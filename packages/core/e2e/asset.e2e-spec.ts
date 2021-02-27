@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
@@ -32,7 +32,7 @@ describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             assetOptions: {
-                permittedFileTypes: ['image/*', '.pdf'],
+                permittedFileTypes: ['image/*', '.pdf', '.zip'],
             },
         }),
     );
@@ -200,6 +200,34 @@ describe('Asset resolver', () => {
                     name: 'dummy.pdf',
                     preview: 'test-url/test-assets/dummy__preview.pdf.png',
                     source: 'test-url/test-assets/dummy.pdf',
+                    type: 'BINARY',
+                },
+            ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/727
+        it('file extension with shared type', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/dummy.zip')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null })),
+                }),
+            });
+
+            expect(createAssets.length).toBe(1);
+
+            expect(isAsset(createAssets[0])).toBe(true);
+            const results = createAssets.filter(isAsset);
+            expect(results.map(a => omit(a, ['id']))).toEqual([
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'application/zip',
+                    name: 'dummy.zip',
+                    preview: 'test-url/test-assets/dummy__preview.zip.png',
+                    source: 'test-url/test-assets/dummy.zip',
                     type: 'BINARY',
                 },
             ]);

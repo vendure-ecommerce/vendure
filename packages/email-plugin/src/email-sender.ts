@@ -12,7 +12,13 @@ import { Stream } from 'stream';
 import { format } from 'util';
 
 import { loggerCtx } from './constants';
-import { EmailDetails, EmailTransportOptions, SendmailTransportOptions, SMTPTransportOptions } from './types';
+import {
+    EmailDetails,
+    EmailSender,
+    EmailTransportOptions,
+    SendmailTransportOptions,
+    SMTPTransportOptions,
+} from './types';
 
 export type StreamTransportInfo = {
     envelope: {
@@ -26,7 +32,7 @@ export type StreamTransportInfo = {
 /**
  * Uses the configured transport to send the generated email.
  */
-export class EmailSender {
+export class DefaultEmailSender implements EmailSender {
     private _smtpTransport: Mail | undefined;
     private _sendMailTransport: Mail | undefined;
 

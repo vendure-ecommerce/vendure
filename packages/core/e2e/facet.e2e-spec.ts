@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { FACET_VALUE_FRAGMENT, FACET_WITH_VALUES_FRAGMENT } from './graphql/fragments';
 import {
@@ -361,6 +361,45 @@ describe('Facet resolver', () => {
                 },
             );
             expect(result.deleteFacet.result).toBe(DeletionResult.DELETED);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/715
+    describe('code conflicts', () => {
+        function createFacetWithCode(code: string) {
+            return adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
+                input: {
+                    isPrivate: false,
+                    code,
+                    translations: [{ languageCode: LanguageCode.en, name: `Test Facet (${code})` }],
+                    values: [],
+                },
+            });
+        }
+
+        it('createFacet with conflicting slug gets renamed', async () => {
+            const { createFacet: result1 } = await createFacetWithCode('test');
+            expect(result1.code).toBe('test');
+
+            const { createFacet: result2 } = await createFacetWithCode('test');
+            expect(result2.code).toBe('test-2');
+        });
+
+        it('updateFacet with conflicting slug gets renamed', async () => {
+            const { createFacet } = await createFacetWithCode('foo');
+            expect(createFacet.code).toBe('foo');
+
+            const { updateFacet } = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(
+                UPDATE_FACET,
+                {
+                    input: {
+                        id: createFacet.id,
+                        code: 'test-2',
+                    },
+                },
+            );
+
+            expect(updateFacet.code).toBe('test-3');
         });
     });
 });

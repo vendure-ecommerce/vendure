@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - master
+      - next
 env:
   CI: true
   node: 12.x

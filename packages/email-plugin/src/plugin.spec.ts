@@ -20,7 +20,7 @@ import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailEventHandler } from './event-handler';
 import { EmailEventListener } from './event-listener';
 import { EmailPlugin } from './plugin';
-import { EmailPluginOptions } from './types';
+import { EmailDetails, EmailPluginOptions, EmailSender, EmailTransportOptions } from './types';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
@@ -624,7 +624,41 @@ describe('EmailPlugin', () => {
             expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`something went horribly wrong!`);
         });
     });
+
+    describe('custom sender', () => {
+        it('should allow a custom sender to be utilized', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello')
+                .setTemplateVars(event => ({ subjectVar: 'foo' }));
+
+            const fakeSender = new FakeCustomSender();
+            const send = jest.fn();
+            fakeSender.send = send;
+
+            await initPluginWithHandlers([handler], {
+                emailSender: fakeSender,
+            });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(send.mock.calls[0][0].subject).toBe('Hello');
+            expect(send.mock.calls[0][0].recipient).toBe('test@test.com');
+            expect(send.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
+            expect(onSend).toHaveBeenCalledTimes(0);
+        });
+    });
 });
+
+class FakeCustomSender implements EmailSender {
+    send: (email: EmailDetails<'unserialized'>, options: EmailTransportOptions) => void;
+}
 
 const pause = () => new Promise(resolve => setTimeout(resolve, 100));
 

@@ -374,9 +374,12 @@ export class AssetService {
 
     private validateMimeType(mimeType: string): boolean {
         const [type, subtype] = mimeType.split('/');
-        const typeMatch = this.permittedMimeTypes.find(t => t.type === type);
-        if (typeMatch) {
-            return typeMatch.subtype === subtype || typeMatch.subtype === '*';
+        const typeMatches = this.permittedMimeTypes.filter(t => t.type === type);
+
+        for (const match of typeMatches) {
+            if (match.subtype === subtype || match.subtype === '*') {
+                return true;
+            }
         }
         return false;
     }
