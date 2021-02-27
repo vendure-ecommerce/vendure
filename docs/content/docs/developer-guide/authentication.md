@@ -9,6 +9,8 @@ Authentication is the process of determining the identity of a user. Common ways
 
 By default, Vendure uses a username/email address and password to authenticate users, but also supports a wide range of authentication methods via configurable AuthenticationStrategies.
 
+While developing a storefront, mobile app or server that implements authentication of Vendure further reading on [Managing Sessions]({{< relref "managing-sessions" >}}) is highly recommended.
+
 ## Adding support for external authentication
 
 This is done via the [`VendureConfig.authOptions` object]({{< relref "auth-options" >}}#shopauthenticationstrategy):
