@@ -35,7 +35,7 @@ describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             assetOptions: {
-                permittedFileTypes: ['image/*', '.pdf'],
+                permittedFileTypes: ['image/*', '.pdf', '.zip'],
             },
         }),
     );
@@ -206,6 +206,34 @@ describe('Asset resolver', () => {
                     preview: 'test-url/test-assets/dummy__preview.pdf.png',
                     source: 'test-url/test-assets/dummy.pdf',
                     tags: [],
+                    type: 'BINARY',
+                },
+            ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/727
+        it('file extension with shared type', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/dummy.zip')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null })),
+                }),
+            });
+
+            expect(createAssets.length).toBe(1);
+
+            expect(isAsset(createAssets[0])).toBe(true);
+            const results = createAssets.filter(isAsset);
+            expect(results.map(a => omit(a, ['id']))).toEqual([
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'application/zip',
+                    name: 'dummy.zip',
+                    preview: 'test-url/test-assets/dummy__preview.zip.png',
+                    source: 'test-url/test-assets/dummy.zip',
                     type: 'BINARY',
                 },
             ]);

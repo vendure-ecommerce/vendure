@@ -578,6 +578,45 @@ describe('Facet resolver', () => {
             }, `No Facet with the id '1' could be found`),
         );
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/715
+    describe('code conflicts', () => {
+        function createFacetWithCode(code: string) {
+            return adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
+                input: {
+                    isPrivate: false,
+                    code,
+                    translations: [{ languageCode: LanguageCode.en, name: `Test Facet (${code})` }],
+                    values: [],
+                },
+            });
+        }
+
+        it('createFacet with conflicting slug gets renamed', async () => {
+            const { createFacet: result1 } = await createFacetWithCode('test');
+            expect(result1.code).toBe('test');
+
+            const { createFacet: result2 } = await createFacetWithCode('test');
+            expect(result2.code).toBe('test-2');
+        });
+
+        it('updateFacet with conflicting slug gets renamed', async () => {
+            const { createFacet } = await createFacetWithCode('foo');
+            expect(createFacet.code).toBe('foo');
+
+            const { updateFacet } = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(
+                UPDATE_FACET,
+                {
+                    input: {
+                        id: createFacet.id,
+                        code: 'test-2',
+                    },
+                },
+            );
+
+            expect(updateFacet.code).toBe('test-3');
+        });
+    });
 });
 
 export const GET_FACET_WITH_VALUES = gql`

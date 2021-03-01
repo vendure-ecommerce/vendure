@@ -6,12 +6,13 @@ import {
     LanguageCode,
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
@@ -96,8 +97,9 @@ export class FacetService {
             input,
             entityType: Facet,
             translationType: FacetTranslation,
-            beforeSave: newEntity => {
-                this.channelService.assignToCurrentChannel(newEntity, ctx);
+            beforeSave: async f => {
+                f.code = await this.ensureUniqueCode(ctx, f.code);
+                this.channelService.assignToCurrentChannel(f, ctx);
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
@@ -110,6 +112,9 @@ export class FacetService {
             input,
             entityType: Facet,
             translationType: FacetTranslation,
+            beforeSave: async f => {
+                f.code = await this.ensureUniqueCode(ctx, f.code, f.id);
+            },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
         return assertFound(this.findOne(ctx, facet.id));
@@ -153,5 +158,31 @@ export class FacetService {
             result,
             message,
         };
+    }
+
+    /**
+     * Checks to ensure the Facet code is unique. If there is a conflict, then the code is suffixed
+     * with an incrementing integer.
+     */
+    private async ensureUniqueCode(ctx: RequestContext, code: string, id?: ID) {
+        let candidate = code;
+        let suffix = 1;
+        let match: Facet | undefined;
+        const alreadySuffixed = /-\d+$/;
+        do {
+            match = await this.connection.getRepository(ctx, Facet).findOne({ where: { code: candidate } });
+
+            const conflict = !!match && ((id != null && !idsAreEqual(match.id, id)) || id == null);
+            if (conflict) {
+                suffix++;
+                if (alreadySuffixed.test(candidate)) {
+                    candidate = candidate.replace(alreadySuffixed, `-${suffix}`);
+                } else {
+                    candidate = `${candidate}-${suffix}`;
+                }
+            }
+        } while (match);
+
+        return candidate;
     }
 }

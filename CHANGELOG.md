@@ -1,3 +1,17 @@
+## <small>0.18.5 (2021-03-01)</small>
+
+
+#### Fixes
+
+* **admin-ui** Typing error on pt-Br i18n (#725) ([50aafb3](https://github.com/vendure-ecommerce/vendure/commit/50aafb3)), closes [#725](https://github.com/vendure-ecommerce/vendure/issues/725)
+* **core** Allow asset uploads with same major mime type ([070c5f2](https://github.com/vendure-ecommerce/vendure/commit/070c5f2)), closes [#727](https://github.com/vendure-ecommerce/vendure/issues/727)
+* **core** Fix list query sorting by non-default language with filters ([1e31828](https://github.com/vendure-ecommerce/vendure/commit/1e31828))
+* **core** Prevent Facet code conflicts ([bce3b59](https://github.com/vendure-ecommerce/vendure/commit/bce3b59)), closes [#715](https://github.com/vendure-ecommerce/vendure/issues/715)
+
+#### Features
+
+* **email-plugin** Support custom EmailGenerators and EmailSenders ([3e20624](https://github.com/vendure-ecommerce/vendure/commit/3e20624))
+
 ## <small>0.18.4 (2021-02-10)</small>
 
 
