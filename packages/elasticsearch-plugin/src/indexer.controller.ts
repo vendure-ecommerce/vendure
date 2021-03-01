@@ -503,7 +503,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         isAuthorized: true,
                         session: {} as any,
                     });
-                    this.productVariantService.applyChannelPriceAndTax(variant, ctx);
+                    await this.productVariantService.applyChannelPriceAndTax(variant, ctx);
                     for (const languageCode of languageVariants) {
                         operations.push(
                             { update: { _id: this.getId(variant.id, channel.id, languageCode) } },
@@ -556,7 +556,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         v.channels.map(c => c.id).includes(channel.id),
                     );
                     for (const variant of variantsInChannel) {
-                        this.productVariantService.applyChannelPriceAndTax(variant, channelCtx);
+                        await this.productVariantService.applyChannelPriceAndTax(variant, channelCtx);
                     }
 
                     for (const languageCode of languageVariants) {

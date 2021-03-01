@@ -92,8 +92,11 @@ export class CollectionService implements OnModuleInit {
                     });
                 let completed = 0;
                 for (const collection of collections) {
-                    await this.applyCollectionFiltersInternal(collection);
+                    const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
                     job.setProgress(Math.ceil((++completed / job.data.collectionIds.length) * 100));
+                    this.eventBus.publish(
+                        new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                    );
                 }
             },
         });
@@ -402,17 +405,19 @@ export class CollectionService implements OnModuleInit {
     /**
      * Applies the CollectionFilters
      */
-    private async applyCollectionFiltersInternal(collection: Collection): Promise<void> {
+    private async applyCollectionFiltersInternal(collection: Collection): Promise<ID[]> {
         const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
             ancestors.reduce(
                 (filters, c) => [...filters, ...(c.filters || [])],
                 [] as ConfigurableOperation[],
             ),
         );
+        const preIds = await this.getCollectionProductVariantIds(collection);
         collection.productVariants = await this.getFilteredProductVariants([
             ...ancestorFilters,
             ...(collection.filters || []),
         ]);
+        const postIds = collection.productVariants.map(v => v.id);
         try {
             await this.connection
                 .getRepository(Collection)
@@ -427,6 +432,13 @@ export class CollectionService implements OnModuleInit {
         } catch (e) {
             Logger.error(e);
         }
+        const preIdsSet = new Set(preIds);
+        const postIdsSet = new Set(postIds);
+        const difference = [
+            ...preIds.filter(id => !postIdsSet.has(id)),
+            ...postIds.filter(id => !preIdsSet.has(id)),
+        ];
+        return difference;
     }
 
     /**

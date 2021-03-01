@@ -176,7 +176,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     }
 
     configure(consumer: MiddlewareConsumer) {
-        Logger.info('Creating asset server middleware', 'AssetServerPlugin');
+        Logger.info('Creating asset server middleware', loggerCtx);
         consumer.apply(this.createAssetServer()).forRoutes(AssetServerPlugin.options.route);
     }
 
@@ -241,9 +241,11 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         }
                         res.set('Content-Type', `image/${(await image.metadata()).format}`);
                         res.send(imageBuffer);
+                        return;
                     } catch (e) {
                         Logger.error(e, 'AssetServerPlugin', e.stack);
                         res.status(500).send(e.message);
+                        return;
                     }
                 }
             }

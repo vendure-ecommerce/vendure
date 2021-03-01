@@ -41,10 +41,6 @@ describe('Plugins', () => {
         await server.destroy();
     });
 
-    it('constructs one instance for each process', () => {
-        expect(onConstructorFn).toHaveBeenCalledTimes(1);
-    });
-
     it('can modify the config in configure()', () => {
         const configService = server.app.get(ConfigService);
         expect(configService instanceof ConfigService).toBe(true);

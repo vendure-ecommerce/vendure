@@ -15,6 +15,7 @@ import {
     PaymentMethodEligibilityChecker,
     VendureConfig,
 } from '@vendure/core';
+import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
@@ -79,12 +80,12 @@ export const devConfig: VendureConfig = {
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin,
+        // DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        // ElasticsearchPlugin.init({
-        //     host: 'http://localhost',
-        //     port: 9200,
-        // }),
+        ElasticsearchPlugin.init({
+            host: 'http://localhost',
+            port: 9200,
+        }),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',
