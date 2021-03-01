@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MicroserviceHealthIndicator, TerminusModule, TypeOrmHealthIndicator } from '@nestjs/terminus';
+import { TerminusModule, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';

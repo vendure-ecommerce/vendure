@@ -1,4 +1,4 @@
-import { INestApplication, INestMicroservice, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { pick } from '@vendure/common/lib/pick';
