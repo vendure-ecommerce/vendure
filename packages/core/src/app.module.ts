@@ -9,17 +9,9 @@ import { HealthCheckModule } from './health-check/health-check.module';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
-import { ProcessContextModule } from './process-context/process-context.module';
 
 @Module({
-    imports: [
-        ConfigModule,
-        I18nModule,
-        ApiModule,
-        PluginModule.forRoot(),
-        ProcessContextModule.forRoot(),
-        HealthCheckModule,
-    ],
+    imports: [ConfigModule, I18nModule, ApiModule, PluginModule.forRoot(), HealthCheckModule],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}

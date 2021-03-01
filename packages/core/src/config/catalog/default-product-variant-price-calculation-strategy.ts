@@ -21,18 +21,19 @@ export class DefaultProductVariantPriceCalculationStrategy implements ProductVar
         this.taxRateService = injector.get(TaxRateService);
     }
 
-    calculate(args: ProductVariantPriceCalculationArgs): PriceCalculationResult {
+    async calculate(args: ProductVariantPriceCalculationArgs): Promise<PriceCalculationResult> {
         const { inputPrice, activeTaxZone, ctx, taxCategory } = args;
         let price = inputPrice;
         let priceIncludesTax = false;
-        const taxRate = this.taxRateService.getApplicableTaxRate(activeTaxZone, taxCategory);
+        const taxRate = await this.taxRateService.getApplicableTaxRate(ctx, activeTaxZone, taxCategory);
 
         if (ctx.channel.pricesIncludeTax) {
             const isDefaultZone = idsAreEqual(activeTaxZone.id, ctx.channel.defaultTaxZone.id);
             if (isDefaultZone) {
                 priceIncludesTax = true;
             } else {
-                const taxRateForDefaultZone = this.taxRateService.getApplicableTaxRate(
+                const taxRateForDefaultZone = await this.taxRateService.getApplicableTaxRate(
+                    ctx,
                     ctx.channel.defaultTaxZone,
                     taxCategory,
                 );

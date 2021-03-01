@@ -9,8 +9,8 @@ class TestController implements OnModuleInit {
 
     constructor(private jobQueueService: JobQueueService) {}
 
-    onModuleInit(): any {
-        this.queue = this.jobQueueService.createQueue({
+    async onModuleInit(): Promise<void> {
+        this.queue = await this.jobQueueService.createQueue({
             name: 'test',
             process: job => {
                 return PluginWithJobQueue.jobSubject

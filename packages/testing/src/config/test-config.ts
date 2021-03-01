@@ -60,11 +60,4 @@ export const testConfig: Required<VendureConfig> = mergeConfig(defaultConfig, {
         assetStorageStrategy: new TestingAssetStorageStrategy(),
         assetPreviewStrategy: new TestingAssetPreviewStrategy(),
     },
-    workerOptions: {
-        runInMainProcess: true,
-        transport: Transport.TCP,
-        options: {
-            port: 3051,
-        },
-    },
 });

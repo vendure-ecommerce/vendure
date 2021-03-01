@@ -24,9 +24,6 @@ describe('JobQueue', () => {
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             plugins: [DefaultJobQueuePlugin, PluginWithJobQueue],
-            workerOptions: {
-                runInMainProcess: true,
-            },
         }),
     );
 

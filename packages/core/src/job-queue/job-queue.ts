@@ -34,26 +34,16 @@ export class JobQueue<Data extends JobData<Data> = {}> {
     constructor(private options: CreateQueueOptions<Data>, private jobQueueStrategy: JobQueueStrategy) {}
 
     /** @internal */
-    start() {
+    async start() {
         if (this.running) {
             return;
         }
         this.running = true;
-        this.jobQueueStrategy.start<Data>(this.options.name, this.options.process);
+        await this.jobQueueStrategy.start<Data>(this.options.name, this.options.process);
     }
 
     /** @internal */
-    pause() {
-        Logger.debug(`Pausing JobQueue "${this.options.name}"`);
-        if (!this.running) {
-            return;
-        }
-        this.running = false;
-        this.jobQueueStrategy.stop(this.options.name, this.options.process);
-    }
-
-    /** @internal */
-    async destroy(): Promise<void> {
+    async stop(): Promise<void> {
         if (!this.running) {
             return;
         }

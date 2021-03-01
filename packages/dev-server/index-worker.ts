@@ -1,4 +1,4 @@
-import { bootstrapWorker } from '@vendure/core';
+import { bootstrapWorker, JobQueueService } from '@vendure/core';
 
 import { devConfig } from './dev-config';
 
@@ -6,8 +6,12 @@ import { devConfig } from './dev-config';
 // fix race condition when modifying DB
 devConfig.dbConnectionOptions = { ...devConfig.dbConnectionOptions, synchronize: false };
 
-bootstrapWorker(devConfig).catch(err => {
-    // tslint:disable-next-line
-    console.log(err);
-    process.exit(1);
-});
+bootstrapWorker(devConfig)
+    .then(app => {
+        app.get(JobQueueService).start();
+    })
+    .catch(err => {
+        // tslint:disable-next-line
+        console.log(err);
+        process.exit(1);
+    });

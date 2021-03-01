@@ -4,13 +4,12 @@ import { Type } from '@vendure/common/lib/shared-types';
 
 import { notNullOrUndefined } from '../../../common/lib/shared-utils';
 
-import { APIExtensionDefinition, PluginConfigurationFn, PluginLifecycleMethods } from './vendure-plugin';
+import { APIExtensionDefinition, PluginConfigurationFn } from './vendure-plugin';
 
 export const PLUGIN_METADATA = {
     CONFIGURATION: 'configuration',
     SHOP_API_EXTENSIONS: 'shopApiExtensions',
     ADMIN_API_EXTENSIONS: 'adminApiExtensions',
-    WORKERS: 'workers',
     ENTITIES: 'entities',
 };
 
@@ -46,17 +45,6 @@ export function getPluginAPIExtensions(
 
 export function getPluginModules(plugins: Array<Type<any> | DynamicModule>): Array<Type<any>> {
     return plugins.map(p => (isDynamicModule(p) ? p.module : p));
-}
-
-export function hasLifecycleMethod<M extends keyof PluginLifecycleMethods>(
-    plugin: any,
-    lifecycleMethod: M,
-): plugin is { [key in M]: PluginLifecycleMethods[M] } {
-    return typeof (plugin as any)[lifecycleMethod] === 'function';
-}
-
-export function getWorkerControllers(plugin: Type<any> | DynamicModule) {
-    return reflectMetadata(plugin, PLUGIN_METADATA.WORKERS);
 }
 
 export function getConfigurationFunction(

@@ -5,7 +5,6 @@ import { ChannelService } from './services/channel.service';
 import { GlobalSettingsService } from './services/global-settings.service';
 import { RoleService } from './services/role.service';
 import { ShippingMethodService } from './services/shipping-method.service';
-import { TaxRateService } from './services/tax-rate.service';
 
 /**
  * Only used internally to run the various service init methods in the correct
@@ -17,7 +16,6 @@ export class InitializerService {
         private channelService: ChannelService,
         private roleService: RoleService,
         private administratorService: AdministratorService,
-        private taxRateService: TaxRateService,
         private shippingMethodService: ShippingMethodService,
         private globalSettingsService: GlobalSettingsService,
     ) {}
@@ -33,7 +31,6 @@ export class InitializerService {
         await this.channelService.initChannels();
         await this.roleService.initRoles();
         await this.administratorService.initAdministrators();
-        await this.taxRateService.initTaxRates();
         await this.shippingMethodService.initShippingMethods();
     }
 }

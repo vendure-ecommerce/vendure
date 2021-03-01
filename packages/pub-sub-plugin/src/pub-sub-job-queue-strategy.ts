@@ -57,7 +57,10 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
         });
     }
 
-    start<Data extends JobData<Data> = {}>(queueName: string, process: (job: Job<Data>) => Promise<any>) {
+    async start<Data extends JobData<Data> = {}>(
+        queueName: string,
+        process: (job: Job<Data>) => Promise<any>,
+    ) {
         if (!this.hasInitialized) {
             this.started.set(queueName, process);
             return;

@@ -1,4 +1,4 @@
-import { DefaultSearchPlugin, mergeConfig } from '@vendure/core';
+import { DefaultSearchPlugin, JobQueueService, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';

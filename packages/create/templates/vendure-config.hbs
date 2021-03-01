@@ -78,14 +78,13 @@ const path = require('path');
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),
-            port: 3001,
         }),
         DefaultJobQueuePlugin,
         DefaultSearchPlugin,
         EmailPlugin.init({
             devMode: true,
             outputPath: path.join(__dirname, '../static/email/test-emails'),
-            mailboxPort: 3003,
+            route: 'mailbox',
             handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../static/email/templates'),
             globalTemplateVars: {
@@ -96,7 +95,10 @@ const path = require('path');
                 changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
             },
         }),
-        AdminUiPlugin.init({ port: 3002 }),
+        AdminUiPlugin.init({
+            route: 'admin',
+            port: 3002,
+        }),
     ],
 };
 {{#if isTs}}

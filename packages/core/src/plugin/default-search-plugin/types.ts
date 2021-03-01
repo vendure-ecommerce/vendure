@@ -2,7 +2,6 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 
 import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';
-import { WorkerMessage } from '../../worker/types';
 
 export type ReindexMessageResponse = {
     total: number;
@@ -45,46 +44,6 @@ export type VariantChannelMessageData = {
     productVariantId: ID;
     channelId: ID;
 };
-
-export class ReindexMessage extends WorkerMessage<ReindexMessageData, ReindexMessageResponse> {
-    static readonly pattern = 'Reindex';
-}
-export class UpdateVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
-    static readonly pattern = 'UpdateProduct';
-}
-export class UpdateProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
-    static readonly pattern = 'UpdateVariant';
-}
-export class DeleteVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
-    static readonly pattern = 'DeleteProduct';
-}
-export class DeleteProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
-    static readonly pattern = 'DeleteVariant';
-}
-export class UpdateVariantsByIdMessage extends WorkerMessage<
-    UpdateVariantsByIdMessageData,
-    ReindexMessageResponse
-> {
-    static readonly pattern = 'UpdateVariantsById';
-}
-export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
-    static readonly pattern = 'AssignProductToChannel';
-}
-export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
-    static readonly pattern = 'RemoveProductFromChannel';
-}
-export class AssignVariantToChannelMessage extends WorkerMessage<VariantChannelMessageData, boolean> {
-    static readonly pattern = 'AssignVariantToChannel';
-}
-export class RemoveVariantFromChannelMessage extends WorkerMessage<VariantChannelMessageData, boolean> {
-    static readonly pattern = 'RemoveVariantFromChannel';
-}
-export class UpdateAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
-    static readonly pattern = 'UpdateAsset';
-}
-export class DeleteAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
-    static readonly pattern = 'DeleteAsset';
-}
 
 type NamedJobData<Type extends string, MessageData> = { type: Type } & MessageData;
 

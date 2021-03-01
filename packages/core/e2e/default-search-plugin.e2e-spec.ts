@@ -4,6 +4,7 @@ import {
     DefaultJobQueuePlugin,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
+    JobQueueService,
     mergeConfig,
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
@@ -64,6 +65,10 @@ import {
 } from './graphql/shared-definitions';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
+
+// Some of these tests have many steps and can timeout
+// on the default of 5s.
+jest.setTimeout(10000);
 
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -650,7 +655,7 @@ describe('Default search plugin', () => {
                     'Football',
                     'Running Shoe',
                 ]);
-            });
+            }, 10000);
 
             it('updates index when a Collection created', async () => {
                 const { createCollection } = await adminClient.query<

@@ -8,7 +8,6 @@ import { take } from 'rxjs/operators';
 
 import { Injector } from '../common';
 import { ConfigService } from '../config/config.service';
-import { ProcessContext, WorkerProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
 import { JobQueueService } from './job-queue.service';
@@ -22,15 +21,12 @@ describe('JobQueueService', () => {
 
     beforeEach(async () => {
         module = await Test.createTestingModule({
-            providers: [
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: ProcessContext, useClass: WorkerProcessContext },
-                JobQueueService,
-            ],
+            providers: [{ provide: ConfigService, useClass: MockConfigService }, JobQueueService],
         }).compile();
+        await module.init();
 
         jobQueueService = module.get(JobQueueService);
-        await module.init();
+        await jobQueueService.start();
     });
 
     afterEach(async () => {
@@ -40,7 +36,7 @@ describe('JobQueueService', () => {
     it('data is passed into job', async () => {
         const subject = new Subject<string>();
         const subNext = subject.pipe(take(1)).toPromise();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: async job => {
                 subject.next(job.data);
@@ -54,7 +50,7 @@ describe('JobQueueService', () => {
 
     it('job marked as complete', async () => {
         const subject = new Subject<string>();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject.toPromise();
@@ -78,7 +74,7 @@ describe('JobQueueService', () => {
 
     it('job marked as failed when exception thrown', async () => {
         const subject = new Subject();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: async job => {
                 const result = await subject.toPromise();
@@ -102,7 +98,7 @@ describe('JobQueueService', () => {
 
     it('job marked as failed when async error thrown', async () => {
         const err = new Error('something bad happened');
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: async job => {
                 throw err;
@@ -119,7 +115,7 @@ describe('JobQueueService', () => {
 
     it('jobs processed in FIFO queue', async () => {
         const subject = new Subject();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject.pipe(take(1)).toPromise();
@@ -164,7 +160,7 @@ describe('JobQueueService', () => {
         testingJobQueueStrategy.concurrency = 2;
 
         const subject = new Subject();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject.pipe(take(1)).toPromise();
@@ -212,7 +208,7 @@ describe('JobQueueService', () => {
             }),
         ]);
 
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: async job => {
                 return;
@@ -232,7 +228,7 @@ describe('JobQueueService', () => {
 
     it('retries', async () => {
         const subject = new Subject<boolean>();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject
@@ -275,7 +271,7 @@ describe('JobQueueService', () => {
             .jobQueueStrategy as TestingJobQueueStrategy;
 
         const subject = new Subject<boolean>();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject.pipe(take(1)).toPromise();
@@ -288,7 +284,7 @@ describe('JobQueueService', () => {
 
         expect((await testingJobQueueStrategy.findOne(testJob.id!))?.state).toBe(JobState.RUNNING);
 
-        await testQueue.destroy();
+        await testQueue.stop();
 
         expect((await testingJobQueueStrategy.findOne(testJob.id!))?.state).toBe(JobState.PENDING);
     }, 10000);
@@ -297,7 +293,7 @@ describe('JobQueueService', () => {
         module.get(ConfigService).jobQueueOptions.activeQueues = ['test'];
 
         const subject = new Subject();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject.toPromise();
@@ -322,7 +318,7 @@ describe('JobQueueService', () => {
         module.get(ConfigService).jobQueueOptions.activeQueues = ['another'];
 
         const subject = new Subject();
-        const testQueue = jobQueueService.createQueue<string>({
+        const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
                 return subject.toPromise();

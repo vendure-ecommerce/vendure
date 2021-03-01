@@ -29,9 +29,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
     });
 
     describe('with prices which do not include tax', () => {
-        it('standard tax, default zone', () => {
+        it('standard tax, default zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: false });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryStandard,
                 activeTaxZone: zoneDefault,
@@ -44,9 +44,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('reduced tax, default zone', () => {
+        it('reduced tax, default zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: false });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryReduced,
                 activeTaxZone: zoneDefault,
@@ -59,9 +59,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('standard tax, other zone', () => {
+        it('standard tax, other zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: false });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryStandard,
                 activeTaxZone: zoneOther,
@@ -74,9 +74,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('reduced tax, other zone', () => {
+        it('reduced tax, other zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: false });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryReduced,
                 activeTaxZone: zoneOther,
@@ -89,9 +89,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('standard tax, unconfigured zone', () => {
+        it('standard tax, unconfigured zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: false });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryReduced,
                 activeTaxZone: zoneWithNoTaxRate,
@@ -106,9 +106,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
     });
 
     describe('with prices which include tax', () => {
-        it('standard tax, default zone', () => {
+        it('standard tax, default zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: true });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryStandard,
                 activeTaxZone: zoneDefault,
@@ -121,9 +121,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('reduced tax, default zone', () => {
+        it('reduced tax, default zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: true });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryReduced,
                 activeTaxZone: zoneDefault,
@@ -136,9 +136,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('standard tax, other zone', () => {
+        it('standard tax, other zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: true });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryStandard,
                 activeTaxZone: zoneOther,
@@ -151,9 +151,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('reduced tax, other zone', () => {
+        it('reduced tax, other zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: true });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryReduced,
                 activeTaxZone: zoneOther,
@@ -166,9 +166,9 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
         });
 
-        it('standard tax, unconfigured zone', () => {
+        it('standard tax, unconfigured zone', async () => {
             const ctx = createRequestContext({ pricesIncludeTax: true });
-            const result = strategy.calculate({
+            const result = await strategy.calculate({
                 inputPrice,
                 taxCategory: taxCategoryStandard,
                 activeTaxZone: zoneWithNoTaxRate,

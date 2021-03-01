@@ -113,7 +113,7 @@ export class RequestContext {
      * @description
      * Serializes the RequestContext object into a JSON-compatible simple object.
      * This is useful when you need to send a RequestContext object to another
-     * process, e.g. to pass it to the Worker process via the {@link WorkerService}.
+     * process, e.g. to pass it to the Job Queue via the {@link JobQueueService}.
      */
     serialize(): SerializedRequestContext {
         const serializableThis: any = Object.assign({}, this);

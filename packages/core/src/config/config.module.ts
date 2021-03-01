@@ -4,7 +4,6 @@ import { ModuleRef } from '@nestjs/core';
 import { ConfigurableOperationDef } from '../common/configurable-operation';
 import { Injector } from '../common/injector';
 import { InjectableStrategy } from '../common/types/injectable-strategy';
-import { ProcessContext } from '../process-context/process-context';
 
 import { ConfigService } from './config.service';
 
@@ -13,35 +12,16 @@ import { ConfigService } from './config.service';
     exports: [ConfigService],
 })
 export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdown {
-    constructor(
-        private configService: ConfigService,
-        private moduleRef: ModuleRef,
-        private processContext: ProcessContext,
-    ) {}
+    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {}
 
     async onApplicationBootstrap() {
-        if (this.runInjectableStrategyLifecycleHooks()) {
-            await this.initInjectableStrategies();
-            await this.initConfigurableOperations();
-        }
+        await this.initInjectableStrategies();
+        await this.initConfigurableOperations();
     }
 
     async onApplicationShutdown(signal?: string) {
-        if (this.runInjectableStrategyLifecycleHooks()) {
-            await this.destroyInjectableStrategies();
-            await this.destroyConfigurableOperations();
-        }
-    }
-
-    /**
-     * The lifecycle hooks of the configured strategies should be run if we are on the main
-     * server process _or_ if we are on the worker running independently of the main process.
-     */
-    private runInjectableStrategyLifecycleHooks(): boolean {
-        return (
-            this.processContext.isServer ||
-            (this.processContext.isWorker && !this.configService.workerOptions.runInMainProcess)
-        );
+        await this.destroyInjectableStrategies();
+        await this.destroyConfigurableOperations();
     }
 
     private async initInjectableStrategies() {

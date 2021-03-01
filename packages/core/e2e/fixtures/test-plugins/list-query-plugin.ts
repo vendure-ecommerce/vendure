@@ -1,3 +1,4 @@
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
@@ -5,7 +6,6 @@ import {
     Ctx,
     ListQueryBuilder,
     LocaleString,
-    OnVendureBootstrap,
     PluginCommonModule,
     RequestContext,
     TransactionalConnection,
@@ -153,10 +153,10 @@ const adminApiExtensions = gql`
         resolvers: [ListQueryResolver],
     },
 })
-export class ListQueryPlugin implements OnVendureBootstrap {
+export class ListQueryPlugin implements OnApplicationBootstrap {
     constructor(private connection: TransactionalConnection) {}
 
-    async onVendureBootstrap() {
+    async onApplicationBootstrap() {
         const count = await this.connection.getRepository(TestEntity).count();
         if (count === 0) {
             const testEntities = await this.connection.getRepository(TestEntity).save([

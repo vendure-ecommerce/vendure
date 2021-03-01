@@ -1,8 +1,5 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { PluginDefinition } from 'apollo-server-core';
-import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
 import { getConfig } from './config-helpers';
@@ -21,10 +18,8 @@ import {
     PromotionOptions,
     RuntimeVendureConfig,
     ShippingOptions,
-    SuperadminCredentials,
     TaxOptions,
     VendureConfig,
-    WorkerOptions,
 } from './vendure-config';
 
 @Injectable()
@@ -105,10 +100,6 @@ export class ConfigService implements VendureConfig {
 
     get logger(): VendureLogger {
         return this.activeConfig.logger;
-    }
-
-    get workerOptions(): WorkerOptions {
-        return this.activeConfig.workerOptions;
     }
 
     get jobQueueOptions(): Required<JobQueueOptions> {

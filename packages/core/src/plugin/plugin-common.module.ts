@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 
+import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { HealthCheckModule } from '../health-check/health-check.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { ServiceModule } from '../service/service.module';
-import { WorkerServiceModule } from '../worker/worker-service.module';
 
 /**
  * @description
@@ -18,7 +18,6 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
  * * `EventBusModule`, allowing the injection of the {@link EventBus} service.
  * * `ServiceModule` allowing the injection of any of the various entity services such as ProductService, OrderService etc.
  * * `ConfigModule`, allowing the injection of the ConfigService.
- * * `WorkerServiceModule`, allowing the injection of the {@link WorkerService}.
  * * `JobQueueModule`, allowing the injection of the {@link JobQueueService}.
  * * `HealthCheckModule`, allowing the injection of the {@link HealthCheckRegistryService}.
  *
@@ -29,17 +28,17 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
         EventBusModule,
         ConfigModule,
         ServiceModule.forPlugin(),
-        WorkerServiceModule,
         JobQueueModule,
         HealthCheckModule,
+        CacheModule,
     ],
     exports: [
         EventBusModule,
         ConfigModule,
         ServiceModule.forPlugin(),
-        WorkerServiceModule,
         JobQueueModule,
         HealthCheckModule,
+        CacheModule,
     ],
 })
 export class PluginCommonModule {}

@@ -1,12 +1,6 @@
-import {
-    createProxyHandler,
-    OnVendureBootstrap,
-    OnVendureClose,
-    PluginCommonModule,
-    VendurePlugin,
-} from '@vendure/core';
+import { MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import express from 'express';
-import { Server } from 'http';
 import path from 'path';
 
 import { KeycloakAuthenticationStrategy } from './keycloak-authentication-strategy';
@@ -24,43 +18,16 @@ import { KeycloakAuthenticationStrategy } from './keycloak-authentication-strate
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    configuration: (config) => {
+    configuration: config => {
         config.authOptions.adminAuthenticationStrategy = [
             ...config.authOptions.adminAuthenticationStrategy,
             new KeycloakAuthenticationStrategy(),
         ];
-        config.apiOptions.middleware.push({
-            handler: createProxyHandler({
-                port: 3042,
-                route: 'keycloak-login',
-                label: 'Keycloak Login',
-                basePath: '',
-            }),
-            route: 'keycloak-login',
-        });
         return config;
     },
 })
-export class KeycloakAuthPlugin implements OnVendureBootstrap, OnVendureClose {
-    private staticServer: Server;
-
-    onVendureBootstrap() {
-        // Set up a static express server to serve the demo login page
-        // from public/index.html.
-        const app = express();
-        app.use(express.static(path.join(__dirname, 'public')));
-        this.staticServer = app.listen(3042);
-    }
-
-    onVendureClose(): void | Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.staticServer.close((err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        });
+export class KeycloakAuthPlugin implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(express.static(path.join(__dirname, 'public'))).forRoutes('keycloak-login');
     }
 }

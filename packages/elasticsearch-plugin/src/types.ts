@@ -8,7 +8,7 @@ import {
     SearchResult,
 } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
-import { Asset, SerializedRequestContext, WorkerMessage } from '@vendure/core';
+import { Asset, SerializedRequestContext } from '@vendure/core';
 
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
@@ -188,46 +188,6 @@ export type VariantChannelMessageData = {
 export interface UpdateAssetMessageData {
     ctx: SerializedRequestContext;
     asset: JsonCompatible<Required<Asset>>;
-}
-
-export class ReindexMessage extends WorkerMessage<ReindexMessageData, ReindexMessageResponse> {
-    static readonly pattern = 'Reindex';
-}
-export class UpdateVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
-    static readonly pattern = 'UpdateProduct';
-}
-export class UpdateProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
-    static readonly pattern = 'UpdateVariant';
-}
-export class DeleteVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
-    static readonly pattern = 'DeleteProduct';
-}
-export class DeleteProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
-    static readonly pattern = 'DeleteVariant';
-}
-export class UpdateVariantsByIdMessage extends WorkerMessage<
-    UpdateVariantsByIdMessageData,
-    ReindexMessageResponse
-> {
-    static readonly pattern = 'UpdateVariantsById';
-}
-export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
-    static readonly pattern = 'AssignProductToChannel';
-}
-export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
-    static readonly pattern = 'RemoveProductFromChannel';
-}
-export class AssignVariantToChannelMessage extends WorkerMessage<VariantChannelMessageData, boolean> {
-    static readonly pattern = 'AssignVariantToChannel';
-}
-export class RemoveVariantFromChannelMessage extends WorkerMessage<VariantChannelMessageData, boolean> {
-    static readonly pattern = 'RemoveVariantFromChannel';
-}
-export class UpdateAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
-    static readonly pattern = 'UpdateAsset';
-}
-export class DeleteAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
-    static readonly pattern = 'DeleteAsset';
 }
 
 type Maybe<T> = T | undefined;

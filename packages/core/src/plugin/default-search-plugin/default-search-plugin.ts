@@ -57,11 +57,10 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [FulltextSearchService, SearchIndexService],
+    providers: [FulltextSearchService, SearchIndexService, IndexerController],
     adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
     shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
     entities: [SearchIndexItem],
-    workers: [IndexerController],
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap {
     /** @internal */
@@ -69,8 +68,6 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
 
     /** @internal */
     async onApplicationBootstrap() {
-        this.searchIndexService.initJobQueue();
-
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
                 return this.searchIndexService.deleteProduct(event.ctx, event.product);

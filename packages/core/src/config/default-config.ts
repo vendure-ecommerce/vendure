@@ -133,13 +133,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     importExportOptions: {
         importAssetsDir: __dirname,
     },
-    workerOptions: {
-        runInMainProcess: false,
-        transport: Transport.TCP,
-        options: {
-            port: 3020,
-        },
-    },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
         activeQueues: [],
