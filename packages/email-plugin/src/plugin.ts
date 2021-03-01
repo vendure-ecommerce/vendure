@@ -7,6 +7,7 @@ import {
     JobQueueService,
     Logger,
     PluginCommonModule,
+    registerPluginStartupMessage,
     Type,
     VendurePlugin,
 } from '@vendure/core';
@@ -213,6 +214,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
             this.devMailbox = new DevMailbox();
             consumer.apply(this.devMailbox.serve(options)).forRoutes(options.route);
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
+            registerPluginStartupMessage('Dev mailbox', options.route);
         }
     }
 

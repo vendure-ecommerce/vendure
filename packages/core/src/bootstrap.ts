@@ -16,7 +16,7 @@ import { registerCustomEntityFields } from './entity/register-custom-entity-fiel
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
-import { getProxyMiddlewareCliGreetings } from './plugin/plugin-utils';
+import { getPluginStartupMessages } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -70,7 +70,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 
 /**
  * @description
- * Bootstraps the Vendure . Read more about the [Vendure Worker]({{< relref "vendure-worker" >}})
+ * Bootstraps the Vendure worker. Read more about the [Vendure Worker]({{< relref "vendure-worker" >}})
  *
  * @example
  * ```TypeScript
@@ -202,11 +202,14 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     } catch (e) {
         version = ' unknown';
     }
-    const { port, shopApiPath, adminApiPath } = config.apiOptions;
-    const apiCliGreetings: Array<[string, string]> = [];
-    apiCliGreetings.push(['Shop API', `http://localhost:${port}/${shopApiPath}`]);
-    apiCliGreetings.push(['Admin API', `http://localhost:${port}/${adminApiPath}`]);
-    apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
+    const { port, shopApiPath, adminApiPath, hostname } = config.apiOptions;
+    const apiCliGreetings: Array<readonly [string, string]> = [];
+    const pathToUrl = (path: string) => `http://${hostname || 'localhost'}:${port}/${path}`;
+    apiCliGreetings.push(['Shop API', pathToUrl(shopApiPath)]);
+    apiCliGreetings.push(['Admin API', pathToUrl(adminApiPath)]);
+    apiCliGreetings.push(
+        ...getPluginStartupMessages().map(({ label, path }) => [label, pathToUrl(path)] as const),
+    );
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
     const title = `Vendure server (v${version}) now running on port ${port}`;
     const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
@@ -218,7 +221,7 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     Logger.info(`=`.repeat(maxLineLength));
 }
 
-function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
+function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): string[] {
     const columnWidth = Math.max(...lines.map(l => l[0].length)) + 2;
     return lines.map(l => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }

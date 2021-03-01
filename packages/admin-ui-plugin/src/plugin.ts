@@ -6,7 +6,14 @@ import {
     AdminUiConfig,
     Type,
 } from '@vendure/common/lib/shared-types';
-import { ConfigService, createProxyHandler, Logger, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import {
+    ConfigService,
+    createProxyHandler,
+    Logger,
+    PluginCommonModule,
+    registerPluginStartupMessage,
+    VendurePlugin,
+} from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
 import path from 'path';
@@ -166,6 +173,7 @@ export class AdminUiPlugin implements NestModule {
                 await overwriteConfig();
             }
         }
+        registerPluginStartupMessage('Admin UI', route);
     }
 
     private async createStaticServer(app?: AdminUiAppConfig) {
