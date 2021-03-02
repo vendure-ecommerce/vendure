@@ -234,6 +234,7 @@ describe('Asset resolver', () => {
                     name: 'dummy.zip',
                     preview: 'test-url/test-assets/dummy__preview.zip.png',
                     source: 'test-url/test-assets/dummy.zip',
+                    tags: [],
                     type: 'BINARY',
                 },
             ]);
@@ -270,7 +271,7 @@ describe('Asset resolver', () => {
 
             expect(results.map(a => pick(a, ['id', 'name', 'tags']))).toEqual([
                 {
-                    id: 'T_8',
+                    id: 'T_9',
                     name: 'pps1.jpg',
                     tags: [
                         { id: 'T_1', value: 'foo' },
@@ -293,7 +294,7 @@ describe('Asset resolver', () => {
 
             expect(results.map(a => pick(a, ['id', 'name', 'tags']))).toEqual([
                 {
-                    id: 'T_9',
+                    id: 'T_10',
                     name: 'pps1.jpg',
                     tags: [
                         { id: 'T_1', value: 'foo' },
@@ -316,7 +317,7 @@ describe('Asset resolver', () => {
 
             expect(results.map(a => pick(a, ['id', 'name', 'tags']))).toEqual([
                 {
-                    id: 'T_10',
+                    id: 'T_11',
                     name: 'pps1.jpg',
                     tags: [
                         { id: 'T_3', value: 'quux' },
@@ -339,7 +340,7 @@ describe('Asset resolver', () => {
                 },
             );
 
-            expect(assets.items.map(i => i.id).sort()).toEqual(['T_8', 'T_9']);
+            expect(assets.items.map(i => i.id).sort()).toEqual(['T_10', 'T_9']);
         });
 
         it('or', async () => {
@@ -353,7 +354,7 @@ describe('Asset resolver', () => {
                 },
             );
 
-            expect(assets.items.map(i => i.id).sort()).toEqual(['T_10', 'T_8', 'T_9']);
+            expect(assets.items.map(i => i.id).sort()).toEqual(['T_10', 'T_11', 'T_9']);
         });
 
         it('empty array', async () => {
@@ -366,7 +367,7 @@ describe('Asset resolver', () => {
                 },
             );
 
-            expect(assets.totalItems).toBe(10);
+            expect(assets.totalItems).toBe(11);
         });
     });
 
