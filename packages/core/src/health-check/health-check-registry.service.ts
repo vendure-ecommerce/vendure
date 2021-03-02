@@ -27,10 +27,10 @@ import { HealthIndicatorFunction } from '@nestjs/terminus';
  * export class MyPlugin {
  *   constructor(
  *     private registry: HealthCheckRegistryService
- *     private dns: DNSHealthIndicator
+ *     private httpIndicator: HttpHealthIndicator
  *   ) {
  *     registry.registerIndicatorFunction(
- *       () => this.dns.pingCheck('vendure-docs', 'https://www.vendure.io/docs/'),
+ *       () => this.httpIndicator.pingCheck('vendure-docs', 'https://www.vendure.io/docs/'),
  *     )
  *   }
  * }
