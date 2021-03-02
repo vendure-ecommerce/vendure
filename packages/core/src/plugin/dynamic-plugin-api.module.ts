@@ -22,11 +22,11 @@ export function createDynamicGraphQlModulesForPlugins(apiType: 'shop' | 'admin')
                 const className = dynamicClassName(pluginModule, apiType);
                 dynamicApiModuleClassMap[className] = class {};
                 Object.defineProperty(dynamicApiModuleClassMap[className], 'name', { value: className });
-                const { imports, providers } = getModuleMetadata(pluginModule);
+                const { imports } = getModuleMetadata(pluginModule);
                 return {
                     module: dynamicApiModuleClassMap[className],
-                    imports,
-                    providers: [...providers, ...resolvers],
+                    imports: [pluginModule, ...imports],
+                    providers: [...resolvers],
                 };
             }
         })

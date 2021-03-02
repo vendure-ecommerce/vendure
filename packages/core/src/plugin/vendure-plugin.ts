@@ -129,6 +129,15 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
             }
         }
         const nestModuleMetadata = pick(pluginMetadata, Object.values(MODULE_METADATA) as any);
+        // Automatically add any of the Plugin's "providers" to the "exports" array. This is done
+        // because when a plugin defines GraphQL resolvers, these resolvers are used to dynamically
+        // created a new Module in the ApiModule, and if those resolvers depend on any providers,
+        // the must be exported. See the function {@link createDynamicGraphQlModulesForPlugins}
+        // for the implementation.
+        nestModuleMetadata.exports = [
+            ...(nestModuleMetadata.exports || []),
+            ...(nestModuleMetadata.providers || []),
+        ];
         Module(nestModuleMetadata)(target);
     };
 }
