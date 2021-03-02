@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./lib"
   },
-  "files": [
-    "./index.ts"
+  "include": [
+    "./src/**/index.ts"
   ]
 }

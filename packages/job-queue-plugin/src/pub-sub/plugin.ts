@@ -1,9 +1,9 @@
+import { PubSub } from '@google-cloud/pubsub';
 import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
 
-import { PubSubOptions } from './options';
 import { PUB_SUB_OPTIONS } from './constants';
+import { PubSubOptions } from './options';
 import { PubSubJobQueueStrategy } from './pub-sub-job-queue-strategy';
-import { PubSub } from '@google-cloud/pubsub';
 
 @VendurePlugin({
     imports: [PluginCommonModule],

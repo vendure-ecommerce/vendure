@@ -1,0 +1,5 @@
+{
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "name": "@vendure/job-queue-plugin/pub-sub"
+}

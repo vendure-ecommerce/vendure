@@ -3,9 +3,8 @@ import { ModuleRef } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { Injector, Job } from '@vendure/core';
 
-import { PubSubOptions } from '../lib';
-
 import { PUB_SUB_OPTIONS } from './constants';
+import { PubSubOptions } from './options';
 import { PubSubJobQueueStrategy } from './pub-sub-job-queue-strategy';
 
 describe('PubSubJobQueueStrategy', () => {
