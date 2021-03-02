@@ -101,13 +101,16 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
      */
     async deleteProduct({ ctx: rawContext, productId }: UpdateProductMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(rawContext);
-        const product = await this.connection.getRepository(Product).findOne(productId);
+        const product = await this.connection.getRepository(Product).findOne(productId, {
+            relations: ['channels'],
+        });
         if (!product) {
             return false;
         }
-        await this.deleteProductInternal(product, ctx.channelId);
+        const channelIds = product.channels.map(c => c.id);
+        await this.deleteProductInternal(product, channelIds);
         const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-        await this.deleteVariantsInternal(variants, ctx.channelId);
+        await this.deleteVariantsInternal(variants, channelIds);
         return true;
     }
 
@@ -143,9 +146,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         if (!product) {
             return false;
         }
-        await this.deleteProductInternal(product, channelId);
+        await this.deleteProductInternal(product, [channelId]);
         const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-        await this.deleteVariantsInternal(variants, channelId);
+        await this.deleteVariantsInternal(variants, [channelId]);
         return true;
     }
 
@@ -168,10 +171,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const productVariant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId, {
             relations: ['product', 'product.channels'],
         });
-        await this.deleteVariantsInternal([productVariant], channelId);
-
+        await this.deleteVariantsInternal([productVariant], [channelId]);
         if (!productVariant.product.channels.find(c => idsAreEqual(c.id, channelId))) {
-            await this.deleteProductInternal(productVariant.product, channelId);
+            await this.deleteProductInternal(productVariant.product, [channelId]);
         }
         return true;
     }
@@ -191,12 +193,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const ctx = RequestContext.deserialize(rawContext);
         const variants = await this.connection
             .getRepository(ProductVariant)
-            .findByIds(variantIds, { relations: ['product'] });
+            .findByIds(variantIds, { relations: ['product', 'channels'] });
         const productIds = unique(variants.map(v => v.product.id));
         for (const productId of productIds) {
             await this.updateProductInternal(ctx, productId);
         }
-        await this.deleteVariantsInternal(variants, ctx.channelId);
+        const channelIds = unique(variants.reduce((flat: ID[], v) => [...flat, ...v.channels.map(c => c.id)], []));
+        await this.deleteVariantsInternal(variants, channelIds);
         return true;
     }
 
@@ -594,25 +597,29 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         }
     }
 
-    private async deleteProductInternal(product: Product, channelId: ID) {
+    private async deleteProductInternal(product: Product, channelIds: ID[]) {
         Logger.verbose(`Deleting 1 Product (${product.id})`, loggerCtx);
         const operations: BulkOperation[] = [];
         const languageVariants = product.translations.map(t => t.languageCode);
         for (const languageCode of languageVariants) {
-            operations.push({ delete: { _id: this.getId(product.id, channelId, languageCode) } });
+            for (const channelId of channelIds) {
+                operations.push({ delete: { _id: this.getId(product.id, channelId, languageCode) } });
+            }
         }
         await this.executeBulkOperations(PRODUCT_INDEX_NAME, operations);
     }
 
-    private async deleteVariantsInternal(variants: ProductVariant[], channelId: ID) {
+    private async deleteVariantsInternal(variants: ProductVariant[], channelIds: ID[]) {
         Logger.verbose(`Deleting ${variants.length} ProductVariants`, loggerCtx);
         const operations: BulkOperation[] = [];
         for (const variant of variants) {
             const languageVariants = variant.translations.map(t => t.languageCode);
             for (const languageCode of languageVariants) {
-                operations.push({
-                    delete: { _id: this.getId(variant.id, channelId, languageCode) },
-                });
+                for (const channelId of channelIds) {
+                    operations.push({
+                        delete: { _id: this.getId(variant.id, channelId, languageCode) },
+                    });
+                }
             }
         }
         await this.executeBulkOperations(VARIANT_INDEX_NAME, operations);
