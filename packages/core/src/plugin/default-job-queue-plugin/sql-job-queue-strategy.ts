@@ -1,6 +1,6 @@
 import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, Connection, FindConditions, In, LessThan } from 'typeorm';
+import { Brackets, Connection, EntityManager, FindConditions, In, LessThan } from 'typeorm';
 
 import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
@@ -46,7 +46,32 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         if (!this.connectionAvailable(this.connection)) {
             throw new Error('Connection not available');
         }
-        const record = await this.connection
+        const connection = this.connection;
+        const connectionType = this.connection.options.type;
+
+        return new Promise(async (resolve, reject) => {
+            if (connectionType === 'sqlite' || connectionType === 'sqljs') {
+                // SQLite driver does not support concurrent transactions. See https://github.com/typeorm/typeorm/issues/1884
+                const result = await this.getNextAndSetAsRunning(connection.manager, queueName);
+                resolve(result);
+            } else {
+                // Selecting the next job is wrapped in a transaction so that we can
+                // set a lock on that row and immediately update the status to "RUNNING".
+                // This prevents multiple worker processes from taking the same job when
+                // running concurrent workers.
+                connection.transaction(async transactionManager => {
+                    const result = await this.getNextAndSetAsRunning(transactionManager, queueName);
+                    resolve(result);
+                });
+            }
+        });
+    }
+
+    private async getNextAndSetAsRunning(
+        manager: EntityManager,
+        queueName: string,
+    ): Promise<Job | undefined> {
+        const record = await manager
             .getRepository(JobRecord)
             .createQueryBuilder('record')
             .where('record.queueName = :queueName', { queueName })
@@ -62,7 +87,11 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         if (record) {
             const job = this.fromRecord(record);
             job.start();
+            record.state = JobState.RUNNING;
+            await manager.getRepository(JobRecord).save(record);
             return job;
+        } else {
+            return;
         }
     }
 
