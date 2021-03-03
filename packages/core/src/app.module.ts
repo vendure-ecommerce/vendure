@@ -16,12 +16,20 @@ import { HealthCheckModule } from './health-check/health-check.module';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
+import { ServiceModule } from './service/service.module';
 
 // tslint:disable-next-line:ban-types
 type Middleware = Type<any> | Function;
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule, PluginModule.forRoot(), HealthCheckModule],
+    imports: [
+        ConfigModule,
+        I18nModule,
+        ApiModule,
+        PluginModule.forRoot(),
+        HealthCheckModule,
+        ServiceModule.forRoot(),
+    ],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}
