@@ -5,60 +5,47 @@ weight: 3
 
 # Plugin Lifecycle
 
-A VendurePlugin can make use of a number pre-defined "hooks", which allow the plugin to execute code at specific points during the lifecycle of the application. 
+Since a VendurePlugin is built on top of the Nestjs module system, any plugin (as well as any providers it defines) can make use of any of the [Nestjs lifecycle hooks](https://docs.nestjs.com/fundamentals/lifecycle-events):
 
-## Nestjs Lifecycle Hooks
+* onModuleInit
+* onApplicationBootstrap
+* onModuleDestroy
+* beforeApplicationShutdown
+* onApplicationShutdown
 
-Since a VendurePlugin is built on top of the Nestjs module system, any plugin can make use of any of the [Nestjs lifecycle hooks](https://docs.nestjs.com/fundamentals/lifecycle-events).
+Note that lifecycle hooks are run in _both_ the server and worker contexts.
 
-{{< alert "warning" >}}
-Note that since a Plugin will typically be instantiated in _both_ the main process _and_ the worker, any logic defined in a Nestjs lifecycle hook will be executed **twice**. 
+## Configure
 
-To run logic _only_ in the main process or worker process, use the Vendure-specific hooks below, or inject the [`ProcessContext`]({{< relref "process-context" >}}) provider.
-{{< /alert >}}
+Another hook which is not strictly a lifecycle hook, but which can be useful to know is the [`configure` method](https://docs.nestjs.com/middleware#applying-middleware) which is used by NestJS to apply middleware. This method is called _only_ for the server and _not_ for the worker, since middleware relates to the network stack, and the worker has no network part.
 
-## Vendure-specific hooks
-
-Vendure defines some additional hooks which allow you to target logic depending on the context (main process or worker), as well as letting you run code _prior_ to the bootstrap process.
-
-The available Vendure-specific lifecycle hooks are:
-
-* [`beforeVendureBootstrap`]({{< relref "plugin-lifecycle-methods" >}}#beforevendurebootstrap) (static method)
-* [`beforeVendureWorkerBootstrap`]({{< relref "plugin-lifecycle-methods" >}}#beforevendureworkerbootstrap) (static method)
-* [`onVendureBootstrap`]({{< relref "plugin-lifecycle-methods" >}}#onvendurebootstrap)
-* [`onVendureWorkerBootstrap`]({{< relref "plugin-lifecycle-methods" >}}#onvendureworkerbootstrap)
-* [`onVendureClose`]({{< relref "plugin-lifecycle-methods" >}}#onvendureclose)
-* [`onVendureWorkerClose`]({{< relref "plugin-lifecycle-methods" >}}#onvendureworkerclose)
-
-### Example 
+## Example
 
 ```TypeScript
-import { OnVendureBootstrap, VendurePlugin } from '@vendure/core';
+import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
+import { EventBus, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
-  // ...
+    imports: [PluginCommonModule]
 })
-export class MyPlugin implements OnVendureBootstrap {
+export class MyPlugin implements OnApplicationBootstrap, NestModule {
 
-  static beforeVendureBootstrap(app) {
-    // An example use-case for this hook is to add 
-    // global middleware as described in 
-    // https://docs.nestjs.com/middleware#global-middleware
-    app.use(/* ... */);
+  constructor(private eventBus: EventBus) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(MyMiddleware)
+      .forRoutes('my-custom-route');
   }
-  
-  async onVendureBootstrap() {
-    // setup logic here. If retuning a Promise, 
-    // app initialization will wait until the Promise resolves.
+
+  async onApplicationBootstrap() {
     await myAsyncInitFunction();
-  }
 
+    this.eventBus
+      .ofType(OrderStateTransitionEvent)
+      .subscribe((event) => {
+        // do some action when this event fires
+      });
+  }
 }
 ```
-
-## Full Lifecycle Diagram
-
-This diagram illustrates how the Nestjs & Vendure lifecycle hooks relate to one another:
-
-{{< figure src="./plugin_lifecycle.png" >}}
-

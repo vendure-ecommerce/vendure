@@ -1,10 +1,10 @@
 ---
-title: "Using the JobQueueService"
+title: "Using the Job Queue"
 weight: 4
 showtoc: true
 ---
 
-# Using the JobQueueService
+# Using the Job Queue
 
 If your plugin involves long-running tasks, you can take advantage of the [job queue system]({{< relref "/docs/developer-guide/job-queue" >}}) that comes with Vendure. This example defines a mutation that can be used to transcode and link a video to a Product's customFields.
 
@@ -20,7 +20,7 @@ class ProductVideoResolver {
   constructor(private productVideoService: ProductVideoService) {}
 
   @Mutation()
-  addVideoToProduct(@Args() args: any) {
+  addVideoToProduct(@Args() args: { productId: ID; videoUrl: string; }) {
     return this.productVideoService.transcodeForProduct(
       args.productId, 
       args.videoUrl,
@@ -34,50 +34,45 @@ The resolver just defines how to handle the new `addVideoToProduct` mutation, de
 // product-video.service.ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, ID, Product, TransactionalConnection } from '@vendure/core';
-import { transcode } from 'third-party-video-sdk'; 
-
-let jobQueue: JobQueue<{ productId: ID; videoUrl: string; }>;
+import { transcode } from 'third-party-video-sdk';
 
 @Injectable()
 class ProductVideoService implements OnModuleInit { 
+    
+  private jobQueue: JobQueue<{ productId: ID; videoUrl: string; }>;
   
-  constructor(private jobQueueService: JobQueueService, 
+  constructor(private jobQueueService: JobQueueService,
               private connection: TransactionalConnection) {}
 
   onModuleInit() {
-    // This check ensures that only a single JobQueue is created, even if this
-    // service gets instantiated more than once.
-    if (!jobQueue) {
-      jobQueue = this.jobQueueService.createQueue({
-        name: 'transcode-video',
-        concurrency: 5,
-        process: async job => {
-          // Here we define how each job in the queue will be processed.
-          // In this case we call out to some imaginary 3rd-party video
-          // transcoding API, which performs the work and then
-          // returns a new URL of the transcoded video, which we can then
-          // associate with the Product via the customFields.
-          try {
-            const result = await transcode(job.data.videoId);
-            await this.connection.getRepository(Product).save({
-              id: job.data.productId,
-              customFields: {
-                videoUrl: result.url,
-              },
-            });
-            job.complete(result);
-          } catch (e) {
-            job.fail(e);
-          }
-        },
-      });
-    }
+    this.jobQueue = this.jobQueueService.createQueue({
+      name: 'transcode-video',
+      process: async job => {
+        // Here we define how each job in the queue will be processed.
+        // In this case we call out to some imaginary 3rd-party video
+        // transcoding API, which performs the work and then
+        // returns a new URL of the transcoded video, which we can then
+        // associate with the Product via the customFields.
+        const result = await transcode(job.data.videoUrl);
+        await this.connection.getRepository(Product).save({
+          id: job.data.productId,
+          customFields: {
+            videoUrl: result.url,
+          },
+        });
+        // The value returned from the `process` function is stored as the "result"
+        // field of the job (for those JobQueueStrategies that support recording of results).
+        //  
+        // Any error thrown from this function will cause the job to fail.  
+        return result
+      },
+    });
   }
 
   transcodeForProduct(productId: ID, videoUrl: string) { 
     // Add a new job to the queue and immediately return the
     // job itself.
-    return jobQueue.add({ productId, videoUrl });
+    return this.jobQueue.add({ productId, videoUrl }, { retries: 2 });
   }
 }
 ```

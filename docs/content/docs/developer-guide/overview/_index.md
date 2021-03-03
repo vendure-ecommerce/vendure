@@ -13,7 +13,7 @@ Here is a simplified diagram of the Vendure application architecture:
 
 ## Entry Points
 
-As you can see in the diagram, there are two entry points into the application: [`bootstrap()`]({{< relref "bootstrap" >}}) and [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}), which start the main server and the [worker]({{< relref "vendure-worker" >}}) respectively.
+As you can see in the diagram, there are two entry points into the application: [`bootstrap()`]({{< relref "bootstrap" >}}) and [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}), which start the main server and the [worker]({{< relref "vendure-worker" >}}) respectively. Communication between server and worker(s) is done via the [Job Queue]({{< relref "/docs/developer-guide/job-queue" >}}).
 
 ## GraphQL APIs
 
@@ -25,10 +25,6 @@ There are 2 separate GraphQL APIs: shop and admin.
 * The **Admin API** is used by administrators to manage products, customers and orders. 
 
     [Admin API Documentation]({{< relref "/docs/graphql-api/admin" >}}).
-
-## ServiceModule
-
-This is an internal module which contains the bulk of the Vendure business logic for managing products, customers, orders, collections etc.
 
 ## Database
 

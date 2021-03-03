@@ -24,22 +24,28 @@ Some operations however will need to perform much longer-running tasks. For exam
 -   Updating the contents of Collections
 -   Sending transactional emails
 
-## Job Queue persistence
+## How does the Job Queue work?
 
-When a job is added to the queue, that fact must be persisted to some kind of storage. In Vendure, the storage mechanism is defined by the [JobQueueStrategy]({{< relref "job-queue-strategy" >}}).
+This diagram illustrates the job queue mechanism:
 
-By default, Vendure uses an [in-memory store]({{< relref "in-memory-job-queue-strategy" >}}) of the contents of each queue. While this has the advantage of requiring no external dependencies, it is not suitable for production because when the server is stopped, the entire queue will be lost and any pending jobs will never be processed.
+{{< figure src="./job_queue_sequence.png" >}}
 
-A better alternative is to use the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}), which configures Vendure to use the [SqlJobQueueStrategy]({{< relref "sql-job-queue-strategy" >}}). This means that event if the Vendure server stops, pending jobs will be persisted and upon re-start, they will be processed.
+The server adds jobs to the queue. The worker then picks up these jobs from the queue and processes them in sequence, one by one (it is possible to increase job queue throughput by [running multiple workers]({{< relref "vendure-worker" >}}#multiple-workers)).
 
-It is also possible to implement your own JobQueueStrategy to enable other persistence mechanisms, e.g. Redis.
+### JobQueueStrategy
+
+The actual queue part is defined by the configured [JobQueueStrategy]({{< relref "job-queue-strategy" >}}).
+
+If no strategy is defined, Vendure uses an [in-memory store]({{< relref "in-memory-job-queue-strategy" >}}) of the contents of each queue. While this has the advantage of requiring no external dependencies, it is not suitable for production because when the server is stopped, the entire queue will be lost and any pending jobs will never be processed. Moreover, it cannot be used when running the worker as a separate process.
+
+A better alternative is to use the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}) (which will be used in a standard `@vendure/create` installation), which configures Vendure to use the [SqlJobQueueStrategy]({{< relref "sql-job-queue-strategy" >}}). This strategy uses the database as a queue, and means that event if the Vendure server stops, pending jobs will be persisted and upon re-start, they will be processed.
+
+It is also possible to implement your own JobQueueStrategy to take advantage of other technologies. Examples include Redis, RabbitMQ, Google Cloud Pub Sub & Amazon SQS. It may make sense to implement a custom strategy based on one of these if the default database-based approach does not meet your performance requirements.
 
 ## Using Job Queues in a plugin
 
 If you create a [Vendure plugin]({{< relref "/docs/plugins" >}}) which involves some long-running tasks, you can also make use of the job queue. See the [JobQueue plugin example]({{< relref "using-job-queue-service" >}}) for a detailed annotated example.
 
 {{< alert "primary" >}}
-Note: The [JobQueueService]({{< relref "job-queue-service" >}}) combines well with the [WorkerService]({{< relref "worker-service" >}}).
-
-A real example of this can be seen in the [EmailPlugin source](https://github.com/vendure-ecommerce/vendure/blob/07e1958f1ad1766e6fd3dae80f526bb688c0288e/packages/email-plugin/src/plugin.ts#L201-L210)
+A real example of this can be seen in the [EmailPlugin source](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/plugin.ts)
 {{< /alert >}}

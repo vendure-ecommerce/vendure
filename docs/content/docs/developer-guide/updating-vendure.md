@@ -43,7 +43,6 @@ In practice, we aim to introduce breaking changes in **minor versions** and non-
 * Changes to the database schema
 * Changes to the GraphQL schema
 * Updates of major underlying libraries, such as upgrading NestJS to a new major version
-* Changes to certain core services which are often used in plugins, such as the JobQueue or WorkerService providers.
 
 Every release will be accompanied by an entry in the [changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md), listing the changes in that release. And breaking changes are clearly listed under a **BREAKING CHANGE** heading.
 

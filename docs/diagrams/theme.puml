@@ -15,7 +15,7 @@ skinparam TitleFontSize 18
 skinparam Padding 3
 
 skinparam Default {
-  FontName  'Impact'
+  FontName  'Segoe UI'
   FontColor BLACK
   FontSize  14
   FontStyle plain

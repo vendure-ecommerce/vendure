@@ -13,12 +13,12 @@ import { Ctx, ProductService, RequestContext } from '@vendure/core';
 
 @Controller('products')
 export class ProductsController {
-    constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService) {}
 
-    @Get()
-    findAll(@Ctx() ctx: RequestContext) {
-        return this.productService.findAll(ctx);
-    }
+  @Get()
+  findAll(@Ctx() ctx: RequestContext) {
+    return this.productService.findAll(ctx);
+  }
 }
 ```
 ```TypeScript
@@ -27,8 +27,8 @@ import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { ProductsController } from './products.controller';
 
 @VendurePlugin({
-    imports: [PluginCommonModule],
-    controllers: [ProductsController],
+  imports: [PluginCommonModule],
+  controllers: [ProductsController],
 })
 export class RestPlugin {}
 ```

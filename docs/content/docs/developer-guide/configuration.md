@@ -155,7 +155,7 @@ export const config: VendureConfig = {
 
 ### Connecting to the worker
 
-The Vendure worker is configured with [`VendureConfig.workerOptions`]({{< relref "worker-options" >}}). The worker is a [Nestjs microservice](https://docs.nestjs.com/microservices/basics) which runs in another process (and can be located on another server or in another container) from the main server.
+The Vendure worker is configured with [`VendureConfig.workerOptions`]. The worker is a [Nestjs microservice](https://docs.nestjs.com/microservices/basics) which runs in another process (and can be located on another server or in another container) from the main server.
 
 By default, the worker communication happens over TCP. If you want to run the worker in a separate container or physical server to the server, please see the [deployment guide]({{< relref "deployment" >}}#deploying-the-worker).
 
