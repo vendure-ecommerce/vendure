@@ -1,4 +1,4 @@
-import { bootstrapWorker, JobQueueService } from '@vendure/core';
+import { bootstrapWorker } from '@vendure/core';
 
 import { devConfig } from './dev-config';
 
@@ -7,9 +7,7 @@ import { devConfig } from './dev-config';
 devConfig.dbConnectionOptions = { ...devConfig.dbConnectionOptions, synchronize: false };
 
 bootstrapWorker(devConfig)
-    .then(app => {
-        app.get(JobQueueService).start();
-    })
+    .then(worker => worker.startJobQueue())
     .catch(err => {
         // tslint:disable-next-line
         console.log(err);

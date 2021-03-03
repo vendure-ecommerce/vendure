@@ -15,6 +15,7 @@ import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
+import { JobQueueService } from './job-queue/job-queue.service';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
 
@@ -70,20 +71,28 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 
 /**
  * @description
- * Bootstraps the Vendure worker. Read more about the [Vendure Worker]({{< relref "vendure-worker" >}})
+ * Bootstraps the Vendure worker. Resolves to an object containing a reference to the underlying
+ * NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as
+ * a function used to start listening for and processing jobs in the job queue.
+ *
+ * Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}).
  *
  * @example
  * ```TypeScript
  * import { bootstrapWorker } from '\@vendure/core';
  * import { config } from './vendure-config';
  *
- * bootstrapWorker(config).catch(err => {
+ * bootstrapWorker(config)
+ *   .then(worker => worker.startJobQueue())
+ *   .catch(err => {
  *     console.log(err);
- * });
+ *   });
  * ```
  * @docsCategory worker
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestApplicationContext> {
+export async function bootstrapWorker(
+    userConfig: Partial<VendureConfig>,
+): Promise<{ app: INestApplicationContext; startJobQueue: () => Promise<void> }> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
     (config.logger as any).setDefaultContext('Vendure Worker');
@@ -99,7 +108,8 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     workerApp.useLogger(new Logger());
     workerApp.enableShutdownHooks();
     await validateDbTablesForWorker(workerApp);
-    return workerApp;
+    const startJobQueue = () => workerApp.get(JobQueueService).start();
+    return { app: workerApp, startJobQueue };
 }
 
 /**
