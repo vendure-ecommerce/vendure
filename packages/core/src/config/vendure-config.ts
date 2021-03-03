@@ -1,4 +1,4 @@
-import { DynamicModule, Type } from '@nestjs/common';
+import { DynamicModule, NestMiddleware, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
@@ -124,11 +124,12 @@ export interface ApiOptions {
     cors?: boolean | CorsOptions;
     /**
      * @description
-     * Custom Express middleware for the server.
+     * Custom Express or NestJS middleware for the server.
      *
      * @default []
      */
-    middleware?: Array<{ handler: RequestHandler; route: string }>;
+    // tslint:disable-next-line:ban-types
+    middleware?: Array<{ handler: Type<any> | Function; route: string }>;
     /**
      * @description
      * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
