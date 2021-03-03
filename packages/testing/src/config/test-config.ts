@@ -1,4 +1,3 @@
-import { Transport } from '@nestjs/microservices';
 import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
     DefaultAssetNamingStrategy,
