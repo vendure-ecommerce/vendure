@@ -5862,10 +5862,10 @@ anymatch@^3.0.3, anymatch@~3.1.1:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-apollo-angular@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.npmjs.org/apollo-angular/-/apollo-angular-2.0.4.tgz#9f6e13aec1856f6db62d58d868c7ef9dddfa5320"
-  integrity sha512-AEODc7Ba4u11zhsVm5DENpFaEQ5RdmN67kN5gE9FSuTlcd5SB4aqCReX/u9BQh9lAcKkpgTtD1TyRt2j/csTDQ==
+apollo-angular@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.npmjs.org/apollo-angular/-/apollo-angular-2.4.0.tgz#a72ae8f0ca58da8e005986381f9a4277b5762c4a"
+  integrity sha512-pgxd+3el59T/KAwkNzHTLxlwh+aHBQqtJqnAk91DBiBP6LILlTC1VwOkBhJ4KjYcdsDAgA0Usq4sezyAwxbnLw==
   dependencies:
     extract-files "^9.0.0"
     semver "^7.0.0"
@@ -11059,6 +11059,11 @@ graphql@*, graphql@15.3.0, graphql@^15.1.0, graphql@^15.3.0:
   version "15.3.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-15.3.0.tgz#3ad2b0caab0d110e3be4a5a9b2aa281e362b5278"
   integrity sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==
+
+graphql@15.5.0:
+  version "15.5.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-15.5.0.tgz#39d19494dbe69d1ea719915b578bf920344a69d5"
+  integrity sha512-OmaM7y0kaK31NKG31q4YbD2beNYa6jBBKtMFT6gLYJljHLJr42IqJ8KX08u3Li/0ifzTU5HjmoOOrwa5BRLeDA==
 
 graphql@^14.5.3:
   version "14.7.0"
@@ -18298,7 +18303,7 @@ rxjs@6.6.3, rxjs@^6.3.3, rxjs@^6.4.0, rxjs@^6.5.0, rxjs@^6.5.1, rxjs@^6.5.2, rxj
   dependencies:
     tslib "^1.9.0"
 
-rxjs@^6.5.3:
+rxjs@^6.5.3, rxjs@^6.6.6:
   version "6.6.6"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.6.tgz#14d8417aa5a07c5e633995b525e1e3c0dec03b70"
   integrity sha512-/oTwee4N4iWzAMAL9xdGKjkEHmIwupR3oXbQjCKywF1BeFohswF3vZdogbmEF6pZkOsXTzWkrZszrWpQTByYVg==
