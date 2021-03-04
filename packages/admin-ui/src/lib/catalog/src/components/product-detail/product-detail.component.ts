@@ -202,7 +202,6 @@ export class ProductDetailComponent
                 .createUrlTree(['./', { ...this.route.snapshot.params, tab: tabName }], {
                     queryParamsHandling: 'merge',
                     relativeTo: this.route,
-                    replaceUrl: true,
                 })
                 .toString(),
         );

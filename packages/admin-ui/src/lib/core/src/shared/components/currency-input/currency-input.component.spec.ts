@@ -1,5 +1,5 @@
 import { Component, Injectable } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Type } from '@vendure/common/lib/shared-types';
@@ -13,19 +13,21 @@ import { AffixedInputComponent } from '../affixed-input/affixed-input.component'
 import { CurrencyInputComponent } from './currency-input.component';
 
 describe('CurrencyInputComponent', () => {
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports: [FormsModule],
-            providers: [{ provide: DataService, useClass: MockDataService }],
-            declarations: [
-                TestControlValueAccessorComponent,
-                TestSimpleComponent,
-                CurrencyInputComponent,
-                AffixedInputComponent,
-                LocaleCurrencyNamePipe,
-            ],
-        }).compileComponents();
-    }));
+    beforeEach(
+        waitForAsync(() => {
+            TestBed.configureTestingModule({
+                imports: [FormsModule],
+                providers: [{ provide: DataService, useClass: MockDataService }],
+                declarations: [
+                    TestControlValueAccessorComponent,
+                    TestSimpleComponent,
+                    CurrencyInputComponent,
+                    AffixedInputComponent,
+                    LocaleCurrencyNamePipe,
+                ],
+            }).compileComponents();
+        }),
+    );
 
     it('should display the price as decimal with a simple binding', fakeAsync(() => {
         const fixture = createAndRunChangeDetection(TestSimpleComponent);
