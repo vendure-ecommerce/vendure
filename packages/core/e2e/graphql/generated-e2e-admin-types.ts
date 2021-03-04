@@ -1,6 +1,8 @@
 // tslint:disable
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
     ID: string;
@@ -4986,7 +4988,7 @@ export type GetFacetWithValuesQueryVariables = Exact<{
 export type GetFacetWithValuesQuery = { facet?: Maybe<FacetWithValuesFragment> };
 
 export type DeleteFacetValuesMutationVariables = Exact<{
-    ids: Array<Scalars['ID']>;
+    ids: Array<Scalars['ID']> | Scalars['ID'];
     force?: Maybe<Scalars['Boolean']>;
 }>;
 
@@ -5010,13 +5012,13 @@ export type GetProductListWithVariantsQuery = {
 };
 
 export type CreateFacetValuesMutationVariables = Exact<{
-    input: Array<CreateFacetValueInput>;
+    input: Array<CreateFacetValueInput> | CreateFacetValueInput;
 }>;
 
 export type CreateFacetValuesMutation = { createFacetValues: Array<FacetValueFragment> };
 
 export type UpdateFacetValuesMutationVariables = Exact<{
-    input: Array<UpdateFacetValueInput>;
+    input: Array<UpdateFacetValueInput> | UpdateFacetValueInput;
 }>;
 
 export type UpdateFacetValuesMutation = { updateFacetValues: Array<FacetValueFragment> };
@@ -5324,13 +5326,13 @@ export type GetProductListQuery = {
 };
 
 export type CreateProductVariantsMutationVariables = Exact<{
-    input: Array<CreateProductVariantInput>;
+    input: Array<CreateProductVariantInput> | CreateProductVariantInput;
 }>;
 
 export type CreateProductVariantsMutation = { createProductVariants: Array<Maybe<ProductVariantFragment>> };
 
 export type UpdateProductVariantsMutationVariables = Exact<{
-    input: Array<UpdateProductVariantInput>;
+    input: Array<UpdateProductVariantInput> | UpdateProductVariantInput;
 }>;
 
 export type UpdateProductVariantsMutation = { updateProductVariants: Array<Maybe<ProductVariantFragment>> };
@@ -5589,7 +5591,7 @@ export type CreateCustomerGroupMutation = { createCustomerGroup: CustomerGroupFr
 
 export type RemoveCustomersFromGroupMutationVariables = Exact<{
     groupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
+    customerIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 export type RemoveCustomersFromGroupMutation = { removeCustomersFromGroup: CustomerGroupFragment };
@@ -5749,7 +5751,7 @@ export type GetCustomerGroupQuery = {
 
 export type AddCustomersToGroupMutationVariables = Exact<{
     groupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
+    customerIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 export type AddCustomersToGroupMutation = { addCustomersToGroup: CustomerGroupFragment };
@@ -5896,7 +5898,7 @@ export type GetAssetFragmentFirstQueryVariables = Exact<{
 export type GetAssetFragmentFirstQuery = { asset?: Maybe<AssetFragFirstFragment> };
 
 export type CreateAssetsMutationVariables = Exact<{
-    input: Array<CreateAssetInput>;
+    input: Array<CreateAssetInput> | CreateAssetInput;
 }>;
 
 export type CreateAssetsMutation = {
@@ -6408,7 +6410,7 @@ export type GetCustomerIdsQueryVariables = Exact<{ [key: string]: never }>;
 export type GetCustomerIdsQuery = { customers: { items: Array<Pick<Customer, 'id'>> } };
 
 export type UpdateStockMutationVariables = Exact<{
-    input: Array<UpdateProductVariantInput>;
+    input: Array<UpdateProductVariantInput> | UpdateProductVariantInput;
 }>;
 
 export type UpdateStockMutation = { updateProductVariants: Array<Maybe<VariantWithStockFragment>> };
@@ -6529,14 +6531,14 @@ export type UpdateZoneMutation = { updateZone: ZoneFragment };
 
 export type AddMembersToZoneMutationVariables = Exact<{
     zoneId: Scalars['ID'];
-    memberIds: Array<Scalars['ID']>;
+    memberIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 export type AddMembersToZoneMutation = { addMembersToZone: ZoneFragment };
 
 export type RemoveMembersFromZoneMutationVariables = Exact<{
     zoneId: Scalars['ID'];
-    memberIds: Array<Scalars['ID']>;
+    memberIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 export type RemoveMembersFromZoneMutation = { removeMembersFromZone: ZoneFragment };

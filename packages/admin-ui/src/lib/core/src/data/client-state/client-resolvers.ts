@@ -119,7 +119,7 @@ export const clientResolvers: ResolverDefinition = {
             const data = {
                 userStatus: {
                     ...previous.userStatus,
-                    channels: args.channels,
+                    channels: Array.isArray(args.channels) ? args.channels : [args.channels],
                 },
             };
             cache.writeQuery({ query: GET_USER_STATUS, data });

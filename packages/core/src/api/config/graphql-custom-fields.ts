@@ -342,6 +342,7 @@ export function addOrderLineCustomFieldsInput(
             defaultValue: null,
             extensions: null,
             astNode: null,
+            deprecationReason: null,
         });
     }
     if (adjustOrderLineMutation) {
@@ -352,6 +353,7 @@ export function addOrderLineCustomFieldsInput(
             defaultValue: null,
             extensions: null,
             astNode: null,
+            deprecationReason: null,
         });
     }
 

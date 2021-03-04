@@ -1,21 +1,15 @@
 module.exports = {
     coverageDirectory: 'coverage',
-    moduleFileExtensions: [
-        'js',
-        'json',
-        'ts',
-    ],
+    moduleFileExtensions: ['js', 'json', 'ts'],
     preset: 'ts-jest',
     rootDir: __dirname,
-    roots: [
-        '<rootDir>/src',
-    ],
+    roots: ['<rootDir>/src'],
     transform: {
         '^.+\\.(t|j)s$': 'ts-jest',
     },
     globals: {
         'ts-jest': {
-            tsConfig: {
+            tsconfig: {
                 allowJs: true,
                 skipLibCheck: true,
             },

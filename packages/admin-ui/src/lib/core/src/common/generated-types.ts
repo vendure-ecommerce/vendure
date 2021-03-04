@@ -1,6 +1,8 @@
 // tslint:disable
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -1512,7 +1514,7 @@ export type ImportInfo = {
 /**
  * @description
  * The state of a Job in the JobQueue
- * 
+ *
  * @docsCategory common
  */
 export enum JobState {
@@ -2625,7 +2627,7 @@ export enum DeletionResult {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
@@ -3022,7 +3024,7 @@ export type CountryList = PaginatedList & {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -3559,7 +3561,7 @@ export type HistoryEntryList = PaginatedList & {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -3938,7 +3940,7 @@ export type OrderItem = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   * 
+   *
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -3982,7 +3984,7 @@ export type OrderLine = Node & {
   unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   * 
+   *
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -5160,7 +5162,7 @@ export type SetActiveChannelMutation = { setActiveChannel: (
   ) };
 
 export type UpdateUserChannelsMutationVariables = Exact<{
-  channels: Array<CurrentUserChannelInput>;
+  channels: Array<CurrentUserChannelInput> | CurrentUserChannelInput;
 }>;
 
 
@@ -5475,7 +5477,7 @@ export type GetCustomerGroupWithCustomersQuery = { customerGroup?: Maybe<(
 
 export type AddCustomersToGroupMutationVariables = Exact<{
   groupId: Scalars['ID'];
-  customerIds: Array<Scalars['ID']>;
+  customerIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 
@@ -5486,7 +5488,7 @@ export type AddCustomersToGroupMutation = { addCustomersToGroup: (
 
 export type RemoveCustomersFromGroupMutationVariables = Exact<{
   groupId: Scalars['ID'];
-  customerIds: Array<Scalars['ID']>;
+  customerIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 
@@ -5604,7 +5606,7 @@ export type DeleteFacetMutation = { deleteFacet: (
   ) };
 
 export type CreateFacetValuesMutationVariables = Exact<{
-  input: Array<CreateFacetValueInput>;
+  input: Array<CreateFacetValueInput> | CreateFacetValueInput;
 }>;
 
 
@@ -5614,7 +5616,7 @@ export type CreateFacetValuesMutation = { createFacetValues: Array<(
   )> };
 
 export type UpdateFacetValuesMutationVariables = Exact<{
-  input: Array<UpdateFacetValueInput>;
+  input: Array<UpdateFacetValueInput> | UpdateFacetValueInput;
 }>;
 
 
@@ -5624,7 +5626,7 @@ export type UpdateFacetValuesMutation = { updateFacetValues: Array<(
   )> };
 
 export type DeleteFacetValuesMutationVariables = Exact<{
-  ids: Array<Scalars['ID']>;
+  ids: Array<Scalars['ID']> | Scalars['ID'];
   force?: Maybe<Scalars['Boolean']>;
 }>;
 
@@ -6242,7 +6244,7 @@ export type DeleteProductMutation = { deleteProduct: (
   ) };
 
 export type CreateProductVariantsMutationVariables = Exact<{
-  input: Array<CreateProductVariantInput>;
+  input: Array<CreateProductVariantInput> | CreateProductVariantInput;
 }>;
 
 
@@ -6252,7 +6254,7 @@ export type CreateProductVariantsMutation = { createProductVariants: Array<Maybe
   )>> };
 
 export type UpdateProductVariantsMutationVariables = Exact<{
-  input: Array<UpdateProductVariantInput>;
+  input: Array<UpdateProductVariantInput> | UpdateProductVariantInput;
 }>;
 
 
@@ -6421,7 +6423,7 @@ export type GetAssetQuery = { asset?: Maybe<(
   )> };
 
 export type CreateAssetsMutationVariables = Exact<{
-  input: Array<CreateAssetInput>;
+  input: Array<CreateAssetInput> | CreateAssetInput;
 }>;
 
 
@@ -6963,7 +6965,7 @@ export type DeleteZoneMutation = { deleteZone: (
 
 export type AddMembersToZoneMutationVariables = Exact<{
   zoneId: Scalars['ID'];
-  memberIds: Array<Scalars['ID']>;
+  memberIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 
@@ -6974,7 +6976,7 @@ export type AddMembersToZoneMutation = { addMembersToZone: (
 
 export type RemoveMembersFromZoneMutationVariables = Exact<{
   zoneId: Scalars['ID'];
-  memberIds: Array<Scalars['ID']>;
+  memberIds: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 
@@ -7884,7 +7886,7 @@ export type GetAllJobsQuery = { jobs: (
   ) };
 
 export type GetJobsByIdQueryVariables = Exact<{
-  ids: Array<Scalars['ID']>;
+  ids: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 

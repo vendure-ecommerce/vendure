@@ -183,7 +183,29 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
 
     async readFileToBuffer(identifier: string): Promise<Buffer> {
         const result = await this.s3.getObject(this.getObjectParams(identifier)).promise();
-        return Buffer.from(result.Body as Stream);
+        const body = result.Body;
+        if (!body) {
+            Logger.error(`Got undefined Body for ${identifier}`, loggerCtx);
+            return Buffer.from('');
+        }
+        if (body instanceof Buffer) {
+            return body;
+        }
+        if (body instanceof Uint8Array || typeof body === 'string') {
+            return Buffer.from(body);
+        }
+        if (body instanceof Readable) {
+            return new Promise((resolve, reject) => {
+                const buf: any[] = [];
+                body.on('data', data => buf.push(data));
+                body.on('error', err => reject(err));
+                body.on('end', () => {
+                    const intArray = Uint8Array.from(buf);
+                    resolve(Buffer.concat([intArray]));
+                });
+            });
+        }
+        return Buffer.from(body as any);
     }
 
     async readFileToStream(identifier: string): Promise<Stream> {

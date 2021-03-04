@@ -90,6 +90,6 @@
     "puppeteer": "^2.1.1",
     "rimraf": "^3.0.0",
     "tslint": "~6.1.0",
-    "typescript": "4.2.2"
+    "typescript": "4.1.5"
   }
 }

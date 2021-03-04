@@ -62,6 +62,7 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                     defaultValue: null,
                     extensions: null,
                     astNode: null,
+                    deprecationReason: null,
                 });
             }
 
