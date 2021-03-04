@@ -6146,6 +6146,14 @@ export type GetPaymentMethodQueryVariables = Exact<{
 
 export type GetPaymentMethodQuery = { paymentMethod?: Maybe<PaymentMethodFragment> };
 
+export type GetPaymentMethodListQueryVariables = Exact<{
+    options?: Maybe<PaymentMethodListOptions>;
+}>;
+
+export type GetPaymentMethodListQuery = {
+    paymentMethods: Pick<PaymentMethodList, 'totalItems'> & { items: Array<PaymentMethodFragment> };
+};
+
 export type TransitionPaymentToStateMutationVariables = Exact<{
     id: Scalars['ID'];
     state: Scalars['String'];
@@ -8310,6 +8318,15 @@ export namespace GetPaymentMethod {
     export type Variables = GetPaymentMethodQueryVariables;
     export type Query = GetPaymentMethodQuery;
     export type PaymentMethod = NonNullable<GetPaymentMethodQuery['paymentMethod']>;
+}
+
+export namespace GetPaymentMethodList {
+    export type Variables = GetPaymentMethodListQueryVariables;
+    export type Query = GetPaymentMethodListQuery;
+    export type PaymentMethods = NonNullable<GetPaymentMethodListQuery['paymentMethods']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetPaymentMethodListQuery['paymentMethods']>['items']>[number]
+    >;
 }
 
 export namespace TransitionPaymentToState {

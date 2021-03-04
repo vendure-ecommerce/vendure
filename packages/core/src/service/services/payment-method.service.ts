@@ -11,6 +11,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodEligibilityChecker } from '../../config/payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
@@ -22,6 +23,8 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
+import { ChannelService } from './channel.service';
+
 @Injectable()
 export class PaymentMethodService {
     constructor(
@@ -30,6 +33,7 @@ export class PaymentMethodService {
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
         private configArgService: ConfigArgService,
+        private channelService: ChannelService,
     ) {}
 
     findAll(
@@ -37,7 +41,7 @@ export class PaymentMethodService {
         options?: ListQueryOptions<PaymentMethod>,
     ): Promise<PaginatedList<PaymentMethod>> {
         return this.listQueryBuilder
-            .build(PaymentMethod, options, { ctx })
+            .build(PaymentMethod, options, { ctx, relations: ['channels'], channelId: ctx.channelId })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -46,7 +50,7 @@ export class PaymentMethodService {
     }
 
     findOne(ctx: RequestContext, paymentMethodId: ID): Promise<PaymentMethod | undefined> {
-        return this.connection.getRepository(ctx, PaymentMethod).findOne(paymentMethodId);
+        return this.connection.findOneInChannel(ctx, PaymentMethod, paymentMethodId, ctx.channelId);
     }
 
     async create(ctx: RequestContext, input: CreatePaymentMethodInput): Promise<PaymentMethod> {
@@ -58,6 +62,7 @@ export class PaymentMethodService {
                 input.checker,
             );
         }
+        this.channelService.assignToCurrentChannel(paymentMethod, ctx);
         return this.connection.getRepository(ctx, PaymentMethod).save(paymentMethod);
     }
 
@@ -92,9 +97,12 @@ export class PaymentMethodService {
     async getEligiblePaymentMethods(ctx: RequestContext, order: Order): Promise<PaymentMethodQuote[]> {
         const paymentMethods = await this.connection
             .getRepository(ctx, PaymentMethod)
-            .find({ where: { enabled: true } });
+            .find({ where: { enabled: true }, relations: ['channels'] });
         const results: PaymentMethodQuote[] = [];
-        for (const method of paymentMethods) {
+        const paymentMethodsInChannel = paymentMethods.filter(p =>
+            p.channels.find(pc => idsAreEqual(pc.id, ctx.channelId)),
+        );
+        for (const method of paymentMethodsInChannel) {
             let isEligible = true;
             let eligibilityMessage: string | undefined;
             if (method.checker) {

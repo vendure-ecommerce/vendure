@@ -12,7 +12,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -183,7 +183,7 @@ export class ShippingMethodService {
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
-        return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
+        return this.activeShippingMethods.filter(sm => sm.channels.find(c => idsAreEqual(c.id, channel.id)));
     }
 
     /**

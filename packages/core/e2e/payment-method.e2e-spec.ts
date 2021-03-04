@@ -4,7 +4,12 @@ import {
     LanguageCode,
     PaymentMethodEligibilityChecker,
 } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -12,10 +17,13 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
+    CreateChannel,
     CreatePaymentMethod,
+    CurrencyCode,
     GetPaymentMethod,
     GetPaymentMethodCheckers,
     GetPaymentMethodHandlers,
+    GetPaymentMethodList,
     UpdatePaymentMethod,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -25,6 +33,7 @@ import {
     GetEligiblePaymentMethods,
     TestOrderWithPaymentsFragment,
 } from './graphql/generated-e2e-shop-types';
+import { CREATE_CHANNEL } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ELIGIBLE_PAYMENT_METHODS } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -281,6 +290,91 @@ describe('PaymentMethod resolver', () => {
             expect(checkerSpy).toHaveBeenCalledTimes(1);
         });
     });
+
+    describe('channels', () => {
+        const SECOND_CHANNEL_TOKEN = 'SECOND_CHANNEL_TOKEN';
+        const THIRD_CHANNEL_TOKEN = 'THIRD_CHANNEL_TOKEN';
+
+        beforeAll(async () => {
+            await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+            await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
+                input: {
+                    code: 'third-channel',
+                    token: THIRD_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+        });
+
+        it('creates a PaymentMethod in channel2', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { createPaymentMethod } = await adminClient.query<
+                CreatePaymentMethod.Mutation,
+                CreatePaymentMethod.Variables
+            >(CREATE_PAYMENT_METHOD, {
+                input: {
+                    code: 'channel-2-method',
+                    name: 'Channel 2 method',
+                    description: 'This is a test payment method',
+                    enabled: true,
+                    handler: {
+                        code: dummyPaymentHandler.code,
+                        arguments: [{ name: 'automaticSettle', value: 'true' }],
+                    },
+                },
+            });
+
+            expect(createPaymentMethod.code).toBe('channel-2-method');
+        });
+
+        it('method is listed in channel2', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { paymentMethods } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+
+            expect(paymentMethods.totalItems).toBe(1);
+            expect(paymentMethods.items[0].code).toBe('channel-2-method');
+        });
+
+        it('method is not listed in channel3', async () => {
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+            const { paymentMethods } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+
+            expect(paymentMethods.totalItems).toBe(0);
+        });
+
+        it('method is listed in default channel', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { paymentMethods } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+
+            expect(paymentMethods.totalItems).toBe(4);
+            expect(paymentMethods.items.map(i => i.code).sort()).toEqual([
+                'channel-2-method',
+                'disabled-method',
+                'no-checks',
+                'price-check',
+            ]);
+        });
+    });
 });
 
 export const PAYMENT_METHOD_FRAGMENT = gql`
@@ -353,6 +447,18 @@ export const GET_PAYMENT_METHOD = gql`
     query GetPaymentMethod($id: ID!) {
         paymentMethod(id: $id) {
             ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const GET_PAYMENT_METHOD_LIST = gql`
+    query GetPaymentMethodList($options: PaymentMethodListOptions) {
+        paymentMethods(options: $options) {
+            items {
+                ...PaymentMethod
+            }
+            totalItems
         }
     }
     ${PAYMENT_METHOD_FRAGMENT}
