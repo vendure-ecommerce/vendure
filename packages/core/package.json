@@ -48,7 +48,7 @@
     "@nestjs/typeorm": "7.1.5",
     "@types/fs-extra": "^9.0.1",
     "@vendure/common": "^0.18.4",
-    "apollo-server-express": "2.18.1",
+    "apollo-server-express": "2.21.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.0",
