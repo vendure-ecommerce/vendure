@@ -80,12 +80,12 @@ export const devConfig: VendureConfig = {
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        // DefaultSearchPlugin,
+        DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        ElasticsearchPlugin.init({
-            host: 'http://localhost',
-            port: 9200,
-        }),
+        // ElasticsearchPlugin.init({
+        //     host: 'http://localhost',
+        //     port: 9200,
+        // }),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',
