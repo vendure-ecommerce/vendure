@@ -197,6 +197,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
             this.testingProcessor = new EmailProcessor(options);
             await this.testingProcessor.init();
         } else {
+            await this.emailProcessor.init();
             this.jobQueue = await this.jobQueueService.createQueue({
                 name: 'send-email',
                 process: job => {
