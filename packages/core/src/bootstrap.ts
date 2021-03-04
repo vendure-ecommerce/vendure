@@ -259,7 +259,7 @@ function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonl
  */
 async function validateDbTablesForWorker(worker: INestApplicationContext) {
     const connection: Connection = worker.get(getConnectionToken());
-    await new Promise(async (resolve, reject) => {
+    await new Promise<void>(async (resolve, reject) => {
         const checkForTables = async (): Promise<boolean> => {
             try {
                 const adminCount = await connection.getRepository(Administrator).count();
