@@ -2283,10 +2283,29 @@
     terminal-link "^2.1.1"
     yargs "^15.3.1"
 
-"@clr/angular@^4.0.8":
-  version "4.0.8"
-  resolved "https://registry.npmjs.org/@clr/angular/-/angular-4.0.8.tgz#4f177bb5aa04dfd1adbc46c3f7f20e572b5f6d4a"
-  integrity sha512-XZxYyt47kWXWNk/ulkW5W3lxgSCwYR37lm8pj5T/HyNca7iVqdrHJdLnuMyrwu7RkACJwMsSrWqqXWcgg6PzCQ==
+"@cds/city@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/@cds/city/-/city-1.1.0.tgz#5b7323750d3d64671ce2e3a804bcf260fbea1154"
+  integrity sha512-S9K+Q39BGOghyLHmR0Wdcmu1i1noSUk8HcvMj+3IaohZw02WFd99aPTQDHJeseXrXZP3CNovaSlePI0R11NcFg==
+
+"@cds/core@^5.0.0":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@cds/core/-/core-5.0.2.tgz#dcbb177ff646982be0506daaddf41533a7d74838"
+  integrity sha512-V7SyUTiC0ik52HODpvzPWzL56Y9r+OjviuHgjF/gqcgigkQFDDlSCCv80W0n9UGNARmATdKtRX92nA83Y6+ivQ==
+  dependencies:
+    "@types/resize-observer-browser" "^0.1.3"
+    lit-element "^2.3.1"
+    lit-html "^1.2.1"
+    ramda "^0.27.0"
+    tslib "^2.0.0"
+  optionalDependencies:
+    "@cds/city" "^1.1.0"
+    normalize.css "^8.0.1"
+
+"@clr/angular@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@clr/angular/-/angular-5.0.2.tgz#4694ae5503f99112c48f1f6f4a8d7c276dd66bc7"
+  integrity sha512-Qkxlrngq2WYRoR2WMCXVJdUk47aw2EXidnhaRW0m+oPKW1rILNhV8CkC0zCcDcJyc2qQRuHGv7CwMf/5PSRItQ==
   dependencies:
     tslib "^2.0.0"
 
@@ -2313,15 +2332,15 @@
     css-vars-ponyfill "^2.3.2"
     normalize.css "^8.0.1"
 
-"@clr/icons@^4.0.8":
-  version "4.0.8"
-  resolved "https://registry.npmjs.org/@clr/icons/-/icons-4.0.8.tgz#3ca645ff7eaeb25db6f5cd35ccf55f06f92c4c28"
-  integrity sha512-zrr47GgmK+AhM6yHG1GwXn8rsqpdnJVtr6NaJP8CMDfpwq+GvJY0JB8XNPE/d/Ujg8/RQeKwVYzsqmUltBSzoQ==
+"@clr/icons@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@clr/icons/-/icons-5.0.2.tgz#a5aa905f56001d791b2aabf1334b08b8822df3cf"
+  integrity sha512-G6B2aXBoamAkGCI4cwEUXEJ8QoAaNf3K1MDg4JbdDADIjpFrhTq7w/xG5whQmguM2BclKS/XGm0SBUeaGsT/jA==
 
-"@clr/ui@^4.0.8":
-  version "4.0.8"
-  resolved "https://registry.npmjs.org/@clr/ui/-/ui-4.0.8.tgz#1d0963090ce3389fda6483f33ec9cf3c68c1506d"
-  integrity sha512-0nAQ+x4ozG7ErW7Oa2OLrS9AkSyc9fZG6PWxpJoyVRTuB38fF3nORWvAeabHq9OLus3VhRO+yzbJCjxIPFHjRg==
+"@clr/ui@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/@clr/ui/-/ui-5.0.2.tgz#69760e7d49286097add9dd8f846cbedbbc914153"
+  integrity sha512-806+fZM3472QnVqfUzl7xtIvrsKYfX+fZ3HwO5SiPXw33ZzPpzsUDVKSNfRboWvC/K+t+oxM5n42s02TSyIZ5w==
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
