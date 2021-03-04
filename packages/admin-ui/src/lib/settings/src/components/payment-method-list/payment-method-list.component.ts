@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { GetPaymentMethodList } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
@@ -18,7 +17,7 @@ export class PaymentMethodListComponent extends BaseListComponent<
     constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.settings.getPaymentMethods(...args),
+            (...args: any[]) => this.dataService.settings.getPaymentMethods(...args).refetchOnChannelChange(),
             data => data.paymentMethods,
         );
     }

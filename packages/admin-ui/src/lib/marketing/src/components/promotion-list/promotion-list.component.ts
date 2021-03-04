@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { EMPTY } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { GetPromotionList } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { EMPTY } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-promotion-list',
@@ -29,7 +28,7 @@ export class PromotionListComponent extends BaseListComponent<
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.promotion.getPromotions(...args),
+            (...args: any[]) => this.dataService.promotion.getPromotions(...args).refetchOnChannelChange(),
             data => data.promotions,
         );
     }
