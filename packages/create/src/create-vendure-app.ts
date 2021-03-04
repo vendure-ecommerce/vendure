@@ -51,7 +51,8 @@ program
     .option('--ci', 'Runs without prompts for use in CI scenarios')
     .parse(process.argv);
 
-createApp(projectName, program.useNpm, program.logLevel || 'silent', program.ci);
+const options = program.opts();
+createApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
 
 async function createApp(
     name: string | undefined,
