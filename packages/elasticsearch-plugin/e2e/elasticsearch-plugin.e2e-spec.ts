@@ -108,6 +108,22 @@ describe('Elasticsearch plugin', () => {
                     indexPrefix: INDEX_PREFIX,
                     port: elasticsearchPort,
                     host: elasticsearchHost,
+                    customProductVariantMappings: {
+                        inStock: {
+                            graphQlType: 'Boolean!',
+                            valueFn: variant => {
+                                return variant.stockOnHand > 0;
+                            },
+                        },
+                    },
+                    customProductMappings: {
+                        answer: {
+                            graphQlType: 'Int!',
+                            valueFn: args => {
+                                return 42;
+                            },
+                        },
+                    },
                 }),
                 DefaultJobQueuePlugin,
             ],
@@ -1048,6 +1064,54 @@ describe('Elasticsearch plugin', () => {
 
                 expect(search1.items[0].productName).toBe('Laptop');
                 expect(search1.items[0].productVariantName).toBe('laptop variant fr');
+            });
+        });
+    });
+
+    describe('customMappings', () => {
+        it('variant mappings', async () => {
+            const query = `{
+            search(input: { take: 1, groupByProduct: false, sort: { name: ASC } }) {
+                items {
+                  productVariantName
+                  customMappings {
+                    ...on CustomProductVariantMappings {
+                      inStock
+                    }
+                  }
+                }
+              }
+            }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customMappings: {
+                    inStock: true,
+                },
+            });
+        });
+
+        it('product mappings', async () => {
+            const query = `{
+            search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                items {
+                  productName
+                  customMappings {
+                    ...on CustomProductMappings {
+                      answer
+                    }
+                  }
+                }
+              }
+            }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productName: 'Bonsai Tree',
+                customMappings: {
+                    answer: 42,
+                },
             });
         });
     });
