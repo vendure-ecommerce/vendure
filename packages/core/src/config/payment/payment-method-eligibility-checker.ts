@@ -14,7 +14,8 @@ import { Order } from '../../entity/order/order.entity';
  * Configuration passed into the constructor of a {@link PaymentMethodEligibilityChecker} to
  * configure its behavior.
  *
- * @docsCategory PaymentMethodEligibilityChecker
+ * @docsCategory payment
+ * @docsPage PaymentMethodEligibilityChecker
  */
 export interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs>
     extends ConfigurableOperationDefOptions<T> {
@@ -39,8 +40,9 @@ export interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs>
  * });
  * ```
  *
- * @docsCategory paymentMethod
+ * @docsCategory payment
  * @docsPage PaymentMethodEligibilityChecker
+ * @docsWeight 0
  */
 export class PaymentMethodEligibilityChecker<
     T extends ConfigArgs = ConfigArgs
@@ -70,7 +72,8 @@ export class PaymentMethodEligibilityChecker<
  * considered to have failed. A string result can be used to provide information about the
  * reason for ineligibility, if desired.
  *
- * @docsCategory PaymentMethodEligibilityChecker
+ * @docsCategory payment
+ * @docsPage PaymentMethodEligibilityChecker
  */
 export type CheckPaymentMethodEligibilityCheckerFn<T extends ConfigArgs> = (
     ctx: RequestContext,
