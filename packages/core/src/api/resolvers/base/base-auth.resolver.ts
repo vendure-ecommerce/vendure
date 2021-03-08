@@ -58,6 +58,7 @@ export class BaseAuthResolver {
             ctx,
             {
                 input: { [NATIVE_AUTH_STRATEGY_NAME]: args },
+                rememberMe: args.rememberMe,
             },
             req,
             res,
