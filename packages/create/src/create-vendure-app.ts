@@ -203,7 +203,7 @@ async function createApp(
                     const { populate } = await import(
                         path.join(root, 'node_modules/@vendure/core/cli/populate')
                     );
-                    const { bootstrap, DefaultLogger, LogLevel } = await import(
+                    const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
                         path.join(root, 'node_modules/@vendure/core/dist/index')
                     );
                     const { config } = await import(ctx.configFile);
@@ -219,7 +219,7 @@ async function createApp(
                             : LogLevel.Info;
                     const bootstrapFn = async () => {
                         await checkDbConnection(config.dbConnectionOptions, root);
-                        return bootstrap({
+                        const _app = await bootstrap({
                             ...config,
                             apiOptions: {
                                 ...(config.apiOptions ?? {}),
@@ -238,6 +238,7 @@ async function createApp(
                                 importAssetsDir: path.join(assetsDir, 'images'),
                             },
                         });
+                        _app.get(JobQueueService).start();
                     };
                     let app: any;
                     if (populateProducts) {
