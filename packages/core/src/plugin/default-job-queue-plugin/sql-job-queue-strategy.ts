@@ -48,9 +48,11 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         }
         const connection = this.connection;
         const connectionType = this.connection.options.type;
+        const isSQLite =
+            connectionType === 'sqlite' || connectionType === 'sqljs' || connectionType === 'better-sqlite3';
 
         return new Promise(async (resolve, reject) => {
-            if (connectionType === 'sqlite' || connectionType === 'sqljs') {
+            if (isSQLite) {
                 // SQLite driver does not support concurrent transactions. See https://github.com/typeorm/typeorm/issues/1884
                 const result = await this.getNextAndSetAsRunning(connection.manager, queueName);
                 resolve(result);
@@ -59,7 +61,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
                 // set a lock on that row and immediately update the status to "RUNNING".
                 // This prevents multiple worker processes from taking the same job when
                 // running concurrent workers.
-                connection.transaction(async transactionManager => {
+                await connection.transaction(async transactionManager => {
                     const result = await this.getNextAndSetAsRunning(transactionManager, queueName);
                     resolve(result);
                 });
