@@ -65,55 +65,6 @@ REQUEST: GET http://localhost:3000/health
 
 Health checks are built on the [Nestjs Terminus module](https://docs.nestjs.com/recipes/terminus). You can also add your own health checks by creating plugins that make use of the [HealthCheckRegistryService]({{< relref "health-check-registry-service" >}}).
 
-## Deploying the worker
-
-By default the worker and server communicate over TCP (other protocols can be used - see the [Nestjs microservices docs](https://docs.nestjs.com/microservices/basics)). In production, you may wish to run the worker in a separate container or machine than the Vendure server. In this case, the `VendureConfig.workerOptions` that get passed to `bootstrap()` and `bootstrapWorker()` will need to be different:
-
-#### Example Scenario
-
-* The Vendure server and worker will run on separate web servers (or in separate containers)
-* These servers are behind a reverse proxy, e.g. nginx
-* Only the Vendure server machine should be accessible from the internet - nginx is configured to forward requests to port 443 (https traffic) to the Vendure server which is listening on port 3000.
-
-```TypeScript
-// vendure-config.ts
-
-export const config: VendureConfig = {
-  apiOptions: {
-      hostname: 'localhost',
-      port: 3000,
-  },
-  workerOptions: {
-    options: {
-      host: '<IP address of the worker server>',
-      port: 3020,
-    },
-  },
-  // ...
-}
-```
-
-```TypeScript
-// index.ts
-
-bootstrap(config);
-```
-
-```TypeScript
-// index-worker.ts
-
-const workerConfig = {
-  ...config,
-  workerOptions: {
-    options: {
-      host: 'localhost',
-      port: 3020,
-    },
-  },
-};
-bootstrapWorker(workerConfig);
-```
-
 ## Admin UI
 
 If you have customized the Admin UI with extensions, it can make sense to [compile your extensions ahead-of-time as part of the deployment process]({{< relref "/docs/plugins/extending-the-admin-ui" >}}#compiling-as-a-deployment-step).

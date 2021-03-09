@@ -55,15 +55,11 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
         importExportOptions: {
             importAssetsDir: path.join(__dirname, './data-sources'),
         },
-        workerOptions: {
-            runInMainProcess: true,
-        },
         customFields: {},
         plugins: [
             AssetServerPlugin.init({
                 assetUploadDir: path.join(__dirname, 'static/assets'),
                 route: 'assets',
-                port: 5002,
             }),
             DefaultSearchPlugin,
         ],

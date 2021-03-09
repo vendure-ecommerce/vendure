@@ -25,11 +25,6 @@ describe('AssetServerPlugin', () => {
             apiOptions: {
                 port: 5050,
             },
-            workerOptions: {
-                options: {
-                    port: 5055,
-                },
-            },
             logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 AssetServerPlugin.init({
