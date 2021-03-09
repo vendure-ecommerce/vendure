@@ -20,8 +20,7 @@ import { PromotionConditionState } from './promotion-condition';
 export type ConditionConfig = {
     [name: string]: { required?: boolean };
 }
-export type ConditionRequiredKeys<U extends ConditionConfig, value extends true | false> =
-    NonNullable<{ [K in keyof U]: value extends U[K]['required'] ? K : never }[keyof U]>;
+
 export type ConditionalState<U extends ConditionConfig> = {
     [K in keyof U]: U[K]['required'] extends true ? PromotionConditionState : PromotionConditionState | undefined;
 }
