@@ -61,7 +61,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
                 // set a lock on that row and immediately update the status to "RUNNING".
                 // This prevents multiple worker processes from taking the same job when
                 // running concurrent workers.
-                await connection.transaction(async transactionManager => {
+                connection.transaction(async transactionManager => {
                     const result = await this.getNextAndSetAsRunning(transactionManager, queueName);
                     resolve(result);
                 });
@@ -85,6 +85,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
                 }),
             )
             .orderBy('record.createdAt', 'ASC')
+            .setLock('pessimistic_write')
             .getOne();
         if (record) {
             const job = this.fromRecord(record);
