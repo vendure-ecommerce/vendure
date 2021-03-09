@@ -1,5 +1,5 @@
 {
-  "name": "@vendure/pub-sub-plugin",
+  "name": "@vendure/job-queue-plugin",
   "version": "0.18.2",
   "license": "MIT",
   "main": "lib/index.js",
@@ -7,6 +7,7 @@
   "files": [
     "lib/**/*"
   ],
+  "private": true,
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "rimraf lib && tsc -p ./tsconfig.build.json && yarn ts-node build.ts",
@@ -15,7 +16,7 @@
     "ci": "yarn build"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "restricted"
   },
   "devDependencies": {
     "@google-cloud/pubsub": "^2.8.0",
