@@ -43,7 +43,7 @@ program
     })
     .option(
         '--log-level <logLevel>',
-        "Log level, either 'silent', 'info', or 'verbose'",
+        `Log level, either 'silent', 'info', or 'verbose'`,
         /^(silent|info|verbose)$/i,
         'silent',
     )
@@ -217,6 +217,7 @@ async function createApp(
                             : logLevel === 'verbose'
                             ? LogLevel.Verbose
                             : LogLevel.Info;
+
                     const bootstrapFn = async () => {
                         await checkDbConnection(config.dbConnectionOptions, root);
                         const _app = await bootstrap({
@@ -231,25 +232,20 @@ async function createApp(
                                 synchronize: true,
                             },
                             logger: new DefaultLogger({ level: vendureLogLevel }),
-                            workerOptions: {
-                                runInMainProcess: true,
-                            },
                             importExportOptions: {
                                 importAssetsDir: path.join(assetsDir, 'images'),
                             },
                         });
-                        _app.get(JobQueueService).start();
+                        await _app.get(JobQueueService).start();
+                        return _app;
                     };
-                    let app: any;
-                    if (populateProducts) {
-                        app = await populate(
-                            bootstrapFn,
-                            initialDataPath,
-                            path.join(assetsDir, 'products.csv'),
-                        );
-                    } else {
-                        app = await populate(bootstrapFn, initialDataPath);
-                    }
+
+                    const app = await populate(
+                        bootstrapFn,
+                        initialDataPath,
+                        populateProducts ? path.join(assetsDir, 'products.csv') : undefined,
+                    );
+
                     // Pause to ensure the worker jobs have time to complete.
                     if (isCi) {
                         console.log('[CI] Pausing before close...');
