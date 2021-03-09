@@ -183,7 +183,7 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order));
+            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
 
             const lineHasExistingPromotions = !!line.items[0]?.adjustments?.find(
                 a => a.type === AdjustmentType.PROMOTION,
@@ -205,12 +205,14 @@ export class OrderCalculator {
                 // We need to test the promotion *again*, even though we've tested them for the line.
                 // This is because the previous Promotions may have adjusted the Order in such a way
                 // as to render later promotions no longer applicable.
-                if (await promotion.test(ctx, order)) {
+                const applicableOrState = await promotion.test(ctx, order);
+                if (applicableOrState) {
+                    const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
                     for (const item of line.items) {
                         const adjustment = await promotion.apply(ctx, {
                             orderItem: item,
                             orderLine: line,
-                        });
+                        }, state);
                         if (adjustment) {
                             item.addAdjustment(adjustment);
                             priceAdjusted = true;
@@ -283,13 +285,15 @@ export class OrderCalculator {
         }
 
         this.calculateOrderTotals(order);
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
                 // may be modified by a previously-applied promotion
-                if (await promotion.test(ctx, order)) {
-                    const adjustment = await promotion.apply(ctx, { order });
+                const applicableOrState = await promotion.test(ctx, order);
+                if (applicableOrState) {
+                    const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
+                    const adjustment = await promotion.apply(ctx, { order }, state);
                     if (adjustment && adjustment.amount !== 0) {
                         const amount = adjustment.amount;
                         const weights = order.lines.map(l => l.proratedLinePriceWithTax);
@@ -330,15 +334,17 @@ export class OrderCalculator {
     }
 
     private async applyShippingPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
         if (applicableOrderPromotions.length) {
             order.shippingLines.forEach(line => (line.adjustments = []));
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
                 // may be modified by a previously-applied promotion
-                if (await promotion.test(ctx, order)) {
+                const applicableOrState = await promotion.test(ctx, order);
+                if (applicableOrState) {
+                    const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
                     for (const shippingLine of order.shippingLines) {
-                        const adjustment = await promotion.apply(ctx, { shippingLine, order });
+                        const adjustment = await promotion.apply(ctx, { shippingLine, order }, state);
                         if (adjustment && adjustment.amount !== 0) {
                             shippingLine.addAdjustment(adjustment);
                         }

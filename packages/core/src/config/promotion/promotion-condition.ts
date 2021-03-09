@@ -1,5 +1,4 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgType, ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -8,8 +7,9 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
+
+export type CheckPromotionConditionResult = boolean | PromotionConditionState;
 
 /**
  * @description
@@ -22,7 +22,7 @@ export type CheckPromotionConditionFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-) => boolean | Promise<boolean>;
+) => CheckPromotionConditionResult | Promise<CheckPromotionConditionResult>;
 
 /**
  * @description
@@ -36,6 +36,8 @@ export interface PromotionConditionConfig<T extends ConfigArgs> extends Configur
     check: CheckPromotionConditionFn<T>;
     priorityValue?: number;
 }
+
+export type PromotionConditionState = Record<string, unknown>;
 
 /**
  * @description
@@ -65,7 +67,7 @@ export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends Confi
         this.priorityValue = config.priorityValue || 0;
     }
 
-    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<boolean> {
+    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<CheckPromotionConditionResult> {
         return this.checkFn(ctx, order, this.argsArrayToHash(args));
     }
 }
