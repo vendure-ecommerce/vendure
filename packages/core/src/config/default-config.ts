@@ -48,9 +48,11 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminApiPath: 'admin-api',
         adminApiPlayground: false,
         adminApiDebug: false,
+        adminApiValidationRules: [],
         shopApiPath: 'shop-api',
         shopApiPlayground: false,
         shopApiDebug: false,
+        shopApiValidationRules: [],
         channelTokenKey: 'vendure-token',
         cors: {
             origin: true,
