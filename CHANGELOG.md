@@ -1,3 +1,10 @@
+## 1.0.0-beta.2 (2021-03-09)
+
+
+#### Fixes
+
+* **core** Fix error in SqlJobQueueStrategy when using SQLite ([c775822](https://github.com/vendure-ecommerce/vendure/commit/c775822))
+
 ## 1.0.0-beta.1 (2021-03-09)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@vendure/job-queue-plugin",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -22,7 +22,7 @@
     "@google-cloud/pubsub": "^2.8.0",
     "@types/redis": "^2.8.28",
     "@vendure/common": "^1.0.0-beta.1",
-    "@vendure/core": "^1.0.0-beta.1",
+    "@vendure/core": "^1.0.0-beta.2",
     "redis": "^3.0.2",
     "rimraf": "^3.0.2",
     "typescript": "4.1.5"
