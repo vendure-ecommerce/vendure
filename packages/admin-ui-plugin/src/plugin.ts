@@ -107,7 +107,7 @@ export class AdminUiPlugin implements NestModule {
     }
 
     async configure(consumer: MiddlewareConsumer) {
-        const { app, hostname, port, route, adminUiConfig } = AdminUiPlugin.options;
+        const { app, hostname, route, adminUiConfig } = AdminUiPlugin.options;
         const adminUiAppPath = AdminUiPlugin.isDevModeApp(app)
             ? path.join(app.sourcePath, 'src')
             : (app && app.path) || DEFAULT_APP_PATH;
@@ -117,6 +117,13 @@ export class AdminUiPlugin implements NestModule {
             const uiConfig = this.getAdminUiConfig(adminUiConfig);
             return this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
         };
+
+        let port: number;
+        if (AdminUiPlugin.isDevModeApp(app)) {
+            port = app.port;
+        } else {
+            port = AdminUiPlugin.options.port;
+        }
 
         if (AdminUiPlugin.isDevModeApp(app)) {
             Logger.info('Creating admin ui middleware (dev mode)', loggerCtx);
