@@ -3,6 +3,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
 import { RequestHandler } from 'express';
+import { ValidationContext } from 'graphql';
 import { ConnectionOptions } from 'typeorm';
 
 import { PermissionDefinition } from '../common/permission-definition';
@@ -106,6 +107,22 @@ export interface ApiOptions {
      * @default false
      */
     shopApiDebug?: boolean;
+    /**
+     * @description
+     * Custom functions to use as additional validation rules when validating the schema for the admin GraphQL API
+     * [ApolloServer validation rules](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#validationrules).
+     *
+     * @default []
+     */
+    adminApiValidationRules?: ((context: ValidationContext) => any)[];
+    /**
+     * @description
+     * Custom functions to use as additional validation rules when validating the schema for the shop GraphQL API
+     * [ApolloServer validation rules](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#validationrules).
+     *
+     * @default []
+     */
+    shopApiValidationRules?: ((context: ValidationContext) => any)[];
     /**
      * @description
      * The name of the property which contains the token of the

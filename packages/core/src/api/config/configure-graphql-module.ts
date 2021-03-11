@@ -2,7 +2,7 @@ import { DynamicModule } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { buildSchema, extendSchema, GraphQLSchema, printSchema } from 'graphql';
+import { buildSchema, extendSchema, GraphQLSchema, printSchema, ValidationContext } from 'graphql';
 import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
@@ -44,6 +44,7 @@ export interface GraphQLApiOptions {
     playground: boolean | any;
     // tslint:disable-next-line:ban-types
     resolverModule: Function;
+    validationRules: ((context: ValidationContext) => any)[];
 }
 
 /**
@@ -114,6 +115,7 @@ async function createGraphQLOptions(
             new AssetInterceptorPlugin(configService),
             ...configService.apiOptions.apolloServerPlugins,
         ],
+        validationRules: options.validationRules,
     } as GqlModuleOptions;
 
     /**

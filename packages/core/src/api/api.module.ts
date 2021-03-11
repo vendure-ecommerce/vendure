@@ -37,6 +37,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             debug: configService.apiOptions.shopApiDebug,
             typePaths: ['shop-api', 'common'].map(p => path.join(__dirname, 'schema', p, '*.graphql')),
             resolverModule: ShopApiModule,
+            validationRules: configService.apiOptions.shopApiValidationRules,
         })),
         configureGraphQLModule(configService => ({
             apiType: 'admin',
@@ -45,6 +46,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             debug: configService.apiOptions.adminApiDebug,
             typePaths: ['admin-api', 'common'].map(p => path.join(__dirname, 'schema', p, '*.graphql')),
             resolverModule: AdminApiModule,
+            validationRules: configService.apiOptions.adminApiValidationRules,
         })),
     ],
     providers: [
