@@ -141,7 +141,7 @@ export class TransactionalConnection {
             const { channelId, ...optionsWithoutChannelId } = options;
             entity = await this.findOneInChannel(
                 ctx,
-                entityType,
+                entityType as Type<T & ChannelAware>,
                 id,
                 options.channelId,
                 optionsWithoutChannelId,
@@ -163,7 +163,7 @@ export class TransactionalConnection {
      * Like the TypeOrm `Repository.findOne()` method, but limits the results to
      * the given Channel.
      */
-    findOneInChannel<T extends ChannelAware | VendureEntity>(
+    findOneInChannel<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
         entity: Type<T>,
         id: ID,

@@ -10,7 +10,6 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -211,6 +210,13 @@ export class ChannelService {
         return {
             result: DeletionResult.DELETED,
         };
+    }
+
+    public isChannelAware(entity: VendureEntity): entity is VendureEntity & ChannelAware {
+        const entityType = Object.getPrototypeOf(entity).constructor;
+        return !!this.connection.rawConnection
+            .getMetadata(entityType)
+            .relations.find(r => r.type === Channel && r.propertyName === 'channels');
     }
 
     /**

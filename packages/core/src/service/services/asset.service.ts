@@ -24,6 +24,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
+import { ChannelAware } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -117,16 +118,26 @@ export class AssetService {
         ctx: RequestContext,
         entity: T,
     ): Promise<Asset | undefined> {
-        const entityType: Type<EntityWithAssets> = Object.getPrototypeOf(entity).constructor;
-        const entityWithFeaturedAsset = await this.connection.findOneInChannel(
-            ctx,
-            entityType,
-            entity.id,
-            ctx.channelId,
-            {
-                relations: ['featuredAsset'],
-            },
-        );
+        const entityType: Type<T> = Object.getPrototypeOf(entity).constructor;
+        let entityWithFeaturedAsset: T | undefined;
+
+        if (this.channelService.isChannelAware(entity)) {
+            entityWithFeaturedAsset = await this.connection.findOneInChannel(
+                ctx,
+                entityType as Type<T & ChannelAware>,
+                entity.id,
+                ctx.channelId,
+                {
+                    relations: ['featuredAsset'],
+                },
+            );
+        } else {
+            entityWithFeaturedAsset = await this.connection
+                .getRepository(ctx, entityType)
+                .findOne(entity.id, {
+                    relations: ['featuredAsset'],
+                });
+        }
         return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
 
