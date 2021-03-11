@@ -110,7 +110,7 @@ export interface ApiOptions {
     /**
      * @description
      * Custom functions to use as additional validation rules when validating the schema for the admin GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * [ApolloServer validation rules](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#validationrules).
      *
      * @default []
      */
@@ -118,7 +118,7 @@ export interface ApiOptions {
     /**
      * @description
      * Custom functions to use as additional validation rules when validating the schema for the shop GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * [ApolloServer validation rules](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#validationrules).
      *
      * @default []
      */
