@@ -1,3 +1,14 @@
+## 1.0.0-beta.3 (2021-03-11)
+
+
+#### Fixes
+
+* **admin-ui-plugin** Fix proxy port when in dev mode ([28b096c](https://github.com/vendure-ecommerce/vendure/commit/28b096c))
+* **core** Fix featuredAsset error when adding item to Order ([e635f25](https://github.com/vendure-ecommerce/vendure/commit/e635f25)), closes [#756](https://github.com/vendure-ecommerce/vendure/issues/756)
+* **core** Fix foreign key error on merging orders ([5e385df](https://github.com/vendure-ecommerce/vendure/commit/5e385df)), closes [#754](https://github.com/vendure-ecommerce/vendure/issues/754)
+* **core** Fix indexing of long descriptions in postgres ([9efd7db](https://github.com/vendure-ecommerce/vendure/commit/9efd7db)), closes [#745](https://github.com/vendure-ecommerce/vendure/issues/745)
+* **core** Prevent max integer error in job duration ([305727e](https://github.com/vendure-ecommerce/vendure/commit/305727e)), closes [#755](https://github.com/vendure-ecommerce/vendure/issues/755)
+
 ## 1.0.0-beta.2 (2021-03-09)
 
 
