@@ -1198,6 +1198,10 @@ export class OrderService {
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
+            // TODO: v2 - Will not be needed after adding `{ onDelete: 'CASCADE' }` constraint to ShippingLine.order
+            for (const shippingLine of orderToDelete.shippingLines) {
+                await this.connection.getRepository(ctx, ShippingLine).delete(shippingLine.id);
+            }
             await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
         }
         if (order && linesToInsert) {

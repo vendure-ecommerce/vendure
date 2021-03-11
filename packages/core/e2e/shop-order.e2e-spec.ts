@@ -1239,6 +1239,57 @@ describe('Shop orders', () => {
             expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
             expect(activeOrder!.lines[1].productVariant.id).toBe('T_2');
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/754
+        it('handles merging when an existing order has OrderLines', async () => {
+            async function setShippingOnActiveOrder() {
+                await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                    SET_SHIPPING_ADDRESS,
+                    {
+                        input: {
+                            streetLine1: '12 the street',
+                            countryCode: 'US',
+                        },
+                    },
+                );
+                const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+                    GET_ELIGIBLE_SHIPPING_METHODS,
+                );
+                await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
+                    SET_SHIPPING_METHOD,
+                    {
+                        id: eligibleShippingMethods[1].id,
+                    },
+                );
+            }
+
+            // Set up an existing order and add a ShippingLine
+            await shopClient.asUserWithCredentials(customers[2].emailAddress, 'test');
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 1,
+            });
+            await setShippingOnActiveOrder();
+
+            // Now start a new guest order
+            await shopClient.query(LOG_OUT);
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_4',
+                quantity: 1,
+            });
+            await setShippingOnActiveOrder();
+
+            // attempt to log in and merge the guest order with the existing order
+            const { login } = await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
+                ATTEMPT_LOGIN,
+                {
+                    username: customers[2].emailAddress,
+                    password: 'test',
+                },
+            );
+
+            expect(login.identifier).toBe(customers[2].emailAddress);
+        });
     });
 
     describe('security of customer data', () => {
@@ -1443,4 +1494,12 @@ export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
         }
     }
     ${UPDATED_ORDER_FRAGMENT}
+`;
+
+export const LOG_OUT = gql`
+    mutation LogOut {
+        logout {
+            success
+        }
+    }
 `;
