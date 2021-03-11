@@ -330,7 +330,7 @@ export class IndexerController {
                             slug: productTranslation.slug,
                             productId: variant.product.id,
                             productName: productTranslation.name,
-                            description: productTranslation.description,
+                            description: this.constrainDescription(productTranslation.description),
                             productVariantName: variantTranslation.name,
                             productAssetId: variant.product.featuredAsset
                                 ? variant.product.featuredAsset.id
@@ -377,7 +377,7 @@ export class IndexerController {
             slug: productTranslation.slug,
             productId: product.id,
             productName: productTranslation.name,
-            description: productTranslation.description,
+            description: this.constrainDescription(productTranslation.description),
             productVariantName: productTranslation.name,
             productAssetId: product.featuredAsset?.id ?? null,
             productPreviewFocalPoint: product.featuredAsset?.focalPoint ?? null,
@@ -443,5 +443,18 @@ export class IndexerController {
             languageCode,
         })) as any[];
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(compositeKeys));
+    }
+
+    /**
+     * Prevent postgres errors from too-long indices
+     * https://github.com/vendure-ecommerce/vendure/issues/745
+     */
+    private constrainDescription(description: string): string {
+        const { type } = this.connection.rawConnection.options;
+        const isPostgresLike = type === 'postgres' || type === 'aurora-data-api-pg' || type === 'cockroachdb';
+        if (isPostgresLike) {
+            return description.substring(0, 2600);
+        }
+        return description;
     }
 }

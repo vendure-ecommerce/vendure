@@ -883,6 +883,52 @@ describe('Default search plugin', () => {
                     { productId: 'T_3', enabled: false },
                 ]);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/745
+            it('very long Product descriptions no not cause indexing to fail', async () => {
+                // We generate this long string out of random chars because Postgres uses compression
+                // when storing the string value, so e.g. a long series of a single character will not
+                // reproduce the error.
+                const description = Array.from({ length: 220 })
+                    .map(() => Math.random().toString(36))
+                    .join(' ');
+
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Very long description aabbccdd',
+                                slug: 'very-long-description',
+                                description,
+                            },
+                        ],
+                    },
+                });
+                await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                    CREATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                productId: createProduct.id,
+                                sku: 'VLD01',
+                                price: 100,
+                                translations: [
+                                    { languageCode: LanguageCode.en, name: 'Very long description variant' },
+                                ],
+                            },
+                        ],
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+                const result = await doAdminSearchQuery({ term: 'aabbccdd' });
+                expect(result.search.items.map(i => i.productName)).toEqual([
+                    'Very long description aabbccdd',
+                ]);
+            });
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/609
