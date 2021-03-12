@@ -114,7 +114,7 @@ export interface ApiOptions {
      *
      * @default []
      */
-    adminApiValidationRules?: ((context: ValidationContext) => any)[];
+    adminApiValidationRules?: Array<(context: ValidationContext) => any>;
     /**
      * @description
      * Custom functions to use as additional validation rules when validating the schema for the shop GraphQL API
@@ -122,7 +122,7 @@ export interface ApiOptions {
      *
      * @default []
      */
-    shopApiValidationRules?: ((context: ValidationContext) => any)[];
+    shopApiValidationRules?: Array<(context: ValidationContext) => any>;
     /**
      * @description
      * The name of the property which contains the token of the

@@ -44,7 +44,7 @@ export interface GraphQLApiOptions {
     playground: boolean | any;
     // tslint:disable-next-line:ban-types
     resolverModule: Function;
-    validationRules: ((context: ValidationContext) => any)[];
+    validationRules: Array<(context: ValidationContext) => any>;
 }
 
 /**
