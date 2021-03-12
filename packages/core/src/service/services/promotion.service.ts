@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApplyCouponCodeResult } from '@vendure/common/lib/generated-shop-types';
 import {
+    ConfigurableOperation,
     ConfigurableOperationDefinition,
     CreatePromotionInput,
     CreatePromotionResult,
@@ -14,6 +15,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
+import { UserInputError } from '../../common';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
 import {
@@ -101,6 +103,11 @@ export class PromotionService {
         ctx: RequestContext,
         input: CreatePromotionInput,
     ): Promise<ErrorResultUnion<CreatePromotionResult, Promotion>> {
+        const conditions = input.conditions.map(c =>
+            this.configArgService.parseInput('PromotionCondition', c),
+        );
+        const actions = input.actions.map(a => this.configArgService.parseInput('PromotionAction', a));
+        this.validateRequiredConditions(conditions, actions);
         const promotion = new Promotion({
             name: input.name,
             enabled: input.enabled,
@@ -108,8 +115,8 @@ export class PromotionService {
             perCustomerUsageLimit: input.perCustomerUsageLimit,
             startsAt: input.startsAt,
             endsAt: input.endsAt,
-            conditions: input.conditions.map(c => this.configArgService.parseInput('PromotionCondition', c)),
-            actions: input.actions.map(a => this.configArgService.parseInput('PromotionAction', a)),
+            conditions,
+            actions,
             priorityScore: this.calculatePriorityScore(input),
         });
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
@@ -227,5 +234,29 @@ export class PromotionService {
         this.activePromotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
         });
+    }
+
+    private validateRequiredConditions(
+        conditions: ConfigurableOperation[],
+        actions: ConfigurableOperation[],
+    ) {
+        const conditionCodes: Record<string, string> = conditions.reduce(
+            (codeMap, { code }) => ({ ...codeMap, [code]: code }),
+            {},
+        );
+        for (const { code: actionCode } of actions) {
+            const actionDef = this.configArgService.getByCode('PromotionAction', actionCode);
+            const actionDependencies: PromotionCondition[] = actionDef.conditions || [];
+            if (!actionDependencies || actionDependencies.length === 0) {
+                continue;
+            }
+            const missingConditions = actionDependencies.filter(condition => !conditionCodes[condition.code]);
+            if (missingConditions.length) {
+                throw new UserInputError('error.conditions-required-for-action', {
+                    action: actionCode,
+                    conditions: missingConditions.map(c => c.code).join(', '),
+                });
+            }
+        }
     }
 }
