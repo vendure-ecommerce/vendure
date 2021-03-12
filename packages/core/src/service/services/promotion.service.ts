@@ -27,7 +27,7 @@ import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { ConditionConfig, PromotionAction } from '../../config/promotion/promotion-action';
+import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
@@ -103,7 +103,9 @@ export class PromotionService {
         ctx: RequestContext,
         input: CreatePromotionInput,
     ): Promise<ErrorResultUnion<CreatePromotionResult, Promotion>> {
-        const conditions = input.conditions.map(c => this.configArgService.parseInput('PromotionCondition', c));
+        const conditions = input.conditions.map(c =>
+            this.configArgService.parseInput('PromotionCondition', c),
+        );
         const actions = input.actions.map(a => this.configArgService.parseInput('PromotionAction', a));
         this.validateRequiredConditions(conditions, actions);
         const promotion = new Promotion({
@@ -234,20 +236,25 @@ export class PromotionService {
         });
     }
 
-    private validateRequiredConditions(conditions: ConfigurableOperation[], actions: ConfigurableOperation[]) {
-        const conditionCodes: Record<string, string> = conditions.reduce((codeMap, { code }) => ({ ...codeMap, [code]: code }), {});
+    private validateRequiredConditions(
+        conditions: ConfigurableOperation[],
+        actions: ConfigurableOperation[],
+    ) {
+        const conditionCodes: Record<string, string> = conditions.reduce(
+            (codeMap, { code }) => ({ ...codeMap, [code]: code }),
+            {},
+        );
         for (const { code: actionCode } of actions) {
-            const { conditions: conditionConfig } =
-                this.configArgService.getByCode('PromotionAction', actionCode) as { conditions?: ConditionConfig };
-            if (!conditionConfig) {
+            const actionDef = this.configArgService.getByCode('PromotionAction', actionCode);
+            const actionDependencies: PromotionCondition[] = actionDef.conditions || [];
+            if (!actionDependencies || actionDependencies.length === 0) {
                 continue;
             }
-            const missingConditions = Object.keys(conditionConfig)
-                .filter((conditionCode) => conditionConfig[conditionCode].required && !conditionCodes[conditionCode]);
+            const missingConditions = actionDependencies.filter(condition => !conditionCodes[condition.code]);
             if (missingConditions.length) {
                 throw new UserInputError('error.conditions-required-for-action', {
-                    name: actionCode,
-                    value: String(missingConditions),
+                    action: actionCode,
+                    conditions: missingConditions.map(c => c.code).join(', '),
                 });
             }
         }

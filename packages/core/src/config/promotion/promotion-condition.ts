@@ -9,20 +9,29 @@ import {
 } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
+export type PromotionConditionState = Record<string, unknown>;
+
 export type CheckPromotionConditionResult = boolean | PromotionConditionState;
 
 /**
  * @description
  * A function which checks whether or not a given {@link Order} satisfies the {@link PromotionCondition}.
  *
+ * The function should return either a `boolean` or and plain object type:
+ *
+ * * `false`: The condition is not satisfied - do not apply PromotionActions
+ * * `true`: The condition is satisfied, apply PromotionActions
+ * * `{ [key: string]: any; }`: The condition is satisfied, apply PromotionActions
+ * _and_ pass this object into the PromotionAction's `state` argument.
+ *
  * @docsCategory promotions
  * @docsPage promotion-condition
  */
-export type CheckPromotionConditionFn<T extends ConfigArgs> = (
+export type CheckPromotionConditionFn<T extends ConfigArgs, R extends CheckPromotionConditionResult> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-) => CheckPromotionConditionResult | Promise<CheckPromotionConditionResult>;
+) => R | Promise<R>;
 
 /**
  * @description
@@ -32,12 +41,15 @@ export type CheckPromotionConditionFn<T extends ConfigArgs> = (
  * @docsPage promotion-condition
  * @docsWeight 1
  */
-export interface PromotionConditionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
-    check: CheckPromotionConditionFn<T>;
+export interface PromotionConditionConfig<
+    T extends ConfigArgs,
+    C extends string,
+    R extends CheckPromotionConditionResult
+> extends ConfigurableOperationDefOptions<T> {
+    code: C;
+    check: CheckPromotionConditionFn<T, R>;
     priorityValue?: number;
 }
-
-export type PromotionConditionState = Record<string, unknown>;
 
 /**
  * @description
@@ -49,7 +61,11 @@ export type PromotionConditionState = Record<string, unknown>;
  * @docsPage promotion-condition
  * @docsWeight 0
  */
-export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
+export class PromotionCondition<
+    T extends ConfigArgs = ConfigArgs,
+    C extends string = string,
+    R extends CheckPromotionConditionResult = any
+> extends ConfigurableOperationDef<T> {
     /**
      * @description
      * Used to determine the order of application of multiple Promotions
@@ -59,15 +75,24 @@ export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends Confi
      * @default 0
      */
     readonly priorityValue: number;
-    private readonly checkFn: CheckPromotionConditionFn<T>;
+    private readonly checkFn: CheckPromotionConditionFn<T, R>;
 
-    constructor(config: PromotionConditionConfig<T>) {
+    get code(): C {
+        return super.code as C;
+    }
+
+    constructor(config: PromotionConditionConfig<T, C, R>) {
         super(config);
         this.checkFn = config.check;
         this.priorityValue = config.priorityValue || 0;
     }
 
-    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<CheckPromotionConditionResult> {
+    /**
+     * @description
+     * This is the function which contains the conditional logic to decide whether
+     * a Promotion should apply to an Order. See {@link CheckPromotionConditionFn}.
+     */
+    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<R> {
         return this.checkFn(ctx, order, this.argsArrayToHash(args));
     }
 }

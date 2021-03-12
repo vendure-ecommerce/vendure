@@ -10,6 +10,7 @@
     "cannot-transition-fulfillment-from-to": "Cannot transition Fulfillment from \"{ fromState }\" to \"{ toState }\"",
     "collection-id-or-slug-must-be-provided": "Either the Collection id or slug must be provided",
     "collection-id-slug-mismatch": "The provided id and slug refer to different Collections",
+    "conditions-required-for-action": "The PromotionAction '{ action }' requires the following conditions: { conditions }",
     "configurable-argument-is-required": "The argument '{ name }' is required, but the value is [{ value }]",
     "country-code-not-valid": "The countryCode \"{ countryCode }\" was not recognized",
     "customer-does-not-belong-to-customer-group": "Customer does not belong to this CustomerGroup",

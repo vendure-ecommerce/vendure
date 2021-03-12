@@ -6,7 +6,11 @@ import { PromotionCondition } from '../promotion-condition';
 export const buyXGetYFreeCondition = new PromotionCondition({
     code: 'buy_x_get_y_free',
     description: [
-        { languageCode: LanguageCode.en, value: 'Buy { amountX } of { variantIdsX } products, get { amountY } of { variantIdsY } products free' },
+        {
+            languageCode: LanguageCode.en,
+            value:
+                'Buy { amountX } of { variantIdsX } products, get { amountY } of { variantIdsY } products free',
+        },
     ],
     args: {
         amountX: {
@@ -46,13 +50,16 @@ export const buyXGetYFreeCondition = new PromotionCondition({
         }
         const quantity = Math.floor(matches / args.amountX);
         if (!quantity || !freeItemCandidates.length) return false;
-        const freeItemIds = freeItemCandidates.sort((a, b) => {
-            const unitPriceA = ctx.channel.pricesIncludeTax ? a.unitPriceWithTax : a.unitPrice;
-            const unitPriceB = ctx.channel.pricesIncludeTax ? b.unitPriceWithTax : b.unitPrice;
-            if (unitPriceA < unitPriceB) return -1;
-            if (unitPriceA > unitPriceB) return 1;
-            return 0;
-        }).map(({ id }) => id).slice(0, quantity * args.amountY);
+        const freeItemIds = freeItemCandidates
+            .sort((a, b) => {
+                const unitPriceA = ctx.channel.pricesIncludeTax ? a.unitPriceWithTax : a.unitPrice;
+                const unitPriceB = ctx.channel.pricesIncludeTax ? b.unitPriceWithTax : b.unitPrice;
+                if (unitPriceA < unitPriceB) return -1;
+                if (unitPriceA > unitPriceB) return 1;
+                return 0;
+            })
+            .map(({ id }) => id)
+            .slice(0, quantity * args.amountY);
         return { freeItemIds };
     },
 });
