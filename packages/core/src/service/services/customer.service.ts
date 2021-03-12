@@ -45,6 +45,8 @@ import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { CustomerAddressEvent } from '../../event-bus/events/customer-address-event';
+import { CustomerEvent } from '../../event-bus/events/customer-event';
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
@@ -228,6 +230,7 @@ export class CustomerService {
                 },
             });
         }
+        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created'));
         return createdCustomer;
     }
 
@@ -273,6 +276,7 @@ export class CustomerService {
                 input,
             },
         });
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated'));
         return assertFound(this.findOne(ctx, customer.id));
     }
 
@@ -564,6 +568,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
+        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created'));
         return createdAddress;
     }
 
@@ -599,6 +604,7 @@ export class CustomerService {
                 input,
             },
         });
+        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated'));
         return updatedAddress;
     }
 
@@ -626,6 +632,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
+        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted'));
         return true;
     }
 
@@ -638,6 +645,7 @@ export class CustomerService {
             .update({ id: customerId }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, customer.user!.id);
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };
