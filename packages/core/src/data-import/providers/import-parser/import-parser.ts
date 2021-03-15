@@ -267,6 +267,14 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
     };
 }
 
+function isJSON(value: string) {
+    try {
+        return JSON.parse(value) && !!value;
+    } catch (e) {
+        return false;
+    }
+}
+
 function parseCustomFields(prefix: 'product' | 'variant', r: RawProductRecord): { [name: string]: string } {
     return Object.entries(r)
         .filter(([key, value]) => {
@@ -276,7 +284,7 @@ function parseCustomFields(prefix: 'product' | 'variant', r: RawProductRecord): 
             const fieldName = key.replace(`${prefix}:`, '');
             return {
                 ...output,
-                [fieldName]: value,
+                [fieldName]: isJSON(value) ? JSON.parse(value) : value,
             };
         }, {});
 }
