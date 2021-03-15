@@ -39,6 +39,7 @@
     "product-id-slug-mismatch": "The provided id and slug refer to different Products",
     "product-variant-option-ids-not-compatible": "ProductVariant optionIds must include one optionId from each of the groups: {groupNames}",
     "product-variant-options-combination-already-exists": "A ProductVariant already exists with the options: {optionNames}",
+    "promotion-channels-can-only-be-changed-from-default-channel": "Promotions channels may only be changed from the Default Channel",
     "stockonhand-cannot-be-negative": "stockOnHand cannot be a negative value",
     "unauthorized": "The credentials did not match. Please check and try again"
   },

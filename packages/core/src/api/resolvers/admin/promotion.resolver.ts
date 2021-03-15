@@ -2,8 +2,10 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreatePromotionResult,
     DeletionResponse,
+    MutationAssignPromotionsToChannelArgs,
     MutationCreatePromotionArgs,
     MutationDeletePromotionArgs,
+    MutationRemovePromotionsFromChannelArgs,
     MutationUpdatePromotionArgs,
     Permission,
     QueryPromotionArgs,
@@ -108,6 +110,26 @@ export class PromotionResolver {
         @Args() args: MutationDeletePromotionArgs,
     ): Promise<DeletionResponse> {
         return this.promotionService.softDeletePromotion(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdatePromotion)
+    assignPromotionsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignPromotionsToChannelArgs,
+    ): Promise<Promotion[]> {
+        return this.promotionService.assignPromotionsToChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdatePromotion)
+    removePromotionsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemovePromotionsFromChannelArgs,
+    ): Promise<Promotion[]> {
+        return this.promotionService.removePromotionsFromChannel(ctx, args.input);
     }
 
     /**

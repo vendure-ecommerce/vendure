@@ -1345,9 +1345,9 @@ export class OrderService {
                 item.listPriceIncludesTax = priceResult.priceIncludesTax;
             }
         }
-        const promotions = await this.connection.getRepository(ctx, Promotion).find({
-            where: { enabled: true, deletedAt: null },
-            order: { priorityScore: 'ASC' },
+        const { items: promotions } = await this.promotionService.findAll(ctx, {
+            filter: { enabled: { eq: true } },
+            sort: { priorityScore: 'ASC' },
         });
         const updatedItems = await this.orderCalculator.applyPriceAdjustments(
             ctx,

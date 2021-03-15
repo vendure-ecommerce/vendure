@@ -30,6 +30,7 @@ import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
     AssignProductsToChannel,
+    AssignPromotionToChannel,
     ChannelFragment,
     CreateChannel,
     CreateCustomerGroup,
@@ -62,6 +63,7 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PROMOTIONS_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_CUSTOMER_GROUP,
     CREATE_PROMOTION,
@@ -515,6 +517,7 @@ describe('Promotions applied to Orders', () => {
 
     describe('default PromotionActions', () => {
         const TAX_INCLUDED_CHANNEL_TOKEN = 'tax_included_channel';
+        let taxIncludedChannel: ChannelFragment;
 
         beforeAll(async () => {
             // Create a channel where the prices include tax, so we can ensure
@@ -533,7 +536,7 @@ describe('Promotions applied to Orders', () => {
                     token: TAX_INCLUDED_CHANNEL_TOKEN,
                 },
             });
-            const taxIncludedChannel = createChannel as ChannelFragment;
+            taxIncludedChannel = createChannel as ChannelFragment;
             await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
                 ASSIGN_PRODUCT_TO_CHANNEL,
                 {
@@ -549,6 +552,18 @@ describe('Promotions applied to Orders', () => {
         beforeEach(async () => {
             await shopClient.asAnonymousUser();
         });
+
+        async function assignPromotionToTaxIncludedChannel(promotionId: string | string[]) {
+            await adminClient.query<AssignPromotionToChannel.Mutation, AssignPromotionToChannel.Variables>(
+                ASSIGN_PROMOTIONS_TO_CHANNEL,
+                {
+                    input: {
+                        promotionIds: Array.isArray(promotionId) ? promotionId : [promotionId],
+                        channelId: taxIncludedChannel.id,
+                    },
+                },
+            );
+        }
 
         describe('orderPercentageDiscount', () => {
             const couponCode = '50%_off_order';
@@ -567,6 +582,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -641,6 +657,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -730,6 +747,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -866,6 +884,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -983,6 +1002,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -1104,6 +1124,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel([promotion1.id, promotion2.id]);
             });
 
             afterAll(async () => {

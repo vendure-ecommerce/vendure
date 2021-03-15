@@ -880,3 +880,21 @@ export const DELETE_SHIPPING_METHOD = gql`
         }
     }
 `;
+
+export const ASSIGN_PROMOTIONS_TO_CHANNEL = gql`
+    mutation AssignPromotionToChannel($input: AssignPromotionsToChannelInput!) {
+        assignPromotionsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`;
+
+export const REMOVE_PROMOTIONS_FROM_CHANNEL = gql`
+    mutation RemovePromotionFromChannel($input: RemovePromotionsFromChannelInput!) {
+        removePromotionsFromChannel(input: $input) {
+            id
+            name
+        }
+    }
+`;

@@ -333,6 +333,8 @@ export type Mutation = {
   assignProductVariantsToChannel: Array<ProductVariant>;
   /** Assigns all ProductVariants of Product to the specified Channel */
   assignProductsToChannel: Array<Product>;
+  /** Assigns Promotions to the specified Channel */
+  assignPromotionsToChannel: Array<Promotion>;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
   /** Authenticates the user using a named authentication strategy */
@@ -446,6 +448,8 @@ export type Mutation = {
   removeProductVariantsFromChannel: Array<ProductVariant>;
   /** Removes all ProductVariants of Product from the specified Channel */
   removeProductsFromChannel: Array<Product>;
+  /** Removes Promotions from the specified Channel */
+  removePromotionsFromChannel: Array<Promotion>;
   /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
   requestCompleted: Scalars['Int'];
@@ -563,6 +567,11 @@ export type MutationAssignProductVariantsToChannelArgs = {
 
 export type MutationAssignProductsToChannelArgs = {
   input: AssignProductsToChannelInput;
+};
+
+
+export type MutationAssignPromotionsToChannelArgs = {
+  input: AssignPromotionsToChannelInput;
 };
 
 
@@ -864,6 +873,11 @@ export type MutationRemoveProductVariantsFromChannelArgs = {
 
 export type MutationRemoveProductsFromChannelArgs = {
   input: RemoveProductsFromChannelInput;
+};
+
+
+export type MutationRemovePromotionsFromChannelArgs = {
+  input: RemovePromotionsFromChannelInput;
 };
 
 
@@ -2283,6 +2297,16 @@ export type UpdatePromotionInput = {
   perCustomerUsageLimit?: Maybe<Scalars['Int']>;
   conditions?: Maybe<Array<ConfigurableOperationInput>>;
   actions?: Maybe<Array<ConfigurableOperationInput>>;
+};
+
+export type AssignPromotionsToChannelInput = {
+  promotionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type RemovePromotionsFromChannelInput = {
+  promotionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
 };
 
 /** Returned if a PromotionCondition has neither a couponCode nor any conditions set */

@@ -458,6 +458,10 @@ export type Mutation = {
   createPromotion: CreatePromotionResult;
   updatePromotion: UpdatePromotionResult;
   deletePromotion: DeletionResponse;
+  /** Assigns Promotions to the specified Channel */
+  assignPromotionsToChannel: Array<Promotion>;
+  /** Removes Promotions from the specified Channel */
+  removePromotionsFromChannel: Array<Promotion>;
   /** Create a new Role */
   createRole: Role;
   /** Update an existing Role */
@@ -919,6 +923,16 @@ export type MutationUpdatePromotionArgs = {
 
 export type MutationDeletePromotionArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationAssignPromotionsToChannelArgs = {
+  input: AssignPromotionsToChannelInput;
+};
+
+
+export type MutationRemovePromotionsFromChannelArgs = {
+  input: RemovePromotionsFromChannelInput;
 };
 
 
@@ -2246,6 +2260,16 @@ export type UpdatePromotionInput = {
   perCustomerUsageLimit?: Maybe<Scalars['Int']>;
   conditions?: Maybe<Array<ConfigurableOperationInput>>;
   actions?: Maybe<Array<ConfigurableOperationInput>>;
+};
+
+export type AssignPromotionsToChannelInput = {
+  promotionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type RemovePromotionsFromChannelInput = {
+  promotionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
 };
 
 /** Returned if a PromotionCondition has neither a couponCode nor any conditions set */

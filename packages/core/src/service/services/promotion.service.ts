@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ApplyCouponCodeResult } from '@vendure/common/lib/generated-shop-types';
 import {
+    AssignPromotionsToChannelInput,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     CreatePromotionInput,
     CreatePromotionResult,
     DeletionResponse,
     DeletionResult,
+    RemovePromotionsFromChannelInput,
     UpdatePromotionInput,
     UpdatePromotionResult,
 } from '@vendure/common/lib/generated-types';
@@ -15,8 +17,8 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
-import { UserInputError } from '../../common';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
+import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
 import {
     CouponCodeExpiredError,
@@ -25,7 +27,7 @@ import {
 } from '../../common/error/generated-graphql-shop-errors';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
@@ -163,6 +165,43 @@ export class PromotionService {
         return {
             result: DeletionResult.DELETED,
         };
+    }
+
+    async assignPromotionsToChannel(
+        ctx: RequestContext,
+        input: AssignPromotionsToChannelInput,
+    ): Promise<Promotion[]> {
+        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+            throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
+        }
+        const promotions = await this.connection.findByIdsInChannel(
+            ctx,
+            Promotion,
+            input.promotionIds,
+            ctx.channelId,
+            {},
+        );
+        for (const promotion of promotions) {
+            await this.channelService.assignToChannels(ctx, Promotion, promotion.id, [input.channelId]);
+        }
+        return promotions;
+    }
+
+    async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) {
+        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+            throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
+        }
+        const promotions = await this.connection.findByIdsInChannel(
+            ctx,
+            Promotion,
+            input.promotionIds,
+            ctx.channelId,
+            {},
+        );
+        for (const promotion of promotions) {
+            await this.channelService.removeFromChannels(ctx, Promotion, promotion.id, [input.channelId]);
+        }
+        return promotions;
     }
 
     async validateCouponCode(
