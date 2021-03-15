@@ -28,9 +28,9 @@ export interface S3Config {
      * The credentials used to access your s3 account. You can supply either the access key ID & secret,
      * or you can make use of a
      * [shared credentials file](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
-     * and supply the profile name (e.g. `'default'`)
+     * and supply the profile name (e.g. `'default'`).
      */
-    credentials: S3Credentials | S3CredentialsProfile;
+    credentials?: S3Credentials | S3CredentialsProfile;
     /**
      * @description
      * The S3 bucket in which to store the assets. If it does not exist, it will be created on startup.
@@ -245,7 +245,9 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
 
     private getS3Credentials() {
         const { credentials } = this.s3Config;
-        if (this.isCredentialsProfile(credentials)) {
+        if (credentials == null) {
+            return null;
+        } else if (this.isCredentialsProfile(credentials)) {
             return new this.AWS.SharedIniFileCredentials(credentials);
         }
         return new this.AWS.Credentials(credentials);
