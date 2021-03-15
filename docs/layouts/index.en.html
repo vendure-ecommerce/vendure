@@ -43,7 +43,7 @@
                   addItemToOrder(productVariantId: 5 quantity: 1) {
                     ...on Order {
                       code
-                      total
+                      totalWithTax
                       state
                       lines {
                         productVariant {
@@ -52,7 +52,7 @@
                         }
                         unitPrice
                         quantity
-                        totalPrice
+                        linePriceWithTax
                       }
                     }
                     ...on ErrorResult {
