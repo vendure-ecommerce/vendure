@@ -770,10 +770,12 @@ export class OrderService {
         if (order.state !== 'ArrangingPayment') {
             return new OrderPaymentStateError();
         }
+        order.payments = await this.getOrderPayments(ctx, order.id);
+        const amountToPay = order.totalWithTax - totalCoveredByPayments(order);
         const payment = await this.paymentService.createPayment(
             ctx,
             order,
-            order.totalWithTax,
+            amountToPay,
             input.method,
             input.metadata,
         );
