@@ -132,7 +132,7 @@ export class TaxRateService {
     }
 
     async updateActiveTaxRates(ctx: RequestContext) {
-        await this.cacheService.set(ctx, activeTaxRatesKey, await this.findActiveTaxRates(ctx));
+        this.cacheService.set(ctx, activeTaxRatesKey, await this.findActiveTaxRates(ctx));
     }
 
     private async findActiveTaxRates(ctx: RequestContext): Promise<TaxRate[]> {

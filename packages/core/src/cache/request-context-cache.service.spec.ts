@@ -8,31 +8,39 @@ describe('Request context cache', () => {
         cache = new RequestContextCacheService();
     });
 
-    it('stores and retrieves a multiple values', async () => {
+    it('stores and retrieves a multiple values', () => {
         const ctx = RequestContext.empty();
 
-        await cache.set(ctx, 'test', 1);
-        await cache.set(ctx, 'test2', 2);
-        expect(await cache.get(ctx, 'test')).toBe(1);
-        expect(await cache.get(ctx, 'test2')).toBe(2);
+        cache.set(ctx, 'test', 1);
+        cache.set(ctx, 'test2', 2);
+        expect(cache.get(ctx, 'test')).toBe(1);
+        expect(cache.get(ctx, 'test2')).toBe(2);
     });
 
-    it('can use objects as keys', async () => {
+    it('uses getDefault function', async () => {
+        const ctx = RequestContext.empty();
+        const result = cache.get(ctx, 'test', async () => 'foo');
+
+        expect(result instanceof Promise).toBe(true);
+        expect(await result).toBe('foo');
+    });
+
+    it('can use objects as keys', () => {
         const ctx = RequestContext.empty();
 
         const x = {};
-        await cache.set(ctx, x, 1);
-        expect(await cache.get(ctx, x)).toBe(1);
+        cache.set(ctx, x, 1);
+        expect(cache.get(ctx, x)).toBe(1);
     });
 
-    it('uses separate stores per context', async () => {
+    it('uses separate stores per context', () => {
         const ctx = RequestContext.empty();
         const ctx2 = RequestContext.empty();
 
-        await cache.set(ctx, 'test', 1);
-        await cache.set(ctx2, 'test', 2);
+        cache.set(ctx, 'test', 1);
+        cache.set(ctx2, 'test', 2);
 
-        expect(await cache.get(ctx, 'test')).toBe(1);
-        expect(await cache.get(ctx2, 'test')).toBe(2);
+        expect(cache.get(ctx, 'test')).toBe(1);
+        expect(cache.get(ctx2, 'test')).toBe(2);
     });
 });
