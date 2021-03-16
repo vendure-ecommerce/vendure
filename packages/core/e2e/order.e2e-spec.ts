@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
     defaultShippingCalculator,
@@ -20,6 +21,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import {
     failsToSettlePaymentMethod,
     onTransitionSpy,
+    partialPaymentMethod,
     singleStageRefundablePaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
@@ -62,6 +64,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
+    AddPaymentToOrder,
     ApplyCouponCode,
     DeletionResult,
     GetActiveOrder,
@@ -90,6 +93,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    ADD_PAYMENT,
     APPLY_COUPON_CODE,
     GET_ACTIVE_ORDER,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
@@ -107,6 +111,7 @@ describe('Orders resolver', () => {
                 twoStagePaymentMethod,
                 failsToSettlePaymentMethod,
                 singleStageRefundablePaymentMethod,
+                partialPaymentMethod,
             ],
         },
     });
@@ -138,6 +143,10 @@ describe('Orders resolver', () => {
                     {
                         name: singleStageRefundablePaymentMethod.code,
                         handler: { code: singleStageRefundablePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: partialPaymentMethod.code,
+                        handler: { code: partialPaymentMethod.code, arguments: [] },
                     },
                 ],
             },
@@ -1713,9 +1722,119 @@ describe('Orders resolver', () => {
         });
     });
 
+    describe('multiple payments', () => {
+        const PARTIAL_PAYMENT_AMOUNT = 1000;
+        let orderId: string;
+        let orderTotalWithTax: number;
+        let payment1Id: string;
+        let payment2Id: string;
+
+        beforeAll(async () => {
+            const result = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[1].emailAddress,
+                password,
+            );
+            orderId = result.orderId;
+        });
+
+        it('adds a partial payment', async () => {
+            await proceedToArrangingPayment(shopClient);
+            const { addPaymentToOrder: order } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: partialPaymentMethod.code,
+                    metadata: {
+                        amount: PARTIAL_PAYMENT_AMOUNT,
+                    },
+                },
+            });
+            orderGuard.assertSuccess(order);
+            orderTotalWithTax = order.totalWithTax;
+
+            expect(order.state).toBe('ArrangingPayment');
+            expect(order.payments?.length).toBe(1);
+            expect(omit(order.payments![0], ['id'])).toEqual({
+                amount: PARTIAL_PAYMENT_AMOUNT,
+                metadata: {
+                    public: {
+                        amount: PARTIAL_PAYMENT_AMOUNT,
+                    },
+                },
+                method: partialPaymentMethod.code,
+                state: 'Settled',
+                transactionId: '12345',
+            });
+            payment1Id = order.payments![0].id;
+        });
+
+        it('adds another payment to make up order totalWithTax', async () => {
+            const { addPaymentToOrder: order } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: singleStageRefundablePaymentMethod.code,
+                    metadata: {},
+                },
+            });
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentSettled');
+            expect(order.payments?.length).toBe(2);
+            expect(omit(order.payments![1], ['id'])).toEqual({
+                amount: orderTotalWithTax - PARTIAL_PAYMENT_AMOUNT,
+                metadata: {},
+                method: singleStageRefundablePaymentMethod.code,
+                state: 'Settled',
+                transactionId: '12345',
+            });
+            payment2Id = order.payments![1].id;
+        });
+
+        it('refunding order with multiple payments', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(
+                REFUND_ORDER,
+                {
+                    input: {
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                        shipping: order!.shipping,
+                        adjustment: 0,
+                        reason: 'foo',
+                        paymentId: payment1Id,
+                    },
+                },
+            );
+            refundGuard.assertSuccess(refundOrder);
+            expect(refundOrder.total).toBe(PARTIAL_PAYMENT_AMOUNT);
+
+            const { order: orderWithPayments } = await adminClient.query<
+                GetOrderWithPayments.Query,
+                GetOrderWithPayments.Variables
+            >(GET_ORDER_WITH_PAYMENTS, {
+                id: orderId,
+            });
+
+            expect(orderWithPayments?.payments![0].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments![0].refunds[0].total).toBe(PARTIAL_PAYMENT_AMOUNT);
+
+            expect(orderWithPayments?.payments![1].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
+                orderTotalWithTax - PARTIAL_PAYMENT_AMOUNT,
+            );
+        });
+    });
+
     describe('issues', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/639
         it('returns fulfillments for Order with no lines', async () => {
+            await shopClient.asAnonymousUser();
             // Apply a coupon code just to create an active order with no OrderLines
             await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
                 couponCode: 'TEST',
@@ -1992,6 +2111,10 @@ const GET_ORDER_WITH_PAYMENTS = gql`
                 id
                 errorMessage
                 metadata
+                refunds {
+                    id
+                    total
+                }
             }
         }
     }

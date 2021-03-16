@@ -49,6 +49,29 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
 });
 
 /**
+ * A method that can be used to pay for only part of the order (allowing us to test multiple payments
+ * per order).
+ */
+export const partialPaymentMethod = new PaymentMethodHandler({
+    code: 'partial-payment-method',
+    description: [{ languageCode: LanguageCode.en, value: 'Partial Payment Method' }],
+    args: {},
+    createPayment: (ctx, order, amount, args, metadata) => {
+        return {
+            amount: metadata.amount,
+            state: 'Settled',
+            transactionId: '12345',
+            metadata: { public: metadata },
+        };
+    },
+    settlePayment: () => {
+        return {
+            success: true,
+        };
+    },
+});
+
+/**
  * A payment method which includes a createRefund method.
  */
 export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({

@@ -6120,7 +6120,15 @@ export type GetOrderWithPaymentsQueryVariables = Exact<{
 
 export type GetOrderWithPaymentsQuery = {
     order?: Maybe<
-        Pick<Order, 'id'> & { payments?: Maybe<Array<Pick<Payment, 'id' | 'errorMessage' | 'metadata'>>> }
+        Pick<Order, 'id'> & {
+            payments?: Maybe<
+                Array<
+                    Pick<Payment, 'id' | 'errorMessage' | 'metadata'> & {
+                        refunds: Array<Pick<Refund, 'id' | 'total'>>;
+                    }
+                >
+            >;
+        }
     >;
 };
 
@@ -8297,6 +8305,13 @@ export namespace GetOrderWithPayments {
     export type Order = NonNullable<GetOrderWithPaymentsQuery['order']>;
     export type Payments = NonNullable<
         NonNullable<NonNullable<GetOrderWithPaymentsQuery['order']>['payments']>[number]
+    >;
+    export type Refunds = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetOrderWithPaymentsQuery['order']>['payments']>[number]
+            >['refunds']
+        >[number]
     >;
 }
 

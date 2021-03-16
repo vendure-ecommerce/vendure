@@ -9,6 +9,7 @@ import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion } from '../../common/error/error-result';
+import { InternalServerError } from '../../common/error/errors';
 import {
     PaymentStateTransitionError,
     RefundStateTransitionError,
@@ -16,6 +17,7 @@ import {
 } from '../../common/error/generated-graphql-admin-errors';
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
+import { idsAreEqual } from '../../common/utils';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
@@ -174,6 +176,11 @@ export class PaymentService {
         return payment;
     }
 
+    /**
+     * Creates a Refund against the specified Payment. If the amount to be refunded exceeds the value of the
+     * specified Payment (in the case of multiple payments on a single Order), then the remaining outstanding
+     * refund amount will be refunded against the next available Payment from the Order.
+     */
     async createRefund(
         ctx: RequestContext,
         input: RefundOrderInput,
@@ -185,46 +192,72 @@ export class PaymentService {
             ctx,
             payment.method,
         );
-        const itemAmount = summate(items, 'proratedUnitPriceWithTax');
-        const refundAmount = itemAmount + input.shipping + input.adjustment;
-        let refund = new Refund({
-            payment,
-            orderItems: items,
-            items: itemAmount,
-            reason: input.reason,
-            adjustment: input.adjustment,
-            shipping: input.shipping,
-            total: refundAmount,
-            method: payment.method,
-            state: 'Pending',
-            metadata: {},
+        const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
+            relations: ['payments', 'payments.refunds'],
         });
-        const createRefundResult = await handler.createRefund(
-            ctx,
-            input,
-            refundAmount,
-            order,
-            payment,
-            paymentMethod.handler.args,
-        );
-        if (createRefundResult) {
-            refund.transactionId = createRefundResult.transactionId || '';
-            refund.metadata = createRefundResult.metadata || {};
-        }
-        refund = await this.connection.getRepository(ctx, Refund).save(refund);
-        if (createRefundResult) {
-            const fromState = refund.state;
-            try {
-                await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
-            } catch (e) {
-                return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
+        const existingRefunds =
+            orderWithRefunds.payments?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[]) ??
+            [];
+        const itemAmount = summate(items, 'proratedUnitPriceWithTax');
+        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        const refundedPaymentIds: ID[] = [];
+        let primaryRefund: Refund;
+        let refundOutstanding = refundTotal - summate(existingRefunds, 'total');
+        do {
+            const paymentToRefund =
+                refundedPaymentIds.length === 0
+                    ? payment
+                    : orderWithRefunds.payments.find(p => !refundedPaymentIds.includes(p.id));
+            if (!paymentToRefund) {
+                throw new InternalServerError(`Could not find a Payment to refund`);
             }
-            await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
-            this.eventBus.publish(
-                new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
+            const total = Math.min(paymentToRefund.amount, refundOutstanding);
+            let refund = new Refund({
+                payment: paymentToRefund,
+                total,
+                orderItems: items,
+                items: itemAmount,
+                reason: input.reason,
+                adjustment: input.adjustment,
+                shipping: input.shipping,
+                method: payment.method,
+                state: 'Pending',
+                metadata: {},
+            });
+            const createRefundResult = await handler.createRefund(
+                ctx,
+                input,
+                total,
+                order,
+                paymentToRefund,
+                paymentMethod.handler.args,
             );
-        }
-        return refund;
+            if (createRefundResult) {
+                refund.transactionId = createRefundResult.transactionId || '';
+                refund.metadata = createRefundResult.metadata || {};
+            }
+            refund = await this.connection.getRepository(ctx, Refund).save(refund);
+            if (createRefundResult) {
+                const fromState = refund.state;
+                try {
+                    await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+                } catch (e) {
+                    return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
+                }
+                await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
+                this.eventBus.publish(
+                    new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
+                );
+            }
+            if (idsAreEqual(paymentToRefund.id, payment.id)) {
+                primaryRefund = refund;
+            }
+            existingRefunds.push(refund);
+            refundedPaymentIds.push(paymentToRefund.id);
+            refundOutstanding = refundTotal - summate(existingRefunds, 'total');
+        } while (0 < refundOutstanding);
+        // tslint:disable-next-line:no-non-null-assertion
+        return primaryRefund!;
     }
 
     private mergePaymentMetadata(m1: PaymentMetadata, m2?: PaymentMetadata): PaymentMetadata {
