@@ -2,13 +2,22 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../../entity/facet/facet.entity';
+import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Facet')
 export class FacetEntityResolver {
-    constructor(private facetValueService: FacetValueService) {}
+    constructor(
+        private facetValueService: FacetValueService,
+        private localeStringHydrator: LocaleStringHydrator,
+    ) {}
+
+    @ResolveField()
+    name(@Ctx() ctx: RequestContext, @Parent() facetValue: FacetValue): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, facetValue, 'name');
+    }
 
     @ResolveField()
     async values(@Ctx() ctx: RequestContext, @Parent() facet: Facet): Promise<FacetValue[]> {

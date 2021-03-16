@@ -8,6 +8,7 @@ import { idsAreEqual } from '../../../common/utils';
 import { Asset, Channel, FacetValue, Product, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
+import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
@@ -18,7 +19,16 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductVariant')
 export class ProductVariantEntityResolver {
-    constructor(private productVariantService: ProductVariantService, private assetService: AssetService) {}
+    constructor(
+        private productVariantService: ProductVariantService,
+        private assetService: AssetService,
+        private localeStringHydrator: LocaleStringHydrator,
+    ) {}
+
+    @ResolveField()
+    async name(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, productVariant, 'name');
+    }
 
     @ResolveField()
     async product(

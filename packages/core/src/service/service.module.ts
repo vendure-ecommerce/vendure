@@ -14,6 +14,7 @@ import { CustomFieldRelationService } from './helpers/custom-field-relation/cust
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
+import { LocaleStringHydrator } from './helpers/locale-string-hydrator/locale-string-hydrator';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
 import { OrderModifier } from './helpers/order-modifier/order-modifier';
@@ -113,10 +114,10 @@ const helpers = [
     ExternalAuthenticationService,
     TransactionalConnection,
     CustomFieldRelationService,
+    LocaleStringHydrator,
 ];
 
 let defaultTypeOrmModule: DynamicModule;
-let workerTypeOrmModule: DynamicModule;
 
 /**
  * The ServiceCoreModule is imported internally by the ServiceModule. It is arranged in this way so that

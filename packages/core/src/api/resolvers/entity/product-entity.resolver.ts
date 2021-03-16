@@ -10,6 +10,7 @@ import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
@@ -28,7 +29,23 @@ export class ProductEntityResolver {
         private productOptionGroupService: ProductOptionGroupService,
         private assetService: AssetService,
         private productService: ProductService,
+        private localeStringHydrator: LocaleStringHydrator,
     ) {}
+
+    @ResolveField()
+    name(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'name');
+    }
+
+    @ResolveField()
+    slug(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'slug');
+    }
+
+    @ResolveField()
+    description(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'description');
+    }
 
     @ResolveField()
     async variants(

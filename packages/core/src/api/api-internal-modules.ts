@@ -36,6 +36,7 @@ import { ZoneResolver } from './resolvers/admin/zone.resolver';
 import { AdministratorEntityResolver } from './resolvers/entity/administrator-entity.resolver';
 import { AssetEntityResolver } from './resolvers/entity/asset-entity.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
+import { CountryEntityResolver } from './resolvers/entity/country-entity.resolver';
 import {
     CustomerAdminEntityResolver,
     CustomerEntityResolver,
@@ -112,6 +113,7 @@ const shopResolvers = [
 
 export const entityResolvers = [
     CollectionEntityResolver,
+    CountryEntityResolver,
     CustomerEntityResolver,
     CustomerGroupEntityResolver,
     FacetEntityResolver,
