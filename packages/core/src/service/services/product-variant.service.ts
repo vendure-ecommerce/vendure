@@ -13,6 +13,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ForbiddenError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -62,6 +63,7 @@ export class ProductVariantService {
         private channelService: ChannelService,
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
+        private requestCache: RequestContextCacheService,
     ) {}
 
     async findAll(
@@ -488,6 +490,53 @@ export class ProductVariantService {
         return {
             result: DeletionResult.DELETED,
         };
+    }
+
+    /**
+     * This method is intended to be used by the ProductVariant GraphQL entity resolver to resolve the
+     * price-related fields which need to be populated at run-time using the `applyChannelPriceAndTax`
+     * method.
+     *
+     * Is optimized to make as few DB calls as possible using caching based on the open request.
+     */
+    async hydratePriceFields<F extends 'currencyCode' | 'price' | 'priceWithTax' | 'taxRateApplied'>(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        priceField: F,
+    ): Promise<ProductVariant[F]> {
+        const cacheKey = `hydrate-variant-price-fields-${variant.id}`;
+        let populatePricesPromise = this.requestCache.get<Promise<ProductVariant>>(ctx, cacheKey);
+
+        if (!populatePricesPromise) {
+            populatePricesPromise = new Promise(async (resolve, reject) => {
+                try {
+                    if (!variant.productVariantPrices?.length) {
+                        const variantWithPrices = await this.connection.getEntityOrThrow(
+                            ctx,
+                            ProductVariant,
+                            variant.id,
+                            { relations: ['productVariantPrices'] },
+                        );
+                        variant.productVariantPrices = variantWithPrices.productVariantPrices;
+                    }
+                    if (!variant.taxCategory) {
+                        const variantWithTaxCategory = await this.connection.getEntityOrThrow(
+                            ctx,
+                            ProductVariant,
+                            variant.id,
+                            { relations: ['taxCategory'] },
+                        );
+                        variant.taxCategory = variantWithTaxCategory.taxCategory;
+                    }
+                    resolve(await this.applyChannelPriceAndTax(variant, ctx));
+                } catch (e) {
+                    reject(e);
+                }
+            });
+            this.requestCache.set(ctx, cacheKey, populatePricesPromise);
+        }
+        const hydratedVariant = await populatePricesPromise;
+        return hydratedVariant[priceField];
     }
 
     /**
