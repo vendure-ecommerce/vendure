@@ -3,6 +3,7 @@ import { Request } from 'express';
 import * as path from 'path';
 import { Readable, Stream } from 'stream';
 
+import { getAssetUrlPrefixFn } from './common';
 import { loggerCtx } from './constants';
 import { AssetServerOptions } from './types';
 
@@ -94,11 +95,12 @@ export interface S3Config {
 export function configureS3AssetStorage(s3Config: S3Config) {
     return (options: AssetServerOptions) => {
         const { assetUrlPrefix, route } = options;
+        const prefixFn = getAssetUrlPrefixFn(options);
         const toAbsoluteUrlFn = (request: Request, identifier: string): string => {
             if (!identifier) {
                 return '';
             }
-            const prefix = assetUrlPrefix || `${request.protocol}://${request.get('host')}/${route}/`;
+            const prefix = prefixFn(request, identifier);
             return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
         };
         return new S3AssetStorageStrategy(s3Config, toAbsoluteUrlFn);

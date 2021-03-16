@@ -1,4 +1,4 @@
-import { AssetNamingStrategy, AssetStorageStrategy } from '@vendure/core';
+import { AssetNamingStrategy, AssetStorageStrategy, RequestContext } from '@vendure/core';
 
 /**
  * @description
@@ -56,13 +56,15 @@ export interface AssetServerOptions {
     assetUploadDir: string; // TODO: this is strategy-specific and should be moved out of the global options
     /**
      * @description
-     * The complete URL prefix of the asset files. For example, "https://demo.vendure.io/assets/"
+     * The complete URL prefix of the asset files. For example, "https://demo.vendure.io/assets/". A
+     * function can also be provided to handle more complex cases, such as serving multiple domains
+     * from a single server. In this case, the function should return a string url prefix.
      *
      * If not provided, the plugin will attempt to guess based off the incoming
      * request and the configured route. However, in all but the simplest cases,
      * this guess may not yield correct results.
      */
-    assetUrlPrefix?: string;
+    assetUrlPrefix?: string | ((ctx: RequestContext, identifier: string) => string);
     /**
      * @description
      * The max width in pixels of a generated preview image.
