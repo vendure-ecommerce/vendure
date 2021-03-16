@@ -188,10 +188,6 @@ export class PaymentService {
         items: OrderItem[],
         payment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
-        const { paymentMethod, handler } = await this.paymentMethodService.getMethodAndOperations(
-            ctx,
-            payment.method,
-        );
         const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
             relations: ['payments', 'payments.refunds'],
         });
@@ -224,6 +220,10 @@ export class PaymentService {
                 state: 'Pending',
                 metadata: {},
             });
+            const { paymentMethod, handler } = await this.paymentMethodService.getMethodAndOperations(
+                ctx,
+                paymentToRefund.method,
+            );
             const createRefundResult = await handler.createRefund(
                 ctx,
                 input,
