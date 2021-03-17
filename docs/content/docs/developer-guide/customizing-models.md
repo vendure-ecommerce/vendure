@@ -163,8 +163,8 @@ Product: [
 Some custom fields may be used internally in your business logic, or for integration with external systems. In this case the can restrict access to the information they contain. In this example, the Customer entity has an externalId relating to an external integration. 
 
 * `public: false` means that it will not be exposed via the Shop API.
-* `readonly: true` means it cannot be updated via the Admin API. It can only be changed programmatically in plugin code.
-* `internal: false` - means the field _will_ be exposed via the Admin API and will also appear (in read-only form) in the Admin UI. Internal custom fields are useful for purely internal implementation details.
+* `readonly: true` means it will be exposed, but cannot be updated via the Admin API. It can only be changed programmatically in plugin code.
+* `internal: false` - means the field _will not_ be exposed via either the Shop or Admin GraphQL APIs. Internal custom fields are useful for purely internal implementation details.
 
 ```TypeScript
 Customer: [
