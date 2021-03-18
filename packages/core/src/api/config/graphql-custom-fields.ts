@@ -312,7 +312,8 @@ export function addOrderLineCustomFieldsInput(
     orderLineCustomFields: CustomFieldConfig[],
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    if (!orderLineCustomFields || orderLineCustomFields.length === 0) {
+    const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
+    if (!publicCustomFields || publicCustomFields.length === 0) {
         return schema;
     }
     const schemaConfig = schema.toConfig();
@@ -320,7 +321,6 @@ export function addOrderLineCustomFieldsInput(
     if (!mutationType) {
         return schema;
     }
-    const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
         fields: publicCustomFields.reduce((fields, field) => {
