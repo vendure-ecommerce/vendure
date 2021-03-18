@@ -320,9 +320,10 @@ export function addOrderLineCustomFieldsInput(
     if (!mutationType) {
         return schema;
     }
+    const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
-        fields: orderLineCustomFields.reduce((fields, field) => {
+        fields: publicCustomFields.reduce((fields, field) => {
             const name = getGraphQlInputName(field);
             // tslint:disable-next-line:no-non-null-assertion
             const primitiveType = schema.getType(getGraphQlInputType(field))!;

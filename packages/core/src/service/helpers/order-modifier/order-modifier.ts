@@ -456,7 +456,14 @@ export class OrderModifier {
             // of every property of an existing customFields object being null.
             return Object.values(existingCustomFields).every(v => v === null);
         }
-        return JSON.stringify(inputCustomFields) === JSON.stringify(existingCustomFields);
+        for (const [key, value] of Object.entries(existingCustomFields || {})) {
+            const valuesMatch = JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(value);
+            const undefinedMatchesNull = value === null && inputCustomFields?.[key] === undefined;
+            if (!valuesMatch && !undefinedMatchesNull) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private async getProductVariantOrThrow(
