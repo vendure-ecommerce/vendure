@@ -86,6 +86,7 @@ export type ID = string | number;
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ * relation     | many-to-one / many-to-many relation   | As specified in config
  *
  * Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
  * are available for that custom field.
