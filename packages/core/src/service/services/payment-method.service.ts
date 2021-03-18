@@ -134,12 +134,13 @@ export class PaymentMethodService {
         handler: PaymentMethodHandler;
         checker: PaymentMethodEligibilityChecker | null;
     }> {
-        const paymentMethod = await this.connection.getRepository(ctx, PaymentMethod).findOne({
-            where: {
-                code: method,
-                enabled: true,
-            },
-        });
+        const paymentMethod = await this.connection
+            .getRepository(ctx, PaymentMethod)
+            .createQueryBuilder('method')
+            .leftJoin('method.channels', 'channel')
+            .where('method.code = :code', { code: method })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getOne();
         if (!paymentMethod) {
             throw new UserInputError(`error.payment-method-not-found`, { method });
         }
