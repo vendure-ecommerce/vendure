@@ -38,7 +38,7 @@ import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
 import { Country } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
-import { CountryService } from '../../../service';
+import { ActiveOrderService, CountryService } from '../../../service';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
@@ -55,6 +55,7 @@ export class ShopOrderResolver {
         private customerService: CustomerService,
         private sessionService: SessionService,
         private countryService: CountryService,
+        private activeOrderService: ActiveOrderService,
     ) {}
 
     @Query()
@@ -93,7 +94,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async activeOrder(@Ctx() ctx: RequestContext): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.findOne(ctx, sessionOrder.id);
             } else {
@@ -145,7 +146,7 @@ export class ShopOrderResolver {
         @Args() args: MutationSetOrderShippingAddressArgs,
     ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setShippingAddress(ctx, sessionOrder.id, args.input);
             }
@@ -161,7 +162,7 @@ export class ShopOrderResolver {
         @Args() args: MutationSetOrderBillingAddressArgs,
     ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setBillingAddress(ctx, sessionOrder.id, args.input);
             }
@@ -173,7 +174,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async eligibleShippingMethods(@Ctx() ctx: RequestContext): Promise<ShippingMethodQuote[]> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.getEligibleShippingMethods(ctx, sessionOrder.id);
             }
@@ -185,7 +186,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async eligiblePaymentMethods(@Ctx() ctx: RequestContext): Promise<PaymentMethodQuote[]> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.getEligiblePaymentMethods(ctx, sessionOrder.id);
             }
@@ -201,7 +202,7 @@ export class ShopOrderResolver {
         @Args() args: MutationSetOrderShippingMethodArgs,
     ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setShippingMethod(ctx, sessionOrder.id, args.shippingMethodId);
             }
@@ -217,7 +218,7 @@ export class ShopOrderResolver {
         @Args() args: MutationSetOrderCustomFieldsArgs,
     ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.updateCustomFields(ctx, sessionOrder.id, args.input.customFields);
             }
@@ -229,7 +230,7 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async nextOrderStates(@Ctx() ctx: RequestContext): Promise<ReadonlyArray<string>> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx, true);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx, true);
             return this.orderService.getNextOrderStates(sessionOrder);
         }
         return [];
@@ -243,7 +244,7 @@ export class ShopOrderResolver {
         @Args() args: MutationTransitionOrderToStateArgs,
     ): Promise<ErrorResultUnion<TransitionOrderToStateResult, Order> | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx, true);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx, true);
             return await this.orderService.transitionToState(ctx, sessionOrder.id, args.state as OrderState);
         }
     }
@@ -255,7 +256,7 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddItemToOrderArgs,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        const order = await this.getOrderFromContext(ctx, true);
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
         return this.orderService.addItemToOrder(
             ctx,
             order.id,
@@ -275,7 +276,7 @@ export class ShopOrderResolver {
         if (args.quantity === 0) {
             return this.removeOrderLine(ctx, { orderLineId: args.orderLineId });
         }
-        const order = await this.getOrderFromContext(ctx, true);
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
         return this.orderService.adjustOrderLine(
             ctx,
             order.id,
@@ -292,7 +293,7 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOrderLineArgs,
     ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
-        const order = await this.getOrderFromContext(ctx, true);
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderLineId);
     }
 
@@ -302,7 +303,7 @@ export class ShopOrderResolver {
     async removeAllOrderLines(
         @Ctx() ctx: RequestContext,
     ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
-        const order = await this.getOrderFromContext(ctx, true);
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
         return this.orderService.removeAllItemsFromOrder(ctx, order.id);
     }
 
@@ -313,7 +314,7 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationApplyCouponCodeArgs,
     ): Promise<ErrorResultUnion<ApplyCouponCodeResult, Order>> {
-        const order = await this.getOrderFromContext(ctx, true);
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
         return this.orderService.applyCouponCode(ctx, order.id, args.couponCode);
     }
 
@@ -324,7 +325,7 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationApplyCouponCodeArgs,
     ): Promise<Order> {
-        const order = await this.getOrderFromContext(ctx, true);
+        const order = await this.activeOrderService.getOrderFromContext(ctx, true);
         return this.orderService.removeCouponCode(ctx, order.id, args.couponCode);
     }
 
@@ -336,7 +337,7 @@ export class ShopOrderResolver {
         @Args() args: MutationAddPaymentToOrderArgs,
     ): Promise<ErrorResultUnion<AddPaymentToOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 const order = await this.orderService.addPaymentToOrder(ctx, sessionOrder.id, args.input);
                 if (isGraphQlErrorResult(order)) {
@@ -383,7 +384,7 @@ export class ShopOrderResolver {
             if (ctx.activeUserId) {
                 return new AlreadyLoggedInError();
             }
-            const sessionOrder = await this.getOrderFromContext(ctx);
+            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 const customer = await this.customerService.createOrUpdate(ctx, args.input, true);
                 if (isGraphQlErrorResult(customer)) {
@@ -393,39 +394,5 @@ export class ShopOrderResolver {
             }
         }
         return new NoActiveOrderError();
-    }
-
-    private async getOrderFromContext(ctx: RequestContext): Promise<Order | undefined>;
-    private async getOrderFromContext(ctx: RequestContext, createIfNotExists: true): Promise<Order>;
-    private async getOrderFromContext(
-        ctx: RequestContext,
-        createIfNotExists = false,
-    ): Promise<Order | undefined> {
-        if (!ctx.session) {
-            throw new InternalServerError(`error.no-active-session`);
-        }
-        let order = ctx.session.activeOrderId
-            ? await this.orderService.findOne(ctx, ctx.session.activeOrderId)
-            : undefined;
-        if (order && order.active === false) {
-            // edge case where an inactive order may not have been
-            // removed from the session, i.e. the regular process was interrupted
-            await this.sessionService.unsetActiveOrder(ctx, ctx.session);
-            order = undefined;
-        }
-        if (!order) {
-            if (ctx.activeUserId) {
-                order = await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId);
-            }
-
-            if (!order && createIfNotExists) {
-                order = await this.orderService.create(ctx, ctx.activeUserId);
-            }
-
-            if (order) {
-                await this.sessionService.setActiveOrder(ctx, ctx.session, order);
-            }
-        }
-        return order || undefined;
     }
 }

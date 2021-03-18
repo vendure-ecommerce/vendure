@@ -9,6 +9,7 @@ import { TypeOrmLogger } from '../config/logger/typeorm-logger';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 
+import { ActiveOrderService } from './helpers/active-order/active-order.service';
 import { ConfigArgService } from './helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
@@ -115,6 +116,7 @@ const helpers = [
     TransactionalConnection,
     CustomFieldRelationService,
     LocaleStringHydrator,
+    ActiveOrderService,
 ];
 
 let defaultTypeOrmModule: DynamicModule;
