@@ -1,3 +1,25 @@
+## 1.0.0-beta.4 (2021-03-18)
+
+
+#### Fixes
+
+* **asset-server-plugin** Make S3 credentials optional ([56bcbff](https://github.com/vendure-ecommerce/vendure/commit/56bcbff)), closes [#733](https://github.com/vendure-ecommerce/vendure/issues/733)
+* **core** Correctly handle refunds on Orders with multiple Payments ([f4ed0e7](https://github.com/vendure-ecommerce/vendure/commit/f4ed0e7))
+* **core** Filter Promotions on Channel before applying to Order ([0cb29e5](https://github.com/vendure-ecommerce/vendure/commit/0cb29e5))
+* **core** Hide private OrderLine customFields in addItemToOrder ([c2c7f1d](https://github.com/vendure-ecommerce/vendure/commit/c2c7f1d))
+* **core** Payment amount accounts for existing Payments on Order ([e92d2ce](https://github.com/vendure-ecommerce/vendure/commit/e92d2ce))
+* **core** Really correctly handle multiple payment refunds ([ba8d411](https://github.com/vendure-ecommerce/vendure/commit/ba8d411))
+* **core** Resolve all LocaleString fields in GraphQL API ([3ddadc0](https://github.com/vendure-ecommerce/vendure/commit/3ddadc0)), closes [#763](https://github.com/vendure-ecommerce/vendure/issues/763)
+* **core** Resolve all ProductVariant price fields in GraphQL API ([2bd289a](https://github.com/vendure-ecommerce/vendure/commit/2bd289a)), closes [#763](https://github.com/vendure-ecommerce/vendure/issues/763)
+* **ui-devkit** Fix Angular compiler compatibility issue ([05b2b12](https://github.com/vendure-ecommerce/vendure/commit/05b2b12)), closes [#758](https://github.com/vendure-ecommerce/vendure/issues/758)
+
+#### Features
+
+* **asset-server-plugin** Allow assetUrlPrefix to be a function ([10eb014](https://github.com/vendure-ecommerce/vendure/commit/10eb014)), closes [#766](https://github.com/vendure-ecommerce/vendure/issues/766)
+* **core** Add Promotion Channel mutations to Admin API ([ff051ae](https://github.com/vendure-ecommerce/vendure/commit/ff051ae))
+* **core** add promotion state and promotion action-condition dependency ([dd66138](https://github.com/vendure-ecommerce/vendure/commit/dd66138))
+* **core** Allow to pass validationRules to shop and admin GraphQL API ([02a37ec](https://github.com/vendure-ecommerce/vendure/commit/02a37ec))
+
 ## 1.0.0-beta.3 (2021-03-11)
 
 
