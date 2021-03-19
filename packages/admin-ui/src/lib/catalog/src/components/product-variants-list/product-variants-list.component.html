@@ -77,11 +77,18 @@
                                     <clr-input-container>
                                         <label>{{ 'catalog.price' | translate }}</label>
                                         <vdr-currency-input
+                                            *ngIf="!channelPriceIncludesTax"
                                             clrInput
                                             [currencyCode]="variant.currencyCode"
                                             [readonly]="!('UpdateCatalog' | hasPermission)"
-                                            [value]="variantListPrice[variant.id]"
-                                            (valueChange)="updateVariantListPrice($event, variant.id, formGroup)"
+                                            formControlName="price"
+                                        ></vdr-currency-input>
+                                        <vdr-currency-input
+                                            *ngIf="channelPriceIncludesTax"
+                                            clrInput
+                                            [currencyCode]="variant.currencyCode"
+                                            [readonly]="!('UpdateCatalog' | hasPermission)"
+                                            formControlName="priceWithTax"
                                         ></vdr-currency-input>
                                     </clr-input-container>
                                 </div>

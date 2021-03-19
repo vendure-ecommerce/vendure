@@ -59,11 +59,18 @@
             <td class="left align-middle price" [class.disabled]="!formGroup.get('enabled')!.value">
                 <clr-input-container>
                     <vdr-currency-input
+                        *ngIf="!channelPriceIncludesTax"
                         clrInput
                         [currencyCode]="variant.currencyCode"
                         [readonly]="!('UpdateCatalog' | hasPermission)"
-                        [value]="variantListPrice[variant.id]"
-                        (valueChange)="updateVariantListPrice($event, variant.id, formGroup)"
+                        formControlName="price"
+                    ></vdr-currency-input>
+                    <vdr-currency-input
+                        *ngIf="channelPriceIncludesTax"
+                        clrInput
+                        [currencyCode]="variant.currencyCode"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        formControlName="priceWithTax"
                     ></vdr-currency-input>
                 </clr-input-container>
             </td>
