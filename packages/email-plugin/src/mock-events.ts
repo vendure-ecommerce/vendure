@@ -12,6 +12,7 @@ import {
     ProductVariant,
     User,
 } from '@vendure/core';
+import { ShippingLine } from '@vendure/core/dist/entity/shipping-line/shipping-line.entity';
 
 export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
     'ArrangingPayment',
@@ -84,7 +85,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
         subTotalWithTax: 18173,
         shipping: 1000,
         shippingLines: [
-            {
+            new ShippingLine({
                 listPrice: 1000,
                 listPriceIncludesTax: true,
                 taxLines: [{ taxRate: 20, description: 'shipping tax' }],
@@ -94,7 +95,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                     description: 'Express Shipping',
                     id: '2',
                 },
-            },
+            }),
         ],
         surcharges: [],
         shippingAddress: {
@@ -118,6 +119,7 @@ export const mockAccountRegistrationEvent = new AccountRegistrationEvent(
         verified: false,
         authenticationMethods: [
             new NativeAuthenticationMethod({
+                identifier: 'test@test.com',
                 verificationToken: 'MjAxOC0xMS0xM1QxNToxNToxNC42ODda_US2U6UK1WZC7NDAX',
             }),
         ],
