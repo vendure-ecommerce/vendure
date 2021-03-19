@@ -36,7 +36,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
             new OrderLine({
                 id: '5',
                 featuredAsset: {
-                    preview: 'http://localhost:3000/assets/alexandru-acea-686569-unsplash__preview.jpg',
+                    preview: '/mailbox/placeholder-image',
                 },
                 productVariant: new ProductVariant({
                     id: '2',
@@ -63,7 +63,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
             new OrderLine({
                 id: '6',
                 featuredAsset: {
-                    preview: 'http://localhost:3000/assets/vincent-botta-736919-unsplash__preview.jpg',
+                    preview: '/mailbox/placeholder-image',
                 },
                 productVariant: new ProductVariant({
                     id: '4',
