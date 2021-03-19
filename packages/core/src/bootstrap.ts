@@ -18,6 +18,7 @@ import { validateCustomFieldsConfig } from './entity/validate-custom-fields-conf
 import { JobQueueService } from './job-queue/job-queue.service';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
+import { setProcessContext } from './process-context/process-context';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -45,6 +46,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
+    setProcessContext('server');
     const { hostname, port, cors } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
@@ -100,6 +102,7 @@ export async function bootstrapWorker(
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
 
     const appModule = await import('./app.module');
+    setProcessContext('worker');
     DefaultLogger.hideNestBoostrapLogs();
     const workerApp = await NestFactory.createApplicationContext(appModule.AppModule, {
         logger: new Logger(),

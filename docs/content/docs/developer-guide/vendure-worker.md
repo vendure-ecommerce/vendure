@@ -72,3 +72,23 @@ bootstrap(config)
 
 If you are authoring a [Vendure plugin]({{< relref "/docs/plugins" >}}) to implement custom functionality, you can also make use of the worker process in order to handle long-running or computationally-demanding tasks. See the [Plugin Examples]({{< relref "plugin-examples" >}}#running-processes-on-the-worker) page for an example of this.
 
+## ProcessContext
+
+Sometimes your code may need to be aware of whether it is being run on the as part of a server or worker process. In this case you can inject the [ProcessContext]({{< relref "process-context" >}}) provider and query it like this:
+
+```TypeScript
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { ProcessContext } from '@vendure/core';
+
+@Injectable()
+export class MyService implements OnApplicationBootstrap {
+  constructor(private processContext: ProcessContext) {}
+
+  onApplicationBootstrap() {
+    if (this.processContext.isServer) {
+      // code which will only execute when running in
+      // the server process
+    }
+  }
+}
+```

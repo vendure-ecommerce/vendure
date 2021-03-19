@@ -1,12 +1,5 @@
-import {
-    MiddlewareConsumer,
-    Module,
-    NestMiddleware,
-    NestModule,
-    OnApplicationShutdown,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
-import { RequestHandler } from 'express';
 
 import { ApiModule } from './api/api.module';
 import { ConfigModule } from './config/config.module';
@@ -16,6 +9,7 @@ import { HealthCheckModule } from './health-check/health-check.module';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
+import { ProcessContextModule } from './process-context/process-context.module';
 import { ServiceModule } from './service/service.module';
 
 // tslint:disable-next-line:ban-types
@@ -23,6 +17,7 @@ type Middleware = Type<any> | Function;
 
 @Module({
     imports: [
+        ProcessContextModule,
         ConfigModule,
         I18nModule,
         ApiModule,

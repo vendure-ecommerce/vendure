@@ -7,6 +7,7 @@ export * from './event-bus/index';
 export * from './health-check/index';
 export * from './job-queue/index';
 export * from './plugin/index';
+export * from './process-context/index';
 export * from './entity/index';
 export * from './data-import/index';
 export * from './service/index';
