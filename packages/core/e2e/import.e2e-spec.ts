@@ -1,16 +1,27 @@
 import { omit } from '@vendure/common/lib/omit';
+import { User } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 describe('Import resolver', () => {
     const { server, adminClient } = createTestEnvironment({
         ...testConfig,
         customFields: {
-            Product: [{ type: 'string', name: 'pageType' }],
+            Product: [
+                { type: 'string', name: 'pageType' },
+                {
+                    name: 'owner',
+                    public: true,
+                    nullable: true,
+                    type: 'relation',
+                    entity: User,
+                    eager: true,
+                },
+            ],
             ProductVariant: [{ type: 'int', name: 'weight' }],
         },
     });
@@ -58,7 +69,7 @@ describe('Import resolver', () => {
         });
 
         expect(result.importProducts.errors).toEqual([
-            'Invalid Record Length: header length is 16, got 1 on line 8',
+            'Invalid Record Length: header length is 17, got 1 on line 8',
         ]);
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
@@ -100,6 +111,9 @@ describe('Import resolver', () => {
                             }
                             customFields {
                                 pageType
+                                owner {
+                                    id
+                                }
                             }
                             variants {
                                 id
@@ -201,5 +215,10 @@ describe('Import resolver', () => {
         expect(smock.variants[1].options.map(byCode).sort()).toEqual(['beige', 'large']);
         expect(smock.variants[2].options.map(byCode).sort()).toEqual(['navy', 'small']);
         expect(smock.variants[3].options.map(byCode).sort()).toEqual(['large', 'navy']);
+
+        expect(paperStretcher.customFields.owner.id).toBe('T_1');
+        expect(easel.customFields.owner.id).toBe('T_1');
+        expect(pencils.customFields.owner.id).toBe('T_1');
+        expect(smock.customFields.owner.id).toBe('T_1');
     }, 20000);
 });
