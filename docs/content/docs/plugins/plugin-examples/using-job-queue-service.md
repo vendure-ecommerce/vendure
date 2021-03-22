@@ -107,3 +107,46 @@ import { ProductVideoResolver } from './product-video.resolver'
 export class ProductVideoPlugin {}
 ```
 Finally, the `ProductVideoPlugin` brings it all together, extending the GraphQL API, defining the required CustomField to store the transcoded video URL, and registering our service and resolver. The [PluginCommonModule]({{< relref "plugin-common-module" >}}) is imported as it exports the JobQueueService.
+
+## Subscribing to job updates
+
+When creating a new job via `JobQueue.add()`, it is possible to subscribe to updates to that Job (progress and status changes). This allows you, for example, to create resolvers which are able to return the results of a given Job.
+
+In the video transcoding example above, we could modify the `transcodeForProduct()` call to look like this:
+
+```TypeScript
+import { of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+
+@Injectable()
+class ProductVideoService implements OnModuleInit { 
+  // ... omitted
+    
+  transcodeForProduct(productId: ID, videoUrl: string) { 
+    const job = await this.jobQueue.add({ productId, videoUrl }, { retries: 2 });
+    
+    return job.updates().pipe(
+      map(update => {
+        // The returned Observable will emit a value for every update to the job
+        // such as when the `progress` or `status` value changes.
+        Logger.info(`Job ${update.id}: progress: ${update.progress}`);
+        if (update.state === JobState.COMPLETED) {
+          Logger.info(`COMPLETED ${update.id}: ${update.result}`);
+        }
+        return update.result;
+      }),
+      catchError(err => of(err.message)),
+    );
+  }
+}
+```
+
+If you prefer to work with Promises rather than Rxjs Observables, you can also convert the updates to a promise:
+
+```TypeScript
+const job = await this.jobQueue.add({ productId, videoUrl }, { retries: 2 });
+    
+return job.updates().toPromise()
+  .then(/* ... */)
+  .catch(/* ... */);
+```

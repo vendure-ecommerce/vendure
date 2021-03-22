@@ -6,7 +6,7 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { Injector } from '../common';
+import { assertFound, Injector } from '../common';
 import { ConfigService } from '../config/config.service';
 
 import { Job } from './job';
@@ -14,10 +14,16 @@ import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 
 const queuePollInterval = 10;
+const testJobQueueStrategy = new TestingJobQueueStrategy(1, queuePollInterval);
 
 describe('JobQueueService', () => {
     let jobQueueService: JobQueueService;
     let module: TestingModule;
+
+    function getJob(job: Job | string): Promise<Job> {
+        const id = typeof job === 'string' ? job : job.id!;
+        return assertFound(testJobQueueStrategy.findOne(id));
+    }
 
     beforeEach(async () => {
         module = await Test.createTestingModule({
@@ -61,15 +67,15 @@ describe('JobQueueService', () => {
         expect(testJob.state).toBe(JobState.PENDING);
 
         await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.RUNNING);
+        expect((await getJob(testJob)).state).toBe(JobState.RUNNING);
 
         subject.next('yay');
         subject.complete();
 
         await tick();
 
-        expect(testJob.state).toBe(JobState.COMPLETED);
-        expect(testJob.result).toBe('yay');
+        expect((await getJob(testJob)).state).toBe(JobState.COMPLETED);
+        expect((await getJob(testJob)).result).toBe('yay');
     });
 
     it('job marked as failed when exception thrown', async () => {
@@ -86,14 +92,14 @@ describe('JobQueueService', () => {
         expect(testJob.state).toBe(JobState.PENDING);
 
         await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.RUNNING);
+        expect((await getJob(testJob)).state).toBe(JobState.RUNNING);
 
         subject.next('uh oh');
         subject.complete();
         await tick();
 
-        expect(testJob.state).toBe(JobState.FAILED);
-        expect(testJob.error).toBe('uh oh');
+        expect((await getJob(testJob)).state).toBe(JobState.FAILED);
+        expect((await getJob(testJob)).error).toBe('uh oh');
     });
 
     it('job marked as failed when async error thrown', async () => {
@@ -109,8 +115,8 @@ describe('JobQueueService', () => {
         expect(testJob.state).toBe(JobState.PENDING);
 
         await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.FAILED);
-        expect(testJob.error).toBe(err.message);
+        expect((await getJob(testJob)).state).toBe(JobState.FAILED);
+        expect((await getJob(testJob)).error).toBe(err.message);
     });
 
     it('jobs processed in FIFO queue', async () => {
@@ -126,29 +132,33 @@ describe('JobQueueService', () => {
         const testJob2 = await testQueue.add('2');
         const testJob3 = await testQueue.add('3');
 
-        const getStates = () => [testJob1.state, testJob2.state, testJob3.state];
+        const getStates = async () => [
+            (await getJob(testJob1)).state,
+            (await getJob(testJob2)).state,
+            (await getJob(testJob3)).state,
+        ];
 
         await tick(queuePollInterval);
 
-        expect(getStates()).toEqual([JobState.RUNNING, JobState.PENDING, JobState.PENDING]);
+        expect(await getStates()).toEqual([JobState.RUNNING, JobState.PENDING, JobState.PENDING]);
 
         subject.next();
         await tick();
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.PENDING, JobState.PENDING]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.PENDING, JobState.PENDING]);
 
         await tick(queuePollInterval);
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.RUNNING, JobState.PENDING]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.RUNNING, JobState.PENDING]);
 
         subject.next();
         await tick();
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
 
         await tick(queuePollInterval);
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
 
         subject.next();
         await tick();
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
 
         subject.complete();
     });
@@ -171,31 +181,32 @@ describe('JobQueueService', () => {
         const testJob2 = await testQueue.add('2');
         const testJob3 = await testQueue.add('3');
 
-        const getStates = () => [testJob1.state, testJob2.state, testJob3.state];
+        const getStates = async () => [
+            (await getJob(testJob1)).state,
+            (await getJob(testJob2)).state,
+            (await getJob(testJob3)).state,
+        ];
 
         await tick(queuePollInterval);
 
-        expect(getStates()).toEqual([JobState.RUNNING, JobState.RUNNING, JobState.PENDING]);
+        expect(await getStates()).toEqual([JobState.RUNNING, JobState.RUNNING, JobState.PENDING]);
 
         subject.next();
         await tick();
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
 
         await tick(queuePollInterval);
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
 
         subject.next();
         await tick();
-        expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
+        expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
 
         subject.complete();
     });
 
     it('processes existing jobs on start', async () => {
-        const testingJobQueueStrategy = module.get(ConfigService).jobQueueOptions
-            .jobQueueStrategy as TestingJobQueueStrategy;
-
-        await testingJobQueueStrategy.prePopulate([
+        await testJobQueueStrategy.prePopulate([
             new Job<any>({
                 queueName: 'test',
                 data: {},
@@ -215,15 +226,13 @@ describe('JobQueueService', () => {
             },
         });
 
-        await tick();
-
-        const job1 = await testingJobQueueStrategy.findOne('job-1');
-        const job2 = await testingJobQueueStrategy.findOne('job-2');
+        const job1 = await getJob('job-1');
+        const job2 = await getJob('job-2');
         expect(job1?.state).toBe(JobState.COMPLETED);
-        expect(job2?.state).toBe(JobState.PENDING);
+        expect(job2?.state).toBe(JobState.RUNNING);
 
         await tick(queuePollInterval);
-        expect(job2?.state).toBe(JobState.COMPLETED);
+        expect((await getJob('job-2')).state).toBe(JobState.COMPLETED);
     });
 
     it('retries', async () => {
@@ -245,25 +254,25 @@ describe('JobQueueService', () => {
         const testJob = await testQueue.add('hello', { retries: 2 });
 
         await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.RUNNING);
-        expect(testJob.isSettled).toBe(false);
+        expect((await getJob(testJob)).state).toBe(JobState.RUNNING);
+        expect((await getJob(testJob)).isSettled).toBe(false);
 
         subject.next(false);
         await tick();
-        expect(testJob.state).toBe(JobState.RETRYING);
-        expect(testJob.isSettled).toBe(false);
-
-        await tick(queuePollInterval);
-        subject.next(false);
-        await tick();
-        expect(testJob.state).toBe(JobState.RETRYING);
-        expect(testJob.isSettled).toBe(false);
+        expect((await getJob(testJob)).state).toBe(JobState.RETRYING);
+        expect((await getJob(testJob)).isSettled).toBe(false);
 
         await tick(queuePollInterval);
         subject.next(false);
         await tick();
-        expect(testJob.state).toBe(JobState.FAILED);
-        expect(testJob.isSettled).toBe(true);
+        expect((await getJob(testJob)).state).toBe(JobState.RETRYING);
+        expect((await getJob(testJob)).isSettled).toBe(false);
+
+        await tick(queuePollInterval);
+        subject.next(false);
+        await tick();
+        expect((await getJob(testJob)).state).toBe(JobState.FAILED);
+        expect((await getJob(testJob)).isSettled).toBe(true);
     });
 
     it('sets long-running jobs to pending on destroy', async () => {
@@ -304,14 +313,14 @@ describe('JobQueueService', () => {
         expect(testJob.state).toBe(JobState.PENDING);
 
         await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.RUNNING);
+        expect((await getJob(testJob)).state).toBe(JobState.RUNNING);
 
         subject.next('yay');
         subject.complete();
         await tick();
 
-        expect(testJob.state).toBe(JobState.COMPLETED);
-        expect(testJob.result).toBe('yay');
+        expect((await getJob(testJob)).state).toBe(JobState.COMPLETED);
+        expect((await getJob(testJob)).result).toBe('yay');
     });
 
     it('should not start a queue if its name is in the active list', async () => {
@@ -329,12 +338,12 @@ describe('JobQueueService', () => {
         expect(testJob.state).toBe(JobState.PENDING);
 
         await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.PENDING);
+        expect((await getJob(testJob)).state).toBe(JobState.PENDING);
 
         subject.next('yay');
         subject.complete();
 
-        expect(testJob.state).toBe(JobState.PENDING);
+        expect((await getJob(testJob)).state).toBe(JobState.PENDING);
     });
 });
 
@@ -353,7 +362,7 @@ class MockConfigService implements OnApplicationBootstrap, OnModuleDestroy {
     constructor(private moduleRef: ModuleRef) {}
 
     jobQueueOptions = {
-        jobQueueStrategy: new TestingJobQueueStrategy(1, queuePollInterval),
+        jobQueueStrategy: testJobQueueStrategy,
         activeQueues: [],
     };
 

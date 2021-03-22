@@ -1,7 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { JobState } from '@vendure/common/lib/generated-types';
 import { JobQueue, JobQueueService, Logger, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { gql } from 'apollo-server-core';
+import { of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class JobQueueTestService implements OnModuleInit {
@@ -26,13 +29,28 @@ export class JobQueueTestService implements OnModuleInit {
                     }
                 }
                 Logger.info(`Completed job ${job.id}`);
+                return 'Done!';
             },
         });
     }
 
-    async startTask(intervalMs: number, shouldFail: boolean) {
-        await this.myQueue.add({ intervalMs, shouldFail }, { retries: 3 });
-        return true;
+    async startTask(intervalMs: number, shouldFail: boolean, subscribeToResult: boolean) {
+        const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 0 });
+        if (subscribeToResult) {
+            return job.updates({ timeoutMs: 1000 }).pipe(
+                map(update => {
+                    Logger.info(`Job ${update.id}: progress: ${update.progress}`);
+                    if (update.state === JobState.COMPLETED) {
+                        Logger.info(`COMPLETED: ${JSON.stringify(update.result, null, 2)}`);
+                        return update.result;
+                    }
+                    return update.progress;
+                }),
+                catchError(err => of(err.message)),
+            );
+        } else {
+            return 'running in background';
+        }
     }
 }
 
@@ -42,7 +60,7 @@ export class JobQueueTestResolver {
 
     @Mutation()
     startTask(@Args() args: any) {
-        return this.service.startTask(args.intervalMs, args.shouldFail);
+        return this.service.startTask(args.intervalMs, args.shouldFail, args.subscribeToResult);
     }
 }
 
@@ -56,7 +74,7 @@ export class JobQueueTestResolver {
         resolvers: [JobQueueTestResolver],
         schema: gql`
             extend type Mutation {
-                startTask(intervalMs: Int, shouldFail: Boolean!): Boolean!
+                startTask(intervalMs: Int, shouldFail: Boolean!, subscribeToResult: Boolean!): JSON!
             }
         `,
     },
