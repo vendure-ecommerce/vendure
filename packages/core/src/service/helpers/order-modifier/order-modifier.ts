@@ -480,7 +480,7 @@ export class OrderModifier {
         for (const def of customFieldDefs) {
             const key = def.name;
             const existingValue = existingCustomFields?.[key];
-            if (existingValue) {
+            if (existingValue !== undefined) {
                 const valuesMatch =
                     JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(existingValue);
                 const undefinedMatchesNull = existingValue === null && inputCustomFields?.[key] === undefined;
