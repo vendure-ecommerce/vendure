@@ -37,7 +37,7 @@ export class JobQueueTestService implements OnModuleInit {
     async startTask(intervalMs: number, shouldFail: boolean, subscribeToResult: boolean) {
         const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 0 });
         if (subscribeToResult) {
-            return job.updates({ timeoutMs: 1000 }).pipe(
+            return job.updates().pipe(
                 map(update => {
                     Logger.info(`Job ${update.id}: progress: ${update.progress}`);
                     if (update.state === JobState.COMPLETED) {

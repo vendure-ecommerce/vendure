@@ -158,13 +158,14 @@ export class Job<T extends JobData<T> = any> {
         if (this.retries >= this._attempts) {
             this._state = JobState.RETRYING;
         } else {
-            this._state = JobState.FAILED;
+            if (this._state !== JobState.CANCELLED) {
+                this._state = JobState.FAILED;
+            }
             this._settledAt = new Date();
         }
     }
 
     cancel() {
-        this._progress = 0;
         this._settledAt = new Date();
         this._state = JobState.CANCELLED;
     }

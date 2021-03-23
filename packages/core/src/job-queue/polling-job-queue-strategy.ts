@@ -1,6 +1,8 @@
+import { JobState } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Subject, Subscription } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import { interval, race, Subject, Subscription } from 'rxjs';
+import { fromPromise } from 'rxjs/internal-compatibility';
+import { filter, switchMap, take, throttleTime } from 'rxjs/operators';
 
 import { Logger } from '../config/logger/vendure-logger';
 
@@ -41,10 +43,21 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                         await this.jobQueueStrategy.update(nextJob);
                         const onProgress = (job: Job) => this.jobQueueStrategy.update(job);
                         nextJob.on('progress', onProgress);
-                        this.process(nextJob)
+                        const cancellationSignal$ = interval(this.jobQueueStrategy.pollInterval * 5).pipe(
+                            // tslint:disable-next-line:no-non-null-assertion
+                            switchMap(() => this.jobQueueStrategy.findOne(nextJob.id!)),
+                            filter(job => job?.state === JobState.CANCELLED),
+                            take(1),
+                        );
+                        race(fromPromise(this.process(nextJob)), cancellationSignal$)
+                            .toPromise()
                             .then(
                                 result => {
-                                    nextJob.complete(result);
+                                    if (result instanceof Job && result.state === JobState.CANCELLED) {
+                                        nextJob.cancel();
+                                    } else {
+                                        nextJob.complete(result);
+                                    }
                                 },
                                 err => {
                                     nextJob.fail(err);

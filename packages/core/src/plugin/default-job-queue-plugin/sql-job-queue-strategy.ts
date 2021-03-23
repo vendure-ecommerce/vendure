@@ -95,7 +95,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             const job = this.fromRecord(record);
             job.start();
             record.state = JobState.RUNNING;
-            await manager.getRepository(JobRecord).save(record);
+            await manager.getRepository(JobRecord).save(record, { reload: false });
             return job;
         } else {
             return;
@@ -106,7 +106,14 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         if (!this.connectionAvailable(this.connection)) {
             throw new Error('Connection not available');
         }
-        await this.connection.getRepository(JobRecord).save(this.toRecord(job));
+        await this.connection
+            .getRepository(JobRecord)
+            .createQueryBuilder('job')
+            .update()
+            .set(this.toRecord(job))
+            .where('id = :id', { id: job.id })
+            .andWhere('state != :cancelled', { cancelled: JobState.CANCELLED })
+            .execute();
     }
 
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
