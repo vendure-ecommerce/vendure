@@ -12,3 +12,16 @@
     cursor: pointer;
     color: var(--color-primary-600);
 }
+
+::ng-deep .line-promotion {
+     display: flex;
+     justify-content: space-between;
+     padding: 6px 12px;
+     .promotion-amount {
+         margin-left: 12px;
+     }
+    .net-price {
+        font-size: 11px;
+        color: var(--color-text-300);
+    }
+}

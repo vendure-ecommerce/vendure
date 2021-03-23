@@ -34,13 +34,4 @@
         cursor: pointer;
         text-transform: lowercase;
     }
-
-    .line-promotion {
-        display: flex;
-        justify-content: space-between;
-        padding: 6px 12px;
-        .promotion-amount {
-            margin-left: 12px;
-        }
-    }
 }

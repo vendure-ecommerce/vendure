@@ -90,9 +90,12 @@
                             <div class="line-promotion" *ngFor="let discount of discounts">
                                 <a class="promotion-name" [routerLink]="getPromotionLink(discount)">{{
                                     discount.description
-                                }}</a>
+                                    }}</a>
                                 <div class="promotion-amount">
-                                    {{ discount.amount | localeCurrency: order.currencyCode }}
+                                    {{ discount.amountWithTax | localeCurrency: order.currencyCode }}
+                                    <div class="net-price" [title]="'order.net-price' | translate">
+                                        {{ discount.amount | localeCurrency: order.currencyCode }}
+                                    </div>
                                 </div>
                             </div>
                         </vdr-dropdown-menu>
@@ -122,7 +125,10 @@
             </td>
             <ng-container *ngIf="showElided"><td></td></ng-container>
             <td class="clr-align-middle">
-                {{ discount.amount | localeCurrency: order.currencyCode }}
+                {{ discount.amountWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ discount.amount | localeCurrency: order.currencyCode }}
+                </div>
             </td>
         </tr>
         <tr class="sub-total">
