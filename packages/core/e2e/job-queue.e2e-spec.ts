@@ -131,6 +131,15 @@ describe('JobQueue', () => {
         expect(jobs.items.length).toBe(1);
         expect(jobs.items[0].id).toBe(jobId);
     });
+
+    it('subscribe to result of job', async () => {
+        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/run-job/subscribe`;
+        const result = await adminClient.fetch(restControllerUrl);
+
+        expect(await result.text()).toBe('42!');
+        const jobs = await getJobsInTestQueue(JobState.RUNNING);
+        expect(jobs.items.length).toBe(0);
+    });
 });
 
 function sleep(ms: number): Promise<void> {
