@@ -178,6 +178,7 @@ type ShippingMethodQuote {
     id: ID!
     price: Int!
     priceWithTax: Int!
+    code: String!
     name: String!
     description: String!
     "Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult"

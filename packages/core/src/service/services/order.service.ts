@@ -603,6 +603,7 @@ export class OrderService {
                 priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
                 description: eligible.method.description,
                 name: eligible.method.name,
+                code: eligible.method.code,
                 metadata,
             };
         });

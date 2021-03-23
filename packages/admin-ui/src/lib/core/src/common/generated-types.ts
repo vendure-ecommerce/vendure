@@ -3004,6 +3004,7 @@ export type ShippingMethodQuote = {
   id: Scalars['ID'];
   price: Scalars['Int'];
   priceWithTax: Scalars['Int'];
+  code: Scalars['String'];
   name: Scalars['String'];
   description: Scalars['String'];
   /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */

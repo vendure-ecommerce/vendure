@@ -769,6 +769,7 @@ export type ShippingMethodQuote = {
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    code: Scalars['String'];
     name: Scalars['String'];
     description: Scalars['String'];
     /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
@@ -2992,7 +2993,9 @@ export type RemoveItemFromOrderMutation = {
 export type GetShippingMethodsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetShippingMethodsQuery = {
-    eligibleShippingMethods: Array<Pick<ShippingMethodQuote, 'id' | 'price' | 'name' | 'description'>>;
+    eligibleShippingMethods: Array<
+        Pick<ShippingMethodQuote, 'id' | 'code' | 'price' | 'name' | 'description'>
+    >;
 };
 
 export type SetShippingMethodMutationVariables = Exact<{

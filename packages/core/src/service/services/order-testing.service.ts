@@ -93,6 +93,7 @@ export class OrderTestingService {
                     price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
                     priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
                     name: result.method.name,
+                    code: result.method.code,
                     description: result.method.description,
                     metadata: result.result.metadata,
                 };
