@@ -8244,7 +8244,7 @@ export type TestEligibleShippingMethodsQueryVariables = Exact<{
 
 export type TestEligibleShippingMethodsQuery = { testEligibleShippingMethods: Array<(
     { __typename?: 'ShippingMethodQuote' }
-    & Pick<ShippingMethodQuote, 'id' | 'name' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+    & Pick<ShippingMethodQuote, 'id' | 'name' | 'code' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
   )> };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
