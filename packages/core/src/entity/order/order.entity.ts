@@ -1,6 +1,7 @@
 import {
     Adjustment,
     CurrencyCode,
+    Discount,
     OrderAddress,
     OrderTaxSummary,
     TaxLine,
@@ -10,7 +11,6 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
-import { taxPayableOn } from '../../common/tax-utils';
 import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
@@ -25,7 +25,6 @@ import { OrderModification } from '../order-modification/order-modification.enti
 import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
-import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
 
 /**
@@ -110,13 +109,14 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     shippingWithTax: number;
 
     @Calculated()
-    get discounts(): Adjustment[] {
-        const groupedAdjustments = new Map<string, Adjustment>();
+    get discounts(): Discount[] {
+        const groupedAdjustments = new Map<string, Discount>();
         for (const line of this.lines) {
             for (const discount of line.discounts) {
                 const adjustment = groupedAdjustments.get(discount.adjustmentSource);
                 if (adjustment) {
                     adjustment.amount += discount.amount;
+                    adjustment.amountWithTax += discount.amountWithTax;
                 } else {
                     groupedAdjustments.set(discount.adjustmentSource, { ...discount });
                 }
@@ -127,6 +127,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
                 const adjustment = groupedAdjustments.get(discount.adjustmentSource);
                 if (adjustment) {
                     adjustment.amount += discount.amount;
+                    adjustment.amountWithTax += discount.amountWithTax;
                 } else {
                     groupedAdjustments.set(discount.adjustmentSource, { ...discount });
                 }

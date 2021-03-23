@@ -1564,7 +1564,7 @@ export type Order = Node & {
    * @deprecated Use `discounts` instead
    */
   adjustments: Array<Adjustment>;
-  discounts: Array<Adjustment>;
+  discounts: Array<Discount>;
   /** An array of all coupon codes applied to the Order */
   couponCodes: Array<Scalars['String']>;
   /** Promotions applied to the order. Only gets populated after the payment process has completed. */
@@ -3911,7 +3911,16 @@ export type ShippingLine = {
   priceWithTax: Scalars['Int'];
   discountedPrice: Scalars['Int'];
   discountedPriceWithTax: Scalars['Int'];
-  discounts: Array<Adjustment>;
+  discounts: Array<Discount>;
+};
+
+export type Discount = {
+  __typename?: 'Discount';
+  adjustmentSource: Scalars['String'];
+  type: AdjustmentType;
+  description: Scalars['String'];
+  amount: Scalars['Int'];
+  amountWithTax: Scalars['Int'];
 };
 
 export type OrderItem = Node & {
@@ -4012,7 +4021,7 @@ export type OrderLine = Node & {
   lineTax: Scalars['Int'];
   /** @deprecated Use `discounts` instead */
   adjustments: Array<Adjustment>;
-  discounts: Array<Adjustment>;
+  discounts: Array<Discount>;
   taxLines: Array<TaxLine>;
   order: Order;
   customFields?: Maybe<Scalars['JSON']>;

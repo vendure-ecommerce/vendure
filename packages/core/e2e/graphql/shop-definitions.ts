@@ -18,6 +18,7 @@ export const TEST_ORDER_FRAGMENT = gql`
         discounts {
             adjustmentSource
             amount
+            amountWithTax
             description
             type
         }
@@ -36,6 +37,7 @@ export const TEST_ORDER_FRAGMENT = gql`
             discounts {
                 adjustmentSource
                 amount
+                amountWithTax
                 description
                 type
             }
@@ -86,6 +88,7 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             discounts {
                 adjustmentSource
                 amount
+                amountWithTax
                 description
                 type
             }
@@ -93,6 +96,7 @@ export const UPDATED_ORDER_FRAGMENT = gql`
         discounts {
             adjustmentSource
             amount
+            amountWithTax
             description
             type
         }

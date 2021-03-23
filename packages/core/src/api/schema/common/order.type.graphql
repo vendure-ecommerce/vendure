@@ -25,7 +25,7 @@ type Order implements Node {
     surcharges: [Surcharge!]!
     "Order-level adjustments to the order total, such as discounts from promotions"
     adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
-    discounts: [Adjustment!]!
+    discounts: [Discount!]!
     "An array of all coupon codes applied to the Order"
     couponCodes: [String!]!
     "Promotions applied to the order. Only gets populated after the payment process has completed."
@@ -100,7 +100,15 @@ type ShippingLine {
     priceWithTax: Int!
     discountedPrice: Int!
     discountedPriceWithTax: Int!
-    discounts: [Adjustment!]!
+    discounts: [Discount!]!
+}
+
+type Discount {
+    adjustmentSource: String!
+    type: AdjustmentType!
+    description: String!
+    amount: Int!
+    amountWithTax: Int!
 }
 
 type OrderItem implements Node {
@@ -204,7 +212,7 @@ type OrderLine implements Node {
     "The total tax on this line"
     lineTax: Int!
     adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
-    discounts: [Adjustment!]!
+    discounts: [Discount!]!
     taxLines: [TaxLine!]!
     order: Order!
 }

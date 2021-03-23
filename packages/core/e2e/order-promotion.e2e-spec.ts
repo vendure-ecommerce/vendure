@@ -353,7 +353,7 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.totalWithTax).toBe(0);
             expect(adjustOrderLine!.discounts[0].description).toBe('Free if order total greater than 100');
-            expect(adjustOrderLine!.discounts[0].amount).toBe(-12000);
+            expect(adjustOrderLine!.discounts[0].amountWithTax).toBe(-12000);
 
             await deletePromotion(promotion.id);
         });
@@ -401,7 +401,7 @@ describe('Promotions applied to Orders', () => {
             expect(res2!.discounts[0].description).toBe(
                 'Free if order contains 2 items with Sale facet value',
             );
-            expect(res2!.discounts[0].amount).toBe(-1320);
+            expect(res2!.discounts[0].amountWithTax).toBe(-1320);
 
             await deletePromotion(promotion.id);
         });
@@ -452,7 +452,7 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.total).toBe(0);
             expect(adjustOrderLine!.discounts[0].description).toBe('Free if buying 3 or more offer products');
-            expect(adjustOrderLine!.discounts[0].amount).toBe(-13200);
+            expect(adjustOrderLine!.discounts[0].amountWithTax).toBe(-13200);
 
             await deletePromotion(promotion.id);
         });
@@ -490,7 +490,7 @@ describe('Promotions applied to Orders', () => {
             expect(addItemToOrder!.totalWithTax).toBe(0);
             expect(addItemToOrder!.discounts.length).toBe(1);
             expect(addItemToOrder!.discounts[0].description).toBe('Free for group members');
-            expect(addItemToOrder!.discounts[0].amount).toBe(-6000);
+            expect(addItemToOrder!.discounts[0].amountWithTax).toBe(-6000);
 
             await adminClient.query<RemoveCustomersFromGroup.Mutation, RemoveCustomersFromGroup.Variables>(
                 REMOVE_CUSTOMERS_FROM_GROUP,
