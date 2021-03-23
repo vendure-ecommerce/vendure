@@ -344,7 +344,6 @@ describe('Elasticsearch plugin', () => {
                         })),
                     },
                 );
-
                 await awaitRunningJobs(adminClient);
                 const { search: search2 } = await doAdminSearchQuery(adminClient, {
                     term: 'drive',

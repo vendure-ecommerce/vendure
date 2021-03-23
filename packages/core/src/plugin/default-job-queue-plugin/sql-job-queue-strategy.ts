@@ -112,7 +112,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             .update()
             .set(this.toRecord(job))
             .where('id = :id', { id: job.id })
-            .andWhere('state != :cancelled', { cancelled: JobState.CANCELLED })
+            .andWhere('settledAt IS NULL')
             .execute();
     }
 

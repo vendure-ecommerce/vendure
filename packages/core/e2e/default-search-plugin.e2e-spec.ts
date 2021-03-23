@@ -4,7 +4,6 @@ import {
     DefaultJobQueuePlugin,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
-    JobQueueService,
     mergeConfig,
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
