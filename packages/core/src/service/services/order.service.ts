@@ -363,7 +363,7 @@ export class OrderService {
         customFields?: { [key: string]: any },
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        const existingOrderLine = this.orderModifier.getExistingOrderLine(
+        const existingOrderLine = await this.orderModifier.getExistingOrderLine(
             ctx,
             order,
             productVariantId,
@@ -425,6 +425,12 @@ export class OrderService {
         }
         if (customFields != null) {
             orderLine.customFields = customFields;
+            await this.customFieldRelationService.updateRelations(
+                ctx,
+                OrderLine,
+                { customFields },
+                orderLine,
+            );
         }
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,

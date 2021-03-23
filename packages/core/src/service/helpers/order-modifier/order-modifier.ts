@@ -32,6 +32,7 @@ import { PaymentService } from '../../services/payment.service';
 import { ProductVariantService } from '../../services/product-variant.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
+import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
 import { patchEntity } from '../utils/patch-entity';
 import { translateDeep } from '../utils/translate-entity';
@@ -57,6 +58,7 @@ export class OrderModifier {
         private countryService: CountryService,
         private stockMovementService: StockMovementService,
         private productVariantService: ProductVariantService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     /**
@@ -77,18 +79,20 @@ export class OrderModifier {
         return correctedQuantity;
     }
 
-    getExistingOrderLine(
+    async getExistingOrderLine(
         ctx: RequestContext,
         order: Order,
         productVariantId: ID,
         customFields?: { [key: string]: any },
-    ): OrderLine | undefined {
-        return order.lines.find(line => {
-            return (
+    ): Promise<OrderLine | undefined> {
+        for (const line of order.lines) {
+            const match =
                 idsAreEqual(line.productVariant.id, productVariantId) &&
-                this.customFieldsAreEqual(customFields, line.customFields)
-            );
-        });
+                (await this.customFieldsAreEqual(ctx, line, customFields, line.customFields));
+            if (match) {
+                return line;
+            }
+        }
     }
 
     /**
@@ -101,7 +105,7 @@ export class OrderModifier {
         productVariantId: ID,
         customFields?: { [key: string]: any },
     ) {
-        const existingOrderLine = this.getExistingOrderLine(ctx, order, productVariantId, customFields);
+        const existingOrderLine = await this.getExistingOrderLine(ctx, order, productVariantId, customFields);
         if (existingOrderLine) {
             return existingOrderLine;
         }
@@ -115,6 +119,7 @@ export class OrderModifier {
                 customFields,
             }),
         );
+        await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
         const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
             relations: [
                 'items',
@@ -447,20 +452,49 @@ export class OrderModifier {
         });
     }
 
-    private customFieldsAreEqual(
+    private async customFieldsAreEqual(
+        ctx: RequestContext,
+        orderLine: OrderLine,
         inputCustomFields: { [key: string]: any } | null | undefined,
         existingCustomFields?: { [key: string]: any },
-    ): boolean {
+    ): Promise<boolean> {
         if (inputCustomFields == null && typeof existingCustomFields === 'object') {
             // A null value for an OrderLine customFields input is the equivalent
             // of every property of an existing customFields object being null.
             return Object.values(existingCustomFields).every(v => v === null);
         }
-        for (const [key, value] of Object.entries(existingCustomFields || {})) {
-            const valuesMatch = JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(value);
-            const undefinedMatchesNull = value === null && inputCustomFields?.[key] === undefined;
-            if (!valuesMatch && !undefinedMatchesNull) {
-                return false;
+        const customFieldDefs = this.configService.customFields.OrderLine;
+
+        const customFieldRelations = customFieldDefs.filter(d => d.type === 'relation');
+        let lineWithCustomFieldRelations: OrderLine | undefined;
+        if (customFieldRelations.length) {
+            // for relation types, we need to actually query the DB and check if there is an
+            // existing entity assigned.
+            lineWithCustomFieldRelations = await this.connection
+                .getRepository(ctx, OrderLine)
+                .findOne(orderLine.id, {
+                    relations: customFieldRelations.map(r => `customFields.${r.name}`),
+                });
+        }
+
+        for (const def of customFieldDefs) {
+            const key = def.name;
+            const existingValue = existingCustomFields?.[key];
+            if (existingValue) {
+                const valuesMatch =
+                    JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(existingValue);
+                const undefinedMatchesNull = existingValue === null && inputCustomFields?.[key] === undefined;
+                if (!valuesMatch && !undefinedMatchesNull) {
+                    return false;
+                }
+            } else if (def.type === 'relation') {
+                const inputId = `${key}Id`;
+                const inputValue = inputCustomFields?.[inputId];
+                // tslint:disable-next-line:no-non-null-assertion
+                const existingRelation = (lineWithCustomFieldRelations!.customFields as any)[key];
+                if (inputValue && inputValue !== existingRelation?.id) {
+                    return false;
+                }
             }
         }
         return true;

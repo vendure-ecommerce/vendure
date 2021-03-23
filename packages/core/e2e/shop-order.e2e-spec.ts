@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig } from '@vendure/core';
+import { Asset, mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -73,6 +73,7 @@ import {
     SET_CUSTOMER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
+    TEST_ORDER_FRAGMENT,
     TRANSITION_TO_STATE,
     UPDATED_ORDER_FRAGMENT,
 } from './graphql/shop-definitions';
@@ -89,10 +90,14 @@ describe('Shop orders', () => {
                 ],
             },
             customFields: {
-                Order: [{ name: 'giftWrap', type: 'boolean', defaultValue: false }],
+                Order: [
+                    { name: 'giftWrap', type: 'boolean', defaultValue: false },
+                    { name: 'orderImage', type: 'relation', entity: Asset },
+                ],
                 OrderLine: [
                     { name: 'notes', type: 'string' },
                     { name: 'privateField', type: 'string', public: false },
+                    { name: 'lineImage', type: 'relation', entity: Asset },
                 ],
             },
             orderOptions: {
@@ -230,98 +235,226 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines[0].quantity).toBe(3);
         });
 
-        it(
-            'addItemToOrder with private customFields errors',
-            assertThrowsWithMessage(async () => {
-                await shopClient.query<AddItemToOrder.Mutation>(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS, {
-                    productVariantId: 'T_2',
+        describe('OrderLine customFields', () => {
+            const GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS = gql`
+                query {
+                    activeOrder {
+                        lines {
+                            id
+                            customFields {
+                                notes
+                                lineImage {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+            it(
+                'addItemToOrder with private customFields errors',
+                assertThrowsWithMessage(async () => {
+                    await shopClient.query<AddItemToOrder.Mutation>(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS, {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            privateField: 'oh no!',
+                        },
+                    });
+                }, 'Variable "$customFields" got invalid value { privateField: "oh no!" }; Field "privateField" is not defined by type "OrderLineCustomFieldsInput".'),
+            );
+
+            it('addItemToOrder with equal customFields adds quantity to the existing OrderLine', async () => {
+                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note1',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add1);
+                expect(add1!.lines.length).toBe(2);
+                expect(add1!.lines[1].quantity).toBe(1);
+
+                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note1',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add2);
+                expect(add2!.lines.length).toBe(2);
+                expect(add2!.lines[1].quantity).toBe(2);
+
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[1].id,
+                    },
+                );
+            });
+
+            it('addItemToOrder with different customFields adds quantity to a new OrderLine', async () => {
+                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note2',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add1);
+                expect(add1!.lines.length).toBe(2);
+                expect(add1!.lines[1].quantity).toBe(1);
+
+                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note3',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add2);
+                expect(add2!.lines.length).toBe(3);
+                expect(add2!.lines[1].quantity).toBe(1);
+                expect(add2!.lines[2].quantity).toBe(1);
+
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[1].id,
+                    },
+                );
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[2].id,
+                    },
+                );
+            });
+
+            it('addItemToOrder with relation customField', async () => {
+                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImageId: 'T_1',
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(2);
+                expect(addItemToOrder!.lines[1].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[1].customFields.lineImage).toEqual({ id: 'T_1' });
+            });
+
+            it('addItemToOrder with equal relation customField adds to quantity', async () => {
+                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImageId: 'T_1',
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(2);
+                expect(addItemToOrder!.lines[1].quantity).toBe(2);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[1].customFields.lineImage).toEqual({ id: 'T_1' });
+            });
+
+            it('addItemToOrder with different relation customField adds new line', async () => {
+                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImageId: 'T_2',
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(3);
+                expect(addItemToOrder!.lines[2].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[2].customFields.lineImage).toEqual({ id: 'T_2' });
+            });
+
+            it('adjustOrderLine updates relation reference', async () => {
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                const ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS = gql`
+                    mutation($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
+                        adjustOrderLine(
+                            orderLineId: $orderLineId
+                            quantity: $quantity
+                            customFields: $customFields
+                        ) {
+                            ... on Order {
+                                lines {
+                                    id
+                                    customFields {
+                                        notes
+                                        lineImage {
+                                            id
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `;
+                const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS, {
+                    orderLineId: activeOrder.lines[2].id,
                     quantity: 1,
                     customFields: {
-                        privateField: 'oh no!',
+                        lineImageId: 'T_1',
                     },
                 });
-            }, 'Variable "$customFields" got invalid value { privateField: "oh no!" }; Field "privateField" is not defined by type "OrderLineCustomFieldsInput".'),
-        );
 
-        it('addItemToOrder with equal customFields adds quantity to the existing OrderLine', async () => {
-            const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_2',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note1',
+                expect(adjustOrderLine.lines[2].customFields.lineImage).toEqual({ id: 'T_1' });
+
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: activeOrder!.lines[2].id,
                     },
-                },
-            );
-            orderResultGuard.assertSuccess(add1);
-            expect(add1!.lines.length).toBe(2);
-            expect(add1!.lines[1].quantity).toBe(1);
-
-            const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_2',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note1',
+                );
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: activeOrder!.lines[1].id,
                     },
-                },
-            );
-            orderResultGuard.assertSuccess(add2);
-            expect(add2!.lines.length).toBe(2);
-            expect(add2!.lines[1].quantity).toBe(2);
-
-            await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                REMOVE_ITEM_FROM_ORDER,
-                {
-                    orderLineId: add2!.lines[1].id,
-                },
-            );
-        });
-
-        it('addItemToOrder with different customFields adds quantity to a new OrderLine', async () => {
-            const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_3',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note2',
-                    },
-                },
-            );
-            orderResultGuard.assertSuccess(add1);
-            expect(add1!.lines.length).toBe(2);
-            expect(add1!.lines[1].quantity).toBe(1);
-
-            const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_3',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note3',
-                    },
-                },
-            );
-            orderResultGuard.assertSuccess(add2);
-            expect(add2!.lines.length).toBe(3);
-            expect(add2!.lines[1].quantity).toBe(1);
-            expect(add2!.lines[2].quantity).toBe(1);
-
-            await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                REMOVE_ITEM_FROM_ORDER,
-                {
-                    orderLineId: add2!.lines[1].id,
-                },
-            );
-            await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                REMOVE_ITEM_FROM_ORDER,
-                {
-                    orderLineId: add2!.lines[2].id,
-                },
-            );
+                );
+            });
         });
 
         it('addItemToOrder errors when going beyond orderItemsLimit', async () => {
@@ -1428,6 +1561,7 @@ describe('Shop orders', () => {
             const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
 
             expect(activeOrder?.customFields).toEqual({
+                orderImage: null,
                 giftWrap: false,
             });
         });
@@ -1435,17 +1569,19 @@ describe('Shop orders', () => {
         it('setting order custom fields', async () => {
             const { setOrderCustomFields } = await shopClient.query(SET_ORDER_CUSTOM_FIELDS, {
                 input: {
-                    customFields: { giftWrap: true },
+                    customFields: { giftWrap: true, orderImageId: 'T_1' },
                 },
             });
 
             expect(setOrderCustomFields?.customFields).toEqual({
+                orderImage: { id: 'T_1' },
                 giftWrap: true,
             });
 
             const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
 
             expect(activeOrder?.customFields).toEqual({
+                orderImage: { id: 'T_1' },
                 giftWrap: true,
             });
         });
@@ -1481,6 +1617,9 @@ const GET_ORDER_CUSTOM_FIELDS = gql`
             id
             customFields {
                 giftWrap
+                orderImage {
+                    id
+                }
             }
         }
     }
@@ -1493,6 +1632,9 @@ const SET_ORDER_CUSTOM_FIELDS = gql`
                 id
                 customFields {
                     giftWrap
+                    orderImage {
+                        id
+                    }
                 }
             }
             ... on ErrorResult {
