@@ -22,14 +22,41 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
  * };
  * ```
  *
+ * ## Configuration
+ *
+ * It is possible to configure the behaviour of the {@link SqlJobQueueStrategy} by passing options to the static `init()` function:
+ *
+ * @example
+ * ```TypeScript
+ * export const config: VendureConfig = {
+ *   plugins: [
+ *     DefaultJobQueuePlugin.init({
+ *       // The interval in ms between polling for new jobs. The default is 200ms.
+ *       // Using a longer interval reduces load on the database but results in a slight
+ *       // delay in processing jobs.
+ *       pollInterval: 5000,
+ *       // The number of jobs to process concurrently per worker. Defaults to 1.
+ *       concurrency: 2
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
  * @docsCategory JobQueue
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
     entities: [JobRecord],
     configuration: config => {
-        config.jobQueueOptions.jobQueueStrategy = new SqlJobQueueStrategy();
+        const { pollInterval, concurrency } = DefaultJobQueuePlugin.options ?? {};
+        config.jobQueueOptions.jobQueueStrategy = new SqlJobQueueStrategy(concurrency, pollInterval);
         return config;
     },
 })
-export class DefaultJobQueuePlugin {}
+export class DefaultJobQueuePlugin {
+    static options: { pollInterval?: number; concurrency?: number };
+    static init(options: { pollInterval?: number; concurrency?: number }) {
+        DefaultJobQueuePlugin.options = options;
+        return DefaultJobQueuePlugin;
+    }
+}
