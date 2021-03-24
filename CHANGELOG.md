@@ -1,3 +1,39 @@
+## 1.0.0-beta.5 (2021-03-24)
+
+
+#### Fixes
+
+* **admin-ui** Fix buggy price input in ProductVariant list & table ([f2b53ca](https://github.com/vendure-ecommerce/vendure/commit/f2b53ca)), closes [#770](https://github.com/vendure-ecommerce/vendure/issues/770)
+* **admin-ui** Fix display of string results in JobQueue list ([10899f3](https://github.com/vendure-ecommerce/vendure/commit/10899f3))
+* **admin-ui** Make assetPreview pipe handle null inputs ([2c19759](https://github.com/vendure-ecommerce/vendure/commit/2c19759))
+* **core** Correctly compare falsy customField values in OrderLines ([265781c](https://github.com/vendure-ecommerce/vendure/commit/265781c))
+* **core** Fix gql error when OrderLine has only private customFields ([4440fea](https://github.com/vendure-ecommerce/vendure/commit/4440fea))
+* **core** Fix race condition in updating JobRecords ([b446c8f](https://github.com/vendure-ecommerce/vendure/commit/b446c8f))
+* **core** Improve reliability of Job cancellation ([410b4c2](https://github.com/vendure-ecommerce/vendure/commit/410b4c2))
+* **core** Make addPaymentToOrder channel aware ([6338212](https://github.com/vendure-ecommerce/vendure/commit/6338212)), closes [#773](https://github.com/vendure-ecommerce/vendure/issues/773)
+* **core** Save relation custom fields in addItemToOrder mutation ([10d43e8](https://github.com/vendure-ecommerce/vendure/commit/10d43e8)), closes [#760](https://github.com/vendure-ecommerce/vendure/issues/760)
+* **email-plugin** Fix broken images in order-confirmation mock emails ([82eefde](https://github.com/vendure-ecommerce/vendure/commit/82eefde))
+
+#### Features
+
+* **admin-ui** Display Order discounts with & without tax ([ea5a9f2](https://github.com/vendure-ecommerce/vendure/commit/ea5a9f2)), closes [#749](https://github.com/vendure-ecommerce/vendure/issues/749)
+* **admin-ui** Improve German translations ([3497e81](https://github.com/vendure-ecommerce/vendure/commit/3497e81))
+* **core** Add `code` field to ShippingMethodQuote ([847b4e2](https://github.com/vendure-ecommerce/vendure/commit/847b4e2)), closes [#780](https://github.com/vendure-ecommerce/vendure/issues/780)
+* **core** Add CustomerEvent and CustomerAddressEvent ([480de31](https://github.com/vendure-ecommerce/vendure/commit/480de31))
+* **core** Enable population of relational custom fields from CSV ([38611fb](https://github.com/vendure-ecommerce/vendure/commit/38611fb))
+* **core** Include with/without tax amounts on discounts ([2de6bf5](https://github.com/vendure-ecommerce/vendure/commit/2de6bf5)), closes [#749](https://github.com/vendure-ecommerce/vendure/issues/749)
+* **core** Make DefaultJobQueuePlugin configurable ([6373d9f](https://github.com/vendure-ecommerce/vendure/commit/6373d9f))
+* **core** Make JobQueue jobs subscribable ([baba268](https://github.com/vendure-ecommerce/vendure/commit/baba268)), closes [#775](https://github.com/vendure-ecommerce/vendure/issues/775)
+* **core** Reinstate ProcessContext provider ([9e30505](https://github.com/vendure-ecommerce/vendure/commit/9e30505)), closes [#772](https://github.com/vendure-ecommerce/vendure/issues/772)
+* **email-plugin** Fix broken mock events ([9ae47f1](https://github.com/vendure-ecommerce/vendure/commit/9ae47f1)), closes [#771](https://github.com/vendure-ecommerce/vendure/issues/771)
+
+
+### BREAKING CHANGE
+
+* A minor breaking change has been made to the GraphQL API: The `Order.discounts` and
+`OrderLine.discounts` fields now return `amount` and `amountWithTax`. Previously they only had
+`amount`, which was actually the tax-inclusive value. So if you want to show discount amounts with
+tax, use `amountWithTax` and otherwise use `amount`.
 ## 1.0.0-beta.4 (2021-03-18)
 
 
