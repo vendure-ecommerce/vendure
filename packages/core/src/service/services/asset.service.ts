@@ -18,7 +18,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 
 import { RequestContext } from '../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
@@ -363,8 +363,13 @@ export class AssetService {
     /**
      * Create an Asset from a file stream created during data import.
      */
-    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult> {
-        const filePath = stream.path;
+    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult>;
+    async createFromFileStream(stream: Readable, filePath: string): Promise<CreateAssetResult>;
+    async createFromFileStream(
+        stream: ReadStream | Readable,
+        maybeFilePath?: string,
+    ): Promise<CreateAssetResult> {
+        const filePath = stream instanceof ReadStream ? stream.path : maybeFilePath;
         if (typeof filePath === 'string') {
             const filename = path.basename(filePath);
             const mimetype = mime.lookup(filename) || 'application/octet-stream';
