@@ -65,6 +65,9 @@ describe('Collection resolver', () => {
     let electronicsCollection: Collection.Fragment;
     let computersCollection: Collection.Fragment;
     let pearCollection: Collection.Fragment;
+    let electronicsBreadcrumbsCollection: Collection.Fragment;
+    let computersBreadcrumbsCollection: Collection.Fragment;
+    let pearBreadcrumbsCollection: Collection.Fragment;
 
     beforeAll(async () => {
         await server.init({
@@ -276,6 +279,115 @@ describe('Collection resolver', () => {
                 'zubehor-2',
             );
         });
+        it('creates a root collection to became a 1st level collection later #779', async () => {
+            const result = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        assetIds: [assets[0].id, assets[1].id],
+                        featuredAssetId: assets[1].id,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('computers')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Computers Breadcrumbs',
+                                description: '',
+                                slug: 'computers_breadcrumbs',
+                            },
+                        ],
+                    },
+                },
+            );
+
+            computersBreadcrumbsCollection = result.createCollection;
+            expect(computersBreadcrumbsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
+        });
+        it('creates a root collection to be a parent collection for 1st level collection with id greater than child collection #779', async () => {
+            const result = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        assetIds: [assets[0].id, assets[1].id],
+                        featuredAssetId: assets[1].id,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('electronics')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Electronics Breadcrumbs',
+                                description: '',
+                                slug: 'electronics_breadcrumbs',
+                            },
+                        ],
+                    },
+                },
+            );
+
+            electronicsBreadcrumbsCollection = result.createCollection;
+            expect(electronicsBreadcrumbsCollection.parent!.name).toBe(ROOT_COLLECTION_NAME);
+        });
+        it('creates a 2nd level nested collection #779', async () => {
+            const result = await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        parentId: computersBreadcrumbsCollection.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Pear Breadcrumbs',
+                                description: '',
+                                slug: 'pear_breadcrumbs',
+                            },
+                        ],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('pear')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                },
+            );
+            pearBreadcrumbsCollection = result.createCollection;
+            expect(pearBreadcrumbsCollection.parent!.name).toBe(computersBreadcrumbsCollection.name);
+        });
     });
 
     describe('updateCollection', () => {
@@ -416,8 +528,16 @@ describe('Collection resolver', () => {
                 id: 'T_1',
             });
 
-            expect(product?.collections.length).toBe(3);
+            expect(product?.collections.length).toBe(6);
             expect(product?.collections.sort(sortById)).toEqual([
+                {
+                    id: 'T_10',
+                    name: 'Pear Breadcrumbs',
+                    parent: {
+                        id: 'T_8',
+                        name: 'Computers Breadcrumbs',
+                    },
+                },
                 {
                     id: 'T_3',
                     name: 'Electronics',
@@ -440,6 +560,22 @@ describe('Collection resolver', () => {
                     parent: {
                         id: 'T_4',
                         name: 'Computers',
+                    },
+                },
+                {
+                    id: 'T_8',
+                    name: 'Computers Breadcrumbs',
+                    parent: {
+                        id: 'T_1',
+                        name: '__root_collection__',
+                    },
+                },
+                {
+                    id: 'T_9',
+                    name: 'Electronics Breadcrumbs',
+                    parent: {
+                        id: 'T_1',
+                        name: '__root_collection__',
                     },
                 },
             ]);
@@ -589,6 +725,55 @@ describe('Collection resolver', () => {
             ]);
         });
 
+        it('moves a 1st level collection to a new parent to check breadcrumbs', async () => {
+            const result = await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(
+                MOVE_COLLECTION,
+                {
+                    input: {
+                        collectionId: computersBreadcrumbsCollection.id,
+                        parentId: electronicsBreadcrumbsCollection.id,
+                        index: 0,
+                    },
+                },
+            );
+
+            expect(result.moveCollection.parent!.id).toBe(electronicsBreadcrumbsCollection.id);
+
+            const positions = await getChildrenOf(electronicsBreadcrumbsCollection.id);
+            expect(positions.map(i => i.id)).toEqual([computersBreadcrumbsCollection.id]);
+        });
+
+        it('breadcrumbs for collection with ids out of order', async () => {
+            const result = await adminClient.query<
+                GetCollectionBreadcrumbs.Query,
+                GetCollectionBreadcrumbs.Variables
+            >(GET_COLLECTION_BREADCRUMBS, {
+                id: pearBreadcrumbsCollection.id,
+            });
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.breadcrumbs).toEqual([
+                { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+                {
+                    id: electronicsBreadcrumbsCollection.id,
+                    name: electronicsBreadcrumbsCollection.name,
+                    slug: electronicsBreadcrumbsCollection.slug,
+                },
+                {
+                    id: computersBreadcrumbsCollection.id,
+                    name: computersBreadcrumbsCollection.name,
+                    slug: computersBreadcrumbsCollection.slug,
+                },
+                {
+                    id: pearBreadcrumbsCollection.id,
+                    name: pearBreadcrumbsCollection.name,
+                    slug: pearBreadcrumbsCollection.slug,
+                },
+            ]);
+        });
+
         it('alters the position in the current parent 1', async () => {
             await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
                 input: {
@@ -657,7 +842,7 @@ describe('Collection resolver', () => {
         );
 
         it(
-            'throws if attempting to move into a decendant of self',
+            'throws if attempting to move into a descendant of self',
             assertThrowsWithMessage(
                 () =>
                     adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
@@ -774,11 +959,38 @@ describe('Collection resolver', () => {
             });
 
             expect(product!.collections).toEqual([
-                { id: 'T_3', name: 'Electronics' },
-                { id: 'T_4', name: 'Computers' },
-                { id: 'T_5', name: 'Pear' },
-                { id: 'T_8', name: 'Delete Me Parent' },
-                { id: 'T_9', name: 'Delete Me Child' },
+                {
+                    id: 'T_3',
+                    name: 'Electronics',
+                },
+                {
+                    id: 'T_4',
+                    name: 'Computers',
+                },
+                {
+                    id: 'T_5',
+                    name: 'Pear',
+                },
+                {
+                    id: 'T_8',
+                    name: 'Computers Breadcrumbs',
+                },
+                {
+                    id: 'T_9',
+                    name: 'Electronics Breadcrumbs',
+                },
+                {
+                    id: 'T_10',
+                    name: 'Pear Breadcrumbs',
+                },
+                {
+                    id: 'T_11',
+                    name: 'Delete Me Parent',
+                },
+                {
+                    id: 'T_12',
+                    name: 'Delete Me Child',
+                },
             ]);
         });
 
@@ -825,6 +1037,18 @@ describe('Collection resolver', () => {
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_4', name: 'Computers' },
                 { id: 'T_5', name: 'Pear' },
+                {
+                    id: 'T_8',
+                    name: 'Computers Breadcrumbs',
+                },
+                {
+                    id: 'T_9',
+                    name: 'Electronics Breadcrumbs',
+                },
+                {
+                    id: 'T_10',
+                    name: 'Pear Breadcrumbs',
+                },
             ]);
         });
     });
@@ -1353,13 +1577,38 @@ describe('Collection resolver', () => {
                 GetCollectionsForProducts.Variables
             >(GET_COLLECTIONS_FOR_PRODUCTS, { term: 'camera' });
             expect(result.products.items[0].collections).toEqual([
-                { id: 'T_3', name: 'Electronics' },
-                { id: 'T_5', name: 'Pear' },
-                { id: 'T_11', name: 'Photo AND Pear' },
-                { id: 'T_12', name: 'Photo OR Pear' },
-                { id: 'T_14', name: 'contains camera' },
-                { id: 'T_16', name: 'endsWith camera' },
-                { id: 'T_18', name: 'pear electronics' },
+                {
+                    id: 'T_3',
+                    name: 'Electronics',
+                },
+                {
+                    id: 'T_5',
+                    name: 'Pear',
+                },
+                {
+                    id: 'T_9',
+                    name: 'Electronics Breadcrumbs',
+                },
+                {
+                    id: 'T_14',
+                    name: 'Photo AND Pear',
+                },
+                {
+                    id: 'T_15',
+                    name: 'Photo OR Pear',
+                },
+                {
+                    id: 'T_17',
+                    name: 'contains camera',
+                },
+                {
+                    id: 'T_19',
+                    name: 'endsWith camera',
+                },
+                {
+                    id: 'T_21',
+                    name: 'pear electronics',
+                },
             ]);
         });
     });
