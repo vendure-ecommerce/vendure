@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import bcrypt from 'bcrypt';
+import bcrypt from '@node-rs/bcrypt';
 
 const SALT_ROUNDS = 12;
 

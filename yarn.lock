@@ -2942,20 +2942,10 @@
     npmlog "^4.1.2"
     write-file-atomic "^3.0.3"
 
-"@mapbox/node-pre-gyp@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/@mapbox/node-pre-gyp/-/node-pre-gyp-1.0.0.tgz#2b809e701da0f6729b47fe78ad4b9dc187a7d2e5"
-  integrity sha512-mEaiD1CURETR/dBIiJAwz0M0Q0mH3gCW4pPMaIlNt97mdzYUVeqGcTJSamgJpS6Tg4tBHDrOJpjdh5fJTLnyNQ==
-  dependencies:
-    detect-libc "^1.0.3"
-    http-proxy-agent "^4.0.1"
-    mkdirp "^1.0.4"
-    node-fetch "^2.6.1"
-    nopt "^5.0.0"
-    npmlog "^4.1.2"
-    rimraf "^3.0.2"
-    semver "^7.3.4"
-    tar "^6.1.0"
+"@napi-rs/triples@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npm.taobao.org/@napi-rs/triples/download/@napi-rs/triples-1.0.2.tgz#2ce4c6a78568358772008f564ee5009093d20a19"
+  integrity sha1-LOTGp4VoNYdyAI9WTuUAkJPSChk=
 
 "@nestjs/common@7.6.13":
   version "7.6.13"
@@ -3071,6 +3061,76 @@
   integrity sha512-LCekn6qCbeXWlhESCxU1rAbZz33WzDG0lI7Ig0pYC1o5YxJWrkU9y3Y4tNi+jakQ7R6YhTR2D3ox6APxDtA0wA==
   dependencies:
     tslib "^2.0.0"
+
+"@node-rs/bcrypt-android-arm64@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-android-arm64/-/bcrypt-android-arm64-1.2.1.tgz#10dea090ddb7e17a7043452b797d5540188ba4a4"
+  integrity sha512-AlggDQIGKwaDzqFbONsjGhEwTWp4dyPBcv/vwqBq03X0FvoQKobdM619+CYKuzirLQjpTqdqLFS/qrCSTecPGg==
+
+"@node-rs/bcrypt-darwin-arm64@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-darwin-arm64/-/bcrypt-darwin-arm64-1.2.1.tgz#401b3faed43808fc4e4f1da87d39e934ea28cab5"
+  integrity sha512-f2ixoJPbkEsV/+N7uGTQg8HBNm4jX7z4OEmBZX1aSVYs9wHvLIHMIhXvimpOkabfOlemgBW/K30WzkqHu/jogw==
+
+"@node-rs/bcrypt-darwin-x64@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-darwin-x64/-/bcrypt-darwin-x64-1.2.1.tgz#b4b02204ce512a136ed7df21f3ad7c1dee6f4bf5"
+  integrity sha512-5cVEo1tN/9roXTifSWiXY0J1J/8fr2LgETxhVqAv6PBEuxRr6o4FAC0WP0Es4IhhieNn9jFFMVOSO8r/VfsP4A==
+
+"@node-rs/bcrypt-linux-arm-gnueabihf@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-linux-arm-gnueabihf/-/bcrypt-linux-arm-gnueabihf-1.2.1.tgz#405131102ee884bc1bba3a1d45d5f2194cc81d00"
+  integrity sha512-YZYtwr8YNmNvz4zdT0B3kyVufHpiv+8ICT+eWffb5wvOlQUF1VlkQ3vxCpOgZcFcVictHcTwphlnH7IXa1tSsw==
+
+"@node-rs/bcrypt-linux-arm64-gnu@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-linux-arm64-gnu/-/bcrypt-linux-arm64-gnu-1.2.1.tgz#eff0d9bf5bc967a676e45ec8a29758d0d82fbd79"
+  integrity sha512-7lV5yzeLn1a8041lUY/EdHWD6TV8izz74sNdFcidDZJoJVbJRO1DGkM2NLBLt+Ljc8JJXQ2EJWZptSbOJIz2lw==
+
+"@node-rs/bcrypt-linux-x64-gnu@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-linux-x64-gnu/-/bcrypt-linux-x64-gnu-1.2.1.tgz#2c8edcccaa738a2abfd30f9d420880b199f91c43"
+  integrity sha512-G60/0juvTF2c4ttR4pw/jCTvRN3GC0lofacBxPSD0QRPV/KUXdUz7bQAJZM32H9ZrpgFvGblrNTeunMnqNmcAw==
+
+"@node-rs/bcrypt-linux-x64-musl@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-linux-x64-musl/-/bcrypt-linux-x64-musl-1.2.1.tgz#d41219b329baa9186a3a65eb15d29952f8a41913"
+  integrity sha512-dVGbKzpYdRBqL9YGksz98eT5YkPCkTy9fVCZrcAGujwepOds2wWteISwaHYQ3N8IxPO1aGBIAEOusASPQWKOIQ==
+
+"@node-rs/bcrypt-win32-ia32-msvc@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-win32-ia32-msvc/-/bcrypt-win32-ia32-msvc-1.2.1.tgz#192165d2c79aa9c56c930016ad9bd670f6b17ab9"
+  integrity sha512-rRVigbpxlENvv5SGA6Ex1mTFx8aZcJ9Od7b9NkdpG3Gx+WMNcQHy0N3tcjsWTmr3Fvu0bZEZBRCqY+Gd89GNlg==
+
+"@node-rs/bcrypt-win32-x64-msvc@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt-win32-x64-msvc/-/bcrypt-win32-x64-msvc-1.2.1.tgz#8520f38b709d9ed67ac97444af78a4dcf6bf884e"
+  integrity sha512-1eR1nRIE2AdstWRXI692AMpKOPiaAhRlBOt08zOFBeTg/3SW0G/K2xD8rnLK2Lcwu81arOtMZMNygxKUMI+yfA==
+
+"@node-rs/bcrypt@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmjs.org/@node-rs/bcrypt/-/bcrypt-1.2.1.tgz#d76badd8b4fcf18e7dd9f910405b18a644c96652"
+  integrity sha512-HOtT4H7QuOQ+5hX3Yekzafhwcv35Q1S2mYi0CoblLwx8FLozlu4RAGTNdCUMNhVpFJmpRznnQDucFV7/FUctUw==
+  dependencies:
+    "@node-rs/helper" "^1.1.0"
+  optionalDependencies:
+    "@node-rs/bcrypt-android-arm64" "^1.2.1"
+    "@node-rs/bcrypt-darwin-arm64" "^1.2.1"
+    "@node-rs/bcrypt-darwin-x64" "^1.2.1"
+    "@node-rs/bcrypt-linux-arm-gnueabihf" "^1.2.1"
+    "@node-rs/bcrypt-linux-arm64-gnu" "^1.2.1"
+    "@node-rs/bcrypt-linux-x64-gnu" "^1.2.1"
+    "@node-rs/bcrypt-linux-x64-musl" "^1.2.1"
+    "@node-rs/bcrypt-win32-ia32-msvc" "^1.2.1"
+    "@node-rs/bcrypt-win32-x64-msvc" "^1.2.1"
+
+"@node-rs/helper@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.npm.taobao.org/@node-rs/helper/download/@node-rs/helper-1.1.0.tgz#4fcbbebae3b81932d1ff3e431c7cd3886b504742"
+  integrity sha1-T8u+uuO4GTLR/z5DHHzTiGtQR0I=
+  dependencies:
+    "@napi-rs/triples" "^1.0.2"
+    tslib "^2.1.0"
 
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
@@ -3545,11 +3605,6 @@
   integrity sha512-kSjgDMZONiIfSH1Nxcr5JIRMwUetDki63FSQfpTCz8ogF3Ulqm8+mr5f78dUYs6vMiB6gBusQqfQmBvHZj/lwg==
   dependencies:
     "@babel/types" "^7.3.0"
-
-"@types/bcrypt@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/@types/bcrypt/-/bcrypt-3.0.0.tgz#851489a9065a067cb7f3c9cbe4ce9bed8bba0876"
-  integrity sha512-nohgNyv+1ViVcubKBh0+XiNJ3dO8nYu///9aJ4cgSqv70gBL+94SNy/iC2NLzKPT2Zt/QavrOkBVbZRLZmw6NQ==
 
 "@types/body-parser@*", "@types/body-parser@1.19.0":
   version "1.19.0"
@@ -5577,14 +5632,6 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
-
-bcrypt@^5.0.0:
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/bcrypt/-/bcrypt-5.0.1.tgz#f1a2c20f208e2ccdceea4433df0c8b2c54ecdf71"
-  integrity sha512-9BTgmrhZM2t1bNuDtrtIMVSmmxZBrJ71n8Wg+YgdjHuIWYF7SjjmCPZFB+/5i/o/PIeRpwVJR3P+NrpIItUjqw==
-  dependencies:
-    "@mapbox/node-pre-gyp" "^1.0.0"
-    node-addon-api "^3.1.0"
 
 before-after-hook@^2.1.0:
   version "2.1.1"

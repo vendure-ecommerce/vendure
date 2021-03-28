@@ -46,10 +46,10 @@
     "@nestjs/terminus": "7.1.0",
     "@nestjs/testing": "7.6.13",
     "@nestjs/typeorm": "7.1.5",
+    "@node-rs/bcrypt": "^1.2.1",
     "@types/fs-extra": "^9.0.1",
     "@vendure/common": "^1.0.0-beta.5",
     "apollo-server-express": "2.21.0",
-    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.0",
     "commander": "^7.1.0",
@@ -77,7 +77,6 @@
     "typeorm": "0.2.31"
   },
   "devDependencies": {
-    "@types/bcrypt": "^3.0.0",
     "@types/cookie-session": "^2.0.41",
     "@types/csv-parse": "^1.2.2",
     "@types/express": "^4.17.8",
