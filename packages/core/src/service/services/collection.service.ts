@@ -203,7 +203,7 @@ export class CollectionService implements OnModuleInit {
         }
         const pickProps = pick(['id', 'name', 'slug']);
         const ancestors = await this.getAncestors(collection.id, ctx);
-        return [pickProps(rootCollection), ...ancestors.map(pickProps), pickProps(collection)];
+        return [pickProps(rootCollection), ...ancestors.map(pickProps).reverse(), pickProps(collection)];
     }
 
     async getCollectionsByProductId(
@@ -285,7 +285,14 @@ export class CollectionService implements OnModuleInit {
             .getRepository(Collection)
             .findByIds(ancestors.map(c => c.id))
             .then(categories => {
-                return ctx ? categories.map(c => translateDeep(c, ctx.languageCode)) : categories;
+                const resultCategories: Array<Collection | Translated<Collection>> = [];
+                ancestors.forEach(a => {
+                    const category = categories.find(c => c.id === a.id);
+                    if (category) {
+                        resultCategories.push(ctx ? translateDeep(category, ctx.languageCode) : category);
+                    }
+                });
+                return resultCategories;
             });
     }
 
