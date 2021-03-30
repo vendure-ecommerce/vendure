@@ -71,7 +71,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                                 },
                             )
                             .finally(() => {
-                                if (!this.running) {
+                                if (!this.running && nextJob.state !== JobState.PENDING) {
                                     return;
                                 }
                                 nextJob.off('progress', onProgress);
