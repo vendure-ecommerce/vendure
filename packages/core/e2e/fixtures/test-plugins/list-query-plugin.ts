@@ -44,8 +44,20 @@ export class TestEntity extends VendureEntity implements Translatable {
     date: Date;
 
     @Calculated({
-        query: qb => qb.addSelect('description', 'description'),
-        expression: 'LENGTH(description)',
+        query: qb =>
+            qb
+                .leftJoin(
+                    qb1 => {
+                        return qb1
+                            .from(TestEntity, 'entity')
+                            .select('LENGTH(entity.description)', 'deslen')
+                            .addSelect('entity.id', 'eid');
+                    },
+                    't1',
+                    't1.eid = testentity.id',
+                )
+                .addSelect('t1.deslen', 'deslen'),
+        expression: 'deslen',
     })
     get descriptionLength() {
         return this.description.length || 0;
