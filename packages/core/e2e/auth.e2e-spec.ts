@@ -6,8 +6,9 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { ProtectedFieldsPlugin, transactions } from './fixtures/test-plugins/with-protected-field-resolver';
 import {
     CreateAdministrator,
     CreateRole,
@@ -32,7 +33,10 @@ import {
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Authorization & permissions', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment({
+        ...testConfig,
+        plugins: [ProtectedFieldsPlugin],
+    });
 
     beforeAll(async () => {
         await server.init({
@@ -106,7 +110,7 @@ describe('Authorization & permissions', () => {
                 await assertRequestAllowed(GET_PRODUCT_LIST);
             });
 
-            it('cannot uppdate', async () => {
+            it('cannot update', async () => {
                 await assertRequestForbidden<MutationUpdateProductArgs>(UPDATE_PRODUCT, {
                     input: {
                         id: '1',
@@ -172,6 +176,68 @@ describe('Authorization & permissions', () => {
                     }
                 `);
             });
+        });
+    });
+
+    describe('protected field resolvers', () => {
+        let readCatalogAdmin: { identifier: string; password: string };
+        let transactionsAdmin: { identifier: string; password: string };
+
+        const GET_PRODUCT_WITH_TRANSACTIONS = `
+            query GetProductWithTransactions($id: ID!) {
+                product(id: $id) {
+                  id
+                  transactions {
+                      id
+                      amount
+                      description
+                  }
+                }
+            }
+        `;
+
+        beforeAll(async () => {
+            await adminClient.asSuperAdmin();
+            transactionsAdmin = await createAdministratorWithPermissions('Transactions', [
+                Permission.ReadCatalog,
+                transactions.Permission,
+            ]);
+            readCatalogAdmin = await createAdministratorWithPermissions('ReadCatalog', [
+                Permission.ReadCatalog,
+            ]);
+        });
+
+        it('protected field not resolved without permissions', async () => {
+            await adminClient.asUserWithCredentials(readCatalogAdmin.identifier, readCatalogAdmin.password);
+
+            try {
+                const status = await adminClient.query(
+                    gql`
+                        ${GET_PRODUCT_WITH_TRANSACTIONS}
+                    `,
+                    { id: 'T_1' },
+                );
+                fail(`Should have thrown`);
+            } catch (e) {
+                expect(getErrorCode(e)).toBe('FORBIDDEN');
+            }
+        });
+
+        it('protected field is resolved with permissions', async () => {
+            await adminClient.asUserWithCredentials(transactionsAdmin.identifier, transactionsAdmin.password);
+
+            const { product } = await adminClient.query(
+                gql`
+                    ${GET_PRODUCT_WITH_TRANSACTIONS}
+                `,
+                { id: 'T_1' },
+            );
+
+            expect(product.id).toBe('T_1');
+            expect(product.transactions).toEqual([
+                { id: 'T_1', amount: 100, description: 'credit' },
+                { id: 'T_2', amount: -50, description: 'debit' },
+            ]);
         });
     });
 

@@ -70,6 +70,10 @@ export class RequestContextService {
         );
     }
 
+    /**
+     * TODO: Deprecate and remove, since this function is now handled internally in the RequestContext.
+     * @private
+     */
     private userHasRequiredPermissionsOnChannel(
         permissions: Permission[] = [],
         channel?: Channel,

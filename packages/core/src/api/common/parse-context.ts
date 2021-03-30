@@ -17,7 +17,6 @@ export type GraphQLContext = {
  */
 export function parseContext(context: ExecutionContext | ArgumentsHost): RestContext | GraphQLContext {
     const graphQlContext = GqlExecutionContext.create(context as ExecutionContext);
-    const restContext = GqlExecutionContext.create(context as ExecutionContext);
     const info = graphQlContext.getInfo();
     let req: Request;
     let res: Response;

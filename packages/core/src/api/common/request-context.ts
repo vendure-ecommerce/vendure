@@ -1,9 +1,10 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 
+import { idsAreEqual } from '../../common/utils';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
 
@@ -111,6 +112,23 @@ export class RequestContext {
 
     /**
      * @description
+     * Returns `true` if there is an active Session & User associated with this request,
+     * and that User has the specified permissions on the active Channel.
+     */
+    userHasPermissions(permissions: Permission[]): boolean {
+        const user = this.session?.user;
+        if (!user || !this.channelId) {
+            return false;
+        }
+        const permissionsOnChannel = user.channelPermissions.find(c => idsAreEqual(c.id, this.channelId));
+        if (permissionsOnChannel) {
+            return this.arraysIntersect(permissionsOnChannel.permissions, permissions);
+        }
+        return false;
+    }
+
+    /**
+     * @description
      * Serializes the RequestContext object into a JSON-compatible simple object.
      * This is useful when you need to send a RequestContext object to another
      * process, e.g. to pass it to the Job Queue via the {@link JobQueueService}.
@@ -176,6 +194,8 @@ export class RequestContext {
     /**
      * @description
      * True if the current session is authorized to access the current resolver method.
+     *
+     * @deprecated Use `userHasPermissions()` method instead.
      */
     get isAuthorized(): boolean {
         return this._isAuthorized;
@@ -200,6 +220,15 @@ export class RequestContext {
         } catch (e) {
             return `Translation format error: ${e.message}). Original key: ${key}`;
         }
+    }
+
+    /**
+     * Returns true if any element of arr1 appears in arr2.
+     */
+    private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
+        return arr1.reduce((intersects, role) => {
+            return intersects || arr2.includes(role);
+        }, false as boolean);
     }
 
     /**
