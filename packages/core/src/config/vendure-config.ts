@@ -109,6 +109,22 @@ export interface ApiOptions {
     shopApiDebug?: boolean;
     /**
      * @description
+     * The maximum number of items that may be returned by a query which returns a `PaginatedList` response. In other words,
+     * this is the upper limit of the `take` input option.
+     *
+     * @default 100
+     */
+    shopListQueryLimit?: number;
+    /**
+     * @description
+     * The maximum number of items that may be returned by a query which returns a `PaginatedList` response. In other words,
+     * this is the upper limit of the `take` input option.
+     *
+     * @default 1000
+     */
+    adminListQueryLimit?: number;
+    /**
+     * @description
      * Custom functions to use as additional validation rules when validating the schema for the admin GraphQL API
      * [ApolloServer validation rules](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#validationrules).
      *

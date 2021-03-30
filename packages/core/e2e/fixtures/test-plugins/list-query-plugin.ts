@@ -43,7 +43,10 @@ export class TestEntity extends VendureEntity implements Translatable {
     @Column()
     date: Date;
 
-    @Calculated({ expression: 'LENGTH(description)' })
+    @Calculated({
+        query: qb => qb.addSelect('description', 'description'),
+        expression: 'LENGTH(description)',
+    })
     get descriptionLength() {
         return this.description.length || 0;
     }
@@ -118,7 +121,7 @@ export class ListQueryResolver {
     }
 }
 
-const adminApiExtensions = gql`
+const apiExtensions = gql`
     type TestEntity implements Node {
         id: ID!
         createdAt: DateTime!
@@ -149,7 +152,11 @@ const adminApiExtensions = gql`
     imports: [PluginCommonModule],
     entities: [TestEntity, TestEntityPrice, TestEntityTranslation],
     adminApiExtensions: {
-        schema: adminApiExtensions,
+        schema: apiExtensions,
+        resolvers: [ListQueryResolver],
+    },
+    shopApiExtensions: {
+        schema: apiExtensions,
         resolvers: [ListQueryResolver],
     },
 })

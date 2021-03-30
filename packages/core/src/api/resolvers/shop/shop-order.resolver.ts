@@ -63,17 +63,7 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCountriesArgs,
     ): Promise<Array<Translated<Country>>> {
-        return this.countryService
-            .findAll(ctx, {
-                filter: {
-                    enabled: {
-                        eq: true,
-                    },
-                },
-                skip: 0,
-                take: 99999,
-            })
-            .then(data => data.items);
+        return this.countryService.findAllAvailable(ctx);
     }
 
     @Query()

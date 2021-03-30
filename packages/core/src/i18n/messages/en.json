@@ -27,6 +27,7 @@
     "field-invalid-string-pattern": "The custom field '{ name }' value ['{ value }'] does not match the pattern [{ pattern }]",
     "forbidden": "You are not currently authorized to perform this action",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
+    "list-query-limit-exceeded": "Cannot take more than { limit } results from a list query",
     "no-active-tax-zone": "The active tax zone could not be determined. Ensure a default tax zone is set for the current channel.",
     "no-configurable-operation-def-with-code-found": "No { type } with the code '{ code }' could be found",
     "no-price-found-for-channel": "No price information was found for ProductVariant ID '{ variantId}' in the Channel '{ channel }'.",

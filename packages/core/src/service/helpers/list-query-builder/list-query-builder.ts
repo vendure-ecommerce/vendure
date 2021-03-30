@@ -7,6 +7,7 @@ import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
 import { VendureEntity } from '../../../entity/base/base.entity';
@@ -46,11 +47,18 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         options: ListQueryOptions<T> = {},
         extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
+        const apiType = extendedOptions.ctx?.apiType ?? 'shop';
+        const { shopListQueryLimit, adminListQueryLimit } = this.configService.apiOptions;
+        const takeLimit = apiType === 'admin' ? adminListQueryLimit : shopListQueryLimit;
+        if (options.take && options.take > takeLimit) {
+            throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
+        }
         const rawConnection = this.connection.rawConnection;
         const skip = Math.max(options.skip ?? 0, 0);
-        let take = Math.max(options.take ?? 0, 0);
+        // `take` must not be negative, and must not be greater than takeLimit
+        let take = Math.min(Math.max(options.take ?? 0, 0), takeLimit) || takeLimit;
         if (options.skip !== undefined && options.take === undefined) {
-            take = Number.MAX_SAFE_INTEGER;
+            take = takeLimit;
         }
         const sort = parseSortParams(
             rawConnection,

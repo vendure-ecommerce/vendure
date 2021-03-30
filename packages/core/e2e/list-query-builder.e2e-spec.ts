@@ -8,13 +8,18 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
 import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
 
 describe('ListQueryBuilder', () => {
-    const { server, adminClient } = createTestEnvironment(
+    const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
+            apiOptions: {
+                shopListQueryLimit: 10,
+                adminListQueryLimit: 30,
+            },
             plugins: [ListQueryPlugin],
         }),
     );
@@ -131,6 +136,28 @@ describe('ListQueryBuilder', () => {
             expect(testEntities.totalItems).toBe(5);
             expect(testEntities.items.length).toBe(5);
         });
+
+        it(
+            'take beyond adminListQueryLimit',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(GET_LIST, {
+                    options: {
+                        take: 50,
+                    },
+                });
+            }, 'Cannot take more than 30 results from a list query'),
+        );
+
+        it(
+            'take beyond shopListQueryLimit',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(GET_LIST, {
+                    options: {
+                        take: 50,
+                    },
+                });
+            }, 'Cannot take more than 10 results from a list query'),
+        );
     });
 
     describe('string filtering', () => {
