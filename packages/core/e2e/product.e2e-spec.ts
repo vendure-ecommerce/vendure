@@ -356,18 +356,21 @@ describe('Product resolver', () => {
                     id: 'T_34',
                     name: 'Bonsai Tree',
                     price: 1999,
+                    priceWithTax: 2399,
                     sku: 'B01MXFLUSV',
                 },
                 {
                     id: 'T_24',
                     name: 'Boxing Gloves',
                     price: 3304,
+                    priceWithTax: 3965,
                     sku: 'B000ZYLPPU',
                 },
                 {
                     id: 'T_19',
                     name: 'Camera Lens',
                     price: 10400,
+                    priceWithTax: 12480,
                     sku: 'B0012UUP02',
                 },
             ]);
@@ -391,19 +394,120 @@ describe('Product resolver', () => {
                     id: 'T_23',
                     name: 'Skipping Rope',
                     price: 799,
+                    priceWithTax: 959,
                     sku: 'B07CNGXVXT',
                 },
                 {
                     id: 'T_20',
                     name: 'Tripod',
                     price: 1498,
+                    priceWithTax: 1798,
                     sku: 'B00XI87KV8',
                 },
                 {
                     id: 'T_32',
                     name: 'Spiky Cactus',
                     price: 1550,
+                    priceWithTax: 1860,
                     sku: 'SC011001',
+                },
+            ]);
+        });
+
+        it('sort by priceWithTax', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        priceWithTax: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_23',
+                    name: 'Skipping Rope',
+                    price: 799,
+                    priceWithTax: 959,
+                    sku: 'B07CNGXVXT',
+                },
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
+                },
+                {
+                    id: 'T_32',
+                    name: 'Spiky Cactus',
+                    price: 1550,
+                    priceWithTax: 1860,
+                    sku: 'SC011001',
+                },
+            ]);
+        });
+
+        it('filter by price', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    filter: {
+                        price: {
+                            between: {
+                                start: 1400,
+                                end: 1500,
+                            },
+                        },
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
+                },
+            ]);
+        });
+
+        it('filter by priceWithTax', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    filter: {
+                        priceWithTax: {
+                            between: {
+                                start: 1400,
+                                end: 1500,
+                            },
+                        },
+                    },
+                },
+            });
+
+            // Note the results are incorrect. This is a design trade-off. See the
+            // commend on the ProductVariant.priceWithTax annotation for explanation.
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
                 },
             ]);
         });
@@ -1343,6 +1447,7 @@ export const GET_PRODUCT_VARIANT_LIST = gql`
                 name
                 sku
                 price
+                priceWithTax
             }
             totalItems
         }

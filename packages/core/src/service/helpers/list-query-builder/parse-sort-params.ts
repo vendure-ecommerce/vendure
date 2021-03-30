@@ -30,8 +30,9 @@ export function parseSortParams<T extends VendureEntity>(
     const output: OrderByCondition = {};
     for (const [key, order] of Object.entries(sortParams)) {
         const calculatedColumnDef = calculatedColumns.find(c => c.name === key);
-        if (columns.find(c => c.propertyName === key)) {
-            output[`${alias}.${key}`] = order as any;
+        const matchingColumn = columns.find(c => c.propertyName === key);
+        if (matchingColumn) {
+            output[`${alias}.${matchingColumn.propertyPath}`] = order as any;
         } else if (translationColumns.find(c => c.propertyName === key)) {
             const translationsAlias = connection.namingStrategy.eagerJoinRelationAlias(alias, 'translations');
             output[`${translationsAlias}.${key}`] = order as any;

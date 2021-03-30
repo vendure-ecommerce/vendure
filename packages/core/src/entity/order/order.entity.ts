@@ -136,7 +136,10 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         return [...groupedAdjustments.values()];
     }
 
-    @Calculated({ expression: 'subTotal + shipping' })
+    @Calculated({
+        query: qb => qb.addSelect('shipping', 'shipping'),
+        expression: 'subTotal + shipping',
+    })
     get total(): number {
         return this.subTotal + (this.shipping || 0);
     }
@@ -160,9 +163,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
                 },
                 't1',
                 't1.oid = order.id',
-            );
+            ).addSelect('t1.qty', 'qty');
         },
-        expression: 't1.qty',
+        expression: 'qty',
     })
     get totalQuantity(): number {
         return summate(this.lines, 'quantity');

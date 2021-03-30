@@ -227,6 +227,7 @@ describe('Orders resolver', () => {
                         sort: {
                             total: SortOrder.DESC,
                         },
+                        take: 10,
                     },
                 },
             );
@@ -236,19 +237,21 @@ describe('Orders resolver', () => {
             ]);
         });
 
-        it('filter by totalWithTax', async () => {
+        it('sort by totalWithTax', async () => {
             const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
                 GET_ORDERS_LIST,
                 {
                     options: {
-                        filter: {
-                            totalWithTax: { gt: 323760 },
+                        sort: {
+                            totalWithTax: SortOrder.DESC,
                         },
+                        take: 10,
                     },
                 },
             );
             expect(result.orders.items.map(o => pick(o, ['id', 'totalWithTax']))).toEqual([
                 { id: 'T_2', totalWithTax: 959520 },
+                { id: 'T_1', totalWithTax: 323760 },
             ]);
         });
 
@@ -260,12 +263,47 @@ describe('Orders resolver', () => {
                         sort: {
                             totalQuantity: SortOrder.DESC,
                         },
+                        take: 10,
                     },
                 },
             );
             expect(result.orders.items.map(o => pick(o, ['id', 'totalQuantity']))).toEqual([
                 { id: 'T_2', totalQuantity: 4 },
                 { id: 'T_1', totalQuantity: 2 },
+            ]);
+        });
+
+        it('filter by total', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            total: { gt: 323760 },
+                        },
+                        take: 10,
+                    },
+                },
+            );
+            expect(result.orders.items.map(o => pick(o, ['id', 'total']))).toEqual([
+                { id: 'T_2', total: 799600 },
+            ]);
+        });
+
+        it('filter by totalWithTax', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            totalWithTax: { gt: 323760 },
+                        },
+                        take: 10,
+                    },
+                },
+            );
+            expect(result.orders.items.map(o => pick(o, ['id', 'totalWithTax']))).toEqual([
+                { id: 'T_2', totalWithTax: 959520 },
             ]);
         });
 
