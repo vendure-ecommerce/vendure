@@ -156,6 +156,9 @@ export class AuthGuard implements CanActivate {
      * Query or Mutation resolver.
      */
     private isFieldResolver(info?: GraphQLResolveInfo): boolean {
+        if (!info) {
+            return false;
+        }
         const parentType = info?.parentType?.name;
         return parentType !== 'Query' && parentType !== 'Mutation';
     }
