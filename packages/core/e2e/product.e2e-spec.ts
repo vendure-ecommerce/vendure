@@ -335,6 +335,17 @@ describe('Product resolver', () => {
 
             expect(result.product).toBeNull();
         });
+
+        it('returns null when slug not found', async () => {
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                slug: 'bad_slug',
+            });
+
+            expect(result.product).toBeNull();
+        });
     });
 
     describe('productVariants list query', () => {

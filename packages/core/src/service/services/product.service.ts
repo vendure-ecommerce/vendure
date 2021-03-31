@@ -136,18 +136,24 @@ export class ProductService {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
-        const translations = await this.connection.getRepository(ctx, ProductTranslation).find({
-            relations: ['base'],
-            where: { slug },
-        });
-        if (!translations?.length) {
-            return;
-        }
-        const bestMatch =
-            translations.find(t => t.languageCode === ctx.languageCode) ??
-            translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
-            translations[0];
-        return this.findOne(ctx, bestMatch.base.id);
+        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        return qb
+            .innerJoin(ProductTranslation, 'product_translation', 'product_translation.baseId=product.id')
+            .leftJoin('product.channels', 'channel')
+            .andWhere('product_translation.slug = :slug', { slug })
+            .andWhere('product_translation.languageCode = :languageCode', { languageCode: ctx.languageCode })
+            .andWhere('product.deletedAt IS NULL')
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getMany()
+            .then(products =>
+                products.map(product =>
+                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                ),
+            )
+            .then(products => products[0]);
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
