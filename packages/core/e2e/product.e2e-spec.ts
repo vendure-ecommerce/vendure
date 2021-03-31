@@ -1295,6 +1295,20 @@ describe('Product resolver', () => {
             );
             expect(result.createProduct.slug).toBe(productToDelete.slug);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/800
+        it('product can be fetched by slug of a deleted product', async () => {
+            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: productToDelete.slug },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe(productToDelete.slug);
+        });
     });
 });
 
