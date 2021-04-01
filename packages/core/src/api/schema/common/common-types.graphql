@@ -188,6 +188,8 @@ type ShippingMethodQuote {
 type PaymentMethodQuote {
     id: ID!
     code: String!
+    name: String!
+    description: String!
     isEligible: Boolean!
     eligibilityMessage: String
 }

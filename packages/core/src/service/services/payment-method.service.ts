@@ -119,6 +119,8 @@ export class PaymentMethodService {
             results.push({
                 id: method.id,
                 code: method.code,
+                name: method.name,
+                description: method.description,
                 isEligible,
                 eligibilityMessage,
             });
