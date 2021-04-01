@@ -153,11 +153,11 @@ export class ProductService {
             .andWhere('product.deletedAt IS NULL')
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addSelect(
-                "CASE product_translations.languageCode WHEN '" +
+                'CASE product_translations.languageCode WHEN \'' +
                     ctx.languageCode +
-                    "' THEN 2 WHEN '" +
+                    '\' THEN 2 WHEN \'' +
                     ctx.channel.defaultLanguageCode +
-                    "' THEN 1 ELSE 0 END",
+                    '\' THEN 1 ELSE 0 END',
                 'sort_order',
             )
             .orderBy('sort_order', 'DESC')
