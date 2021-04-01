@@ -113,6 +113,10 @@ export const config: VendureConfig = {
 If your PaymentMethodHandler needs access to the database or other providers, see the [ConfigurableOperationDef Dependency Injection guide]({{< relref "configurable-operation-def" >}}#dependency-injection).
 {{< /alert >}}
 
+### Creating a PaymentMethod
+
+Once the PaymentMethodHandler is defined as above, you can use it to create a new PaymentMethod via the Admin UI (_Settings_ -> _Payment methods_, then _Create new payment method_) or via the Admin API `createPaymentMethod` mutation.
+
 ## Payment flow
 
 1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
