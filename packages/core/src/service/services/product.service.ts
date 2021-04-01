@@ -140,20 +140,35 @@ export class ProductService {
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        const translationQb = this.connection
+            .getRepository(ctx, ProductTranslation)
+            .createQueryBuilder('product_translation')
+            .select('product_translation.baseId')
+            .andWhere('product_translation.slug = :slug', { slug });
+
         return qb
-            .innerJoin(ProductTranslation, 'product_translation', 'product_translation.baseId=product.id')
             .leftJoin('product.channels', 'channel')
-            .andWhere('product_translation.slug = :slug', { slug })
-            .andWhere('product_translation.languageCode = :languageCode', { languageCode: ctx.languageCode })
+            .andWhere('product.id IN (' + translationQb.getQuery() + ')')
+            .setParameters(translationQb.getParameters())
             .andWhere('product.deletedAt IS NULL')
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
-            .getMany()
-            .then(products =>
-                products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
-                ),
+            .addSelect(
+                "CASE product_translations.languageCode WHEN '" +
+                    ctx.languageCode +
+                    "' THEN 2 WHEN '" +
+                    ctx.channel.defaultLanguageCode +
+                    "' THEN 1 ELSE 0 END",
+                'sort_order',
             )
-            .then(products => products[0]);
+            .orderBy('sort_order', 'DESC')
+            .limit(1)
+            .getMany()
+            .then(products => products[0])
+            .then(product =>
+                product
+                    ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
+                    : undefined,
+            );
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
