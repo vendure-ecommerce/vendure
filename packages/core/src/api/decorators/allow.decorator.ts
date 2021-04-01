@@ -5,8 +5,9 @@ export const PERMISSIONS_METADATA_KEY = '__permissions__';
 
 /**
  * @description
- * Attatches metadata to the resolver defining which permissions are required to execute the
- * operation, using one or more {@link Permission} values.
+ * Attaches metadata to the resolver defining which permissions are required to execute the
+ * operation, using one or more {@link Permission} values. Can be applied to top-level queries
+ * and mutations as well as field resolvers.
  *
  * @example
  * ```TypeScript

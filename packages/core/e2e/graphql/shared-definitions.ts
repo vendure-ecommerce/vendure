@@ -898,3 +898,15 @@ export const REMOVE_PROMOTIONS_FROM_CHANNEL = gql`
         }
     }
 `;
+
+export const GET_TAX_RATES_LIST = gql`
+    query GetTaxRates($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                ...TaxRate
+            }
+            totalItems
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
+`;
