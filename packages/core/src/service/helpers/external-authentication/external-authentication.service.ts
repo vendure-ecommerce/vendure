@@ -13,6 +13,7 @@ import { ChannelService } from '../../services/channel.service';
 import { CustomerService } from '../../services/customer.service';
 import { HistoryService } from '../../services/history.service';
 import { RoleService } from '../../services/role.service';
+import { UserService } from '../../services/user.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 /**
@@ -31,6 +32,7 @@ export class ExternalAuthenticationService {
         private customerService: CustomerService,
         private administratorService: AdministratorService,
         private channelService: ChannelService,
+        private userService: UserService,
     ) {}
 
     /**
@@ -92,13 +94,20 @@ export class ExternalAuthenticationService {
             lastName?: string;
         },
     ): Promise<User> {
-        const customerRole = await this.roleService.getCustomerRole();
-        const newUser = new User({
-            identifier: config.emailAddress,
-            roles: [customerRole],
-            verified: config.verified || false,
-        });
+        let user: User;
 
+        const existingUser = await this.userService.getUserByEmailAddress(ctx, config.emailAddress);
+        if (existingUser) {
+            user = existingUser;
+        } else {
+            const customerRole = await this.roleService.getCustomerRole();
+            user = new User({
+                identifier: config.emailAddress,
+                roles: [customerRole],
+                verified: config.verified || false,
+                authenticationMethods: [],
+            });
+        }
         const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
             new ExternalAuthenticationMethod({
                 externalIdentifier: config.externalIdentifier,
@@ -106,15 +115,21 @@ export class ExternalAuthenticationService {
             }),
         );
 
-        newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
+        user.authenticationMethods = [...(user.authenticationMethods || []), authMethod];
+        const savedUser = await this.connection.getRepository(ctx, User).save(user);
 
-        const customer = new Customer({
-            emailAddress: config.emailAddress,
-            firstName: config.firstName,
-            lastName: config.lastName,
-            user: savedUser,
-        });
+        let customer: Customer;
+        const existingCustomer = await this.customerService.findOneByUserId(ctx, savedUser.id);
+        if (existingCustomer) {
+            customer = existingCustomer;
+        } else {
+            customer = new Customer({
+                emailAddress: config.emailAddress,
+                firstName: config.firstName,
+                lastName: config.lastName,
+                user: savedUser,
+            });
+        }
         this.channelService.assignToCurrentChannel(customer, ctx);
         await this.connection.getRepository(ctx, Customer).save(customer);
 
@@ -187,14 +202,25 @@ export class ExternalAuthenticationService {
         return newUser;
     }
 
-    findUser(ctx: RequestContext, strategy: string, externalIdentifier: string): Promise<User | undefined> {
-        return this.connection
+    async findUser(
+        ctx: RequestContext,
+        strategy: string,
+        externalIdentifier: string,
+    ): Promise<User | undefined> {
+        const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
-            .where('authMethod.strategy = :strategy', { strategy })
             .andWhere('authMethod.externalIdentifier = :externalIdentifier', { externalIdentifier })
             .andWhere('user.deletedAt IS NULL')
             .getOne();
+
+        const userHasMatchingAuthMethod = !!user?.authenticationMethods.find(m => {
+            return m instanceof ExternalAuthenticationMethod && m.strategy === strategy;
+        });
+
+        if (userHasMatchingAuthMethod) {
+            return user;
+        }
     }
 }

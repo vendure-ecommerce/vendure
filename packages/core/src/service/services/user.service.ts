@@ -67,6 +67,17 @@ export class UserService {
         identifier: string,
         password?: string,
     ): Promise<User> {
+        const checkUser = user.id != null && (await this.getUserById(ctx, user.id));
+        if (checkUser) {
+            if (
+                !!checkUser.authenticationMethods.find(
+                    (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+                )
+            ) {
+                // User already has a NativeAuthenticationMethod registered, so just return.
+                return user;
+            }
+        }
         const authenticationMethod = new NativeAuthenticationMethod();
         if (this.configService.authOptions.requireVerification) {
             authenticationMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();

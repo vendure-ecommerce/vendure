@@ -338,7 +338,9 @@ export class CustomerService {
         if (!user.verified) {
             user = await this.userService.setVerificationToken(ctx, user);
         }
+
         customer.user = user;
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));

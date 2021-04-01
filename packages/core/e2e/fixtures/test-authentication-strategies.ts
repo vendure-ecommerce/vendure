@@ -64,3 +64,44 @@ export class TestAuthenticationStrategy implements AuthenticationStrategy<TestAu
         });
     }
 }
+
+export class TestAuthenticationStrategy2 implements AuthenticationStrategy<{ token: string; email: string }> {
+    readonly name = 'test_strategy2';
+    private externalAuthenticationService: ExternalAuthenticationService;
+
+    init(injector: Injector) {
+        this.externalAuthenticationService = injector.get(ExternalAuthenticationService);
+    }
+
+    defineInputType(): DocumentNode {
+        return gql`
+            input TestAuth2Input {
+                token: String!
+                email: String!
+            }
+        `;
+    }
+
+    async authenticate(
+        ctx: RequestContext,
+        data: { token: string; email: string },
+    ): Promise<User | false | string> {
+        const { token, email } = data;
+        if (token !== VALID_AUTH_TOKEN) {
+            return false;
+        }
+        const user = await this.externalAuthenticationService.findCustomerUser(ctx, this.name, token);
+        if (user) {
+            return user;
+        }
+        const result = await this.externalAuthenticationService.createCustomerAndUser(ctx, {
+            strategy: this.name,
+            externalIdentifier: data.token,
+            emailAddress: email,
+            firstName: 'test',
+            lastName: 'test',
+            verified: true,
+        });
+        return result;
+    }
+}
