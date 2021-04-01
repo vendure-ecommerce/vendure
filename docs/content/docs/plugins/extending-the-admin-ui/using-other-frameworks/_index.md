@@ -164,6 +164,19 @@ The `@vendure/ui-devkit` package provides a number of helper methods which allow
 * Make GraphQL queries & mutations, without the need for your own HTTP or GraphQL client, with full integration with the Admin UI client-side GraphQL cache.
 * Display toast notifications.
 
+#### setTargetOrigin
+
+The UiDevkitClient uses the browser's [postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) to communicate between the Admin UI app and your extension. For security reasons this communication channel is restricted to a specific domain (where your extension app will be running from). To configure this, use the [setTargetOrigin]({{< relref "ui-devkit-client" >}}#settargetorigin) function:
+
+```TypeScript
+import { setTargetOrigin } from '@vendure/ui-devkit';
+
+setTargetOrigin('http://my-domain.com');
+
+```
+
+If this is mis-configured you will see an error along the lines of "Failed to execute 'postMessage' on 'DOMWindow'".
+
 For apps with a build step, you can use these functions like this:
 
 ```TypeScript
