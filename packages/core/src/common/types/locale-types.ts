@@ -12,7 +12,9 @@ import { UnwrappedArray } from './common-types';
  */
 export type LocaleString = string & { _opaqueType: 'LocaleString' };
 
-export type TranslatableKeys<T> = { [K in keyof T]: T[K] extends LocaleString ? K : never }[keyof T];
+export type TranslatableKeys<T, U = Omit<T, 'translations'>> = {
+    [K in keyof U]: U[K] extends LocaleString ? K : never;
+}[keyof U];
 
 export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleString ? never : K }[keyof T];
 
