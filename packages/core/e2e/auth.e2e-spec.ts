@@ -160,15 +160,14 @@ describe('Authorization & permissions', () => {
 
             it('can create', async () => {
                 await assertRequestAllowed(
-                    gql`
-                        mutation CanCreateCustomer($input: CreateCustomerInput!) {
+                    gql(`mutation CanCreateCustomer($input: CreateCustomerInput!) {
                             createCustomer(input: $input) {
                                 ... on Customer {
                                     id
                                 }
                             }
                         }
-                    `,
+                    `),
                     { input: { emailAddress: '', firstName: '', lastName: '' } },
                 );
             });
@@ -217,12 +216,7 @@ describe('Authorization & permissions', () => {
             await adminClient.asUserWithCredentials(readCatalogAdmin.identifier, readCatalogAdmin.password);
 
             try {
-                const status = await adminClient.query(
-                    gql`
-                        ${GET_PRODUCT_WITH_TRANSACTIONS}
-                    `,
-                    { id: 'T_1' },
-                );
+                const status = await adminClient.query(gql(GET_PRODUCT_WITH_TRANSACTIONS), { id: 'T_1' });
                 fail(`Should have thrown`);
             } catch (e) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
@@ -232,12 +226,7 @@ describe('Authorization & permissions', () => {
         it('protected field is resolved with permissions', async () => {
             await adminClient.asUserWithCredentials(transactionsAdmin.identifier, transactionsAdmin.password);
 
-            const { product } = await adminClient.query(
-                gql`
-                    ${GET_PRODUCT_WITH_TRANSACTIONS}
-                `,
-                { id: 'T_1' },
-            );
+            const { product } = await adminClient.query(gql(GET_PRODUCT_WITH_TRANSACTIONS), { id: 'T_1' });
 
             expect(product.id).toBe('T_1');
             expect(product.transactions).toEqual([
@@ -284,7 +273,7 @@ describe('Authorization & permissions', () => {
             try {
                 const status = await shopClient.query(
                     gql(`
-                query {
+                query DeepFieldResolutionTestQuery{
                   product(id: "T_1") {
                     variants {
                       taxRateApplied {
