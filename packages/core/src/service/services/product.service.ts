@@ -136,18 +136,39 @@ export class ProductService {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
-        const translations = await this.connection.getRepository(ctx, ProductTranslation).find({
-            relations: ['base'],
-            where: { slug },
-        });
-        if (!translations?.length) {
-            return;
-        }
-        const bestMatch =
-            translations.find(t => t.languageCode === ctx.languageCode) ??
-            translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
-            translations[0];
-        return this.findOne(ctx, bestMatch.base.id);
+        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        const translationQb = this.connection
+            .getRepository(ctx, ProductTranslation)
+            .createQueryBuilder('product_translation')
+            .select('product_translation.baseId')
+            .andWhere('product_translation.slug = :slug', { slug });
+
+        return qb
+            .leftJoin('product.channels', 'channel')
+            .andWhere('product.id IN (' + translationQb.getQuery() + ')')
+            .setParameters(translationQb.getParameters())
+            .andWhere('product.deletedAt IS NULL')
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .addSelect(
+                'CASE product_translations.languageCode WHEN \'' +
+                    ctx.languageCode +
+                    '\' THEN 2 WHEN \'' +
+                    ctx.channel.defaultLanguageCode +
+                    '\' THEN 1 ELSE 0 END',
+                'sort_order',
+            )
+            .orderBy('sort_order', 'DESC')
+            .limit(1)
+            .getMany()
+            .then(products => products[0])
+            .then(product =>
+                product
+                    ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
+                    : undefined,
+            );
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {

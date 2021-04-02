@@ -335,6 +335,17 @@ describe('Product resolver', () => {
 
             expect(result.product).toBeNull();
         });
+
+        it('returns null when slug not found', async () => {
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                slug: 'bad_slug',
+            });
+
+            expect(result.product).toBeNull();
+        });
     });
 
     describe('productVariants list query', () => {
@@ -577,6 +588,7 @@ describe('Product resolver', () => {
     });
 
     describe('product mutation', () => {
+        let newTranslatedProduct: ProductWithVariants.Fragment;
         let newProduct: ProductWithVariants.Fragment;
         let newProductWithAssets: ProductWithVariants.Fragment;
 
@@ -607,7 +619,133 @@ describe('Product resolver', () => {
                 'A baked potato',
                 'Eine baked Erdapfel',
             ]);
-            newProduct = result.createProduct;
+            newTranslatedProduct = result.createProduct;
+        });
+
+        describe('product query with translations', () => {
+            it('en slug without translation arg', async () => {
+                const en_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.en;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('de slug without translation arg', async () => {
+                const en_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.en;
+                })[0];
+                const de_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.de;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('en slug with translation en', async () => {
+                const en_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.en;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.en });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('de slug with translation en', async () => {
+                const en_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.en;
+                })[0];
+                const de_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.de;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.en });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('en slug with translation de', async () => {
+                const en_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.en;
+                })[0];
+                const de_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.de;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.de });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(de_translation.slug);
+            });
+
+            it('de slug with translation de', async () => {
+                const de_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.de;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.de });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(de_translation.slug);
+            });
+
+            it('de slug with translation ru', async () => {
+                const en_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.en;
+                })[0];
+                const de_translation = newTranslatedProduct.translations.filter(t => {
+                    return t.languageCode === LanguageCode.de;
+                })[0];
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.ru });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
         });
 
         it('createProduct creates a new Product with assets', async () => {
@@ -1437,6 +1575,20 @@ describe('Product resolver', () => {
                 },
             );
             expect(result.createProduct.slug).toBe(productToDelete.slug);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/800
+        it('product can be fetched by slug of a deleted product', async () => {
+            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: productToDelete.slug },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe(productToDelete.slug);
         });
     });
 });
