@@ -63,7 +63,7 @@ export type Query = {
   productOptionGroups: Array<ProductOptionGroup>;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
-  /** List ProductVariants */
+  /** List ProductVariants either all or for the specific product. */
   productVariants: ProductVariantList;
   /** List Products */
   products: ProductList;
@@ -227,6 +227,7 @@ export type QueryProductVariantArgs = {
 
 export type QueryProductVariantsArgs = {
   options?: Maybe<ProductVariantListOptions>;
+  productId?: Maybe<Scalars['ID']>;
 };
 
 

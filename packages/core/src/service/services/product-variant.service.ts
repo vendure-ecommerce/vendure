@@ -130,8 +130,11 @@ export class ProductVariantService {
             });
     }
 
-    getVariantsByProductId(ctx: RequestContext, productId: ID): Promise<Array<Translated<ProductVariant>>> {
-        const qb = this.connection.getRepository(ctx, ProductVariant).createQueryBuilder('productVariant');
+    getVariantsByProductId(
+        ctx: RequestContext,
+        productId: ID,
+        options: ListQueryOptions<ProductVariant> = {},
+    ): Promise<PaginatedList<Translated<ProductVariant>>> {
         const relations = [
             'options',
             'facetValues',
@@ -140,32 +143,38 @@ export class ProductVariantService {
             'assets',
             'featuredAsset',
         ];
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations });
-        // tslint:disable-next-line:no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        return qb
-            .innerJoinAndSelect('productVariant.channels', 'channel', 'channel.id = :channelId', {
+
+        return this.listQueryBuilder
+            .build(ProductVariant, options, {
+                relations,
+                orderBy: { id: 'ASC' },
+                where: { deletedAt: null },
+                ctx,
+            })
+            .innerJoinAndSelect('productvariant.channels', 'channel', 'channel.id = :channelId', {
                 channelId: ctx.channelId,
             })
-            .innerJoinAndSelect('productVariant.product', 'product', 'product.id = :productId', {
+            .innerJoinAndSelect('productvariant.product', 'product', 'product.id = :productId', {
                 productId,
             })
-            .andWhere('productVariant.deletedAt IS NULL')
-            .orderBy('productVariant.id', 'ASC')
-            .getMany()
-            .then(
-                async variants =>
-                    await Promise.all(
-                        variants.map(async variant => {
-                            const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
-                            return translateDeep(variantWithPrices, ctx.languageCode, [
-                                'options',
-                                'facetValues',
-                                ['facetValues', 'facet'],
-                            ]);
-                        }),
-                    ),
-            );
+            .getManyAndCount()
+            .then(async ([variants, totalItems]) => {
+                const items = await Promise.all(
+                    variants.map(async variant => {
+                        const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
+                        return translateDeep(variantWithPrices, ctx.languageCode, [
+                            'options',
+                            'facetValues',
+                            ['facetValues', 'facet'],
+                        ]);
+                    }),
+                );
+
+                return {
+                    items,
+                    totalItems,
+                };
+            });
     }
 
     getVariantsByCollectionId(
