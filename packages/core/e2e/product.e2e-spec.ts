@@ -346,6 +346,134 @@ describe('Product resolver', () => {
 
             expect(result.product).toBeNull();
         });
+
+        describe('product query with translations', () => {
+            let translatedProduct: ProductWithVariants.Fragment;
+            let en_translation: ProductWithVariants.Translations;
+            let de_translation: ProductWithVariants.Translations;
+
+            beforeAll(async () => {
+                const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                    CREATE_PRODUCT,
+                    {
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'en Pineapple',
+                                    slug: 'en-pineapple',
+                                    description: 'A delicious pineapple',
+                                },
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'de Ananas',
+                                    slug: 'de-ananas',
+                                    description: 'Eine köstliche Ananas',
+                                },
+                            ],
+                        },
+                    },
+                );
+                translatedProduct = result.createProduct;
+                en_translation = translatedProduct.translations.find(
+                    t => t.languageCode === LanguageCode.en,
+                )!;
+                de_translation = translatedProduct.translations.find(
+                    t => t.languageCode === LanguageCode.de,
+                )!;
+            });
+
+            it('en slug without translation arg', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('de slug without translation arg', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('en slug with translation en', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.en });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('de slug with translation en', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.en });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('en slug with translation de', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.de });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(de_translation.slug);
+            });
+
+            it('de slug with translation de', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.de });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(de_translation.slug);
+            });
+
+            it('de slug with translation ru', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.ru });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+        });
     });
 
     describe('productVariants list query', () => {
@@ -620,132 +748,6 @@ describe('Product resolver', () => {
                 'Eine baked Erdapfel',
             ]);
             newTranslatedProduct = result.createProduct;
-        });
-
-        describe('product query with translations', () => {
-            it('en slug without translation arg', async () => {
-                const en_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.en;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(en_translation.slug);
-            });
-
-            it('de slug without translation arg', async () => {
-                const en_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.en;
-                })[0];
-                const de_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.de;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(en_translation.slug);
-            });
-
-            it('en slug with translation en', async () => {
-                const en_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.en;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.en });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(en_translation.slug);
-            });
-
-            it('de slug with translation en', async () => {
-                const en_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.en;
-                })[0];
-                const de_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.de;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.en });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(en_translation.slug);
-            });
-
-            it('en slug with translation de', async () => {
-                const en_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.en;
-                })[0];
-                const de_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.de;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.de });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(de_translation.slug);
-            });
-
-            it('de slug with translation de', async () => {
-                const de_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.de;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.de });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(de_translation.slug);
-            });
-
-            it('de slug with translation ru', async () => {
-                const en_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.en;
-                })[0];
-                const de_translation = newTranslatedProduct.translations.filter(t => {
-                    return t.languageCode === LanguageCode.de;
-                })[0];
-                const { product } = await adminClient.query<
-                    GetProductSimple.Query,
-                    GetProductSimple.Variables
-                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.ru });
-
-                if (!product) {
-                    fail('Product not found');
-                    return;
-                }
-                expect(product.slug).toBe(en_translation.slug);
-            });
         });
 
         it('createProduct creates a new Product with assets', async () => {
