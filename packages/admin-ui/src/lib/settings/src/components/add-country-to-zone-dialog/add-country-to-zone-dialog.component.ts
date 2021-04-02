@@ -21,7 +21,7 @@ export class AddCountryToZoneDialogComponent implements Dialog<string[]>, OnInit
     ngOnInit(): void {
         const currentMemberIds = this.currentMembers.map(m => m.id);
         this.availableCountries$ = this.dataService.settings
-            .getCountries(99999)
+            .getCountries(999)
             .mapStream(data => data.countries.items)
             .pipe(map(countries => countries.filter(c => !currentMemberIds.includes(c.id))));
     }

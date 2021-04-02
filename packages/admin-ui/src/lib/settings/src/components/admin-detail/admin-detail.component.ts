@@ -73,7 +73,7 @@ export class AdminDetailComponent
     ngOnInit() {
         this.init();
         this.administrator$ = this.entity$;
-        this.allRoles$ = this.dataService.administrator.getRoles(99999).mapStream(item => item.roles.items);
+        this.allRoles$ = this.dataService.administrator.getRoles(999).mapStream(item => item.roles.items);
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
             if (!userStatus.permissions.includes(Permission.UpdateAdministrator)) {
                 const rolesSelect = this.detailForm.get('roles');

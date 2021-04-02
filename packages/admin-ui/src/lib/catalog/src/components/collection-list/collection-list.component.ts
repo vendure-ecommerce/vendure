@@ -35,7 +35,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
-        this.queryResult = this.dataService.collection.getCollections(99999, 0).refetchOnChannelChange();
+        this.queryResult = this.dataService.collection.getCollections(1000, 0).refetchOnChannelChange();
         this.items$ = this.queryResult.mapStream(data => data.collections.items).pipe(shareReplay(1));
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
