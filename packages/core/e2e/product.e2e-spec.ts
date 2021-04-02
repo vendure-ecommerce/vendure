@@ -511,6 +511,45 @@ describe('Product resolver', () => {
                 },
             ]);
         });
+
+        it('returns variants for particular product by id', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+                productId: 'T_1',
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_1',
+                    name: 'Laptop 13 inch 8GB',
+                    price: 129900,
+                    priceWithTax: 155880,
+                    sku: 'L2201308',
+                },
+                {
+                    id: 'T_2',
+                    name: 'Laptop 15 inch 8GB',
+                    price: 139900,
+                    priceWithTax: 167880,
+                    sku: 'L2201508',
+                },
+                {
+                    id: 'T_3',
+                    name: 'Laptop 13 inch 16GB',
+                    priceWithTax: 263880,
+                    price: 219900,
+                    sku: 'L2201316',
+                },
+            ]);
+        });
     });
 
     describe('productVariant query', () => {
@@ -1440,8 +1479,8 @@ export const GET_PRODUCT_VARIANT = gql`
 `;
 
 export const GET_PRODUCT_VARIANT_LIST = gql`
-    query GetProductVariantLIST($options: ProductVariantListOptions) {
-        productVariants(options: $options) {
+    query GetProductVariantLIST($options: ProductVariantListOptions, $productId: ID) {
+        productVariants(options: $options, productId: $productId) {
             items {
                 id
                 name

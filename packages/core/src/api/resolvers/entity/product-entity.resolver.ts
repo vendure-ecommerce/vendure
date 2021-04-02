@@ -53,7 +53,7 @@ export class ProductEntityResolver {
         @Parent() product: Product,
         @Api() apiType: ApiType,
     ): Promise<Array<Translated<ProductVariant>>> {
-        const variants = await this.productVariantService.getVariantsByProductId(ctx, product.id);
+        const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, product.id);
         return variants.filter(v => (apiType === 'admin' ? true : v.enabled));
     }
 

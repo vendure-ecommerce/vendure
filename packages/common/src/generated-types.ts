@@ -61,7 +61,7 @@ export type Query = {
   products: ProductList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
-  /** List ProductVariants */
+  /** List ProductVariants either all or for the specific product. */
   productVariants: ProductVariantList;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
@@ -228,6 +228,7 @@ export type QueryProductArgs = {
 
 export type QueryProductVariantsArgs = {
   options?: Maybe<ProductVariantListOptions>;
+  productId?: Maybe<Scalars['ID']>;
 };
 
 

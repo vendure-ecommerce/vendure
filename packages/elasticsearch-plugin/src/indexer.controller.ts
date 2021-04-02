@@ -109,7 +109,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         }
         const channelIds = product.channels.map(c => c.id);
         await this.deleteProductInternal(product, channelIds);
-        const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
+        const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, productId);
         await this.deleteVariantsInternal(variants, channelIds);
         return true;
     }
@@ -124,7 +124,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }: ProductChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(rawContext);
         await this.updateProductInternal(ctx, productId);
-        const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
+        const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, productId);
         await this.updateVariantsInternal(
             ctx,
             variants.map(v => v.id),
@@ -147,7 +147,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             return false;
         }
         await this.deleteProductInternal(product, [channelId]);
-        const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
+        const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, productId);
         await this.deleteVariantsInternal(variants, [channelId]);
         return true;
     }
@@ -198,7 +198,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         for (const productId of productIds) {
             await this.updateProductInternal(ctx, productId);
         }
-        const channelIds = unique(variants.reduce((flat: ID[], v) => [...flat, ...v.channels.map(c => c.id)], []));
+        const channelIds = unique(
+            variants.reduce((flat: ID[], v) => [...flat, ...v.channels.map(c => c.id)], []),
+        );
         await this.deleteVariantsInternal(variants, channelIds);
         return true;
     }

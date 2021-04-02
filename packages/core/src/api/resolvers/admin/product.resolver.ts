@@ -77,6 +77,14 @@ export class ProductResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductVariantsArgs,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
+        if (args.productId) {
+            return this.productVariantService.getVariantsByProductId(
+                ctx,
+                args.productId,
+                args.options || undefined,
+            );
+        }
+
         return this.productVariantService.findAll(ctx, args.options || undefined);
     }
 
