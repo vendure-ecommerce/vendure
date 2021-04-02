@@ -2978,6 +2978,8 @@ export type PaymentMethodQuote = {
   __typename?: 'PaymentMethodQuote';
   id: Scalars['ID'];
   code: Scalars['String'];
+  name: Scalars['String'];
+  description: Scalars['String'];
   isEligible: Scalars['Boolean'];
   eligibilityMessage?: Maybe<Scalars['String']>;
 };
