@@ -153,17 +153,12 @@ export class ProductService {
             .andWhere('product.deletedAt IS NULL')
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addSelect(
-                'CASE product_translations.languageCode WHEN \'' +
-                    ctx.languageCode +
-                    '\' THEN 2 WHEN \'' +
-                    ctx.channel.defaultLanguageCode +
-                    '\' THEN 1 ELSE 0 END',
+                `CASE product_translations.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
                 'sort_order',
             )
             .orderBy('sort_order', 'DESC')
             .limit(1)
-            .getMany()
-            .then(products => products[0])
+            .getOne()
             .then(product =>
                 product
                     ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
