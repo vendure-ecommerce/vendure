@@ -12,6 +12,7 @@ export * from './common/generated-types';
 export * from './common/introspection-result-wrapper';
 export * from './common/introspection-result';
 export * from './common/language-translation-strings';
+export * from './common/single-search-selection-model';
 export * from './common/utilities/configurable-operation-utils';
 export * from './common/utilities/create-updated-translatable';
 export * from './common/utilities/find-translation';

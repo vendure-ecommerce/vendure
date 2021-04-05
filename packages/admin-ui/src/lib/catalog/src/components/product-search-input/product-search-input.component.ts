@@ -1,16 +1,14 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
-import { SearchProducts } from '@vendure/admin-ui/core';
+import { SearchProducts, SingleSearchSelectionModelFactory } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-
-import { ProductSearchSelectionModelFactory } from './product-search-selection-model';
 
 @Component({
     selector: 'vdr-product-search-input',
     templateUrl: './product-search-input.component.html',
     styleUrls: ['./product-search-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: ProductSearchSelectionModelFactory }],
+    providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: SingleSearchSelectionModelFactory }],
 })
 export class ProductSearchInputComponent {
     @Input() facetValueResults: SearchProducts.FacetValues[];

@@ -19,7 +19,6 @@ export * from './components/product-assets/product-assets.component';
 export * from './components/product-detail/product-detail.component';
 export * from './components/product-list/product-list.component';
 export * from './components/product-search-input/product-search-input.component';
-export * from './components/product-search-input/product-search-selection-model';
 export * from './components/product-variants-editor/product-variants-editor.component';
 export * from './components/product-variants-list/product-variants-list.component';
 export * from './components/product-variants-table/product-variants-table.component';
