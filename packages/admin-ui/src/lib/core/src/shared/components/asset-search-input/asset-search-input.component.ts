@@ -1,14 +1,16 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { NgSelectComponent } from '@ng-select/ng-select';
+import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { SearchProducts, TagFragment } from '../../../common/generated-types';
+import { SingleSearchSelectionModelFactory } from '../../../common/single-search-selection-model';
 
 @Component({
     selector: 'vdr-asset-search-input',
     templateUrl: './asset-search-input.component.html',
     styleUrls: ['./asset-search-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: SingleSearchSelectionModelFactory }],
 })
 export class AssetSearchInputComponent {
     @Input() tags: TagFragment[];
@@ -67,7 +69,18 @@ export class AssetSearchInputComponent {
         if (!Array.isArray(selectedItems)) {
             selectedItems = [selectedItems];
         }
-        const searchTermItem = selectedItems.find(item => !this.isTag(item)) as { label: string } | undefined;
+
+        const searchTermItems = selectedItems.filter(item => !this.isTag(item));
+        if (1 < searchTermItems.length) {
+            for (let i = 0; i < searchTermItems.length - 1; i++) {
+                // this.selectComponent.unselect(searchTermItems[i] as any);
+            }
+        }
+
+        const searchTermItem = searchTermItems[searchTermItems.length - 1] as
+            | { label: string }
+            | undefined;
+
         const searchTerm = searchTermItem ? searchTermItem.label : '';
 
         const tags = selectedItems.filter(this.isTag);
@@ -84,6 +97,10 @@ export class AssetSearchInputComponent {
 
     isSearchHeaderSelected(): boolean {
         return this.selectComponent.itemsList.markedIndex === -1;
+    }
+
+    addTagFn(item: any) {
+        return { label: item };
     }
 
     private isTag = (input: unknown): input is TagFragment => {

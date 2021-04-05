@@ -1,5 +1,5 @@
 <ng-select
-    [addTag]="true"
+    [addTag]="addTagFn"
     [placeholder]="'catalog.search-asset-name-or-tag' | translate"
     [items]="tags"
     [searchFn]="filterTagResults"
@@ -24,7 +24,7 @@
             <vdr-chip [colorFrom]="item.value" icon="close" (iconClick)="clear(item)"><clr-icon shape="tag" class="mr2"></clr-icon> {{ item.value }}</vdr-chip>
         </ng-container>
         <ng-container *ngIf="!item.value">
-            <vdr-chip [icon]="'times'" (iconClick)="clear(item)">"{{ item.label }}"</vdr-chip>
+            <vdr-chip [icon]="'times'" (iconClick)="clear(item)">"{{ item.label || item }}"</vdr-chip>
         </ng-container>
     </ng-template>
     <ng-template ng-option-tmp let-item="item" let-index="index" let-search="searchTerm">
