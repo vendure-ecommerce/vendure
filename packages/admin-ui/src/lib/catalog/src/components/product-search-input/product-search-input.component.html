@@ -20,7 +20,7 @@
         </div>
     </ng-template>
     <ng-template ng-label-tmp let-item="item" let-clear="clear">
-        <ng-container *ngIf="item.value">
+        <ng-container *ngIf="item.facetValue">
             <vdr-facet-value-chip
                 [facetValue]="item.facetValue"
                 [removable]="true"
