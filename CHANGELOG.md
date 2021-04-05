@@ -1,3 +1,20 @@
+## 1.0.0-beta.7 (2021-04-05)
+
+
+#### Features
+
+* **admin-ui** AssetPickerDialog can take initial tags ([03c6706](https://github.com/vendure-ecommerce/vendure/commit/03c6706))
+* **asset-server-plugin** Support Apple M1 (update Sharp to 0.28) ([1335080](https://github.com/vendure-ecommerce/vendure/commit/1335080)), closes [#803](https://github.com/vendure-ecommerce/vendure/issues/803)
+* **core** Add ability to get variants for a specific product in productVariants query ([1da0592](https://github.com/vendure-ecommerce/vendure/commit/1da0592)), closes [#786](https://github.com/vendure-ecommerce/vendure/issues/786)
+* **core** Add name and description fields to eligiblePaymentMethods query ([fd28208](https://github.com/vendure-ecommerce/vendure/commit/fd28208)), closes [#738](https://github.com/vendure-ecommerce/vendure/issues/738)
+
+#### Fixes
+
+* **admin-ui** Fix asset search component ([d65277e](https://github.com/vendure-ecommerce/vendure/commit/d65277e))
+* **admin-ui** Fix errors caused by lists greater than 1000 items ([5844715](https://github.com/vendure-ecommerce/vendure/commit/5844715)), closes [#807](https://github.com/vendure-ecommerce/vendure/issues/807)
+* **admin-ui** Fix facet display in product search bar ([a05044d](https://github.com/vendure-ecommerce/vendure/commit/a05044d))
+* **core** Fix product query by slug ([2ace0eb](https://github.com/vendure-ecommerce/vendure/commit/2ace0eb)), closes [#800](https://github.com/vendure-ecommerce/vendure/issues/800)
+
 ## 1.0.0-beta.6 (2021-04-01)
 
 
