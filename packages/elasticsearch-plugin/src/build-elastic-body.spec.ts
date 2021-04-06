@@ -72,6 +72,93 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('facetFilters', () => {
+        const result = buildElasticBody(
+            { facetFilters: [{ facetId: '1' }, { facetIds: ['2', '3'] }] },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { facetValueIds: '1' } },
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '2' } }, { term: { facetValueIds: '3' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('facetFilters with facetValueIds AND', () => {
+        const result = buildElasticBody(
+            {
+                facetFilters: [{ facetId: '1' }, { facetIds: ['2', '3'] }],
+                facetValueIds: ['1', '2'],
+                facetValueOperator: LogicalOperator.AND,
+            },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    {
+                        bool: {
+                            must: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                    { term: { facetValueIds: '1' } },
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '2' } }, { term: { facetValueIds: '3' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('facetFilters with facetValueIds OR', () => {
+        const result = buildElasticBody(
+            {
+                facetFilters: [{ facetId: '1' }, { facetIds: ['2', '3'] }],
+                facetValueIds: ['1', '2'],
+                facetValueOperator: LogicalOperator.OR,
+            },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                    { term: { facetValueIds: '1' } },
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '2' } }, { term: { facetValueIds: '3' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
     it('collectionId', () => {
         const result = buildElasticBody({ collectionId: '1' }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
