@@ -121,6 +121,7 @@ export const failsToSettlePaymentMethod = new PaymentMethodHandler({
     settlePayment: () => {
         return {
             success: false,
+            state: 'Cancelled',
             errorMessage: 'Something went horribly wrong',
             metadata: {
                 privateSettlePaymentData: 'secret',

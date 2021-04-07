@@ -17,7 +17,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     failsToSettlePaymentMethod,
@@ -83,9 +83,9 @@ import {
     DELETE_SHIPPING_METHOD,
     GET_CUSTOMER_LIST,
     GET_ORDER,
+    GET_ORDERS_LIST,
     GET_ORDER_FULFILLMENTS,
     GET_ORDER_HISTORY,
-    GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
@@ -356,6 +356,7 @@ describe('Orders resolver', () => {
             });
 
             expect(result.order!.state).toBe('PaymentAuthorized');
+            expect(result.order!.payments![0].state).toBe('Cancelled');
             firstOrderCode = order.code;
             firstOrderId = order.id;
         });

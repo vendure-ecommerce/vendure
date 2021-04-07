@@ -42,6 +42,9 @@ export interface CreatePaymentResult {
      *
      * In a single-step payment flow, this should be set to `'Settled'`.
      * In a two-step flow, this should be set to `'Authorized'`.
+     *
+     * If using a {@link CustomOrderProcess}, may be something else
+     * entirely according to your business logic.
      */
     state: Exclude<PaymentState, 'Error'>;
     /**
@@ -101,13 +104,41 @@ export interface CreateRefundResult {
 
 /**
  * @description
- * This object is the return value of the {@link SettlePaymentFn}
+ * This object is the return value of the {@link SettlePaymentFn} when the Payment
+ * has been successfully settled.
  *
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
 export interface SettlePaymentResult {
-    success: boolean;
+    success: true;
+    metadata?: PaymentMetadata;
+}
+
+/**
+ * @description
+ * This object is the return value of the {@link SettlePaymentFn} when the Payment
+ * could not be settled.
+ *
+ * @docsCategory payment
+ * @docsPage Payment Method Types
+ */
+export interface SettlePaymentErrorResult {
+    success: false;
+    /**
+     * @description
+     * The state to transition this Payment to upon unsuccessful settlement.
+     * Defaults to `Error`. Note that if using a different state, it must be
+     * legal to transition to that state from the `Authorized` state according
+     * to the PaymentState config (which can be customized using the
+     * {@link CustomPaymentProcess}).
+     */
+    state?: Exclude<PaymentState, 'Settled'>;
+    /**
+     * @description
+     * The message that will be returned when attempting to settle the payment, and will
+     * also be persisted as `Payment.errorMessage`.
+     */
     errorMessage?: string;
     metadata?: PaymentMetadata;
 }
@@ -141,7 +172,7 @@ export type SettlePaymentFn<T extends ConfigArgs> = (
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
-) => SettlePaymentResult | Promise<SettlePaymentResult>;
+) => SettlePaymentResult | SettlePaymentErrorResult | Promise<SettlePaymentResult | SettlePaymentErrorResult>;
 
 /**
  * @description

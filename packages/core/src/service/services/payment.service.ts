@@ -150,6 +150,12 @@ export class PaymentService {
         } else {
             payment.errorMessage = settlePaymentResult.errorMessage;
             payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
+            await this.paymentStateMachine.transition(
+                ctx,
+                payment.order,
+                payment,
+                settlePaymentResult.state || 'Error',
+            );
             await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         }
         return payment;
