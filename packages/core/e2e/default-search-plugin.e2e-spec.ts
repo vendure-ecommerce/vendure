@@ -1058,6 +1058,9 @@ describe('Default search plugin', () => {
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Very long description aabbccdd',
                 ]);
+                await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                    id: createProduct.id,
+                });
             });
         });
 
