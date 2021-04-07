@@ -1,3 +1,6 @@
+import { Type } from '@vendure/common/lib/shared-types';
+
+import { BackoffStrategy } from '../../job-queue/polling-job-queue-strategy';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
@@ -26,17 +29,38 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
  *
  * It is possible to configure the behaviour of the {@link SqlJobQueueStrategy} by passing options to the static `init()` function:
  *
+ * ### pollInterval
+ * The interval in ms between polling for new jobs. The default is 200ms.
+ * Using a longer interval reduces load on the database but results in a slight
+ * delay in processing jobs.
+ *
+ * ### concurrency
+ * The number of jobs to process concurrently per worker. Defaults to 1.
+ *
+ * ### backoffStrategy
+ * Defines the backoff strategy used when retrying failed jobs. In other words, if a job fails
+ * and is configured to be re-tried, how long should we wait before the next attempt?
+ *
+ * By default a job will be retried as soon as possible, but in some cases this is not desirable. For example,
+ * a job may interact with an unreliable 3rd-party API which is sensitive to too many requests. In this case, an
+ * exponential backoff may be used which progressively increases the delay between each subsequent retry.
+ *
  * @example
  * ```TypeScript
  * export const config: VendureConfig = {
  *   plugins: [
  *     DefaultJobQueuePlugin.init({
- *       // The interval in ms between polling for new jobs. The default is 200ms.
- *       // Using a longer interval reduces load on the database but results in a slight
- *       // delay in processing jobs.
  *       pollInterval: 5000,
- *       // The number of jobs to process concurrently per worker. Defaults to 1.
  *       concurrency: 2
+ *       backoffStrategy: (queueName, attemptsMade, job) => {
+ *         if (queueName === 'transcode-video') {
+ *           // exponential backoff example
+ *           return (attemptsMade ** 2) * 1000;
+ *         }
+ *
+ *         // A default delay for all other queues
+ *         return 1000;
+ *       },
  *     }),
  *   ],
  * };
@@ -48,14 +72,24 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
     imports: [PluginCommonModule],
     entities: [JobRecord],
     configuration: config => {
-        const { pollInterval, concurrency } = DefaultJobQueuePlugin.options ?? {};
-        config.jobQueueOptions.jobQueueStrategy = new SqlJobQueueStrategy(concurrency, pollInterval);
+        const { pollInterval, concurrency, backoffStrategy } = DefaultJobQueuePlugin.options ?? {};
+        config.jobQueueOptions.jobQueueStrategy = new SqlJobQueueStrategy({
+            concurrency,
+            pollInterval,
+            backoffStrategy,
+        });
         return config;
     },
 })
 export class DefaultJobQueuePlugin {
-    static options: { pollInterval?: number; concurrency?: number };
-    static init(options: { pollInterval?: number; concurrency?: number }) {
+    /** @internal */
+    static options: { pollInterval?: number; concurrency?: number; backoffStrategy?: BackoffStrategy };
+
+    static init(options: {
+        pollInterval?: number;
+        concurrency?: number;
+        backoffStrategy?: BackoffStrategy;
+    }): Type<DefaultJobQueuePlugin> {
         DefaultJobQueuePlugin.options = options;
         return DefaultJobQueuePlugin;
     }

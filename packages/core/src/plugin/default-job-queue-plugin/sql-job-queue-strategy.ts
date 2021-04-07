@@ -93,6 +93,13 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         const record = await qb.getOne();
         if (record) {
             const job = this.fromRecord(record);
+            if (record.state === JobState.RETRYING && typeof this.backOffStrategy === 'function') {
+                const msSinceLastFailure = Date.now() - +record.updatedAt;
+                const backOffDelayMs = this.backOffStrategy(queueName, record.attempts, job);
+                if (msSinceLastFailure < backOffDelayMs) {
+                    return;
+                }
+            }
             job.start();
             record.state = JobState.RUNNING;
             await manager.getRepository(JobRecord).save(record, { reload: false });

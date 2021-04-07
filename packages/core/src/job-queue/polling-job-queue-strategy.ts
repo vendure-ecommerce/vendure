@@ -1,5 +1,6 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { isObject } from '@vendure/common/lib/shared-utils';
 import { interval, race, Subject, Subscription } from 'rxjs';
 import { fromPromise } from 'rxjs/internal-compatibility';
 import { filter, switchMap, take, throttleTime } from 'rxjs/operators';
@@ -10,6 +11,22 @@ import { InjectableJobQueueStrategy } from './injectable-job-queue-strategy';
 import { Job } from './job';
 import { QueueNameProcessStorage } from './queue-name-process-storage';
 import { JobData } from './types';
+
+/**
+ * @description
+ * Defines the backoff strategy used when retrying failed jobs. Returns the delay in
+ * ms that should pass before the failed job is retried.
+ *
+ * @docsCategory JobQueue
+ * @docsPage types
+ */
+export type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => number;
+
+export interface PollingJobQueueStrategyConfig {
+    concurrency?: number;
+    pollInterval?: number;
+    backoffStrategy?: BackoffStrategy;
+}
 
 const STOP_SIGNAL = Symbol('STOP_SIGNAL');
 
@@ -134,12 +151,32 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
  * @description
  * This class allows easier implementation of {@link JobQueueStrategy} in a polling style.
  * Instead of providing {@link JobQueueStrategy} `start()` you should provide a `next` method.
+ *
+ * This class should be extended by any strategy which does not support a push-based system
+ * to notify on new jobs. It is used by the {@link SqlJobQueueStrategy} and {@link InMemoryJobQueueStrategy}.
+ *
+ * @docsCategory JobQueue
  */
 export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
+    public concurrency: number;
+    public pollInterval: number;
+    public backOffStrategy?: BackoffStrategy;
+
     private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
 
-    constructor(public concurrency: number = 1, public pollInterval: number = 200) {
+    constructor(config?: PollingJobQueueStrategyConfig);
+    constructor(concurrency?: number, pollInterval?: number);
+    constructor(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number) {
         super();
+
+        if (concurrencyOrConfig && isObject(concurrencyOrConfig)) {
+            this.concurrency = concurrencyOrConfig.concurrency ?? 1;
+            this.pollInterval = concurrencyOrConfig.pollInterval ?? 200;
+            this.backOffStrategy = concurrencyOrConfig.backoffStrategy;
+        } else {
+            this.concurrency = concurrencyOrConfig ?? 1;
+            this.pollInterval = maybePollInterval ?? 200;
+        }
     }
 
     async start<Data extends JobData<Data> = {}>(

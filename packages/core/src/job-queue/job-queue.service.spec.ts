@@ -8,13 +8,19 @@ import { take } from 'rxjs/operators';
 
 import { assertFound, Injector } from '../common';
 import { ConfigService } from '../config/config.service';
+import { ProcessContext, setProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
 import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 
 const queuePollInterval = 10;
-const testJobQueueStrategy = new TestingJobQueueStrategy(1, queuePollInterval);
+const backoffStrategySpy = jest.fn();
+const testJobQueueStrategy = new TestingJobQueueStrategy({
+    concurrency: 1,
+    pollInterval: queuePollInterval,
+    backoffStrategy: backoffStrategySpy.mockReturnValue(0),
+});
 
 describe('JobQueueService', () => {
     let jobQueueService: JobQueueService;
@@ -26,8 +32,14 @@ describe('JobQueueService', () => {
     }
 
     beforeEach(async () => {
+        setProcessContext('server');
+
         module = await Test.createTestingModule({
-            providers: [{ provide: ConfigService, useClass: MockConfigService }, JobQueueService],
+            providers: [
+                { provide: ConfigService, useClass: MockConfigService },
+                JobQueueService,
+                ProcessContext,
+            ],
         }).compile();
         await module.init();
 
@@ -236,6 +248,7 @@ describe('JobQueueService', () => {
     });
 
     it('retries', async () => {
+        backoffStrategySpy.mockClear();
         const subject = new Subject<boolean>();
         const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
@@ -263,12 +276,20 @@ describe('JobQueueService', () => {
         expect((await getJob(testJob)).isSettled).toBe(false);
 
         await tick(queuePollInterval);
+
+        expect(backoffStrategySpy).toHaveBeenCalledTimes(1);
+        expect(backoffStrategySpy.mock.calls[0]).toEqual(['test', 1, await getJob(testJob)]);
+
         subject.next(false);
         await tick();
         expect((await getJob(testJob)).state).toBe(JobState.RETRYING);
         expect((await getJob(testJob)).isSettled).toBe(false);
 
         await tick(queuePollInterval);
+
+        expect(backoffStrategySpy).toHaveBeenCalledTimes(2);
+        expect(backoffStrategySpy.mock.calls[1]).toEqual(['test', 2, await getJob(testJob)]);
+
         subject.next(false);
         await tick();
         expect((await getJob(testJob)).state).toBe(JobState.FAILED);

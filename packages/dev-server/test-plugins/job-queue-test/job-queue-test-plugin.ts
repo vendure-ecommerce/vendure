@@ -6,6 +6,13 @@ import { gql } from 'apollo-server-core';
 import { of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
+interface TaskConfigInput {
+    intervalMs: number;
+    shouldFail: boolean;
+    retries: number;
+    subscribeToResult: boolean;
+}
+
 @Injectable()
 export class JobQueueTestService implements OnModuleInit {
     private myQueue: JobQueue<{ intervalMs: number; shouldFail: boolean }>;
@@ -34,8 +41,9 @@ export class JobQueueTestService implements OnModuleInit {
         });
     }
 
-    async startTask(intervalMs: number, shouldFail: boolean, subscribeToResult: boolean) {
-        const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries: 0 });
+    async startTask(input: TaskConfigInput) {
+        const { intervalMs, shouldFail, subscribeToResult, retries } = input;
+        const job = await this.myQueue.add({ intervalMs, shouldFail }, { retries });
         if (subscribeToResult) {
             return job.updates().pipe(
                 map(update => {
@@ -60,7 +68,7 @@ export class JobQueueTestResolver {
 
     @Mutation()
     startTask(@Args() args: any) {
-        return this.service.startTask(args.intervalMs, args.shouldFail, args.subscribeToResult);
+        return this.service.startTask(args.input);
     }
 }
 
@@ -73,8 +81,14 @@ export class JobQueueTestResolver {
     adminApiExtensions: {
         resolvers: [JobQueueTestResolver],
         schema: gql`
+            input TaskConfigInput {
+                intervalMs: Int!
+                shouldFail: Boolean!
+                retries: Int
+                subscribeToResult: Boolean
+            }
             extend type Mutation {
-                startTask(intervalMs: Int, shouldFail: Boolean!, subscribeToResult: Boolean!): JSON!
+                startTask(input: TaskConfigInput!): JSON!
             }
         `,
     },
