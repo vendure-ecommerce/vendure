@@ -25,12 +25,6 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
         extend input SearchInput {
             priceRange: PriceRangeInput
             priceRangeWithTax: PriceRangeInput
-            facetFilters: [FacetFilterInput!]
-        }
-
-        input FacetFilterInput {
-            facetId: ID
-            facetIds: [ID!]
         }
 
         input PriceRangeInput {

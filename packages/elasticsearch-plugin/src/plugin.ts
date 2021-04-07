@@ -98,36 +98,6 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
  *
  * This `SearchResponsePriceData` type allows you to query data about the range of prices in the result set.
  *
- * # FacetFilters input
- * Moreover, the [SearchInput](/docs/graphql-api/admin/object-types/#searchinput) type is extended with
- * FacetFilters parameter to put multiple conditions of facet filtering.
- *
- * ```SDL
- * extend input SearchInput {
- *    facetFilters: [FacetFilterInput!]
- * }
- * input FacetFilterInput {
- *     facetId: ID
- *     facetIds: [ID!]
- * }
- * ```
- *
- * # Simple OR filter
- * This example translate as facetID=1 OR facet_id=2
- * ```JSON
- * {facetFilters: [{facetIds:[1,2]}]}
- * ```
- * # Simple AND filter
- * This example translate as facetID=1 AND facet_id=2
- * ```JSON
- * {facetFilters: [{facetId:1]},{facetId:2}]}
- * ```
- * # AND and OR filter combination
- * This example translate as facetID=1 AND (facet_id=2 OR facet_id=3)
- * ```JSON
- * {facetFilters: [{facetId:1]},{facetIds:[2,3]}]}
- * ```
- *
  * ## Example Request & Response
  *
  * ```SDL

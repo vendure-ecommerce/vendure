@@ -10,15 +10,9 @@ import {
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { Asset, SerializedRequestContext } from '@vendure/core';
 
-export type FacetFilter = {
-    facetId?: ID;
-    facetIds?: ID[];
-};
-
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
     priceRangeWithTax?: PriceRange;
-    facetFilters?: FacetFilter[];
 };
 
 export type ElasticSearchResponse = SearchResponse & {

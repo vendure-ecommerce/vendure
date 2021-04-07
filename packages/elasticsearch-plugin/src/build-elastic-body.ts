@@ -26,7 +26,7 @@ export function buildElasticBody(
         sort,
         priceRangeWithTax,
         priceRange,
-        facetFilters,
+        facetValueFilters,
     } = input;
     const query: any = {
         bool: {},
@@ -60,20 +60,20 @@ export function buildElasticBody(
             },
         ]);
     }
-    if (facetFilters && facetFilters.length) {
+    if (facetValueFilters && facetValueFilters.length) {
         ensureBoolFilterExists(query);
-        facetFilters.forEach(facetFilter => {
-            if (facetFilter.facetId && facetFilter.facetIds && facetFilter.facetIds.length) {
+        facetValueFilters.forEach(facetValueFilter => {
+            if (facetValueFilter.facetValueId && facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
                 throw Error('facetId and facetIds cannot be specified simultaneously');
             }
 
-            if (facetFilter.facetId) {
-                query.bool.filter.push({ term: { facetValueIds: facetFilter.facetId } });
+            if (facetValueFilter.facetValueId) {
+                query.bool.filter.push({ term: { facetValueIds: facetValueFilter.facetValueId } });
             }
 
-            if (facetFilter.facetIds && facetFilter.facetIds.length) {
+            if (facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
                 query.bool.filter.push({
-                    bool: { should: facetFilter.facetIds.map(id => ({ term: { facetValueIds: id } })) },
+                    bool: { ['should']: facetValueFilter.facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
                 });
             }
         });

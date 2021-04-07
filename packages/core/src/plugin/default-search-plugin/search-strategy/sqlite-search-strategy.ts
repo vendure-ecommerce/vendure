@@ -105,7 +105,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
+        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -141,6 +141,35 @@ export class SqliteSearchStrategy implements SearchStrategy {
                         } else {
                             qb1.orWhere(clause, params);
                         }
+                    }
+                }),
+            );
+        }
+        if (facetValueFilters?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const facetValueFilter of facetValueFilters)
+                    {
+                        qb1.andWhere(new Brackets(qb2 => {
+                            if (facetValueFilter.facetValueId && facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
+                                throw Error('facetValueId and facetValueIds cannot be specified simultaneously');
+                            }
+                            if (facetValueFilter.facetValueId) {
+                                const placeholder = '_' + facetValueFilter.facetValueId;
+                                const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                                const params = { [placeholder]: `%,${facetValueFilter.facetValueId},%` }
+                                qb2.where(clause, params);
+                            }
+                            if (facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
+                                for (const id of facetValueFilter.facetValueIds)
+                                {
+                                    const placeholder = '_' + id;
+                                    const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                                    const params = { [placeholder]: `%,${id},%` };
+                                    qb2.orWhere(clause, params);
+                                }
+                            }
+                        }))
                     }
                 }),
             );
