@@ -713,6 +713,7 @@
     "add-products-to-test-order": "新增產品到測試訂單",
     "channel": "渠道",
     "channel-token": "渠道唯一碼",
+    "confirm-delete-payment-method": "",
     "confirm-delete-role": "確認移除角色?",
     "confirm-delete-tax-category": "確認移除税表分類?",
     "confirm-delete-tax-rate": "確認移除税率?",

@@ -713,6 +713,7 @@
     "add-products-to-test-order": "",
     "channel": "Canal de ventas",
     "channel-token": "Token de canal",
+    "confirm-delete-payment-method": "",
     "confirm-delete-role": "¿Eliminar rol?",
     "confirm-delete-tax-category": "¿Eliminar categoría de impuestos?",
     "confirm-delete-tax-rate": "¿Eliminar tasa de impuestos?",

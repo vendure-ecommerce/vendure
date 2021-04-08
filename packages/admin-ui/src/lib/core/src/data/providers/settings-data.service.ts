@@ -18,6 +18,7 @@ import {
     CreateZoneInput,
     DeleteChannel,
     DeleteCountry,
+    DeletePaymentMethod,
     DeleteTaxCategory,
     DeleteTaxRate,
     DeleteZone,
@@ -70,6 +71,7 @@ import {
     CREATE_ZONE,
     DELETE_CHANNEL,
     DELETE_COUNTRY,
+    DELETE_PAYMENT_METHOD,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
     DELETE_ZONE,
@@ -336,6 +338,16 @@ export class SettingsDataService {
             UPDATE_PAYMENT_METHOD,
             {
                 input,
+            },
+        );
+    }
+
+    deletePaymentMethod(id: string, force: boolean) {
+        return this.baseDataService.mutate<DeletePaymentMethod.Mutation, DeletePaymentMethod.Variables>(
+            DELETE_PAYMENT_METHOD,
+            {
+                id,
+                force,
             },
         );
     }

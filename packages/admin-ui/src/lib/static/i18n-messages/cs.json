@@ -713,6 +713,7 @@
     "add-products-to-test-order": "Přidat produkty do testovací objednávky",
     "channel": "Kanál",
     "channel-token": "Token kanálu",
+    "confirm-delete-payment-method": "",
     "confirm-delete-role": "Smazat roli?",
     "confirm-delete-tax-category": "Smazat daňovou kategorii?",
     "confirm-delete-tax-rate": "Smazat daňovou sazbu?",

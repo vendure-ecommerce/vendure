@@ -409,6 +409,8 @@ export type Mutation = {
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>;
   deleteOrderNote: DeletionResponse;
+  /** Delete a PaymentMethod */
+  deletePaymentMethod: DeletionResponse;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
   /** Delete a ProductVariant */
@@ -774,6 +776,12 @@ export type MutationDeleteFacetValuesArgs = {
 
 export type MutationDeleteOrderNoteArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeletePaymentMethodArgs = {
+  id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -7291,6 +7299,17 @@ export type UpdatePaymentMethodMutation = { updatePaymentMethod: (
     & PaymentMethodFragment
   ) };
 
+export type DeletePaymentMethodMutationVariables = Exact<{
+  id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type DeletePaymentMethodMutation = { deletePaymentMethod: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) };
+
 export type GlobalSettingsFragment = (
   { __typename?: 'GlobalSettings' }
   & Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory' | 'outOfStockThreshold'>
@@ -9475,6 +9494,12 @@ export namespace UpdatePaymentMethod {
   export type Variables = UpdatePaymentMethodMutationVariables;
   export type Mutation = UpdatePaymentMethodMutation;
   export type UpdatePaymentMethod = (NonNullable<UpdatePaymentMethodMutation['updatePaymentMethod']>);
+}
+
+export namespace DeletePaymentMethod {
+  export type Variables = DeletePaymentMethodMutationVariables;
+  export type Mutation = DeletePaymentMethodMutation;
+  export type DeletePaymentMethod = (NonNullable<DeletePaymentMethodMutation['deletePaymentMethod']>);
 }
 
 export namespace GlobalSettings {

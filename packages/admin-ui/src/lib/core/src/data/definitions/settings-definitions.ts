@@ -444,6 +444,15 @@ export const UPDATE_PAYMENT_METHOD = gql`
     ${PAYMENT_METHOD_FRAGMENT}
 `;
 
+export const DELETE_PAYMENT_METHOD = gql`
+    mutation DeletePaymentMethod($id: ID!, $force: Boolean) {
+        deletePaymentMethod(id: $id, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
 export const GLOBAL_SETTINGS_FRAGMENT = gql`
     fragment GlobalSettings on GlobalSettings {
         id
