@@ -122,7 +122,7 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
         {
             input: {
                 groupByProduct: true,
-                facetValueFilters: [{ facetValueId: 'T_1' }, { facetValueId: 'T_2' }],
+                facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
             },
         },
     );
@@ -142,7 +142,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
         {
             input: {
                 groupByProduct: true,
-                facetValueFilters: [ { facetValueIds: ['T_1', 'T_5'] }],
+                facetValueFilters: [ { or: ['T_1', 'T_5'] }],
                 sort: {
                     name: SortOrder.ASC,
                 },
@@ -173,7 +173,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
         {
             input: {
                 groupByProduct: true,
-                facetValueFilters: [{facetValueId: 'T_1'}, { facetValueIds: ['T_2', 'T_3'] }],
+                facetValueFilters: [{and: 'T_1'}, { or: ['T_2', 'T_3'] }],
             },
         },
     );
@@ -198,7 +198,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             input: {
                 facetValueIds: ['T_2', 'T_3'],
                 facetValueOperator: LogicalOperator.OR,
-                facetValueFilters: [{facetValueId:'T_1'}],
+                facetValueFilters: [{and:'T_1'}],
                 groupByProduct: true,
             },
         },
@@ -223,7 +223,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
         {
             input: {
                 facetValueIds: ['T_1'],
-                facetValueFilters: [{facetValueId:'T_3'}],
+                facetValueFilters: [{and:'T_3'}],
                 facetValueOperator: LogicalOperator.AND,
                 groupByProduct: true,
             },

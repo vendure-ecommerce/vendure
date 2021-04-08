@@ -63,17 +63,17 @@ export function buildElasticBody(
     if (facetValueFilters && facetValueFilters.length) {
         ensureBoolFilterExists(query);
         facetValueFilters.forEach(facetValueFilter => {
-            if (facetValueFilter.facetValueId && facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
+            if (facetValueFilter.and && facetValueFilter.or && facetValueFilter.or.length) {
                 throw Error('facetId and facetIds cannot be specified simultaneously');
             }
 
-            if (facetValueFilter.facetValueId) {
-                query.bool.filter.push({ term: { facetValueIds: facetValueFilter.facetValueId } });
+            if (facetValueFilter.and) {
+                query.bool.filter.push({ term: { facetValueIds: facetValueFilter.and } });
             }
 
-            if (facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
+            if (facetValueFilter.or && facetValueFilter.or.length) {
                 query.bool.filter.push({
-                    bool: { ['should']: facetValueFilter.facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
+                    bool: { ['should']: facetValueFilter.or.map(id => ({ term: { facetValueIds: id } })) },
                 });
             }
         });

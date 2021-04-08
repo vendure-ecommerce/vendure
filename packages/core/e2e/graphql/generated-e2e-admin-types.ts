@@ -2814,8 +2814,8 @@ export type DateOperators = {
 };
 
 export type FacetValueFilterInput = {
-  facetValueId?: Maybe<Scalars['ID']>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  and?: Maybe<Scalars['ID']>;
+  or?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type SearchInput = {

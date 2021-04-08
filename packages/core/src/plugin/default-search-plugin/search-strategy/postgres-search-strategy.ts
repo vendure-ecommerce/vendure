@@ -162,17 +162,17 @@ export class PostgresSearchStrategy implements SearchStrategy {
                     for (const facetValueFilter of facetValueFilters)
                     {
                         qb1.andWhere(new Brackets(qb2 => {
-                            if (facetValueFilter.facetValueId && facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
+                            if (facetValueFilter.and && facetValueFilter.or && facetValueFilter.or.length) {
                                 throw Error('facetValueId and facetValueIds cannot be specified simultaneously');
                             }
-                            if (facetValueFilter.facetValueId) {
-                                const placeholder = '_' + facetValueFilter.facetValueId;
+                            if (facetValueFilter.and) {
+                                const placeholder = '_' + facetValueFilter.and;
                                 const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
-                                const params = { [placeholder]: facetValueFilter.facetValueId };
+                                const params = { [placeholder]: facetValueFilter.and };
                                 qb2.where(clause, params);
                             }
-                            if (facetValueFilter.facetValueIds && facetValueFilter.facetValueIds.length) {
-                                for (const id of facetValueFilter.facetValueIds)
+                            if (facetValueFilter.or && facetValueFilter.or.length) {
+                                for (const id of facetValueFilter.or)
                                 {
                                     const placeholder = '_' + id;
                                     const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;

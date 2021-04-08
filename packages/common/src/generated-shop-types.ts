@@ -769,8 +769,8 @@ export type DateOperators = {
 };
 
 export type FacetValueFilterInput = {
-  facetValueId?: Maybe<Scalars['ID']>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  and?: Maybe<Scalars['ID']>;
+  or?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type SearchInput = {
@@ -784,6 +784,8 @@ export type SearchInput = {
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
   sort?: Maybe<SearchResultSortParameter>;
+  priceRange?: Maybe<PriceRangeInput>;
+  priceRangeWithTax?: Maybe<PriceRangeInput>;
 };
 
 export type SearchResultSortParameter = {
@@ -2128,6 +2130,7 @@ export type SearchResponse = {
   items: Array<SearchResult>;
   totalItems: Scalars['Int'];
   facetValues: Array<FacetValueResult>;
+  prices: SearchResponsePriceData;
 };
 
 /**
@@ -2636,6 +2639,25 @@ export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError |
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
 
 export type ActiveOrderResult = Order | NoActiveOrderError;
+
+export type SearchResponsePriceData = {
+  __typename?: 'SearchResponsePriceData';
+  range: PriceRange;
+  rangeWithTax: PriceRange;
+  buckets: Array<PriceRangeBucket>;
+  bucketsWithTax: Array<PriceRangeBucket>;
+};
+
+export type PriceRangeBucket = {
+  __typename?: 'PriceRangeBucket';
+  to: Scalars['Int'];
+  count: Scalars['Int'];
+};
+
+export type PriceRangeInput = {
+  min: Scalars['Int'];
+  max: Scalars['Int'];
+};
 
 export type CollectionListOptions = {
   skip?: Maybe<Scalars['Int']>;

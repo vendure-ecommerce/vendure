@@ -114,8 +114,8 @@ input DateOperators {
 }
 
 input facetValueFilterInput {
-    facetValueId: ID
-    facetValueIds: [ID!]
+    and: ID
+    or: [ID!]
 }
 
 input SearchInput {
