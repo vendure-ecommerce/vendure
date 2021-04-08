@@ -3,6 +3,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { SearchIndexItem } from '../search-index-item.entity';
 
@@ -105,7 +106,14 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
+        const {
+            term,
+            facetValueFilters,
+            facetValueIds,
+            facetValueOperator,
+            collectionId,
+            collectionSlug,
+        } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -148,28 +156,28 @@ export class SqliteSearchStrategy implements SearchStrategy {
         if (facetValueFilters?.length) {
             qb.andWhere(
                 new Brackets(qb1 => {
-                    for (const facetValueFilter of facetValueFilters)
-                    {
-                        qb1.andWhere(new Brackets(qb2 => {
-                            if (facetValueFilter.and && facetValueFilter.or && facetValueFilter.or.length) {
-                                throw Error('facetValueId and facetValueIds cannot be specified simultaneously');
-                            }
-                            if (facetValueFilter.and) {
-                                const placeholder = '_' + facetValueFilter.and;
-                                const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
-                                const params = { [placeholder]: `%,${facetValueFilter.and},%` }
-                                qb2.where(clause, params);
-                            }
-                            if (facetValueFilter.or && facetValueFilter.or.length) {
-                                for (const id of facetValueFilter.or)
-                                {
-                                    const placeholder = '_' + id;
-                                    const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
-                                    const params = { [placeholder]: `%,${id},%` };
-                                    qb2.orWhere(clause, params);
+                    for (const facetValueFilter of facetValueFilters) {
+                        qb1.andWhere(
+                            new Brackets(qb2 => {
+                                if (facetValueFilter.and && facetValueFilter.or?.length) {
+                                    throw new UserInputError('error.facetfilterinput-invalid-input');
                                 }
-                            }
-                        }))
+                                if (facetValueFilter.and) {
+                                    const placeholder = '_' + facetValueFilter.and;
+                                    const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                                    const params = { [placeholder]: `%,${facetValueFilter.and},%` };
+                                    qb2.where(clause, params);
+                                }
+                                if (facetValueFilter.or?.length) {
+                                    for (const id of facetValueFilter.or) {
+                                        const placeholder = '_' + id;
+                                        const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                                        const params = { [placeholder]: `%,${id},%` };
+                                        qb2.orWhere(clause, params);
+                                    }
+                                }
+                            }),
+                        );
                     }
                 }),
             );

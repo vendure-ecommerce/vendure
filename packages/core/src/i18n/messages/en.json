@@ -17,6 +17,7 @@
     "default-channel-not-found": "Default channel not found",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
     "entity-with-id-not-found": "No { entityName } with the id '{ id }' could be found",
+    "facetfilterinput-invalid-input": "A FacetValueFilterInput object may not specify the 'and' and 'or' fields simultaneously",
     "field-invalid-datetime-range-max": "The custom field '{ name }' value [{ value }] is greater than the maximum [{ max }]",
     "field-invalid-datetime-range-min": "The custom field '{ name }' value [{ value }] is less than the minimum [{ min }]",
     "field-invalid-non-nullable": "The custom field '{ name }' value cannot be set to null",
