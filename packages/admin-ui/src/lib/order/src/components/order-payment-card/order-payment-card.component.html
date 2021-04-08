@@ -1,6 +1,9 @@
 <div class="card">
     <div class="card-header payment-header">
-        <div>{{ 'order.payment' | translate }} #{{ payment.transactionId }}</div>
+        <div>
+            {{ 'order.payment' | translate }}
+            <ng-container *ngIf="payment.transactionId">#{{ payment.transactionId }}</ng-container>
+        </div>
         <div class="payment-state">
             <vdr-payment-state-label [state]="payment.state"></vdr-payment-state-label>
         </div>

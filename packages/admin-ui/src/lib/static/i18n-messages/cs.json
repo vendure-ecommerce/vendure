@@ -596,6 +596,7 @@
     "customer": "Zákazník",
     "edit-billing-address": "Upravit fakturační adresu",
     "edit-shipping-address": "Upravit dodací adresu",
+    "error-message": "",
     "filter-custom": "Vlastní",
     "filter-preset-active": "Aktivní",
     "filter-preset-completed": "Uzavřené",

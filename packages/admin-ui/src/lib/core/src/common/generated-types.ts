@@ -5815,7 +5815,7 @@ export type OrderDetailFragment = (
     & OrderAddressFragment
   )>, payments?: Maybe<Array<(
     { __typename?: 'Payment' }
-    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'nextStates' | 'metadata'>
+    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'nextStates' | 'errorMessage' | 'metadata'>
     & { refunds: Array<(
       { __typename?: 'Refund' }
       & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'>

@@ -596,6 +596,7 @@
     "customer": "Kunde",
     "edit-billing-address": "Rechnungsadresse bearbeiten",
     "edit-shipping-address": "Versandadresse bearbeiten",
+    "error-message": "",
     "filter-custom": "Benutzerdefiniert",
     "filter-preset-active": "Aktiv",
     "filter-preset-completed": "Abgeschlossen",

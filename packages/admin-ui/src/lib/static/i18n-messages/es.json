@@ -596,6 +596,7 @@
     "customer": "Cliente",
     "edit-billing-address": "",
     "edit-shipping-address": "",
+    "error-message": "",
     "filter-custom": "",
     "filter-preset-active": "",
     "filter-preset-completed": "",

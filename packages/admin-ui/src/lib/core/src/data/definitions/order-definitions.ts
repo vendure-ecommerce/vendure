@@ -186,6 +186,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             method
             state
             nextStates
+            errorMessage
             metadata
             refunds {
                 id

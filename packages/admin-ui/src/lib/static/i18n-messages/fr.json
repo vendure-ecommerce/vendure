@@ -596,6 +596,7 @@
     "customer": "Client",
     "edit-billing-address": "",
     "edit-shipping-address": "",
+    "error-message": "",
     "filter-custom": "Personnalisé",
     "filter-preset-active": "Active",
     "filter-preset-completed": "Terminée",
