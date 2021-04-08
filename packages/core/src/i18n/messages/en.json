@@ -109,6 +109,7 @@
     "facet-used": "The selected Facet includes FacetValues which are assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-value-force-deleted": "The selected FacetValue was removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}} and deleted",
     "facet-value-used": "The selected FacetValue is assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
+    "payment-method-used-in-channels": "The selected PaymentMethod is assigned to the following Channels: { channelCodes }. Set \"force: true\" to delete from all Channels.",
     "zone-used-in-channels": "The selected Zone cannot be deleted as it used as a default in the following Channels: { channelCodes }",
     "zone-used-in-tax-rates": "The selected Zone cannot be deleted as it is used in the following TaxRates: { taxRateNames }"
   }

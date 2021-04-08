@@ -6,6 +6,23 @@ import { CreatePaymentResult, PaymentMethodHandler } from './payment-method-hand
  * @description
  * A dummy PaymentMethodHandler which simply creates a Payment without any integration
  * with an external payment provider. Intended only for use in development.
+ *
+ * By specifying certain metadata keys, failures can be simulated:
+ * @example
+ * ```GraphQL
+ * addPaymentToOrder(input: {
+ *   method: 'dummy-payment-method',
+ *   metadata: {
+ *     shouldDecline: false,
+ *     shouldError: false,
+ *     shouldErrorOnSettle: true,
+ *   }
+ * }) {
+ *   # ...
+ * }
+ * ```
+ *
+ * @docsCategory payment
  */
 export const dummyPaymentHandler = new PaymentMethodHandler({
     code: 'dummy-payment-handler',
@@ -34,11 +51,20 @@ export const dummyPaymentHandler = new PaymentMethodHandler({
             defaultValue: false,
         },
     },
-    createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
+    createPayment: async (ctx, order, amount, args, metadata) => {
         if (metadata.shouldDecline) {
             return {
                 amount,
-                state: 'Declined' as 'Declined',
+                state: 'Declined' as const,
+                metadata: {
+                    errorMessage: 'Simulated decline',
+                },
+            };
+        } else if (metadata.shouldError) {
+            return {
+                amount,
+                state: 'Error' as const,
+                errorMessage: 'Simulated error',
                 metadata: {
                     errorMessage: 'Simulated error',
                 },
@@ -53,9 +79,14 @@ export const dummyPaymentHandler = new PaymentMethodHandler({
         }
     },
     settlePayment: async (ctx, order, payment, args) => {
+        if (payment.metadata.shouldErrorOnSettle) {
+            return {
+                success: false,
+                errorMessage: 'Simulated settlement error',
+            };
+        }
         return {
             success: true,
-            metadata: {},
         };
     },
 });

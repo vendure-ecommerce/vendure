@@ -1,7 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ConfigurableOperationDefinition,
+    DeletionResponse,
     MutationCreatePaymentMethodArgs,
+    MutationDeletePaymentMethodArgs,
     MutationUpdatePaymentMethodArgs,
     Permission,
     QueryPaymentMethodArgs,
@@ -56,6 +58,16 @@ export class PaymentMethodResolver {
         @Args() args: MutationUpdatePaymentMethodArgs,
     ): Promise<PaymentMethod> {
         return this.paymentMethodService.update(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    deletePaymentMethod(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeletePaymentMethodArgs,
+    ): Promise<DeletionResponse> {
+        return this.paymentMethodService.delete(ctx, args.id, args.force);
     }
 
     @Query()

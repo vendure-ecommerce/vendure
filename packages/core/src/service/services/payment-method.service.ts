@@ -3,9 +3,12 @@ import { PaymentMethodQuote } from '@vendure/common/lib/generated-shop-types';
 import {
     ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
+    DeletionResponse,
+    DeletionResult,
     UpdatePaymentMethodInput,
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -82,6 +85,48 @@ export class PaymentMethodService {
             paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
         }
         return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
+    }
+
+    async delete(
+        ctx: RequestContext,
+        paymentMethodId: ID,
+        force: boolean = false,
+    ): Promise<DeletionResponse> {
+        const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, paymentMethodId, {
+            relations: ['channels'],
+            channelId: ctx.channelId,
+        });
+        if (ctx.channel.code === DEFAULT_CHANNEL_CODE) {
+            const nonDefaultChannels = paymentMethod.channels.filter(
+                channel => channel.code !== DEFAULT_CHANNEL_CODE,
+            );
+            if (0 < nonDefaultChannels.length && !force) {
+                const message = ctx.translate('message.payment-method-used-in-channels', {
+                    channelCodes: nonDefaultChannels.map(c => c.code).join(', '),
+                });
+                const result = DeletionResult.NOT_DELETED;
+                return { result, message };
+            }
+            try {
+                await this.connection.getRepository(ctx, PaymentMethod).remove(paymentMethod);
+                return {
+                    result: DeletionResult.DELETED,
+                };
+            } catch (e) {
+                return {
+                    result: DeletionResult.NOT_DELETED,
+                    message: e.message || String(e),
+                };
+            }
+        } else {
+            // If not deleting from the default channel, we will not actually delete,
+            // but will remove from the current channel
+            paymentMethod.channels = paymentMethod.channels.filter(c => !idsAreEqual(c.id, ctx.channelId));
+            await this.connection.getRepository(ctx, PaymentMethod).save(paymentMethod);
+            return {
+                result: DeletionResult.DELETED,
+            };
+        }
     }
 
     getPaymentMethodEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {

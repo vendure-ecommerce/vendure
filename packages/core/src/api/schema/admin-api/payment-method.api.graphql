@@ -10,6 +10,8 @@ type Mutation {
     createPaymentMethod(input: CreatePaymentMethodInput!): PaymentMethod!
     "Update an existing PaymentMethod"
     updatePaymentMethod(input: UpdatePaymentMethodInput!): PaymentMethod!
+    "Delete a PaymentMethod"
+    deletePaymentMethod(id: ID!, force: Boolean): DeletionResponse!
 }
 
 type PaymentMethodList implements PaginatedList {

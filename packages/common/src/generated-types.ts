@@ -423,6 +423,8 @@ export type Mutation = {
   createPaymentMethod: PaymentMethod;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
+  /** Delete a PaymentMethod */
+  deletePaymentMethod: DeletionResponse;
   /** Create a new ProductOptionGroup */
   createProductOptionGroup: ProductOptionGroup;
   /** Update an existing ProductOptionGroup */
@@ -827,6 +829,12 @@ export type MutationCreatePaymentMethodArgs = {
 
 export type MutationUpdatePaymentMethodArgs = {
   input: UpdatePaymentMethodInput;
+};
+
+
+export type MutationDeletePaymentMethodArgs = {
+  id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
 };
 
 
