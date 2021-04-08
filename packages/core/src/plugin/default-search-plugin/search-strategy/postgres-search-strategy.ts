@@ -111,7 +111,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
         input: SearchInput,
         forceGroup: boolean = false,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
+        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
         // join multiple words with the logical AND operator
         const termLogicalAnd = term ? term.trim().replace(/\s+/g, ' & ') : '';
 
@@ -152,6 +152,35 @@ export class PostgresSearchStrategy implements SearchStrategy {
                         } else {
                             qb1.orWhere(clause, params);
                         }
+                    }
+                }),
+            );
+        }
+        if (facetValueFilters?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const facetValueFilter of facetValueFilters)
+                    {
+                        qb1.andWhere(new Brackets(qb2 => {
+                            if (facetValueFilter.and && facetValueFilter.or && facetValueFilter.or.length) {
+                                throw Error('facetValueId and facetValueIds cannot be specified simultaneously');
+                            }
+                            if (facetValueFilter.and) {
+                                const placeholder = '_' + facetValueFilter.and;
+                                const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
+                                const params = { [placeholder]: facetValueFilter.and };
+                                qb2.where(clause, params);
+                            }
+                            if (facetValueFilter.or && facetValueFilter.or.length) {
+                                for (const id of facetValueFilter.or)
+                                {
+                                    const placeholder = '_' + id;
+                                    const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
+                                    const params = { [placeholder]: id };
+                                    qb2.orWhere(clause, params);
+                                }
+                            }
+                        }))
                     }
                 }),
             );

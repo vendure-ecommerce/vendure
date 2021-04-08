@@ -116,6 +116,127 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
     ]);
 }
 
+export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                groupByProduct: true,
+                facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Laptop',
+        'Curvy Monitor',
+        'Gaming PC',
+        'Hard Drive',
+        'Clacky Keyboard',
+        'USB Cable',
+    ].sort());
+}
+
+export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                groupByProduct: true,
+                facetValueFilters: [ { or: ['T_1', 'T_5'] }],
+                sort: {
+                    name: SortOrder.ASC,
+                },
+                take: 20,
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Bonsai Tree',
+        'Camera Lens',
+        'Clacky Keyboard',
+        'Curvy Monitor',
+        'Gaming PC',
+        'Hard Drive',
+        'Instant Camera',
+        'Laptop',
+        'Orchid',
+        'SLR Camera',
+        'Spiky Cactus',
+        'Tripod',
+        'USB Cable',
+    ].sort());
+}
+
+export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                groupByProduct: true,
+                facetValueFilters: [{and: 'T_1'}, { or: ['T_2', 'T_3'] }],
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Laptop',
+        'Curvy Monitor',
+        'Gaming PC',
+        'Hard Drive',
+        'Clacky Keyboard',
+        'USB Cable',
+        'Instant Camera',
+        'Camera Lens',
+        'Tripod',
+        'SLR Camera'
+    ].sort());
+}
+
+export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                facetValueIds: ['T_2', 'T_3'],
+                facetValueOperator: LogicalOperator.OR,
+                facetValueFilters: [{and:'T_1'}],
+                groupByProduct: true,
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Laptop',
+        'Curvy Monitor',
+        'Gaming PC',
+        'Hard Drive',
+        'Clacky Keyboard',
+        'USB Cable',
+        'Instant Camera',
+        'Camera Lens',
+        'Tripod',
+        'SLR Camera',
+    ].sort());
+}
+
+export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                facetValueIds: ['T_1'],
+                facetValueFilters: [{and:'T_3'}],
+                facetValueOperator: LogicalOperator.AND,
+                groupByProduct: true,
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Instant Camera',
+        'Camera Lens',
+        'Tripod',
+        'SLR Camera'
+    ].sort());
+}
+
 export async function testMatchCollectionId(client: SimpleGraphQLClient) {
     const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
         SEARCH_PRODUCTS_SHOP,

@@ -26,6 +26,7 @@ export function buildElasticBody(
         sort,
         priceRangeWithTax,
         priceRange,
+        facetValueFilters,
     } = input;
     const query: any = {
         bool: {},
@@ -58,6 +59,24 @@ export function buildElasticBody(
                 bool: { [operator]: facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
             },
         ]);
+    }
+    if (facetValueFilters && facetValueFilters.length) {
+        ensureBoolFilterExists(query);
+        facetValueFilters.forEach(facetValueFilter => {
+            if (facetValueFilter.and && facetValueFilter.or && facetValueFilter.or.length) {
+                throw Error('facetId and facetIds cannot be specified simultaneously');
+            }
+
+            if (facetValueFilter.and) {
+                query.bool.filter.push({ term: { facetValueIds: facetValueFilter.and } });
+            }
+
+            if (facetValueFilter.or && facetValueFilter.or.length) {
+                query.bool.filter.push({
+                    bool: { ['should']: facetValueFilter.or.map(id => ({ term: { facetValueIds: id } })) },
+                });
+            }
+        });
     }
     if (collectionId) {
         ensureBoolFilterExists(query);

@@ -113,10 +113,16 @@ input DateOperators {
     between: DateRange
 }
 
+input facetValueFilterInput {
+    and: ID
+    or: [ID!]
+}
+
 input SearchInput {
     term: String
-    facetValueIds: [ID!]
-    facetValueOperator: LogicalOperator
+    facetValueIds: [ID!] @deprecated(reason: "Use `facetValueFilters` instead")
+    facetValueOperator: LogicalOperator @deprecated(reason: "Use `facetValueFilters` instead")
+    facetValueFilters: [facetValueFilterInput!]
     collectionId: ID
     collectionSlug: String
     groupByProduct: Boolean

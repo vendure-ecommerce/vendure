@@ -2937,10 +2937,16 @@ export type DateOperators = {
   between?: Maybe<DateRange>;
 };
 
+export type FacetValueFilterInput = {
+  and?: Maybe<Scalars['ID']>;
+  or?: Maybe<Array<Scalars['ID']>>;
+};
+
 export type SearchInput = {
   term?: Maybe<Scalars['String']>;
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   facetValueOperator?: Maybe<LogicalOperator>;
+  facetValueFilters?: Maybe<Array<FacetValueFilterInput>>;
   collectionId?: Maybe<Scalars['ID']>;
   collectionSlug?: Maybe<Scalars['String']>;
   groupByProduct?: Maybe<Scalars['Boolean']>;

@@ -71,6 +71,11 @@ import {
     testMatchCollectionSlug,
     testMatchFacetIdsAnd,
     testMatchFacetIdsOr,
+    testMatchFacetValueFiltersAnd,
+    testMatchFacetValueFiltersOr,
+    testMatchFacetValueFiltersOrWithAnd,
+    testMatchFacetValueFiltersWithFacetIdsAnd,
+    testMatchFacetValueFiltersWithFacetIdsOr,
     testMatchSearchTerm,
     testNoGrouping,
     testPriceRanges,
@@ -157,6 +162,16 @@ describe('Elasticsearch plugin', () => {
         it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(shopClient));
 
         it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+
+        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+
+        it('matches by FacetValueFilters with facetId OR operator', () => testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters with facetId AND operator', () => testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
@@ -311,6 +326,16 @@ describe('Elasticsearch plugin', () => {
         it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(adminClient));
 
         it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(adminClient));
+
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+
+        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+
+        it('matches by FacetValueFilters with facetId OR operator', () => testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters with facetId AND operator', () => testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
