@@ -1,6 +1,4 @@
-
 @mixin order-table {
-
     .is-cancelled td {
         text-decoration: line-through;
         background-color: var(--color-component-bg-200);
@@ -13,6 +11,25 @@
     .total td {
         font-weight: bold;
         border-top: 1px dashed var(--color-component-border-200);
+    }
+
+    td.custom-fields-row {
+        border-top-style: dashed;
+        border-top-color: var(--color-grey-200);
+    }
+
+    .order-line-custom-fields {
+        display: flex;
+        flex-wrap: wrap;
+
+        .custom-field {
+            text-align: start;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 6px;
+            margin-right: 18px;
+        }
     }
 
     .order-line-custom-field {

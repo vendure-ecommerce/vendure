@@ -32,6 +32,20 @@ export class OrderTableComponent implements OnInit {
         return line.discounts.filter(a => a.type === AdjustmentType.PROMOTION);
     }
 
+    getLineCustomFields(line: OrderDetail.Lines): Array<{ config: CustomFieldConfig; value: any }> {
+        return this.orderLineCustomFields
+            .map(config => {
+                const value = (line as any).customFields[config.name];
+                return {
+                    config,
+                    value,
+                };
+            })
+            .filter(field => {
+                return this.orderLineCustomFieldsVisible ? true : field.value != null;
+            });
+    }
+
     getPromotionLink(promotion: OrderDetail.Discounts): any[] {
         const id = promotion.adjustmentSource.split(':')[1];
         return ['/marketing', 'promotions', id];
