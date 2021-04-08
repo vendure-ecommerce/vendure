@@ -85,13 +85,15 @@ export class CollectionService implements OnModuleInit {
                 const ctx = RequestContext.deserialize(job.data.ctx);
 
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
-                const collections = await this.connection
-                    .getRepository(Collection)
-                    .findByIds(job.data.collectionIds, {
+                let completed = 0;
+                for (const collectionId of job.data.collectionIds) {
+                    const collection = await this.connection.getRepository(Collection).findOne(collectionId, {
                         relations: ['productVariants'],
                     });
-                let completed = 0;
-                for (const collection of collections) {
+                    if (!collection) {
+                        Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
+                        continue;
+                    }
                     const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
                     job.setProgress(Math.ceil((++completed / job.data.collectionIds.length) * 100));
                     this.eventBus.publish(
