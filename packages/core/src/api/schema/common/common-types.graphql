@@ -113,7 +113,15 @@ input DateOperators {
     between: DateRange
 }
 
-input facetValueFilterInput {
+"""
+Used to construct boolean expressions for filtering search results
+by FacetValue ID. Examples:
+
+* ID=1 OR ID=2: `{ facetValueFilters: [{ or: [1,2] }] }`
+* ID=1 AND ID=2: `{ facetValueFilters: [{ and: 1 }, { and: 2 }] }`
+* ID=1 AND (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1 }, { or: [2,3] }] }`
+"""
+input FacetValueFilterInput {
     and: ID
     or: [ID!]
 }
@@ -122,7 +130,7 @@ input SearchInput {
     term: String
     facetValueIds: [ID!] @deprecated(reason: "Use `facetValueFilters` instead")
     facetValueOperator: LogicalOperator @deprecated(reason: "Use `facetValueFilters` instead")
-    facetValueFilters: [facetValueFilterInput!]
+    facetValueFilters: [FacetValueFilterInput!]
     collectionId: ID
     collectionSlug: String
     groupByProduct: Boolean

@@ -25,9 +25,66 @@ There are a couple of query parameters which are valid for all GraphQL operation
 
 ## Browsing the catalogue
 
-* {{< shop-api-operation operation="collections" type="query" >}}: List available Collections. Useful for creating navigation menus.
-* {{< shop-api-operation operation="search" type="query" >}}: Useful both for keyword searching, and for listing product results by collectionId and/or facetValueId. In practice this query can power all kinds of storefront product lists as it is backed by a search index optimized for performance.
-* {{< shop-api-operation operation="product" type="query" >}}: Use this for the Product detail view.
+### Listing collections
+
+{{< shop-api-operation operation="collections" type="query" >}}
+
+This query lists available Collections. Useful for creating navigation menus. The query will return Collections as a flat list, rather than a tree structure. Using the `parent` and `children` fields, you can convert this list into an [`arrayToTree` function](https://github.com/vendure-ecommerce/storefront/blob/8848e9e0540c12e0eb964a90ca8accabccb4fbfa/src/app/core/components/collections-menu/array-to-tree.ts).
+
+### Listing products
+
+{{< shop-api-operation operation="search" type="query" >}}
+
+The `search` query is intended to be used for keyword searching, facet-based filtering, and for listing product results by collection. In practice this query can power all kinds of storefront product lists, and is preferable to the `products` query, since it is backed by a dedicated search index and as such, queries are significantly more efficient.
+
+### Filtering by facet
+
+A common requirement is to make product listing pages filterable based on facets. Using the `search` query, you can select a summary of all Facets and FacetValues which apply to the current results:
+
+```GraphQL
+query SearchProducts {
+  search(input: {
+    collectionSlug: "shoes"
+  }) {
+    totalItems
+    items {
+      productId
+      productName
+    }
+    facetValues {
+      facetValue {
+        id
+        name
+      }
+      count
+    }
+  }
+}
+```
+The FacetValue data can be then used to create a facet filter UI, allowing the customer to select which facets to filter for. The result set can then be filtered using the `facetValueFilters` input field:
+
+```GraphQL
+query SearchProducts {
+  search(input: {
+    collectionSlug: "shoes"
+    facetValueFilters: [
+      { or: [34, 25] },
+      { and: 12 }
+    ]
+  }) {
+    totalItems
+    # etc.
+  }
+}
+```
+
+The above example translates to **return all products in the "shoes" collection, which have FacetValue 12 AND (34 OR 25)**
+
+### Product detail
+
+{{< shop-api-operation operation="product" type="query" >}}
+
+Use the `product` query for the Product detail view.
 
 ## Order flow
 
