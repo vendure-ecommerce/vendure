@@ -1,8 +1,10 @@
 import { stitchSchemas } from '@graphql-tools/stitch';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
     GraphQLEnumType,
     GraphQLField,
+    GraphQLInputField,
     GraphQLInputFieldConfig,
     GraphQLInputFieldConfigMap,
     GraphQLInputObjectType,
@@ -13,6 +15,7 @@ import {
     GraphQLOutputType,
     GraphQLSchema,
     isEnumType,
+    isInputObjectType,
     isListType,
     isNonNullType,
     isObjectType,
@@ -80,15 +83,28 @@ function isListQueryType(type: GraphQLOutputType): type is GraphQLObjectType {
 }
 
 function createSortParameter(schema: GraphQLSchema, targetType: GraphQLObjectType) {
-    const fields = Object.values(targetType.getFields());
+    const fields: Array<GraphQLField<any, any> | GraphQLInputField> = Object.values(targetType.getFields());
     const targetTypeName = targetType.name;
     const SortOrder = schema.getType('SortOrder') as GraphQLEnumType;
 
+    const inputName = `${targetTypeName}SortParameter`;
+    const existingInput = schema.getType(inputName);
+    if (isInputObjectType(existingInput)) {
+        fields.push(...Object.values(existingInput.getFields()));
+    }
+
     const sortableTypes = ['ID', 'String', 'Int', 'Float', 'DateTime'];
     return new GraphQLInputObjectType({
-        name: `${targetTypeName}SortParameter`,
+        name: inputName,
         fields: fields
-            .filter(field => sortableTypes.includes(unwrapNonNullType(field.type).name))
+            .map(field => {
+                if (unwrapNonNullType(field.type) === SortOrder) {
+                    return field;
+                } else {
+                    return sortableTypes.includes(unwrapNonNullType(field.type).name) ? field : undefined;
+                }
+            })
+            .filter(notNullOrUndefined)
             .reduce((result, field) => {
                 const fieldConfig: GraphQLInputFieldConfig = {
                     type: SortOrder,
@@ -102,14 +118,21 @@ function createSortParameter(schema: GraphQLSchema, targetType: GraphQLObjectTyp
 }
 
 function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectType): GraphQLInputObjectType {
-    const fields = Object.values(targetType.getFields());
+    const fields: Array<GraphQLField<any, any> | GraphQLInputField> = Object.values(targetType.getFields());
     const targetTypeName = targetType.name;
     const { StringOperators, BooleanOperators, NumberOperators, DateOperators } = getCommonTypes(schema);
 
+    const inputName = `${targetTypeName}FilterParameter`;
+    const existingInput = schema.getType(inputName);
+    if (isInputObjectType(existingInput)) {
+        fields.push(...Object.values(existingInput.getFields()));
+    }
+
     return new GraphQLInputObjectType({
-        name: `${targetTypeName}FilterParameter`,
+        name: inputName,
         fields: fields.reduce((result, field) => {
-            const filterType = getFilterType(field);
+            const fieldType = field.type;
+            const filterType = isInputObjectType(fieldType) ? fieldType : getFilterType(field);
             if (!filterType) {
                 return result;
             }
@@ -123,7 +146,7 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
         }, {} as GraphQLInputFieldConfigMap),
     });
 
-    function getFilterType(field: GraphQLField<any, any>): GraphQLInputType | undefined {
+    function getFilterType(field: GraphQLField<any, any> | GraphQLInputField): GraphQLInputType | undefined {
         if (isListType(field.type)) {
             return;
         }
@@ -178,7 +201,7 @@ function getCommonTypes(schema: GraphQLSchema) {
 /**
  * Unwraps the inner type if it is inside a non-nullable type
  */
-function unwrapNonNullType(type: GraphQLOutputType): GraphQLNamedType {
+function unwrapNonNullType(type: GraphQLOutputType | GraphQLInputType): GraphQLNamedType {
     if (isNonNullType(type)) {
         return type.ofType;
     }

@@ -21,6 +21,7 @@ export function parseSortParams<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
     sortParams?: NullOptionals<SortParameter<T>> | null,
+    customPropertyMap?: { [name: string]: string },
 ): OrderByCondition {
     if (!sortParams || Object.keys(sortParams).length === 0) {
         return {};
@@ -41,6 +42,8 @@ export function parseSortParams<T extends VendureEntity>(
             if (instruction) {
                 output[escapeCalculatedColumnExpression(connection, instruction.expression)] = order as any;
             }
+        } else if (customPropertyMap?.[key]) {
+            output[customPropertyMap[key]] = order as any;
         } else {
             throw new UserInputError('error.invalid-sort-field', {
                 fieldName: key,

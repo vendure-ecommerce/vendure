@@ -6,10 +6,12 @@ import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
+import { ApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
+import { Logger } from '../../../config/logger/vendure-logger';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
@@ -29,6 +31,27 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * executed as part of any outer transaction.
      */
     ctx?: RequestContext;
+    /**
+     * One of the main tasks of the ListQueryBuilder is to auto-generate filter and sort queries based on the
+     * available columns of a given entity. However, it may also be sometimes desirable to allow filter/sort
+     * on a property of a relation. In this case, the `customPropertyMap` can be used to define a property
+     * of the `options.sort` or `options.filter` which does not correspond to a direct column of the current
+     * entity, and then provide a mapping to the related property to be sorted/filtered.
+     *
+     * Example: we want to allow sort/filter by and Order's `customerLastName`. The actual lastName property is
+     * not a column in the Order table, it exists on the Customer entity, and Order has a relation to Customer via
+     * `Order.customer`. Therefore we can define a customPropertyMap like this:
+     *
+     * ```ts
+     * const qb = this.listQueryBuilder.build(Order, options, {
+     *   relations: ['customer'],
+     *   customPropertyMap: {
+     *       customerLastName: 'customer.lastName',
+     *   },
+     * };
+     * ```
+     */
+    customPropertyMap?: { [name: string]: string };
 };
 
 @Injectable()
@@ -48,24 +71,8 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
         const apiType = extendedOptions.ctx?.apiType ?? 'shop';
-        const { shopListQueryLimit, adminListQueryLimit } = this.configService.apiOptions;
-        const takeLimit = apiType === 'admin' ? adminListQueryLimit : shopListQueryLimit;
-        if (options.take && options.take > takeLimit) {
-            throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
-        }
         const rawConnection = this.connection.rawConnection;
-        const skip = Math.max(options.skip ?? 0, 0);
-        // `take` must not be negative, and must not be greater than takeLimit
-        let take = Math.min(Math.max(options.take ?? 0, 0), takeLimit) || takeLimit;
-        if (options.skip !== undefined && options.take === undefined) {
-            take = takeLimit;
-        }
-        const sort = parseSortParams(
-            rawConnection,
-            entity,
-            Object.assign({}, options.sort, extendedOptions.orderBy),
-        );
-        const filter = parseFilterParams(rawConnection, entity, options.filter);
+        const { take, skip } = this.parseTakeSkipParams(apiType, options);
 
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
@@ -85,6 +92,18 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
 
+        const { customPropertyMap } = extendedOptions;
+        if (customPropertyMap) {
+            this.normalizeCustomPropertyMap(customPropertyMap, qb);
+        }
+        const sort = parseSortParams(
+            rawConnection,
+            entity,
+            Object.assign({}, options.sort, extendedOptions.orderBy),
+            customPropertyMap,
+        );
+        const filter = parseFilterParams(rawConnection, entity, options.filter, customPropertyMap);
+
         filter.forEach(({ clause, parameters }) => {
             qb.andWhere(clause, parameters);
         });
@@ -98,6 +117,53 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         qb.orderBy(sort);
         return qb;
+    }
+
+    private parseTakeSkipParams(
+        apiType: ApiType,
+        options: ListQueryOptions<any>,
+    ): { take: number; skip: number } {
+        const { shopListQueryLimit, adminListQueryLimit } = this.configService.apiOptions;
+        const takeLimit = apiType === 'admin' ? adminListQueryLimit : shopListQueryLimit;
+        if (options.take && options.take > takeLimit) {
+            throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
+        }
+        const rawConnection = this.connection.rawConnection;
+        const skip = Math.max(options.skip ?? 0, 0);
+        // `take` must not be negative, and must not be greater than takeLimit
+        let take = Math.min(Math.max(options.take ?? 0, 0), takeLimit) || takeLimit;
+        if (options.skip !== undefined && options.take === undefined) {
+            take = takeLimit;
+        }
+        return { take, skip };
+    }
+
+    /**
+     * If a customPropertyMap is provided, we need to take the path provided and convert it to the actual
+     * relation aliases being used by the SelectQueryBuilder.
+     *
+     * This method mutates the customPropertyMap object.
+     */
+    private normalizeCustomPropertyMap(
+        customPropertyMap: { [name: string]: string },
+        qb: SelectQueryBuilder<any>,
+    ) {
+        for (const [key, value] of Object.entries(customPropertyMap)) {
+            const parts = customPropertyMap[key].split('.');
+            const entityPart = 2 <= parts.length ? parts[parts.length - 2] : qb.alias;
+            const columnPart = parts[parts.length - 1];
+            const relationAlias = qb.expressionMap.aliases.find(
+                a => a.metadata.tableNameWithoutPrefix === entityPart,
+            );
+            if (relationAlias) {
+                customPropertyMap[key] = `${relationAlias.name}.${columnPart}`;
+            } else {
+                Logger.error(
+                    `The customPropertyMap entry "${key}:${value}" could not be resolved to a related table`,
+                );
+                delete customPropertyMap[key];
+            }
+        }
     }
 
     /**
