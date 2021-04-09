@@ -275,6 +275,30 @@ describe('Orders resolver', () => {
             ]);
         });
 
+        it('sort by customerLastName', async () => {
+            async function sortOrdersByLastName(sortOrder: SortOrder) {
+                const { orders } = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                    GET_ORDERS_LIST,
+                    {
+                        options: {
+                            sort: {
+                                customerLastName: sortOrder,
+                            },
+                        },
+                    },
+                );
+                return orders;
+            }
+
+            const result1 = await sortOrdersByLastName(SortOrder.ASC);
+            expect(result1.totalItems).toEqual(2);
+            expect(result1.items.map(order => order.customer?.lastName)).toEqual(['Donnelly', 'Zieme']);
+
+            const result2 = await sortOrdersByLastName(SortOrder.DESC);
+            expect(result2.totalItems).toEqual(2);
+            expect(result2.items.map(order => order.customer?.lastName)).toEqual(['Zieme', 'Donnelly']);
+        });
+
         it('filter by total', async () => {
             const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
                 GET_ORDERS_LIST,
@@ -323,6 +347,23 @@ describe('Orders resolver', () => {
             expect(result.orders.items.map(o => pick(o, ['id', 'totalQuantity']))).toEqual([
                 { id: 'T_2', totalQuantity: 4 },
             ]);
+        });
+
+        it('filter by customerLastName', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            customerLastName: {
+                                eq: customers[1].lastName,
+                            },
+                        },
+                    },
+                },
+            );
+            expect(result.orders.totalItems).toEqual(1);
+            expect(result.orders.items[0].customer?.lastName).toEqual(customers[1].lastName);
         });
     });
 

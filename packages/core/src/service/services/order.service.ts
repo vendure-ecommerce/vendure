@@ -24,6 +24,7 @@ import {
     ModifyOrderInput,
     ModifyOrderResult,
     OrderLineInput,
+    OrderListOptions,
     OrderProcessState,
     RefundOrderInput,
     RefundOrderResult,
@@ -51,7 +52,6 @@ import {
     MultipleOrderError,
     NothingToRefundError,
     PaymentOrderMismatchError,
-    PaymentStateTransitionError,
     QuantityTooGreatError,
     RefundOrderStateError,
     SettlePaymentError,
@@ -87,7 +87,6 @@ import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
-import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
@@ -157,9 +156,10 @@ export class OrderService {
         })) as OrderProcessState[];
     }
 
-    findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
+    findAll(ctx: RequestContext, options?: OrderListOptions): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
+                ctx,
                 relations: [
                     'lines',
                     'customer',
@@ -169,7 +169,9 @@ export class OrderService {
                     'shippingLines',
                 ],
                 channelId: ctx.channelId,
-                ctx,
+                customPropertyMap: {
+                    customerLastName: 'customer.lastName',
+                },
             })
             .getManyAndCount()
             .then(([items, totalItems]) => {

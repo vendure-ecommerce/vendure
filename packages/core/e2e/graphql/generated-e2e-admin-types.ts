@@ -1475,6 +1475,41 @@ export type OrderModification = Node & {
     isSettled: Scalars['Boolean'];
 };
 
+export type OrderFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    orderPlacedAt?: Maybe<DateOperators>;
+    code?: Maybe<StringOperators>;
+    state?: Maybe<StringOperators>;
+    active?: Maybe<BooleanOperators>;
+    totalQuantity?: Maybe<NumberOperators>;
+    subTotal?: Maybe<NumberOperators>;
+    subTotalWithTax?: Maybe<NumberOperators>;
+    currencyCode?: Maybe<StringOperators>;
+    shipping?: Maybe<NumberOperators>;
+    shippingWithTax?: Maybe<NumberOperators>;
+    total?: Maybe<NumberOperators>;
+    totalWithTax?: Maybe<NumberOperators>;
+    customerLastName?: Maybe<StringOperators>;
+};
+
+export type OrderSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+    orderPlacedAt?: Maybe<SortOrder>;
+    code?: Maybe<SortOrder>;
+    state?: Maybe<SortOrder>;
+    totalQuantity?: Maybe<SortOrder>;
+    subTotal?: Maybe<SortOrder>;
+    subTotalWithTax?: Maybe<SortOrder>;
+    shipping?: Maybe<SortOrder>;
+    shippingWithTax?: Maybe<SortOrder>;
+    total?: Maybe<SortOrder>;
+    totalWithTax?: Maybe<SortOrder>;
+    customerLastName?: Maybe<SortOrder>;
+};
+
 export type UpdateOrderInput = {
     id: Scalars['ID'];
     customFields?: Maybe<Scalars['JSON']>;
@@ -3826,7 +3861,7 @@ export type OrderLine = Node & {
     discounts: Array<Discount>;
     taxLines: Array<TaxLine>;
     order: Order;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<OrderLineCustomFields>;
 };
 
 export type Refund = Node & {
@@ -4359,39 +4394,6 @@ export type JobSortParameter = {
     duration?: Maybe<SortOrder>;
 };
 
-export type OrderFilterParameter = {
-    createdAt?: Maybe<DateOperators>;
-    updatedAt?: Maybe<DateOperators>;
-    orderPlacedAt?: Maybe<DateOperators>;
-    code?: Maybe<StringOperators>;
-    state?: Maybe<StringOperators>;
-    active?: Maybe<BooleanOperators>;
-    totalQuantity?: Maybe<NumberOperators>;
-    subTotal?: Maybe<NumberOperators>;
-    subTotalWithTax?: Maybe<NumberOperators>;
-    currencyCode?: Maybe<StringOperators>;
-    shipping?: Maybe<NumberOperators>;
-    shippingWithTax?: Maybe<NumberOperators>;
-    total?: Maybe<NumberOperators>;
-    totalWithTax?: Maybe<NumberOperators>;
-};
-
-export type OrderSortParameter = {
-    id?: Maybe<SortOrder>;
-    createdAt?: Maybe<SortOrder>;
-    updatedAt?: Maybe<SortOrder>;
-    orderPlacedAt?: Maybe<SortOrder>;
-    code?: Maybe<SortOrder>;
-    state?: Maybe<SortOrder>;
-    totalQuantity?: Maybe<SortOrder>;
-    subTotal?: Maybe<SortOrder>;
-    subTotalWithTax?: Maybe<SortOrder>;
-    shipping?: Maybe<SortOrder>;
-    shippingWithTax?: Maybe<SortOrder>;
-    total?: Maybe<SortOrder>;
-    totalWithTax?: Maybe<SortOrder>;
-};
-
 export type PaymentMethodFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -4559,6 +4561,14 @@ export type HistoryEntrySortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+};
+
+export type OrderLineCustomFields = {
+    giftCardValue?: Maybe<Scalars['Int']>;
+    giftCardRecipientName?: Maybe<Scalars['String']>;
+    giftCardRecipientEmailAddress?: Maybe<Scalars['String']>;
+    giftCardMessage?: Maybe<Scalars['String']>;
+    giftCardDeliveryDate?: Maybe<Scalars['DateTime']>;
 };
 
 export type AuthenticationInput = {
