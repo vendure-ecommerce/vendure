@@ -7,12 +7,13 @@ import {
     DataService,
     GetOrderList,
     LocalStorageService,
+    OrderListOptions,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, skip, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, skip, takeUntil, tap } from 'rxjs/operators';
 
 interface OrderFilterConfig {
     active?: boolean;
@@ -34,7 +35,8 @@ interface FilterPreset {
 export class OrderListComponent
     extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
     implements OnInit {
-    searchTerm = new FormControl('');
+    searchOrderCodeControl = new FormControl('');
+    searchLastNameControl = new FormControl('');
     customFilterForm: FormGroup;
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
     filterPresets: FilterPreset[] = [
@@ -91,7 +93,8 @@ export class OrderListComponent
                 this.createQueryOptions(
                     skip,
                     take,
-                    this.searchTerm.value,
+                    this.searchOrderCodeControl.value,
+                    this.searchLastNameControl.value,
                     this.route.snapshot.queryParamMap.get('filter') || 'open',
                 ),
         );
@@ -107,7 +110,14 @@ export class OrderListComponent
             map(qpm => qpm.get('filter') || 'open'),
             distinctUntilChanged(),
         );
-        merge(this.searchTerm.valueChanges.pipe(debounceTime(250)), this.route.queryParamMap)
+        const searchTerms$ = merge(
+            this.searchOrderCodeControl.valueChanges,
+            this.searchLastNameControl.valueChanges,
+        ).pipe(
+            filter(value => 2 < value.length || value.length === 0),
+            debounceTime(250),
+        );
+        merge(searchTerms$, this.route.queryParamMap)
             .pipe(takeUntil(this.destroy$))
             .subscribe(val => {
                 this.refresh();
@@ -150,9 +160,16 @@ export class OrderListComponent
         this.localStorageService.set('orderListLastCustomFilters', customFilters);
     }
 
-    // tslint:disable-next-line:no-shadowed-variable
-    private createQueryOptions(skip: number, take: number, searchTerm: string, activeFilterPreset?: string) {
+    private createQueryOptions(
+        // tslint:disable-next-line:no-shadowed-variable
+        skip: number,
+        take: number,
+        orderCodeSearchTerm: string,
+        customerNameSearchTerm: string,
+        activeFilterPreset?: string,
+    ): { options: OrderListOptions } {
         const filterConfig = this.filterPresets.find(p => p.name === activeFilterPreset);
+        // tslint:disable-next-line:no-shadowed-variable
         const filter: any = {};
         if (filterConfig) {
             if (filterConfig.config.active != null) {
@@ -199,7 +216,10 @@ export class OrderListComponent
                 filter: {
                     ...(filter ?? {}),
                     code: {
-                        contains: searchTerm,
+                        contains: orderCodeSearchTerm,
+                    },
+                    customerLastName: {
+                        contains: customerNameSearchTerm,
                     },
                 },
                 sort: {
