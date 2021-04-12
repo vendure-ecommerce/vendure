@@ -55,7 +55,7 @@ export class TranslationTestPlugin implements OnApplicationBootstrap {
 
         this.i18nService.addTranslation('de', {
             errorResult: {
-                CUSTOM_ERROR: CUSTOM_ERROR_MESSAGE_TRANSLATION,
+                CUSTOM_ERROR: 'DE_' + CUSTOM_ERROR_MESSAGE_TRANSLATION,
             },
         });
 

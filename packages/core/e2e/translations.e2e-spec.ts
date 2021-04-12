@@ -1,4 +1,4 @@
-import { mergeConfig } from '@vendure/core';
+import { LanguageCode, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -35,6 +35,12 @@ describe('Translation', () => {
         const { customErrorMessage } = await adminClient.query(VERIFY_ERROR);
         expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
         expect(customErrorMessage.message).toBe(CUSTOM_ERROR_MESSAGE_TRANSLATION);
+    });
+
+    it('shall receive german error message', async () => {
+        const { customErrorMessage } = await adminClient.query(VERIFY_ERROR, {}, { lang: LanguageCode.de });
+        expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
+        expect(customErrorMessage.message).toBe('DE_' + CUSTOM_ERROR_MESSAGE_TRANSLATION);
     });
 
 });
