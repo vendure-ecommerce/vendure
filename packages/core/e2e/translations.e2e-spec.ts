@@ -6,6 +6,8 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import * as DE from './fixtures/i18n/de.json';
+import * as EN from './fixtures/i18n/en.json';
 import {
     CUSTOM_ERROR_MESSAGE_TRANSLATION,
     TranslationTestPlugin,
@@ -31,23 +33,50 @@ describe('Translation', () => {
         await server.destroy();
     });
 
-    it('shall receive custom error message', async () => {
-        const { customErrorMessage } = await adminClient.query(VERIFY_ERROR);
-        expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
-        expect(customErrorMessage.message).toBe(CUSTOM_ERROR_MESSAGE_TRANSLATION);
+    describe('translations added manualy', () => {
+        it('shall receive custom error message', async () => {
+            const { customErrorMessage } = await adminClient.query(CUSTOM_ERROR);
+            expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
+            expect(customErrorMessage.message).toBe(CUSTOM_ERROR_MESSAGE_TRANSLATION);
+        });
+
+        it('shall receive german error message', async () => {
+            const { customErrorMessage } = await adminClient.query(CUSTOM_ERROR, {}, { languageCode: LanguageCode.de });
+            expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
+            expect(customErrorMessage.message).toBe('DE_' + CUSTOM_ERROR_MESSAGE_TRANSLATION);
+        });
     });
 
-    it('shall receive german error message', async () => {
-        const { customErrorMessage } = await adminClient.query(VERIFY_ERROR, {}, { languageCode: LanguageCode.de });
-        expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
-        expect(customErrorMessage.message).toBe('DE_' + CUSTOM_ERROR_MESSAGE_TRANSLATION);
+    describe('translation added by file', () => {
+        it('shall receive custom error message', async () => {
+            const { newErrorMessage } = await adminClient.query(NEW_ERROR);
+            expect(newErrorMessage.errorCode).toBe('NEW_ERROR');
+            expect(newErrorMessage.message).toBe(EN.errorResult.NEW_ERROR);
+        });
+
+        it('shall receive german error message', async () => {
+            const { newErrorMessage } = await adminClient.query(NEW_ERROR, {}, { languageCode: LanguageCode.de });
+            expect(newErrorMessage.errorCode).toBe('NEW_ERROR');
+            expect(newErrorMessage.message).toBe(DE.errorResult.NEW_ERROR);
+        });
     });
 
 });
 
-const VERIFY_ERROR = gql`
+const CUSTOM_ERROR = gql`
     query CustomError {
         customErrorMessage {
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+`;
+
+const NEW_ERROR = gql`
+    query NewError {
+        newErrorMessage {
             ... on ErrorResult {
                 errorCode
                 message
