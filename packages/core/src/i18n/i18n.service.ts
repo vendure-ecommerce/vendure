@@ -15,7 +15,9 @@ import { ConfigService } from '../config/config.service';
 import { I18nError } from './i18n-error';
 
 /**
+ * @description
  * I18n resources used for translations
+ *
  * @docsCategory Translation
  */
 export interface VendureTranslationResources {
@@ -72,7 +74,9 @@ export class I18nService implements OnModuleInit {
     }
 
     /**
-     * Add a I18n translation file
+     * @description
+     * Add a I18n translation by json file
+     *
      * @param langKey language key of the I18n translation file
      * @param filePath path to the I18n translation file
      */
@@ -87,7 +91,9 @@ export class I18nService implements OnModuleInit {
     }
 
     /**
-     * Add a I18n translation file
+     * @description
+     * Add a I18n translation (key-value) resource
+     *
      * @param langKey language key of the I18n translation file
      * @param resources key-value translations
      */
