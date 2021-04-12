@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { OrderDetail } from '@vendure/admin-ui/core';
+import { isObject } from '@vendure/common/lib/shared-utils';
 
 @Component({
     selector: 'vdr-fulfillment-detail',
@@ -7,9 +8,15 @@ import { OrderDetail } from '@vendure/admin-ui/core';
     styleUrls: ['./fulfillment-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FulfillmentDetailComponent {
+export class FulfillmentDetailComponent implements OnChanges {
     @Input() fulfillmentId: string;
     @Input() order: OrderDetail.Fragment;
+
+    customFields: Array<{ key: string; value: any }> = [];
+
+    ngOnChanges(changes: SimpleChanges) {
+        this.customFields = this.getCustomFields();
+    }
 
     get fulfillment(): OrderDetail.Fulfillments | undefined | null {
         return this.order.fulfillments && this.order.fulfillments.find(f => f.id === this.fulfillmentId);
@@ -38,9 +45,16 @@ export class FulfillmentDetailComponent {
         if (customFields) {
             return Object.entries(customFields)
                 .filter(([key]) => key !== '__typename')
-                .map(([key, value]) => ({ key, value: (value as any)?.toString() ?? '-' }));
+                .map(([key, val]) => {
+                    const value = Array.isArray(val) || isObject(val) ? val : (val as any).toString();
+                    return { key, value };
+                });
         } else {
             return [];
         }
+    }
+
+    customFieldIsObject(customField: unknown) {
+        return Array.isArray(customField) || isObject(customField);
     }
 }
