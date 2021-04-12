@@ -38,7 +38,7 @@ describe('Translation', () => {
     });
 
     it('shall receive german error message', async () => {
-        const { customErrorMessage } = await adminClient.query(VERIFY_ERROR, {}, { lang: LanguageCode.de });
+        const { customErrorMessage } = await adminClient.query(VERIFY_ERROR, {}, { languageCode: LanguageCode.de });
         expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
         expect(customErrorMessage.message).toBe('DE_' + CUSTOM_ERROR_MESSAGE_TRANSLATION);
     });

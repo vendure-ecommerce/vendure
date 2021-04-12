@@ -14,6 +14,10 @@ import { ConfigService } from '../config/config.service';
 
 import { I18nError } from './i18n-error';
 
+/**
+ * I18n resources used for translations
+ * @docsCategory Translation
+ */
 export interface VendureTranslationResources {
     error: any;
     errorResult: any;
@@ -29,11 +33,19 @@ export interface I18nRequest extends Request {
  * The `i18next-express-middleware` middleware detects the client's preferred language based on
  * the `Accept-Language` header or "lang" query param and adds language-specific translation
  * functions to the Express request / response objects.
+ * @docsCategory Translation
  */
 @Injectable()
 export class I18nService implements OnModuleInit {
+    /**
+     * @internal
+     * @param configService
+     */
     constructor(private configService: ConfigService) {}
 
+    /**
+     * @internal
+     */
     onModuleInit() {
         return i18next
             .use(i18nextMiddleware.LanguageDetector)
@@ -43,7 +55,7 @@ export class I18nService implements OnModuleInit {
                 preload: ['en', 'de'],
                 fallbackLng: 'en',
                 detection: {
-                    lookupQuerystring: 'lang',
+                    lookupQuerystring: 'languageCode',
                 },
                 backend: {
                     loadPath: path.join(__dirname, 'messages/{{lng}}.json'),
@@ -52,6 +64,9 @@ export class I18nService implements OnModuleInit {
             });
     }
 
+    /**
+     * @internal
+     */
     handle(): Handler {
         return i18nextMiddleware.handle(i18next);
     }
@@ -82,6 +97,7 @@ export class I18nService implements OnModuleInit {
 
     /**
      * Translates the originalError if it is an instance of I18nError.
+     * @internal
      */
     translateError(req: I18nRequest, error: GraphQLError) {
         const originalError = error.originalError;
@@ -105,6 +121,7 @@ export class I18nService implements OnModuleInit {
 
     /**
      * Translates the message of an ErrorResult
+     * @internal
      */
     translateErrorResult(req: I18nRequest, error: GraphQLErrorResult) {
         const t: TFunction = req.t;
