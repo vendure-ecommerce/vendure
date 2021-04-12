@@ -37,6 +37,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
@@ -183,7 +184,7 @@ export class OrderService {
     }
 
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
-        const order = await this.connection
+        const qb = this.connection
             .getRepository(ctx, Order)
             .createQueryBuilder('order')
             .leftJoin('order.channels', 'channel')
@@ -203,8 +204,12 @@ export class OrderService {
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addOrderBy('lines.createdAt', 'ASC')
-            .addOrderBy('items.createdAt', 'ASC')
-            .getOne();
+            .addOrderBy('items.createdAt', 'ASC');
+
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+
+        const order = await qb.getOne();
         if (order) {
             for (const line of order.lines) {
                 line.productVariant = translateDeep(
