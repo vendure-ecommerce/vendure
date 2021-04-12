@@ -3,8 +3,8 @@ import { Handler, Request } from 'express';
 import { GraphQLError } from 'graphql';
 import i18next, { TFunction } from 'i18next';
 import i18nextMiddleware from 'i18next-express-middleware';
+import Backend from 'i18next-fs-backend';
 import ICU from 'i18next-icu';
-import Backend from 'i18next-node-fs-backend';
 import path from 'path';
 
 import { GraphQLErrorResult } from '../common/error/error-result';
