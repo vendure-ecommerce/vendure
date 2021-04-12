@@ -17,13 +17,13 @@ docs/static/main.css*
 docs/static/intro.js*
 docs/static/intro.css*
 docs/public
-docs/content/docs/typescript-api/*
+docs/content/typescript-api/*
 docs/data/build.json
-!docs/content/docs/typescript-api/_index.md
-docs/content/docs/graphql-api/*
-!docs/content/docs/graphql-api/_index.md
-!docs/content/docs/graphql-api/shop/_index.md
-!docs/content/docs/graphql-api/admin/_index.md
+!docs/content/typescript-api/_index.md
+docs/content/graphql-api/*
+!docs/content/graphql-api/_index.md
+!docs/content/graphql-api/shop/_index.md
+!docs/content/graphql-api/admin/_index.md
 .vscode/
 yarn-error.log
 
