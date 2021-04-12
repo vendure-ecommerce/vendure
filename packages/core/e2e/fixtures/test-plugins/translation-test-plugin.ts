@@ -1,9 +1,7 @@
 import { OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Ctx, ErrorResult, PluginCommonModule, RequestContext, VendurePlugin } from '@vendure/core';
+import { Ctx, ErrorResult, I18nService, PluginCommonModule, RequestContext, VendurePlugin } from '@vendure/core';
 import gql from 'graphql-tag';
-
-import { I18nService } from '../../../dist/i18n/i18n.service';
 
 class CustomError extends ErrorResult {
     readonly __typename = 'CustomError';
@@ -52,13 +50,13 @@ export class TranslationTestPlugin implements OnApplicationBootstrap {
         this.i18nService.addTranslation('en', {
             errorResult: {
                 CUSTOM_ERROR: CUSTOM_ERROR_MESSAGE_TRANSLATION,
-            }
+            },
         });
 
         this.i18nService.addTranslation('de', {
             errorResult: {
                 CUSTOM_ERROR: CUSTOM_ERROR_MESSAGE_TRANSLATION,
-            }
+            },
         });
 
     }
