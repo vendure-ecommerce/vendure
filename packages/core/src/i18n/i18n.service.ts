@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Handler, Request } from 'express';
+import * as fs from 'fs';
 import { GraphQLError } from 'graphql';
 import i18next, { TFunction } from 'i18next';
 import i18nextMiddleware from 'i18next-express-middleware';
@@ -8,9 +9,16 @@ import ICU from 'i18next-icu';
 import path from 'path';
 
 import { GraphQLErrorResult } from '../common/error/error-result';
+import { Logger } from '../config';
 import { ConfigService } from '../config/config.service';
 
 import { I18nError } from './i18n-error';
+
+export interface VendureTranslationResources {
+    error: any;
+    errorResult: any;
+    message: any;
+}
 
 export interface I18nRequest extends Request {
     t: TFunction;
@@ -46,6 +54,30 @@ export class I18nService implements OnModuleInit {
 
     handle(): Handler {
         return i18nextMiddleware.handle(i18next);
+    }
+
+    /**
+     * Add a I18n translation file
+     * @param langKey language key of the I18n translation file
+     * @param filePath path to the I18n translation file
+     */
+    addTranslationFile(langKey: string, filePath: string): void {
+        try {
+            const rawData = fs.readFileSync(filePath);
+            const resources = JSON.parse(rawData.toString('utf-8'));
+            this.addTranslation(langKey, resources);
+        } catch (err) {
+            Logger.error(`Could not load resources file ${filePath}`, `I18nService`);
+        }
+    }
+
+    /**
+     * Add a I18n translation file
+     * @param langKey language key of the I18n translation file
+     * @param resources key-value translations
+     */
+    addTranslation(langKey: string, resources: VendureTranslationResources | any): void {
+        i18next.addResourceBundle(langKey, 'translation', resources, true, true);
     }
 
     /**
