@@ -10205,20 +10205,17 @@ i18next-express-middleware@^2.0.0:
   dependencies:
     cookies "0.7.1"
 
+i18next-fs-backend@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/i18next-fs-backend/-/i18next-fs-backend-1.1.1.tgz#1d8028926803f63784ffa0f2b1478fb369f92735"
+  integrity sha512-RFkfy10hNxJqc7MVAp5iAZq0Tum6msBCNebEe3OelOBvrROvzHUPaR8Qe10RQrOGokTm0W4vJGEJzruFkEt+hQ==
+
 i18next-icu@^1.4.2:
   version "1.4.2"
   resolved "https://registry.npmjs.org/i18next-icu/-/i18next-icu-1.4.2.tgz#2b79d1ac2c2d542725219beac34a74db15cd2ff9"
   integrity sha512-EqHafx/sL8eoEowwqi5P6cXtLrzJXBKI4RmV+UaMXlpIJNfckVsq873F2KkMKkApxiw2ATj46C8MurmhMsHQGw==
   dependencies:
     intl-messageformat "2.2.0"
-
-i18next-node-fs-backend@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.npmjs.org/i18next-node-fs-backend/-/i18next-node-fs-backend-2.1.3.tgz#483fa9eda4c152d62a3a55bcae2a5727ba887559"
-  integrity sha512-CreMFiVl3ChlMc5ys/e0QfuLFOZyFcL40Jj6jaKD6DxZ/GCUMxPI9BpU43QMWUgC7r+PClpxg2cGXAl0CjG04g==
-  dependencies:
-    js-yaml "3.13.1"
-    json5 "2.0.0"
 
 i18next@^19.8.1:
   version "19.9.1"
@@ -11534,14 +11531,6 @@ js-beautify@^1.6.14:
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml@3.13.1:
-  version "3.13.1"
-  resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-3.13.1.tgz#aff151b30bfdfa8e49e05da22e7415e9dfa37847"
-  integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
-  dependencies:
-    argparse "^1.0.7"
-    esprima "^4.0.0"
-
 js-yaml@^3.13.1, js-yaml@^3.14.0:
   version "3.14.1"
   resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-3.14.1.tgz#dae812fdb3825fa306609a8717383c50c36a0537"
@@ -11663,13 +11652,6 @@ json3@^3.3.3:
   version "3.3.3"
   resolved "https://registry.npmjs.org/json3/-/json3-3.3.3.tgz#7fc10e375fc5ae42c4705a5cc0aa6f62be305b81"
   integrity sha512-c7/8mbUsKigAbLkD5B010BK4D9LZm7A1pNItkEwiUZRpIN66exu/e7YQWysGun+TRKaJp8MhemM+VkfWv42aCA==
-
-json5@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/json5/-/json5-2.0.0.tgz#b61abf97aa178c4b5853a66cc8eecafd03045d78"
-  integrity sha512-0EdQvHuLm7yJ7lyG5dp7Q3X2ku++BG5ZHaJ5FTnaXpKqDrw4pMxel5Bt3oAYMthnrthFBdnZ1FcsXTPyrQlV0w==
-  dependencies:
-    minimist "^1.2.0"
 
 json5@2.x, json5@^2.1.2:
   version "2.2.0"
@@ -13853,7 +13835,7 @@ npm-package-arg@^8.0.0, npm-package-arg@^8.0.1, npm-package-arg@^8.1.0:
 
 npm-packlist@1.1.12, npm-packlist@^1.1.6, npm-packlist@^2.1.4:
   version "1.1.12"
-  resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
+  resolved "https://registry.yarnpkg.com/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
   integrity sha512-WJKFOVMeAlsU/pjXuqVdzU0WfgtIBCupkEVwn+1Y0ERAbUfWw8R4GjgVbaKnUjRoD2FoQbHOCbOyT5Mbs9Lw4g==
   dependencies:
     ignore-walk "^3.0.1"
