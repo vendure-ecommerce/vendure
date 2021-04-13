@@ -1,3 +1,10 @@
+## 1.0.0-beta.9 (2021-04-13)
+
+
+#### Fixes
+
+* **admin-ui** Display guest orders in OrderList ([c1dcb19](https://github.com/vendure-ecommerce/vendure/commit/c1dcb19))
+
 ## 1.0.0-beta.8 (2021-04-13)
 
 
