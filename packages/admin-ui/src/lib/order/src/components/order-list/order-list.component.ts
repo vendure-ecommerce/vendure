@@ -209,18 +209,22 @@ export class OrderListComponent
                 };
             }
         }
+        if (customerNameSearchTerm) {
+            filter.customerLastName = {
+                contains: customerNameSearchTerm,
+            };
+        }
+        if (orderCodeSearchTerm) {
+            filter.code = {
+                contains: orderCodeSearchTerm,
+            };
+        }
         return {
             options: {
                 skip,
                 take,
                 filter: {
                     ...(filter ?? {}),
-                    code: {
-                        contains: orderCodeSearchTerm,
-                    },
-                    customerLastName: {
-                        contains: customerNameSearchTerm,
-                    },
                 },
                 sort: {
                     updatedAt: SortOrder.DESC,
