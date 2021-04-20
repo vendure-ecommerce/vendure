@@ -73,6 +73,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         manager: EntityManager,
         queueName: string,
         setLock: boolean,
+        waitingJobIds: ID[] = [],
     ): Promise<Job | undefined> {
         const qb = manager
             .getRepository(JobRecord)
@@ -87,6 +88,10 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             )
             .orderBy('record.createdAt', 'ASC');
 
+        if (waitingJobIds.length) {
+            qb.andWhere('record.id NOT IN (:...waitingJobIds)', { waitingJobIds });
+        }
+
         if (setLock) {
             qb.setLock('pessimistic_write');
         }
@@ -97,7 +102,10 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
                 const msSinceLastFailure = Date.now() - +record.updatedAt;
                 const backOffDelayMs = this.backOffStrategy(queueName, record.attempts, job);
                 if (msSinceLastFailure < backOffDelayMs) {
-                    return;
+                    return await this.getNextAndSetAsRunning(manager, queueName, setLock, [
+                        ...waitingJobIds,
+                        record.id,
+                    ]);
                 }
             }
             job.start();
