@@ -46,17 +46,11 @@ REQUEST: GET http://localhost:3000/health
   "info": {
     "database": {
       "status": "up"
-    },
-    "worker": {
-      "status": "up"
     }
   },
   "error": {},
   "details": {
     "database": {
-      "status": "up"
-    },
-    "worker": {
       "status": "up"
     }
   }
