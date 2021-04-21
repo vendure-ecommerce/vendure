@@ -1,11 +1,9 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch';
+import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     ConfigService,
     DeepRequired,
-    FacetValue,
-    FacetValueService,
     InternalServerError,
     Job,
     Logger,
@@ -37,7 +35,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: DeepRequired<ElasticsearchOptions>,
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
-        private facetValueService: FacetValueService,
         private configService: ConfigService,
     ) {
         searchService.adopt(this);
@@ -58,8 +55,30 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return this.client.close();
     }
 
-    checkConnection() {
-        return this.client.ping({}, { requestTimeout: 1000 });
+    async checkConnection(): Promise<void> {
+        await new Promise<void>(async (resolve, reject) => {
+            const { connectionAttempts, connectionAttemptInterval } = this.options;
+            let attempts = 0;
+            Logger.verbose('Pinging Elasticsearch...', loggerCtx);
+            while (attempts < connectionAttempts) {
+                attempts++;
+                try {
+                    const pingResult = await this.client.ping({}, { requestTimeout: 1000 });
+                    if (pingResult.body) {
+                        Logger.verbose(`Ping to Elasticsearch successful`, loggerCtx);
+                        return resolve();
+                    }
+                } catch (e) {
+                    Logger.verbose(`Ping to Elasticsearch failed with error "${e.message}"`, loggerCtx);
+                }
+                Logger.verbose(
+                    `Connection to Elasticsearch could not be made, trying again after ${connectionAttemptInterval}ms (attempt ${attempts} of ${connectionAttempts})`,
+                    loggerCtx,
+                );
+                await new Promise(resolve1 => setTimeout(resolve1, connectionAttemptInterval));
+            }
+            reject(`Could not connection to Elasticsearch. Aborting bootstrap.`);
+        });
     }
 
     async createIndicesIfNotExists() {
@@ -131,59 +150,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 throw e;
             }
         }
-    }
-
-    /**
-     * Return a list of all FacetValues which appear in the result set.
-     */
-    async facetValues(
-        ctx: RequestContext,
-        input: ElasticSearchInput,
-        enabledOnly: boolean = false,
-    ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const { indexPrefix } = this.options;
-        const elasticSearchBody = buildElasticBody(
-            input,
-            this.options.searchConfig,
-            ctx.channelId,
-            ctx.languageCode,
-            enabledOnly,
-        );
-        elasticSearchBody.from = 0;
-        elasticSearchBody.size = 0;
-        elasticSearchBody.aggs = {
-            facetValue: {
-                terms: {
-                    field: 'facetValueIds',
-                    size: this.options.searchConfig.facetValueMaxSize,
-                },
-            },
-        };
-        let body: SearchResponseBody<VariantIndexItem>;
-        try {
-            const result = await this.client.search<SearchResponseBody<VariantIndexItem>>({
-                index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
-                body: elasticSearchBody,
-            });
-            body = result.body;
-        } catch (e) {
-            Logger.error(e.message, loggerCtx, e.stack);
-            throw e;
-        }
-
-        const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
-
-        const facetValues = await this.facetValueService.findByIds(
-            ctx,
-            buckets.map(b => b.key),
-        );
-        return facetValues.map((facetValue, index) => {
-            const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
-            return {
-                facetValue,
-                count: bucket ? bucket.doc_count : 0,
-            };
-        });
     }
 
     async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {

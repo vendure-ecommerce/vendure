@@ -28,6 +28,20 @@ export interface ElasticsearchOptions {
     port?: number;
     /**
      * @description
+     * Maximum amount of attempts made to connect to the ElasticSearch server on startup.
+     *
+     * @default 10
+     */
+    connectionAttempts?: number;
+    /**
+     * @description
+     * Interval in milliseconds between attempts to connect to the ElasticSearch server on startup.
+     *
+     * @default 5000
+     */
+    connectionAttemptInterval?: number;
+    /**
+     * @description
      * Options to pass directly to the
      * [Elasticsearch Node.js client](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/index.html). For example, to
      * set authentication or other more advanced options.
@@ -295,6 +309,8 @@ export type ElasticsearchRuntimeOptions = DeepRequired<Omit<ElasticsearchOptions
 export const defaultOptions: ElasticsearchRuntimeOptions = {
     host: 'http://localhost',
     port: 9200,
+    connectionAttempts: 10,
+    connectionAttemptInterval: 5000,
     indexPrefix: 'vendure-',
     batchSize: 2000,
     searchConfig: {
