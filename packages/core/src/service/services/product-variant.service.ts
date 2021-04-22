@@ -723,7 +723,7 @@ export class ProductVariantService {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
                 if (variantOptionIds === inputOptionIds) {
                     throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                        variantName: variant.name,
+                        variantName: translateDeep(variant, ctx.languageCode).name,
                     });
                 }
             });
