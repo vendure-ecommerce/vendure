@@ -126,14 +126,9 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Laptop',
-        'Curvy Monitor',
-        'Gaming PC',
-        'Hard Drive',
-        'Clacky Keyboard',
-        'USB Cable',
-    ].sort());
+    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+        ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort(),
+    );
 }
 
 export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
@@ -142,7 +137,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
         {
             input: {
                 groupByProduct: true,
-                facetValueFilters: [ { or: ['T_1', 'T_5'] }],
+                facetValueFilters: [{ or: ['T_1', 'T_5'] }],
                 sort: {
                     name: SortOrder.ASC,
                 },
@@ -150,21 +145,23 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Bonsai Tree',
-        'Camera Lens',
-        'Clacky Keyboard',
-        'Curvy Monitor',
-        'Gaming PC',
-        'Hard Drive',
-        'Instant Camera',
-        'Laptop',
-        'Orchid',
-        'SLR Camera',
-        'Spiky Cactus',
-        'Tripod',
-        'USB Cable',
-    ].sort());
+    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+        [
+            'Bonsai Tree',
+            'Camera Lens',
+            'Clacky Keyboard',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Instant Camera',
+            'Laptop',
+            'Orchid',
+            'SLR Camera',
+            'Spiky Cactus',
+            'Tripod',
+            'USB Cable',
+        ].sort(),
+    );
 }
 
 export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
@@ -173,22 +170,24 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
         {
             input: {
                 groupByProduct: true,
-                facetValueFilters: [{and: 'T_1'}, { or: ['T_2', 'T_3'] }],
+                facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Laptop',
-        'Curvy Monitor',
-        'Gaming PC',
-        'Hard Drive',
-        'Clacky Keyboard',
-        'USB Cable',
-        'Instant Camera',
-        'Camera Lens',
-        'Tripod',
-        'SLR Camera'
-    ].sort());
+    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+        [
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'SLR Camera',
+        ].sort(),
+    );
 }
 
 export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
@@ -198,23 +197,25 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             input: {
                 facetValueIds: ['T_2', 'T_3'],
                 facetValueOperator: LogicalOperator.OR,
-                facetValueFilters: [{and:'T_1'}],
+                facetValueFilters: [{ and: 'T_1' }],
                 groupByProduct: true,
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Laptop',
-        'Curvy Monitor',
-        'Gaming PC',
-        'Hard Drive',
-        'Clacky Keyboard',
-        'USB Cable',
-        'Instant Camera',
-        'Camera Lens',
-        'Tripod',
-        'SLR Camera',
-    ].sort());
+    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+        [
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'SLR Camera',
+        ].sort(),
+    );
 }
 
 export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
@@ -223,18 +224,15 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
         {
             input: {
                 facetValueIds: ['T_1'],
-                facetValueFilters: [{and:'T_3'}],
+                facetValueFilters: [{ and: 'T_3' }],
                 facetValueOperator: LogicalOperator.AND,
                 groupByProduct: true,
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Instant Camera',
-        'Camera Lens',
-        'Tripod',
-        'SLR Camera'
-    ].sort());
+    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort(),
+    );
 }
 
 export async function testMatchCollectionId(client: SimpleGraphQLClient) {
@@ -247,7 +245,11 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName)).toEqual(['Spiky Cactus', 'Orchid', 'Bonsai Tree']);
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Bonsai Tree',
+        'Orchid',
+        'Spiky Cactus',
+    ]);
 }
 
 export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
@@ -260,7 +262,11 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName)).toEqual(['Spiky Cactus', 'Orchid', 'Bonsai Tree']);
+    expect(result.search.items.map(i => i.productName).sort()).toEqual([
+        'Bonsai Tree',
+        'Orchid',
+        'Spiky Cactus',
+    ]);
 }
 
 export async function testSinglePrices(client: SimpleGraphQLClient) {
