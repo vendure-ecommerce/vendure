@@ -162,7 +162,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     async deleteVariants({ ctx: rawContext, variantIds }: UpdateVariantMessageData): Promise<boolean> {
         const productIds = await this.getProductIdsByVariantIds(variantIds);
         for (const productId of productIds) {
-            await this.deleteProductInternal(productId);
+            await this.updateProductsInternal([productId]);
         }
         return true;
     }
@@ -228,6 +228,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     .select('product.id')
                     .where('product.deletedAt IS NULL')
                     .getMany();
+
+                Logger.verbose(`Reindexing ${productIds.length} Products`, loggerCtx);
 
                 let finishedProductsCount = 0;
                 for (const { id: productId } of productIds) {
@@ -396,7 +398,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     updatedProductVariants.forEach(v => (v.enabled = false));
                 }
                 Logger.verbose(`Updating Product (${productId})`, loggerCtx);
-                if (updatedProductVariants.length) await this.updateVariantsInternal(updatedProductVariants);
+                if (updatedProductVariants.length) {
+                    await this.updateVariantsInternal(updatedProductVariants);
+                }
 
                 const languageVariants = product.translations.map(t => t.languageCode);
 
@@ -441,7 +445,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }
 
     private async deleteProductInternal(productId: ID) {
-        Logger.verbose(`Deleting 1 Product (${productId})`, loggerCtx);
         const channels = await this.connection
             .getRepository(Channel)
             .createQueryBuilder('channel')
@@ -451,6 +454,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             relations: ['variants'],
         });
         if (product) {
+            Logger.verbose(`Deleting 1 Product (id: ${productId})`, loggerCtx);
             const operations: BulkOperation[] = [];
             for (const { id: channelId } of channels) {
                 const languageVariants = product.translations.map(t => t.languageCode);
@@ -494,6 +498,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         indexName: string,
         operations: Array<BulkOperation | BulkOperationDoc<VariantIndexItem | ProductIndexItem>>,
     ) {
+        if (operations.length === 0) {
+            return;
+        }
         try {
             const fullIndexName = this.options.indexPrefix + indexName;
             const { body }: { body: BulkResponseBody } = await this.client.bulk({
@@ -519,7 +526,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     }
                 });
             } else {
-                Logger.verbose(
+                Logger.debug(
                     `Executed ${body.items.length} bulk operations on index [${fullIndexName}]`,
                     loggerCtx,
                 );
@@ -527,7 +534,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             return body;
         } catch (e) {
             Logger.error(`Error when attempting to run bulk operations [${e.toString()}]`, loggerCtx);
-            Logger.error('Error details: ' + JSON.stringify(e.body && e.body.error, null, 2), loggerCtx);
+            Logger.error('Error details: ' + JSON.stringify(e.body?.error, null, 2), loggerCtx);
         }
     }
 
@@ -645,7 +652,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const productTranslation = this.getTranslation(product, ctx.languageCode);
         return {
             channelId: ctx.channelId,
-            languageCode: languageCode,
+            languageCode,
             sku: '',
             slug: productTranslation.slug,
             productId: product.id,

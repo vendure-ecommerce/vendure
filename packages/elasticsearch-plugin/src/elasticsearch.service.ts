@@ -4,6 +4,8 @@ import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-t
 import {
     ConfigService,
     DeepRequired,
+    FacetValue,
+    FacetValueService,
     InternalServerError,
     Job,
     Logger,
@@ -36,6 +38,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
         private configService: ConfigService,
+        private facetValueService: FacetValueService,
     ) {
         searchService.adopt(this);
     }
@@ -150,6 +153,59 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 throw e;
             }
         }
+    }
+
+    /**
+     * Return a list of all FacetValues which appear in the result set.
+     */
+    async facetValues(
+        ctx: RequestContext,
+        input: ElasticSearchInput,
+        enabledOnly: boolean = false,
+    ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
+        const { indexPrefix } = this.options;
+        const elasticSearchBody = buildElasticBody(
+            input,
+            this.options.searchConfig,
+            ctx.channelId,
+            ctx.languageCode,
+            enabledOnly,
+        );
+        elasticSearchBody.from = 0;
+        elasticSearchBody.size = 0;
+        elasticSearchBody.aggs = {
+            facetValue: {
+                terms: {
+                    field: 'facetValueIds',
+                    size: this.options.searchConfig.facetValueMaxSize,
+                },
+            },
+        };
+        let body: SearchResponseBody<VariantIndexItem>;
+        try {
+            const result = await this.client.search<SearchResponseBody<VariantIndexItem>>({
+                index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
+                body: elasticSearchBody,
+            });
+            body = result.body;
+        } catch (e) {
+            Logger.error(e.message, loggerCtx, e.stack);
+            throw e;
+        }
+
+        const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
+
+        const facetValues = await this.facetValueService.findByIds(
+            ctx,
+            buckets.map(b => b.key),
+        );
+        return facetValues.map((facetValue, index) => {
+            const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
+            return {
+                facetValue,
+                count: bucket ? bucket.doc_count : 0,
+            };
+        });
     }
 
     async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {

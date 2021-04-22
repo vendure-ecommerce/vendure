@@ -6,8 +6,7 @@ import {
     SearchResponse,
 } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Allow, Ctx, FacetValue, FacetValueService, RequestContext, SearchResolver } from '@vendure/core';
-import { countBy, uniq } from 'lodash';
+import { Allow, Ctx, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
 
 import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticSearchInput, SearchPriceData } from './types';
@@ -62,16 +61,14 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
 
 @Resolver('SearchResponse')
 export class EntityElasticSearchResolver implements Pick<SearchResolver, 'facetValues'> {
-    constructor(private facetValueService: FacetValueService) {}
+    constructor(private elasticsearchService: ElasticsearchService) {}
 
     @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() parent: Omit<SearchResponse, 'facetValues'>,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const facetValueIds = parent.items.map(item => item.facetValueIds).flat();
-        const facetValueCounts = countBy(facetValueIds);
-        const facetValues = await this.facetValueService.findByIds(ctx, uniq(facetValueIds));
-        return facetValues.map(facetValue => ({ facetValue, count: facetValueCounts[facetValue.id] }));
+        const facetValues = await this.elasticsearchService.facetValues(ctx, (parent as any).input, true);
+        return facetValues.filter(i => !i.facetValue.facet.isPrivate);
     }
 }
