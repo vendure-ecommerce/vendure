@@ -41,7 +41,11 @@ describe('Translation', () => {
         });
 
         it('shall receive german error message', async () => {
-            const { customErrorMessage } = await adminClient.query(CUSTOM_ERROR, {}, { languageCode: LanguageCode.de });
+            const { customErrorMessage } = await adminClient.query(
+                CUSTOM_ERROR,
+                {},
+                { languageCode: LanguageCode.de },
+            );
             expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
             expect(customErrorMessage.message).toBe('DE_' + CUSTOM_ERROR_MESSAGE_TRANSLATION);
         });
@@ -49,21 +53,24 @@ describe('Translation', () => {
 
     describe('translation added by file', () => {
         it('shall receive custom error message', async () => {
-            const { newErrorMessage } = await adminClient.query(NEW_ERROR);
+            const { newErrorMessage } = await adminClient.query(gql(NEW_ERROR));
             expect(newErrorMessage.errorCode).toBe('NEW_ERROR');
             expect(newErrorMessage.message).toBe(EN.errorResult.NEW_ERROR);
         });
 
         it('shall receive german error message', async () => {
-            const { newErrorMessage } = await adminClient.query(NEW_ERROR, {}, { languageCode: LanguageCode.de });
+            const { newErrorMessage } = await adminClient.query(
+                gql(NEW_ERROR),
+                {},
+                { languageCode: LanguageCode.de },
+            );
             expect(newErrorMessage.errorCode).toBe('NEW_ERROR');
             expect(newErrorMessage.message).toBe(DE.errorResult.NEW_ERROR);
         });
     });
-
 });
 
-const CUSTOM_ERROR = gql`
+const CUSTOM_ERROR = `
     query CustomError {
         customErrorMessage {
             ... on ErrorResult {
@@ -74,7 +81,7 @@ const CUSTOM_ERROR = gql`
     }
 `;
 
-const NEW_ERROR = gql`
+const NEW_ERROR = `
     query NewError {
         newErrorMessage {
             ... on ErrorResult {
