@@ -1301,7 +1301,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'A ProductVariant already exists with the options:'),
+                }, 'A ProductVariant with the selected options already exists: Variant 1'),
             );
 
             it('updateProductVariants updates variants', async () => {
