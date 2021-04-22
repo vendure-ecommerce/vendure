@@ -103,7 +103,6 @@ export class ConfigArgService {
                 if (val == null) {
                     throw new UserInputError('error.configurable-argument-is-required', {
                         name,
-                        value: String(val),
                     });
                 }
             }

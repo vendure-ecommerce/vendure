@@ -137,10 +137,10 @@
     "sku": "Artikelnummer",
     "slug": "Slug",
     "slug-pattern-error": "Ungültiger Slug",
-    "stock-allocated": "Bestand reserviert",
+    "stock-allocated": "Lagerbestand reserviert",
     "stock-allocated-tooltip": "Anzahl der Artikel, die bereits bestellt, aber noch nicht abgewickelt wurden",
-    "stock-on-hand": "Bestand",
-    "stock-on-hand-tooltip": "Bestand dieses Artikels im Lager",
+    "stock-on-hand": "Lagerbestand",
+    "stock-on-hand-tooltip": "Lagerbestand dieses Artikels",
     "stock-saleable": "Verkaufbar",
     "stock-saleable-tooltip": "Anzahl der verkauftbaren Einheiten dieses Artikels; berücksichtigt reservierte Artikel und eingestellte Fehlmenge",
     "tax-category": "Steuerkategorie",
@@ -365,8 +365,8 @@
     "could-not-connect-to-server": "Es konnte keine Verbindung zum Vendure-Server auf { url } hergestellt werden.",
     "facet-value-form-values-do-not-match": "Die Anzahl der Werte im Facetten-Formular stimmt nicht mit der tatsächlichen Anzahl der Werte überein",
     "health-check-failed": "Systemzustandsprüfung fehlgeschlagen",
-    "no-default-shipping-zone-set": "Dieser Kanal hat keine Standard-Versandzone. Dies kann zu Fehlern bei der Berechnung der Auftragsversandkosten führen.",
-    "no-default-tax-zone-set": "Dieser Kanal verfügt nicht über ein Standard-Steuerzone, was zu Fehlern bei der Preisberechnung führen kann. Bitte erstellen oder wählen Sie eine Zone.",
+    "no-default-shipping-zone-set": "Dieser Kanal verfügt nicht über eine Standard-Versandzone. Dies kann zu Fehlern bei der Berechnung der Auftragsversandkosten führen.",
+    "no-default-tax-zone-set": "Dieser Kanal verfügt nicht über eine Standard-Steuerzone, was zu Fehlern bei der Preisberechnung führen kann. Bitte erstellen oder wählen Sie eine Zone.",
     "product-variant-form-values-do-not-match": "Die Anzahl der Varianten im Produktformular stimmt nicht mit der tatsächlichen Anzahl der Varianten überein."
   },
   "lang": {
@@ -762,7 +762,7 @@
     "test-result": "Test-Ergebnis",
     "test-shipping-method": "Test-Versandart",
     "test-shipping-methods": "Test-Versandarten",
-    "track-inventory-default": "Bestand standardmäßig verfolgen",
+    "track-inventory-default": "Lagerbestand standardmäßig verfolgen",
     "update-zone": "Zone aktualisieren",
     "view-zone-members": "Mitglieder anzeigen",
     "zone": "Zone"
