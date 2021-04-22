@@ -1,6 +1,6 @@
 {
   "name": "@vendure/core",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.10",
   "description": "A modern, headless ecommerce framework",
   "repository": {
     "type": "git",

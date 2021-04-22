@@ -1,6 +1,6 @@
 {
   "name": "dev-server",
-  "version": "1.0.0-beta.9",
+  "version": "1.0.0-beta.10",
   "main": "index.js",
   "license": "MIT",
   "private": true,
@@ -14,18 +14,18 @@
     "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
   },
   "dependencies": {
-    "@vendure/admin-ui-plugin": "^1.0.0-beta.8",
-    "@vendure/asset-server-plugin": "^1.0.0-beta.8",
+    "@vendure/admin-ui-plugin": "^1.0.0-beta.10",
+    "@vendure/asset-server-plugin": "^1.0.0-beta.10",
     "@vendure/common": "^1.0.0-beta.8",
-    "@vendure/core": "^1.0.0-beta.8",
-    "@vendure/elasticsearch-plugin": "^1.0.0-beta.8",
-    "@vendure/email-plugin": "^1.0.0-beta.8",
+    "@vendure/core": "^1.0.0-beta.10",
+    "@vendure/elasticsearch-plugin": "^1.0.0-beta.10",
+    "@vendure/email-plugin": "^1.0.0-beta.10",
     "typescript": "4.1.5"
   },
   "devDependencies": {
     "@types/csv-stringify": "^3.1.0",
-    "@vendure/testing": "^1.0.0-beta.8",
-    "@vendure/ui-devkit": "^1.0.0-beta.9",
+    "@vendure/testing": "^1.0.0-beta.10",
+    "@vendure/ui-devkit": "^1.0.0-beta.10",
     "concurrently": "^5.0.0",
     "csv-stringify": "^5.3.3"
   }

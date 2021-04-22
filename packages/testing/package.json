@@ -1,6 +1,6 @@
 {
   "name": "@vendure/testing",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.10",
   "description": "End-to-end testing tools for Vendure projects",
   "keywords": [
     "vendure",
@@ -44,7 +44,7 @@
   "devDependencies": {
     "@types/mysql": "^2.15.15",
     "@types/pg": "^7.14.5",
-    "@vendure/core": "^1.0.0-beta.8",
+    "@vendure/core": "^1.0.0-beta.10",
     "mysql": "^2.18.1",
     "pg": "^8.4.0",
     "rimraf": "^3.0.0",
