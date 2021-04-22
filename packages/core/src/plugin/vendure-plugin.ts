@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider, Type as NestType } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
 import { DocumentNode } from 'graphql';
@@ -134,10 +135,21 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
         // created a new Module in the ApiModule, and if those resolvers depend on any providers,
         // the must be exported. See the function {@link createDynamicGraphQlModulesForPlugins}
         // for the implementation.
-        nestModuleMetadata.exports = [
-            ...(nestModuleMetadata.exports || []),
-            ...(nestModuleMetadata.providers || []),
-        ];
+        // However, we must omit any global providers (https://github.com/vendure-ecommerce/vendure/issues/837)
+        const nestGlobalProviderTokens = [APP_INTERCEPTOR, APP_FILTER, APP_GUARD, APP_PIPE];
+        const exportedProviders = (nestModuleMetadata.providers || []).filter(provider => {
+            if (isNamedProvider(provider)) {
+                if (nestGlobalProviderTokens.includes(provider.provide as any)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        nestModuleMetadata.exports = [...(nestModuleMetadata.exports || []), ...exportedProviders];
         Module(nestModuleMetadata)(target);
     };
+}
+
+function isNamedProvider(provider: Provider): provider is Exclude<Provider, NestType<any>> {
+    return provider.hasOwnProperty('provide');
 }
