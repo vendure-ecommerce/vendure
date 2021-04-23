@@ -35,14 +35,14 @@ describe('Translation', () => {
 
     describe('translations added manualy', () => {
         it('shall receive custom error message', async () => {
-            const { customErrorMessage } = await adminClient.query(CUSTOM_ERROR);
+            const { customErrorMessage } = await adminClient.query(gql(CUSTOM_ERROR));
             expect(customErrorMessage.errorCode).toBe('CUSTOM_ERROR');
             expect(customErrorMessage.message).toBe(CUSTOM_ERROR_MESSAGE_TRANSLATION);
         });
 
         it('shall receive german error message', async () => {
             const { customErrorMessage } = await adminClient.query(
-                CUSTOM_ERROR,
+                gql(CUSTOM_ERROR),
                 {},
                 { languageCode: LanguageCode.de },
             );
