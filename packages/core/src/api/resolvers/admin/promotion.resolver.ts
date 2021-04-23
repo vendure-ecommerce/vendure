@@ -33,7 +33,7 @@ export class PromotionResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadPromotion)
+    @Allow(Permission.ReadPromotion, Permission.ReadPromotion)
     promotions(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPromotionsArgs,
@@ -45,26 +45,26 @@ export class PromotionResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadPromotion)
+    @Allow(Permission.ReadPromotion, Permission.ReadPromotion)
     promotion(@Ctx() ctx: RequestContext, @Args() args: QueryPromotionArgs): Promise<Promotion | undefined> {
         return this.promotionService.findOne(ctx, args.id).then(this.encodeConditionsAndActions);
     }
 
     @Query()
-    @Allow(Permission.ReadPromotion)
+    @Allow(Permission.ReadPromotion, Permission.ReadPromotion)
     promotionConditions(@Ctx() ctx: RequestContext) {
         return this.promotionService.getPromotionConditions(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadPromotion)
+    @Allow(Permission.ReadPromotion, Permission.ReadPromotion)
     promotionActions(@Ctx() ctx: RequestContext) {
         return this.promotionService.getPromotionActions(ctx);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreatePromotion)
+    @Allow(Permission.CreatePromotion, Permission.CreatePromotion)
     createPromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreatePromotionArgs,
@@ -82,7 +82,7 @@ export class PromotionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdatePromotion)
+    @Allow(Permission.UpdatePromotion, Permission.UpdatePromotion)
     updatePromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdatePromotionArgs,
@@ -104,7 +104,7 @@ export class PromotionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeletePromotion)
+    @Allow(Permission.DeletePromotion, Permission.DeletePromotion)
     deletePromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeletePromotionArgs,
@@ -114,7 +114,7 @@ export class PromotionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdatePromotion)
+    @Allow(Permission.UpdatePromotion, Permission.UpdatePromotion)
     assignPromotionsToChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAssignPromotionsToChannelArgs,
@@ -124,7 +124,7 @@ export class PromotionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdatePromotion)
+    @Allow(Permission.UpdatePromotion, Permission.UpdatePromotion)
     removePromotionsFromChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemovePromotionsFromChannelArgs,

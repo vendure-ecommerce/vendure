@@ -14,7 +14,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class TaxRateEntityResolver {
     constructor(private taxRateService: TaxRateService) {}
 
-    @Allow(Permission.ReadCustomer)
+    @Allow(Permission.ReadCustomer, Permission.ReadCustomerGroup)
     @ResolveField()
     async customerGroup(
         @Ctx() ctx: RequestContext,

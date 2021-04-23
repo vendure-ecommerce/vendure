@@ -2703,28 +2703,84 @@ export enum Permission {
   Authenticated = 'Authenticated',
   /** Grants permission to create Administrator */
   CreateAdministrator = 'CreateAdministrator',
-  /** Grants permission to create Catalog */
+  /** Grants permission to create Asset */
+  CreateAsset = 'CreateAsset',
+  /** Grants permission to create Products, Facets, Assets, Collections */
   CreateCatalog = 'CreateCatalog',
+  /** Grants permission to create Channel */
+  CreateChannel = 'CreateChannel',
+  /** Grants permission to create Collection */
+  CreateCollection = 'CreateCollection',
+  /** Grants permission to create Country */
+  CreateCountry = 'CreateCountry',
   /** Grants permission to create Customer */
   CreateCustomer = 'CreateCustomer',
+  /** Grants permission to create CustomerGroup */
+  CreateCustomerGroup = 'CreateCustomerGroup',
+  /** Grants permission to create Facet */
+  CreateFacet = 'CreateFacet',
   /** Grants permission to create Order */
   CreateOrder = 'CreateOrder',
+  /** Grants permission to create PaymentMethod */
+  CreatePaymentMethod = 'CreatePaymentMethod',
+  /** Grants permission to create Product */
+  CreateProduct = 'CreateProduct',
   /** Grants permission to create Promotion */
   CreatePromotion = 'CreatePromotion',
-  /** Grants permission to create Settings */
+  /** Grants permission to create PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   CreateSettings = 'CreateSettings',
+  /** Grants permission to create ShippingMethod */
+  CreateShippingMethod = 'CreateShippingMethod',
+  /** Grants permission to create System */
+  CreateSystem = 'CreateSystem',
+  /** Grants permission to create Tag */
+  CreateTag = 'CreateTag',
+  /** Grants permission to create TaxCategory */
+  CreateTaxCategory = 'CreateTaxCategory',
+  /** Grants permission to create TaxRate */
+  CreateTaxRate = 'CreateTaxRate',
+  /** Grants permission to create Zone */
+  CreateZone = 'CreateZone',
   /** Grants permission to delete Administrator */
   DeleteAdministrator = 'DeleteAdministrator',
-  /** Grants permission to delete Catalog */
+  /** Grants permission to delete Asset */
+  DeleteAsset = 'DeleteAsset',
+  /** Grants permission to delete Products, Facets, Assets, Collections */
   DeleteCatalog = 'DeleteCatalog',
+  /** Grants permission to delete Channel */
+  DeleteChannel = 'DeleteChannel',
+  /** Grants permission to delete Collection */
+  DeleteCollection = 'DeleteCollection',
+  /** Grants permission to delete Country */
+  DeleteCountry = 'DeleteCountry',
   /** Grants permission to delete Customer */
   DeleteCustomer = 'DeleteCustomer',
+  /** Grants permission to delete CustomerGroup */
+  DeleteCustomerGroup = 'DeleteCustomerGroup',
+  /** Grants permission to delete Facet */
+  DeleteFacet = 'DeleteFacet',
   /** Grants permission to delete Order */
   DeleteOrder = 'DeleteOrder',
+  /** Grants permission to delete PaymentMethod */
+  DeletePaymentMethod = 'DeletePaymentMethod',
+  /** Grants permission to delete Product */
+  DeleteProduct = 'DeleteProduct',
   /** Grants permission to delete Promotion */
   DeletePromotion = 'DeletePromotion',
-  /** Grants permission to delete Settings */
+  /** Grants permission to delete PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   DeleteSettings = 'DeleteSettings',
+  /** Grants permission to delete ShippingMethod */
+  DeleteShippingMethod = 'DeleteShippingMethod',
+  /** Grants permission to delete System */
+  DeleteSystem = 'DeleteSystem',
+  /** Grants permission to delete Tag */
+  DeleteTag = 'DeleteTag',
+  /** Grants permission to delete TaxCategory */
+  DeleteTaxCategory = 'DeleteTaxCategory',
+  /** Grants permission to delete TaxRate */
+  DeleteTaxRate = 'DeleteTaxRate',
+  /** Grants permission to delete Zone */
+  DeleteZone = 'DeleteZone',
   /** Owner means the user owns this entity, e.g. a Customer's own Order */
   Owner = 'Owner',
   Placeholder = 'Placeholder',
@@ -2732,30 +2788,88 @@ export enum Permission {
   Public = 'Public',
   /** Grants permission to read Administrator */
   ReadAdministrator = 'ReadAdministrator',
-  /** Grants permission to read Catalog */
+  /** Grants permission to read Asset */
+  ReadAsset = 'ReadAsset',
+  /** Grants permission to read Products, Facets, Assets, Collections */
   ReadCatalog = 'ReadCatalog',
+  /** Grants permission to read Channel */
+  ReadChannel = 'ReadChannel',
+  /** Grants permission to read Collection */
+  ReadCollection = 'ReadCollection',
+  /** Grants permission to read Country */
+  ReadCountry = 'ReadCountry',
   /** Grants permission to read Customer */
   ReadCustomer = 'ReadCustomer',
+  /** Grants permission to read CustomerGroup */
+  ReadCustomerGroup = 'ReadCustomerGroup',
+  /** Grants permission to read Facet */
+  ReadFacet = 'ReadFacet',
   /** Grants permission to read Order */
   ReadOrder = 'ReadOrder',
+  /** Grants permission to read PaymentMethod */
+  ReadPaymentMethod = 'ReadPaymentMethod',
+  /** Grants permission to read Product */
+  ReadProduct = 'ReadProduct',
   /** Grants permission to read Promotion */
   ReadPromotion = 'ReadPromotion',
-  /** Grants permission to read Settings */
+  /** Grants permission to read PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   ReadSettings = 'ReadSettings',
+  /** Grants permission to read ShippingMethod */
+  ReadShippingMethod = 'ReadShippingMethod',
+  /** Grants permission to read System */
+  ReadSystem = 'ReadSystem',
+  /** Grants permission to read Tag */
+  ReadTag = 'ReadTag',
+  /** Grants permission to read TaxCategory */
+  ReadTaxCategory = 'ReadTaxCategory',
+  /** Grants permission to read TaxRate */
+  ReadTaxRate = 'ReadTaxRate',
+  /** Grants permission to read Zone */
+  ReadZone = 'ReadZone',
   /** SuperAdmin has unrestricted access to all operations */
   SuperAdmin = 'SuperAdmin',
   /** Grants permission to update Administrator */
   UpdateAdministrator = 'UpdateAdministrator',
-  /** Grants permission to update Catalog */
+  /** Grants permission to update Asset */
+  UpdateAsset = 'UpdateAsset',
+  /** Grants permission to update Products, Facets, Assets, Collections */
   UpdateCatalog = 'UpdateCatalog',
+  /** Grants permission to update Channel */
+  UpdateChannel = 'UpdateChannel',
+  /** Grants permission to update Collection */
+  UpdateCollection = 'UpdateCollection',
+  /** Grants permission to update Country */
+  UpdateCountry = 'UpdateCountry',
   /** Grants permission to update Customer */
   UpdateCustomer = 'UpdateCustomer',
+  /** Grants permission to update CustomerGroup */
+  UpdateCustomerGroup = 'UpdateCustomerGroup',
+  /** Grants permission to update Facet */
+  UpdateFacet = 'UpdateFacet',
+  /** Grants permission to update GlobalSettings */
+  UpdateGlobalSettings = 'UpdateGlobalSettings',
   /** Grants permission to update Order */
   UpdateOrder = 'UpdateOrder',
+  /** Grants permission to update PaymentMethod */
+  UpdatePaymentMethod = 'UpdatePaymentMethod',
+  /** Grants permission to update Product */
+  UpdateProduct = 'UpdateProduct',
   /** Grants permission to update Promotion */
   UpdatePromotion = 'UpdatePromotion',
-  /** Grants permission to update Settings */
-  UpdateSettings = 'UpdateSettings'
+  /** Grants permission to update PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
+  UpdateSettings = 'UpdateSettings',
+  /** Grants permission to update ShippingMethod */
+  UpdateShippingMethod = 'UpdateShippingMethod',
+  /** Grants permission to update System */
+  UpdateSystem = 'UpdateSystem',
+  /** Grants permission to update Tag */
+  UpdateTag = 'UpdateTag',
+  /** Grants permission to update TaxCategory */
+  UpdateTaxCategory = 'UpdateTaxCategory',
+  /** Grants permission to update TaxRate */
+  UpdateTaxRate = 'UpdateTaxRate',
+  /** Grants permission to update Zone */
+  UpdateZone = 'UpdateZone'
 }
 
 export enum SortOrder {
@@ -4123,7 +4237,7 @@ export type OrderLine = Node & {
   discounts: Array<Discount>;
   taxLines: Array<TaxLine>;
   order: Order;
-  customFields?: Maybe<OrderLineCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Refund = Node & {
@@ -4853,15 +4967,6 @@ export type HistoryEntrySortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
-};
-
-export type OrderLineCustomFields = {
-  __typename?: 'OrderLineCustomFields';
-  giftCardValue?: Maybe<Scalars['Int']>;
-  giftCardRecipientName?: Maybe<Scalars['String']>;
-  giftCardRecipientEmailAddress?: Maybe<Scalars['String']>;
-  giftCardMessage?: Maybe<Scalars['String']>;
-  giftCardDeliveryDate?: Maybe<Scalars['DateTime']>;
 };
 
 export type AuthenticationInput = {

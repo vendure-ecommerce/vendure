@@ -41,7 +41,7 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
@@ -53,7 +53,7 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
     }
 
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async reindex(@Ctx() ctx: RequestContext): Promise<GraphQLJob> {
         return (this.elasticsearchService.reindex(ctx, false) as unknown) as GraphQLJob;
     }

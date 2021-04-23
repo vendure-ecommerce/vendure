@@ -18,7 +18,7 @@ export class JobResolver {
     constructor(private configService: ConfigService, private jobService: JobQueueService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadSystem)
     async job(@Args() args: QueryJobArgs) {
         const strategy = this.requireInspectableJobQueueStrategy();
         if (!strategy) {
@@ -28,7 +28,7 @@ export class JobResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadSystem)
     async jobs(@Args() args: QueryJobsArgs) {
         const strategy = this.requireInspectableJobQueueStrategy();
         if (!strategy) {
@@ -41,7 +41,7 @@ export class JobResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadSystem)
     async jobsById(@Args() args: QueryJobsByIdArgs) {
         const strategy = this.requireInspectableJobQueueStrategy();
         if (!strategy) {
@@ -51,13 +51,13 @@ export class JobResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadSystem)
     jobQueues(): JobQueue[] {
         return this.jobService.getJobQueues();
     }
 
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteSystem)
     async removeSettledJobs(@Args() args: MutationRemoveSettledJobsArgs) {
         const strategy = this.requireInspectableJobQueueStrategy();
         if (!strategy) {
@@ -67,7 +67,7 @@ export class JobResolver {
     }
 
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteSystem)
     async cancelJob(@Args() args: MutationCancelJobArgs) {
         const strategy = this.requireInspectableJobQueueStrategy();
         if (!strategy) {

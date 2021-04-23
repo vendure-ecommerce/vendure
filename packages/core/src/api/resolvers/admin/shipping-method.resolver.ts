@@ -29,7 +29,7 @@ export class ShippingMethodResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadShippingMethod)
     shippingMethods(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryShippingMethodsArgs,
@@ -38,7 +38,7 @@ export class ShippingMethodResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadShippingMethod)
     shippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryShippingMethodArgs,
@@ -47,26 +47,26 @@ export class ShippingMethodResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings, Permission.ReadOrder)
+    @Allow(Permission.ReadSettings, Permission.ReadOrder, Permission.ReadShippingMethod)
     shippingEligibilityCheckers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getShippingEligibilityCheckers(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings, Permission.ReadOrder)
+    @Allow(Permission.ReadSettings, Permission.ReadOrder, Permission.ReadShippingMethod)
     shippingCalculators(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getShippingCalculators(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings, Permission.ReadOrder)
+    @Allow(Permission.ReadSettings, Permission.ReadOrder, Permission.ReadShippingMethod)
     fulfillmentHandlers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getFulfillmentHandlers(ctx);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreateSettings, Permission.CreateShippingMethod)
     createShippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateShippingMethodArgs,
@@ -77,7 +77,7 @@ export class ShippingMethodResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateShippingMethod)
     updateShippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateShippingMethodArgs,
@@ -88,7 +88,7 @@ export class ShippingMethodResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteShippingMethod)
     deleteShippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteShippingMethodArgs,
@@ -98,14 +98,14 @@ export class ShippingMethodResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadShippingMethod)
     testShippingMethod(@Ctx() ctx: RequestContext, @Args() args: QueryTestShippingMethodArgs) {
         const { input } = args;
         return this.orderTestingService.testShippingMethod(ctx, input);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadShippingMethod)
     testEligibleShippingMethods(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryTestEligibleShippingMethodsArgs,

@@ -24,7 +24,7 @@ export class CustomerGroupResolver {
     constructor(private customerGroupService: CustomerGroupService) {}
 
     @Query()
-    @Allow(Permission.ReadCustomer)
+    @Allow(Permission.ReadCustomer, Permission.ReadCustomerGroup)
     customerGroups(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerGroupsArgs,
@@ -33,7 +33,7 @@ export class CustomerGroupResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCustomer)
+    @Allow(Permission.ReadCustomer, Permission.ReadCustomerGroup)
     async customerGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerGroupArgs,
@@ -43,7 +43,7 @@ export class CustomerGroupResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCustomer)
+    @Allow(Permission.CreateCustomerGroup)
     async createCustomerGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCustomerGroupArgs,
@@ -53,7 +53,7 @@ export class CustomerGroupResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCustomer)
+    @Allow(Permission.UpdateCustomerGroup)
     async updateCustomerGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCustomerGroupArgs,
@@ -63,7 +63,7 @@ export class CustomerGroupResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCustomer)
+    @Allow(Permission.DeleteCustomerGroup)
     async deleteCustomerGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteCustomerGroupArgs,
@@ -73,7 +73,7 @@ export class CustomerGroupResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCustomer)
+    @Allow(Permission.UpdateCustomerGroup)
     async addCustomersToGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddCustomersToGroupArgs,
@@ -83,7 +83,7 @@ export class CustomerGroupResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCustomer)
+    @Allow(Permission.UpdateCustomerGroup)
     async removeCustomersFromGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveCustomersFromGroupArgs,

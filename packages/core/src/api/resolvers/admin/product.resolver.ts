@@ -44,7 +44,7 @@ export class ProductResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async products(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductsArgs,
@@ -53,7 +53,7 @@ export class ProductResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async product(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductArgs,
@@ -72,7 +72,7 @@ export class ProductResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async productVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductVariantsArgs,
@@ -89,7 +89,7 @@ export class ProductResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async productVariant(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductVariantArgs,
@@ -99,7 +99,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog)
+    @Allow(Permission.CreateCatalog, Permission.CreateProduct)
     async createProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductArgs,
@@ -110,7 +110,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async updateProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductArgs,
@@ -121,7 +121,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
     async deleteProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteProductArgs,
@@ -131,7 +131,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async addOptionGroupToProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddOptionGroupToProductArgs,
@@ -142,7 +142,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async removeOptionGroupFromProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOptionGroupFromProductArgs,
@@ -153,7 +153,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async createProductVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductVariantsArgs,
@@ -164,7 +164,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async updateProductVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductVariantsArgs,
@@ -175,7 +175,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
     async deleteProductVariant(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteProductVariantArgs,
@@ -185,7 +185,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async assignProductsToChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAssignProductsToChannelArgs,
@@ -195,7 +195,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async removeProductsFromChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveProductsFromChannelArgs,
@@ -205,7 +205,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async assignProductVariantsToChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAssignProductVariantsToChannelArgs,
@@ -215,7 +215,7 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async removeProductVariantsFromChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveProductVariantsFromChannelArgs,

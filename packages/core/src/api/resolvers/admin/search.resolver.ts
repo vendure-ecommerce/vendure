@@ -10,7 +10,7 @@ import { Allow } from '../../decorators/allow.decorator';
 @Resolver()
 export class SearchResolver {
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async search(...args: any): Promise<Omit<SearchResponse, 'facetValues'>> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
@@ -21,7 +21,7 @@ export class SearchResolver {
     }
 
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async reindex(...args: any[]): Promise<any> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }

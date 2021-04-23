@@ -23,7 +23,7 @@ export class ProductOptionGroupEntityResolver {
     }
 
     @ResolveField()
-    @Allow(Permission.ReadCatalog, Permission.Public)
+    @Allow(Permission.ReadCatalog, Permission.Public, Permission.ReadProduct)
     async options(
         @Ctx() ctx: RequestContext,
         @Parent() optionGroup: Translated<ProductOptionGroup>,

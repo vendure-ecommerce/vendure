@@ -23,7 +23,7 @@ export class PaymentMethodResolver {
     constructor(private paymentMethodService: PaymentMethodService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadPaymentMethod)
     paymentMethods(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPaymentMethodsArgs,
@@ -32,7 +32,7 @@ export class PaymentMethodResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadPaymentMethod)
     paymentMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPaymentMethodArgs,
@@ -42,7 +42,7 @@ export class PaymentMethodResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreateSettings, Permission.CreatePaymentMethod)
     createPaymentMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreatePaymentMethodArgs,
@@ -52,7 +52,7 @@ export class PaymentMethodResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdatePaymentMethod)
     updatePaymentMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdatePaymentMethodArgs,
@@ -62,7 +62,7 @@ export class PaymentMethodResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeletePaymentMethod)
     deletePaymentMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeletePaymentMethodArgs,
@@ -71,13 +71,13 @@ export class PaymentMethodResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadPaymentMethod)
     paymentMethodHandlers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.paymentMethodService.getPaymentMethodHandlers(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadPaymentMethod)
     paymentMethodEligibilityCheckers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.paymentMethodService.getPaymentMethodEligibilityCheckers(ctx);
     }
