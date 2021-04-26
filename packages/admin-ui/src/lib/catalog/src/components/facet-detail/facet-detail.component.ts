@@ -15,6 +15,7 @@ import {
     LanguageCode,
     ModalService,
     NotificationService,
+    Permission,
     ServerConfigService,
     UpdateFacetInput,
     UpdateFacetValueInput,
@@ -37,6 +38,7 @@ export class FacetDetailComponent
     customValueFields: CustomFieldConfig[];
     detailForm: FormGroup;
     values: Array<FacetWithValues.Values | { name: string; code: string }>;
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateFacet];
 
     constructor(
         router: Router,

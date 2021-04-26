@@ -14,6 +14,7 @@ import {
     getConfigArgValue,
     NotificationService,
     PaymentMethod,
+    Permission,
     ServerConfigService,
     toConfigurableOperationInput,
     UpdatePaymentMethodInput,
@@ -38,6 +39,7 @@ export class PaymentMethodDetailComponent
     selectedCheckerDefinition?: ConfigurableOperationDefinition;
     selectedHandler?: ConfigurableOperation | null;
     selectedHandlerDefinition?: ConfigurableOperationDefinition;
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdatePaymentMethod];
 
     constructor(
         router: Router,

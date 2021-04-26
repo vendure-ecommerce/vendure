@@ -4,7 +4,7 @@
         <button
             class="btn btn-primary"
             (click)="save()"
-            *vdrIfPermissions="['UpdateSettings', 'UpdateGlobalSettings']"
+            *vdrIfPermissions="updatePermission"
             [disabled]="detailForm.invalid || detailForm.pristine"
         >
             {{ 'common.update' | translate }}
@@ -42,7 +42,7 @@
             id="outOfStockThreshold"
             type="number"
             formControlName="outOfStockThreshold"
-            [readonly]="!(['UpdateSettings', 'UpdateGlobalSettings'] | hasPermission)"
+            [readonly]="!(updatePermission | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field
@@ -56,7 +56,7 @@
                 clrToggle
                 name="enabled"
                 formControlName="trackInventory"
-                [vdrDisabled]="!(['UpdateSettings', 'UpdateGlobalSettings'] | hasPermission)"
+                [vdrDisabled]="!(updatePermission | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>

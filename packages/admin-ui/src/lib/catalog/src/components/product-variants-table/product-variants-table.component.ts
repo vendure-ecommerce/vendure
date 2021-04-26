@@ -7,7 +7,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { ProductWithVariants } from '@vendure/admin-ui/core';
+import { Permission, ProductWithVariants } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
@@ -26,6 +26,7 @@ export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     formGroupMap = new Map<string, FormGroup>();
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
     private subscription: Subscription;
 
     constructor(private changeDetector: ChangeDetectorRef) {}

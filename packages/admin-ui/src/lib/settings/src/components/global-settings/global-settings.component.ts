@@ -19,6 +19,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     languageCodes = Object.values(LanguageCode);
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateGlobalSettings];
 
     constructor(
         router: Router,

@@ -14,7 +14,6 @@ import {
     BaseDetailComponent,
     Collection,
     ConfigurableOperation,
-    ConfigurableOperationDef,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateCollectionInput,
@@ -27,6 +26,7 @@ import {
     LanguageCode,
     ModalService,
     NotificationService,
+    Permission,
     ServerConfigService,
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
@@ -50,6 +50,7 @@ export class CollectionDetailComponent
     assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(

@@ -21,7 +21,7 @@
         </button>
         <ng-template #updateButton>
             <button
-                *vdrIfPermissions="['UpdateCatalog', 'UpdateFacet']"
+                *vdrIfPermissions="updatePermission"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="detailForm.invalid || detailForm.pristine"
@@ -39,7 +39,7 @@
                 <input
                     type="checkbox"
                     clrToggle
-                    [vdrDisabled]="!(['UpdateCatalog', 'UpdateFacet'] | hasPermission)"
+                    [vdrDisabled]="!(updatePermission | hasPermission)"
                     formControlName="visible"
                     id="visibility"
                 />
@@ -54,19 +54,19 @@
                 id="name"
                 type="text"
                 formControlName="name"
-                [readonly]="!(['UpdateCatalog', 'UpdateFacet'] | hasPermission)"
+                [readonly]="!(updatePermission | hasPermission)"
                 (input)="updateCode(facet.code, $event.target.value)"
             />
         </vdr-form-field>
         <vdr-form-field
             [label]="'common.code' | translate"
             for="code"
-            [readOnlyToggle]="['UpdateCatalog', 'UpdateFacet'] | hasPermission"
+            [readOnlyToggle]="updatePermission | hasPermission"
         >
             <input
                 id="code"
                 type="text"
-                [readonly]="!(['UpdateCatalog', 'UpdateFacet'] | hasPermission)"
+                [readonly]="!(updatePermission | hasPermission)"
                 formControlName="code"
             />
         </vdr-form-field>
@@ -112,7 +112,7 @@
                         <input
                             type="text"
                             formControlName="name"
-                            [readonly]="!(['UpdateCatalog', 'UpdateFacet'] | hasPermission)"
+                            [readonly]="!(updatePermission | hasPermission)"
                             (input)="updateValueCode(facet.values[i]?.code, $event.target.value, i)"
                         />
                     </td>
@@ -139,7 +139,7 @@
                                     type="button"
                                     class="delete-button"
                                     (click)="deleteFacetValue(facet.values[i]?.id, i)"
-                                    [disabled]="!(['UpdateCatalog', 'UpdateFacet'] | hasPermission)"
+                                    [disabled]="!(updatePermission | hasPermission)"
                                     vdrDropdownItem
                                 >
                                     <clr-icon shape="trash" class="is-danger"></clr-icon>

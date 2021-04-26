@@ -21,7 +21,7 @@
         </button>
         <ng-template #updateButton>
             <button
-                *vdrIfPermissions="['UpdateCatalog', 'UpdateCollection']"
+                *vdrIfPermissions="updatePermission"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="(detailForm.invalid || detailForm.pristine) && !assetsChanged()"
@@ -42,7 +42,7 @@
                         clrToggle
                         formControlName="visible"
                         id="visibility"
-                        [vdrDisabled]="!(['UpdateCatalog', 'UpdateCollection'] | hasPermission)"
+                        [vdrDisabled]="!(updatePermission | hasPermission)"
                     />
                     <label class="visible-toggle">
                         <ng-container *ngIf="detailForm.value.visible; else private">{{ 'catalog.public' | translate }}</ng-container>
@@ -55,7 +55,7 @@
                     id="name"
                     type="text"
                     formControlName="name"
-                    [readonly]="!(['UpdateCatalog', 'UpdateCollection'] | hasPermission)"
+                    [readonly]="!(updatePermission | hasPermission)"
                     (input)="updateSlug($event.target.value)"
                 />
             </vdr-form-field>
@@ -68,13 +68,13 @@
                     id="slug"
                     type="text"
                     formControlName="slug"
-                    [readonly]="!(['UpdateCatalog', 'UpdateCollection'] | hasPermission)"
+                    [readonly]="!(updatePermission | hasPermission)"
                     pattern="[a-z0-9_-]+"
                 />
             </vdr-form-field>
             <vdr-rich-text-editor
                 formControlName="description"
-                [readonly]="!(['UpdateCatalog', 'UpdateCollection'] | hasPermission)"
+                [readonly]="!(updatePermission | hasPermission)"
                 [label]="'common.description' | translate"
             ></vdr-rich-text-editor>
 
@@ -107,11 +107,11 @@
                     [operation]="filter"
                     [operationDefinition]="getFilterDefinition(filter)"
                     [formControlName]="i"
-                    [readonly]="!(['UpdateCatalog', 'UpdateCollection'] | hasPermission)"
+                    [readonly]="!(updatePermission | hasPermission)"
                 ></vdr-configurable-input>
             </ng-container>
 
-            <div *vdrIfPermissions="['UpdateCatalog', 'UpdateCollection']">
+            <div *vdrIfPermissions="updatePermission">
                 <vdr-dropdown>
                     <button class="btn btn-outline" vdrDropdownTrigger>
                         <clr-icon shape="plus"></clr-icon>
