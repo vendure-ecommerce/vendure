@@ -11,6 +11,7 @@ import {
     CollectionService,
     FacetValueService,
     PaymentMethodService,
+    RoleService,
     ShippingMethodService,
 } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -19,7 +20,13 @@ import { SearchService } from '../../../service/services/search.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { ZoneService } from '../../../service/services/zone.service';
-import { CollectionFilterDefinition, CountryDefinition, InitialData, ZoneMap } from '../../types';
+import {
+    CollectionFilterDefinition,
+    CountryDefinition,
+    InitialData,
+    RoleDefinition,
+    ZoneMap,
+} from '../../types';
 import { AssetImporter } from '../asset-importer/asset-importer';
 
 /**
@@ -39,6 +46,7 @@ export class Populator {
         private facetValueService: FacetValueService,
         private searchService: SearchService,
         private assetImporter: AssetImporter,
+        private roleService: RoleService,
     ) {}
 
     /**
@@ -53,6 +61,7 @@ export class Populator {
         await this.populateShippingMethods(ctx, data.shippingMethods);
         await this.populatePaymentMethods(ctx, data.paymentMethods);
         await this.setChannelDefaults(zoneMap, data, channel);
+        await this.populateRoles(ctx, data.roles);
     }
 
     /**
@@ -246,6 +255,15 @@ export class Populator {
                 enabled: true,
                 handler: method.handler,
             });
+        }
+    }
+
+    private async populateRoles(ctx: RequestContext, roles?: RoleDefinition[]) {
+        if (!roles) {
+            return;
+        }
+        for (const roleDef of roles) {
+            await this.roleService.create(ctx, roleDef);
         }
     }
 }
