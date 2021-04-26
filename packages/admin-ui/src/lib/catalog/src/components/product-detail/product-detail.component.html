@@ -2,7 +2,7 @@
     <vdr-ab-left>
         <div class="flex clr-flex-row">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
-            <clr-toggle-wrapper *vdrIfPermissions="'UpdateCatalog'">
+            <clr-toggle-wrapper *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']">
                 <input
                     type="checkbox"
                     clrToggle
@@ -32,7 +32,7 @@
         </button>
         <ng-template #updateButton>
             <button
-                *vdrIfPermissions="'UpdateCatalog'"
+                *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="
@@ -90,7 +90,7 @@
                                     id="name"
                                     type="text"
                                     formControlName="name"
-                                    [readonly]="!('UpdateCatalog' | hasPermission)"
+                                    [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                     (input)="updateSlug($event.target.value)"
                                 />
                             </vdr-form-field>
@@ -121,13 +121,13 @@
                                     id="slug"
                                     type="text"
                                     formControlName="slug"
-                                    [readonly]="!('UpdateCatalog' | hasPermission)"
+                                    [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                     pattern="[a-z0-9_-]+"
                                 />
                             </vdr-form-field>
                             <vdr-rich-text-editor
                                 formControlName="description"
-                                [readonly]="!('UpdateCatalog' | hasPermission)"
+                                [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                 [label]="'common.description' | translate"
                             ></vdr-rich-text-editor>
 
@@ -139,7 +139,7 @@
                                         entityName="Product"
                                         [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
                                         [customField]="customField"
-                                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                     ></vdr-custom-field-control>
                                 </ng-container>
                             </section>
@@ -148,12 +148,12 @@
                                 <vdr-facet-value-chip
                                     *ngFor="let facetValue of facetValues$ | async"
                                     [facetValue]="facetValue"
-                                    [removable]="'UpdateCatalog' | hasPermission"
+                                    [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
                                     (remove)="removeProductFacetValue(facetValue.id)"
                                 ></vdr-facet-value-chip>
                                 <button
                                     class="btn btn-sm btn-secondary"
-                                    *vdrIfPermissions="'UpdateCatalog'"
+                                    *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                                     (click)="selectProductFacetValue()"
                                 >
                                     <clr-icon shape="plus"></clr-icon>
@@ -215,7 +215,7 @@
                         </div>
                         <div class="flex-spacer"></div>
                         <a
-                            *vdrIfPermissions="'UpdateCatalog'"
+                            *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                             [routerLink]="['./', 'manage-variants']"
                             class="btn btn-secondary edit-variants-btn"
                         >

@@ -8,6 +8,7 @@ import {
     EventEmitter,
     HostBinding,
     Input,
+    Optional,
     Output,
     ViewChild,
 } from '@angular/core';
@@ -16,8 +17,11 @@ import {
     AssetPickerDialogComponent,
     AssetPreviewDialogComponent,
     ModalService,
+    Permission,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
+
+import { CollectionDetailComponent } from '../collection-detail/collection-detail.component';
 
 export interface AssetChange {
     assets: Asset[];
@@ -58,10 +62,22 @@ export class ProductAssetsComponent implements AfterViewInit {
     public activeContainer;
     public assets: Asset[] = [];
 
+    private readonly updateCollectionPermissions = [Permission.UpdateCatalog, Permission.UpdateCollection];
+    private readonly updateProductPermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
+
+    get updatePermissions(): Permission[] {
+        if (this.collectionDetailComponent) {
+            return this.updateCollectionPermissions;
+        } else {
+            return this.updateProductPermissions;
+        }
+    }
+
     constructor(
         private modalService: ModalService,
         private changeDetector: ChangeDetectorRef,
         private viewportRuler: ViewportRuler,
+        @Optional() private collectionDetailComponent?: CollectionDetailComponent,
     ) {}
 
     ngAfterViewInit() {

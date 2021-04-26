@@ -21,7 +21,7 @@
         <ng-template #updateButton>
             <button
                 class="btn btn-primary"
-                *vdrIfPermissions="'UpdateSettings'"
+                *vdrIfPermissions="['UpdateSettings', 'UpdateCountry']"
                 (click)="save()"
                 [disabled]="detailForm.invalid || detailForm.pristine"
             >
@@ -37,7 +37,7 @@
             id="code"
             type="text"
             formControlName="code"
-            [readonly]="!('UpdateSettings' | hasPermission)"
+            [readonly]="!(['UpdateSettings', 'UpdateCountry'] | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field [label]="'common.name' | translate" for="name">
@@ -45,7 +45,7 @@
             id="name"
             type="text"
             formControlName="name"
-            [readonly]="!('UpdateSettings' | hasPermission)"
+            [readonly]="!(['UpdateSettings', 'UpdateCountry'] | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field [label]="'common.enabled' | translate" for="enabled">
@@ -55,7 +55,7 @@
                 clrToggle
                 id="enabled"
                 formControlName="enabled"
-                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+                [vdrDisabled]="!(['UpdateSettings', 'UpdateCountry'] | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>

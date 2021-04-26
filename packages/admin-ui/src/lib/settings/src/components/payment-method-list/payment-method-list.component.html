@@ -1,7 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="payment-method-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreatePaymentMethod']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-payment-method' | translate }}
         </a>
@@ -41,7 +41,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deletePaymentMethod(paymentMethod.id)"
-                        [disabled]="!('DeleteSettings' | hasPermission)"
+                        [disabled]="!(['DeleteSettings', 'DeletePaymentMethod'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

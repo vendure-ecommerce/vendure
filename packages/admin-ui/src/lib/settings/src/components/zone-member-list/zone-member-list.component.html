@@ -11,7 +11,7 @@
 <vdr-data-table
     [items]="filteredMembers()"
     [allSelected]="areAllSelected()"
-    [isRowSelectedFn]="('UpdateSettings' | hasPermission) && isMemberSelected"
+    [isRowSelectedFn]="(['UpdateSettings', 'UpdateZone'] | hasPermission) && isMemberSelected"
     (rowSelectChange)="toggleSelectMember($event)"
     (allSelectChange)="toggleSelectAll()"
 >

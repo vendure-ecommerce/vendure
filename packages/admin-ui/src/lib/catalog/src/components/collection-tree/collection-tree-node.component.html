@@ -47,7 +47,7 @@
                 <clr-icon shape="edit"></clr-icon>
                 {{ 'common.edit' | translate }}
             </a>
-            <div class="drag-handle" cdkDragHandle *vdrIfPermissions="'UpdateCatalog'">
+            <div class="drag-handle" cdkDragHandle *vdrIfPermissions="['UpdateCatalog', 'UpdateCollection']">
                 <clr-icon shape="drag-handle" size="24"></clr-icon>
             </div>
             <vdr-dropdown>
@@ -58,7 +58,7 @@
                     <a
                         class="dropdown-item"
                         [routerLink]="['./', 'create', { parentId: collection.id }]"
-                        *vdrIfPermissions="'CreateCatalog'"
+                        *vdrIfPermissions="['CreateCatalog', 'CreateCollection']"
                     >
                         <clr-icon shape="plus"></clr-icon>
                         {{ 'catalog.create-new-collection' | translate }}

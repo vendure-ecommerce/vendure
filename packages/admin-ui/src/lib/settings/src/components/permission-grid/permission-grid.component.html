@@ -1,8 +1,9 @@
 <table class="table">
     <tbody>
         <tr *ngFor="let section of gridData">
-            <td class="permission-group">
-                <div>{{ section.label | translate }}</div>
+            <td class="permission-group left">
+                <div><strong>{{ section.label | translate }}</strong></div>
+                <small>{{ section.description | translate }}</small><br>
                 <button *ngIf="1 < section.permissions.length && !readonly" class="btn btn-sm btn-link" (click)="toggleAll(section.permissions)">
                     {{ 'common.toggle-all' | translate }}
                 </button>

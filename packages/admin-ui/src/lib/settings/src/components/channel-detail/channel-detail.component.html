@@ -17,7 +17,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
-                *vdrIfPermissions="'SuperAdmin'"
+                *vdrIfPermissions="['SuperAdmin', 'UpdateChannel']"
                 [disabled]="!saveButtonEnabled()"
             >
                 {{ 'common.update' | translate }}
@@ -28,17 +28,17 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'common.code' | translate" for="code">
-        <input id="code" type="text" [readonly]="!('SuperAdmin' | hasPermission)" formControlName="code" />
+        <input id="code" type="text" [readonly]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)" formControlName="code" />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
-        <input id="token" type="text" [readonly]="!('SuperAdmin' | hasPermission)" formControlName="token" />
+        <input id="token" type="text" [readonly]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)" formControlName="token" />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
         <select
             clrSelect
             name="currencyCode"
             formControlName="currencyCode"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)"
         >
             <option *ngFor="let code of currencyCodes" [value]="code">{{ code | localeCurrencyName }}</option>
         </select>
@@ -48,7 +48,7 @@
             clrSelect
             name="defaultLanguageCode"
             formControlName="defaultLanguageCode"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)"
         >
             <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode">
                 {{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})
@@ -62,7 +62,7 @@
                 clrToggle
                 id="pricesIncludeTax"
                 formControlName="pricesIncludeTax"
-                [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+                [vdrDisabled]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
@@ -71,7 +71,7 @@
             clrSelect
             name="defaultTaxZoneId"
             formControlName="defaultTaxZoneId"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)"
         >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
@@ -93,7 +93,7 @@
             clrSelect
             name="defaultShippingZoneId"
             formControlName="defaultShippingZoneId"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(['SuperAdmin', 'UpdateChannel', 'CreateChannel'] | hasPermission)"
         >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>

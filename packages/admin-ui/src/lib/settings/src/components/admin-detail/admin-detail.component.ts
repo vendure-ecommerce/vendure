@@ -16,6 +16,7 @@ import {
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { CUSTOMER_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 
@@ -73,7 +74,9 @@ export class AdminDetailComponent
     ngOnInit() {
         this.init();
         this.administrator$ = this.entity$;
-        this.allRoles$ = this.dataService.administrator.getRoles(999).mapStream(item => item.roles.items);
+        this.allRoles$ = this.dataService.administrator
+            .getRoles(999)
+            .mapStream(item => item.roles.items.filter(i => i.code !== CUSTOMER_ROLE_CODE));
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
             if (!userStatus.permissions.includes(Permission.UpdateAdministrator)) {
                 const rolesSelect = this.detailForm.get('roles');

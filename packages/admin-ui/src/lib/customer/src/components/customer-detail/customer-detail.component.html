@@ -21,6 +21,7 @@
         </button>
         <ng-template #updateButton>
             <button
+                *vdrIfPermissions="'UpdateCustomer'"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="!(addressDefaultsUpdated || (detailForm.valid && detailForm.dirty))"
@@ -95,7 +96,7 @@
         {{ 'customer.not-a-member-of-any-groups' | translate }}
     </ng-template>
     <div>
-        <button class="btn btn-sm btn-secondary" (click)="addToGroup()">
+        <button class="btn btn-sm btn-secondary" (click)="addToGroup()" *vdrIfPermissions="'UpdateCustomerGroup'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.add-customer-to-group' | translate }}
         </button>
@@ -112,10 +113,11 @@
             [isDefaultShipping]="defaultShippingAddressId === addressForm.value.id"
             [addressForm]="addressForm"
             [customFields]="addressCustomFields"
+            [editable]="['UpdateCustomer'] | hasPermission"
             (setAsDefaultBilling)="setDefaultBillingAddressId($event)"
             (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
         ></vdr-address-card>
-        <button class="btn btn-secondary" (click)="addAddress()">
+        <button class="btn btn-secondary" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.create-new-address' | translate }}
         </button>

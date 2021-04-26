@@ -49,11 +49,11 @@ export class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] |
                 .userStatus()
                 .mapStream(({ userStatus }) => {
                     for (const permission of permissions) {
-                        if (!userStatus.permissions.includes(permission)) {
-                            return false;
+                        if (userStatus.permissions.includes(permission)) {
+                            return true;
                         }
                     }
-                    return true;
+                    return false;
                 })
                 .pipe(tap(() => this.changeDetectorRef.markForCheck()));
         });
