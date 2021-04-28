@@ -15,6 +15,10 @@
 * **core** Improved translations ([a8ca019](https://github.com/vendure-ecommerce/vendure/commit/a8ca019)), closes [#839](https://github.com/vendure-ecommerce/vendure/issues/839)
 * **core** More granular (entity-based) permissions ([4ed2ed5](https://github.com/vendure-ecommerce/vendure/commit/4ed2ed5)), closes [#617](https://github.com/vendure-ecommerce/vendure/issues/617)
 
+#### Perf
+
+* **elasticsearch-plugin** Improve indexing memory usage [#833](https://github.com/vendure-ecommerce/vendure/pull/833)
+
 ## 1.0.0-beta.10 (2021-04-22)
 
 
