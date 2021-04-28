@@ -1,3 +1,20 @@
+## 1.0.0-beta.11 (2021-04-28)
+
+
+#### Fixes
+
+* **core** Allow plugins to define global Nestjs providers ([97edcb9](https://github.com/vendure-ecommerce/vendure/commit/97edcb9)), closes [#837](https://github.com/vendure-ecommerce/vendure/issues/837)
+* **core** Display informative message when saving a translatable fails ([ce6293d](https://github.com/vendure-ecommerce/vendure/commit/ce6293d))
+* **core** Fix error on concurrent calls to new channel ([fad9006](https://github.com/vendure-ecommerce/vendure/commit/fad9006)), closes [#834](https://github.com/vendure-ecommerce/vendure/issues/834)
+* **core** Fix missing customField input for Assets ([772bd8d](https://github.com/vendure-ecommerce/vendure/commit/772bd8d)), closes [#844](https://github.com/vendure-ecommerce/vendure/issues/844)
+
+#### Features
+
+* **admin-ui** Support new permissions ([57566b0](https://github.com/vendure-ecommerce/vendure/commit/57566b0)), closes [#617](https://github.com/vendure-ecommerce/vendure/issues/617)
+* **core** Allow default Roles to be defined in InitialData ([d866325](https://github.com/vendure-ecommerce/vendure/commit/d866325))
+* **core** Improved translations ([a8ca019](https://github.com/vendure-ecommerce/vendure/commit/a8ca019)), closes [#839](https://github.com/vendure-ecommerce/vendure/issues/839)
+* **core** More granular (entity-based) permissions ([4ed2ed5](https://github.com/vendure-ecommerce/vendure/commit/4ed2ed5)), closes [#617](https://github.com/vendure-ecommerce/vendure/issues/617)
+
 ## 1.0.0-beta.10 (2021-04-22)
 
 
