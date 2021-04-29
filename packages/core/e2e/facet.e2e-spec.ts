@@ -592,6 +592,22 @@ describe('Facet resolver', () => {
             });
         }
 
+        // https://github.com/vendure-ecommerce/vendure/issues/831
+        it('updateFacet with unchanged code', async () => {
+            const { createFacet } = await createFacetWithCode('some-new-facet');
+            const result = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(
+                UPDATE_FACET,
+                {
+                    input: {
+                        id: createFacet.id,
+                        code: createFacet.code,
+                    },
+                },
+            );
+
+            expect(result.updateFacet.code).toBe(createFacet.code);
+        });
+
         it('createFacet with conflicting slug gets renamed', async () => {
             const { createFacet: result1 } = await createFacetWithCode('test');
             expect(result1.code).toBe('test');

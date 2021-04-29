@@ -7,7 +7,7 @@
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="collection-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" *vdrIfPermissions="'CreateCatalog'" [routerLink]="['./create']">
+        <a class="btn btn-primary" *vdrIfPermissions="['CreateCatalog', 'CreateCollection']" [routerLink]="['./create']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'catalog.create-new-collection' | translate }}
         </a>

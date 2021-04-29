@@ -1,3 +1,81 @@
+## 1.0.0-beta.11 (2021-04-28)
+
+
+#### Fixes
+
+* **core** Allow plugins to define global Nestjs providers ([97edcb9](https://github.com/vendure-ecommerce/vendure/commit/97edcb9)), closes [#837](https://github.com/vendure-ecommerce/vendure/issues/837)
+* **core** Display informative message when saving a translatable fails ([ce6293d](https://github.com/vendure-ecommerce/vendure/commit/ce6293d))
+* **core** Fix error on concurrent calls to new channel ([fad9006](https://github.com/vendure-ecommerce/vendure/commit/fad9006)), closes [#834](https://github.com/vendure-ecommerce/vendure/issues/834)
+* **core** Fix missing customField input for Assets ([772bd8d](https://github.com/vendure-ecommerce/vendure/commit/772bd8d)), closes [#844](https://github.com/vendure-ecommerce/vendure/issues/844)
+
+#### Features
+
+* **admin-ui** Support new permissions ([57566b0](https://github.com/vendure-ecommerce/vendure/commit/57566b0)), closes [#617](https://github.com/vendure-ecommerce/vendure/issues/617)
+* **core** Allow default Roles to be defined in InitialData ([d866325](https://github.com/vendure-ecommerce/vendure/commit/d866325))
+* **core** Improved translations ([a8ca019](https://github.com/vendure-ecommerce/vendure/commit/a8ca019)), closes [#839](https://github.com/vendure-ecommerce/vendure/issues/839)
+* **core** More granular (entity-based) permissions ([4ed2ed5](https://github.com/vendure-ecommerce/vendure/commit/4ed2ed5)), closes [#617](https://github.com/vendure-ecommerce/vendure/issues/617)
+
+#### Perf
+
+* **elasticsearch-plugin** Improve indexing memory usage [#833](https://github.com/vendure-ecommerce/vendure/pull/833)
+
+## 1.0.0-beta.10 (2021-04-22)
+
+
+#### Fixes
+
+* **admin-ui** Fix error when updating roles ([432c89c](https://github.com/vendure-ecommerce/vendure/commit/432c89c)), closes [#828](https://github.com/vendure-ecommerce/vendure/issues/828)
+* **admin-ui** Make dropdowns scrollable ([e887a2b](https://github.com/vendure-ecommerce/vendure/commit/e887a2b)), closes [#824](https://github.com/vendure-ecommerce/vendure/issues/824)
+* **core** Backoff strategy does not block next jobs ([709cdff](https://github.com/vendure-ecommerce/vendure/commit/709cdff)), closes [#832](https://github.com/vendure-ecommerce/vendure/issues/832)
+* **core** Fix crash on updating Facet code ([755ebc4](https://github.com/vendure-ecommerce/vendure/commit/755ebc4)), closes [#831](https://github.com/vendure-ecommerce/vendure/issues/831)
+* **core** Fix error when assigning deleted ProductVariant to channel ([b5d0e43](https://github.com/vendure-ecommerce/vendure/commit/b5d0e43))
+* **elasticsearch-plugin** Fix bad import ([9c76767](https://github.com/vendure-ecommerce/vendure/commit/9c76767))
+
+#### Features
+
+* **admin-ui** Add Russian translations (#829) ([650f38e](https://github.com/vendure-ecommerce/vendure/commit/650f38e)), closes [#829](https://github.com/vendure-ecommerce/vendure/issues/829)
+* **core** Added i18n messages for DE (#830) ([d62628b](https://github.com/vendure-ecommerce/vendure/commit/d62628b)), closes [#830](https://github.com/vendure-ecommerce/vendure/issues/830)
+* **core** JobQueueStrategy pollInterval accepts function ([c2701b9](https://github.com/vendure-ecommerce/vendure/commit/c2701b9))
+
+### 1.0.0-beta.9 (2021-04-13)
+
+
+#### Fixes
+
+* **admin-ui** Display guest orders in OrderList ([c1dcb19](https://github.com/vendure-ecommerce/vendure/commit/c1dcb19))
+* **admin-ui-plugin** Bump version to make fix available
+
+## 1.0.0-beta.8 (2021-04-13)
+
+
+#### Fixes
+
+* **admin-ui** Better display Fulfillment customFields in Order detail ([0e9f528](https://github.com/vendure-ecommerce/vendure/commit/0e9f528)), closes [#816](https://github.com/vendure-ecommerce/vendure/issues/816)
+* **core** Handle relation customFields when creating Fulfillments ([9559e34](https://github.com/vendure-ecommerce/vendure/commit/9559e34)), closes [#816](https://github.com/vendure-ecommerce/vendure/issues/816)
+* **core** Join eager relations on OrderService.findOne method ([5e181ea](https://github.com/vendure-ecommerce/vendure/commit/5e181ea))
+* **core** Return all assets when querying product by slug ([acb3fb0](https://github.com/vendure-ecommerce/vendure/commit/acb3fb0)), closes [#820](https://github.com/vendure-ecommerce/vendure/issues/820)
+* **email-plugin** Added filename filter for json files (#821) ([317a63c](https://github.com/vendure-ecommerce/vendure/commit/317a63c)), closes [#821](https://github.com/vendure-ecommerce/vendure/issues/821)
+* **email-plugin** make @types/nodemailer a dependency to resolve #817 ([1c2b353](https://github.com/vendure-ecommerce/vendure/commit/1c2b353)), closes [#817](https://github.com/vendure-ecommerce/vendure/issues/817) [#817](https://github.com/vendure-ecommerce/vendure/issues/817)
+
+#### Features
+
+* **admin-ui** Display payment errors in OrderDetail view ([cf31cbf](https://github.com/vendure-ecommerce/vendure/commit/cf31cbf))
+* **admin-ui** Filter Customer list by customer last name ([6df325b](https://github.com/vendure-ecommerce/vendure/commit/6df325b)), closes [#572](https://github.com/vendure-ecommerce/vendure/issues/572)
+* **admin-ui** Filter Order list by customer last name ([690dfa7](https://github.com/vendure-ecommerce/vendure/commit/690dfa7)), closes [#572](https://github.com/vendure-ecommerce/vendure/issues/572)
+* **admin-ui** Improve display of OrderLine customFields ([fde3ffc](https://github.com/vendure-ecommerce/vendure/commit/fde3ffc))
+* **admin-ui** UI for deletion of PaymentMethods ([fa67076](https://github.com/vendure-ecommerce/vendure/commit/fa67076))
+* **core** Add server translations via plugin application bootstrap ([13a4b68](https://github.com/vendure-ecommerce/vendure/commit/13a4b68)), closes [#810](https://github.com/vendure-ecommerce/vendure/issues/810)
+* **core** Allow ListQuery sort/filter inputs to be manually extended ([834ea2d](https://github.com/vendure-ecommerce/vendure/commit/834ea2d)), closes [#572](https://github.com/vendure-ecommerce/vendure/issues/572)
+* **core** Allow setting PaymentState on failure to settle Payment ([0241ade](https://github.com/vendure-ecommerce/vendure/commit/0241ade)), closes [#809](https://github.com/vendure-ecommerce/vendure/issues/809)
+* **core** Configurable backoff strategy for DefaultJobQueuePlugin ([be0a27d](https://github.com/vendure-ecommerce/vendure/commit/be0a27d)), closes [#813](https://github.com/vendure-ecommerce/vendure/issues/813)
+* **core** Implement deletion of PaymentMethods ([f97cd4f](https://github.com/vendure-ecommerce/vendure/commit/f97cd4f))
+* **core** Implement sort/filter OrderList by customerLastName ([c29e6f2](https://github.com/vendure-ecommerce/vendure/commit/c29e6f2)), closes [#572](https://github.com/vendure-ecommerce/vendure/issues/572)
+* **elasticsearch-plugin** Add facetFilters input for search query ([23cc655](https://github.com/vendure-ecommerce/vendure/commit/23cc655)), closes [#726](https://github.com/vendure-ecommerce/vendure/issues/726)
+
+#### Perf
+
+* **core** Reduce memory usage of apply-collection-filters job ([76361d5](https://github.com/vendure-ecommerce/vendure/commit/76361d5))
+
 ## 1.0.0-beta.7 (2021-04-05)
 
 

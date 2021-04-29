@@ -83,7 +83,7 @@ export class DevMailbox {
     private async getEmailList(outputPath: string) {
         const list = await fs.readdir(outputPath);
         const contents: any[] = [];
-        for (const fileName of list) {
+        for (const fileName of list.filter(name => name.endsWith('.json'))) {
             const json = await fs.readFile(path.join(outputPath, fileName), 'utf-8');
             const content = JSON.parse(json);
             contents.push({

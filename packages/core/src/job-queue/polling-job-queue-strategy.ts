@@ -24,7 +24,7 @@ export type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job
 
 export interface PollingJobQueueStrategyConfig {
     concurrency?: number;
-    pollInterval?: number;
+    pollInterval?: number | ((queueName: string) => number);
     backoffStrategy?: BackoffStrategy;
 }
 
@@ -38,6 +38,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
     private errorNotifier$ = new Subject<[string, string]>();
     private queueStopped$ = new Subject<typeof STOP_SIGNAL>();
     private subscription: Subscription;
+    private readonly pollInterval: number;
 
     constructor(
         private readonly queueName: string,
@@ -48,6 +49,10 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
             Logger.error(message);
             Logger.debug(stack);
         });
+        this.pollInterval =
+            typeof this.jobQueueStrategy.pollInterval === 'function'
+                ? this.jobQueueStrategy.pollInterval(queueName)
+                : this.jobQueueStrategy.pollInterval;
     }
 
     start() {
@@ -63,7 +68,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                         await this.jobQueueStrategy.update(nextJob);
                         const onProgress = (job: Job) => this.jobQueueStrategy.update(job);
                         nextJob.on('progress', onProgress);
-                        const cancellationSignal$ = interval(this.jobQueueStrategy.pollInterval * 5).pipe(
+                        const cancellationSignal$ = interval(this.pollInterval * 5).pipe(
                             // tslint:disable-next-line:no-non-null-assertion
                             switchMap(() => this.jobQueueStrategy.findOne(nextJob.id!)),
                             filter(job => job?.state === JobState.CANCELLED),
@@ -106,7 +111,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                 ]);
             }
             if (this.running) {
-                this.timer = setTimeout(runNextJobs, this.jobQueueStrategy.pollInterval);
+                this.timer = setTimeout(runNextJobs, this.pollInterval);
             }
         };
 
@@ -159,7 +164,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
  */
 export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
     public concurrency: number;
-    public pollInterval: number;
+    public pollInterval: number | ((queueName: string) => number);
     public backOffStrategy?: BackoffStrategy;
 
     private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();

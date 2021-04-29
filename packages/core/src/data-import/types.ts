@@ -1,4 +1,4 @@
-import { ConfigurableOperationInput, LanguageCode } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { Zone } from '../entity/zone/zone.entity';
@@ -31,6 +31,12 @@ export interface CollectionDefinition {
     assetPaths?: string[];
 }
 
+export interface RoleDefinition {
+    code: string;
+    description: string;
+    permissions: Permission[];
+}
+
 /**
  * @description
  * An object defining initial settings for a new Vendure installation.
@@ -40,6 +46,7 @@ export interface CollectionDefinition {
 export interface InitialData {
     defaultLanguage: LanguageCode;
     defaultZone: string;
+    roles?: RoleDefinition[];
     countries: CountryDefinition[];
     taxRates: Array<{ name: string; percentage: number }>;
     shippingMethods: Array<{ name: string; price: number }>;

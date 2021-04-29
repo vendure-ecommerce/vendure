@@ -119,14 +119,11 @@ export class RoleService {
     }
 
     async create(ctx: RequestContext, input: CreateRoleInput): Promise<Role> {
-        if (!ctx.activeUserId) {
-            throw new ForbiddenError();
-        }
         this.checkPermissionsAreValid(input.permissions);
 
         let targetChannels: Channel[] = [];
         if (input.channelIds) {
-            targetChannels = await this.getPermittedChannels(ctx, input.channelIds, ctx.activeUserId);
+            targetChannels = await this.getPermittedChannels(ctx, input.channelIds);
         } else {
             targetChannels = [ctx.channel];
         }
@@ -150,7 +147,7 @@ export class RoleService {
                 : undefined,
         });
         if (input.channelIds && ctx.activeUserId) {
-            updatedRole.channels = await this.getPermittedChannels(ctx, input.channelIds, ctx.activeUserId);
+            updatedRole.channels = await this.getPermittedChannels(ctx, input.channelIds);
         }
         await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
         return assertFound(this.findOne(ctx, role.id));
@@ -174,11 +171,7 @@ export class RoleService {
         await this.channelService.assignToChannels(ctx, Role, roleId, [channelId]);
     }
 
-    private async getPermittedChannels(
-        ctx: RequestContext,
-        channelIds: ID[],
-        activeUserId: ID,
-    ): Promise<Channel[]> {
+    private async getPermittedChannels(ctx: RequestContext, channelIds: ID[]): Promise<Channel[]> {
         let permittedChannels: Channel[] = [];
         for (const channelId of channelIds) {
             const channel = await this.connection.getEntityOrThrow(ctx, Channel, channelId);

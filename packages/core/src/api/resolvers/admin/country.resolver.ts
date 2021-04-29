@@ -23,7 +23,7 @@ export class CountryResolver {
     constructor(private countryService: CountryService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadCountry)
     countries(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCountriesArgs,
@@ -32,7 +32,7 @@ export class CountryResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadCountry)
     async country(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCountryArgs,
@@ -42,7 +42,7 @@ export class CountryResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreateSettings, Permission.CreateCountry)
     async createCountry(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCountryArgs,
@@ -52,7 +52,7 @@ export class CountryResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateCountry)
     async updateCountry(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCountryArgs,
@@ -62,7 +62,7 @@ export class CountryResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteCountry)
     async deleteCountry(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteCountryArgs,

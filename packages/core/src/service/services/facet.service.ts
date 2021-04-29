@@ -167,12 +167,14 @@ export class FacetService {
     private async ensureUniqueCode(ctx: RequestContext, code: string, id?: ID) {
         let candidate = code;
         let suffix = 1;
-        let match: Facet | undefined;
+        let conflict = false;
         const alreadySuffixed = /-\d+$/;
         do {
-            match = await this.connection.getRepository(ctx, Facet).findOne({ where: { code: candidate } });
+            const match = await this.connection
+                .getRepository(ctx, Facet)
+                .findOne({ where: { code: candidate } });
 
-            const conflict = !!match && ((id != null && !idsAreEqual(match.id, id)) || id == null);
+            conflict = !!match && ((id != null && !idsAreEqual(match.id, id)) || id == null);
             if (conflict) {
                 suffix++;
                 if (alreadySuffixed.test(candidate)) {
@@ -181,7 +183,7 @@ export class FacetService {
                     candidate = `${candidate}-${suffix}`;
                 }
             }
-        } while (match);
+        } while (conflict);
 
         return candidate;
     }

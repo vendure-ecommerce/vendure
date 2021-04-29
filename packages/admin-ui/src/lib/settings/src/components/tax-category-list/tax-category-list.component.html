@@ -1,7 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="tax-category-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateTaxCategory']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-tax-category' | translate }}
         </a>
@@ -36,7 +36,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteTaxCategory(taxCategory)"
-                        [disabled]="!('DeleteSettings' | hasPermission)"
+                        [disabled]="!(['DeleteSettings', 'DeleteTaxCategory'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

@@ -69,6 +69,13 @@ export const config: VendureConfig = {
 };
 ```
 
+ To add multiple new States you need to extend the generic type like this:
+ ```TypeScript
+import { CustomOrderProcess } from '@vendure/core';
+
+export const customerValidationProcess: CustomOrderProcess<'ValidatingCustomer'|'AnotherState'> = {...}
+ ```
+This way multiple custom states gets defined.
 
 ### Example: Intercepting a state transition
 

@@ -119,7 +119,7 @@
                         type="button"
                         class="delete-button"
                         (click)="cancelJob(job.id)"
-                        [disabled]="!('DeleteSettings' | hasPermission)"
+                        [disabled]="!(['DeleteSettings', 'DeleteSystem'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="ban" class="is-danger"></clr-icon>

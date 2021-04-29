@@ -3,7 +3,7 @@ import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testi
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AddCustomersToGroup,
@@ -285,6 +285,40 @@ describe('ChannelAware Customers', () => {
             );
             expect(customers.totalItems).toBe(4);
             expect(customers.items.map(customer => customer.emailAddress)).toContain('john.doe.2@test.com');
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/834
+        it('handles concurrent assignments to a new channel', async () => {
+            const THIRD_CHANNEL_TOKEN = 'third_channel_token';
+            await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
+                input: {
+                    code: 'third-channel',
+                    token: THIRD_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+
+            await shopClient.asUserWithCredentials(secondCustomer.emailAddress, 'test');
+            shopClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+
+            try {
+                await Promise.all([shopClient.query<Me.Query>(ME), shopClient.query<Me.Query>(ME)]);
+            } catch (e) {
+                fail('Threw: ' + e.message);
+            }
+
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+            const { customers } = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
+                GET_CUSTOMER_LIST,
+            );
+            expect(customers.totalItems).toBe(1);
+            expect(customers.items.map(customer => customer.emailAddress)).toContain(
+                secondCustomer.emailAddress,
+            );
         });
     });
 

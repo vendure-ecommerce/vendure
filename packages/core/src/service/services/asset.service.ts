@@ -37,6 +37,7 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -69,6 +70,7 @@ export class AssetService {
         private tagService: TagService,
         private channelService: ChannelService,
         private roleService: RoleService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {
         this.permittedMimeTypes = this.configService.assetOptions.permittedFileTypes
             .map(val => (/\.[\w]+/.test(val) ? mime.lookup(val) || undefined : val))
@@ -235,10 +237,11 @@ export class AssetService {
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
         const { createReadStream, filename, mimetype } = await input.file;
         const stream = createReadStream();
-        const result = await this.createAssetInternal(ctx, stream, filename, mimetype);
+        const result = await this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields);
         if (isGraphQlErrorResult(result)) {
             return result;
         }
+        await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
         if (input.tags) {
             const tags = await this.tagService.valuesToTags(ctx, input.tags);
             result.tags = tags;
@@ -419,6 +422,7 @@ export class AssetService {
         stream: Stream,
         filename: string,
         mimetype: string,
+        customFields?: { [key: string]: any },
     ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
@@ -454,6 +458,7 @@ export class AssetService {
             source: sourceFileIdentifier,
             preview: previewFileIdentifier,
             focalPoint: null,
+            customFields,
         });
         this.channelService.assignToCurrentChannel(asset, ctx);
         return this.connection.getRepository(ctx, Asset).save(asset);

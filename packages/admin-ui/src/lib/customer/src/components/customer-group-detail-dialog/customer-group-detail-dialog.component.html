@@ -4,7 +4,7 @@
 </ng-template>
 
 <vdr-form-field [label]="'common.name' | translate" for="name">
-    <input id="name" type="text" [(ngModel)]="group.name" [readonly]="!('UpdateCustomer' | hasPermission)" />
+    <input id="name" type="text" [(ngModel)]="group.name" [readonly]="!(['CreateCustomerGroup', 'UpdateCustomerGroup'] | hasPermission)" />
 </vdr-form-field>
 
 <ng-template vdrDialogButtons>

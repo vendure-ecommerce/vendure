@@ -116,7 +116,7 @@ describe('Configurable operations', () => {
                         },
                     },
                 );
-            }, "The argument 'required' is required, but the value is [null]"),
+            }, "The argument 'required' is required"),
         );
     });
 

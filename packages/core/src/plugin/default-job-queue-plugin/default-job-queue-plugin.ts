@@ -9,6 +9,20 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
 
 /**
  * @description
+ * Configuration options for the DefaultJobQueuePlugin. These values get passed into the
+ * {@link SqlJobQueueStrategy}.
+ *
+ * @docsCategory JobQueue
+ * @docsPage DefaultJobQueuePlugin
+ */
+export interface DefaultJobQueueOptions {
+    pollInterval?: number | ((queueName: string) => number);
+    concurrency?: number;
+    backoffStrategy?: BackoffStrategy;
+}
+
+/**
+ * @description
  * A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the {@link SqlJobQueueStrategy}. If you add this
  * plugin to an existing Vendure installation, you'll need to run a [database migration](/docs/developer-guide/migrations), since this
  * plugin will add a new "job_record" table to the database.
@@ -32,8 +46,27 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
  * ### pollInterval
  * The interval in ms between polling for new jobs. The default is 200ms.
  * Using a longer interval reduces load on the database but results in a slight
- * delay in processing jobs.
+ * delay in processing jobs. For more control, it is possible to supply a function which can specify
+ * a pollInterval based on the queue name:
  *
+ * @example
+ * ```TypeScript
+ * export const config: VendureConfig = {
+ *   plugins: [
+ *     DefaultJobQueuePlugin.init({
+ *       pollInterval: queueName => {
+ *         if (queueName === 'cart-recovery-email') {
+ *           // This queue does not need to be polled so frequently,
+ *           // so we set a longer interval in order to reduce load
+ *           // on the database.
+ *           return 10000;
+ *         }
+ *         return 200;
+ *       },
+ *     }),
+ *   ],
+ * };
+ * ```
  * ### concurrency
  * The number of jobs to process concurrently per worker. Defaults to 1.
  *
@@ -67,6 +100,7 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
  * ```
  *
  * @docsCategory JobQueue
+ * @docsWeight 0
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -83,13 +117,9 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
 })
 export class DefaultJobQueuePlugin {
     /** @internal */
-    static options: { pollInterval?: number; concurrency?: number; backoffStrategy?: BackoffStrategy };
+    static options: DefaultJobQueueOptions;
 
-    static init(options: {
-        pollInterval?: number;
-        concurrency?: number;
-        backoffStrategy?: BackoffStrategy;
-    }): Type<DefaultJobQueuePlugin> {
+    static init(options: DefaultJobQueueOptions): Type<DefaultJobQueuePlugin> {
         DefaultJobQueuePlugin.options = options;
         return DefaultJobQueuePlugin;
     }

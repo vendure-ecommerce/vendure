@@ -1,4 +1,4 @@
-import { Client, ClientOptions } from '@elastic/elasticsearch';
+import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
@@ -37,8 +37,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: DeepRequired<ElasticsearchOptions>,
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
-        private facetValueService: FacetValueService,
         private configService: ConfigService,
+        private facetValueService: FacetValueService,
     ) {
         searchService.adopt(this);
     }
@@ -58,8 +58,30 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return this.client.close();
     }
 
-    checkConnection() {
-        return this.client.ping({}, { requestTimeout: 1000 });
+    async checkConnection(): Promise<void> {
+        await new Promise<void>(async (resolve, reject) => {
+            const { connectionAttempts, connectionAttemptInterval } = this.options;
+            let attempts = 0;
+            Logger.verbose('Pinging Elasticsearch...', loggerCtx);
+            while (attempts < connectionAttempts) {
+                attempts++;
+                try {
+                    const pingResult = await this.client.ping({}, { requestTimeout: 1000 });
+                    if (pingResult.body) {
+                        Logger.verbose(`Ping to Elasticsearch successful`, loggerCtx);
+                        return resolve();
+                    }
+                } catch (e) {
+                    Logger.verbose(`Ping to Elasticsearch failed with error "${e.message}"`, loggerCtx);
+                }
+                Logger.verbose(
+                    `Connection to Elasticsearch could not be made, trying again after ${connectionAttemptInterval}ms (attempt ${attempts} of ${connectionAttempts})`,
+                    loggerCtx,
+                );
+                await new Promise(resolve1 => setTimeout(resolve1, connectionAttemptInterval));
+            }
+            reject(`Could not connection to Elasticsearch. Aborting bootstrap.`);
+        });
     }
 
     async createIndicesIfNotExists() {

@@ -100,9 +100,13 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         return ids.map(id => this.jobs.get(id)).filter(notNullOrUndefined);
     }
 
-    async next(queueName: string): Promise<Job | undefined> {
+    async next(queueName: string, waitingJobs: Job[] = []): Promise<Job | undefined> {
         this.checkProcessContext();
-        const next = this.unsettledJobs[queueName]?.shift();
+        const nextIndex = this.unsettledJobs[queueName]?.findIndex(item => !waitingJobs.includes(item.job));
+        if (nextIndex === -1) {
+            return;
+        }
+        const next = this.unsettledJobs[queueName]?.splice(nextIndex, 1)[0];
         if (next) {
             if (next.job.state === JobState.RETRYING && typeof this.backOffStrategy === 'function') {
                 const msSinceLastFailure = Date.now() - +next.updatedAt;

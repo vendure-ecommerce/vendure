@@ -14,7 +14,7 @@
     (pageChange)="setContentsPageNumber($event)"
     (itemsPerPageChange)="setContentsItemsPerPage($event)"
     [allSelected]="areAllSelected()"
-    [isRowSelectedFn]="('UpdateCustomer' | hasPermission) && isMemberSelected"
+    [isRowSelectedFn]="('UpdateCustomerGroup' | hasPermission) && isMemberSelected"
     (rowSelectChange)="toggleSelectMember($event)"
     (allSelectChange)="toggleSelectAll()"
 >

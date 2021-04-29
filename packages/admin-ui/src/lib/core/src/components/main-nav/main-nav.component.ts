@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
+import { Permission } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { HealthCheckService } from '../../providers/health-check/health-check.service';
 import { JobQueueService } from '../../providers/job-queue/job-queue.service';
@@ -64,31 +65,52 @@ export class MainNavComponent implements OnInit, OnDestroy {
     }
 
     private defineNavMenu() {
+        function allow(...permissions: string[]): (userPermissions: string[]) => boolean {
+            return userPermissions => {
+                for (const permission of permissions) {
+                    if (userPermissions.includes(permission)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+        }
+
         this.navBuilderService.defineNavMenuSections([
             {
-                requiresPermission: 'ReadCatalog',
+                requiresPermission: allow(
+                    Permission.ReadCatalog,
+                    Permission.ReadProduct,
+                    Permission.ReadFacet,
+                    Permission.ReadCollection,
+                    Permission.ReadAsset,
+                ),
                 id: 'catalog',
                 label: _('nav.catalog'),
                 items: [
                     {
+                        requiresPermission: allow(Permission.ReadCatalog, Permission.ReadProduct),
                         id: 'products',
                         label: _('nav.products'),
                         icon: 'library',
                         routerLink: ['/catalog', 'products'],
                     },
                     {
+                        requiresPermission: allow(Permission.ReadCatalog, Permission.ReadFacet),
                         id: 'facets',
                         label: _('nav.facets'),
                         icon: 'tag',
                         routerLink: ['/catalog', 'facets'],
                     },
                     {
+                        requiresPermission: allow(Permission.ReadCatalog, Permission.ReadCollection),
                         id: 'collections',
                         label: _('nav.collections'),
                         icon: 'folder-open',
                         routerLink: ['/catalog', 'collections'],
                     },
                     {
+                        requiresPermission: allow(Permission.ReadCatalog, Permission.ReadAsset),
                         id: 'assets',
                         label: _('nav.assets'),
                         icon: 'image-gallery',
@@ -99,9 +121,10 @@ export class MainNavComponent implements OnInit, OnDestroy {
             {
                 id: 'sales',
                 label: _('nav.sales'),
-                requiresPermission: 'ReadOrder',
+                requiresPermission: allow(Permission.ReadOrder),
                 items: [
                     {
+                        requiresPermission: allow(Permission.ReadOrder),
                         id: 'orders',
                         label: _('nav.orders'),
                         routerLink: ['/orders'],
@@ -112,15 +135,17 @@ export class MainNavComponent implements OnInit, OnDestroy {
             {
                 id: 'customers',
                 label: _('nav.customers'),
-                requiresPermission: 'ReadCustomer',
+                requiresPermission: allow(Permission.ReadCustomer, Permission.ReadCustomerGroup),
                 items: [
                     {
+                        requiresPermission: allow(Permission.ReadCustomer),
                         id: 'customers',
                         label: _('nav.customers'),
                         routerLink: ['/customer', 'customers'],
                         icon: 'user',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadCustomerGroup),
                         id: 'customer-groups',
                         label: _('nav.customer-groups'),
                         routerLink: ['/customer', 'groups'],
@@ -131,9 +156,10 @@ export class MainNavComponent implements OnInit, OnDestroy {
             {
                 id: 'marketing',
                 label: _('nav.marketing'),
-                requiresPermission: 'ReadPromotion',
+                requiresPermission: allow(Permission.ReadPromotion),
                 items: [
                     {
+                        requiresPermission: allow(Permission.ReadPromotion),
                         id: 'promotions',
                         label: _('nav.promotions'),
                         routerLink: ['/marketing', 'promotions'],
@@ -144,67 +170,86 @@ export class MainNavComponent implements OnInit, OnDestroy {
             {
                 id: 'settings',
                 label: _('nav.settings'),
-                requiresPermission: 'ReadSettings',
+                requiresPermission: allow(
+                    Permission.ReadSettings,
+                    Permission.ReadChannel,
+                    Permission.ReadAdministrator,
+                    Permission.ReadShippingMethod,
+                    Permission.ReadPaymentMethod,
+                    Permission.ReadTaxCategory,
+                    Permission.ReadTaxRate,
+                    Permission.ReadCountry,
+                    Permission.ReadZone,
+                    Permission.UpdateGlobalSettings,
+                ),
                 collapsible: true,
                 collapsedByDefault: true,
                 items: [
                     {
+                        requiresPermission: allow(Permission.ReadChannel),
                         id: 'channels',
                         label: _('nav.channels'),
                         routerLink: ['/settings', 'channels'],
                         icon: 'layers',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadAdministrator),
                         id: 'administrators',
                         label: _('nav.administrators'),
-                        requiresPermission: 'ReadAdministrator',
                         routerLink: ['/settings', 'administrators'],
                         icon: 'administrator',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadAdministrator),
                         id: 'roles',
                         label: _('nav.roles'),
-                        requiresPermission: 'ReadAdministrator',
                         routerLink: ['/settings', 'roles'],
                         icon: 'users',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadShippingMethod),
                         id: 'shipping-methods',
                         label: _('nav.shipping-methods'),
                         routerLink: ['/settings', 'shipping-methods'],
                         icon: 'truck',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadPaymentMethod),
                         id: 'payment-methods',
                         label: _('nav.payment-methods'),
                         routerLink: ['/settings', 'payment-methods'],
                         icon: 'credit-card',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadTaxCategory),
                         id: 'tax-categories',
                         label: _('nav.tax-categories'),
                         routerLink: ['/settings', 'tax-categories'],
                         icon: 'view-list',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadTaxRate),
                         id: 'tax-rates',
                         label: _('nav.tax-rates'),
                         routerLink: ['/settings', 'tax-rates'],
                         icon: 'calculator',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadCountry),
                         id: 'countries',
                         label: _('nav.countries'),
                         routerLink: ['/settings', 'countries'],
                         icon: 'flag',
                     },
                     {
+                        requiresPermission: allow(Permission.ReadZone),
                         id: 'zones',
                         label: _('nav.zones'),
                         routerLink: ['/settings', 'zones'],
                         icon: 'world',
                     },
                     {
+                        requiresPermission: allow(Permission.UpdateGlobalSettings),
                         id: 'global-settings',
                         label: _('nav.global-settings'),
                         routerLink: ['/settings', 'global-settings'],
@@ -215,7 +260,7 @@ export class MainNavComponent implements OnInit, OnDestroy {
             {
                 id: 'system',
                 label: _('nav.system'),
-                requiresPermission: 'ReadSettings',
+                requiresPermission: Permission.ReadSystem,
                 collapsible: true,
                 collapsedByDefault: true,
                 items: [

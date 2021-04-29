@@ -9,7 +9,7 @@
                 <clr-icon shape="times"></clr-icon>
             </button>
             <div class="flex-spacer"></div>
-            <div class="drag-handle" cdkDragHandle *vdrIfPermissions="'UpdateCatalog'">
+            <div class="drag-handle" cdkDragHandle *ngIf="!readonly">
                 <clr-icon shape="drag-handle" size="24"></clr-icon>
             </div>
         </div>

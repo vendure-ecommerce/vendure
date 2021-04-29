@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, Permission } from '@vendure/admin-ui/core';
 import {
     ConfigurableOperation,
     CreateTaxCategoryInput,
@@ -27,6 +27,7 @@ export class TaxCategoryDetailComponent
     implements OnInit, OnDestroy {
     taxCategory$: Observable<TaxCategory.Fragment>;
     detailForm: FormGroup;
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxCategory];
 
     private taxCondition: ConfigurableOperation;
     private taxAction: ConfigurableOperation;

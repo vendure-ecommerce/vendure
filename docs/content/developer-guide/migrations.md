@@ -48,7 +48,7 @@ _However_ this is **not supported by MySQL / MariaDB**. This means that when usi
 
 ### Revert a migration
 
-The [`runMigrations` function]({{< relref "run-migrations" >}}) will revert the last applied migration. If run again it will then revert the one before that, and so on.
+The [`revertLastMigration` function]({{< relref "revert-last-migration" >}}) will revert the last applied migration. If run again it will then revert the one before that, and so on.
 
 ## Example
 

@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
-import { EMPTY } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { GetRoles, Role } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
+import { EMPTY, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-role-list',
@@ -17,9 +16,10 @@ import { ModalService } from '@vendure/admin-ui/core';
     styleUrls: ['./role-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRoles.Items> {
+export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRoles.Items> implements OnInit {
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
+    visibleRoles$: Observable<GetRoles.Items[]>;
 
     constructor(
         private modalService: ModalService,
@@ -32,6 +32,13 @@ export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRole
         super.setQueryFn(
             (...args: any[]) => this.dataService.administrator.getRoles(...args),
             data => data.roles,
+        );
+    }
+
+    ngOnInit() {
+        super.ngOnInit();
+        this.visibleRoles$ = this.items$.pipe(
+            map(roles => roles.filter(role => role.code !== CUSTOMER_ROLE_CODE)),
         );
     }
 

@@ -3,7 +3,6 @@ import {
     Job as GraphQLJob,
     Permission,
     QuerySearchArgs,
-    SearchInput,
     SearchResponse,
 } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
@@ -13,7 +12,7 @@ import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticSearchInput, SearchPriceData } from './types';
 
 @Resolver('SearchResponse')
-export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'> {
+export class ShopElasticSearchResolver implements Omit<SearchResolver, 'facetValues' | 'reindex'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()
@@ -29,15 +28,6 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'
     }
 
     @ResolveField()
-    async facetValues(
-        @Ctx() ctx: RequestContext,
-        @Parent() parent: { input: ElasticSearchInput },
-    ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const facetValues = await this.elasticsearchService.facetValues(ctx, parent.input, true);
-        return facetValues.filter((i) => !i.facetValue.facet.isPrivate);
-    }
-
-    @ResolveField()
     async prices(
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: ElasticSearchInput },
@@ -47,11 +37,11 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'
 }
 
 @Resolver('SearchResponse')
-export class AdminElasticSearchResolver implements SearchResolver {
+export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetValues'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
@@ -62,17 +52,23 @@ export class AdminElasticSearchResolver implements SearchResolver {
         return result;
     }
 
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async reindex(@Ctx() ctx: RequestContext): Promise<GraphQLJob> {
+        return (this.elasticsearchService.reindex(ctx, false) as unknown) as GraphQLJob;
+    }
+}
+
+@Resolver('SearchResponse')
+export class EntityElasticSearchResolver implements Pick<SearchResolver, 'facetValues'> {
+    constructor(private elasticsearchService: ElasticsearchService) {}
+
     @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
-        @Parent() parent: { input: SearchInput },
+        @Parent() parent: Omit<SearchResponse, 'facetValues'>,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        return this.elasticsearchService.facetValues(ctx, parent.input, false);
-    }
-
-    @Mutation()
-    @Allow(Permission.UpdateCatalog)
-    async reindex(@Ctx() ctx: RequestContext): Promise<GraphQLJob> {
-        return (this.elasticsearchService.reindex(ctx, false) as unknown) as GraphQLJob;
+        const facetValues = await this.elasticsearchService.facetValues(ctx, (parent as any).input, true);
+        return facetValues.filter(i => !i.facetValue.facet.isPrivate);
     }
 }

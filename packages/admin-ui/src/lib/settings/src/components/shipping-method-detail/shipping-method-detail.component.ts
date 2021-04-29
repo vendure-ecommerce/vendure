@@ -16,6 +16,7 @@ import {
     getConfigArgValue,
     LanguageCode,
     NotificationService,
+    Permission,
     ServerConfigService,
     ShippingMethod,
     TestShippingMethodInput,
@@ -53,6 +54,7 @@ export class ShippingMethodDetailComponent
     testDataUpdated = false;
     testResult$: Observable<TestShippingMethodResult | undefined>;
     customFields: CustomFieldConfig[];
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateShippingMethod];
     private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
 
     constructor(

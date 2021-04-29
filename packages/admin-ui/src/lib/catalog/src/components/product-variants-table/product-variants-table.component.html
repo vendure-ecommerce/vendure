@@ -31,7 +31,7 @@
                         clrInput
                         type="text"
                         formControlName="name"
-                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [readonly]="!(updatePermission | hasPermission)"
                         [placeholder]="'common.name' | translate"
                     />
                 </clr-input-container>
@@ -42,7 +42,7 @@
                         clrInput
                         type="text"
                         formControlName="sku"
-                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [readonly]="!(updatePermission | hasPermission)"
                         [placeholder]="'catalog.sku' | translate"
                     />
                 </clr-input-container>
@@ -62,14 +62,14 @@
                         *ngIf="!channelPriceIncludesTax"
                         clrInput
                         [currencyCode]="variant.currencyCode"
-                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [readonly]="!(updatePermission | hasPermission)"
                         formControlName="price"
                     ></vdr-currency-input>
                     <vdr-currency-input
                         *ngIf="channelPriceIncludesTax"
                         clrInput
                         [currencyCode]="variant.currencyCode"
-                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [readonly]="!(updatePermission | hasPermission)"
                         formControlName="priceWithTax"
                     ></vdr-currency-input>
                 </clr-input-container>
@@ -82,7 +82,7 @@
                         min="0"
                         step="1"
                         formControlName="stockOnHand"
-                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [readonly]="!(updatePermission | hasPermission)"
                     />
                 </clr-input-container>
             </td>
@@ -93,7 +93,7 @@
                         clrToggle
                         name="enabled"
                         formControlName="enabled"
-                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
+                        [vdrDisabled]="!(updatePermission | hasPermission)"
                     />
                 </clr-toggle-wrapper>
             </td>

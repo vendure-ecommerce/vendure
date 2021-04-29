@@ -2,7 +2,7 @@
     <vdr-ab-left> </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="zone-list"></vdr-action-bar-items>
-        <button class="btn btn-primary" *vdrIfPermissions="'CreateSettings'" (click)="create()">
+        <button class="btn btn-primary" *vdrIfPermissions="['CreateSettings', 'CreateZone']" (click)="create()">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-zone' | translate }}
         </button>
@@ -41,7 +41,7 @@
                                 class="button"
                                 vdrDropdownItem
                                 (click)="delete(zone.id)"
-                                [disabled]="!('DeleteSettings' | hasPermission)"
+                                [disabled]="!(['DeleteSettings', 'DeleteZone'] | hasPermission)"
                             >
                                 <clr-icon shape="trash" class="is-danger"></clr-icon>
                                 {{ 'common.delete' | translate }}
@@ -86,7 +86,7 @@
                                     class="delete-button"
                                     (click)="removeFromZone(activeZone, selectedMemberIds)"
                                     vdrDropdownItem
-                                    [disabled]="!('DeleteSettings' | hasPermission)"
+                                    [disabled]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)"
                                 >
                                     <clr-icon shape="trash" class="is-danger"></clr-icon>
                                     {{ 'settings.remove-from-zone' | translate }}
@@ -118,7 +118,7 @@
                                 class="delete-button"
                                 (click)="removeFromZone(activeZone, [member.id])"
                                 vdrDropdownItem
-                                [disabled]="!('DeleteSettings' | hasPermission)"
+                                [disabled]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)"
                             >
                                 <clr-icon shape="trash" class="is-danger"></clr-icon>
                                 {{ 'settings.remove-from-zone' | translate }}

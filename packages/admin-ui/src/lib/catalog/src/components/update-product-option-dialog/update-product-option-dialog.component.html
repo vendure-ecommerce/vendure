@@ -24,7 +24,7 @@
             entityName="ProductOption"
             [customFieldsFormGroup]="customFieldsForm"
             [customField]="customField"
-            [readonly]="!('UpdateCatalog' | hasPermission)"
+            [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
         ></vdr-custom-field-control>
     </ng-container>
 </section>

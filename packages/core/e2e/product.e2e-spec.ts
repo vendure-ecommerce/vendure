@@ -252,6 +252,33 @@ describe('Product resolver', () => {
             expect(product.slug).toBe('curvy-monitor');
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/820
+        it('by slug with multiple assets', async () => {
+            const { product: product1 } = await adminClient.query<
+                GetProductSimple.Query,
+                GetProductSimple.Variables
+            >(GET_PRODUCT_SIMPLE, { id: 'T_1' });
+            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: product1!.id,
+                        assetIds: ['T_1', 'T_2', 'T_3'],
+                    },
+                },
+            );
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, { slug: product1!.slug });
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.assets.map(a => a.id)).toEqual(['T_1', 'T_2', 'T_3']);
+        });
+
         // https://github.com/vendure-ecommerce/vendure/issues/538
         it('falls back to default language slug', async () => {
             const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
@@ -1274,7 +1301,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'A ProductVariant already exists with the options:'),
+                }, 'A ProductVariant with the selected options already exists: Variant 1'),
             );
 
             it('updateProductVariants updates variants', async () => {

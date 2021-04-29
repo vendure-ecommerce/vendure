@@ -105,9 +105,23 @@ export class AuthGuard implements CanActivate {
                 // To avoid assigning the customer to the active channel on every request,
                 // it is only done on the first request and whenever the channel changes
                 if (customer) {
-                    await this.channelService.assignToChannels(requestContext, Customer, customer.id, [
-                        requestContext.channelId,
-                    ]);
+                    try {
+                        await this.channelService.assignToChannels(requestContext, Customer, customer.id, [
+                            requestContext.channelId,
+                        ]);
+                    } catch (e) {
+                        const isDuplicateError =
+                            e.code === 'ER_DUP_ENTRY' /* mySQL/MariaDB */ ||
+                            e.code === '23505'; /* postgres */
+                        if (isDuplicateError) {
+                            // For a duplicate error, this means that concurrent requests have resulted in attempting to
+                            // assign the Customer to the channel more than once. In this case we can safely ignore the
+                            // error as the Customer was successfully assigned in the earlier call.
+                            // See https://github.com/vendure-ecommerce/vendure/issues/834
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
             }
             return true;

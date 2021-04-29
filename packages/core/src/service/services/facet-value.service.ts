@@ -53,9 +53,9 @@ export class FacetValueService {
     }
 
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {
-        const facetValues = this.connection
-            .getRepository(ctx, FacetValue)
-            .findByIds(ids, { relations: ['facet'] });
+        const facetValues = this.connection.findByIdsInChannel(ctx, FacetValue, ids, ctx.channelId, {
+            relations: ['facet'],
+        });
         return facetValues.then(values =>
             values.map(facetValue => translateDeep(facetValue, ctx.languageCode, ['facet'])),
         );

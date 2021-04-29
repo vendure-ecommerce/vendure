@@ -20,6 +20,7 @@ import {
     GlobalFlag,
     LanguageCode,
     ModalService,
+    Permission,
     ProductOptionFragment,
     ProductVariant,
     ProductWithVariants,
@@ -75,6 +76,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
     private facetValues: FacetValue.Fragment[];
     private subscription: Subscription;
 

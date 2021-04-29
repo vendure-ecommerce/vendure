@@ -153,11 +153,11 @@ export class ProductService {
             .andWhere('product.deletedAt IS NULL')
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addSelect(
+                // tslint:disable-next-line:max-line-length
                 `CASE product_translations.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
                 'sort_order',
             )
             .orderBy('sort_order', 'DESC')
-            .limit(1)
             .getOne()
             .then(product =>
                 product

@@ -15,4 +15,5 @@ export const defaultAvailableLanguages = [
     LanguageCode.pt_BR,
     LanguageCode.cs,
     LanguageCode.fr,
+    LanguageCode.ru,
 ];

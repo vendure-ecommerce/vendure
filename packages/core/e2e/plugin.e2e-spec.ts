@@ -10,6 +10,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { TestPluginWithAllLifecycleHooks } from './fixtures/test-plugins/with-all-lifecycle-hooks';
 import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensions';
 import { TestPluginWithConfig } from './fixtures/test-plugins/with-config';
+import { PluginWithGlobalProviders } from './fixtures/test-plugins/with-global-providers';
 import { TestLazyExtensionPlugin } from './fixtures/test-plugins/with-lazy-api-extensions';
 import { TestPluginWithProvider } from './fixtures/test-plugins/with-provider';
 import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
@@ -25,6 +26,7 @@ describe('Plugins', () => {
             TestPluginWithProvider,
             TestLazyExtensionPlugin,
             TestRestPlugin,
+            PluginWithGlobalProviders,
         ],
     });
 

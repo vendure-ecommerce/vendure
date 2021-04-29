@@ -603,6 +603,9 @@ export class ProductVariantService {
             .findByIds(input.productVariantIds, { relations: ['taxCategory', 'assets'] });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const variant of variants) {
+            if (variant.deletedAt) {
+                continue;
+            }
             await this.applyChannelPriceAndTax(variant, ctx);
             await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
@@ -720,7 +723,7 @@ export class ProductVariantService {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
                 if (variantOptionIds === inputOptionIds) {
                     throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                        optionNames: this.sortJoin(variant.options, ', ', 'code'),
+                        variantName: translateDeep(variant, ctx.languageCode).name,
                     });
                 }
             });

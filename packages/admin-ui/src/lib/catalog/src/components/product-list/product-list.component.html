@@ -16,7 +16,7 @@
                         type="button"
                         vdrDropdownItem
                         (click)="rebuildSearchIndex()"
-                        [disabled]="!('UpdateCatalog' | hasPermission)"
+                        [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                     >
                         {{ 'catalog.rebuild-search-index' | translate }}
                     </button>
@@ -30,7 +30,7 @@
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateCatalog'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateCatalog', 'CreateProduct']">
             <clr-icon shape="plus"></clr-icon>
             <span class="full-label">{{ 'catalog.create-new-product' | translate }}</span>
         </a>
@@ -86,7 +86,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteProduct(result.productId)"
-                        [disabled]="!('DeleteCatalog' | hasPermission)"
+                        [disabled]="!(['DeleteCatalog', 'DeleteProduct'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

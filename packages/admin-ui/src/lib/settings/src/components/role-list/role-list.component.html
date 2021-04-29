@@ -9,7 +9,7 @@
 </vdr-action-bar>
 
 <vdr-data-table
-    [items]="items$ | async"
+    [items]="visibleRoles$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
     [totalItems]="totalItems$ | async"
     [currentPage]="currentPage$ | async"
