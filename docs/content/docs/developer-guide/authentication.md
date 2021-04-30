@@ -9,7 +9,9 @@ Authentication is the process of determining the identity of a user. Common ways
 
 By default, Vendure uses a username/email address and password to authenticate users, but also supports a wide range of authentication methods via configurable AuthenticationStrategies.
 
-While developing a storefront, mobile app or server that implements authentication of Vendure further reading on [Managing Sessions]({{< relref "managing-sessions" >}}) is highly recommended.
+{{< alert "primary" >}}
+See the [Managing Sessions guide]({{< relref "managing-sessions" >}}) for how to manage authenticated session in your storefront/client applications.
+{{ /alert >}}
 
 ## Adding support for external authentication
 
@@ -33,9 +35,9 @@ export const config: VendureConfig = {
 
 In the above example, we define the strategies available for authenticating in the Shop API and the Admin API. The `NativeAuthenticationStrategy` is the only one actually provided by Vendure out-of-the-box, and this is the default username/email + password strategy.
 
-The other strategies would be custom-built (or provided by future npm packages) but creating classes that implement the [`AuthenticationStrategy` interface]({{< relref "authentication-strategy" >}}).
+The other strategies would be custom-built (or provided by future npm packages) by creating classes that implement the [`AuthenticationStrategy` interface]({{< relref "authentication-strategy" >}}).
 
-Let's take a look at a couple of examples of what a customer AuthenticationStrategy implementation would look like.
+Let's take a look at a couple of examples of what a custom AuthenticationStrategy implementation would look like.
 
 ## Example: Google authentication
 
