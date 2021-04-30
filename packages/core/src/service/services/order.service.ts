@@ -820,7 +820,7 @@ export class OrderService {
         if (orderTotalIsCovered(order, 'Settled')) {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
         }
-        if (orderTotalIsCovered(order, 'Authorized')) {
+        if (orderTotalIsCovered(order, ['Authorized', 'Settled'])) {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
@@ -867,16 +867,10 @@ export class OrderService {
             if (payment.state !== 'Settled') {
                 return new SettlePaymentError(payment.errorMessage || '');
             }
-            const orderTotalSettled = payment.amount === payment.order.totalWithTax;
-            if (
-                orderTotalSettled &&
-                this.orderStateMachine.canTransition(payment.order.state, 'PaymentSettled')
-            ) {
-                const orderTransitionResult = await this.transitionToState(
-                    ctx,
-                    payment.order.id,
-                    'PaymentSettled',
-                );
+            const order = await this.findOne(ctx, payment.order.id);
+            if (order) {
+                order.payments = await this.getOrderPayments(ctx, order.id);
+                const orderTransitionResult = await this.transitionOrderIfTotalIsCovered(ctx, order);
                 if (isGraphQlErrorResult(orderTransitionResult)) {
                     return orderTransitionResult;
                 }

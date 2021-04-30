@@ -1911,6 +1911,55 @@ describe('Orders resolver', () => {
                 orderTotalWithTax - PARTIAL_PAYMENT_AMOUNT,
             );
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/847
+        it('manual call to settlePayment works with multiple payments', async () => {
+            const result = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[1].emailAddress,
+                password,
+            );
+            await proceedToArrangingPayment(shopClient);
+            await shopClient.query<AddPaymentToOrder.Mutation, AddPaymentToOrder.Variables>(ADD_PAYMENT, {
+                input: {
+                    method: partialPaymentMethod.code,
+                    metadata: {
+                        amount: PARTIAL_PAYMENT_AMOUNT,
+                        authorizeOnly: true,
+                    },
+                },
+            });
+            const { addPaymentToOrder: order } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: singleStageRefundablePaymentMethod.code,
+                    metadata: {},
+                },
+            });
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentAuthorized');
+
+            const { settlePayment } = await adminClient.query<
+                SettlePayment.Mutation,
+                SettlePayment.Variables
+            >(SETTLE_PAYMENT, {
+                id: order.payments![0].id,
+            });
+
+            paymentGuard.assertSuccess(settlePayment);
+
+            expect(settlePayment.state).toBe('Settled');
+
+            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: order.id,
+            });
+
+            expect(order2?.state).toBe('PaymentSettled');
+        });
     });
 
     describe('issues', () => {
