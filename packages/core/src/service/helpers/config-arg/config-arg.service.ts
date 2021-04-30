@@ -92,15 +92,7 @@ export class ConfigArgService {
         for (const [name, argDef] of Object.entries(def.args)) {
             if (argDef.required) {
                 const inputArg = input.arguments.find(a => a.name === name);
-                let val: unknown;
-                if (inputArg) {
-                    try {
-                        val = JSON.parse(inputArg?.value);
-                    } catch (e) {
-                        // ignore
-                    }
-                }
-                if (val == null) {
+                if (!inputArg || inputArg.value === null || inputArg.value === '') {
                     throw new UserInputError('error.configurable-argument-is-required', {
                         name,
                     });
