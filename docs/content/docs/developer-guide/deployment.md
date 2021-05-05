@@ -32,6 +32,7 @@ For a production Vendure server, there are a few security-related points to cons
     // ...
   }
   ```
+* Consider using [helmet](https://github.com/helmetjs/helmet) as middleware (add to the `apiOptions.middleware` array) to handle security-related headers. 
 
 ## Health/Readiness Checks
 
