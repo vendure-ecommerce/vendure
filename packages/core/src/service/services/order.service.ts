@@ -820,7 +820,7 @@ export class OrderService {
         if (orderTotalIsCovered(order, 'Settled')) {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
         }
-        if (orderTotalIsCovered(order, 'Authorized')) {
+        if (orderTotalIsCovered(order, ['Authorized', 'Settled'])) {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
@@ -867,16 +867,10 @@ export class OrderService {
             if (payment.state !== 'Settled') {
                 return new SettlePaymentError(payment.errorMessage || '');
             }
-            const orderTotalSettled = payment.amount === payment.order.totalWithTax;
-            if (
-                orderTotalSettled &&
-                this.orderStateMachine.canTransition(payment.order.state, 'PaymentSettled')
-            ) {
-                const orderTransitionResult = await this.transitionToState(
-                    ctx,
-                    payment.order.id,
-                    'PaymentSettled',
-                );
+            const order = await this.findOne(ctx, payment.order.id);
+            if (order) {
+                order.payments = await this.getOrderPayments(ctx, order.id);
+                const orderTransitionResult = await this.transitionOrderIfTotalIsCovered(ctx, order);
                 if (isGraphQlErrorResult(orderTransitionResult)) {
                     return orderTransitionResult;
                 }
@@ -1084,7 +1078,7 @@ export class OrderService {
         ) {
             return new NothingToRefundError();
         }
-        const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, input.lines, i => !i.cancelled);
+        const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, input.lines, i => !i.refund);
         if (!ordersAndItems) {
             return new QuantityTooGreatError();
         }
@@ -1412,7 +1406,7 @@ export class OrderService {
         const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
             orderLinesInput.map(l => l.orderLineId),
             {
-                relations: ['order', 'items', 'items.fulfillments', 'order.channels'],
+                relations: ['order', 'items', 'items.fulfillments', 'order.channels', 'items.refund'],
                 order: { id: 'ASC' },
             },
         );

@@ -246,8 +246,24 @@ export class RequestContext {
                     // avoid Express "deprecated: req.host" warning
                     continue;
                 }
-                const val = (target as any)[key];
-                if (!isObject(val) && typeof val !== 'function') {
+                let val: any;
+                try {
+                    val = (target as any)[key];
+                } catch (e) {
+                    val = String(e);
+                }
+
+                if (Array.isArray(val)) {
+                    depth++;
+                    result[key] = val.map(v => {
+                        if (!isObject(v) && typeof val !== 'function') {
+                            return v;
+                        } else {
+                            return copySimpleFieldsToDepth(v, maxDepth, depth);
+                        }
+                    });
+                    depth--;
+                } else if (!isObject(val) && typeof val !== 'function') {
                     result[key] = val;
                 } else if (depth < maxDepth) {
                     depth++;

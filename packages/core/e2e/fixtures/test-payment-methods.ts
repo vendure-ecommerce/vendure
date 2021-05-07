@@ -59,7 +59,7 @@ export const partialPaymentMethod = new PaymentMethodHandler({
     createPayment: (ctx, order, amount, args, metadata) => {
         return {
             amount: metadata.amount,
-            state: 'Settled',
+            state: metadata.authorizeOnly ? 'Authorized' : 'Settled',
             transactionId: '12345',
             metadata: { public: metadata },
         };

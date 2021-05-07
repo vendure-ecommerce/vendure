@@ -57,6 +57,30 @@ describe('RequestContext', () => {
             const result = RequestContext.deserialize(serializedCtx);
             expect(result.session).toEqual(original.session);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/864
+        it('serialize request context with circular refs', () => {
+            const cyclic: any = {};
+            const cyclic1: any = {
+                prop: cyclic,
+            };
+            cyclic.prop = cyclic1;
+
+            const requestContext = createRequestContext({
+                simple: 'foo',
+                arr: [1, 2, 3],
+                cycle: cyclic,
+                cycleArr: [cyclic, cyclic],
+            });
+
+            const serialized = requestContext.serialize();
+            expect(serialized._req).toEqual({
+                simple: 'foo',
+                arr: [1, 2, 3],
+                cycle: {},
+                cycleArr: [{}, {}],
+            });
+        });
     });
 
     describe('copy', () => {
@@ -106,7 +130,7 @@ describe('RequestContext', () => {
         });
     });
 
-    function createRequestContext() {
+    function createRequestContext(req?: any) {
         let session: CachedSession;
         let channel: Channel;
         let activeOrder: Order;
@@ -148,6 +172,7 @@ describe('RequestContext', () => {
             languageCode: LanguageCode.en,
             channel,
             session,
+            req: req ?? {},
             isAuthorized: true,
             authorizedAsOwnerOnly: false,
         });

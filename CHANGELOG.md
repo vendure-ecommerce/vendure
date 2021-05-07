@@ -1,3 +1,11 @@
+## 1.0.0-rc.0 (2021-05-05)
+
+
+#### Fixes
+
+* **core** Fix transition to PaymentSettled with multiple payments ([c60fad7](https://github.com/vendure-ecommerce/vendure/commit/c60fad7)), closes [#847](https://github.com/vendure-ecommerce/vendure/issues/847)
+* **core** Handle different input types in validateRequiredFields() (#861) ([2ca6bfd](https://github.com/vendure-ecommerce/vendure/commit/2ca6bfd)), closes [#861](https://github.com/vendure-ecommerce/vendure/issues/861) [#855](https://github.com/vendure-ecommerce/vendure/issues/855)
+
 ## 1.0.0-beta.11 (2021-04-28)
 
 
