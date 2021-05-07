@@ -9,6 +9,7 @@ import {
     DefaultSearchPlugin,
     dummyPaymentHandler,
     examplePaymentHandler,
+    FulfillmentHandler,
     LanguageCode,
     LogLevel,
     manualFulfillmentHandler,
@@ -25,6 +26,21 @@ const testPaymentChecker = new PaymentMethodEligibilityChecker({
     description: [{ languageCode: LanguageCode.en, value: 'test checker' }],
     args: {},
     check: (ctx, order) => true,
+});
+
+const myHandler = new FulfillmentHandler({
+    code: 'test-handler',
+    args: {},
+    description: [{ languageCode: LanguageCode.en, value: 'test fulfillment handler' }],
+    createFulfillment: ctx => {
+        return {
+            method: 'test-handler',
+            trackingCode: '123123123123',
+            customFields: {
+                logoId: 1,
+            },
+        };
+    },
 });
 
 /**
@@ -67,13 +83,21 @@ export const devConfig: VendureConfig = {
     },
     customFields: {
         /*Asset: [{ name: 'description', type: 'string' }],*/
+        Fulfillment: [
+            {
+                name: 'logo',
+                type: 'relation',
+                entity: Asset,
+                nullable: true,
+            },
+        ],
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     shippingOptions: {
-        fulfillmentHandlers: [manualFulfillmentHandler],
+        fulfillmentHandlers: [manualFulfillmentHandler, myHandler],
     },
     plugins: [
         AssetServerPlugin.init({

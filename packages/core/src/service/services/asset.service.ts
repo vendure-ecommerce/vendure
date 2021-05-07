@@ -37,10 +37,10 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
-import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
@@ -422,7 +422,7 @@ export class AssetService {
         stream: Stream,
         filename: string,
         mimetype: string,
-        customFields?: { [key: string]: any }
+        customFields?: { [key: string]: any },
     ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
@@ -458,7 +458,7 @@ export class AssetService {
             source: sourceFileIdentifier,
             preview: previewFileIdentifier,
             focalPoint: null,
-            customFields
+            customFields,
         });
         this.channelService.assignToCurrentChannel(asset, ctx);
         return this.connection.getRepository(ctx, Asset).save(asset);

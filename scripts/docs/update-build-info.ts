@@ -1,6 +1,7 @@
 /* tslint:disable:no-console */
-const fs = require('fs');
-const { exec } = require('child_process');
+import { exec } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 getLastCommitHash()
     .then(hash => writeBuildInfo(hash))
@@ -13,24 +14,28 @@ getLastCommitHash()
         process.exit(1);
     });
 
-function writeBuildInfo(commitHash) {
-    const corePackageJson = require('../packages/core/package');
+function writeBuildInfo(commitHash: string) {
+    const corePackageJson = require('../../packages/core/package');
     const content = {
         version: corePackageJson.version,
         commit: commitHash,
     };
-    return new Promise((resolve, reject) => {
-        fs.writeFile('./data/build.json', JSON.stringify(content, null, 2), err => {
-            if (err) {
-                reject(err);
-            }
-            resolve();
-        });
+    return new Promise<void>((resolve, reject) => {
+        fs.writeFile(
+            path.join(__dirname, '../../docs/data/build.json'),
+            JSON.stringify(content, null, 2),
+            err => {
+                if (err) {
+                    reject(err);
+                }
+                resolve();
+            },
+        );
     });
 }
 
 function getLastCommitHash() {
-    return new Promise((resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
         exec(`git log --pretty=format:'%h' -n 1`, (err, out) => {
             if (err) {
                 reject(err);

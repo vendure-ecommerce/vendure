@@ -1,6 +1,13 @@
 import { OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Ctx, ErrorResult, I18nService, PluginCommonModule, RequestContext, VendurePlugin } from '@vendure/core';
+import {
+    Ctx,
+    ErrorResult,
+    I18nService,
+    PluginCommonModule,
+    RequestContext,
+    VendurePlugin,
+} from '@vendure/core';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -18,7 +25,6 @@ class NewError extends ErrorResult {
 
 @Resolver()
 class TestResolver {
-
     @Query()
     async customErrorMessage(@Ctx() ctx: RequestContext, @Args() args: any) {
         return new CustomError();
@@ -28,7 +34,6 @@ class TestResolver {
     async newErrorMessage(@Ctx() ctx: RequestContext, @Args() args: any) {
         return new NewError();
     }
-
 }
 
 export const CUSTOM_ERROR_MESSAGE_TRANSLATION = 'A custom error message';
@@ -60,10 +65,7 @@ export const CUSTOM_ERROR_MESSAGE_TRANSLATION = 'A custom error message';
     },
 })
 export class TranslationTestPlugin implements OnApplicationBootstrap {
-
-    constructor(private i18nService: I18nService) {
-
-    }
+    constructor(private i18nService: I18nService) {}
 
     onApplicationBootstrap(): any {
         this.i18nService.addTranslation('en', {
@@ -78,7 +80,7 @@ export class TranslationTestPlugin implements OnApplicationBootstrap {
             },
         });
 
-        this.i18nService.addTranslationFile('en', path.join(__dirname, '../i18n/en.json'))
-        this.i18nService.addTranslationFile('de', path.join(__dirname, '../i18n/de.json'))
+        this.i18nService.addTranslationFile('en', path.join(__dirname, '../i18n/en.json'));
+        this.i18nService.addTranslationFile('de', path.join(__dirname, '../i18n/de.json'));
     }
 }
