@@ -1567,8 +1567,10 @@ describe('Orders resolver', () => {
             );
             refundGuard.assertErrorResult(refundOrder);
 
-            expect(refundOrder.message).toBe('Cannot refund an OrderItem which has already been refunded');
-            expect(refundOrder.errorCode).toBe(ErrorCode.ALREADY_REFUNDED_ERROR);
+            expect(refundOrder.message).toBe(
+                'The specified quantity is greater than the available OrderItems',
+            );
+            expect(refundOrder.errorCode).toBe(ErrorCode.QUANTITY_TOO_GREAT_ERROR);
         });
 
         it('manually settle a Refund', async () => {
@@ -2070,6 +2072,49 @@ describe('Orders resolver', () => {
                 priceWithTax: 500,
                 shippingMethod: pick(shippingMethod, ['id', 'name', 'code', 'description']),
             });
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/868
+        it('allows multiple refunds of same OrderLine', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            const { refundOrder: refund1 } = await adminClient.query<
+                RefundOrder.Mutation,
+                RefundOrder.Variables
+            >(REFUND_ORDER, {
+                input: {
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    shipping: 0,
+                    adjustment: 0,
+                    reason: 'foo',
+                    paymentId: order.payments![0].id,
+                },
+            });
+            refundGuard.assertSuccess(refund1);
+
+            const { refundOrder: refund2 } = await adminClient.query<
+                RefundOrder.Mutation,
+                RefundOrder.Variables
+            >(REFUND_ORDER, {
+                input: {
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    shipping: 0,
+                    adjustment: 0,
+                    reason: 'foo',
+                    paymentId: order.payments![0].id,
+                },
+            });
+            refundGuard.assertSuccess(refund2);
         });
     });
 });

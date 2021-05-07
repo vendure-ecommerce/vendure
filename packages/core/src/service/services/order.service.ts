@@ -1078,7 +1078,7 @@ export class OrderService {
         ) {
             return new NothingToRefundError();
         }
-        const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, input.lines, i => !i.cancelled);
+        const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, input.lines, i => !i.refund);
         if (!ordersAndItems) {
             return new QuantityTooGreatError();
         }
@@ -1406,7 +1406,7 @@ export class OrderService {
         const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
             orderLinesInput.map(l => l.orderLineId),
             {
-                relations: ['order', 'items', 'items.fulfillments', 'order.channels'],
+                relations: ['order', 'items', 'items.fulfillments', 'order.channels', 'items.refund'],
                 order: { id: 'ASC' },
             },
         );
