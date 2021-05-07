@@ -82,12 +82,15 @@ import { SharedModule, addActionBarItem } from '@vendure/admin-ui/core';
   imports: [SharedModule],
   providers: [
     addActionBarItem({
-       id: 'product-reviews',
-       label: 'Product reviews',
-       locationId: 'product-detail',
-       buttonStyle: 'outline',
-       routerLink: ['./reviews'],
-       requiresPermission: 'SuperAdmin'
+      id: 'product-reviews',
+      label: 'Product reviews',
+      locationId: 'product-detail',
+      buttonStyle: 'outline',
+      routerLink: route => {
+          const id = route.snapshot.params.id;
+          return ['./extensions/reviews', id];
+      },
+      requiresPermission: 'SuperAdmin'
     }),
   ],
 })
