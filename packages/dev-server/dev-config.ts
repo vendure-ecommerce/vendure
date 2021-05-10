@@ -6,6 +6,7 @@ import {
     Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
+    defaultPromotionActions,
     DefaultSearchPlugin,
     dummyPaymentHandler,
     examplePaymentHandler,
@@ -14,6 +15,7 @@ import {
     LogLevel,
     manualFulfillmentHandler,
     PaymentMethodEligibilityChecker,
+    PromotionItemAction,
     VendureConfig,
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
@@ -26,6 +28,20 @@ const testPaymentChecker = new PaymentMethodEligibilityChecker({
     description: [{ languageCode: LanguageCode.en, value: 'test checker' }],
     args: {},
     check: (ctx, order) => true,
+});
+
+const testPromoAction = new PromotionItemAction({
+    code: 'discount-price-action',
+    description: [{ languageCode: LanguageCode.en, value: 'Apply discount price' }],
+    args: {},
+    execute: (ctx, orderItem, orderLine) => {
+        if ((orderLine.productVariant.customFields as any).discountPrice) {
+            return -(
+                orderLine.unitPriceWithTax - (orderLine.productVariant.customFields as any).discountPrice
+            );
+        }
+        return 0;
+    },
 });
 
 const myHandler = new FulfillmentHandler({
@@ -81,16 +97,11 @@ export const devConfig: VendureConfig = {
         paymentMethodEligibilityCheckers: [testPaymentChecker],
         paymentMethodHandlers: [dummyPaymentHandler],
     },
+    promotionOptions: {
+        promotionActions: [...defaultPromotionActions, testPromoAction],
+    },
     customFields: {
         /*Asset: [{ name: 'description', type: 'string' }],*/
-        Fulfillment: [
-            {
-                name: 'logo',
-                type: 'relation',
-                entity: Asset,
-                nullable: true,
-            },
-        ],
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {

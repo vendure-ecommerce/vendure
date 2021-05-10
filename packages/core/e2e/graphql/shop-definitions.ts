@@ -128,10 +128,8 @@ export const SEARCH_PRODUCTS_SHOP = gql`
             items {
                 productId
                 productName
-                productPreview
                 productVariantId
                 productVariantName
-                productVariantPreview
                 sku
                 collectionIds
                 price {

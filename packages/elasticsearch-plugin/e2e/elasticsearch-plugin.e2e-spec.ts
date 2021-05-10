@@ -1167,7 +1167,6 @@ export const SEARCH_PRODUCTS = gql`
                         y
                     }
                 }
-                productPreview
                 productVariantId
                 productVariantName
                 productVariantAsset {
@@ -1178,7 +1177,6 @@ export const SEARCH_PRODUCTS = gql`
                         y
                     }
                 }
-                productVariantPreview
                 sku
             }
         }

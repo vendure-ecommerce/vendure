@@ -55,9 +55,7 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         collectionIds: raw.si_collectionIds.split(',').map((x: string) => x.trim()),
         channelIds: raw.si_channelIds.split(',').map((x: string) => x.trim()),
         productAsset,
-        productPreview: raw.si_productPreview,
         productVariantAsset,
-        productVariantPreview: raw.si_productVariantPreview,
         score: raw.score || 0,
     };
 }

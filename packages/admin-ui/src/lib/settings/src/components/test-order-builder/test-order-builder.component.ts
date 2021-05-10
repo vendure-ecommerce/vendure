@@ -52,7 +52,7 @@ export class TestOrderBuilderComponent implements OnInit {
             this.lines.push({
                 id: result.productVariantId,
                 name: result.productVariantName,
-                preview: result.productPreview,
+                preview: result.productAsset?.preview ?? '',
                 quantity: 1,
                 sku: result.sku,
                 unitPriceWithTax:

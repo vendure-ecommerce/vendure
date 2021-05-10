@@ -501,7 +501,6 @@ export const PRODUCT_SELECTOR_SEARCH = gql`
             items {
                 productVariantId
                 productVariantName
-                productPreview
                 productAsset {
                     id
                     preview

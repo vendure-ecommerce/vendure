@@ -261,7 +261,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     groupByProduct: true,
-                    facetValueFilters: [ { or: ['T_1', 'T_5'] }],
+                    facetValueFilters: [{ or: ['T_1', 'T_5'] }],
                 },
             },
         );
@@ -288,7 +288,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     groupByProduct: true,
-                    facetValueFilters: [{and: 'T_1'}, { or: ['T_2', 'T_3'] }],
+                    facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
                 },
             },
         );
@@ -302,7 +302,7 @@ describe('Default search plugin', () => {
             'Instant Camera',
             'Camera Lens',
             'Tripod',
-            'Slr Camera'
+            'Slr Camera',
         ]);
     }
 
@@ -313,7 +313,7 @@ describe('Default search plugin', () => {
                 input: {
                     facetValueIds: ['T_2', 'T_3'],
                     facetValueOperator: LogicalOperator.OR,
-                    facetValueFilters: [{and:'T_1'}],
+                    facetValueFilters: [{ and: 'T_1' }],
                     groupByProduct: true,
                 },
             },
@@ -328,7 +328,7 @@ describe('Default search plugin', () => {
             'Instant Camera',
             'Camera Lens',
             'Tripod',
-            'Slr Camera'
+            'Slr Camera',
         ]);
     }
 
@@ -338,7 +338,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     facetValueIds: ['T_1'],
-                    facetValueFilters: [{and:'T_3'}],
+                    facetValueFilters: [{ and: 'T_3' }],
                     facetValueOperator: LogicalOperator.AND,
                     groupByProduct: true,
                 },
@@ -348,7 +348,7 @@ describe('Default search plugin', () => {
             'Instant Camera',
             'Camera Lens',
             'Tripod',
-            'Slr Camera'
+            'Slr Camera',
         ]);
     }
 
@@ -455,9 +455,11 @@ describe('Default search plugin', () => {
 
         it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
 
-        it('matches by FacetValueFilters with facetId OR operator', () => testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+        it('matches by FacetValueFilters with facetId OR operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
 
-        it('matches by FacetValueFilters with facetId AND operator', () => testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+        it('matches by FacetValueFilters with facetId AND operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
@@ -627,9 +629,11 @@ describe('Default search plugin', () => {
 
         it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
 
-        it('matches by FacetValueFilters with facetId OR operator', () => testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+        it('matches by FacetValueFilters with facetId OR operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
 
-        it('matches by FacetValueFilters with facetId AND operator', () => testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+        it('matches by FacetValueFilters with facetId AND operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
@@ -794,8 +798,10 @@ describe('Default search plugin', () => {
             }, 10000);
 
             it('updates index when a Collection created', async () => {
-                const { createCollection } = await adminClient.query<CreateCollection.Mutation,
-                    CreateCollection.Variables>(CREATE_COLLECTION, {
+                const { createCollection } = await adminClient.query<
+                    CreateCollection.Mutation,
+                    CreateCollection.Variables
+                >(CREATE_COLLECTION, {
                     input: {
                         translations: [
                             {
@@ -928,8 +934,10 @@ describe('Default search plugin', () => {
                     groupByProduct: false,
                 });
 
-                const { deleteProductVariant } = await adminClient.query<DeleteProductVariant.Mutation,
-                    DeleteProductVariant.Variables>(DELETE_PRODUCT_VARIANT, { id: s1.items[0].productVariantId });
+                const { deleteProductVariant } = await adminClient.query<
+                    DeleteProductVariant.Mutation,
+                    DeleteProductVariant.Variables
+                >(DELETE_PRODUCT_VARIANT, { id: s1.items[0].productVariantId });
 
                 await awaitRunningJobs(adminClient);
 
@@ -1025,8 +1033,10 @@ describe('Default search plugin', () => {
                     .map(() => Math.random().toString(36))
                     .join(' ');
 
-                const { createProduct } = await adminClient.query<CreateProduct.Mutation,
-                    CreateProduct.Variables>(CREATE_PRODUCT, {
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
                     input: {
                         translations: [
                             {
@@ -1069,8 +1079,10 @@ describe('Default search plugin', () => {
             let createdProductId: string;
 
             it('creates synthetic index item for Product with no variants', async () => {
-                const { createProduct } = await adminClient.query<CreateProduct.Mutation,
-                    CreateProduct.Variables>(CREATE_PRODUCT, {
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
                     input: {
                         facetValueIds: ['T_1'],
                         translations: [
@@ -1111,8 +1123,10 @@ describe('Default search plugin', () => {
             });
 
             it('removes synthetic index item once a variant is created', async () => {
-                const { createProductVariants } = await adminClient.query<CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables>(CREATE_PRODUCT_VARIANTS, {
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             productId: createdProductId,
@@ -1138,8 +1152,10 @@ describe('Default search plugin', () => {
             let secondChannel: ChannelFragment;
 
             beforeAll(async () => {
-                const { createChannel } = await adminClient.query<CreateChannel.Mutation,
-                    CreateChannel.Variables>(CREATE_CHANNEL, {
+                const { createChannel } = await adminClient.query<
+                    CreateChannel.Mutation,
+                    CreateChannel.Variables
+                >(CREATE_CHANNEL, {
                     input: {
                         code: 'second-channel',
                         token: SECOND_CHANNEL_TOKEN,
@@ -1170,8 +1186,10 @@ describe('Default search plugin', () => {
 
             it('removing product from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                const { removeProductsFromChannel } = await adminClient.query<RemoveProductsFromChannel.Mutation,
-                    RemoveProductsFromChannel.Variables>(REMOVE_PRODUCT_FROM_CHANNEL, {
+                const { removeProductsFromChannel } = await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_2'],
                         channelId: secondChannel.id,
@@ -1186,8 +1204,10 @@ describe('Default search plugin', () => {
 
             it('adding product variant to channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                await adminClient.query<AssignProductVariantsToChannel.Mutation,
-                    AssignProductVariantsToChannel.Variables>(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
+                await adminClient.query<
+                    AssignProductVariantsToChannel.Mutation,
+                    AssignProductVariantsToChannel.Variables
+                >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
@@ -1210,8 +1230,10 @@ describe('Default search plugin', () => {
 
             it('removing product variant from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                await adminClient.query<RemoveProductVariantsFromChannel.Mutation,
-                    RemoveProductVariantsFromChannel.Variables>(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                await adminClient.query<
+                    RemoveProductVariantsFromChannel.Mutation,
+                    RemoveProductVariantsFromChannel.Variables
+                >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
@@ -1232,8 +1254,10 @@ describe('Default search plugin', () => {
 
             it('updating product affects current channel', async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { updateProduct } = await adminClient.query<UpdateProduct.Mutation,
-                    UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                const { updateProduct } = await adminClient.query<
+                    UpdateProduct.Mutation,
+                    UpdateProduct.Variables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_3',
                         enabled: true,
@@ -1276,8 +1300,10 @@ describe('Default search plugin', () => {
             }
 
             beforeAll(async () => {
-                const { updateProduct } = await adminClient.query<UpdateProduct.Mutation,
-                    UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                const { updateProduct } = await adminClient.query<
+                    UpdateProduct.Mutation,
+                    UpdateProduct.Variables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_1',
                         translations: [
@@ -1359,10 +1385,8 @@ export const SEARCH_PRODUCTS = gql`
                 productName
                 slug
                 description
-                productPreview
                 productVariantId
                 productVariantName
-                productVariantPreview
                 sku
             }
         }

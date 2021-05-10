@@ -1981,13 +1981,9 @@ export type SearchResult = {
     slug: Scalars['String'];
     productId: Scalars['ID'];
     productName: Scalars['String'];
-    /** @deprecated Use `productAsset.preview` instead */
-    productPreview: Scalars['String'];
     productAsset?: Maybe<SearchResultAsset>;
     productVariantId: Scalars['ID'];
     productVariantName: Scalars['String'];
-    /** @deprecated Use `productVariantAsset.preview` instead */
-    productVariantPreview: Scalars['String'];
     productVariantAsset?: Maybe<SearchResultAsset>;
     price: SearchResultPrice;
     priceWithTax: SearchResultPrice;

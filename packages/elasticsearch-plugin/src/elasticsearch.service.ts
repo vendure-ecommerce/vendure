@@ -332,10 +332,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             productVariantAsset,
             productId: source.productId.toString(),
             productName: source.productName,
-            productPreview: source.productPreview || '', // TODO: deprecated and to be removed
             productVariantId: source.productVariantId.toString(),
             productVariantName: source.productVariantName,
-            productVariantPreview: source.productVariantPreview || '', // TODO: deprecated and to be removed
             facetIds: source.facetIds as string[],
             facetValueIds: source.facetValueIds as string[],
             collectionIds: source.collectionIds as string[],
