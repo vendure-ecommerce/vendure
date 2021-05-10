@@ -51,9 +51,6 @@ export class ProductVariant
     @Column()
     sku: string;
 
-    // TODO: Remove as deprecated
-    priceIncludesTax = false;
-
     /**
      * Calculated at run-time
      */

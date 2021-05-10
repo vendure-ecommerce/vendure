@@ -160,7 +160,7 @@ export class OrderModifier {
                 newOrderItems.push(
                     new OrderItem({
                         listPrice: orderLine.productVariant.price,
-                        listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
+                        listPriceIncludesTax: orderLine.productVariant.listPriceIncludesTax,
                         adjustments: [],
                         taxLines: [],
                         lineId: orderLine.id,

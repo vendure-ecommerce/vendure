@@ -341,10 +341,6 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                     unitPriceWithTax
                     taxRate
                 }
-                adjustments {
-                    amount
-                    type
-                }
                 taxLines {
                     taxRate
                     description

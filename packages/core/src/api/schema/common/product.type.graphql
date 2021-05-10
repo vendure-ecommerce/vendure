@@ -48,7 +48,6 @@ type ProductVariant implements Node {
     assets: [Asset!]!
     price: Int!
     currencyCode: CurrencyCode!
-    priceIncludesTax: Boolean! @deprecated(reason: "price now always excludes tax")
     priceWithTax: Int!
     stockLevel: String!
     taxRateApplied: TaxRate!

@@ -23,8 +23,6 @@ type Order implements Node {
     methods.
     """
     surcharges: [Surcharge!]!
-    "Order-level adjustments to the order total, such as discounts from promotions"
-    adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
     discounts: [Discount!]!
     "An array of all coupon codes applied to the Order"
     couponCodes: [String!]!
@@ -140,7 +138,6 @@ type OrderItem implements Node {
     "The proratedUnitPrice including tax"
     proratedUnitPriceWithTax: Int!
     unitTax: Int!
-    unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
     adjustments: [Adjustment!]!
     taxLines: [TaxLine!]!
@@ -187,7 +184,6 @@ type OrderLine implements Node {
     proratedUnitPriceWithTax: Int!
     quantity: Int!
     items: [OrderItem!]!
-    totalPrice: Int! @deprecated(reason: "Use `linePriceWithTax` instead")
     taxRate: Float!
     """
     The total price of the line excluding tax and discounts.
@@ -211,7 +207,6 @@ type OrderLine implements Node {
     proratedLinePriceWithTax: Int!
     "The total tax on this line"
     lineTax: Int!
-    adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
     discounts: [Discount!]!
     taxLines: [TaxLine!]!
     order: Order!
