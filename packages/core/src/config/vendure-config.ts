@@ -195,7 +195,12 @@ export interface CookieOptions {
 
     /**
      * @description
-     * A string which will be used as single key if keys is not provided.
+     * The secret used for signing the session cookies for authenticated users. Only applies
+     * tokenMethod is set to 'cookie'.
+     *
+     * In production applications, this should not be stored as a string in
+     * source control for security reasons, but may be loaded from an external
+     * file not under source control, or from an environment variable, for example.
      *
      * @default (random character string)
      */
@@ -293,21 +298,6 @@ export interface AuthOptions {
      * @default 'cookie'
      */
     tokenMethod?: 'cookie' | 'bearer';
-    /**
-     * @description
-     * **Deprecated** use `cookieConfig.secret` instead.
-     *
-     * The secret used for signing the session cookies for authenticated users. Only applies when
-     * tokenMethod is set to 'cookie'.
-     *
-     * In production applications, this should not be stored as a string in
-     * source control for security reasons, but may be loaded from an external
-     * file not under source control, or from an environment variable, for example.
-     *
-     * @default 'session-secret'
-     * @deprecated use `cookieConfig.secret` instead
-     */
-    sessionSecret?: string;
     /**
      * @description
      * Options related to the handling of cookies when using the 'cookie' tokenMethod.

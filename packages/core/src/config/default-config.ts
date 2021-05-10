@@ -66,7 +66,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
-        sessionSecret: '',
         cookieOptions: {
             secret: Math.random().toString(36).substr(3),
             httpOnly: true,

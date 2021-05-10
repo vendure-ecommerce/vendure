@@ -16,15 +16,17 @@ Using cookies is the simpler approach for browser-based applications, since the 
 
     For example, if using a fetch-based client (such as [Apollo client](https://www.apollographql.com/docs/react/recipes/authentication/#cookie)) you would set `credentials: 'include'` or if using [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials), you would set `withCredentials: true`
 
-2. When using cookie-based sessions, you should set the [`authOptions.sessionSecret` property]({{< relref "auth-options" >}}#sessionsecret) to some secret string which will be used to sign the cookies sent to clients to prevent tampering. This string could be hard-coded in your config file, or (better) reside in an environment variable:
+2. When using cookie-based sessions, you should set the [`authOptions.cookieOptions.secret` property]({{< relref "cookie-options" >}}#secret) to some secret string which will be used to sign the cookies sent to clients to prevent tampering. This string could be hard-coded in your config file, or (better) reside in an environment variable:
 
 ```TypeScript
 const config = {
-    // ...
-    authOptions: {
-        tokenMethod: 'cookie',
-        sessionSecret: process.env.COOKIE_SESSION_SECRET
+  // ...
+  authOptions: {
+    tokenMethod: 'cookie',
+    cookieOptions: {
+      secret: process.env.COOKIE_SESSION_SECRET
     }
+  }
 }
 ```
 

@@ -83,7 +83,6 @@ export const devConfig: VendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
-        sessionSecret: 'some-secret',
         requireVerification: true,
         customPermissions: [],
     },

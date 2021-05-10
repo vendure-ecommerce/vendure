@@ -35,9 +35,11 @@ export const testConfig: Required<VendureConfig> = mergeConfig(defaultConfig, {
     },
     defaultChannelToken: E2E_DEFAULT_CHANNEL_TOKEN,
     authOptions: {
-        sessionSecret: 'some-secret',
         tokenMethod: 'bearer',
         requireVerification: true,
+        cookieOptions: {
+            secret: 'some-secret',
+        },
     },
     dbConnectionOptions: {
         type: 'sqljs',

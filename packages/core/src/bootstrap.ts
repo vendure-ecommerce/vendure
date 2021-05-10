@@ -56,14 +56,8 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
     if (config.authOptions.tokenMethod === 'cookie') {
-        const { sessionSecret, cookieOptions } = config.authOptions;
-        app.use(
-            cookieSession({
-                ...cookieOptions,
-                // TODO: Remove once the deprecated sessionSecret field is removed
-                ...(sessionSecret ? { secret: sessionSecret } : {}),
-            }),
-        );
+        const { cookieOptions } = config.authOptions;
+        app.use(cookieSession(cookieOptions));
     }
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();

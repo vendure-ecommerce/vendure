@@ -142,8 +142,10 @@ Example:
 export const config: VendureConfig = {
   authOptions: {
     tokenMethod: 'cookie',
-    sessionSecret: process.env.COOKIE_SESSION_SECRET,
     requireVerification: true,
+    cookieOptions: {
+      secret: process.env.COOKIE_SESSION_SECRET,
+    },
     superadminCredentials: {
       identifier: process.env.SUPERADMIN_USERNAME,
       password: process.env.SUPERADMIN_PASSWORD,
