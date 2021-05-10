@@ -116,7 +116,6 @@ export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
 ): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
-        checkForDeprecatedOptions(userConfig);
         setConfig(userConfig);
     }
 
@@ -286,24 +285,4 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
         }
         reject(`Could not validate DB table structure. Aborting bootstrap.`);
     });
-}
-
-function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
-    const deprecatedApiOptions = [
-        'hostname',
-        'port',
-        'adminApiPath',
-        'shopApiPath',
-        'channelTokenKey',
-        'cors',
-        'middleware',
-        'apolloServerPlugins',
-    ];
-    const deprecatedOptionsUsed = deprecatedApiOptions.filter(option => config.hasOwnProperty(option));
-    if (deprecatedOptionsUsed.length) {
-        throw new Error(
-            `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +
-                `They have been moved to the "apiOptions" object. Please update your configuration.`,
-        );
-    }
 }
