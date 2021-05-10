@@ -185,7 +185,7 @@ export class OrderCalculator {
             // which affected the order price.
             const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
 
-            const lineHasExistingPromotions = !!line.items[0]?.adjustments?.find(
+            const lineHasExistingPromotions = !!line.firstItem?.adjustments?.find(
                 a => a.type === AdjustmentType.PROMOTION,
             );
             const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
@@ -209,10 +209,14 @@ export class OrderCalculator {
                 if (applicableOrState) {
                     const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
                     for (const item of line.items) {
-                        const adjustment = await promotion.apply(ctx, {
-                            orderItem: item,
-                            orderLine: line,
-                        }, state);
+                        const adjustment = await promotion.apply(
+                            ctx,
+                            {
+                                orderItem: item,
+                                orderLine: line,
+                            },
+                            state,
+                        );
                         if (adjustment) {
                             item.addAdjustment(adjustment);
                             priceAdjusted = true;
@@ -225,9 +229,9 @@ export class OrderCalculator {
                     }
                 }
             }
-            const lineNoLongerHasPromotions =
-                !line.items[0]?.adjustments ||
-                !line.items[0]?.adjustments.find(a => a.type === AdjustmentType.PROMOTION);
+            const lineNoLongerHasPromotions = !line.firstItem?.adjustments?.find(
+                a => a.type === AdjustmentType.PROMOTION,
+            );
             if (lineHasExistingPromotions && lineNoLongerHasPromotions) {
                 line.items.forEach(i => updatedOrderItems.add(i));
             }
@@ -285,7 +289,9 @@ export class OrderCalculator {
         }
 
         this.calculateOrderTotals(order);
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
+        const applicableOrderPromotions = await filterAsync(promotions, p =>
+            p.test(ctx, order).then(Boolean),
+        );
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
@@ -334,7 +340,9 @@ export class OrderCalculator {
     }
 
     private async applyShippingPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
+        const applicableOrderPromotions = await filterAsync(promotions, p =>
+            p.test(ctx, order).then(Boolean),
+        );
         if (applicableOrderPromotions.length) {
             order.shippingLines.forEach(line => (line.adjustments = []));
             for (const promotion of applicableOrderPromotions) {

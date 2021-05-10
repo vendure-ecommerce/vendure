@@ -197,6 +197,14 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     /**
+     * Returns the first OrderItems of the line (i.e. the one with the earliest
+     * `createdAt` property).
+     */
+    get firstItem(): OrderItem | undefined {
+        return (this.items ?? []).sort((a, b) => +a.createdAt - +b.createdAt)[0];
+    }
+
+    /**
      * Clears Adjustments from all OrderItems of the given type. If no type
      * is specified, then all adjustments are removed.
      */

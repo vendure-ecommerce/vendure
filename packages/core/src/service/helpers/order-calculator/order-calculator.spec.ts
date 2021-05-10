@@ -1573,7 +1573,7 @@ function assertOrderTotalsAddUp(order: Order) {
         const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
         expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
 
-        const pricesIncludeTax = line.items[0].listPriceIncludesTax;
+        const pricesIncludeTax = line.firstItem?.listPriceIncludesTax;
 
         if (pricesIncludeTax) {
             const lineDiscountsAmountWithTaxSum = summate(line.discounts, 'amountWithTax');
