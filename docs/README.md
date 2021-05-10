@@ -1,6 +1,6 @@
 # Vendure Docs
 
-This is the source for the documentation part of the Vendure. Docs are written in markdown and the website is generated with [Hugo](https://gohugo.io).
+This is the source for the documentation part of the vendure.io website. Docs are written in markdown and the website is generated with [Hugo](https://gohugo.io).
 
 ## Structure
 
