@@ -10,6 +10,7 @@ import {
     OrderState,
     PaymentMethodHandler,
     RequestContext,
+    TransactionalConnection,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -51,7 +52,7 @@ describe('Payment process', () => {
     const PAYMENT_ERROR_MESSAGE = 'Payment is not valid';
     const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
         init(injector) {
-            initSpy(injector.getConnection().name);
+            initSpy(injector.get(TransactionalConnection).rawConnection.name);
         },
         transitions: {
             Created: {

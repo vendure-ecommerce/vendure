@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { CustomOrderProcess, mergeConfig, OrderState } from '@vendure/core';
+import { CustomOrderProcess, mergeConfig, OrderState, TransactionalConnection } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 
@@ -42,7 +42,7 @@ describe('Order process', () => {
     const VALIDATION_ERROR_MESSAGE = 'Customer must have a company email address';
     const customOrderProcess: CustomOrderProcess<'ValidatingCustomer'> = {
         init(injector) {
-            initSpy(injector.getConnection().name);
+            initSpy(injector.get(TransactionalConnection).rawConnection.name);
         },
         transitions: {
             AddingItems: {
