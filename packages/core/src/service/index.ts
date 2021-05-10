@@ -1,7 +1,5 @@
 export * from './helpers/utils/translate-entity';
 export * from './helpers/utils/patch-entity';
-export * from './helpers/utils/channel-aware-orm-utils';
-export * from './helpers/utils/get-entity-or-throw';
 export * from './helpers/active-order/active-order.service';
 export * from './helpers/list-query-builder/list-query-builder';
 export * from './helpers/locale-string-hydrator/locale-string-hydrator';
