@@ -1924,7 +1924,11 @@ describe('Orders resolver', () => {
 
             expect(order.state).toBe('PaymentSettled');
             expect(order.payments?.length).toBe(2);
-            expect(omit(order.payments![1], ['id'])).toEqual({
+            expect(
+                omit(order.payments?.find(p => p.method === singleStageRefundablePaymentMethod.code)!, [
+                    'id',
+                ]),
+            ).toEqual({
                 amount: orderTotalWithTax - PARTIAL_PAYMENT_AMOUNT,
                 metadata: {},
                 method: singleStageRefundablePaymentMethod.code,
@@ -2042,7 +2046,7 @@ describe('Orders resolver', () => {
                 SettlePayment.Mutation,
                 SettlePayment.Variables
             >(SETTLE_PAYMENT, {
-                id: order.payments![0].id,
+                id: order.payments!.find(p => p.method === partialPaymentMethod.code)!.id,
             });
 
             paymentGuard.assertSuccess(settlePayment);
