@@ -498,9 +498,9 @@ export class OrderDetailComponent
                         return of(undefined);
                     }
 
-                    const operations: Array<Observable<
-                        RefundOrder.RefundOrder | CancelOrder.CancelOrder
-                    >> = [];
+                    const operations: Array<
+                        Observable<RefundOrder.RefundOrder | CancelOrder.CancelOrder>
+                    > = [];
                     if (input.refund.lines.length) {
                         operations.push(
                             this.dataService.order
@@ -527,7 +527,11 @@ export class OrderDetailComponent
                             break;
                         case 'Refund':
                             this.refetchOrder(result).subscribe();
-                            this.notificationService.success(_('order.refund-order-success'));
+                            if (result.state === 'Failed') {
+                                this.notificationService.error(_('order.refund-order-failed'));
+                            } else {
+                                this.notificationService.success(_('order.refund-order-success'));
+                            }
                             break;
                         case 'QuantityTooGreatError':
                         case 'MultipleOrderError':

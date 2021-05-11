@@ -56,7 +56,7 @@
                                 [value]="line.quantity"
                                 (input)="updateLineQuantity(line, $event.target.value)"
                             />
-                            <vdr-line-refunds [line]="line"></vdr-line-refunds>
+                            <vdr-line-refunds [line]="line" [payments]="order.payments"></vdr-line-refunds>
                             <vdr-line-fulfillment
                                 [line]="line"
                                 [orderState]="order.state"

@@ -24,7 +24,7 @@
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
                 <td class="align-middle quantity">
                     {{ line.quantity }}
-                    <vdr-line-refunds [line]="line"></vdr-line-refunds>
+                    <vdr-line-refunds [line]="line" [payments]="order.payments"></vdr-line-refunds>
                 </td>
                 <td class="align-middle quantity">
                     {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
@@ -41,7 +41,11 @@
                                     <div class="line-promotion" *ngFor="let discount of discounts">
                                         {{ discount.description }}
                                         <div class="promotion-amount">
-                                            {{ discount.amount / 100 / line.quantity | number: '1.0-2' | currency: order.currencyCode }}
+                                            {{
+                                                discount.amount / 100 / line.quantity
+                                                    | number: '1.0-2'
+                                                    | currency: order.currencyCode
+                                            }}
                                         </div>
                                     </div>
                                 </vdr-dropdown-menu>
@@ -140,18 +144,18 @@
                     {{ 'order.refund-total' | translate }}:
                     {{ refundTotal | localeCurrency: order.currencyCode }}
                 </div>
-                <div
-                    class="refund-total-error"
-                    *ngIf="refundTotal < 0 || selectedPayment.amount < refundTotal"
-                >
+                <div class="refund-total-error" *ngIf="refundTotal < 0 || settledPaymentsTotal < refundTotal">
                     {{
                         'order.refund-total-error'
                             | translate
                                 : {
                                       min: 0 | currency: order.currencyCode,
-                                      max: selectedPayment.amount | localeCurrency: order.currencyCode
+                                      max: settledPaymentsTotal | localeCurrency: order.currencyCode
                                   }
                     }}
+                </div>
+                <div class="refund-total-warning" *ngIf="selectedPayment.amount < refundTotal">
+                    {{ 'order.refund-total-warning' | translate }}
                 </div>
             </div>
         </div>
@@ -162,10 +166,10 @@
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
     <button type="submit" (click)="select()" [disabled]="!canSubmit()" class="btn btn-primary">
         <ng-container *ngIf="isRefunding(); else cancelling">
-        {{
-            'order.refund-with-amount'
-                | translate: { amount: refundTotal | localeCurrency: order.currencyCode }
-        }}
+            {{
+                'order.refund-with-amount'
+                    | translate: { amount: refundTotal | localeCurrency: order.currencyCode }
+            }}
         </ng-container>
         <ng-template #cancelling>
             {{ 'order.cancel-selected-items' | translate }}

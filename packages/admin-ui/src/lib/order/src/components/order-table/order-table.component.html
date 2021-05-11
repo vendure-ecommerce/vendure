@@ -25,7 +25,7 @@
                 </td>
                 <td class="align-middle quantity">
                     {{ line.quantity }}
-                    <vdr-line-refunds [line]="line"></vdr-line-refunds>
+                    <vdr-line-refunds [line]="line" [payments]="order.payments"></vdr-line-refunds>
                     <vdr-line-fulfillment [line]="line" [orderState]="order.state"></vdr-line-fulfillment>
                 </td>
                 <td class="align-middle total">

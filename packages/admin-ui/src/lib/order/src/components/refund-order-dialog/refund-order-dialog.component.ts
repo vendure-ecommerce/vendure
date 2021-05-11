@@ -9,6 +9,7 @@ import {
     OrderLineInput,
     RefundOrderInput,
 } from '@vendure/admin-ui/core';
+import { summate } from '@vendure/common/lib/shared-utils';
 
 type SelectionLine = { quantity: number; refund: boolean; cancel: boolean };
 
@@ -43,8 +44,37 @@ export class RefundOrderDialogComponent
         return itemTotal + (this.refundShipping ? this.order.shippingWithTax : 0) + this.adjustment;
     }
 
+    get settledPaymentsTotal(): number {
+        return this.settledPayments
+            .map(payment => {
+                const paymentTotal = payment.amount;
+                const alreadyRefundedTotal = summate(
+                    payment.refunds.filter(r => r.state !== 'Failed') as Array<Required<OrderDetail.Refunds>>,
+                    'total',
+                );
+                return paymentTotal - alreadyRefundedTotal;
+            })
+            .reduce((sum, amount) => sum + amount, 0);
+    }
+
     lineCanBeRefundedOrCancelled(line: OrderDetail.Lines): boolean {
-        return 0 < line.items.filter(i => i.refundId == null && !i.cancelled).length;
+        const refunds =
+            this.order.payments?.reduce(
+                (all, payment) => [...all, ...payment.refunds],
+                [] as OrderDetail.Refunds[],
+            ) ?? [];
+
+        const refundable = line.items.filter(i => {
+            if (i.cancelled) {
+                return false;
+            }
+            if (i.refundId == null) {
+                return true;
+            }
+            const refund = refunds.find(r => r.id === i.refundId);
+            return refund?.state === 'Failed';
+        });
+        return 0 < refundable.length;
     }
 
     ngOnInit() {
@@ -87,12 +117,11 @@ export class RefundOrderDialogComponent
 
     canSubmit(): boolean {
         if (this.isRefunding()) {
-            // !selectedPayment || !reason || refundTotal === 0 || refundTotal > selectedPayment.amount;
             return !!(
                 this.selectedPayment &&
                 this.reason &&
                 0 < this.refundTotal &&
-                this.refundTotal <= this.selectedPayment.amount
+                this.refundTotal <= this.settledPaymentsTotal
             );
         } else if (this.isCancelling()) {
             return !!this.reason;
