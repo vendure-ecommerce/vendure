@@ -101,6 +101,7 @@ export const devConfig: VendureConfig = {
     },
     customFields: {
         /*Asset: [{ name: 'description', type: 'string' }],*/
+        ProductVariant: [{ name: 'discountPrice', type: 'int' }],
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {

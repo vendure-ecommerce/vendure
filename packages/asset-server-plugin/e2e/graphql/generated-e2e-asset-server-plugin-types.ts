@@ -1912,7 +1912,7 @@ export type ProductVariant = Node & {
     options: Array<ProductOption>;
     facetValues: Array<FacetValue>;
     translations: Array<ProductVariantTranslation>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<ProductVariantCustomFields>;
 };
 
 export type ProductVariantStockMovementsArgs = {
@@ -2051,7 +2051,7 @@ export type CreateProductVariantInput = {
     outOfStockThreshold?: Maybe<Scalars['Int']>;
     useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
     trackInventory?: Maybe<GlobalFlag>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<CreateProductVariantCustomFieldsInput>;
 };
 
 export type UpdateProductVariantInput = {
@@ -2068,7 +2068,7 @@ export type UpdateProductVariantInput = {
     outOfStockThreshold?: Maybe<Scalars['Int']>;
     useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
     trackInventory?: Maybe<GlobalFlag>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<UpdateProductVariantCustomFieldsInput>;
 };
 
 export type AssignProductsToChannelInput = {
@@ -4544,6 +4544,7 @@ export type ProductVariantFilterParameter = {
     currencyCode?: Maybe<StringOperators>;
     priceWithTax?: Maybe<NumberOperators>;
     stockLevel?: Maybe<StringOperators>;
+    discountPrice?: Maybe<NumberOperators>;
 };
 
 export type ProductVariantSortParameter = {
@@ -4559,6 +4560,7 @@ export type ProductVariantSortParameter = {
     price?: Maybe<SortOrder>;
     priceWithTax?: Maybe<SortOrder>;
     stockLevel?: Maybe<SortOrder>;
+    discountPrice?: Maybe<SortOrder>;
 };
 
 export type PromotionFilterParameter = {
@@ -4657,6 +4659,18 @@ export type HistoryEntrySortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+};
+
+export type ProductVariantCustomFields = {
+    discountPrice?: Maybe<Scalars['Int']>;
+};
+
+export type CreateProductVariantCustomFieldsInput = {
+    discountPrice?: Maybe<Scalars['Int']>;
+};
+
+export type UpdateProductVariantCustomFieldsInput = {
+    discountPrice?: Maybe<Scalars['Int']>;
 };
 
 export type AuthenticationInput = {

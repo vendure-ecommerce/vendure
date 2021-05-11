@@ -2320,7 +2320,7 @@ export type ProductVariant = Node & {
     options: Array<ProductOption>;
     facetValues: Array<FacetValue>;
     translations: Array<ProductVariantTranslation>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<ProductVariantCustomFields>;
 };
 
 export type ProductVariantTranslation = {
@@ -2845,6 +2845,7 @@ export type ProductVariantFilterParameter = {
     currencyCode?: Maybe<StringOperators>;
     priceWithTax?: Maybe<NumberOperators>;
     stockLevel?: Maybe<StringOperators>;
+    discountPrice?: Maybe<NumberOperators>;
 };
 
 export type ProductVariantSortParameter = {
@@ -2857,6 +2858,7 @@ export type ProductVariantSortParameter = {
     price?: Maybe<SortOrder>;
     priceWithTax?: Maybe<SortOrder>;
     stockLevel?: Maybe<SortOrder>;
+    discountPrice?: Maybe<SortOrder>;
 };
 
 export type CustomerFilterParameter = {
@@ -2927,6 +2929,11 @@ export type HistoryEntrySortParameter = {
 
 export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductVariantCustomFields = {
+    __typename?: 'ProductVariantCustomFields';
+    discountPrice?: Maybe<Scalars['Int']>;
 };
 
 export type AuthenticationInput = {
