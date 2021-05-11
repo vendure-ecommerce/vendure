@@ -16,7 +16,7 @@ export class OrderPaymentCardComponent {
     @Output() settleRefund = new EventEmitter<OrderDetail.Refunds>();
 
     refundHasMetadata(refund?: OrderDetail.Refunds): boolean {
-        return !!refund && Object.keys(refund).length < 0;
+        return !!refund && Object.keys(refund.metadata).length > 0;
     }
 
     nextOtherStates(): string[] {
