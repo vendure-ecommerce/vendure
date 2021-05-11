@@ -24,6 +24,7 @@ import {
     onTransitionSpy,
     partialPaymentMethod,
     singleStageRefundablePaymentMethod,
+    singleStageRefundFailingPaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
 import { FULFILLMENT_FRAGMENT } from './graphql/fragments';
@@ -113,6 +114,7 @@ describe('Orders resolver', () => {
                     failsToSettlePaymentMethod,
                     singleStageRefundablePaymentMethod,
                     partialPaymentMethod,
+                    singleStageRefundFailingPaymentMethod,
                 ],
             },
         }),
@@ -145,6 +147,10 @@ describe('Orders resolver', () => {
                     {
                         name: singleStageRefundablePaymentMethod.code,
                         handler: { code: singleStageRefundablePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: singleStageRefundFailingPaymentMethod.code,
+                        handler: { code: singleStageRefundFailingPaymentMethod.code, arguments: [] },
                     },
                     {
                         name: partialPaymentMethod.code,
@@ -1550,6 +1556,22 @@ describe('Orders resolver', () => {
             refundId = refundOrder.id;
         });
 
+        it('manually settle a Refund', async () => {
+            const { settleRefund } = await adminClient.query<SettleRefund.Mutation, SettleRefund.Variables>(
+                SETTLE_REFUND,
+                {
+                    input: {
+                        id: refundId,
+                        transactionId: 'aaabbb',
+                    },
+                },
+            );
+            refundGuard.assertSuccess(settleRefund);
+
+            expect(settleRefund.state).toBe('Settled');
+            expect(settleRefund.transactionId).toBe('aaabbb');
+        });
+
         it('returns error result if attempting to refund the same item more than once', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: orderId,
@@ -1571,22 +1593,6 @@ describe('Orders resolver', () => {
                 'The specified quantity is greater than the available OrderItems',
             );
             expect(refundOrder.errorCode).toBe(ErrorCode.QUANTITY_TOO_GREAT_ERROR);
-        });
-
-        it('manually settle a Refund', async () => {
-            const { settleRefund } = await adminClient.query<SettleRefund.Mutation, SettleRefund.Variables>(
-                SETTLE_REFUND,
-                {
-                    input: {
-                        id: refundId,
-                        transactionId: 'aaabbb',
-                    },
-                },
-            );
-            refundGuard.assertSuccess(settleRefund);
-
-            expect(settleRefund.state).toBe('Settled');
-            expect(settleRefund.transactionId).toBe('aaabbb');
         });
 
         it('order history contains expected entries', async () => {
@@ -1654,6 +1660,53 @@ describe('Orders resolver', () => {
                     },
                 },
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/873
+        it('can add another refund if the first one fails', async () => {
+            const orderResult = await createTestOrder(
+                adminClient,
+                shopClient,
+                customers[0].emailAddress,
+                password,
+            );
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundFailingPaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentSettled');
+
+            const { refundOrder: refund1 } = await adminClient.query<
+                RefundOrder.Mutation,
+                RefundOrder.Variables
+            >(REFUND_ORDER, {
+                input: {
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order!.shipping,
+                    adjustment: 0,
+                    reason: 'foo',
+                    paymentId: order.payments![0].id,
+                },
+            });
+            refundGuard.assertSuccess(refund1);
+            expect(refund1.state).toBe('Failed');
+            expect(refund1.total).toBe(order.totalWithTax);
+
+            const { refundOrder: refund2 } = await adminClient.query<
+                RefundOrder.Mutation,
+                RefundOrder.Variables
+            >(REFUND_ORDER, {
+                input: {
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order!.shipping,
+                    adjustment: 0,
+                    reason: 'foo',
+                    paymentId: order.payments![0].id,
+                },
+            });
+            refundGuard.assertSuccess(refund2);
+            expect(refund2.state).toBe('Settled');
+            expect(refund2.total).toBe(order.totalWithTax);
         });
     });
 
@@ -1812,6 +1865,7 @@ describe('Orders resolver', () => {
         let orderTotalWithTax: number;
         let payment1Id: string;
         let payment2Id: string;
+        let productInOrder: GetProductWithVariants.Product;
 
         beforeAll(async () => {
             const result = await createTestOrder(
@@ -1821,6 +1875,7 @@ describe('Orders resolver', () => {
                 password,
             );
             orderId = result.orderId;
+            productInOrder = result.product;
         });
 
         it('adds a partial payment', async () => {
@@ -1879,7 +1934,7 @@ describe('Orders resolver', () => {
             payment2Id = order.payments![1].id;
         });
 
-        it('refunding order with multiple payments', async () => {
+        it('partial refunding of order with multiple payments', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: orderId,
             });
@@ -1887,8 +1942,8 @@ describe('Orders resolver', () => {
                 REFUND_ORDER,
                 {
                     input: {
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                        shipping: order!.shipping,
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        shipping: 0,
                         adjustment: 0,
                         reason: 'foo',
                         paymentId: payment1Id,
@@ -1910,7 +1965,45 @@ describe('Orders resolver', () => {
 
             expect(orderWithPayments?.payments![1].refunds.length).toBe(1);
             expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
-                orderTotalWithTax - PARTIAL_PAYMENT_AMOUNT,
+                productInOrder.variants[0].priceWithTax - PARTIAL_PAYMENT_AMOUNT,
+            );
+        });
+
+        it('refunding remaining amount of order with multiple payments', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(
+                REFUND_ORDER,
+                {
+                    input: {
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        shipping: order!.shippingWithTax,
+                        adjustment: 0,
+                        reason: 'foo',
+                        paymentId: payment1Id,
+                    },
+                },
+            );
+            refundGuard.assertSuccess(refundOrder);
+            expect(refundOrder.total).toBe(order!.totalWithTax - order!.lines[0].unitPriceWithTax);
+
+            const { order: orderWithPayments } = await adminClient.query<
+                GetOrderWithPayments.Query,
+                GetOrderWithPayments.Variables
+            >(GET_ORDER_WITH_PAYMENTS, {
+                id: orderId,
+            });
+
+            expect(orderWithPayments?.payments![0].refunds.length).toBe(1);
+            expect(orderWithPayments?.payments![0].refunds[0].total).toBe(PARTIAL_PAYMENT_AMOUNT);
+
+            expect(orderWithPayments?.payments![1].refunds.length).toBe(2);
+            expect(orderWithPayments?.payments![1].refunds[0].total).toBe(
+                productInOrder.variants[0].priceWithTax - PARTIAL_PAYMENT_AMOUNT,
+            );
+            expect(orderWithPayments?.payments![1].refunds[1].total).toBe(
+                productInOrder.variants[0].priceWithTax + order!.shippingWithTax,
             );
         });
 

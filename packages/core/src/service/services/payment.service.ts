@@ -192,28 +192,43 @@ export class PaymentService {
         input: RefundOrderInput,
         order: Order,
         items: OrderItem[],
-        payment: Payment,
+        selectedPayment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
             relations: ['payments', 'payments.refunds'],
         });
-        const existingRefunds =
-            orderWithRefunds.payments?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[]) ??
-            [];
+
+        function paymentRefundTotal(payment: Payment): number {
+            const nonFailedRefunds = payment.refunds?.filter(refund => refund.state !== 'Failed') ?? [];
+            return summate(nonFailedRefunds, 'total');
+        }
+        const existingNonFailedRefunds =
+            orderWithRefunds.payments
+                ?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[])
+                .filter(refund => refund.state !== 'Failed') ?? [];
+        const refundablePayments = orderWithRefunds.payments.filter(p => {
+            return paymentRefundTotal(p) < p.amount;
+        });
         const itemAmount = summate(items, 'proratedUnitPriceWithTax');
-        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        let primaryRefund: Refund | undefined;
         const refundedPaymentIds: ID[] = [];
-        let primaryRefund: Refund;
-        let refundOutstanding = refundTotal - summate(existingRefunds, 'total');
+        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        const refundMax =
+            orderWithRefunds.payments
+                ?.map(p => p.amount - paymentRefundTotal(p))
+                .reduce((sum, amount) => sum + amount, 0) ?? 0;
+        let refundOutstanding = Math.min(refundTotal, refundMax);
         do {
             const paymentToRefund =
-                refundedPaymentIds.length === 0
-                    ? payment
-                    : orderWithRefunds.payments.find(p => !refundedPaymentIds.includes(p.id));
+                (refundedPaymentIds.length === 0 &&
+                    refundablePayments.find(p => idsAreEqual(p.id, selectedPayment.id))) ||
+                refundablePayments.find(p => !refundedPaymentIds.includes(p.id)) ||
+                refundablePayments[0];
             if (!paymentToRefund) {
                 throw new InternalServerError(`Could not find a Payment to refund`);
             }
-            const total = Math.min(paymentToRefund.amount, refundOutstanding);
+            const amountNotRefunded = paymentToRefund.amount - paymentRefundTotal(paymentToRefund);
+            const total = Math.min(amountNotRefunded, refundOutstanding);
             let refund = new Refund({
                 payment: paymentToRefund,
                 total,
@@ -222,7 +237,7 @@ export class PaymentService {
                 reason: input.reason,
                 adjustment: input.adjustment,
                 shipping: input.shipping,
-                method: payment.method,
+                method: selectedPayment.method,
                 state: 'Pending',
                 metadata: {},
             });
@@ -255,12 +270,12 @@ export class PaymentService {
                     new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
                 );
             }
-            if (idsAreEqual(paymentToRefund.id, payment.id)) {
+            if (primaryRefund == null) {
                 primaryRefund = refund;
             }
-            existingRefunds.push(refund);
+            existingNonFailedRefunds.push(refund);
             refundedPaymentIds.push(paymentToRefund.id);
-            refundOutstanding = refundTotal - summate(existingRefunds, 'total');
+            refundOutstanding = refundTotal - summate(existingNonFailedRefunds, 'total');
         } while (0 < refundOutstanding);
         // tslint:disable-next-line:no-non-null-assertion
         return primaryRefund!;

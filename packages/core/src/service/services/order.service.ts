@@ -817,10 +817,10 @@ export class OrderService {
         order: Order,
     ): Promise<Order | OrderStateTransitionError> {
         const orderId = order.id;
-        if (orderTotalIsCovered(order, 'Settled')) {
+        if (orderTotalIsCovered(order, 'Settled') && order.state !== 'PaymentSettled') {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
         }
-        if (orderTotalIsCovered(order, ['Authorized', 'Settled'])) {
+        if (orderTotalIsCovered(order, ['Authorized', 'Settled']) && order.state !== 'PaymentAuthorized') {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
@@ -1078,7 +1078,11 @@ export class OrderService {
         ) {
             return new NothingToRefundError();
         }
-        const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, input.lines, i => !i.refund);
+        const ordersAndItems = await this.getOrdersAndItemsFromLines(
+            ctx,
+            input.lines,
+            i => i.refund?.state !== 'Settled',
+        );
         if (!ordersAndItems) {
             return new QuantityTooGreatError();
         }
@@ -1100,7 +1104,9 @@ export class OrderService {
         ) {
             return new RefundOrderStateError(order.state);
         }
-        const alreadyRefunded = items.find(i => !!i.refundId);
+        const alreadyRefunded = items.find(
+            i => i.refund?.state === 'Pending' || i.refund?.state === 'Settled',
+        );
         if (alreadyRefunded) {
             return new AlreadyRefundedError(alreadyRefunded.refundId as string);
         }
