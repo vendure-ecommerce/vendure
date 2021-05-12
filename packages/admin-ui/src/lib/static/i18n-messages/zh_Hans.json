@@ -537,7 +537,9 @@
     "create-new-promotion": "添加促销产品",
     "ends-at": "有效起始时间",
     "per-customer-limit": "每人限领数",
-    "starts-at": "有效结束时间"
+    "starts-at": "有效结束时间",
+    "search-by-name": "",
+    "search-by-coupon-code": ""
   },
   "nav": {
     "administrators": "登陆管理",
