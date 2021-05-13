@@ -86,4 +86,9 @@ skinparam Actor {
   BackgroundColor BLACK
   BorderColor BLACK
 }
+
+skinparam Object {
+  BorderColor #666666
+  BackgroundColor BACKGROUND
+}
 @enduml
