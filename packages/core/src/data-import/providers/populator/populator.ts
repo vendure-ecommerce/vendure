@@ -238,6 +238,7 @@ export class Populator {
                     arguments: [
                         { name: 'rate', value: method.price.toString() },
                         { name: 'taxRate', value: '0' },
+                        { name: 'includesTax', value: 'auto' },
                     ],
                 },
                 code: normalizeString(method.name, '-'),
