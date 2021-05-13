@@ -310,14 +310,18 @@ export class ShippingMethodDetailComponent
             checker: shippingMethod.checker || {},
             calculator: shippingMethod.calculator || {},
         });
-        this.selectedChecker = shippingMethod.checker && {
-            code: shippingMethod.checker.code,
-            args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
-        };
-        this.selectedCalculator = shippingMethod.calculator && {
-            code: shippingMethod.calculator?.code,
-            args: shippingMethod.calculator?.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
-        };
+        if (!this.selectedChecker) {
+            this.selectedChecker = shippingMethod.checker && {
+                code: shippingMethod.checker.code,
+                args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+            };
+        }
+        if (!this.selectedCalculator) {
+            this.selectedCalculator = shippingMethod.calculator && {
+                code: shippingMethod.calculator?.code,
+                args: shippingMethod.calculator?.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+            };
+        }
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
 
