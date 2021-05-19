@@ -11,7 +11,7 @@ By default, Vendure uses a username/email address and password to authenticate u
 
 {{< alert "primary" >}}
 See the [Managing Sessions guide]({{< relref "managing-sessions" >}}) for how to manage authenticated session in your storefront/client applications.
-{{ /alert >}}
+{{< /alert >}}
 
 ## Adding support for external authentication
 

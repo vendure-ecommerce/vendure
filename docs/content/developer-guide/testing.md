@@ -124,3 +124,11 @@ it('myNewQuery returns the expected result', async () => {
 ```
 
 Running the test will then assert that your new query works as expected.
+
+### Run your tests
+
+All that's left is to run your tests to find out whether your code behaves as expected!
+
+{{< alert "warning" >}} 
+**Note:** When using **Jest**, make sure you run with the [`--runInBand` option](https://jestjs.io/docs/cli#--runinband), which ensures that your tests run in series rather than in parallel.
+{{< /alert >}}

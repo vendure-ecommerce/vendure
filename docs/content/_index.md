@@ -5,9 +5,21 @@ weight: 0
 
 # Vendure Documentation
 
-{{< alert "warning" >}}
-**Note**: Vendure is currently in beta and as such, the information and APIs documented here are subject to change.
+## Quick links
+
+<div class="flex space-x-4 w-full">
+{{< alert >}}
+**Developers**
+
+Learn how to build with Vendure in our [Developer Guide]({{< relref "developer-guide" >}})
 {{< /alert >}}
+
+{{< alert "success" >}}
+**Administrators**
+
+Learn how to run your store in our [Administrator Guide]({{< relref "user-guide" >}})
+{{< /alert >}}
+</div>
 
 ## What is Vendure?
 

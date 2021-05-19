@@ -21,7 +21,7 @@ There are a couple of query parameters which are valid for all GraphQL operation
   ```text
   POST http://localhost:3000/shop-api?languageCode=de
   ```
-* `vendure-token`: If your Vendure instance features more than a single [Channel]({{< relref "channels" >}}), the token of the active Channel can be specified by token as either a query parameter _or_ as a header. The name of the key can be configured by the [`channelTokenKey` config option]({{< relref "vendure-config" >}}#channeltokenkey).
+* `vendure-token`: If your Vendure instance features more than a single [Channel]({{< relref "/docs/developer-guide/channels" >}}), the token of the active Channel can be specified by token as either a query parameter _or_ as a header. The name of the key can be configured by the [`channelTokenKey` config option]({{< relref "vendure-config" >}}#channeltokenkey).
 
 ## Browsing the catalogue
 
