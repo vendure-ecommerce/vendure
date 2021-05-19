@@ -9,7 +9,7 @@ Vendure v1.0 is here! 🎉
 * TypeScript: `Injector.getConnection()`. Use `Injector.get(TransactionalConnection)` instead.  
 * TypeScript: `PriceCalculationStrategy`. Use `OrderItemPriceCalculationStrategy` instead.
 * TypeScript: `TaxCalculationStrategy`. Use `ProductVariantPriceCalculationStrategy` instead.
-* TypeScript: `VendureConfig.authOptions.sessionSecret`. Use `VendureConfig.cookieOptions.secret` instead.
+* TypeScript: `VendureConfig.authOptions.sessionSecret`. Use `VendureConfig.authOptions.cookieOptions.secret` instead.
 * GraphQL: `SearchResult` type - `productPreview` & `productVariantPreview` fields. Use `productAsset.preview`, `productVariantAsset.preview` instead. 
 * GraphQL: `Order.adjustments`. Use `Order.discounts` instead.
 * GraphQL: `OrderItem.unitPriceIncludesTax`. This is removed as redundant - `unitPrice` is always without tax.
