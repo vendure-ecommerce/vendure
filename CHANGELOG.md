@@ -1,3 +1,23 @@
+## 1.0.0 (2021-05-19)
+
+
+#### Features
+
+* **admin-ui** Improve FR translations (#884) ([ad5bc2b](https://github.com/vendure-ecommerce/vendure/commit/ad5bc2b)), closes [#884](https://github.com/vendure-ecommerce/vendure/issues/884)
+
+#### Fixes
+
+* **admin-ui** Display refund metadata (#875) ([7bc7372](https://github.com/vendure-ecommerce/vendure/commit/7bc7372)), closes [#875](https://github.com/vendure-ecommerce/vendure/issues/875)
+* **admin-ui** Enable retrying of failed refunds ([4fc749d](https://github.com/vendure-ecommerce/vendure/commit/4fc749d)), closes [#873](https://github.com/vendure-ecommerce/vendure/issues/873)
+* **admin-ui** Fix configurable arg forms becoming unresponsive ([6039f0c](https://github.com/vendure-ecommerce/vendure/commit/6039f0c))
+* **admin-ui** Update Chinese translations (#878) ([084dc31](https://github.com/vendure-ecommerce/vendure/commit/084dc31)), closes [#878](https://github.com/vendure-ecommerce/vendure/issues/878)
+* **core** Correct order totals in order modification preview ([1795f48](https://github.com/vendure-ecommerce/vendure/commit/1795f48)), closes [#872](https://github.com/vendure-ecommerce/vendure/issues/872)
+* **core** Fix bug in applying OrderItem promotions with postgres ([aaa8393](https://github.com/vendure-ecommerce/vendure/commit/aaa8393))
+* **core** Fix multiple refunds on the same OrderLine ([7316d31](https://github.com/vendure-ecommerce/vendure/commit/7316d31)), closes [#868](https://github.com/vendure-ecommerce/vendure/issues/868)
+* **core** Fix refunds after failures & with multiple payments ([ed30874](https://github.com/vendure-ecommerce/vendure/commit/ed30874)), closes [#873](https://github.com/vendure-ecommerce/vendure/issues/873)
+* **core** Handle array circular refs when serializing RequestContext ([4abb912](https://github.com/vendure-ecommerce/vendure/commit/4abb912)), closes [#864](https://github.com/vendure-ecommerce/vendure/issues/864)
+* **core** Include tax setting when populating default shipping methods ([26ce6ff](https://github.com/vendure-ecommerce/vendure/commit/26ce6ff))
+
 ## 1.0.0-rc.0 (2021-05-05)
 
 
