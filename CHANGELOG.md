@@ -1,12 +1,27 @@
 ## 1.0.0 (2021-05-19)
 
+Vendure v1.0 is here! 🎉
 
-#### Features
+**Note** with this release, all deprecated APIs have been removed. If you were still using any, you'll have a very small amount of work to do in switching over to their replacements. Removed deprecated APIs:
 
-* **admin-ui** Improve FR translations (#884) ([ad5bc2b](https://github.com/vendure-ecommerce/vendure/commit/ad5bc2b)), closes [#884](https://github.com/vendure-ecommerce/vendure/issues/884)
+* TypeScript: `EventBus.sucscribe()`, use `EventBus.ofType()` instead.
+* TypeScript: `getEntityOrThrow()` helper. Use `TransactionalConnection.getEntityOrThrow()` instead.
+* TypeScript: `Injector.getConnection()`. Use `Injector.get(TransactionalConnection)` instead.  
+* TypeScript: `PriceCalculationStrategy`. Use `OrderItemPriceCalculationStrategy` instead.
+* TypeScript: `TaxCalculationStrategy`. Use `ProductVariantPriceCalculationStrategy` instead.
+* TypeScript: `VendureConfig.authOptions.sessionSecret`. Use `VendureConfig.cookieOptions.secret` instead.
+* GraphQL: `SearchResult` type - `productPreview` & `productVariantPreview` fields. Use `productAsset.preview`, `productVariantAsset.preview` instead. 
+* GraphQL: `Order.adjustments`. Use `Order.discounts` instead.
+* GraphQL: `OrderItem.unitPriceIncludesTax`. This is removed as redundant - `unitPrice` is always without tax.
+* GraphQL: `OrderLine.totalPrice`. Use `OrderLine.linePriceWithTax` instead.
+* GraphQL: `OrderLine.adjustments`. Use `OrderLine.discounts` instead.
+* GraphQL: `Product.priceIncludesTax`. This is removed as redundant - `price` is always without tax.
+
+
 
 #### Fixes
 
+* **admin-ui** Improve FR translations (#884) ([ad5bc2b](https://github.com/vendure-ecommerce/vendure/commit/ad5bc2b)), closes [#884](https://github.com/vendure-ecommerce/vendure/issues/884)
 * **admin-ui** Display refund metadata (#875) ([7bc7372](https://github.com/vendure-ecommerce/vendure/commit/7bc7372)), closes [#875](https://github.com/vendure-ecommerce/vendure/issues/875)
 * **admin-ui** Enable retrying of failed refunds ([4fc749d](https://github.com/vendure-ecommerce/vendure/commit/4fc749d)), closes [#873](https://github.com/vendure-ecommerce/vendure/issues/873)
 * **admin-ui** Fix configurable arg forms becoming unresponsive ([6039f0c](https://github.com/vendure-ecommerce/vendure/commit/6039f0c))
