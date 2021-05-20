@@ -10,6 +10,7 @@ Vendure v1.0 is here! 🎉
 * TypeScript: `PriceCalculationStrategy`. Use `OrderItemPriceCalculationStrategy` instead.
 * TypeScript: `TaxCalculationStrategy`. Use `ProductVariantPriceCalculationStrategy` instead.
 * TypeScript: `VendureConfig.authOptions.sessionSecret`. Use `VendureConfig.authOptions.cookieOptions.secret` instead.
+* TypeScript - AssetServerPlugin: The `region` option of the S3AssetStorageStrategy should be moved into the `nativeS3Configuration` object.
 * GraphQL: `SearchResult` type - `productPreview` & `productVariantPreview` fields. Use `productAsset.preview`, `productVariantAsset.preview` instead. 
 * GraphQL: `Order.adjustments`. Use `Order.discounts` instead.
 * GraphQL: `OrderItem.unitPriceIncludesTax`. This is removed as redundant - `unitPrice` is always without tax.
