@@ -1,6 +1,6 @@
 {
-  "generatedOn": "2021-05-13T09:41:10.029Z",
-  "lastCommit": "1fb3620ce86cac7a29c747cbd3cf8cb831aa1983",
+  "generatedOn": "2021-05-21T11:59:17.170Z",
+  "lastCommit": "084dc3128e7235776c3394e4ab4d436a3485b9c9",
   "translationStatus": {
     "cs": {
       "tokenCount": 775,
@@ -39,7 +39,7 @@
     },
     "ru": {
       "tokenCount": 775,
-      "translatedCount": 773,
+      "translatedCount": 775,
       "percentage": 100
     },
     "zh_Hans": {
