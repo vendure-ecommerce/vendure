@@ -1,6 +1,6 @@
 {
-  "generatedOn": "2021-05-21T11:59:17.170Z",
-  "lastCommit": "084dc3128e7235776c3394e4ab4d436a3485b9c9",
+  "generatedOn": "2021-05-21T13:44:00.060Z",
+  "lastCommit": "039561e0cb4f889de3ab83c59d447b1daf3e5c07",
   "translationStatus": {
     "cs": {
       "tokenCount": 775,
@@ -38,6 +38,11 @@
       "percentage": 96
     },
     "ru": {
+      "tokenCount": 775,
+      "translatedCount": 775,
+      "percentage": 100
+    },
+    "uk": {
       "tokenCount": 775,
       "translatedCount": 775,
       "percentage": 100
