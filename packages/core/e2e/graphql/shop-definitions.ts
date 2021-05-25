@@ -31,6 +31,7 @@ export const TEST_ORDER_FRAGMENT = gql`
             unitPriceWithTax
             unitPriceChangeSinceAdded
             unitPriceWithTaxChangeSinceAdded
+            proratedUnitPriceWithTax
             productVariant {
                 id
             }

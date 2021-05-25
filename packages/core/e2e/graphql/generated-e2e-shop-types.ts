@@ -2856,6 +2856,7 @@ export type TestOrderFragmentFragment = Pick<
             | 'unitPriceWithTax'
             | 'unitPriceChangeSinceAdded'
             | 'unitPriceWithTaxChangeSinceAdded'
+            | 'proratedUnitPriceWithTax'
         > & {
             productVariant: Pick<ProductVariant, 'id'>;
             discounts: Array<

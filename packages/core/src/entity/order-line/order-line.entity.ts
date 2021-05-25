@@ -209,7 +209,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * is specified, then all adjustments are removed.
      */
     clearAdjustments(type?: AdjustmentType) {
-        this.activeItems.forEach(item => item.clearAdjustments(type));
+        this.items.forEach(item => item.clearAdjustments(type));
     }
 
     private firstActiveItemPropOr<K extends keyof OrderItem>(
