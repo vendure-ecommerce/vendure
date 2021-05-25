@@ -4,13 +4,23 @@ Hi! Thank you for taking the time to contribute to Vendure!
 
 In order to make the best use of both your time and that of the Vendure maintainers, please follow the guidelines in this document.
 
+## Branches
+
+There are 3 important branches to know about:
+
+* `master` - the default branch
+* `minor` - a branch for commits which introduce new features which would go in the next [SemVer minor](https://semver.org/) release.
+* `major` - a branch for commits which introduce breaking changes which would go in the next [SemVer major](https://semver.org/) release.
+
+Bug fixes should go direct in the `master` branch, from which new patch releases will be made regularly. Periodically the master branch will be merged into the `minor` and `major` branches.
+
 ## Bug fixes
 
 If you would like to contribute a bugfix, please first create an issue detailing the bug, and indicate that you intend to fix it. When creating commits, please follow the commit message format below.
 
 ## New features
 
-Again, please create a feature request detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below.
+Again, please create a feature request detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below. New feature pull requests should be made against the `minor` branch.
 
 ## Commit message format
 
@@ -52,7 +62,7 @@ If a commit applies to no particular package (e.g. a tooling change in the root 
 
 If your contribution includes any breaking changes (including any changes to the DB schema; backwards-incompatible changes to the GraphQL APIs or VendureConfig; backwards-incompatible changes to current behavior), please include a `BREAKING CHANGE` section in your commit message as per the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/#commit-message-with-both-and-breaking-change-footer).
 
-Please also make your pull request against the `next` branch rather than `master` in the case of breaking changes.
+Please also make your pull request against the `major` branch rather than `master` in the case of breaking changes.
 
 Example:
 
