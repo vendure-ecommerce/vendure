@@ -18,6 +18,7 @@ import {
     OrderDetail,
     OrderDetailFragment,
     OrderLineFragment,
+    Refund,
     RefundOrder,
     ServerConfigService,
     SortOrder,
@@ -253,8 +254,13 @@ export class OrderDetailComponent
     outstandingPaymentAmount(order: OrderDetailFragment): number {
         const paymentIsValid = (p: OrderDetail.Payments): boolean =>
             p.state !== 'Cancelled' && p.state !== 'Declined' && p.state !== 'Error';
-        const validPayments = order.payments?.filter(paymentIsValid).map(p => pick(p, ['amount'])) ?? [];
-        const amountCovered = summate(validPayments, 'amount');
+
+        let amountCovered = 0;
+        for (const payment of order.payments?.filter(paymentIsValid) ?? []) {
+            const refunds = payment.refunds.filter(r => r.state !== 'Failed') ?? [];
+            const refundsTotal = summate(refunds as Array<Required<Refund>>, 'total');
+            amountCovered += payment.amount - refundsTotal;
+        }
         return order.totalWithTax - amountCovered;
     }
 
