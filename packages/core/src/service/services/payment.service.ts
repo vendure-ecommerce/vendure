@@ -133,33 +133,28 @@ export class PaymentService {
             payment,
             paymentMethod.handler.args,
         );
+        const fromState = payment.state;
+        let toState: PaymentState;
+        payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
         if (settlePaymentResult.success) {
-            const fromState = payment.state;
-            const toState = 'Settled';
-            try {
-                await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
-            } catch (e) {
-                const transitionError = ctx.translate(e.message, { fromState, toState });
-                return new PaymentStateTransitionError(transitionError, fromState, toState);
-            }
-            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
-            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
-            this.eventBus.publish(
-                new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
-            );
+            toState = 'Settled';
         } else {
+            toState = settlePaymentResult.state || 'Error';
             payment.errorMessage = settlePaymentResult.errorMessage;
-            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
-            await this.paymentStateMachine.transition(
-                ctx,
-                payment.order,
-                payment,
-                settlePaymentResult.state || 'Error',
-            );
-            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         }
+        try {
+            await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
+        } catch (e) {
+            const transitionError = ctx.translate(e.message, { fromState, toState });
+            return new PaymentStateTransitionError(transitionError, fromState, toState);
+        }
+        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        this.eventBus.publish(
+            new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
+        );
         return payment;
     }
+
     /**
      * Creates a Payment from the manual payment mutation in the Admin API
      */
@@ -202,6 +197,7 @@ export class PaymentService {
             const nonFailedRefunds = payment.refunds?.filter(refund => refund.state !== 'Failed') ?? [];
             return summate(nonFailedRefunds, 'total');
         }
+
         const existingNonFailedRefunds =
             orderWithRefunds.payments
                 ?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[])
