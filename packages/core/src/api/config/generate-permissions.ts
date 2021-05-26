@@ -1,5 +1,5 @@
-import { stitchSchemas } from '@graphql-tools/stitch';
-import { GraphQLEnumType, GraphQLInputObjectType, GraphQLSchema } from 'graphql';
+import { stitchSchemas, ValidationLevel } from '@graphql-tools/stitch';
+import { GraphQLEnumType, GraphQLSchema } from 'graphql';
 import { GraphQLEnumValueConfigMap } from 'graphql/type/definition';
 
 import { getAllPermissionsMetadata } from '../../common/constants';
@@ -35,5 +35,9 @@ export function generatePermissionEnum(
         values,
     });
 
-    return stitchSchemas({ schemas: [schema, [permissionsEnum]] });
+    return stitchSchemas({
+        subschemas: [schema],
+        types: [permissionsEnum],
+        typeMergingOptions: { validationSettings: { validationLevel: ValidationLevel.Off } },
+    });
 }

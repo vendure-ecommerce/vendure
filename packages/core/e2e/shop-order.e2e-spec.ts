@@ -251,9 +251,8 @@ describe('Shop orders', () => {
                     }
                 }
             `;
-            it(
-                'addItemToOrder with private customFields errors',
-                assertThrowsWithMessage(async () => {
+            it('addItemToOrder with private customFields errors', async () => {
+                try {
                     await shopClient.query<AddItemToOrder.Mutation>(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS, {
                         productVariantId: 'T_2',
                         quantity: 1,
@@ -261,8 +260,11 @@ describe('Shop orders', () => {
                             privateField: 'oh no!',
                         },
                     });
-                }, 'Variable "$customFields" got invalid value { privateField: "oh no!" }; Field "privateField" is not defined by type "OrderLineCustomFieldsInput".'),
-            );
+                    fail('Should have thrown');
+                } catch (e) {
+                    expect(e.response.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+                }
+            });
 
             it('addItemToOrder with equal customFields adds quantity to the existing OrderLine', async () => {
                 const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
