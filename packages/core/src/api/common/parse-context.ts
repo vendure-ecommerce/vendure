@@ -16,6 +16,16 @@ export type GraphQLContext = {
  * GraphQL & REST requests.
  */
 export function parseContext(context: ExecutionContext | ArgumentsHost): RestContext | GraphQLContext {
+    // TODO: Remove this check once this issue is resolved: https://github.com/nestjs/graphql/pull/1469
+    if ((context as ExecutionContext).getHandler?.()?.name === '__resolveType') {
+        return {
+            req: context.getArgs()[1].req,
+            res: context.getArgs()[1].res,
+            isGraphQL: false,
+            info: undefined,
+        };
+    }
+
     const graphQlContext = GqlExecutionContext.create(context as ExecutionContext);
     const info = graphQlContext.getInfo();
     let req: Request;
