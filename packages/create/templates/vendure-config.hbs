@@ -51,11 +51,7 @@ const path = require('path');
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
-        {{#if requiresConnection}}
         synchronize: true, // turn this off for production
-        {{else}}
-        synchronize: false, // not working with SQLite/SQL.js, see https://github.com/typeorm/typeorm/issues/2576
-        {{/if}}
         logging: false,
         database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{ dbName }}'{{/if}},
         {{#if isSQLjs}}
