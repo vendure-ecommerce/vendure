@@ -174,7 +174,7 @@ function createConnectionOptions(userConfig: Partial<VendureConfig>): Connection
  * See https://github.com/typeorm/typeorm/issues/2576#issuecomment-499506647
  */
 async function disableForeignKeysForSqLite<T>(connection: Connection, work: () => Promise<T>): Promise<T> {
-    const isSqLite = connection.options.type === 'sqlite';
+    const isSqLite = connection.options.type === 'sqlite' || connection.options.type === 'better-sqlite3';
     if (isSqLite) {
         await connection.query('PRAGMA foreign_keys=OFF');
     }

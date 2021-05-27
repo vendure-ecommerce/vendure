@@ -1,4 +1,4 @@
-import { stitchSchemas } from '@graphql-tools/stitch';
+import { stitchSchemas, ValidationLevel } from '@graphql-tools/stitch';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
@@ -74,7 +74,11 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
             generatedTypes.push(generatedListOptions);
         }
     }
-    return stitchSchemas({ schemas: [schema, generatedTypes] });
+    return stitchSchemas({
+        subschemas: [schema],
+        types: generatedTypes,
+        typeMergingOptions: { validationSettings: { validationLevel: ValidationLevel.Off } },
+    });
 }
 
 function isListQueryType(type: GraphQLOutputType): type is GraphQLObjectType {

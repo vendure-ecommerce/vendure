@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Channel, RequestContext } from '@vendure/core';
-import express from 'express';
+import express, { Router } from 'express';
 import fs from 'fs-extra';
 import http from 'http';
 import path from 'path';
@@ -17,7 +17,7 @@ export class DevMailbox {
         event: EventWithContext,
     ) => void | undefined;
 
-    serve(options: EmailPluginDevModeOptions) {
+    serve(options: EmailPluginDevModeOptions): Router {
         const { outputPath, handlers } = options;
         const server = express.Router();
         server.get('/', (req, res) => {
