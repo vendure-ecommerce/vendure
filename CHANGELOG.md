@@ -1,3 +1,16 @@
+## <small>1.0.1 (2021-05-27)</small>
+
+
+#### Fixes
+
+* **admin-ui** Account for refunds when calculating outstanding payment ([fce00c4](https://github.com/vendure-ecommerce/vendure/commit/fce00c4))
+* **admin-ui** Fixed unsupported plural for Simple Chinese translation (#888) ([d43602f](https://github.com/vendure-ecommerce/vendure/commit/d43602f)), closes [#888](https://github.com/vendure-ecommerce/vendure/issues/888)
+* **core** Correctly calculate refund amount when modifying order ([56d058d](https://github.com/vendure-ecommerce/vendure/commit/56d058d)), closes [#890](https://github.com/vendure-ecommerce/vendure/issues/890)
+* **core** Prevent FK error when migrating with better-sqlite3 driver ([8bfa03d](https://github.com/vendure-ecommerce/vendure/commit/8bfa03d)), closes [#880](https://github.com/vendure-ecommerce/vendure/issues/880)
+* **core** Publish PaymentStateTransitionEvent when settlePayment fails ([c01106c](https://github.com/vendure-ecommerce/vendure/commit/c01106c)), closes [#886](https://github.com/vendure-ecommerce/vendure/issues/886)
+* **core** Update NestJS & graphql-related deps to fix version conflict ([8891c43](https://github.com/vendure-ecommerce/vendure/commit/8891c43)), closes [#532](https://github.com/vendure-ecommerce/vendure/issues/532) [blob/9267a79b974e397e87ad9ee408b65c46751e4565/CHANGELOG.md#v2230](https://github.com/blob/9267a79b974e397e87ad9ee408b65c46751e4565/CHANGELOG.md/issues/v2230)
+* **create** Remove redundant synchronize warning ([73841e4](https://github.com/vendure-ecommerce/vendure/commit/73841e4))
+
 ## 1.0.0 (2021-05-19)
 
 Vendure v1.0 is here! 🎉
