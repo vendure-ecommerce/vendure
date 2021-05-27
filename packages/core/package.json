@@ -41,7 +41,7 @@
     "@graphql-tools/stitch": "^7.5.3",
     "@nestjs/common": "7.6.17",
     "@nestjs/core": "7.6.17",
-    "@nestjs/graphql": "7.10.6",
+    "@nestjs/graphql": "7.9.7",
     "@nestjs/platform-express": "7.6.17",
     "@nestjs/terminus": "7.2.0",
     "@nestjs/testing": "7.6.17",
