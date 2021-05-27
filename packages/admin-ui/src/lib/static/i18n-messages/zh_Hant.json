@@ -537,7 +537,9 @@
     "create-new-promotion": "新增促销產品",
     "ends-at": "結束時間",
     "per-customer-limit": "領取上限",
-    "starts-at": "開始時間"
+    "starts-at": "開始時間",
+    "search-by-name": "",
+    "search-by-coupon-code": ""
   },
   "nav": {
     "administrators": "管理員",

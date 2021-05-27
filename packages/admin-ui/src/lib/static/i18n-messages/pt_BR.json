@@ -537,7 +537,9 @@
     "create-new-promotion": "Criar nova promoção",
     "ends-at": "Termina em",
     "per-customer-limit": "Limite por cliente",
-    "starts-at": "Começa em"
+    "starts-at": "Começa em",
+    "search-by-name": "",
+    "search-by-coupon-code": ""
   },
   "nav": {
     "administrators": "Administradores",

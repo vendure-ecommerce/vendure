@@ -537,7 +537,9 @@
     "create-new-promotion": "Создать новую акцию",
     "ends-at": "Заканчивается в",
     "per-customer-limit": "Лимит на клиента",
-    "starts-at": "Начинается в"
+    "starts-at": "Начинается в",
+    "search-by-name": "Поиск по имени",
+    "search-by-coupon-code": "Поиск по коду купона"
   },
   "nav": {
     "administrators": "Администраторы",
