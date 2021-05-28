@@ -118,6 +118,7 @@ import {
  * ```ts
  * EmailPlugin.init({
  *   devMode: true,
+ *   route: 'mailbox',
  *   handlers: defaultEmailHandlers,
  *   templatePath: path.join(__dirname, 'vendure/email/templates'),
  *   outputPath: path.join(__dirname, 'test-emails'),
