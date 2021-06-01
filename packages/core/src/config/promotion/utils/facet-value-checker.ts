@@ -46,7 +46,7 @@ import { TransactionalConnection } from '../../../service/transaction/transactio
  * @docsCategory Promotions
  */
 export class FacetValueChecker {
-    private variantCache = new TtlCache<ID, ProductVariant>({ ttlMs: 5000 });
+    private variantCache = new TtlCache<ID, ProductVariant>({ ttl: 5000 });
 
     constructor(private connection: TransactionalConnection) {}
     /**
