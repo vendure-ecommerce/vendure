@@ -58,6 +58,7 @@ Note that this can take a few minutes.
 ### 4. Set up the server
 
 The server requires an SQL database to be available. The simplest option is to use SQLite, but if you have Docker available you can use the [dev-server docker-compose file](./packages/dev-server/docker-compose.yml) which will start up both MariaDB and Postgres as well as their GUI management tools.
+You can use npm script `docker:start` to start just the Postgres database for local development.
 
 Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **PostgreSQL** and **SQLite**, though other TypeORM-supported databases may work.
 

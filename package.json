@@ -11,6 +11,8 @@
     "lint": "yarn tslint --fix",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
     "bootstrap": "lerna bootstrap",
+    "docker:start": "docker-compose -f packages/dev-server/docker-compose.yml up --build -d postgres",
+    "docker:stop": "docker-compose -f packages/dev-server/docker-compose.yml down",
     "docs:generate-typescript-docs": "ts-node scripts/docs/generate-typescript-docs.ts",
     "docs:generate-graphql-docs": "ts-node scripts/docs/generate-graphql-docs.ts --api=shop && ts-node scripts/docs/generate-graphql-docs.ts --api=admin",
     "docs:update-build-info": "ts-node scripts/docs/update-build-info.ts",
