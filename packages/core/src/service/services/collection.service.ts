@@ -87,9 +87,7 @@ export class CollectionService implements OnModuleInit {
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 let completed = 0;
                 for (const collectionId of job.data.collectionIds) {
-                    const collection = await this.connection.getRepository(Collection).findOne(collectionId, {
-                        relations: ['productVariants'],
-                    });
+                    const collection = await this.connection.getRepository(Collection).findOne(collectionId);
                     if (!collection) {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
                         continue;
@@ -482,8 +480,10 @@ export class CollectionService implements OnModuleInit {
             const productVariants = await this.connection
                 .getRepository(ctx, ProductVariant)
                 .createQueryBuilder('variant')
+                .select('variant.id', 'id')
                 .innerJoin('variant.collections', 'collection', 'collection.id = :id', { id: collection.id })
-                .getMany();
+                .getRawMany();
+
             return productVariants.map(v => v.id);
         }
     }
