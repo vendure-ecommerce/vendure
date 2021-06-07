@@ -537,9 +537,9 @@
     "create-new-promotion": "Nová propagace",
     "ends-at": "Končí",
     "per-customer-limit": "Limit za zákazníka",
-    "starts-at": "Začíná",
+    "search-by-coupon-code": "",
     "search-by-name": "",
-    "search-by-coupon-code": ""
+    "starts-at": "Začíná"
   },
   "nav": {
     "administrators": "Administrátoři",

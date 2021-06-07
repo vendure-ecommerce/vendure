@@ -537,9 +537,9 @@
     "create-new-promotion": "Creer nouvelle promotion",
     "ends-at": "Termine au",
     "per-customer-limit": "Limite par client",
-    "starts-at": "Débute au",
+    "search-by-coupon-code": "",
     "search-by-name": "",
-    "search-by-coupon-code": ""
+    "starts-at": "Débute au"
   },
   "nav": {
     "administrators": "Administrateurs",
@@ -668,6 +668,7 @@
     "refund-cancellation-reason": "Raison du remboursement/annulation",
     "refund-cancellation-reason-required": "Raison du remboursement/annulation requise",
     "refund-metadata": "Métadonnées de rembousement",
+    "refund-order-failed": "",
     "refund-order-success": "Commande remboursée",
     "refund-reason": "Raison du remboursement",
     "refund-reason-customer-request": "Demande du client",
@@ -675,6 +676,7 @@
     "refund-shipping": "Rembourser la livraison",
     "refund-total": "Remboursement total",
     "refund-total-error": "Le remboursement total doit être entre {min} et {max}",
+    "refund-total-warning": "",
     "refund-with-amount": "Rembourser {amount}",
     "refunded-count": "{count} {count, plural, one {article remboursé} other {articles remboursés}}",
     "removed-items": "Articles supprimés",

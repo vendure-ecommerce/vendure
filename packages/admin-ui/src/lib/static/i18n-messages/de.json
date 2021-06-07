@@ -537,9 +537,9 @@
     "create-new-promotion": "Neue Werbeaktion erstellen",
     "ends-at": "Endet am",
     "per-customer-limit": "Begrenzung pro Kunde",
-    "starts-at": "Beginnt am",
+    "search-by-coupon-code": "",
     "search-by-name": "",
-    "search-by-coupon-code": ""
+    "starts-at": "Beginnt am"
   },
   "nav": {
     "administrators": "Administratoren",
