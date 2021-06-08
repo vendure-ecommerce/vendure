@@ -120,6 +120,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         process: [],
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
+        orderByCodePermanentAccess: false,
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
     },
