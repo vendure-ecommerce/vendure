@@ -473,6 +473,19 @@ export interface OrderOptions {
     orderCodeStrategy?: OrderCodeStrategy;
     /**
      * @description
+     * Orders can be retrieved with their code using the orderByCode query. By default this
+     * is only possible if a User is logged in and owns the Order or the Order was created
+     * in the last two hours by anyone knowing the code.
+     *
+     * Set this to true to enable permanend anonymous access with the correct code.
+     * You can use more secure codes with a custom OrderCodeStrategy. Also consider limiting
+     * requests to prevent brute forcing a code.
+     *
+     * @default false
+     */
+    orderByCodePermanentAccess?: boolean;
+    /**
+     * @description
      * Defines how we handle the situation where an OrderItem exists in an Order, and
      * then later on another is added but in the mean time the price of the ProductVariant has changed.
      *
