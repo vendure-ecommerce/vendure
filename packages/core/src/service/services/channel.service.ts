@@ -88,10 +88,13 @@ export class ChannelService {
         entityType: Type<T>,
         entityId: ID,
         channelIds: ID[],
-    ): Promise<T> {
-        const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
+    ): Promise<T | undefined> {
+        const entity = await this.connection.getRepository(ctx, entityType).findOne(entityId, {
             relations: ['channels'],
         });
+        if (!entity) {
+            return;
+        }
         for (const id of channelIds) {
             entity.channels = entity.channels.filter(c => !idsAreEqual(c.id, id));
         }
