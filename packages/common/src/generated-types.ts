@@ -2767,7 +2767,6 @@ export enum DeletionResult {
  * @docsCategory common
  */
 export enum Permission {
-  Placeholder = 'Placeholder',
   /** Authenticated means simply that the user is logged in */
   Authenticated = 'Authenticated',
   /** SuperAdmin has unrestricted access to all operations */

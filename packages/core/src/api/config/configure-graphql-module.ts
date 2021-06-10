@@ -141,7 +141,6 @@ async function createGraphQLOptions(
             .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
             .filter(notNullOrUndefined)
             .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
-        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
@@ -155,6 +154,7 @@ async function createGraphQLOptions(
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
         }
+        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
 
         return schema;
     }

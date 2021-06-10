@@ -487,7 +487,6 @@ export enum DeletionResult {
  * @docsCategory common
  */
 export enum Permission {
-  Placeholder = 'Placeholder',
   /** Authenticated means simply that the user is logged in */
   Authenticated = 'Authenticated',
   /** SuperAdmin has unrestricted access to all operations */
@@ -2677,44 +2676,6 @@ export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVe
 
 export type ActiveOrderResult = Order | NoActiveOrderError;
 
-export type CollectionFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  slug?: Maybe<StringOperators>;
-  position?: Maybe<NumberOperators>;
-  description?: Maybe<StringOperators>;
-};
-
-export type CollectionSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  slug?: Maybe<SortOrder>;
-  position?: Maybe<SortOrder>;
-  description?: Maybe<SortOrder>;
-};
-
-export type ProductFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  slug?: Maybe<StringOperators>;
-  description?: Maybe<StringOperators>;
-};
-
-export type ProductSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  slug?: Maybe<SortOrder>;
-  description?: Maybe<SortOrder>;
-};
-
 export type ProductVariantFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -2803,6 +2764,44 @@ export type HistoryEntrySortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
+};
+
+export type CollectionFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  slug?: Maybe<StringOperators>;
+  position?: Maybe<NumberOperators>;
+  description?: Maybe<StringOperators>;
+};
+
+export type CollectionSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
+  position?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+};
+
+export type ProductFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  slug?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
+};
+
+export type ProductSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type NativeAuthInput = {
