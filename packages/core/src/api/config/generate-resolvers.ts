@@ -1,8 +1,7 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { IFieldResolver, IResolvers } from 'apollo-server-express';
 import { GraphQLSchema } from 'graphql';
-import { GraphQLDateTime } from 'graphql-iso-date';
-import GraphQLJSON from 'graphql-type-json';
+import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
 import { GraphQLUpload } from 'graphql-upload';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
@@ -14,7 +13,6 @@ import { shopErrorOperationTypeResolvers } from '../../common/error/generated-gr
 import { Translatable } from '../../common/types/locale-types';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';
-import { CustomFieldRelationService } from '../../service/helpers/custom-field-relation/custom-field-relation.service';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { ApiType } from '../common/get-api-type';
 import { RequestContext } from '../common/request-context';

@@ -137,6 +137,7 @@ export class ChannelDetailComponent
                     const input = {
                         id: channel.id,
                         code: formValue.code,
+                        token: formValue.token,
                         pricesIncludeTax: formValue.pricesIncludeTax,
                         currencyCode: formValue.currencyCode,
                         defaultShippingZoneId: formValue.defaultShippingZoneId,

@@ -2,62 +2,10 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
-import {
-    Asset,
-    DefaultJobQueuePlugin,
-    DefaultLogger,
-    defaultPromotionActions,
-    DefaultSearchPlugin,
-    dummyPaymentHandler,
-    examplePaymentHandler,
-    FulfillmentHandler,
-    LanguageCode,
-    LogLevel,
-    manualFulfillmentHandler,
-    PaymentMethodEligibilityChecker,
-    PromotionItemAction,
-    VendureConfig,
-} from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
+import { DefaultJobQueuePlugin, DefaultLogger, DefaultSearchPlugin, dummyPaymentHandler, LogLevel, VendureConfig, } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-
-const testPaymentChecker = new PaymentMethodEligibilityChecker({
-    code: 'test-checker',
-    description: [{ languageCode: LanguageCode.en, value: 'test checker' }],
-    args: {},
-    check: (ctx, order) => true,
-});
-
-const testPromoAction = new PromotionItemAction({
-    code: 'discount-price-action',
-    description: [{ languageCode: LanguageCode.en, value: 'Apply discount price' }],
-    args: {},
-    execute: (ctx, orderItem, orderLine) => {
-        if ((orderLine.productVariant.customFields as any).discountPrice) {
-            return -(
-                orderLine.unitPriceWithTax - (orderLine.productVariant.customFields as any).discountPrice
-            );
-        }
-        return 0;
-    },
-});
-
-const myHandler = new FulfillmentHandler({
-    code: 'test-handler',
-    args: {},
-    description: [{ languageCode: LanguageCode.en, value: 'test fulfillment handler' }],
-    createFulfillment: ctx => {
-        return {
-            method: 'test-handler',
-            trackingCode: '123123123123',
-            customFields: {
-                logoId: 1,
-            },
-        };
-    },
-});
 
 /**
  * Config settings used during development
@@ -93,22 +41,12 @@ export const devConfig: VendureConfig = {
         ...getDbConfig(),
     },
     paymentOptions: {
-        paymentMethodEligibilityCheckers: [testPaymentChecker],
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-    promotionOptions: {
-        promotionActions: [...defaultPromotionActions, testPromoAction],
-    },
-    customFields: {
-        /*Asset: [{ name: 'description', type: 'string' }],*/
-        ProductVariant: [{ name: 'discountPrice', type: 'int' }],
-    },
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    customFields: {},
+    logger: new DefaultLogger({level: LogLevel.Info}),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
-    },
-    shippingOptions: {
-        fulfillmentHandlers: [manualFulfillmentHandler, myHandler],
     },
     plugins: [
         AssetServerPlugin.init({

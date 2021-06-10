@@ -1,7 +1,5 @@
 import gql from 'graphql-tag';
 
-import { ERROR_RESULT_FRAGMENT } from '../../../admin-ui/src/lib/core/src/data/definitions/shared-definitions';
-
 export const TEST_ORDER_FRAGMENT = gql`
     fragment TestOrderFragment on Order {
         id

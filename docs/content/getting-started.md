@@ -7,7 +7,7 @@ weight: 0
 
 ## Requirements
  
-* [Node.js](https://nodejs.org/en/) **v10.13.0** or above
+* [Node.js](https://nodejs.org/en/) **v12** or above, with support for **even-numbered Node.js versions**.
 * If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, if you are just testing out Vendure, we recommend using SQLite, which has no external requirements.
 * For Windows users: make sure you have **[windows build tools](https://www.npmjs.com/package/windows-build-tools) installed**
   * `npm install --global --production windows-build-tools`

@@ -91,7 +91,9 @@ export async function bootstrapWorker(
 ): Promise<{ app: INestApplicationContext; startJobQueue: () => Promise<void> }> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
-    (config.logger as any).setDefaultContext('Vendure Worker');
+    if (config.logger instanceof DefaultLogger) {
+        config.logger.setDefaultContext('Vendure Worker');
+    }
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
 
