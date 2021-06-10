@@ -12,6 +12,7 @@ import { asyncObservable, idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
@@ -151,10 +152,15 @@ export class IndexerController {
         const ctx = RequestContext.deserialize(data.ctx);
         const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
         if (variants.length) {
+            const languageVariants = unique([
+                ...variants
+                    .reduce((vt, v) => [...vt, ...v.translations], [] as Array<Translation<ProductVariant>>)
+                    .map(t => t.languageCode),
+            ]);
             await this.removeSearchIndexItems(
-                ctx.languageCode,
                 ctx.channelId,
                 variants.map(v => v.id),
+                languageVariants,
             );
         }
         return true;
@@ -177,15 +183,19 @@ export class IndexerController {
 
     async removeVariantFromChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        await this.removeSearchIndexItems(ctx.languageCode, data.channelId, [data.productVariantId]);
+        const variant = await this.connection.getRepository(ProductVariant).findOne(data.productVariantId);
+        const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
+        await this.removeSearchIndexItems(data.channelId, [data.productVariantId], languageVariants);
         return true;
     }
 
     async updateAsset(data: UpdateAssetMessageData): Promise<boolean> {
         const id = data.asset.id;
+
         function getFocalPoint(point?: { x: number; y: number }) {
             return point && point.x && point.y ? point : null;
         }
+
         const focalPoint = getFocalPoint(data.asset.focalPoint);
         await this.connection
             .getRepository(SearchIndexItem)
@@ -266,9 +276,16 @@ export class IndexerController {
             relations: ['variants'],
         });
         if (product) {
+            const languageVariants = unique([
+                ...product.translations.map(t => t.languageCode),
+                ...product.variants
+                    .reduce((vt, v) => [...vt, ...v.translations], [] as Array<Translation<ProductVariant>>)
+                    .map(t => t.languageCode),
+            ]);
+
             const removedVariantIds = product.variants.map(v => v.id);
             if (removedVariantIds.length) {
-                await this.removeSearchIndexItems(ctx.languageCode, channelId, removedVariantIds);
+                await this.removeSearchIndexItems(channelId, removedVariantIds, languageVariants);
             }
         }
         return true;
@@ -436,13 +453,18 @@ export class IndexerController {
     /**
      * Remove items from the search index
      */
-    private async removeSearchIndexItems(languageCode: LanguageCode, channelId: ID, variantIds: ID[]) {
-        const compositeKeys = variantIds.map(id => ({
-            productVariantId: id,
-            channelId,
-            languageCode,
-        })) as any[];
-        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(compositeKeys));
+    private async removeSearchIndexItems(channelId: ID, variantIds: ID[], languageCodes: LanguageCode[]) {
+        const keys: Array<Partial<SearchIndexItem>> = [];
+        for (const productVariantId of variantIds) {
+            for (const languageCode of languageCodes) {
+                keys.push({
+                    productVariantId,
+                    channelId,
+                    languageCode,
+                });
+            }
+        }
+        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(keys as any));
     }
 
     /**

@@ -1013,6 +1013,72 @@ describe('Elasticsearch plugin', () => {
                 });
                 expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/896
+            it('removing from channel with multiple languages', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_4',
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'product en',
+                                slug: 'product-en',
+                                description: 'en',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'product de',
+                                slug: 'product-de',
+                                description: 'de',
+                            },
+                        ],
+                    },
+                });
+
+                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
+                    ASSIGN_PRODUCT_TO_CHANNEL,
+                    {
+                        input: { channelId: secondChannel.id, productIds: ['T_4'] },
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                async function searchSecondChannelForDEProduct() {
+                    adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                    const { search } = await adminClient.query<
+                        SearchProductsShop.Query,
+                        SearchProductsShop.Variables
+                    >(
+                        SEARCH_PRODUCTS,
+                        {
+                            input: { term: 'product', groupByProduct: true },
+                        },
+                        { languageCode: LanguageCode.de },
+                    );
+                    return search;
+                }
+
+                const search1 = await searchSecondChannelForDEProduct();
+                expect(search1.items.map(i => i.productName)).toEqual(['product de']);
+
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { removeProductsFromChannel } = await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                    input: {
+                        productIds: ['T_4'],
+                        channelId: secondChannel.id,
+                    },
+                });
+                await awaitRunningJobs(adminClient);
+
+                const search2 = await searchSecondChannelForDEProduct();
+                expect(search2.items.map(i => i.productName)).toEqual([]);
+            });
         });
 
         describe('multiple language handling', () => {
