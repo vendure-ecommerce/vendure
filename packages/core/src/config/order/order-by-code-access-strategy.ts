@@ -6,13 +6,13 @@ import { Order } from '../../entity/order/order.entity';
 
 /**
  * @description
- * The OrderByCodeAccessStrategy determins how access to a placed Order via the
+ * The OrderByCodeAccessStrategy determines how access to a placed Order via the
  * orderByCode query is granted.
  * With a custom strategy anonymous access could be made permanent or tied to specific
- * conditions like IP range or a specific Order status.
+ * conditions like IP range or an Order status.
  *
  * @example
- * This example grants access to the requested Order to everyone – unless it's Monday.
+ * This example grants access to the requested Order to anyone – unless it's Monday.
  * ```TypeScript
  * export class NotMondayOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
  *     canAccessOrder(ctx: RequestContext, order: Order): boolean {
@@ -38,25 +38,23 @@ export interface OrderByCodeAccessStrategy extends InjectableStrategy {
 /**
  * @description
  * The default OrderByCodeAccessStrategy used by Vendure. It permitts permanent access to
- * the Customer owning the Order and anyone within 2 hours after placing the Order.
+ * the Customer owning the Order and anyone within a given time period after placing the Order
+ * (defaults to 2h).
+ *
+ * @param anonymousAccessDuration value for [ms](https://github.com/vercel/ms), e.g. `2h` for 2 hours or `5d` for 5 days
  *
  * @docsCategory orders
  * @docsPage OrderByCodeAccessStrategy
  */
 export class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
-    canAccessOrder(ctx: RequestContext, order: Order): boolean {
+    canAccessOrder(ctx: RequestContext, order: Order, anonymousAccessDuration: string = '2h'): boolean {
         // Order owned by active user
-        const activeUserMatches = !!(
-            order &&
-            order.customer &&
-            order.customer.user &&
-            order.customer.user.id === ctx.activeUserId
-        );
+        const activeUserMatches = order?.customer?.user?.id === ctx.activeUserId;
 
         // For guest Customers, allow access to the Order for the following
         // time period
         const anonymousAccessPermitted = () => {
-            const anonymousAccessLimit = ms('2h');
+            const anonymousAccessLimit = ms(anonymousAccessDuration);
             const orderPlaced = order.orderPlacedAt ? +order.orderPlacedAt : 0;
             const now = Date.now();
             return now - orderPlaced < anonymousAccessLimit;
