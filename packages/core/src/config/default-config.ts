@@ -121,7 +121,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         process: [],
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
-        orderByCodeAccessStrategy: new DefaultOrderByCodeAccessStrategy(),
+        orderByCodeAccessStrategy: new DefaultOrderByCodeAccessStrategy('2h'),
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
     },

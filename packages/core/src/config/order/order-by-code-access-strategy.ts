@@ -47,14 +47,20 @@ export interface OrderByCodeAccessStrategy extends InjectableStrategy {
  * @docsPage OrderByCodeAccessStrategy
  */
 export class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrategy {
-    canAccessOrder(ctx: RequestContext, order: Order, anonymousAccessDuration: string = '2h'): boolean {
+    private anonymousAccessDuration;
+
+    constructor(anonymousAccessDuration: string) {
+        this.anonymousAccessDuration = anonymousAccessDuration;
+    }
+
+    canAccessOrder(ctx: RequestContext, order: Order): boolean {
         // Order owned by active user
         const activeUserMatches = order?.customer?.user?.id === ctx.activeUserId;
 
         // For guest Customers, allow access to the Order for the following
         // time period
         const anonymousAccessPermitted = () => {
-            const anonymousAccessLimit = ms(anonymousAccessDuration);
+            const anonymousAccessLimit = ms(this.anonymousAccessDuration);
             const orderPlaced = order.orderPlacedAt ? +order.orderPlacedAt : 0;
             const now = Date.now();
             return now - orderPlaced < anonymousAccessLimit;
