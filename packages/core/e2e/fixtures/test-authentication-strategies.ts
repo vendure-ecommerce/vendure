@@ -3,6 +3,7 @@ import {
     ExternalAuthenticationService,
     Injector,
     RequestContext,
+    RoleService,
     User,
 } from '@vendure/core';
 import { DocumentNode } from 'graphql';
@@ -60,6 +61,76 @@ export class TestAuthenticationStrategy implements AuthenticationStrategy<TestAu
             emailAddress: userData.email,
             firstName: userData.firstName,
             lastName: userData.lastName,
+            verified: true,
+        });
+    }
+}
+
+export class TestSSOStrategyAdmin implements AuthenticationStrategy<{ email: string }> {
+    readonly name = 'test_sso_strategy_admin';
+    private externalAuthenticationService: ExternalAuthenticationService;
+    private roleService: RoleService;
+
+    init(injector: Injector) {
+        this.externalAuthenticationService = injector.get(ExternalAuthenticationService);
+        this.roleService = injector.get(RoleService);
+    }
+
+    defineInputType(): DocumentNode {
+        return gql`
+            input TestSSOInputAdmin {
+                email: String!
+            }
+        `;
+    }
+
+    async authenticate(ctx: RequestContext, data: { email: string }): Promise<User | false | string> {
+        const { email } = data;
+        const user = await this.externalAuthenticationService.findUser(ctx, this.name, email);
+        if (user) {
+            return user;
+        }
+        const superAdminRole = await this.roleService.getSuperAdminRole();
+        return this.externalAuthenticationService.createAdministratorAndUser(ctx, {
+            strategy: this.name,
+            externalIdentifier: email,
+            emailAddress: email,
+            firstName: 'SSO Admin First Name',
+            lastName: 'SSO Admin Last Name',
+            identifier: email,
+            roles: [superAdminRole],
+        });
+    }
+}
+
+export class TestSSOStrategyShop implements AuthenticationStrategy<{ email: string }> {
+    readonly name = 'test_sso_strategy_shop';
+    private externalAuthenticationService: ExternalAuthenticationService;
+
+    init(injector: Injector) {
+        this.externalAuthenticationService = injector.get(ExternalAuthenticationService);
+    }
+
+    defineInputType(): DocumentNode {
+        return gql`
+            input TestSSOInputShop {
+                email: String!
+            }
+        `;
+    }
+
+    async authenticate(ctx: RequestContext, data: { email: string }): Promise<User | false | string> {
+        const { email } = data;
+        const user = await this.externalAuthenticationService.findUser(ctx, this.name, email);
+        if (user) {
+            return user;
+        }
+        return this.externalAuthenticationService.createCustomerAndUser(ctx, {
+            strategy: this.name,
+            externalIdentifier: email,
+            emailAddress: email,
+            firstName: 'SSO Customer First Name',
+            lastName: 'SSO Customer Last Name',
             verified: true,
         });
     }
