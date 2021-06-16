@@ -174,6 +174,13 @@ export interface ApiOptions {
      * @default []
      */
     apolloServerPlugins?: PluginDefinition[];
+    /**
+     * @description
+     * Whether to use underlying platform body parser.
+     *
+     * @default true
+     */
+    bodyParser?: true;
 }
 
 /**
