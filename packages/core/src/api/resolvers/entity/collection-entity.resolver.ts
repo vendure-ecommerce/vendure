@@ -67,19 +67,33 @@ export class CollectionEntityResolver {
     }
 
     @ResolveField()
-    async parent(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection> {
+    async parent(
+        @Ctx() ctx: RequestContext,
+        @Parent() collection: Collection,
+        @Api() apiType: ApiType,
+    ): Promise<Collection | undefined> {
+        let parent: Collection;
         if (collection.parent) {
-            return collection.parent;
+            parent = collection.parent;
+        } else {
+            parent = (await this.collectionService.getParent(ctx, collection.id)) as any;
         }
-        return this.collectionService.getParent(ctx, collection.id) as any;
+        return apiType === 'shop' && parent.isPrivate ? undefined : parent;
     }
 
     @ResolveField()
-    async children(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection[]> {
+    async children(
+        @Ctx() ctx: RequestContext,
+        @Parent() collection: Collection,
+        @Api() apiType: ApiType,
+    ): Promise<Collection[]> {
+        let children: Collection[] = [];
         if (collection.children) {
-            return collection.children;
+            children = collection.children;
+        } else {
+            children = (await this.collectionService.getChildren(ctx, collection.id)) as any;
         }
-        return this.collectionService.getChildren(ctx, collection.id) as any;
+        return children.filter(c => (apiType === 'shop' ? !c.isPrivate : true));
     }
 
     @ResolveField()

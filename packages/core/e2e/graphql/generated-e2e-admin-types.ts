@@ -6534,6 +6534,17 @@ export type GetProductCollectionQueryVariables = Exact<{ [key: string]: never; }
 
 export type GetProductCollectionQuery = { product?: Maybe<{ collections: Array<Pick<Collection, 'id' | 'name'>> }> };
 
+export type GetCollectionShopQueryVariables = Exact<{
+  id?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
+}>;
+
+
+export type GetCollectionShopQuery = { collection?: Maybe<(
+    Pick<Collection, 'id' | 'name' | 'slug' | 'description'>
+    & { parent?: Maybe<Pick<Collection, 'id' | 'name'>>, children?: Maybe<Array<Pick<Collection, 'id' | 'name'>>> }
+  )> };
+
 export type DisableProductMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -8274,6 +8285,14 @@ export namespace GetProductCollection {
   export type Query = GetProductCollectionQuery;
   export type Product = (NonNullable<GetProductCollectionQuery['product']>);
   export type Collections = NonNullable<(NonNullable<(NonNullable<GetProductCollectionQuery['product']>)['collections']>)[number]>;
+}
+
+export namespace GetCollectionShop {
+  export type Variables = GetCollectionShopQueryVariables;
+  export type Query = GetCollectionShopQuery;
+  export type Collection = (NonNullable<GetCollectionShopQuery['collection']>);
+  export type Parent = (NonNullable<(NonNullable<GetCollectionShopQuery['collection']>)['parent']>);
+  export type Children = NonNullable<(NonNullable<(NonNullable<GetCollectionShopQuery['collection']>)['children']>)[number]>;
 }
 
 export namespace DisableProduct {
