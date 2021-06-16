@@ -62,7 +62,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
         middleware: [],
         apolloServerPlugins: [],
-        bodyParser: true,
     },
     authOptions: {
         disableAuth: false,
