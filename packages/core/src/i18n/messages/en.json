@@ -53,6 +53,7 @@
     "COUPON_CODE_EXPIRED_ERROR": "Coupon code \"{ couponCode }\" has expired",
     "COUPON_CODE_INVALID_ERROR": "Coupon code \"{ couponCode }\" is not valid",
     "COUPON_CODE_LIMIT_ERROR": "Coupon code cannot be used more than {limit, plural, one {once} other {# times}} per customer",
+    "CREATE_FULFILLMENT_ERROR": "An error occurred when attempting to create the Fulfillment",
     "EMAIL_ADDRESS_CONFLICT_ERROR": "The email address is not available.",
     "EMPTY_ORDER_LINE_SELECTION_ERROR": "At least one OrderLine must be specified",
     "IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR": "Identifier change token not recognized",

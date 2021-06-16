@@ -6027,9 +6027,11 @@ export type CreateFulfillmentMutation = { addFulfillmentToOrder: (
     & ErrorResult_InvalidFulfillmentHandlerError_Fragment
   ) | (
     { __typename?: 'FulfillmentStateTransitionError' }
+    & Pick<FulfillmentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>
     & ErrorResult_FulfillmentStateTransitionError_Fragment
   ) | (
     { __typename?: 'CreateFulfillmentError' }
+    & Pick<CreateFulfillmentError, 'errorCode' | 'message' | 'fulfillmentHandlerError'>
     & ErrorResult_CreateFulfillmentError_Fragment
   ) };
 
@@ -8917,6 +8919,8 @@ export namespace CreateFulfillment {
   export type Variables = CreateFulfillmentMutationVariables;
   export type Mutation = CreateFulfillmentMutation;
   export type AddFulfillmentToOrder = (NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>);
+  export type CreateFulfillmentErrorInlineFragment = (DiscriminateUnion<(NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>), { __typename?: 'CreateFulfillmentError' }>);
+  export type FulfillmentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>), { __typename?: 'FulfillmentStateTransitionError' }>);
 }
 
 export namespace CancelOrder {
