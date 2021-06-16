@@ -1286,12 +1286,14 @@ describe('Collection resolver', () => {
             async function createVariantNameFilteredCollection(
                 operator: string,
                 term: string,
+                parentId?: string,
             ): Promise<Collection.Fragment> {
                 const { createCollection } = await adminClient.query<
                     CreateCollection.Mutation,
                     CreateCollection.Variables
                 >(CREATE_COLLECTION, {
                     input: {
+                        parentId,
                         translations: [
                             {
                                 languageCode: LanguageCode.en,
@@ -1393,6 +1395,41 @@ describe('Collection resolver', () => {
                     'USB Cable',
                     'Tripod',
                     'Hat',
+                ]);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/927
+            it('nested variantName filter', async () => {
+                const parent = await createVariantNameFilteredCollection('contains', 'lap');
+
+                const parentResult = await adminClient.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: parent.id,
+                });
+
+                expect(parentResult.collection?.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                ]);
+
+                const child = await createVariantNameFilteredCollection('contains', 'GB', parent.id);
+
+                const childResult = await adminClient.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: child.id,
+                });
+
+                expect(childResult.collection?.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
                 ]);
             });
         });
@@ -1606,7 +1643,7 @@ describe('Collection resolver', () => {
                     name: 'endsWith camera',
                 },
                 {
-                    id: 'T_21',
+                    id: 'T_23',
                     name: 'pear electronics',
                 },
             ]);

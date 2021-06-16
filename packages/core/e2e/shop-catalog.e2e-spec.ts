@@ -12,6 +12,7 @@ import {
     CreateFacet,
     DisableProduct,
     FacetWithValues,
+    GetCollection,
     GetCollectionList,
     GetCollectionVariants,
     GetFacetList,
@@ -232,6 +233,27 @@ describe('Shop catalog', () => {
     describe('collections', () => {
         let collection: CreateCollection.CreateCollection;
 
+        async function createNewCollection(name: string, isPrivate: boolean, parentId?: string) {
+            return await adminClient.query<CreateCollection.Mutation, CreateCollection.Variables>(
+                CREATE_COLLECTION,
+                {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name,
+                                description: '',
+                                slug: name,
+                            },
+                        ],
+                        isPrivate,
+                        parentId,
+                        filters: [],
+                    },
+                },
+            );
+        }
+
         beforeAll(async () => {
             const result = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
             const category = result.facets.items[0];
@@ -387,8 +409,55 @@ describe('Shop catalog', () => {
 
             expect(result.product!.collections).toEqual([]);
         });
+
+        it('private children not returned in Shop API', async () => {
+            const { createCollection: parent } = await createNewCollection('public-parent', false);
+            const { createCollection: child } = await createNewCollection('private-child', true, parent.id);
+
+            const result = await shopClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION_SHOP,
+                {
+                    id: parent.id,
+                },
+            );
+
+            expect(result.collection?.children).toEqual([]);
+        });
+
+        it('private parent not returned in Shop API', async () => {
+            const { createCollection: parent } = await createNewCollection('private-parent', true);
+            const { createCollection: child } = await createNewCollection('public-child', false, parent.id);
+
+            const result = await shopClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION_SHOP,
+                {
+                    id: child.id,
+                },
+            );
+
+            expect(result.collection?.parent).toBeNull();
+        });
     });
 });
+
+const GET_COLLECTION_SHOP = gql`
+    query GetCollectionShop($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
+            id
+            name
+            slug
+            description
+            parent {
+                id
+                name
+            }
+            children {
+                id
+                name
+            }
+        }
+    }
+`;
 
 const DISABLE_PRODUCT = gql`
     mutation DisableProduct($id: ID!) {

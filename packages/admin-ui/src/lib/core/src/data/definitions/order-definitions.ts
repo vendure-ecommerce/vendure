@@ -308,6 +308,16 @@ export const CREATE_FULFILLMENT = gql`
     mutation CreateFulfillment($input: FulfillOrderInput!) {
         addFulfillmentToOrder(input: $input) {
             ...Fulfillment
+            ... on CreateFulfillmentError {
+                errorCode
+                message
+                fulfillmentHandlerError
+            }
+            ... on FulfillmentStateTransitionError {
+                errorCode
+                message
+                transitionError
+            }
             ...ErrorResult
         }
     }

@@ -64,6 +64,7 @@ export class OrderDetailComponent
         'Modifying',
         'ArrangingAdditionalPayment',
     ];
+
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -332,15 +333,28 @@ export class OrderDetailComponent
             )
             .subscribe(result => {
                 if (result) {
-                    switch (result.addFulfillmentToOrder.__typename) {
+                    const { addFulfillmentToOrder } = result;
+                    switch (addFulfillmentToOrder.__typename) {
                         case 'Fulfillment':
                             this.notificationService.success(_('order.create-fulfillment-success'));
                             break;
                         case 'EmptyOrderLineSelectionError':
                         case 'InsufficientStockOnHandError':
                         case 'ItemsAlreadyFulfilledError':
-                            this.notificationService.error(result.addFulfillmentToOrder.message);
+                        case 'InvalidFulfillmentHandlerError':
+                            this.notificationService.error(addFulfillmentToOrder.message);
                             break;
+                        case 'FulfillmentStateTransitionError':
+                            this.notificationService.error(addFulfillmentToOrder.transitionError);
+                            break;
+                        case 'CreateFulfillmentError':
+                            this.notificationService.error(addFulfillmentToOrder.fulfillmentHandlerError);
+                            break;
+                        case undefined:
+                            this.notificationService.error(JSON.stringify(addFulfillmentToOrder));
+                            break;
+                        default:
+                            assertNever(addFulfillmentToOrder);
                     }
                 }
             });

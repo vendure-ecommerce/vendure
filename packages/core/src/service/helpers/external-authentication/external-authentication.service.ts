@@ -4,7 +4,6 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
-import { Collection } from '../../../entity/collection/collection.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
@@ -13,7 +12,6 @@ import { ChannelService } from '../../services/channel.service';
 import { CustomerService } from '../../services/customer.service';
 import { HistoryService } from '../../services/history.service';
 import { RoleService } from '../../services/role.service';
-import { UserService } from '../../services/user.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 /**
@@ -32,7 +30,6 @@ export class ExternalAuthenticationService {
         private customerService: CustomerService,
         private administratorService: AdministratorService,
         private channelService: ChannelService,
-        private userService: UserService,
     ) {}
 
     /**
@@ -96,7 +93,8 @@ export class ExternalAuthenticationService {
     ): Promise<User> {
         let user: User;
 
-        const existingUser = await this.userService.getUserByEmailAddress(ctx, config.emailAddress);
+        const existingUser = await this.findExistingCustomerUserByEmailAddress(ctx, config.emailAddress);
+
         if (existingUser) {
             user = existingUser;
         } else {
@@ -207,20 +205,34 @@ export class ExternalAuthenticationService {
         strategy: string,
         externalIdentifier: string,
     ): Promise<User | undefined> {
-        const user = await this.connection
+        const usersWithMatchingIdentifier = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
             .andWhere('authMethod.externalIdentifier = :externalIdentifier', { externalIdentifier })
             .andWhere('user.deletedAt IS NULL')
+            .getMany();
+
+        const matchingUser = usersWithMatchingIdentifier.find(user =>
+            user.authenticationMethods.find(
+                m => m instanceof ExternalAuthenticationMethod && m.strategy === strategy,
+            ),
+        );
+
+        return matchingUser;
+    }
+
+    private async findExistingCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string) {
+        const customer = await this.connection
+            .getRepository(ctx, Customer)
+            .createQueryBuilder('customer')
+            .leftJoinAndSelect('customer.user', 'user')
+            .leftJoin('customer.channels', 'channel')
+            .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
+            .andWhere('customer.emailAddress = :emailAddress', { emailAddress })
+            .andWhere('user.deletedAt IS NULL')
             .getOne();
 
-        const userHasMatchingAuthMethod = !!user?.authenticationMethods.find(m => {
-            return m instanceof ExternalAuthenticationMethod && m.strategy === strategy;
-        });
-
-        if (userHasMatchingAuthMethod) {
-            return user;
-        }
+        return customer?.user;
     }
 }

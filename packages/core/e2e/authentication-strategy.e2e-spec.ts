@@ -12,13 +12,14 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import {
     TestAuthenticationStrategy,
     TestAuthenticationStrategy2,
+    TestSSOStrategyAdmin,
+    TestSSOStrategyShop,
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     Authenticate,
     CreateCustomer,
-    CurrentUser,
     CurrentUserFragment,
     CustomerFragment,
     DeleteCustomer,
@@ -31,7 +32,6 @@ import {
 import { Register } from './graphql/generated-e2e-shop-types';
 import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
 import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
-import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('AuthenticationStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -41,7 +41,9 @@ describe('AuthenticationStrategy', () => {
                     new NativeAuthenticationStrategy(),
                     new TestAuthenticationStrategy(),
                     new TestAuthenticationStrategy2(),
+                    new TestSSOStrategyShop(),
                 ],
+                adminAuthenticationStrategy: [new NativeAuthenticationStrategy(), new TestSSOStrategyAdmin()],
             },
         }),
     );
@@ -291,6 +293,31 @@ describe('AuthenticationStrategy', () => {
                     },
                 },
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/926
+        it('Customer and Admin external auth does not reuse same User for different strategies', async () => {
+            const emailAddress = 'hello@test-domain.com';
+            await adminClient.asAnonymousUser();
+            const { authenticate: adminAuth } = await adminClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+                input: {
+                    test_sso_strategy_admin: {
+                        email: emailAddress,
+                    },
+                },
+            });
+            currentUserGuard.assertSuccess(adminAuth);
+
+            const { authenticate: shopAuth } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+                input: {
+                    test_sso_strategy_shop: {
+                        email: emailAddress,
+                    },
+                },
+            });
+            currentUserGuard.assertSuccess(shopAuth);
+
+            expect(adminAuth.id).not.toBe(shopAuth.id);
         });
     });
 

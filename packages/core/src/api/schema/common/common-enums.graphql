@@ -17,9 +17,7 @@ enum DeletionResult {
 }
 
 # Populated at run-time
-enum Permission {
-    Placeholder
-}
+enum Permission
 
 enum SortOrder {
     ASC
