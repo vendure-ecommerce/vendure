@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/shared-types';
+import { Type } from '@vendure/common/lib/shared-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
