@@ -1,3 +1,14 @@
+## <small>1.0.3 (2021-06-18)</small>
+
+
+#### Fixes
+
+* **admin-ui** Handle all ErrorResults when creating a Fulfillment ([75952dd](https://github.com/vendure-ecommerce/vendure/commit/75952dd)), closes [#929](https://github.com/vendure-ecommerce/vendure/issues/929)
+* **core** Correct handling of nested variantNameCollectionFilters ([14b40bb](https://github.com/vendure-ecommerce/vendure/commit/14b40bb)), closes [#927](https://github.com/vendure-ecommerce/vendure/issues/927)
+* **core** Do not return private collections in Shop API ([33f40f2](https://github.com/vendure-ecommerce/vendure/commit/33f40f2)), closes [#928](https://github.com/vendure-ecommerce/vendure/issues/928)
+* **core** Fix Admin/Customer user conflict with external auth ([69f46a3](https://github.com/vendure-ecommerce/vendure/commit/69f46a3)), closes [#926](https://github.com/vendure-ecommerce/vendure/issues/926)
+* **core** Remove "Placeholder" from Permission enum ([eabfe77](https://github.com/vendure-ecommerce/vendure/commit/eabfe77))
+
 ## <small>1.0.2 (2021-06-10)</small>
 
 

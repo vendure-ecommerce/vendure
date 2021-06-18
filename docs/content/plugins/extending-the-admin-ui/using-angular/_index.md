@@ -118,6 +118,18 @@ Now go to the Admin UI app in your browser and log in. You should now be able to
 
 {{< figure src="./ui-extensions-greeter.jpg" >}}
 
+{{< alert warning >}}
+**Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`. You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array:
+```json
+{
+  "exclude": [
+    "src/plugins/**/ui/*"
+  ]
+}
+```
+{{< /alert >}}
+
+
 ## Next Steps
 
 Now you have created your new route, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../adding-navigation-items" >}})
