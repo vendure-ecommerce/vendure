@@ -89,3 +89,14 @@ plugins: [
   }),
 ],
 ```
+
+{{< alert warning >}}
+**Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`. You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array:
+```json
+{
+  "exclude": [
+    "src/plugins/**/ui/*"
+  ]
+}
+```
+{{< /alert >}}
