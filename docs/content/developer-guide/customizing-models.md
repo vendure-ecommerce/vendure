@@ -55,6 +55,60 @@ mutation {
 }
 ```
 
+## TypeScript Typings
+
+Because custom fields are generated at run-time, TypeScript has no way of knowing about them based on your
+VendureConfig. Consider the example above - let's say we have a [plugin]({{< relref "/docs/plugins" >}}) which needs to
+access the custom field values on a Product entity.
+
+Attempting to access the custom field will result in a TS compiler error:
+ 
+```TypeScript {hl_lines=[12,13]}
+import { RequestContext, TransactionalConnection, ID, Product } from '@vendure/core';
+
+export class MyService {
+  constructor(private connection: TransactionalConnection) {} 
+
+  async getInfoUrl(ctx: RequestContext, productId: ID) {
+    const product = await this.connection
+      .getRepository(ctx, Product)
+      .findOne(productId);
+    
+    return product.customFields.infoUrl; 
+  }                           // ^ TS2339: Property 'infoUrl' 
+}                             // does not exist on type 'CustomProductFields'.
+```
+
+The "easy" way to solve this is to assert the `customFields` object as `any`:
+```TypeScript
+return (product.customFields as any).infoUrl; 
+```
+However, this sacrifices type safety. To make our custom fields type-safe we can take advantage of a couple of more advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and  [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules). This allows us to extend the built-in `CustomProductFields` interface to add our custom fields to it:
+
+```TypeScript
+// types.ts
+
+declare module '@vendure/core' {
+  interface CustomProductFields {
+    infoUrl: string;
+    downloadable: boolean;
+    shortName: string;
+  }
+}
+```
+
+When this file is then imported into our service file (either directly or indirectly), TypeScript will know about our custom fields, and we do not need to do any type assertions.
+
+```TypeScript
+return product.customFields.infoUrl; 
+// no error, plus TS autocomplete works.
+```
+
+{{< alert "primary" >}}
+For a working example of this setup, see the [real-world-vendure repo](https://github.com/vendure-ecommerce/real-world-vendure/blob/master/src/plugins/reviews/types.ts)
+{{< /alert >}}
+
+
 ## Examples
 
 ### defaultValue & nullable
