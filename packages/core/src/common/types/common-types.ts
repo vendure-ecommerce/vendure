@@ -1,3 +1,5 @@
+import { Type } from '@vendure/common/lib/shared-types';
+
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Tag } from '../../entity/tag/tag.entity';
@@ -144,3 +146,8 @@ export type PriceCalculationResult = {
     price: number;
     priceIncludesTax: boolean;
 };
+
+// tslint:disable-next-line:ban-types
+export type MiddlewareHandler = Type<any> | Function;
+
+export type Middleware = { handler: MiddlewareHandler; route: string; beforeListen?: boolean };
