@@ -12,6 +12,43 @@ import { VendureEvent } from './vendure-event';
  * @description
  * The EventBus is used to globally publish events which can then be subscribed to.
  *
+ * Events are published whenever certain actions take place within the Vendure server, for example:
+ *
+ * * when a Product is updated ({@link ProductEvent})
+ * * when an Order transitions state ({@link OrderStateTransitionEvent})
+ * * when a Customer registers a new account ({@link AccountRegistrationEvent})
+ *
+ * Using the EventBus it is possible to subscribe to an take action when these events occur.
+ * This is done with the `.ofType()` method, which takes an event type and returns an rxjs observable
+ * stream of events:
+ *
+ * @example
+ * ```TypeScript
+ * import { OnApplicationBootstrap } from '\@nestjs/common';
+ * import { EventBus, PluginCommonModule, VendurePlugin } from '\@vendure/core';
+ * import { filter } from 'rxjs/operators';
+ *
+ * \@VendurePlugin({
+ *     imports: [PluginCommonModule]
+ * })
+ * export class MyPlugin implements OnApplicationBootstrap {
+ *
+ *   constructor(private eventBus: EventBus) {}
+ *
+ *   async onApplicationBootstrap() {
+ *
+ *     this.eventBus
+ *       .ofType(OrderStateTransitionEvent)
+ *       .pipe(
+ *         filter(event => event.toState === 'PaymentSettled'),
+ *       )
+ *       .subscribe((event) => {
+ *         // do some action when this event fires
+ *       });
+ *   }
+ * }
+ * ```
+ *
  * @docsCategory events
  * */
 @Injectable()
