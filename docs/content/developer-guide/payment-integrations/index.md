@@ -27,7 +27,7 @@ This two-step workflow can also be applied to other non-card forms of payment: e
 Payment integrations are created by defining a new [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and passing that handler into the [`paymentOptions.paymentMethodHandlers`]({{< relref "payment-options" >}}) array in the VendureConfig.
 
 ```TypeScript
-import { PaymentMethodHandler, VendureConfig, CreatePaymentResult, SettlePaymentResult } from '@vendure/core';
+import { PaymentMethodHandler, VendureConfig, CreatePaymentResult, SettlePaymentResult, SettlePaymentErrorResult } from '@vendure/core';
 import { sdk } from 'payment-provider-sdk';
 
 /**
@@ -80,7 +80,7 @@ const myPaymentIntegration = new PaymentMethodHandler({
   },
 
   /** This is called when the `settlePayment` mutation is executed */
-  settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
+  settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult | SettlePaymentErrorResult> => {
     try {
       const result = await sdk.charges.capture({ 
         apiKey: args.apiKey,
