@@ -9,7 +9,7 @@ import { SearchIndexItem } from '../search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
 import { fieldsToSelect } from './search-strategy-common';
-import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
+import { createCollectionIdCountMap, createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
 
 /**
  * A weighted fulltext search for PostgeSQL.
@@ -39,6 +39,28 @@ export class PostgresSearchStrategy implements SearchStrategy {
         }
         const facetValuesResult = await facetValuesQb.getRawMany();
         return createFacetIdCountMap(facetValuesResult);
+    }
+
+    async getCollectionIds(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<Map<ID, number>> {
+        const collectionsQb = this.connection
+            .getRepository(SearchIndexItem)
+            .createQueryBuilder('si')
+            .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
+            .addSelect(`string_agg("si"."collectionIds",',')`, 'collections');
+
+        this.applyTermAndFilters(ctx, collectionsQb, input, true);
+        if (!input.groupByProduct) {
+            collectionsQb.groupBy('"si"."productVariantId", "si"."productId"');
+        }
+        if (enabledOnly) {
+            collectionsQb.andWhere('"si"."enabled" = :enabled', { enabled: true });
+        }
+        const collectionsResult = await collectionsQb.getRawMany();
+        return createCollectionIdCountMap(collectionsResult);
     }
 
     async getSearchResults(
