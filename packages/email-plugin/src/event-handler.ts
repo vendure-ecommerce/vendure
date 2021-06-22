@@ -127,8 +127,13 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
     /**
      * @description
-     * Defines one or more files to be attached to the email. An attachment _must_ specify
-     * a `path` property which can be either a file system path _or_ a URL to the file.
+     * Defines one or more files to be attached to the email. An attachment can be specified
+     * as either a `path` (to a file or URL) or as `content` which can be a string, Buffer or Stream.
+     *
+     * **Note:** When using the `content` to pass a Buffer or Stream, the raw data will get serialized
+     * into the job queue. For this reason the total size of all attachments passed as `content` should kept to
+     * **less than ~50k**. If the attachments are greater than that limit, a warning will be logged and
+     * errors may result if using the DefaultJobQueuePlugin with certain DBs such as MySQL/MariaDB.
      *
      * @example
      * ```TypeScript

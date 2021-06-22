@@ -360,7 +360,7 @@ export type LoadDataFn<Event extends EventWithContext, R> = (context: {
     injector: Injector;
 }) => Promise<R>;
 
-export type OptionalTuNullable<O> = {
+export type OptionalToNullable<O> = {
     [K in keyof O]-?: undefined extends O[K] ? NonNullable<O[K]> | null : O[K];
 };
 
@@ -374,9 +374,11 @@ export type OptionalTuNullable<O> = {
  * @docsCategory EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type EmailAttachment = Omit<Attachment, 'content' | 'raw'> & { path: string };
+export type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string };
 
-export type SerializedAttachment = OptionalTuNullable<EmailAttachment>;
+export type SerializedAttachment = OptionalToNullable<
+    Omit<EmailAttachment, 'content'> & { content: string | null }
+>;
 
 export type IntermediateEmailDetails = {
     type: string;
