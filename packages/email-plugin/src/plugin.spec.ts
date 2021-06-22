@@ -781,6 +781,58 @@ describe('EmailPlugin', () => {
             expect(onSend).toHaveBeenCalledTimes(0);
         });
     });
+
+    describe('optional address fields', () => {
+        const ctx = RequestContext.deserialize({
+            _channel: { code: DEFAULT_CHANNEL_CODE },
+            _languageCode: LanguageCode.en,
+        } as any);
+
+        it('cc', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setOptionalAddressFields(() => ({ cc: 'foo@bar.com' }));
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].cc).toBe('foo@bar.com');
+        });
+
+        it('bcc', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setOptionalAddressFields(() => ({ bcc: 'foo@bar.com' }));
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].bcc).toBe('foo@bar.com');
+        });
+
+        it('replyTo', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setOptionalAddressFields(() => ({ replyTo: 'foo@bar.com' }));
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].replyTo).toBe('foo@bar.com');
+        });
+    });
 });
 
 class FakeCustomSender implements EmailSender {

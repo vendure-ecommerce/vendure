@@ -6,12 +6,14 @@ import { serializeAttachments } from './attachment-utils';
 import { loggerCtx } from './constants';
 import { EmailEventListener } from './event-listener';
 import {
+    EmailAttachment,
     EmailTemplateConfig,
     EventWithAsyncData,
     EventWithContext,
     IntermediateEmailDetails,
     LoadDataFn,
     SetAttachmentsFn,
+    SetOptionalAddressFieldsFn,
     SetTemplateVarsFn,
 } from './types';
 
@@ -58,10 +60,15 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     private setRecipientFn: (event: Event) => string;
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
+    private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
     private from: string;
+    private optionalAddressFields: {
+        cc?: string;
+        bcc?: string;
+    };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
 
     constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
@@ -89,6 +96,10 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     /**
      * @description
      * A function which defines how the recipient email address should be extracted from the incoming event.
+     *
+     * The recipient can be a plain email address: `'foobar@example.com'`
+     * Or with a formatted name (includes unicode support): `'Ноде Майлер <foobar@example.com>'`
+     * Or a comma-separated list of addresses: `'foobar@example.com, "Ноде Майлер" <bar@example.com>'`
      */
     setRecipient(setRecipientFn: (event: Event) => string): EmailEventHandler<T, Event> {
         this.setRecipientFn = setRecipientFn;
@@ -122,6 +133,14 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      */
     setFrom(from: string): EmailEventHandler<T, Event> {
         this.from = from;
+        return this;
+    }
+
+    /**
+     * A function which allows {@link OptionalAddressFields} to be specified such as "cc" and "bcc".
+     */
+    setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) {
+        this.setOptionalAddressFieldsFn = optionalAddressFieldsFn;
         return this;
     }
 
@@ -196,6 +215,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         asyncHandler.setRecipientFn = this.setRecipientFn;
         asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
         asyncHandler.setAttachmentsFn = this.setAttachmentsFn;
+        asyncHandler.setOptionalAddressFieldsFn = this.setOptionalAddressFieldsFn;
         asyncHandler.filterFns = this.filterFns;
         asyncHandler.configurations = this.configurations;
         asyncHandler.defaultSubject = this.defaultSubject;
@@ -258,7 +278,14 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         const recipient = this.setRecipientFn(event);
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
-        const attachments = await serializeAttachments((await this.setAttachmentsFn?.(event)) ?? []);
+        let attachmentsArray: EmailAttachment[] = [];
+        try {
+            attachmentsArray = (await this.setAttachmentsFn?.(event)) ?? [];
+        } catch (e) {
+            Logger.error(e, loggerCtx, e.stack);
+        }
+        const attachments = await serializeAttachments(attachmentsArray);
+        const optionalAddressFields = (await this.setOptionalAddressFieldsFn?.(event)) ?? {};
         return {
             type: this.type,
             recipient,
@@ -267,6 +294,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             subject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
             attachments,
+            ...optionalAddressFields,
         };
     }
 

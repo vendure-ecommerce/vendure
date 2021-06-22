@@ -258,6 +258,9 @@ export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unse
     subject: string;
     body: string;
     attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 }
 
 /**
@@ -345,7 +348,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
         subject: string,
         body: string,
         templateVars: { [key: string]: any },
-    ): Omit<EmailDetails, 'recipient' | 'attachments'>;
+    ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
 }
 
 /**
@@ -388,6 +391,9 @@ export type IntermediateEmailDetails = {
     subject: string;
     templateFile: string;
     attachments: SerializedAttachment[];
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 };
 
 /**
@@ -447,3 +453,39 @@ export type SetTemplateVarsFn<Event> = (
  * @docsPage Email Plugin Types
  */
 export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+
+/**
+ * @description
+ * Optional address-related fields for sending the email.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export interface OptionalAddressFields {
+    /**
+     * @description
+     * Comma separated list of recipients email addresses that will appear on the _Cc:_ field
+     */
+    cc?: string;
+    /**
+     * @description
+     * Comma separated list of recipients email addresses that will appear on the _Bcc:_ field
+     */
+    bcc?: string;
+    /**
+     * @description
+     * An email address that will appear on the _Reply-To:_ field
+     */
+    replyTo?: string;
+}
+
+/**
+ * @description
+ * A function used to set the {@link OptionalAddressFields}.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetOptionalAddressFieldsFn<Event> = (
+    event: Event,
+) => OptionalAddressFields | Promise<OptionalAddressFields>;
