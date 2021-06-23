@@ -49,8 +49,8 @@
     class="form"
     [formGroup]="detailForm"
     *ngIf="product$ | async as product"
-    (keydown.enter)="$event.preventDefault()"
 >
+    <button type="submit" hidden x-data="prevents enter key from triggering other buttons"></button>
     <clr-tabs>
         <clr-tab>
             <button clrTabLink (click)="navigateToTab('details')">
