@@ -273,4 +273,12 @@ mutation {
   }
 }
 ```
+#### UI for relation type
 
+The Admin UI app has built-in selection components for "relation" custom fields which reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will instead see the message:
+
+```text
+No input component configured for "<entity>" type
+```
+
+In this case, you will need to create a UI extension which defines a custom field control for that custom field. You can read more about this in the [CustomField Controls guide]({{< relref "custom-field-controls" >}})
