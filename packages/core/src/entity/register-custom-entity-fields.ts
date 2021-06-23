@@ -161,6 +161,14 @@ function getColumnType(
         case 'string':
         case 'localeString':
             return 'varchar';
+        case 'text':
+            switch (dbEngine) {
+                case 'mysql':
+                case 'mariadb':
+                    return 'longtext';
+                default:
+                    return 'text';
+            }
         case 'boolean':
             switch (dbEngine) {
                 case 'mysql':

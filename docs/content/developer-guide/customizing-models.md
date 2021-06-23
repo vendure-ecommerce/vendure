@@ -5,7 +5,7 @@ showtoc: true
  
 # Customizing Models with custom fields
 
-Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/docs/typescript-api/custom-fields" >}}#signature)
+Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/docs/typescript-api/custom-fields" >}})
 
 They are specified in the VendureConfig:
 
