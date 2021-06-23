@@ -213,6 +213,9 @@ const DECLARATIONS = [
     LocaleDatePipe,
     LocaleCurrencyPipe,
     TagSelectorComponent,
+    ManageTagsDialogComponent,
+    RelationSelectorDialogComponent,
+    RelationCardComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -238,13 +241,7 @@ const DYNAMIC_FORM_INPUTS = [
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [
-        ...DECLARATIONS,
-        ...DYNAMIC_FORM_INPUTS,
-        ManageTagsDialogComponent,
-        RelationSelectorDialogComponent,
-        RelationCardComponent,
-    ],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which
