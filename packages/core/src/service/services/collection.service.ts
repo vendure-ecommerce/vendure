@@ -87,16 +87,22 @@ export class CollectionService implements OnModuleInit {
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 let completed = 0;
                 for (const collectionId of job.data.collectionIds) {
-                    const collection = await this.connection.getRepository(Collection).findOne(collectionId);
-                    if (!collection) {
+                    let collection: Collection | undefined;
+                    try {
+                        collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {
+                            retries: 3,
+                        });
+                    } catch (err) {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
-                        continue;
                     }
-                    const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
-                    job.setProgress(Math.ceil((++completed / job.data.collectionIds.length) * 100));
-                    this.eventBus.publish(
-                        new CollectionModificationEvent(ctx, collection, affectedVariantIds),
-                    );
+                    completed++;
+                    if (collection) {
+                        const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
+                        job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
+                        this.eventBus.publish(
+                            new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                        );
+                    }
                 }
             },
         });
