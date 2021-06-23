@@ -376,9 +376,14 @@ export class CustomerService {
         if (isGraphQlErrorResult(result)) {
             return result;
         }
-        const customer = await this.findOneByUserId(ctx, result.id);
+        const customer = await this.findOneByUserId(ctx, result.id, false);
         if (!customer) {
             throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        if (ctx.channelId) {
+            await this.channelService.assignToChannels(ctx, Customer, customer.id, [
+                ctx.channelId,
+            ]);
         }
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
