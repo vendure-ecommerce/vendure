@@ -2,7 +2,14 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
-import { DefaultJobQueuePlugin, DefaultLogger, DefaultSearchPlugin, dummyPaymentHandler, LogLevel, VendureConfig, } from '@vendure/core';
+import {
+    DefaultJobQueuePlugin,
+    DefaultLogger,
+    DefaultSearchPlugin,
+    dummyPaymentHandler,
+    LogLevel,
+    VendureConfig,
+} from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
@@ -33,6 +40,9 @@ export const devConfig: VendureConfig = {
         tokenMethod: 'cookie',
         requireVerification: true,
         customPermissions: [],
+        cookieOptions: {
+            secret: 'abc',
+        },
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -44,7 +54,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
-    logger: new DefaultLogger({level: LogLevel.Info}),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
