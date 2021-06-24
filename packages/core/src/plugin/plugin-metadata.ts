@@ -19,7 +19,10 @@ export function getEntitiesFromPlugins(plugins?: Array<Type<any> | DynamicModule
     }
     return plugins
         .map(p => reflectMetadata(p, PLUGIN_METADATA.ENTITIES))
-        .reduce((all, entities) => [...all, ...(entities || [])], []);
+        .reduce((all, entities) => {
+            const resolvedEntities = typeof entities === 'function' ? entities() : entities ?? [];
+            return [...all, ...resolvedEntities];
+        }, []);
 }
 
 export function getModuleMetadata(module: Type<any>) {

@@ -1312,6 +1312,46 @@ describe('Shop orders', () => {
                     }, `You are not currently authorized to perform this action`),
                 );
             });
+
+            describe('3 hours after the Order has been placed', () => {
+                let dateNowMock: any;
+                beforeAll(() => {
+                    // mock Date.now: add 3 hours
+                    const nowIn3H = Date.now() + 3 * 3600 * 1000;
+                    dateNowMock = jest.spyOn(global.Date, 'now').mockImplementation(() => nowIn3H);
+                });
+
+                it('still works when authenticated as owner', async () => {
+                    authenticatedUserEmailAddress = customers[0].emailAddress;
+                    await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
+                    const result = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
+                        GET_ORDER_BY_CODE,
+                        {
+                            code: activeOrder.code,
+                        },
+                    );
+
+                    expect(result.orderByCode!.id).toBe(activeOrder.id);
+                });
+
+                it(
+                    'access denied when anonymous',
+                    assertThrowsWithMessage(async () => {
+                        await shopClient.asAnonymousUser();
+                        await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
+                            GET_ORDER_BY_CODE,
+                            {
+                                code: activeOrder.code,
+                            },
+                        );
+                    }, `You are not currently authorized to perform this action`),
+                );
+
+                afterAll(() => {
+                    // restore Date.now
+                    dateNowMock.mockRestore();
+                });
+            });
         });
     });
 

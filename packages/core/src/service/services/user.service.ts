@@ -19,7 +19,7 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
-import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -31,7 +31,7 @@ export class UserService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private roleService: RoleService,
-        private passwordCipher: PasswordCiper,
+        private passwordCipher: PasswordCipher,
         private verificationTokenGenerator: VerificationTokenGenerator,
     ) {}
 

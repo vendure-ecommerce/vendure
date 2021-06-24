@@ -82,6 +82,7 @@ export type ID = string | number;
  * -----        |---------                              |---------------
  * string       | varchar                               | String
  * localeString | varchar                               | String
+ * text         | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
@@ -100,7 +101,8 @@ export type CustomFieldType =
     | 'float'
     | 'boolean'
     | 'datetime'
-    | 'relation';
+    | 'relation'
+    | 'text';
 
 /**
  * @description
@@ -133,6 +135,7 @@ export type DefaultFormComponentId =
     | 'product-selector-form-input'
     | 'customer-group-form-input'
     | 'text-form-input'
+    | 'textarea-form-input'
     | 'password-form-input'
     | 'relation-form-input';
 
@@ -154,6 +157,9 @@ type DefaultFormConfigHash = {
     'product-selector-form-input': {};
     'customer-group-form-input': {};
     'text-form-input': {};
+    'textarea-form-input': {
+        spellcheck?: boolean;
+    };
     'password-form-input': {};
     'relation-form-input': {};
 };

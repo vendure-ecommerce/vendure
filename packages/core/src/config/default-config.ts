@@ -22,6 +22,7 @@ import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
+import { DefaultOrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
@@ -120,6 +121,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         process: [],
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
+        orderByCodeAccessStrategy: new DefaultOrderByCodeAccessStrategy('2h'),
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
     },

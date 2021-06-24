@@ -1,4 +1,20 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <form class="search-form" [formGroup]="searchForm">
+            <input
+                type="text"
+                formControlName="name"
+                [placeholder]="'marketing.search-by-name' | translate"
+                class="search-input"
+            />
+            <input
+                type="text"
+                formControlName="couponCode"
+                [placeholder]="'marketing.search-by-coupon-code' | translate"
+                class="search-input"
+            />
+        </form>
+    </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="promotion-list"></vdr-action-bar-items>
         <a class="btn btn-primary"

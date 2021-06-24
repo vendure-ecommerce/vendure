@@ -63,6 +63,7 @@ function getDefaultValue(type: CustomFieldType): any {
     switch (type) {
         case 'localeString':
         case 'string':
+        case 'text':
             return '';
         case 'boolean':
             return false;

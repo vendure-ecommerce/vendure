@@ -17,6 +17,8 @@ import { Release } from '../../entity/stock-movement/release.entity';
 import { Sale } from '../../entity/stock-movement/sale.entity';
 import { StockAdjustment } from '../../entity/stock-movement/stock-adjustment.entity';
 import { StockMovement } from '../../entity/stock-movement/stock-movement.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { StockMovementEvent } from '../../event-bus/events/stock-movement-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -32,6 +34,7 @@ export class StockMovementService {
         private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
         private globalSettingsService: GlobalSettingsService,
+        private eventBus: EventBus,
     ) {}
 
     getStockMovementsByProductVariantId(
@@ -63,11 +66,14 @@ export class StockMovementService {
         }
         const delta = newStockLevel - oldStockLevel;
 
-        const adjustment = new StockAdjustment({
-            quantity: delta,
-            productVariant: { id: productVariantId },
-        });
-        return this.connection.getRepository(ctx, StockAdjustment).save(adjustment);
+        const adjustment = await this.connection.getRepository(ctx, StockAdjustment).save(
+            new StockAdjustment({
+                quantity: delta,
+                productVariant: { id: productVariantId },
+            }),
+        );
+        this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
+        return adjustment;
     }
 
     async createAllocationsForOrder(ctx: RequestContext, order: Order): Promise<Allocation[]> {
@@ -92,7 +98,11 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Allocation).save(allocations);
+        const savedAllocations = await this.connection.getRepository(ctx, Allocation).save(allocations);
+        if (savedAllocations.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedAllocations));
+        }
+        return savedAllocations;
     }
 
     async createSalesForOrder(ctx: RequestContext, orderItems: OrderItem[]): Promise<Sale[]> {
@@ -131,7 +141,11 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Sale).save(sales);
+        const savedSales = await this.connection.getRepository(ctx, Sale).save(sales);
+        if (savedSales.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedSales));
+        }
+        return savedSales;
     }
 
     async createCancellationsForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Cancellation[]> {
@@ -168,7 +182,11 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Cancellation).save(cancellations);
+        const savedCancellations = await this.connection.getRepository(ctx, Cancellation).save(cancellations);
+        if (savedCancellations.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedCancellations));
+        }
+        return savedCancellations;
     }
 
     async createReleasesForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Release[]> {
@@ -205,7 +223,11 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Release).save(releases);
+        const savedReleases = await this.connection.getRepository(ctx, Release).save(releases);
+        if (savedReleases.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedReleases));
+        }
+        return savedReleases;
     }
 
     private trackInventoryForVariant(variant: ProductVariant, globalTrackInventory: boolean): boolean {
