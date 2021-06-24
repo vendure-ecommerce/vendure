@@ -30,6 +30,7 @@ import {
     LanguageCode,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    SearchCollections,
     SearchFacetValues,
     SearchGetPrices,
     SearchInput,
@@ -84,7 +85,7 @@ import {
 import {
     GetJobInfo,
     JobState,
-    Reindex, SearchCollections,
+    Reindex,
     SearchProductsAdmin,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 

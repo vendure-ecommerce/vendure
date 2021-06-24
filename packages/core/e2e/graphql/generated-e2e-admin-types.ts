@@ -5138,6 +5138,19 @@ export type SearchFacetValuesQuery = { search: (
     )> }
   ) };
 
+export type SearchCollectionsQueryVariables = Exact<{
+  input: SearchInput;
+}>;
+
+
+export type SearchCollectionsQuery = { search: (
+    Pick<SearchResponse, 'totalItems'>
+    & { collections: Array<(
+      Pick<CollectionResult, 'count'>
+      & { collection: Pick<Collection, 'id' | 'name'> }
+    )> }
+  ) };
+
 export type SearchGetAssetsQueryVariables = Exact<{
   input: SearchInput;
 }>;
@@ -7046,6 +7059,14 @@ export namespace SearchFacetValues {
   export type Search = (NonNullable<SearchFacetValuesQuery['search']>);
   export type FacetValues = NonNullable<(NonNullable<(NonNullable<SearchFacetValuesQuery['search']>)['facetValues']>)[number]>;
   export type FacetValue = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchFacetValuesQuery['search']>)['facetValues']>)[number]>['facetValue']>);
+}
+
+export namespace SearchCollections {
+  export type Variables = SearchCollectionsQueryVariables;
+  export type Query = SearchCollectionsQuery;
+  export type Search = (NonNullable<SearchCollectionsQuery['search']>);
+  export type Collections = NonNullable<(NonNullable<(NonNullable<SearchCollectionsQuery['search']>)['collections']>)[number]>;
+  export type Collection = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchCollectionsQuery['search']>)['collections']>)[number]>['collection']>);
 }
 
 export namespace SearchGetAssets {
