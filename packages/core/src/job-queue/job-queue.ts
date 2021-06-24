@@ -91,7 +91,12 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             queueName: this.options.name,
             retries: options?.retries ?? 0,
         });
-        const addedJob = await this.jobQueueStrategy.add(job);
-        return new SubscribableJob(addedJob, this.jobQueueStrategy);
+        try {
+            const addedJob = await this.jobQueueStrategy.add(job);
+            return new SubscribableJob(addedJob, this.jobQueueStrategy);
+        } catch (err) {
+            Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
+            return new SubscribableJob(job, this.jobQueueStrategy);
+        }
     }
 }

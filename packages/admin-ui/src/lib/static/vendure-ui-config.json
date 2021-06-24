@@ -5,7 +5,7 @@
   "tokenMethod": "bearer",
   "authTokenHeaderKey": "vendure-auth-token",
   "defaultLanguage": "en",
-  "availableLanguages": ["en", "es", "zh_Hant", "zh_Hans", "pl", "de", "pt_BR", "cs", "fr", "ru"],
+  "availableLanguages": ["en", "es", "zh_Hant", "zh_Hans", "pl", "de", "pt_BR", "cs", "fr", "ru", "uk"],
   "brand": "",
   "hideVendureBranding": false,
   "hideVersion": false

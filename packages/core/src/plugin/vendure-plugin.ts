@@ -42,7 +42,7 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * @description
      * The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
      */
-    entities?: Array<Type<any>>;
+    entities?: Array<Type<any>> | (() => Array<Type<any>>);
 }
 /**
  * @description

@@ -20,9 +20,15 @@ export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleStrin
 
 // prettier-ignore
 /**
+ * @description
  * Entities which have localizable string properties should implement this type.
+ *
+ * @docsCategory entities
+ * @docsPage interfaces
  */
-export interface Translatable { translations: Array<Translation<VendureEntity>>; }
+export interface Translatable {
+    translations: Array<Translation<VendureEntity>>;
+}
 
 export type TranslationCustomFields<T> = { [K in keyof T]: K extends 'customFields' ? K : never }[keyof T];
 
@@ -31,7 +37,7 @@ export type TranslationCustomFields<T> = { [K in keyof T]: K extends 'customFiel
  * Translations of localizable entities should implement this type.
  */
 export type Translation<T> =
-    // Translation must include the languageCode and a reference to the base Translatable entity it is associated with
+// Translation must include the languageCode and a reference to the base Translatable entity it is associated with
     {
         id: ID;
         languageCode: LanguageCode;
@@ -61,6 +67,6 @@ export interface TranslatedInput<T> {
 /**
  * This is the type of a Translatable entity after it has been deep-translated into a given language.
  */
-export type Translated<T> =  T & { languageCode: LanguageCode; } & {
+export type Translated<T> = T & { languageCode: LanguageCode; } & {
     [K in TranslatableRelationsKeys<T>]: T[K] extends any[] ? Array<Translated<UnwrappedArray<T[K]>>> : Translated<T[K]>;
 };

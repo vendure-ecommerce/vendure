@@ -77,6 +77,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             orderItemPriceCalculationStrategy,
             process,
             orderCodeStrategy,
+            orderByCodeAccessStrategy,
             stockAllocationStrategy,
         } = this.configService.orderOptions;
         const { customFulfillmentProcess } = this.configService.shippingOptions;
@@ -94,6 +95,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             mergeStrategy,
             checkoutMergeStrategy,
             orderCodeStrategy,
+            orderByCodeAccessStrategy,
             entityIdStrategy,
             productVariantPriceCalculationStrategy,
             orderItemPriceCalculationStrategy,

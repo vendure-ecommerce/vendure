@@ -5,7 +5,7 @@ showtoc: true
  
 # Customizing Models with custom fields
 
-Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/docs/typescript-api/custom-fields" >}}#signature)
+Custom fields allow you to add your own custom data properties to many of the Vendure entities. The entities which may have custom fields defined are listed in the [CustomFields documentation]({{< relref "/docs/typescript-api/custom-fields" >}})
 
 They are specified in the VendureConfig:
 
@@ -273,4 +273,12 @@ mutation {
   }
 }
 ```
+#### UI for relation type
 
+The Admin UI app has built-in selection components for "relation" custom fields which reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will instead see the message:
+
+```text
+No input component configured for "<entity>" type
+```
+
+In this case, you will need to create a UI extension which defines a custom field control for that custom field. You can read more about this in the [CustomField Controls guide]({{< relref "custom-field-controls" >}})

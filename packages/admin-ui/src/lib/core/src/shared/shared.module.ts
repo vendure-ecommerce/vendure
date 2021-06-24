@@ -103,6 +103,7 @@ import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-
 import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
+import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
@@ -213,6 +214,9 @@ const DECLARATIONS = [
     LocaleDatePipe,
     LocaleCurrencyPipe,
     TagSelectorComponent,
+    ManageTagsDialogComponent,
+    RelationSelectorDialogComponent,
+    RelationCardComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -233,18 +237,13 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardPreviewDirective,
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
+    TextareaFormInputComponent,
 ];
 
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [
-        ...DECLARATIONS,
-        ...DYNAMIC_FORM_INPUTS,
-        ManageTagsDialogComponent,
-        RelationSelectorDialogComponent,
-        RelationCardComponent,
-    ],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which

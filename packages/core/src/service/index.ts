@@ -8,6 +8,7 @@ export * from './helpers/order-calculator/order-calculator';
 export * from './helpers/order-merger/order-merger';
 export * from './helpers/order-modifier/order-modifier';
 export * from './helpers/order-state-machine/order-state';
+export * from './helpers/password-cipher/password-cipher';
 export * from './helpers/fulfillment-state-machine/fulfillment-state';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './services/administrator.service';

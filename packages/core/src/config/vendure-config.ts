@@ -6,6 +6,7 @@ import { RequestHandler } from 'express';
 import { ValidationContext } from 'graphql';
 import { ConnectionOptions } from 'typeorm';
 
+import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -23,6 +24,7 @@ import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
 import { CustomOrderProcess } from './order/custom-order-process';
+import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
@@ -162,7 +164,7 @@ export interface ApiOptions {
      * @default []
      */
     // tslint:disable-next-line:ban-types
-    middleware?: Array<{ handler: Type<any> | Function; route: string }>;
+    middleware?: Middleware[];
     /**
      * @description
      * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
@@ -471,6 +473,16 @@ export interface OrderOptions {
      * @default DefaultOrderCodeStrategy
      */
     orderCodeStrategy?: OrderCodeStrategy;
+    /**
+     * @description
+     * Defines the strategy used to check if and how an Order may be retrieved via the orderByCode query.
+     *
+     * The default strategy permitts permanent access to the Customer owning the Order and anyone
+     * within 2 hours after placing the Order.
+     *
+     * @default DefaultOrderByCodeAccessStrategy
+     */
+    orderByCodeAccessStrategy?: OrderByCodeAccessStrategy;
     /**
      * @description
      * Defines how we handle the situation where an OrderItem exists in an Order, and

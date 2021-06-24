@@ -47,6 +47,7 @@ export async function validateCustomFieldValue(
             break;
         case 'boolean':
         case 'relation':
+        case 'text':
             break;
         default:
             assertNever(config);

@@ -9,6 +9,7 @@ import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { TemplateLoader } from './template-loader';
 import {
+    EmailDetails,
     EmailGenerator,
     EmailPluginOptions,
     EmailSender,
@@ -70,10 +71,13 @@ export class EmailProcessor {
                 bodySource,
                 data.templateVars,
             );
-            const emailDetails = {
+            const emailDetails: EmailDetails = {
                 ...generated,
                 recipient: data.recipient,
                 attachments: deserializeAttachments(data.attachments),
+                cc: data.cc,
+                bcc: data.bcc,
+                replyTo: data.replyTo,
             };
             await this.emailSender.send(emailDetails, this.transport);
             return true;

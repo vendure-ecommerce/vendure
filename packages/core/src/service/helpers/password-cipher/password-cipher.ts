@@ -7,7 +7,7 @@ const SALT_ROUNDS = 12;
  * A cipher which uses bcrypt (https://en.wikipedia.org/wiki/Bcrypt) to hash plaintext password strings.
  */
 @Injectable()
-export class PasswordCiper {
+export class PasswordCipher {
     hash(plaintext: string): Promise<string> {
         return bcrypt.hash(plaintext, SALT_ROUNDS);
     }

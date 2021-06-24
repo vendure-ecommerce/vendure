@@ -20,7 +20,7 @@ import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
 import { OrderModifier } from './helpers/order-modifier/order-modifier';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
-import { PasswordCiper } from './helpers/password-cipher/password-ciper';
+import { PasswordCipher } from './helpers/password-cipher/password-cipher';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
@@ -99,7 +99,7 @@ const services = [
 
 const helpers = [
     TranslatableSaver,
-    PasswordCiper,
+    PasswordCipher,
     OrderCalculator,
     OrderStateMachine,
     FulfillmentStateMachine,

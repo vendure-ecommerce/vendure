@@ -8,6 +8,7 @@ import {
     LocalizedString,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
+    TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
 
@@ -73,6 +74,7 @@ export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<
     'localeString',
     GraphQLLocaleStringCustomFieldConfig
 >;
+export type TextCustomFieldConfig = TypedCustomFieldConfig<'text', GraphQLTextCustomFieldConfig>;
 export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCustomFieldConfig>;
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
@@ -91,6 +93,7 @@ export type RelationCustomFieldConfig = TypedCustomFieldConfig<
 export type CustomFieldConfig =
     | StringCustomFieldConfig
     | LocaleStringCustomFieldConfig
+    | TextCustomFieldConfig
     | IntCustomFieldConfig
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig

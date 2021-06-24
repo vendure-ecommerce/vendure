@@ -13,7 +13,10 @@ import {
     VendureEvent,
 } from '@vendure/core';
 import { TestingLogger } from '@vendure/testing';
+import { createReadStream, readFileSync } from 'fs';
+import { readFile } from 'fs-extra';
 import path from 'path';
+import { Readable } from 'stream';
 
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailEventHandler } from './event-handler';
@@ -504,6 +507,132 @@ describe('EmailPlugin', () => {
 
             expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
         });
+
+        it('attachment content as a string buffer', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        content: Buffer.from('hello'),
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            const attachment = onSend.mock.calls[0][0].attachments[0].content;
+            expect(Buffer.compare(attachment, Buffer.from('hello'))).toBe(0); // 0 = buffers are equal
+        });
+
+        it('attachment content as an image buffer', async () => {
+            const imageFileBuffer = readFileSync(TEST_IMAGE_PATH);
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        content: imageFileBuffer,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            const attachment = onSend.mock.calls[0][0].attachments[0].content;
+            expect(Buffer.compare(attachment, imageFileBuffer)).toBe(0); // 0 = buffers are equal
+        });
+
+        it('attachment content as a string', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        content: 'hello',
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            const attachment = onSend.mock.calls[0][0].attachments[0].content;
+            expect(attachment).toBe('hello');
+        });
+
+        it('attachment content as a string stream', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        content: Readable.from(['hello']),
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            const attachment = onSend.mock.calls[0][0].attachments[0].content;
+            expect(Buffer.compare(attachment, Buffer.from('hello'))).toBe(0); // 0 = buffers are equal
+        });
+
+        it('attachment content as an image stream', async () => {
+            const imageFileBuffer = readFileSync(TEST_IMAGE_PATH);
+            const imageFileStream = createReadStream(TEST_IMAGE_PATH);
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        content: imageFileStream,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            const attachment = onSend.mock.calls[0][0].attachments[0].content;
+            expect(Buffer.compare(attachment, imageFileBuffer)).toBe(0); // 0 = buffers are equal
+        });
+
+        it('raises a warning for large content attachments', async () => {
+            testingLogger.warnSpy.mockClear();
+            const largeBuffer = Buffer.from(Array.from({ length: 65535, 0: 0 }));
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        content: largeBuffer,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(testingLogger.warnSpy.mock.calls[0][0]).toContain(
+                `Email has a large 'content' attachment (64k). Consider using the 'path' instead for improved performance.`,
+            );
+        });
     });
 
     describe('orderConfirmationHandler', () => {
@@ -650,6 +779,58 @@ describe('EmailPlugin', () => {
             expect(send.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(send.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
             expect(onSend).toHaveBeenCalledTimes(0);
+        });
+    });
+
+    describe('optional address fields', () => {
+        const ctx = RequestContext.deserialize({
+            _channel: { code: DEFAULT_CHANNEL_CODE },
+            _languageCode: LanguageCode.en,
+        } as any);
+
+        it('cc', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setOptionalAddressFields(() => ({ cc: 'foo@bar.com' }));
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].cc).toBe('foo@bar.com');
+        });
+
+        it('bcc', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setOptionalAddressFields(() => ({ bcc: 'foo@bar.com' }));
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].bcc).toBe('foo@bar.com');
+        });
+
+        it('replyTo', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setOptionalAddressFields(() => ({ replyTo: 'foo@bar.com' }));
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].replyTo).toBe('foo@bar.com');
         });
     });
 });
