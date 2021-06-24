@@ -6,7 +6,7 @@ import {
     SearchResponse,
 } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Allow, Ctx, Collection, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
+import { Allow, Collection, Ctx, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
 
 import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticSearchInput, SearchPriceData } from './types';
@@ -76,8 +76,8 @@ export class EntityElasticSearchResolver implements Pick<SearchResolver, 'facetV
     async collections(
         @Ctx() ctx: RequestContext,
         @Parent() parent: Omit<SearchResponse, 'facetValues' | 'collections'>,
-    ): Promise<Array<{ collections: Collection; count: number }>> {
-        const collections = await this.elasticsearchService.facetValues(ctx, (parent as any).input, true);
-        return collections.filter(i => !i.facetValue.facet.isPrivate);
+    ): Promise<Array<{ collection: Collection; count: number }>> {
+        const collections = await this.elasticsearchService.collections(ctx, (parent as any).input, true);
+        return collections.filter(i => !i.collection.isPrivate);
     }
 }
