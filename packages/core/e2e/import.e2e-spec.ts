@@ -21,6 +21,13 @@ describe('Import resolver', () => {
                     entity: User,
                     eager: true,
                 },
+                {
+                    name: 'keywords',
+                    public: true,
+                    nullable: true,
+                    type: 'string',
+                    list: true,
+                },
             ],
             ProductVariant: [{ type: 'int', name: 'weight' }],
         },
@@ -69,7 +76,7 @@ describe('Import resolver', () => {
         });
 
         expect(result.importProducts.errors).toEqual([
-            'Invalid Record Length: header length is 17, got 1 on line 8',
+            'Invalid Record Length: header length is 18, got 1 on line 8',
         ]);
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
@@ -114,6 +121,7 @@ describe('Import resolver', () => {
                                 owner {
                                     id
                                 }
+                                keywords
                             }
                             variants {
                                 id
@@ -216,9 +224,16 @@ describe('Import resolver', () => {
         expect(smock.variants[2].options.map(byCode).sort()).toEqual(['navy', 'small']);
         expect(smock.variants[3].options.map(byCode).sort()).toEqual(['large', 'navy']);
 
+        // Import relation custom fields
         expect(paperStretcher.customFields.owner.id).toBe('T_1');
         expect(easel.customFields.owner.id).toBe('T_1');
         expect(pencils.customFields.owner.id).toBe('T_1');
         expect(smock.customFields.owner.id).toBe('T_1');
+
+        // Import list custom fields
+        expect(paperStretcher.customFields.keywords).toEqual(['paper', 'stretching', 'watercolor']);
+        expect(easel.customFields.keywords).toEqual([]);
+        expect(pencils.customFields.keywords).toEqual([]);
+        expect(smock.customFields.keywords).toEqual(['apron', 'clothing']);
     }, 20000);
 });

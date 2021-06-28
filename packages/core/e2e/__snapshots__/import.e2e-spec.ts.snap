@@ -17,6 +17,11 @@ Object {
     },
   ],
   "customFields": Object {
+    "keywords": Array [
+      "paper",
+      "stretching",
+      "watercolor",
+    ],
     "owner": Object {
       "id": "T_1",
     },
@@ -114,6 +119,7 @@ exports[`Import resolver imports products 2`] = `
 Object {
   "assets": Array [],
   "customFields": Object {
+    "keywords": Array [],
     "owner": Object {
       "id": "T_1",
     },
@@ -160,6 +166,7 @@ exports[`Import resolver imports products 3`] = `
 Object {
   "assets": Array [],
   "customFields": Object {
+    "keywords": Array [],
     "owner": Object {
       "id": "T_1",
     },
@@ -250,6 +257,10 @@ exports[`Import resolver imports products 4`] = `
 Object {
   "assets": Array [],
   "customFields": Object {
+    "keywords": Array [
+      "apron",
+      "clothing",
+    ],
     "owner": Object {
       "id": "T_1",
     },

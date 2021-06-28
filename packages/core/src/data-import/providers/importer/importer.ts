@@ -8,6 +8,7 @@ import { Stream } from 'stream';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
+import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../../entity/facet/facet.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
@@ -160,7 +161,10 @@ export class Importer {
                         slug: product.slug,
                     },
                 ],
-                customFields: product.customFields,
+                customFields: this.processCustomFieldValues(
+                    product.customFields,
+                    this.configService.customFields.Product,
+                ),
             });
 
             const optionsMap: { [optionName: string]: ID } = {};
@@ -219,7 +223,10 @@ export class Importer {
                         },
                     ],
                     price: Math.round(variant.price * 100),
-                    customFields: variant.customFields,
+                    customFields: this.processCustomFieldValues(
+                        variant.customFields,
+                        this.configService.customFields.ProductVariant,
+                    ),
                 });
             }
             imported++;
@@ -293,6 +300,16 @@ export class Importer {
         }
 
         return facetValueIds;
+    }
+
+    private processCustomFieldValues(customFields: { [field: string]: string }, config: CustomFieldConfig[]) {
+        const processed: { [field: string]: string | string[] } = {};
+        for (const fieldDef of config) {
+            const value = customFields[fieldDef.name];
+            processed[fieldDef.name] =
+                fieldDef.list === true ? value.split('|').filter(val => val.trim() !== '') : value;
+        }
+        return processed;
     }
 
     /**
