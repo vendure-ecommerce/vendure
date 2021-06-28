@@ -21,6 +21,7 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
+import { FacetValue } from '../../entity';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -42,7 +43,6 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
-import { FacetValue } from '../../entity';
 
 type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };
 
@@ -91,7 +91,8 @@ export class CollectionService implements OnModuleInit {
                     let collection: Collection | undefined;
                     try {
                         collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {
-                            retries: 3,
+                            retries: 5,
+                            retryDelay: 50,
                         });
                     } catch (err) {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
