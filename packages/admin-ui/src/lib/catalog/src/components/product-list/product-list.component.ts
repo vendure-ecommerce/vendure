@@ -6,14 +6,26 @@ import {
     DataService,
     JobQueueService,
     JobState,
+    LanguageCode,
     LogicalOperator,
     ModalService,
     NotificationService,
     SearchInput,
     SearchProducts,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { EMPTY, Observable } from 'rxjs';
-import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { EMPTY, Observable, of } from 'rxjs';
+import {
+    delay,
+    distinctUntilChanged,
+    map,
+    shareReplay,
+    switchMap,
+    take,
+    takeUntil,
+    tap,
+    withLatestFrom,
+} from 'rxjs/operators';
 
 import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
@@ -29,6 +41,8 @@ export class ProductListComponent
     facetValueIds: string[] = [];
     groupByProduct = true;
     facetValues$: Observable<SearchProducts.FacetValues[]>;
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
     @ViewChild('productSearchInputComponent', { static: true })
     private productSearchInput: ProductSearchInputComponent;
     constructor(
@@ -36,6 +50,7 @@ export class ProductListComponent
         private modalService: ModalService,
         private notificationService: NotificationService,
         private jobQueueService: JobQueueService,
+        private serverConfigService: ServerConfigService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -80,6 +95,11 @@ export class ProductListComponent
         this.facetValues$.pipe(take(1), delay(100), withLatestFrom(fvids$)).subscribe(([__, ids]) => {
             this.productSearchInput.setFacetValues(ids);
         });
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage)
+            .pipe(tap(() => this.refresh()));
     }
 
     setSearchTerm(term: string) {
@@ -140,5 +160,9 @@ export class ProductListComponent
                     });
                 },
             );
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 }

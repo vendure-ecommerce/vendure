@@ -1,19 +1,20 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseListComponent } from '@vendure/admin-ui/core';
 import {
+    BaseListComponent,
+    DataService,
     GetActiveChannel,
     GetShippingMethodList,
+    LanguageCode,
+    ModalService,
+    NotificationService,
+    ServerConfigService,
     ShippingMethodQuote,
     TestEligibleShippingMethodsInput,
-    TestShippingMethodInput,
 } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { EMPTY, Observable, Subject } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 
 import { TestAddress } from '../test-address-form/test-address-form.component';
 import { TestOrderLine } from '../test-order-builder/test-order-builder.component';
@@ -32,12 +33,15 @@ export class ShippingMethodListComponent
     testOrderLines: TestOrderLine[];
     testDataUpdated = false;
     testResult$: Observable<ShippingMethodQuote[] | undefined>;
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
     private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
 
     constructor(
         private modalService: ModalService,
         private notificationService: NotificationService,
         private dataService: DataService,
+        private serverConfigService: ServerConfigService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -65,6 +69,11 @@ export class ShippingMethodListComponent
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
             .mapStream(data => data.activeChannel);
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage)
+            .pipe(tap(() => this.refresh()));
     }
 
     deleteShippingMethod(id: string) {
@@ -113,5 +122,9 @@ export class ShippingMethodListComponent
     runTest() {
         this.fetchTestResult$.next([this.testAddress, this.testOrderLines]);
         this.testDataUpdated = false;
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 }

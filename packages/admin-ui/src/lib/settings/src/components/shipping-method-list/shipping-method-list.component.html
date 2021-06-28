@@ -1,7 +1,18 @@
 <vdr-action-bar>
+    <vdr-ab-left>
+        <vdr-language-selector
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="contentLanguage$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
+    </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="shipping-method-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateShippingMethod']">
+        <a
+            class="btn btn-primary"
+            [routerLink]="['./create']"
+            *vdrIfPermissions="['CreateSettings', 'CreateShippingMethod']"
+        >
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-shipping-method' | translate }}
         </a>

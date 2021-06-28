@@ -10,6 +10,7 @@ type Mutation {
     setAsLoggedIn(input: UserStatusInput!): UserStatus!
     setAsLoggedOut: UserStatus!
     setUiLanguage(languageCode: LanguageCode!): LanguageCode!
+    setContentLanguage(languageCode: LanguageCode!): LanguageCode!
     setUiTheme(theme: String!): String!
     setActiveChannel(channelId: ID!): UserStatus!
     updateUserChannels(channels: [CurrentUserChannelInput!]!): UserStatus!
@@ -30,6 +31,7 @@ type UserStatus {
 
 type UiState {
     language: LanguageCode!
+    contentLanguage: LanguageCode!
     theme: String!
 }
 

@@ -1,26 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseListComponent } from '@vendure/admin-ui/core';
+import { BaseListComponent, LanguageCode, ServerConfigService } from '@vendure/admin-ui/core';
 import { DeletionResult, GetFacetList } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { EMPTY, Observable } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-facet-list',
     templateUrl: './facet-list.component.html',
     styleUrls: ['./facet-list.component.scss'],
 })
-export class FacetListComponent extends BaseListComponent<GetFacetList.Query, GetFacetList.Items> {
+export class FacetListComponent
+    extends BaseListComponent<GetFacetList.Query, GetFacetList.Items>
+    implements OnInit {
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
         private notificationService: NotificationService,
+        private serverConfigService: ServerConfigService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -29,6 +34,15 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
             (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
             data => data.facets,
         );
+    }
+
+    ngOnInit() {
+        super.ngOnInit();
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage)
+            .pipe(tap(() => this.refresh()));
     }
 
     toggleDisplayLimit(facet: GetFacetList.Items) {
@@ -67,6 +81,10 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                     });
                 },
             );
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 
     private showModalAndDelete(facetId: string, message?: string) {

@@ -11,6 +11,14 @@ $space-4: $space-unit * 3;
     display: flex;
 }
 
+.flex.center {
+    align-items: center;
+}
+
+.flex.wrap {
+    flex-wrap: wrap;
+}
+
 .flex-spacer {
     flex: 1;
 }

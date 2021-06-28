@@ -52,6 +52,12 @@ export const SET_UI_LANGUAGE = gql`
     }
 `;
 
+export const SET_CONTENT_LANGUAGE = gql`
+    mutation SetContentLanguage($languageCode: LanguageCode!) {
+        setContentLanguage(languageCode: $languageCode) @client
+    }
+`;
+
 export const SET_UI_THEME = gql`
     mutation SetUiTheme($theme: String!) {
         setUiTheme(theme: $theme) @client
@@ -79,6 +85,7 @@ export const GET_UI_STATE = gql`
     query GetUiState {
         uiState @client {
             language
+            contentLanguage
             theme
         }
     }
@@ -94,6 +101,7 @@ export const GET_CLIENT_STATE = gql`
         }
         uiState @client {
             language
+            contentLanguage
             theme
         }
     }

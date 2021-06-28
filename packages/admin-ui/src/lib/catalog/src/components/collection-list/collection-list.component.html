@@ -1,13 +1,28 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <clr-checkbox-wrapper class="expand-all-toggle ml3">
-            <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" />
-            <label>{{ 'catalog.expand-all-collections' | translate }}</label>
-        </clr-checkbox-wrapper>
+        <div class="flex center wrap">
+            <vdr-language-selector
+                class="mt2"
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+            <clr-checkbox-wrapper
+                class="expand-all-toggle ml3"
+                [ngClass]="(availableLanguages$ | async)?.length === 1 ? 'mt3' : 'mt1'"
+            >
+                <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" />
+                <label>{{ 'catalog.expand-all-collections' | translate }}</label>
+            </clr-checkbox-wrapper>
+        </div>
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="collection-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" *vdrIfPermissions="['CreateCatalog', 'CreateCollection']" [routerLink]="['./create']">
+        <a
+            class="btn btn-primary"
+            *vdrIfPermissions="['CreateCatalog', 'CreateCollection']"
+            [routerLink]="['./create']"
+        >
             <clr-icon shape="plus"></clr-icon>
             {{ 'catalog.create-new-collection' | translate }}
         </a>

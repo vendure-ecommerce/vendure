@@ -23,10 +23,17 @@
                 </vdr-dropdown-menu>
             </vdr-dropdown>
         </div>
-        <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" />
-            <label>{{ 'catalog.group-by-product' | translate }}</label>
-        </clr-checkbox-wrapper>
+        <div class="flex wrap">
+            <clr-checkbox-wrapper class="mt2">
+                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct"/>
+                <label>{{ 'catalog.group-by-product' | translate }}</label>
+            </clr-checkbox-wrapper>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+        </div>
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
@@ -58,7 +65,9 @@
                     [src]="asset | assetPreview:'tiny'"
                 />
                 <ng-template #imagePlaceholder>
-                    <div class="placeholder"><clr-icon shape="image" size="48"></clr-icon></div>
+                    <div class="placeholder">
+                        <clr-icon shape="image" size="48"></clr-icon>
+                    </div>
                 </ng-template>
             </div>
         </td>

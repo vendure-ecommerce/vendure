@@ -460,6 +460,7 @@ export type Mutation = {
   setActiveChannel: UserStatus;
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
+  setContentLanguage: LanguageCode;
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiTheme: Scalars['String'];
@@ -903,6 +904,11 @@ export type MutationSetActiveChannelArgs = {
 
 export type MutationSetAsLoggedInArgs = {
   input: UserStatusInput;
+};
+
+
+export type MutationSetContentLanguageArgs = {
+  languageCode: LanguageCode;
 };
 
 
@@ -5022,6 +5028,7 @@ export type UserStatus = {
 export type UiState = {
   __typename?: 'UiState';
   language: LanguageCode;
+  contentLanguage: LanguageCode;
   theme: Scalars['String'];
 };
 
@@ -5285,6 +5292,13 @@ export type SetUiLanguageMutationVariables = Exact<{
 
 export type SetUiLanguageMutation = Pick<Mutation, 'setUiLanguage'>;
 
+export type SetContentLanguageMutationVariables = Exact<{
+  languageCode: LanguageCode;
+}>;
+
+
+export type SetContentLanguageMutation = Pick<Mutation, 'setContentLanguage'>;
+
 export type SetUiThemeMutationVariables = Exact<{
   theme: Scalars['String'];
 }>;
@@ -5313,7 +5327,7 @@ export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUiStateQuery = { uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'theme'>
+    & Pick<UiState, 'language' | 'contentLanguage' | 'theme'>
   ) };
 
 export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
@@ -5327,7 +5341,7 @@ export type GetClientStateQuery = { networkStatus: (
     & UserStatusFragment
   ), uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'theme'>
+    & Pick<UiState, 'language' | 'contentLanguage' | 'theme'>
   ) };
 
 export type SetActiveChannelMutationVariables = Exact<{
@@ -8627,6 +8641,11 @@ export namespace SetAsLoggedOut {
 export namespace SetUiLanguage {
   export type Variables = SetUiLanguageMutationVariables;
   export type Mutation = SetUiLanguageMutation;
+}
+
+export namespace SetContentLanguage {
+  export type Variables = SetContentLanguageMutationVariables;
+  export type Mutation = SetContentLanguageMutation;
 }
 
 export namespace SetUiTheme {
