@@ -546,6 +546,7 @@ export class CustomerService {
         } else {
             customer = new Customer(input);
             this.channelService.assignToCurrentChannel(customer, ctx);
+            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);
     }
