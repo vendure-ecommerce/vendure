@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { OrderDetail } from '@vendure/admin-ui/core';
+import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { CustomFieldConfig, OrderDetail, ServerConfigService } from '@vendure/admin-ui/core';
 import { isObject } from '@vendure/common/lib/shared-utils';
 
 @Component({
@@ -8,14 +9,21 @@ import { isObject } from '@vendure/common/lib/shared-utils';
     styleUrls: ['./fulfillment-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FulfillmentDetailComponent implements OnChanges {
+export class FulfillmentDetailComponent implements OnInit, OnChanges {
     @Input() fulfillmentId: string;
     @Input() order: OrderDetail.Fragment;
 
-    customFields: Array<{ key: string; value: any }> = [];
+    customFieldConfig: CustomFieldConfig[] = [];
+    customFieldFormGroup = new FormGroup({});
+
+    constructor(private serverConfigService: ServerConfigService) {}
+
+    ngOnInit() {
+        this.customFieldConfig = this.serverConfigService.getCustomFieldsFor('Fulfillment');
+    }
 
     ngOnChanges(changes: SimpleChanges) {
-        this.customFields = this.getCustomFields();
+        this.buildCustomFieldsFormGroup();
     }
 
     get fulfillment(): OrderDetail.Fulfillments | undefined | null {
@@ -40,17 +48,10 @@ export class FulfillmentDetailComponent implements OnChanges {
         return Array.from(itemMap.entries()).map(([name, quantity]) => ({ name, quantity }));
     }
 
-    getCustomFields(): Array<{ key: string; value: any }> {
+    buildCustomFieldsFormGroup() {
         const customFields = (this.fulfillment as any).customFields;
-        if (customFields) {
-            return Object.entries(customFields)
-                .filter(([key]) => key !== '__typename')
-                .map(([key, val]) => {
-                    const value = Array.isArray(val) || isObject(val) ? val : (val as any).toString();
-                    return { key, value };
-                });
-        } else {
-            return [];
+        for (const fieldDef of this.serverConfigService.getCustomFieldsFor('Fulfillment')) {
+            this.customFieldFormGroup.addControl(fieldDef.name, new FormControl(customFields[fieldDef.name]));
         }
     }
 

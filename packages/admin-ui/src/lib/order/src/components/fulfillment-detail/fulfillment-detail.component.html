@@ -10,14 +10,12 @@
 <vdr-labeled-data [label]="'order.contents' | translate">
     <vdr-simple-item-list [items]="items"></vdr-simple-item-list>
 </vdr-labeled-data>
-<ng-container *ngFor="let customField of customFields">
-    <vdr-labeled-data [label]="customField.key">
-        <vdr-object-tree
-            *ngIf="customFieldIsObject(customField.value); else primitive"
-            [value]="{ object: customField.value }"
-        ></vdr-object-tree>
-        <ng-template #primitive>
-            {{ customField.value }}
-        </ng-template>
-    </vdr-labeled-data>
+<ng-container *ngFor="let customField of customFieldConfig">
+    <vdr-custom-field-control
+        *ngIf="customFieldFormGroup.get(customField.name)"
+        [readonly]="true"
+        [compact]="true"
+        [customField]="customField"
+        [customFieldsFormGroup]="customFieldFormGroup"
+    ></vdr-custom-field-control>
 </ng-container>
