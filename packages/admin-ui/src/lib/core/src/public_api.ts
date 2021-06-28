@@ -186,6 +186,7 @@ export * from './shared/dynamic-form-inputs/relation-form-input/relation-form-in
 export * from './shared/dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 export * from './shared/dynamic-form-inputs/select-form-input/select-form-input.component';
 export * from './shared/dynamic-form-inputs/text-form-input/text-form-input.component';
+export * from './shared/dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 export * from './shared/pipes/asset-preview.pipe';
 export * from './shared/pipes/channel-label.pipe';
 export * from './shared/pipes/custom-field-label.pipe';

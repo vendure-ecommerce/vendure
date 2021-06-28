@@ -30,6 +30,7 @@ import {
     LanguageCode,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    SearchCollections,
     SearchFacetValues,
     SearchGetPrices,
     SearchInput,
@@ -37,7 +38,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate,
+    UpdateTaxRate
 } from '../../core/e2e/graphql/generated-e2e-admin-types';
 import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
@@ -263,6 +264,34 @@ describe('Elasticsearch plugin', () => {
                 { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
                 { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
                 { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+            ]);
+        });
+
+        it('returns correct collections when not grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+        ]);
+        });
+
+        it('returns correct collections when grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
             ]);
         });
 
@@ -1256,6 +1285,21 @@ export const SEARCH_GET_FACET_VALUES = gql`
             facetValues {
                 count
                 facetValue {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+export const SEARCH_GET_COLLECTIONS = gql`
+    query SearchCollections($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            collections {
+                count
+                collection {
                     id
                     name
                 }

@@ -47,7 +47,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
     setProcessContext('server');
-    const { hostname, port, cors } = config.apiOptions;
+    const { hostname, port, cors, middleware } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
@@ -59,6 +59,10 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
         const { cookieOptions } = config.authOptions;
         app.use(cookieSession(cookieOptions));
     }
+    const earlyMiddlewares = middleware.filter(mid => mid.beforeListen);
+    earlyMiddlewares.forEach(mid => {
+        app.use(mid.route, mid.handler);
+    });
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
     logWelcomeMessage(config);

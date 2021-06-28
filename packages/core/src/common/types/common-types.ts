@@ -1,3 +1,5 @@
+import { Type } from '@vendure/common/lib/shared-types';
+
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Tag } from '../../entity/tag/tag.entity';
@@ -5,28 +7,44 @@ import { Tag } from '../../entity/tag/tag.entity';
 import { LocaleString } from './locale-types';
 
 /**
+ * @description
  * Entities which can be assigned to Channels should implement this interface.
+ *
+ * @docsCategory entities
+ * @docsPage interfaces
  */
 export interface ChannelAware {
     channels: Channel[];
 }
 
 /**
+ * @description
  * Entities which can be soft deleted should implement this interface.
+ *
+ * @docsCategory entities
+ * @docsPage interfaces
  */
 export interface SoftDeletable {
     deletedAt: Date | null;
 }
 
 /**
+ * @description
  * Entities which can be ordered relative to their siblings in a list.
+ *
+ * @docsCategory entities
+ * @docsPage interfaces
  */
 export interface Orderable {
     position: number;
 }
 
 /**
+ * @description
  * Entities which can have Tags applied to them.
+ *
+ * @docsCategory entities
+ * @docsPage interfaces
  */
 export interface Taggable {
     tags: Tag[];
@@ -144,3 +162,8 @@ export type PriceCalculationResult = {
     price: number;
     priceIncludesTax: boolean;
 };
+
+// tslint:disable-next-line:ban-types
+export type MiddlewareHandler = Type<any> | Function;
+
+export type Middleware = { handler: MiddlewareHandler; route: string; beforeListen?: boolean };

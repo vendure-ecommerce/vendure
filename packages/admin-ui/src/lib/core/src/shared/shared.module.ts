@@ -103,6 +103,7 @@ import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-
 import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
+import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
@@ -236,6 +237,7 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardPreviewDirective,
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
+    TextareaFormInputComponent,
 ];
 
 @NgModule({

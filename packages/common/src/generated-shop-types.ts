@@ -1451,13 +1451,24 @@ export type RelationCustomFieldConfig = CustomField & {
   scalarFields: Array<Scalars['String']>;
 };
 
+export type TextCustomFieldConfig = CustomField & {
+  __typename?: 'TextCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString';
   languageCode: LanguageCode;
   value: Scalars['String'];
 };
 
-export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig;
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig | TextCustomFieldConfig;
 
 export type CustomerGroup = Node & {
   __typename?: 'CustomerGroup';
@@ -2260,6 +2271,7 @@ export type SearchResponse = {
   items: Array<SearchResult>;
   totalItems: Scalars['Int'];
   facetValues: Array<FacetValueResult>;
+  collections: Array<CollectionResult>;
 };
 
 /**
@@ -2269,6 +2281,16 @@ export type SearchResponse = {
 export type FacetValueResult = {
   __typename?: 'FacetValueResult';
   facetValue: FacetValue;
+  count: Scalars['Int'];
+};
+
+/**
+ * Which Collections are present in the products returned
+ * by the search, and in what quantity.
+ */
+export type CollectionResult = {
+  __typename?: 'CollectionResult';
+  collection: Collection;
   count: Scalars['Int'];
 };
 

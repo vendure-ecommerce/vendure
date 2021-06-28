@@ -163,6 +163,16 @@ export interface SearchConfig {
      */
     facetValueMaxSize?: number;
 
+    /**
+     * @description
+     * The maximum number of Collections to return from the search query. Internally, this
+     * value sets the "size" property of an Elasticsearch aggregation.
+     *
+     * @default
+     * 50
+     */
+    collectionMaxSize?: number;
+
     // prettier-ignore
     /**
      * @description
@@ -315,6 +325,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     batchSize: 2000,
     searchConfig: {
         facetValueMaxSize: 50,
+        collectionMaxSize: 50,
         multiMatchType: 'best_fields',
         boostFields: {
             productName: 1,

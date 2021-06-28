@@ -36,6 +36,7 @@ import {
 } from '../../../common/error/generated-graphql-shop-errors';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
+import { ConfigService } from '../../../config';
 import { Country } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ActiveOrderService, CountryService } from '../../../service';
@@ -56,6 +57,7 @@ export class ShopOrderResolver {
         private sessionService: SessionService,
         private countryService: CountryService,
         private activeOrderService: ActiveOrderService,
+        private configService: ConfigService,
     ) {}
 
     @Query()
@@ -102,25 +104,11 @@ export class ShopOrderResolver {
         if (ctx.authorizedAsOwnerOnly) {
             const order = await this.orderService.findOneByCode(ctx, args.code);
 
-            if (order) {
-                // For guest Customers, allow access to the Order for the following
-                // time period
-                const anonymousAccessLimit = ms('2h');
-                const orderPlaced = order.orderPlacedAt ? +order.orderPlacedAt : 0;
-                const activeUserMatches = !!(
-                    order &&
-                    order.customer &&
-                    order.customer.user &&
-                    order.customer.user.id === ctx.activeUserId
-                );
-                const now = +new Date();
-                const isWithinAnonymousAccessLimit = now - orderPlaced < anonymousAccessLimit;
-                if (
-                    (ctx.activeUserId && activeUserMatches) ||
-                    (!ctx.activeUserId && isWithinAnonymousAccessLimit)
-                ) {
-                    return this.orderService.findOne(ctx, order.id);
-                }
+            if (
+                order &&
+                (await this.configService.orderOptions.orderByCodeAccessStrategy.canAccessOrder(ctx, order))
+            ) {
+                return order;
             }
             // We throw even if the order does not exist, since giving a different response
             // opens the door to an enumeration attack to find valid order codes.

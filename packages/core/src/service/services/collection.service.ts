@@ -42,6 +42,7 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+import { FacetValue } from '../../entity';
 
 type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };
 
@@ -87,16 +88,22 @@ export class CollectionService implements OnModuleInit {
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 let completed = 0;
                 for (const collectionId of job.data.collectionIds) {
-                    const collection = await this.connection.getRepository(Collection).findOne(collectionId);
-                    if (!collection) {
+                    let collection: Collection | undefined;
+                    try {
+                        collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {
+                            retries: 3,
+                        });
+                    } catch (err) {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
-                        continue;
                     }
-                    const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
-                    job.setProgress(Math.ceil((++completed / job.data.collectionIds.length) * 100));
-                    this.eventBus.publish(
-                        new CollectionModificationEvent(ctx, collection, affectedVariantIds),
-                    );
+                    completed++;
+                    if (collection) {
+                        const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
+                        job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
+                        this.eventBus.publish(
+                            new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                        );
+                    }
                 }
             },
         });
@@ -144,6 +151,17 @@ export class CollectionService implements OnModuleInit {
             return;
         }
         return translateDeep(collection, ctx.languageCode, ['parent']);
+    }
+
+    async findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<Collection>>> {
+        const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
+        const collections = this.connection.findByIdsInChannel(ctx, Collection, ids, ctx.channelId, {
+            relations,
+            loadEagerRelations: true,
+        });
+        return collections.then(values =>
+            values.map(collection => translateDeep(collection, ctx.languageCode, ['parent'])),
+        );
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {

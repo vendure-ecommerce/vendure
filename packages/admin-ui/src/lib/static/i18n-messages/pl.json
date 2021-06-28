@@ -537,6 +537,8 @@
     "create-new-promotion": "Utwórz nową promocje",
     "ends-at": "Kończy się",
     "per-customer-limit": "Limit klientów",
+    "search-by-coupon-code": "",
+    "search-by-name": "",
     "starts-at": "Zaczyna się"
   },
   "nav": {
