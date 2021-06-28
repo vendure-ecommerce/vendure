@@ -19,7 +19,6 @@ import { ProductSelectorFormInputComponent } from './product-selector-form-input
 import { RelationFormInputComponent } from './relation-form-input/relation-form-input.component';
 import { SelectFormInputComponent } from './select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './text-form-input/text-form-input.component';
-import { TextareaFormInputComponent } from './textarea-form-input/textarea-form-input.component';
 
 export const defaultFormInputs = [
     BooleanFormInputComponent,
@@ -33,7 +32,6 @@ export const defaultFormInputs = [
     CustomerGroupFormInputComponent,
     PasswordFormInputComponent,
     RelationFormInputComponent,
-    TextareaFormInputComponent,
 ];
 
 /**

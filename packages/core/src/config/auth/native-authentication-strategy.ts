@@ -7,7 +7,7 @@ import { UnauthorizedError } from '../../common/error/errors';
 import { Injector } from '../../common/injector';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
-import { PasswordCipher } from '../../service/helpers/password-cipher/password-cipher';
+import { PasswordCiper } from '../../service/helpers/password-cipher/password-ciper';
 import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 
 import { AuthenticationStrategy } from './authentication-strategy';
@@ -31,11 +31,11 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     readonly name = NATIVE_AUTH_STRATEGY_NAME;
 
     private connection: TransactionalConnection;
-    private passwordCipher: PasswordCipher;
+    private passwordCipher: PasswordCiper;
 
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
-        this.passwordCipher = injector.get(PasswordCipher);
+        this.passwordCipher = injector.get(PasswordCiper);
     }
 
     defineInputType(): DocumentNode {

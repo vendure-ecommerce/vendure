@@ -409,7 +409,6 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
             return 'DateOperators';
         case 'string':
         case 'localeString':
-        case 'text':
             return 'StringOperators';
         case 'boolean':
             return 'BooleanOperators';
@@ -432,7 +431,6 @@ function getGraphQlType(config: CustomFieldConfig): string {
     switch (config.type) {
         case 'string':
         case 'localeString':
-        case 'text':
             return 'String';
         case 'datetime':
             return 'DateTime';

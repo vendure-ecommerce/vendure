@@ -6,7 +6,6 @@ type SearchResponse {
     items: [SearchResult!]!
     totalItems: Int!
     facetValues: [FacetValueResult!]!
-    collections: [CollectionResult!]!
 }
 
 """
@@ -15,15 +14,6 @@ by the search, and in what quantity.
 """
 type FacetValueResult {
     facetValue: FacetValue!
-    count: Int!
-}
-
-"""
-Which Collections are present in the products returned
-by the search, and in what quantity.
-"""
-type CollectionResult {
-    collection: Collection!
     count: Int!
 }
 

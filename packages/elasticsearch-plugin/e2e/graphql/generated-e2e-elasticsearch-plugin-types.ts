@@ -3623,22 +3623,12 @@ export type RelationCustomFieldConfig = CustomField & {
   scalarFields: Array<Scalars['String']>;
 };
 
-export type TextCustomFieldConfig = CustomField & {
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-};
-
 export type LocalizedString = {
   languageCode: LanguageCode;
   value: Scalars['String'];
 };
 
-export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig | TextCustomFieldConfig;
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig;
 
 export type CustomerGroup = Node & {
   id: Scalars['ID'];
@@ -4281,7 +4271,6 @@ export type SearchResponse = {
   items: Array<SearchResult>;
   totalItems: Scalars['Int'];
   facetValues: Array<FacetValueResult>;
-  collections: Array<CollectionResult>;
 };
 
 /**
@@ -4290,15 +4279,6 @@ export type SearchResponse = {
  */
 export type FacetValueResult = {
   facetValue: FacetValue;
-  count: Scalars['Int'];
-};
-
-/**
- * Which Collections are present in the products returned
- * by the search, and in what quantity.
- */
-export type CollectionResult = {
-  collection: Collection;
   count: Scalars['Int'];
 };
 
@@ -4860,19 +4840,6 @@ export type SearchFacetValuesQuery = { search: (
     )> }
   ) };
 
-export type SearchCollectionsQueryVariables = Exact<{
-  input: SearchInput;
-}>;
-
-
-export type SearchCollectionsQuery = { search: (
-    Pick<SearchResponse, 'totalItems'>
-    & { collections: Array<(
-      Pick<CollectionResult, 'count'>
-      & { collection: Pick<Collection, 'id' | 'name'> }
-    )> }
-  ) };
-
 export type SearchGetPricesQueryVariables = Exact<{
   input: SearchInput;
 }>;
@@ -4919,14 +4886,6 @@ export namespace SearchFacetValues {
   export type Search = (NonNullable<SearchFacetValuesQuery['search']>);
   export type FacetValues = NonNullable<(NonNullable<(NonNullable<SearchFacetValuesQuery['search']>)['facetValues']>)[number]>;
   export type FacetValue = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchFacetValuesQuery['search']>)['facetValues']>)[number]>['facetValue']>);
-}
-
-export namespace SearchCollections {
-  export type Variables = SearchCollectionsQueryVariables;
-  export type Query = SearchCollectionsQuery;
-  export type Search = (NonNullable<SearchCollectionsQuery['search']>);
-  export type Collections = NonNullable<(NonNullable<(NonNullable<SearchCollectionsQuery['search']>)['collections']>)[number]>;
-  export type Collection = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchCollectionsQuery['search']>)['collections']>)[number]>['collection']>);
 }
 
 export namespace SearchGetPrices {

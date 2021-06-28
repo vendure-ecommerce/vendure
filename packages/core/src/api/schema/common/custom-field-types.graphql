@@ -99,16 +99,6 @@ type RelationCustomFieldConfig implements CustomField {
     scalarFields: [String!]!
 }
 
-type TextCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-}
-
 type LocalizedString {
     languageCode: LanguageCode!
     value: String!
@@ -122,4 +112,3 @@ union CustomFieldConfig =
     | BooleanCustomFieldConfig
     | DateTimeCustomFieldConfig
     | RelationCustomFieldConfig
-    | TextCustomFieldConfig

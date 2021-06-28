@@ -2,8 +2,6 @@ import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
-    Collection,
-    CollectionService,
     ConfigService,
     DeepRequired,
     FacetValue,
@@ -41,7 +39,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         private elasticsearchIndexService: ElasticsearchIndexService,
         private configService: ConfigService,
         private facetValueService: FacetValueService,
-        private collectionService: CollectionService,
     ) {
         searchService.adopt(this);
     }
@@ -117,7 +114,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         ctx: RequestContext,
         input: ElasticSearchInput,
         enabledOnly: boolean = false,
-    ): Promise<Omit<ElasticSearchResponse, 'facetValues' | 'collections' | 'priceRange'>> {
+    ): Promise<Omit<ElasticSearchResponse, 'facetValues' | 'priceRange'>> {
         const { indexPrefix } = this.options;
         const { groupByProduct } = input;
         const elasticSearchBody = buildElasticBody(
@@ -206,59 +203,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
             return {
                 facetValue,
-                count: bucket ? bucket.doc_count : 0,
-            };
-        });
-    }
-
-    /**
-     * Return a list of all Collections which appear in the result set.
-     */
-    async collections(
-        ctx: RequestContext,
-        input: ElasticSearchInput,
-        enabledOnly: boolean = false,
-    ): Promise<Array<{ collection: Collection; count: number }>> {
-        const { indexPrefix } = this.options;
-        const elasticSearchBody = buildElasticBody(
-            input,
-            this.options.searchConfig,
-            ctx.channelId,
-            ctx.languageCode,
-            enabledOnly,
-        );
-        elasticSearchBody.from = 0;
-        elasticSearchBody.size = 0;
-        elasticSearchBody.aggs = {
-            collection: {
-                terms: {
-                    field: 'collectionIds',
-                    size: this.options.searchConfig.collectionMaxSize,
-                },
-            },
-        };
-        let body: SearchResponseBody<VariantIndexItem>;
-        try {
-            const result = await this.client.search<SearchResponseBody<VariantIndexItem>>({
-                index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
-                body: elasticSearchBody,
-            });
-            body = result.body;
-        } catch (e) {
-            Logger.error(e.message, loggerCtx, e.stack);
-            throw e;
-        }
-
-        const buckets = body.aggregations ? body.aggregations.collection.buckets : [];
-
-        const collections = await this.collectionService.findByIds(
-            ctx,
-            buckets.map(b => b.key),
-        );
-        return collections.map(collection => {
-            const bucket = buckets.find(b => b.key.toString() === collection.id.toString());
-            return {
-                collection,
                 count: bucket ? bucket.doc_count : 0,
             };
         });

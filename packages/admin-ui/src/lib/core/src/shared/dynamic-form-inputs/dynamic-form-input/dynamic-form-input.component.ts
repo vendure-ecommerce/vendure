@@ -297,9 +297,6 @@ export class DynamicFormInputComponent
                     return { component: 'text-form-input' };
                 }
             }
-            case 'text': {
-                return { component: 'textarea-form-input' };
-            }
             case 'int':
             case 'float':
                 return { component: 'number-form-input' };

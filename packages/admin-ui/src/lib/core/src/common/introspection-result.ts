@@ -236,8 +236,7 @@
       "FloatCustomFieldConfig",
       "BooleanCustomFieldConfig",
       "DateTimeCustomFieldConfig",
-      "RelationCustomFieldConfig",
-      "TextCustomFieldConfig"
+      "RelationCustomFieldConfig"
     ],
     "CustomFieldConfig": [
       "StringCustomFieldConfig",
@@ -246,8 +245,7 @@
       "FloatCustomFieldConfig",
       "BooleanCustomFieldConfig",
       "DateTimeCustomFieldConfig",
-      "RelationCustomFieldConfig",
-      "TextCustomFieldConfig"
+      "RelationCustomFieldConfig"
     ],
     "SearchResultPrice": [
       "PriceRange",

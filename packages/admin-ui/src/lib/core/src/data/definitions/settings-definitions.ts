@@ -530,12 +530,6 @@ export const LOCALE_STRING_CUSTOM_FIELD_FRAGMENT = gql`
     }
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
-export const TEXT_CUSTOM_FIELD_FRAGMENT = gql`
-    fragment TextCustomField on TextCustomFieldConfig {
-        ...CustomFieldConfig
-    }
-    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
-`;
 export const BOOLEAN_CUSTOM_FIELD_FRAGMENT = gql`
     fragment BooleanCustomField on BooleanCustomFieldConfig {
         ...CustomFieldConfig
@@ -586,9 +580,6 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         ... on LocaleStringCustomFieldConfig {
             ...LocaleStringCustomField
         }
-        ... on TextCustomFieldConfig {
-            ...TextCustomField
-        }
         ... on BooleanCustomFieldConfig {
             ...BooleanCustomField
         }
@@ -607,7 +598,6 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     }
     ${STRING_CUSTOM_FIELD_FRAGMENT}
     ${LOCALE_STRING_CUSTOM_FIELD_FRAGMENT}
-    ${TEXT_CUSTOM_FIELD_FRAGMENT}
     ${BOOLEAN_CUSTOM_FIELD_FRAGMENT}
     ${INT_CUSTOM_FIELD_FRAGMENT}
     ${FLOAT_CUSTOM_FIELD_FRAGMENT}

@@ -91,9 +91,6 @@ export class NodemailerEmailSender implements EmailSender {
             subject: email.subject,
             html: email.body,
             attachments: email.attachments,
-            cc: email.cc,
-            bcc: email.bcc,
-            replyTo: email.replyTo,
         });
     }
 
@@ -104,9 +101,6 @@ export class NodemailerEmailSender implements EmailSender {
             recipient: email.recipient,
             subject: email.subject,
             body: email.body,
-            cc: email.cc,
-            bcc: email.bcc,
-            replyTo: email.replyTo,
         };
         await fs.writeFile(pathWithoutExt + '.json', JSON.stringify(output, null, 2));
     }

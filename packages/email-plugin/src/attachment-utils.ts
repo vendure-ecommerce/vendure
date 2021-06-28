@@ -1,14 +1,14 @@
-import { Logger } from '@vendure/core';
-import { Readable, Stream } from 'stream';
-import { format, Url } from 'url';
+import { Injectable } from '@nestjs/common';
+import { Attachment } from 'nodemailer/lib/mailer';
+import { Readable } from 'stream';
+import { format } from 'url';
 
-import { loggerCtx } from './constants';
 import { EmailAttachment, SerializedAttachment } from './types';
 
 export async function serializeAttachments(attachments: EmailAttachment[]): Promise<SerializedAttachment[]> {
     const promises = attachments.map(async a => {
-        const stringPath = (path: string | Url) => (typeof path === 'string' ? path : format(path));
-        const content = a.content instanceof Stream ? await streamToBuffer(a.content) : a.content;
+        const stringPath = typeof a.path === 'string' ? a.path : format(a.path);
+
         return {
             filename: null,
             cid: null,
@@ -18,8 +18,7 @@ export async function serializeAttachments(attachments: EmailAttachment[]): Prom
             contentDisposition: null,
             headers: null,
             ...a,
-            path: a.path ? stringPath(a.path) : null,
-            content: JSON.stringify(content),
+            path: stringPath,
         };
     });
     return Promise.all(promises);
@@ -27,15 +26,6 @@ export async function serializeAttachments(attachments: EmailAttachment[]): Prom
 
 export function deserializeAttachments(serializedAttachments: SerializedAttachment[]): EmailAttachment[] {
     return serializedAttachments.map(a => {
-        const content = parseContent(a.content);
-        if (content instanceof Buffer && 50 * 1024 <= content.length) {
-            Logger.warn(
-                `Email has a large 'content' attachment (${Math.round(
-                    content.length / 1024,
-                )}k). Consider using the 'path' instead for improved performance.`,
-                loggerCtx,
-            );
-        }
         return {
             filename: nullToUndefined(a.filename),
             cid: nullToUndefined(a.cid),
@@ -44,35 +34,8 @@ export function deserializeAttachments(serializedAttachments: SerializedAttachme
             contentTransferEncoding: nullToUndefined(a.contentTransferEncoding),
             contentDisposition: nullToUndefined(a.contentDisposition),
             headers: nullToUndefined(a.headers),
-            path: nullToUndefined(a.path),
-            content,
+            path: a.path,
         };
-    });
-}
-
-function parseContent(content: string | null): string | Buffer | undefined {
-    try {
-        const parsedContent = content && JSON.parse(content);
-        if (typeof parsedContent === 'string') {
-            return parsedContent;
-        } else if (parsedContent.hasOwnProperty('data')) {
-            return Buffer.from(parsedContent.data);
-        }
-    } catch (e) {
-        // empty
-    }
-}
-
-function streamToBuffer(stream: Readable): Promise<Buffer> {
-    const chunks: Buffer[] = [];
-    return new Promise((resolve, reject) => {
-        stream.on('data', chunk => {
-            chunks.push(Buffer.from(chunk));
-        });
-        stream.on('error', err => reject(err));
-        stream.on('end', () => {
-            resolve(Buffer.concat(chunks));
-        });
     });
 }
 

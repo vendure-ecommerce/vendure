@@ -6,14 +6,6 @@ import { OrderItem } from '../order-item/order-item.entity';
 
 import { StockMovement } from './stock-movement.entity';
 
-/**
- * @description
- * A Release is created when OrderItems which have been allocated (but not yet fulfilled)
- * are cancelled.
- *
- * @docsCategory entities
- * @docsPage StockMovement
- */
 @ChildEntity()
 export class Release extends StockMovement {
     readonly type = StockMovementType.RELEASE;

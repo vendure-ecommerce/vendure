@@ -6,13 +6,13 @@ import {
     SearchResponse,
 } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Allow, Collection, Ctx, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
+import { Allow, Ctx, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
 
 import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticSearchInput, SearchPriceData } from './types';
 
 @Resolver('SearchResponse')
-export class ShopElasticSearchResolver implements Omit<SearchResolver, 'facetValues' | 'collections' | 'reindex' > {
+export class ShopElasticSearchResolver implements Omit<SearchResolver, 'facetValues' | 'reindex'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()
@@ -20,7 +20,7 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'facetVal
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
-    ): Promise<Omit<SearchResponse, 'facetValues' | 'collections'>> {
+    ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const result = await this.elasticsearchService.search(ctx, args.input, true);
         // ensure the facetValues property resolver has access to the input args
         (result as any).input = args.input;
@@ -37,7 +37,7 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'facetVal
 }
 
 @Resolver('SearchResponse')
-export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetValues' | 'collections'> {
+export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetValues'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()
@@ -45,7 +45,7 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
-    ): Promise<Omit<SearchResponse, 'facetValues' | 'collections'>> {
+    ): Promise<Omit<SearchResponse, 'facetValues'>> {
         const result = await this.elasticsearchService.search(ctx, args.input, false);
         // ensure the facetValues property resolver has access to the input args
         (result as any).input = args.input;
@@ -60,24 +60,15 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
 }
 
 @Resolver('SearchResponse')
-export class EntityElasticSearchResolver implements Pick<SearchResolver, 'facetValues' | 'collections'> {
+export class EntityElasticSearchResolver implements Pick<SearchResolver, 'facetValues'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
-        @Parent() parent: Omit<SearchResponse, 'facetValues' | 'collections'>,
+        @Parent() parent: Omit<SearchResponse, 'facetValues'>,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const facetValues = await this.elasticsearchService.facetValues(ctx, (parent as any).input, true);
         return facetValues.filter(i => !i.facetValue.facet.isPrivate);
-    }
-
-    @ResolveField()
-    async collections(
-        @Ctx() ctx: RequestContext,
-        @Parent() parent: Omit<SearchResponse, 'facetValues' | 'collections'>,
-    ): Promise<Array<{ collection: Collection; count: number }>> {
-        const collections = await this.elasticsearchService.collections(ctx, (parent as any).input, true);
-        return collections.filter(i => !i.collection.isPrivate);
     }
 }

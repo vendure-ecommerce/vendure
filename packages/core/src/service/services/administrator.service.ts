@@ -15,7 +15,7 @@ import { NativeAuthenticationMethod } from '../../entity/authentication-method/n
 import { User } from '../../entity/user/user.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
+import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -28,7 +28,7 @@ export class AdministratorService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
-        private passwordCipher: PasswordCipher,
+        private passwordCipher: PasswordCiper,
         private userService: UserService,
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
