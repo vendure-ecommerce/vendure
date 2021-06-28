@@ -4443,6 +4443,7 @@ export type SearchResponse = {
   items: Array<SearchResult>;
   totalItems: Scalars['Int'];
   facetValues: Array<FacetValueResult>;
+  collections: Array<CollectionResult>;
 };
 
 /**
@@ -4452,6 +4453,16 @@ export type SearchResponse = {
 export type FacetValueResult = {
   __typename?: 'FacetValueResult';
   facetValue: FacetValue;
+  count: Scalars['Int'];
+};
+
+/**
+ * Which Collections are present in the products returned
+ * by the search, and in what quantity.
+ */
+export type CollectionResult = {
+  __typename?: 'CollectionResult';
+  collection: Collection;
   count: Scalars['Int'];
 };
 

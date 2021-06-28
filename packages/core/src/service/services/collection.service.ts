@@ -42,6 +42,7 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+import { FacetValue } from '../../entity';
 
 type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };
 
@@ -150,6 +151,17 @@ export class CollectionService implements OnModuleInit {
             return;
         }
         return translateDeep(collection, ctx.languageCode, ['parent']);
+    }
+
+    async findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<Collection>>> {
+        const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
+        const collections = this.connection.findByIdsInChannel(ctx, Collection, ids, ctx.channelId, {
+            relations,
+            loadEagerRelations: true,
+        });
+        return collections.then(values =>
+            values.map(collection => translateDeep(collection, ctx.languageCode, ['parent'])),
+        );
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {

@@ -77,6 +77,23 @@ export function createFacetIdCountMap(facetValuesResult: Array<{ facetValues: st
     return result;
 }
 
+/**
+ * Given the raw query results containing rows with a `collections` property line "1,2,1,2",
+ * this function returns a map of Collection ids => count of how many times they occur.
+ */
+export function createCollectionIdCountMap(collectionsResult: Array<{ collections: string }>) {
+    const result = new Map<ID, number>();
+    for (const res of collectionsResult) {
+        const collectionIds: ID[] = unique(res.collections.split(',').filter(x => x !== ''));
+        for (const id of collectionIds) {
+            const count = result.get(id);
+            const newCount = count ? count + 1 : 1;
+            result.set(id, newCount);
+        }
+    }
+    return result;
+}
+
 function parseFocalPoint(focalPoint: any): Coordinate | undefined {
     if (focalPoint && typeof focalPoint === 'string') {
         try {

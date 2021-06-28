@@ -15,4 +15,9 @@ export interface SearchStrategy {
      * facetValue occurs in the result set.
      */
     getFacetValueIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>>;
+    /**
+     * Returns a map of `collectionId` => `count`, providing the number of times that
+     * collection occurs in the result set.
+     */
+    getCollectionIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>>;
 }
