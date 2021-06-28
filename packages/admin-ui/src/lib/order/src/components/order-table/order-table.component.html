@@ -56,29 +56,17 @@
                     </ng-container>
                 </td>
             </tr>
-            <ng-container *ngIf="getLineCustomFields(line) as customFields">
+            <ng-container *ngIf="customFieldsForLine[line.id] as customFields">
                 <tr *ngIf="customFields.length">
                     <td colspan="6" class="custom-fields-row">
                         <div class="order-line-custom-fields">
                             <div class="custom-field" *ngFor="let field of customFields">
-                                <vdr-labeled-data [label]="field.config | customFieldLabel">
-                                    <div class="mt2" [ngSwitch]="field.config.type">
-                                        <ng-template [ngSwitchCase]="'datetime'">
-                                            <span [title]="field.value">{{ field.value }}</span>
-                                        </ng-template>
-                                        <ng-template [ngSwitchCase]="'boolean'">
-                                            <ng-template [ngIf]="field.value === true">
-                                                <clr-icon shape="check"></clr-icon>
-                                            </ng-template>
-                                            <ng-template [ngIf]="field.value === false">
-                                                <clr-icon shape="times"></clr-icon>
-                                            </ng-template>
-                                        </ng-template>
-                                        <ng-template ngSwitchDefault>
-                                            {{ field.value }}
-                                        </ng-template>
-                                    </div>
-                                </vdr-labeled-data>
+                                <vdr-custom-field-control
+                                    [compact]="true"
+                                    [readonly]="true"
+                                    [customField]="field.config"
+                                    [customFieldsFormGroup]="field.formGroup"
+                                ></vdr-custom-field-control>
                             </div>
                         </div>
                     </td>
