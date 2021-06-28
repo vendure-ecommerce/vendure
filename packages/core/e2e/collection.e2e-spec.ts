@@ -2,6 +2,7 @@
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
     DefaultJobQueuePlugin,
+    DefaultLogger,
     facetValueCollectionFilter,
     JobQueueService,
     variantNameCollectionFilter,
@@ -57,6 +58,7 @@ import { sortById } from './utils/test-order-utils';
 describe('Collection resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig,
+        logger: new DefaultLogger(),
         plugins: [DefaultJobQueuePlugin],
     });
 
