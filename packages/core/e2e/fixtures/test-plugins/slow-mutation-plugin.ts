@@ -8,8 +8,6 @@ import {
     Product,
     ProductAsset,
     RequestContext,
-    TaxCategory,
-    TaxRate,
     Transaction,
     TransactionalConnection,
     VendurePlugin,
