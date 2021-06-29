@@ -29,7 +29,6 @@
 <button
     class="btn btn-primary-outline btn-sm"
     (click)="addOption()"
-    *ngIf="product?.variants.length === 1 && product?.optionGroups.length === 0"
 >
     <clr-icon shape="plus"></clr-icon>
     {{ 'catalog.add-option' | translate }}

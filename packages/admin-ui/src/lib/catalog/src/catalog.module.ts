@@ -12,6 +12,7 @@ import { CollectionDetailComponent } from './components/collection-detail/collec
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
 import { CollectionTreeNodeComponent } from './components/collection-tree/collection-tree-node.component';
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
+import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
@@ -52,6 +53,7 @@ import { VariantPriceDetailComponent } from './components/variant-price-detail/v
         ProductVariantsEditorComponent,
         AssignProductsToChannelDialogComponent,
         AssetDetailComponent,
+        ConfirmVariantDeletionDialogComponent,
     ],
 })
 export class CatalogModule {}
