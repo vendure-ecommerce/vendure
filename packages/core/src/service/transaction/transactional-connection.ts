@@ -24,7 +24,7 @@ import { VendureEntity } from '../../entity/base/base.entity';
  *
  * @docsCategory data-access
  */
-export interface GetEntityOrThrowOptions extends FindOneOptions {
+export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
     /**
      * @description
      * An optional channelId to limit results to entities assigned to the given Channel. Should
@@ -161,7 +161,7 @@ export class TransactionalConnection {
         ctx: RequestContext,
         entityType: Type<T>,
         id: ID,
-        options: GetEntityOrThrowOptions = {},
+        options: GetEntityOrThrowOptions<T> = {},
     ): Promise<T> {
         const { retries, retryDelay } = options;
         if (retries == null || retries <= 0) {
