@@ -92,6 +92,7 @@
   "message": {
     "asset-to-be-deleted-is-featured": "The selected {assetCount, plural, one {Asset is} other {Assets are}} featured by {products, plural, =0 {} one {1 Product} other {# Products}} {variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}} {collections, plural, =0 {} one { 1 Collection} other { # Collections}}",
     "cannot-remove-tax-category-due-to-tax-rates": "Cannot remove TaxCategory \"{ name }\" as it is referenced by {count, plural, one {1 TaxRate} other {# TaxRates}}",
+    "cannot-transition-order-contains-products-which-are-unavailable": "Cannot transition to \"{ toState }\" because the Order contains ProductVariants which are no longer available",
     "cannot-transition-from-arranging-additional-payment": "Cannot transition away from \"ArrangingAdditionalPayment\" unless Order total is covered by Payments",
     "cannot-transition-order-from-to": "Cannot transition Order from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-no-additional-payments-needed": "Cannot transition Order to the \"ArrangingAdditionalPayment\" state as no additional payments are needed",

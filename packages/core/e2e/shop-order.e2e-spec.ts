@@ -16,10 +16,14 @@ import {
 import {
     AttemptLogin,
     CreateAddressInput,
+    DeleteProduct,
+    DeleteProductVariant,
     GetCountryList,
     GetCustomer,
     GetCustomerList,
     UpdateCountry,
+    UpdateProduct,
+    UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
     ActiveOrderCustomerFragment,
@@ -49,10 +53,14 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
+    DELETE_PRODUCT,
+    DELETE_PRODUCT_VARIANT,
     GET_COUNTRY_LIST,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
     UPDATE_COUNTRY,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
@@ -1649,6 +1657,122 @@ describe('Shop orders', () => {
             orderResultGuard.assertSuccess(removeAllOrderLines);
             expect(removeAllOrderLines?.total).toBe(0);
             expect(removeAllOrderLines?.lines.length).toBe(0);
+        });
+    });
+
+    describe('validation of product variant availability', () => {
+        const bonsaiProductId = 'T_20';
+        const bonsaiVariantId = 'T_34';
+
+        beforeAll(async () => {
+            await shopClient.asAnonymousUser();
+        });
+
+        it(
+            'addItemToOrder errors when product is disabled',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: bonsaiProductId,
+                        enabled: false,
+                    },
+                });
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+
+        it(
+            'addItemToOrder errors when product variant is disabled',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: bonsaiProductId,
+                        enabled: true,
+                    },
+                });
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                id: bonsaiVariantId,
+                                enabled: false,
+                            },
+                        ],
+                    },
+                );
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+        it(
+            'addItemToOrder errors when product is deleted',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                    id: bonsaiProductId,
+                });
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+        it(
+            'addItemToOrder errors when product variant is deleted',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
+                    DELETE_PRODUCT_VARIANT,
+                    {
+                        id: bonsaiVariantId,
+                    },
+                );
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+
+        it('errors when transitioning to ArrangingPayment with deleted variant', async () => {
+            const orchidProductId = 'T_19';
+            const orchidVariantId = 'T_33';
+
+            await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: orchidVariantId,
+                quantity: 1,
+            });
+
+            orderResultGuard.assertSuccess(addItemToOrder);
+
+            await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                id: orchidProductId,
+            });
+
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToState.Mutation,
+                TransitionToState.Variables
+            >(TRANSITION_TO_STATE, {
+                state: 'ArrangingPayment',
+            });
+            orderResultGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.transitionError).toBe(
+                `Cannot transition to "ArrangingPayment" because the Order contains ProductVariants which are no longer available`,
+            );
+            expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
         });
     });
 });
