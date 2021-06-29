@@ -35,6 +35,9 @@ const enumerate = <T>() => <U extends NonEmptyArray<T>>(...elements: MustInclude
 
 const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'Address',
+    'Administrator',
+    'Asset',
+    'Channel',
     'Collection',
     'Customer',
     'Facet',
@@ -126,7 +129,6 @@ describe('Custom field relations', () => {
             'height',
             'source',
             'preview',
-            'customFields',
         ]);
     });
 

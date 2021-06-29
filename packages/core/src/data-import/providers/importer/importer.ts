@@ -307,7 +307,7 @@ export class Importer {
         for (const fieldDef of config) {
             const value = customFields[fieldDef.name];
             processed[fieldDef.name] =
-                fieldDef.list === true ? value.split('|').filter(val => val.trim() !== '') : value;
+                fieldDef.list === true ? value?.split('|').filter(val => val.trim() !== '') : value;
         }
         return processed;
     }
