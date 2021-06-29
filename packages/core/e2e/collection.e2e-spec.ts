@@ -408,7 +408,7 @@ describe('Collection resolver', () => {
                 },
             });
 
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
             expect(updateCollection).toMatchSnapshot();
 
             pearCollection = updateCollection;
@@ -425,7 +425,7 @@ describe('Collection resolver', () => {
                     featuredAssetId: assets[3].id,
                 },
             });
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
             expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
         });
 
@@ -439,7 +439,7 @@ describe('Collection resolver', () => {
                     assetIds: [],
                 },
             });
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
             expect(updateCollection.assets).toEqual([]);
             expect(updateCollection.featuredAsset).toBeNull();
         });
@@ -712,7 +712,7 @@ describe('Collection resolver', () => {
         });
 
         it('re-evaluates Collection contents on move', async () => {
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
 
             const result = await adminClient.query<
                 GetCollectionProducts.Query,
@@ -922,7 +922,7 @@ describe('Collection resolver', () => {
                 },
             );
             collectionToDeleteChild = result2.createCollection;
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
         });
 
         it(
@@ -1166,7 +1166,7 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
                 const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
@@ -1211,7 +1211,7 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
                 const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
@@ -1265,7 +1265,7 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
                 const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
@@ -1321,7 +1321,7 @@ describe('Collection resolver', () => {
                         ],
                     },
                 });
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
                 return createCollection;
             }
 
@@ -1469,7 +1469,7 @@ describe('Collection resolver', () => {
                     },
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
 
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
@@ -1502,7 +1502,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
 
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
@@ -1536,7 +1536,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 500);
 
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
@@ -1589,7 +1589,7 @@ describe('Collection resolver', () => {
                 } as CreateCollectionInput,
             });
 
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
 
             const result = await adminClient.query<
                 GetCollectionProducts.Query,
@@ -1680,7 +1680,7 @@ describe('Collection resolver', () => {
                     input: [{ id: 'T_1', enabled: false }],
                 },
             );
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000, 500);
 
             const { collection } = await shopClient.query<
                 GetCollectionProducts.Query,
