@@ -1,5 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import nanoid from 'nanoid';
+import { customAlphabet } from 'nanoid';
 
 import { UserInputError } from '../../common/error/errors';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -90,7 +90,8 @@ export const variantNameCollectionFilter = new CollectionFilter({
     description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
     apply: (qb, args) => {
         const translationAlias = `variant_name_filter_translation`;
-        const termName = `term_${nanoid(6)}`;
+        const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 6);
+        const termName = `term_${nanoid()}`;
         const hasJoinOnTranslations = !!qb.expressionMap.joinAttributes.find(
             ja => ja.entityOrProperty === 'productVariant.translations',
         );
