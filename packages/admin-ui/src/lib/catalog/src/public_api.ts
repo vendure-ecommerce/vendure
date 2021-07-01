@@ -11,6 +11,7 @@ export * from './components/collection-list/collection-list.component';
 export * from './components/collection-tree/array-to-tree';
 export * from './components/collection-tree/collection-tree-node.component';
 export * from './components/collection-tree/collection-tree.component';
+export * from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 export * from './components/facet-detail/facet-detail.component';
 export * from './components/facet-list/facet-list.component';
 export * from './components/generate-product-variants/generate-product-variants.component';

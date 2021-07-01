@@ -31,6 +31,8 @@
 * **core** Export PasswordCipher helper ([221051f](https://github.com/vendure-ecommerce/vendure/commit/221051f))
 * **core** Improve typing of TransactionConnection.getEntityOrThrow ([eec8808](https://github.com/vendure-ecommerce/vendure/commit/eec8808))
 * **core** Publish StockMovementEvent ([0a71723](https://github.com/vendure-ecommerce/vendure/commit/0a71723)), closes [#902](https://github.com/vendure-ecommerce/vendure/issues/902)
+* **core** Add `collections` field to SearchResponse, closes [#943](https://github.com/vendure-ecommerce/vendure/issues/943)
+* **elasticsearch-plugin** Add `collections` field to SearchResponse, closes [#943](https://github.com/vendure-ecommerce/vendure/issues/943)
 * **email-plugin** Add `.setOptionalAddressFields()` - cc, bcc, replyTo ([8e9b72f](https://github.com/vendure-ecommerce/vendure/commit/8e9b72f)), closes [#921](https://github.com/vendure-ecommerce/vendure/issues/921)
 * **email-plugin** Extend attachment support ([70a55fd](https://github.com/vendure-ecommerce/vendure/commit/70a55fd)), closes [#882](https://github.com/vendure-ecommerce/vendure/issues/882)
 
