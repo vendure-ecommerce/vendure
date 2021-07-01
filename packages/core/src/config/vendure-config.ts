@@ -163,7 +163,6 @@ export interface ApiOptions {
      *
      * @default []
      */
-    // tslint:disable-next-line:ban-types
     middleware?: Middleware[];
     /**
      * @description
