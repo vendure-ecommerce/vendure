@@ -86,6 +86,10 @@ This is used to exclude members from appearing in the docs. For example, a class
 public method for internal use, but this method is not intended to be used by external consumers of that
 class.
 
+##### `@since`
+
+The @since tag indicates that a class, method, or other symbol was added in a specific version.
+
 ##### Example
 
 ````ts

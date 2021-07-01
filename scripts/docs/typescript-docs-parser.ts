@@ -29,7 +29,7 @@ export class TypescriptDocsParser {
      * parsed data structures ready for rendering.
      */
     parse(filePaths: string[]): DocsPage[] {
-        const sourceFiles = filePaths.map((filePath) => {
+        const sourceFiles = filePaths.map(filePath => {
             return ts.createSourceFile(
                 filePath,
                 this.replaceEscapedAtTokens(fs.readFileSync(filePath).toString()),
@@ -41,7 +41,7 @@ export class TypescriptDocsParser {
         const statements = this.getStatementsWithSourceLocation(sourceFiles);
 
         const pageMap = statements
-            .map((statement) => {
+            .map(statement => {
                 const info = this.parseDeclaration(
                     statement.statement,
                     statement.sourceFile,
@@ -79,7 +79,7 @@ export class TypescriptDocsParser {
         sourceFiles: ts.SourceFile[],
     ): Array<{ statement: ts.Statement; sourceFile: string; sourceLine: number }> {
         return sourceFiles.reduce((st, sf) => {
-            const statementsWithSources = sf.statements.map((statement) => {
+            const statementsWithSources = sf.statements.map(statement => {
                 const sourceFile = path.relative(path.join(__dirname, '..'), sf.fileName).replace(/\\/g, '/');
                 const sourceLine = sf.getLineAndCharacterOfPosition(statement.getStart()).line + 1;
                 return { statement, sourceFile, sourceLine };
@@ -113,6 +113,7 @@ export class TypescriptDocsParser {
         const weight = this.getDeclarationWeight(statement);
         const description = this.getDeclarationDescription(statement);
         const docsPage = this.getDocsPage(statement);
+        const since = this.getSince(statement);
         const packageName = this.getPackageName(sourceFile);
 
         const info = {
@@ -125,6 +126,7 @@ export class TypescriptDocsParser {
             category,
             description,
             page: docsPage,
+            since,
         };
 
         if (ts.isInterfaceDeclaration(statement)) {
@@ -158,7 +160,7 @@ export class TypescriptDocsParser {
                 members: this.parseMembers(statement.members) as PropertyInfo[],
             };
         } else if (ts.isFunctionDeclaration(statement)) {
-            const parameters = statement.parameters.map((p) => ({
+            const parameters = statement.parameters.map(p => ({
                 name: p.name.getText(),
                 type: p.type ? p.type.getText() : '',
                 optional: !!p.questionToken,
@@ -189,7 +191,7 @@ export class TypescriptDocsParser {
         if (!heritageClauses) {
             return;
         }
-        const clause = heritageClauses.find((cl) => cl.token === kind);
+        const clause = heritageClauses.find(cl => cl.token === kind);
         if (!clause) {
             return;
         }
@@ -212,7 +214,7 @@ export class TypescriptDocsParser {
             !ts.isVariableStatement(declaration) &&
             declaration.typeParameters
         ) {
-            typeParams = '<' + declaration.typeParameters.map((tp) => tp.getText()).join(', ') + '>';
+            typeParams = '<' + declaration.typeParameters.map(tp => tp.getText()).join(', ') + '>';
         }
         return name + typeParams;
     }
@@ -235,7 +237,7 @@ export class TypescriptDocsParser {
         const result: Array<PropertyInfo | MethodInfo> = [];
 
         for (const member of members) {
-            const modifiers = member.modifiers ? member.modifiers.map((m) => m.getText()) : [];
+            const modifiers = member.modifiers ? member.modifiers.map(m => m.getText()) : [];
             const isPrivate = modifiers.includes('private');
             if (
                 !isPrivate &&
@@ -259,6 +261,7 @@ export class TypescriptDocsParser {
                 let parameters: MethodParameterInfo[] = [];
                 let fullText = '';
                 let isInternal = false;
+                let since: string | undefined;
                 if (ts.isConstructorDeclaration(member)) {
                     fullText = 'constructor';
                 } else if (ts.isMethodDeclaration(member)) {
@@ -269,10 +272,11 @@ export class TypescriptDocsParser {
                     fullText = member.getText();
                 }
                 this.parseTags(member, {
-                    description: (tag) => (description += tag.comment || ''),
-                    example: (tag) => (description += this.formatExampleCode(tag.comment)),
-                    default: (tag) => (defaultValue = tag.comment || ''),
-                    internal: (tag) => (isInternal = true),
+                    description: tag => (description += tag.comment || ''),
+                    example: tag => (description += this.formatExampleCode(tag.comment)),
+                    default: tag => (defaultValue = tag.comment || ''),
+                    internal: tag => (isInternal = true),
+                    since: tag => (since = tag.comment || undefined),
                 });
                 if (isInternal) {
                     continue;
@@ -286,13 +290,14 @@ export class TypescriptDocsParser {
                     description: this.restoreAtTokens(description),
                     type,
                     modifiers,
+                    since,
                 };
                 if (
                     ts.isMethodSignature(member) ||
                     ts.isMethodDeclaration(member) ||
                     ts.isConstructorDeclaration(member)
                 ) {
-                    parameters = member.parameters.map((p) => ({
+                    parameters = member.parameters.map(p => ({
                         name: p.name.getText(),
                         type: p.type ? p.type.getText() : '',
                         optional: !!p.questionToken,
@@ -322,7 +327,7 @@ export class TypescriptDocsParser {
     private getDeclarationWeight(statement: ValidDeclaration): number {
         let weight = 10;
         this.parseTags(statement, {
-            docsWeight: (tag) => (weight = Number.parseInt(tag.comment || '10', 10)),
+            docsWeight: tag => (weight = Number.parseInt(tag.comment || '10', 10)),
         });
         return weight;
     }
@@ -330,9 +335,20 @@ export class TypescriptDocsParser {
     private getDocsPage(statement: ValidDeclaration): string | undefined {
         let docsPage: string | undefined;
         this.parseTags(statement, {
-            docsPage: (tag) => (docsPage = tag.comment),
+            docsPage: tag => (docsPage = tag.comment),
         });
         return docsPage;
+    }
+
+    /**
+     * Reads the @since JSDoc tag
+     */
+    private getSince(statement: ValidDeclaration): string | undefined {
+        let since: string | undefined;
+        this.parseTags(statement, {
+            since: tag => (since = tag.comment),
+        });
+        return since;
     }
 
     /**
@@ -341,8 +357,8 @@ export class TypescriptDocsParser {
     private getDeclarationDescription(statement: ValidDeclaration): string {
         let description = '';
         this.parseTags(statement, {
-            description: (tag) => (description += tag.comment),
-            example: (tag) => (description += this.formatExampleCode(tag.comment)),
+            description: tag => (description += tag.comment),
+            example: tag => (description += this.formatExampleCode(tag.comment)),
         });
         return this.restoreAtTokens(description);
     }
@@ -353,7 +369,7 @@ export class TypescriptDocsParser {
     private getDocsCategory(statement: ValidDeclaration): string | undefined {
         let category: string | undefined;
         this.parseTags(statement, {
-            docsCategory: (tag) => (category = tag.comment || ''),
+            docsCategory: tag => (category = tag.comment || ''),
         });
         return this.kebabCase(category);
     }
