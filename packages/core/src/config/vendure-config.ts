@@ -476,9 +476,10 @@ export interface OrderOptions {
      * @description
      * Defines the strategy used to check if and how an Order may be retrieved via the orderByCode query.
      *
-     * The default strategy permitts permanent access to the Customer owning the Order and anyone
+     * The default strategy permits permanent access to the Customer owning the Order and anyone
      * within 2 hours after placing the Order.
      *
+     * @since 1.1.0
      * @default DefaultOrderByCodeAccessStrategy
      */
     orderByCodeAccessStrategy?: OrderByCodeAccessStrategy;

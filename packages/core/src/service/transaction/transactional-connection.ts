@@ -38,6 +38,7 @@ export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
      * creation of new Entities which may on first attempt be inaccessible due to an ongoing
      * transaction.
      *
+     * @since 1.1.0
      * @default 0
      */
     retries?: number;
@@ -45,6 +46,7 @@ export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
      * @description
      * Specifies the delay in ms to wait between retries.
      *
+     * @since 1.1.0
      * @default 25
      */
     retryDelay?: number;

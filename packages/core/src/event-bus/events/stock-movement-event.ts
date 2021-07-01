@@ -9,6 +9,7 @@ import { VendureEvent } from '../vendure-event';
  * This event is fired whenever a {@link StockMovement} entity is created, which occurs when the saleable
  * stock level of a ProductVariant is altered due to things like sales, manual adjustments, and cancellations.
  *
+ * @since 1.1.0
  * @docsCategory events
  * @docsPage Event Types
  */

@@ -137,7 +137,10 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     }
 
     /**
+     * @description
      * A function which allows {@link OptionalAddressFields} to be specified such as "cc" and "bcc".
+     *
+     * @since 1.1.0
      */
     setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) {
         this.setOptionalAddressFieldsFn = optionalAddressFieldsFn;

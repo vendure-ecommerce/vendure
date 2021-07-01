@@ -458,6 +458,7 @@ export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Prom
  * @description
  * Optional address-related fields for sending the email.
  *
+ * @since 1.1.0
  * @docsCategory EmailPlugin
  * @docsPage Email Plugin Types
  */
@@ -483,6 +484,7 @@ export interface OptionalAddressFields {
  * @description
  * A function used to set the {@link OptionalAddressFields}.
  *
+ * @since 1.1.0
  * @docsCategory EmailPlugin
  * @docsPage Email Plugin Types
  */

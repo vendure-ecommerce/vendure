@@ -194,6 +194,7 @@ export interface Middleware {
      * `body-parser` middleware which is automatically applied by NestJS. This can be useful in certain cases such as when you need to access the
      * raw unparsed request for a specific route.
      *
+     * @since 1.1.0
      * @default false
      */
     beforeListen?: boolean;

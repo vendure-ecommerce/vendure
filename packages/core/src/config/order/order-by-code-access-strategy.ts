@@ -24,6 +24,7 @@ import { Order } from '../../entity/order/order.entity';
  * }
  * ```
  *
+ * @since 1.1.0
  * @docsCategory orders
  * @docsPage OrderByCodeAccessStrategy
  */
