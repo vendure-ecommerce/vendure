@@ -1,3 +1,39 @@
+## 1.1.0 (2021-07-01)
+
+
+#### Fixes
+
+* **admin-ui** Correctly export relation selector components ([56ab5bd](https://github.com/vendure-ecommerce/vendure/commit/56ab5bd)), closes [#941](https://github.com/vendure-ecommerce/vendure/issues/941)
+* **asset-server-plugin** Update sharp to fix Linux install issues ([e9de674](https://github.com/vendure-ecommerce/vendure/commit/e9de674)), closes [#962](https://github.com/vendure-ecommerce/vendure/issues/962)
+* **core** Fix occasional failing variantNameCollectionFilter ([ac76e2c](https://github.com/vendure-ecommerce/vendure/commit/ac76e2c))
+* **core** Improve fault tolerance of "apply-collection-filters" job ([be59bf9](https://github.com/vendure-ecommerce/vendure/commit/be59bf9))
+* **core** Improve fault-tolerance of JobQueue ([cb5b100](https://github.com/vendure-ecommerce/vendure/commit/cb5b100))
+* **core** Make verifyCustomerAccount channel-independent (#945) ([39b3937](https://github.com/vendure-ecommerce/vendure/commit/39b3937)), closes [#945](https://github.com/vendure-ecommerce/vendure/issues/945)
+
+#### Features
+
+* **admin-ui** Add ability to filter promotions by name or coupon code ([5795a84](https://github.com/vendure-ecommerce/vendure/commit/5795a84))
+* **admin-ui** Add Ukrainian translation (#889) ([b0b1716](https://github.com/vendure-ecommerce/vendure/commit/b0b1716)), closes [#889](https://github.com/vendure-ecommerce/vendure/issues/889)
+* **admin-ui** Enable adding OptionGroups to existing products ([bd5e7c0](https://github.com/vendure-ecommerce/vendure/commit/bd5e7c0)), closes [#711](https://github.com/vendure-ecommerce/vendure/issues/711)
+* **admin-ui** Enable selection of content language from list views ([eb9cb4f](https://github.com/vendure-ecommerce/vendure/commit/eb9cb4f)), closes [#883](https://github.com/vendure-ecommerce/vendure/issues/883)
+* **admin-ui** Support "text" custom fields with textarea control ([2abd018](https://github.com/vendure-ecommerce/vendure/commit/2abd018)), closes [#885](https://github.com/vendure-ecommerce/vendure/issues/885)
+* **admin-ui** Support custom field controls in FulfillmentDetail ([a8a7eac](https://github.com/vendure-ecommerce/vendure/commit/a8a7eac)), closes [#887](https://github.com/vendure-ecommerce/vendure/issues/887)
+* **admin-ui** Support custom field controls in OrderTable ([02c2d4e](https://github.com/vendure-ecommerce/vendure/commit/02c2d4e)), closes [#887](https://github.com/vendure-ecommerce/vendure/issues/887)
+* **core** Access to orderByCode configurable by strategy ([2554822](https://github.com/vendure-ecommerce/vendure/commit/2554822))
+* **core** Add "text" custom field type for storing data over 64k ([00c5c43](https://github.com/vendure-ecommerce/vendure/commit/00c5c43)), closes [#885](https://github.com/vendure-ecommerce/vendure/issues/885)
+* **core** Add retries to TransactionalConnection.getEntityOrThrow() ([1e3ba7b](https://github.com/vendure-ecommerce/vendure/commit/1e3ba7b)), closes [#937](https://github.com/vendure-ecommerce/vendure/issues/937)
+* **core** Allow middleware to execute before server.listen ([dd89204](https://github.com/vendure-ecommerce/vendure/commit/dd89204))
+* **core** Allow Plugin entities to be defined with a function ([d130134](https://github.com/vendure-ecommerce/vendure/commit/d130134)), closes [#906](https://github.com/vendure-ecommerce/vendure/issues/906)
+* **core** Check availability of variants when adding to Order ([ea2b6b0](https://github.com/vendure-ecommerce/vendure/commit/ea2b6b0)), closes [#723](https://github.com/vendure-ecommerce/vendure/issues/723)
+* **core** Emit CustomerEvent on creation via Shop API ([680b8c2](https://github.com/vendure-ecommerce/vendure/commit/680b8c2)), closes [#949](https://github.com/vendure-ecommerce/vendure/issues/949)
+* **core** Enable importing of custom field list data ([5d85c07](https://github.com/vendure-ecommerce/vendure/commit/5d85c07)), closes [#577](https://github.com/vendure-ecommerce/vendure/issues/577)
+* **core** Export all helper classes from service layer ([d529db0](https://github.com/vendure-ecommerce/vendure/commit/d529db0))
+* **core** Export PasswordCipher helper ([221051f](https://github.com/vendure-ecommerce/vendure/commit/221051f))
+* **core** Improve typing of TransactionConnection.getEntityOrThrow ([eec8808](https://github.com/vendure-ecommerce/vendure/commit/eec8808))
+* **core** Publish StockMovementEvent ([0a71723](https://github.com/vendure-ecommerce/vendure/commit/0a71723)), closes [#902](https://github.com/vendure-ecommerce/vendure/issues/902)
+* **email-plugin** Add `.setOptionalAddressFields()` - cc, bcc, replyTo ([8e9b72f](https://github.com/vendure-ecommerce/vendure/commit/8e9b72f)), closes [#921](https://github.com/vendure-ecommerce/vendure/issues/921)
+* **email-plugin** Extend attachment support ([70a55fd](https://github.com/vendure-ecommerce/vendure/commit/70a55fd)), closes [#882](https://github.com/vendure-ecommerce/vendure/issues/882)
+
 ## <small>1.0.3 (2021-06-18)</small>
 
 
