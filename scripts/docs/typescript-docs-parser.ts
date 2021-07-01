@@ -408,7 +408,7 @@ export class TypescriptDocsParser {
      * Ensure all the code examples use the unix-style line separators.
      */
     private formatExampleCode(example: string = ''): string {
-        return '\n\n*Example*\n\n' + example.replace(/\r/g, '\n');
+        return '\n\n*Example*\n\n' + example.replace(/\r/g, '');
     }
 
     private kebabCase<T extends string | undefined>(input: T): T {
