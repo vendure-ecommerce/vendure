@@ -3,6 +3,6 @@
 <div *ngFor="let code of availableLanguages" >
     <button class="btn btn-link btn-sm" (click)="setLanguage(code)">
         <clr-icon [attr.shape]="code === currentLanguage ? 'dot-circle' : 'circle'"></clr-icon>
-        {{ code | uppercase }} ({{ 'lang.' + code | translate }})
+        {{ code | uppercase }} ({{ code | localeLanguageName }})
     </button>
 </div>

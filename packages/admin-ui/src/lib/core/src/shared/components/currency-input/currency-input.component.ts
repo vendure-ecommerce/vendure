@@ -53,11 +53,11 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
                     return '';
                 }
                 const locale = languageCode.replace(/_/g, '-');
-                const parts = new Intl.NumberFormat(locale, {
+                const parts = (new Intl.NumberFormat(locale, {
                     style: 'currency',
                     currency: currencyCode,
                     currencyDisplay: 'symbol',
-                }).formatToParts();
+                }) as any).formatToParts();
                 const NaNString = parts.find(p => p.type === 'nan')?.value ?? 'NaN';
                 const localised = new Intl.NumberFormat(locale, {
                     style: 'currency',

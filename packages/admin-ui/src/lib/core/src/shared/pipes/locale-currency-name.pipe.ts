@@ -35,11 +35,11 @@ export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransf
             }).of(value);
         }
         if (display === 'full' || display === 'symbol') {
-            const parts = new Intl.NumberFormat(activeLocale, {
+            const parts = (new Intl.NumberFormat(activeLocale, {
                 style: 'currency',
                 currency: value,
                 currencyDisplay: 'symbol',
-            }).formatToParts();
+            }) as any).formatToParts();
 
             symbol = parts.find(p => p.type === 'currency')?.value || value;
         }
