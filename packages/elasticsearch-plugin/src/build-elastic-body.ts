@@ -120,6 +120,7 @@ export function buildElasticBody(
         sort: sortArray,
         from: skip || 0,
         size: take || 10,
+        track_total_hits: searchConfig.totalItemsMaxSize,
     };
 }
 

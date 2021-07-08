@@ -173,6 +173,19 @@ export interface SearchConfig {
      */
     collectionMaxSize?: number;
 
+    /**
+     * @description
+     * The maximum number of totalItems to return from the search query. Internally, this
+     * value sets the "track_total_hits" property of an Elasticsearch query.
+     * If this parameter is set to "True", accurate count of totalItems will be returned.
+     * If this parameter is set to "False", totalItems will be returned as 0.
+     * If this parameter is set to integer, accurate count of totalItems will be returned not bigger than integer.
+     *
+     * @default
+     * 10000
+     */
+    totalItemsMaxSize?: number|boolean;
+
     // prettier-ignore
     /**
      * @description
@@ -326,6 +339,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     searchConfig: {
         facetValueMaxSize: 50,
         collectionMaxSize: 50,
+        totalItemsMaxSize: 10000,
         multiMatchType: 'best_fields',
         boostFields: {
             productName: 1,
