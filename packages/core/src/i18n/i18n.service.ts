@@ -54,7 +54,7 @@ export class I18nService implements OnModuleInit {
             .use(Backend as any)
             .use(ICU as any)
             .init({
-                preload: ['en', 'de'],
+                preload: ['en', 'de', 'ru', 'uk'],
                 fallbackLng: 'en',
                 detection: {
                     lookupQuerystring: 'languageCode',
