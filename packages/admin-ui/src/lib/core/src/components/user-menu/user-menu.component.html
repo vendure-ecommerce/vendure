@@ -15,7 +15,7 @@
                 (click)="selectUiLanguage.emit()"
                 [title]="'common.select-display-language' | translate"
             >
-                <clr-icon shape="language"></clr-icon> {{ 'lang.' + uiLanguage | translate }}
+                <clr-icon shape="language"></clr-icon> {{ uiLanguage | localeLanguageName }}
             </button>
         </ng-container>
         <div class="dropdown-item">

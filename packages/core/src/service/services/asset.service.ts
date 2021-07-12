@@ -259,6 +259,7 @@ export class AssetService {
             input.focalPoint.y = to3dp(input.focalPoint.y);
         }
         patchEntity(asset, omit(input, ['tags']));
+        await this.customFieldRelationService.updateRelations(ctx, Asset, input, asset);
         if (input.tags) {
             asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
         }

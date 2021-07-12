@@ -72,13 +72,13 @@ export class CollectionEntityResolver {
         @Parent() collection: Collection,
         @Api() apiType: ApiType,
     ): Promise<Collection | undefined> {
-        let parent: Collection;
+        let parent: Collection | undefined;
         if (collection.parent) {
             parent = collection.parent;
         } else {
-            parent = (await this.collectionService.getParent(ctx, collection.id)) as any;
+            parent = await this.collectionService.getParent(ctx, collection.id);
         }
-        return apiType === 'shop' && parent.isPrivate ? undefined : parent;
+        return apiType === 'shop' && parent?.isPrivate ? undefined : parent;
     }
 
     @ResolveField()

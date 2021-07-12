@@ -51,7 +51,7 @@
             [vdrDisabled]="!(updatePermission | hasPermission)"
         >
             <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode">
-                {{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})
+                {{ languageCode | localeLanguageName }} ({{ languageCode | uppercase }})
             </option>
         </select>
     </vdr-form-field>
