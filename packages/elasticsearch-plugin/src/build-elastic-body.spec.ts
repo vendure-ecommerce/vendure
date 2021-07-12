@@ -230,6 +230,7 @@ describe('buildElasticBody()', () => {
             size: 10,
             query: { bool: { filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM] } },
             sort: [],
+            track_total_hits: 10000,
         });
     });
 
@@ -329,6 +330,7 @@ describe('buildElasticBody()', () => {
                 },
             },
             sort: [{ 'productName.keyword': { order: 'desc' } }],
+            track_total_hits: 10000,
         });
     });
 

@@ -135,7 +135,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 });
                 return {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
-                    totalItems: body.hits.total.value,
+                    totalItems: body.hits.total ? body.hits.total.value : 0,
                 };
             } catch (e) {
                 Logger.error(e.message, loggerCtx, e.stack);
@@ -149,7 +149,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 });
                 return {
                     items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
-                    totalItems: body.hits.total.value,
+                    totalItems: body.hits.total ? body.hits.total.value : 0,
                 };
             } catch (e) {
                 Logger.error(e.message, loggerCtx, e.stack);
