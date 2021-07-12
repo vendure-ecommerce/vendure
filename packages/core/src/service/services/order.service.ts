@@ -409,7 +409,12 @@ export class OrderService {
             productVariantId,
             customFields,
         );
-        await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
+        if (correctedQuantity < quantity) {
+            const newQuantity = (existingOrderLine ? existingOrderLine?.quantity : 0) + correctedQuantity;
+            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, newQuantity, order);
+        } else {
+            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
+        }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
         if (quantityWasAdjustedDown) {
@@ -457,7 +462,7 @@ export class OrderService {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
         } else {
-            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, quantity, order);
+            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
