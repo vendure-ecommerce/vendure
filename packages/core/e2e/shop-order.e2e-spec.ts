@@ -540,12 +540,13 @@ describe('Shop orders', () => {
                 AdjustItemQuantity.Variables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: 'T_8',
-                quantity: 99,
+                quantity: 101,
             });
-            orderResultGuard.assertSuccess(adjustOrderLine);
-            expect(adjustOrderLine!.lines.length).toBe(2);
-            expect(adjustOrderLine!.lines[1].quantity).toBe(99);
-            expect(adjustOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            orderResultGuard.assertErrorResult(adjustOrderLine);
+            expect(adjustOrderLine.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
+            expect(adjustOrderLine.message).toBe(
+                'Only 100 items were added to the order due to insufficient stock',
+            );
 
             const { adjustOrderLine: adjustLine2 } = await shopClient.query<
                 AdjustItemQuantity.Mutation,
