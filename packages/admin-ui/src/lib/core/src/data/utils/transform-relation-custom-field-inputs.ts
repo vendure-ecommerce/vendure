@@ -7,12 +7,17 @@ import { CustomFieldConfig } from '../../common/generated-types';
  * Transforms any custom field "relation" type inputs into the corresponding `<name>Id` format,
  * as expected by the server.
  */
-export function transformRelationCustomFieldInputs<T extends { input?: any } & Record<string, any> = any>(
-    variables: T,
-    customFieldConfig: CustomFieldConfig[],
-): T {
+export function transformRelationCustomFieldInputs<
+    T extends { input?: Record<string, any> | Array<Record<string, any>> } & Record<string, any> = any
+>(variables: T, customFieldConfig: CustomFieldConfig[]): T {
     if (variables.input) {
-        transformRelations(variables.input, customFieldConfig);
+        if (Array.isArray(variables.input)) {
+            for (const item of variables.input) {
+                transformRelations(item, customFieldConfig);
+            }
+        } else {
+            transformRelations(variables.input, customFieldConfig);
+        }
     }
     return transformRelations(variables, customFieldConfig);
 }
@@ -22,7 +27,7 @@ export function transformRelationCustomFieldInputs<T extends { input?: any } & R
  * When persisting custom fields, we need to send just the IDs of the relations,
  * rather than the objects themselves.
  */
-function transformRelations(input: any, customFieldConfig: CustomFieldConfig[]) {
+function transformRelations<T>(input: T, customFieldConfig: CustomFieldConfig[]) {
     for (const field of customFieldConfig) {
         if (field.type === 'relation') {
             if (hasCustomFields(input)) {
