@@ -13,6 +13,7 @@ import { debounceTime, delay, finalize, map, take as rxjsTake, takeUntil, tap } 
 
 import {
     Asset,
+    CreateAssets,
     GetAssetList,
     LogicalOperator,
     SortOrder,
@@ -22,6 +23,7 @@ import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';
 import { Dialog } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
+import { AssetGalleryComponent } from '../asset-gallery/asset-gallery.component';
 import { AssetSearchInputComponent } from '../asset-search-input/asset-search-input.component';
 
 /**
@@ -43,6 +45,8 @@ export class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDest
     };
     @ViewChild('assetSearchInputComponent')
     private assetSearchInputComponent: AssetSearchInputComponent;
+    @ViewChild('assetGalleryComponent')
+    private assetGalleryComponent: AssetGalleryComponent;
 
     multiSelect = true;
     initialTags: string[] = [];
@@ -119,6 +123,10 @@ export class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDest
                     this.notificationService.success(_('asset.notify-create-assets-success'), {
                         count: files.length,
                     });
+                    const assets = res.createAssets.filter(
+                        a => a.__typename === 'Asset',
+                    ) as CreateAssets.AssetInlineFragment[];
+                    this.assetGalleryComponent.selectMultiple(assets);
                 });
         }
     }

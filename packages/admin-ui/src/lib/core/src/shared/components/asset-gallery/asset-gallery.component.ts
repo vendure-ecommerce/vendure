@@ -38,9 +38,9 @@ export class AssetGalleryComponent implements OnChanges {
         }
     }
 
-    toggleSelection(event: MouseEvent, asset: Asset) {
+    toggleSelection(asset: AssetLike, event?: MouseEvent) {
         const index = this.selection.findIndex(a => a.id === asset.id);
-        if (this.multiSelect && event.shiftKey && 1 <= this.selection.length) {
+        if (this.multiSelect && event?.shiftKey && 1 <= this.selection.length) {
             const lastSelection = this.selection[this.selection.length - 1];
             const lastSelectionIndex = this.assets.findIndex(a => a.id === lastSelection.id);
             const currentIndex = this.assets.findIndex(a => a.id === asset.id);
@@ -50,13 +50,13 @@ export class AssetGalleryComponent implements OnChanges {
                 ...this.assets.slice(start, end).filter(a => !this.selection.find(s => s.id === a.id)),
             );
         } else if (index === -1) {
-            if (this.multiSelect && (event.ctrlKey || event.shiftKey)) {
+            if (this.multiSelect && (event?.ctrlKey || event?.shiftKey)) {
                 this.selection.push(asset);
             } else {
                 this.selection = [asset];
             }
         } else {
-            if (this.multiSelect && event.ctrlKey) {
+            if (this.multiSelect && event?.ctrlKey) {
                 this.selection.splice(index, 1);
             } else if (1 < this.selection.length) {
                 this.selection = [asset];
@@ -66,6 +66,11 @@ export class AssetGalleryComponent implements OnChanges {
         }
         // Make the selection mutable
         this.selection = this.selection.map(x => ({ ...x }));
+        this.selectionChange.emit(this.selection);
+    }
+
+    selectMultiple(assets: AssetLike[]) {
+        this.selection = assets;
         this.selectionChange.emit(this.selection);
     }
 

@@ -21,6 +21,7 @@
     [assets]="(assets$ | async)! | paginate: paginationConfig"
     [multiSelect]="multiSelect"
     (selectionChange)="selection = $event"
+    #assetGalleryComponent
 ></vdr-asset-gallery>
 
 <div class="paging-controls">
