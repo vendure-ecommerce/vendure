@@ -88,4 +88,66 @@ describe('transformRelationCustomFieldInput()', () => {
             },
         } as any);
     });
+
+    it('transforms input object', () => {
+        const config: CustomFieldConfig[] = [
+            { name: 'weight', type: 'int', list: false },
+            { name: 'avatar', type: 'relation', list: false, entity: 'Asset' },
+        ];
+        const entity = {
+            id: 1,
+            name: 'test',
+            customFields: {
+                weight: 500,
+                avatar: {
+                    id: 123,
+                    preview: '...',
+                },
+            },
+        };
+
+        const result = transformRelationCustomFieldInputs({ input: entity }, config);
+        expect(result).toEqual({
+            input: {
+                id: 1,
+                name: 'test',
+                customFields: {
+                    weight: 500,
+                    avatarId: 123,
+                },
+            },
+        } as any);
+    });
+
+    it('transforms input array (as in UpdateProductVariantsInput)', () => {
+        const config: CustomFieldConfig[] = [
+            { name: 'weight', type: 'int', list: false },
+            { name: 'avatar', type: 'relation', list: false, entity: 'Asset' },
+        ];
+        const entity = {
+            id: 1,
+            name: 'test',
+            customFields: {
+                weight: 500,
+                avatar: {
+                    id: 123,
+                    preview: '...',
+                },
+            },
+        };
+
+        const result = transformRelationCustomFieldInputs({ input: [entity] }, config);
+        expect(result).toEqual({
+            input: [
+                {
+                    id: 1,
+                    name: 'test',
+                    customFields: {
+                        weight: 500,
+                        avatarId: 123,
+                    },
+                },
+            ],
+        } as any);
+    });
 });
