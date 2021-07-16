@@ -1,6 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import equal from 'fast-deep-equal/es6';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     Collection,
@@ -15,6 +14,7 @@ import {
     RequestContext,
     SearchService,
 } from '@vendure/core';
+import equal from 'fast-deep-equal/es6';
 
 import { buildElasticBody } from './build-elastic-body';
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
