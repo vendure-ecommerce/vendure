@@ -1,5 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import equal from 'fast-deep-equal/es6';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     Collection,
@@ -94,7 +95,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             const index = indexPrefix + indexName;
             const result = await this.client.indices.exists({ index });
 
-            if (result.body === false) {
+            if (!result.body) {
                 Logger.verbose(`Index "${index}" does not exist. Creating...`, loggerCtx);
                 await createIndices(
                     this.client,
@@ -105,6 +106,43 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 );
             } else {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
+
+                const existedIndexSettings = await this.client.indices.getSettings({ index });
+                const existedSettings = existedIndexSettings.body[index].settings.index;
+
+                const temp_name = Math.random().toString(36).substring(7);
+                const temp_index = temp_name + indexName;
+                await createIndices(
+                    this.client,
+                    `${temp_name}`,
+                    this.options.indexSettings,
+                    this.options.indexMappingProperties,
+                    this.configService.entityIdStrategy.primaryKeyType,
+                );
+                const tempIndexSettings = await this.client.indices.getSettings({index:temp_index});
+                const tempSettings = tempIndexSettings.body[temp_index].settings.index;
+
+                const index_params_to_exclude = [`routing`, `number_of_shards`, `provided_name`, `creation_date`, `number_of_replicas`, `uuid`, `version`];
+                for (const param of index_params_to_exclude)
+                {
+                    if (tempSettings[param]) delete tempSettings[param];
+                    if (existedSettings[param]) delete existedSettings[param];
+                }
+
+                if(!equal(tempSettings,existedSettings))
+                    Logger.warn(`Index "${index}" schema differ from index definition in vendure config! Consider to reindex data.`, loggerCtx);
+                else {
+                    const existedIndexMappings = await this.client.indices.getMapping({ index });
+                    const existedMappings = existedIndexMappings.body[index].mappings;
+
+                    const tempIndexMappings = await this.client.indices.getMapping({index:temp_index});
+                    const tempMappings = tempIndexMappings.body[temp_index].mappings;
+                    if(!equal(tempMappings,existedMappings))
+                        Logger.warn(`Index "${index}" schema differ from index definition in vendure config! Consider to reindex data.`, loggerCtx);
+                }
+
+                await this.client.indices.delete({index:`${temp_name}products`});
+                await this.client.indices.delete({index:`${temp_name}variants`});
             }
         };
 
@@ -417,17 +455,17 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     ): { productAsset: SearchResultAsset | undefined; productVariantAsset: SearchResultAsset | undefined } {
         const productAsset: SearchResultAsset | undefined = source.productAssetId
             ? {
-                  id: source.productAssetId.toString(),
-                  preview: source.productPreview,
-                  focalPoint: source.productPreviewFocalPoint,
-              }
+                id: source.productAssetId.toString(),
+                preview: source.productPreview,
+                focalPoint: source.productPreviewFocalPoint,
+            }
             : undefined;
         const productVariantAsset: SearchResultAsset | undefined = source.productVariantAssetId
             ? {
-                  id: source.productVariantAssetId.toString(),
-                  preview: source.productVariantPreview,
-                  focalPoint: source.productVariantPreviewFocalPoint,
-              }
+                id: source.productVariantAssetId.toString(),
+                preview: source.productVariantPreview,
+                focalPoint: source.productVariantPreviewFocalPoint,
+            }
             : undefined;
         return { productAsset, productVariantAsset };
     }
