@@ -1493,6 +1493,55 @@ describe('Product resolver', () => {
                     deletedVariant.options.map(o => o.code).sort(),
                 );
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/980
+            it('creating variants in a non-default language', async () => {
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'Ananas',
+                                slug: 'ananas',
+                                description: 'Yummy Ananas',
+                            },
+                        ],
+                    },
+                });
+
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: createProduct.id,
+                            sku: 'AN1110111',
+                            optionIds: [],
+                            translations: [{ languageCode: LanguageCode.de, name: 'Ananas Klein' }],
+                        },
+                    ],
+                });
+
+                expect(createProductVariants.length).toBe(1);
+                expect(createProductVariants[0]?.name).toBe('Ananas Klein');
+
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: createProduct.id,
+                    },
+                    { languageCode: LanguageCode.en },
+                );
+
+                expect(product?.variants.length).toBe(1);
+            });
         });
     });
 
