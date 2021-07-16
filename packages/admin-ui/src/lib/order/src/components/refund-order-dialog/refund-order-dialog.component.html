@@ -122,7 +122,7 @@
                 <input type="checkbox" clrCheckbox [(ngModel)]="refundShipping" [disabled]="!isRefunding()" />
                 <label>
                     {{ 'order.refund-shipping' | translate }} ({{
-                        order.shipping | localeCurrency: order.currencyCode
+                        order.shippingWithTax | localeCurrency: order.currencyCode
                     }})
                 </label>
             </clr-checkbox-wrapper>
