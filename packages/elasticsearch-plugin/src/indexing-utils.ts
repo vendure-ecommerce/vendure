@@ -4,7 +4,7 @@ import { ID, Logger } from '@vendure/core';
 import { loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
 import { ProductIndexItem, VariantIndexItem } from './types';
 
-export async function createIndices(client: Client, prefix: string, primaryKeyType: 'increment' | 'uuid') {
+export async function createIndices(client: Client, prefix: string, indexSettings: object, indexMappingProperties: object, primaryKeyType: 'increment' | 'uuid') {
     const textWithKeyword = {
         type: 'text',
         fields: {
@@ -46,12 +46,14 @@ export async function createIndices(client: Client, prefix: string, primaryKeyTy
         priceMax: { type: 'long' },
         priceWithTaxMin: { type: 'long' },
         priceWithTaxMax: { type: 'long' },
+        ...indexMappingProperties
     };
 
     const variantMappings: { [prop in keyof VariantIndexItem]: any } = {
         ...commonMappings,
         price: { type: 'long' },
         priceWithTax: { type: 'long' },
+        ...indexMappingProperties
     };
 
     try {
@@ -62,6 +64,7 @@ export async function createIndices(client: Client, prefix: string, primaryKeyTy
                 mappings: {
                     properties: variantMappings,
                 },
+                settings: indexSettings
             },
         });
         Logger.verbose(`Created index "${index}"`, loggerCtx);
@@ -76,6 +79,7 @@ export async function createIndices(client: Client, prefix: string, primaryKeyTy
                 mappings: {
                     properties: productMappings,
                 },
+                settings: indexSettings
             },
         });
         Logger.verbose(`Created index "${index}"`, loggerCtx);

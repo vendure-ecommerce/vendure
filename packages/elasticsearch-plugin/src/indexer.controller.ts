@@ -218,6 +218,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     await createIndices(
                         this.client,
                         this.options.indexPrefix,
+                        this.options.indexSettings,
+                        this.options.indexMappingProperties,
                         this.configService.entityIdStrategy.primaryKeyType,
                     );
                 }

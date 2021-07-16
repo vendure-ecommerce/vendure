@@ -99,6 +99,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 await createIndices(
                     this.client,
                     indexPrefix,
+                    this.options.indexSettings,
+                    this.options.indexMappingProperties,
                     this.configService.entityIdStrategy.primaryKeyType,
                 );
             } else {

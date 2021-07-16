@@ -58,6 +58,25 @@ export interface ElasticsearchOptions {
     indexPrefix?: string;
     /**
      * @description
+     * [These options](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index-modules.html#index-modules-settings)
+     * are directly passed to index settings. To apply some settings indices will be recreated.
+     *
+     * @default
+     * {}
+     */
+    indexSettings?: object;
+    /**
+     * @description
+     * This option allow to redefine or define new properties in mapping. More about elastic
+     * [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
+     * After changing this option indices will be recreated.
+     *
+     * @default
+     * {}
+     */
+    indexMappingProperties?: object;
+    /**
+     * @description
      * Batch size for bulk operations (e.g. when rebuilding the indices).
      *
      * @default
@@ -335,6 +354,8 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     connectionAttempts: 10,
     connectionAttemptInterval: 5000,
     indexPrefix: 'vendure-',
+    indexSettings: {},
+    indexMappingProperties:{},
     batchSize: 2000,
     searchConfig: {
         facetValueMaxSize: 50,
