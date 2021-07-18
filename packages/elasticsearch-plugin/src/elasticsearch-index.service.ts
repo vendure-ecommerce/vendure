@@ -64,8 +64,8 @@ export class ElasticsearchIndexService implements OnApplicationBootstrap {
         });
     }
 
-    reindex(ctx: RequestContext, dropIndices: boolean) {
-        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize(), dropIndices });
+    reindex(ctx: RequestContext) {
+        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize()});
     }
 
     updateProduct(ctx: RequestContext, product: Product) {

@@ -4,7 +4,8 @@ import { ID, Logger } from '@vendure/core';
 import { loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
 import { ProductIndexItem, VariantIndexItem } from './types';
 
-export async function createIndices(client: Client, prefix: string, indexSettings: object, indexMappingProperties: object, primaryKeyType: 'increment' | 'uuid') {
+export async function createIndices(client: Client, prefix: string, indexSettings: object, indexMappingProperties: object,
+                                    primaryKeyType: 'increment' | 'uuid', mapAlias = true, aliasPostfix = ``) {
     const textWithKeyword = {
         type: 'text',
         fields: {
@@ -46,43 +47,85 @@ export async function createIndices(client: Client, prefix: string, indexSetting
         priceMax: { type: 'long' },
         priceWithTaxMin: { type: 'long' },
         priceWithTaxMax: { type: 'long' },
-        ...indexMappingProperties
+        ...indexMappingProperties,
     };
 
     const variantMappings: { [prop in keyof VariantIndexItem]: any } = {
         ...commonMappings,
         price: { type: 'long' },
         priceWithTax: { type: 'long' },
-        ...indexMappingProperties
+        ...indexMappingProperties,
     };
 
+    const date = new Date();
+    const unixtimestampPostfix = date.valueOf();
+
     try {
-        const index = prefix + VARIANT_INDEX_NAME;
-        await client.indices.create({
-            index,
-            body: {
-                mappings: {
-                    properties: variantMappings,
+        const index = prefix + VARIANT_INDEX_NAME + `${unixtimestampPostfix}`;
+        const alias = prefix + VARIANT_INDEX_NAME + aliasPostfix;
+
+        if (mapAlias) {
+            await client.indices.create({
+                index,
+                body: {
+                    mappings: {
+                        properties: variantMappings,
+                    },
+                    settings: indexSettings,
                 },
-                settings: indexSettings
-            },
-        });
-        Logger.verbose(`Created index "${index}"`, loggerCtx);
+            });
+            await client.indices.putAlias({
+                index,
+                name: alias,
+            });
+            Logger.verbose(`Created index "${index}"`, loggerCtx);
+        } else {
+            await client.indices.create({
+                index: alias,
+                body: {
+                    mappings: {
+                        properties: variantMappings,
+                    },
+                    settings: indexSettings,
+                },
+            });
+            Logger.verbose(`Created index "${alias}"`, loggerCtx);
+        }
+
     } catch (e) {
         Logger.error(JSON.stringify(e, null, 2), loggerCtx);
     }
     try {
-        const index = prefix + PRODUCT_INDEX_NAME;
-        await client.indices.create({
-            index,
-            body: {
-                mappings: {
-                    properties: productMappings,
+        const index = prefix + PRODUCT_INDEX_NAME + `${unixtimestampPostfix}`;
+        const alias = prefix + PRODUCT_INDEX_NAME + aliasPostfix;
+
+        if (mapAlias) {
+            await client.indices.create({
+                index,
+                body: {
+                    mappings: {
+                        properties: variantMappings,
+                    },
+                    settings: indexSettings,
                 },
-                settings: indexSettings
-            },
-        });
-        Logger.verbose(`Created index "${index}"`, loggerCtx);
+            });
+            await client.indices.putAlias({
+                index,
+                name: alias,
+            });
+            Logger.verbose(`Created index "${index}"`, loggerCtx);
+        } else {
+            await client.indices.create({
+                index: alias,
+                body: {
+                    mappings: {
+                        properties: variantMappings,
+                    },
+                    settings: indexSettings,
+                },
+            });
+            Logger.verbose(`Created index "${alias}"`, loggerCtx);
+        }
     } catch (e) {
         Logger.error(JSON.stringify(e, null, 2), loggerCtx);
     }

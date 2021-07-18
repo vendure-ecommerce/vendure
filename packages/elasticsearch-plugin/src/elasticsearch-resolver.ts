@@ -55,7 +55,7 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
     @Mutation()
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async reindex(@Ctx() ctx: RequestContext): Promise<GraphQLJob> {
-        return (this.elasticsearchService.reindex(ctx, false) as unknown) as GraphQLJob;
+        return (this.elasticsearchService.reindex(ctx) as unknown) as GraphQLJob;
     }
 }
 

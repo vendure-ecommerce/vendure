@@ -339,7 +339,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
             .subscribe(event => {
                 const defaultTaxZone = event.ctx.channel.defaultTaxZone;
                 if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                    return this.elasticsearchService.updateAll(event.ctx);
+                    return this.elasticsearchService.reindex(event.ctx);
                 }
             });
     }

@@ -108,41 +108,43 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
 
                 const existedIndexSettings = await this.client.indices.getSettings({ index });
-                const existedSettings = existedIndexSettings.body[index].settings.index;
+                const existedSettings = existedIndexSettings.body[Object.keys(existedIndexSettings.body)[0]].settings.index;
 
-                const temp_name = Math.random().toString(36).substring(7);
-                const temp_index = temp_name + indexName;
+
+                const date = new Date();
+                const temp_name = date.valueOf();
+                const temp_index = `temp` + `${temp_name}-` + indexName;
+                // ToDo Implement some random to fix race conflict of worker and server Math.random().toString(36).substring(7);
                 await createIndices(
                     this.client,
-                    `${temp_name}`,
+                    `temp` + `${temp_name}-`,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
                     this.configService.entityIdStrategy.primaryKeyType,
+                    false,
                 );
-                const tempIndexSettings = await this.client.indices.getSettings({index:temp_index});
+                const tempIndexSettings = await this.client.indices.getSettings({ index: temp_index });
                 const tempSettings = tempIndexSettings.body[temp_index].settings.index;
 
                 const index_params_to_exclude = [`routing`, `number_of_shards`, `provided_name`, `creation_date`, `number_of_replicas`, `uuid`, `version`];
-                for (const param of index_params_to_exclude)
-                {
+                for (const param of index_params_to_exclude) {
                     if (tempSettings[param]) delete tempSettings[param];
                     if (existedSettings[param]) delete existedSettings[param];
                 }
-
-                if(!equal(tempSettings,existedSettings))
+                // ToDo Research why after recreation schema differ
+                if (!equal(tempSettings, existedSettings))
                     Logger.warn(`Index "${index}" schema differ from index definition in vendure config! Consider to reindex data.`, loggerCtx);
                 else {
                     const existedIndexMappings = await this.client.indices.getMapping({ index });
-                    const existedMappings = existedIndexMappings.body[index].mappings;
+                    const existedMappings = existedIndexMappings.body[Object.keys(existedIndexMappings.body)[0]].mappings;
 
-                    const tempIndexMappings = await this.client.indices.getMapping({index:temp_index});
+                    const tempIndexMappings = await this.client.indices.getMapping({ index: temp_index });
                     const tempMappings = tempIndexMappings.body[temp_index].mappings;
-                    if(!equal(tempMappings,existedMappings))
+                    if (!equal(tempMappings, existedMappings))
                         Logger.warn(`Index "${index}" schema differ from index definition in vendure config! Consider to reindex data.`, loggerCtx);
                 }
 
-                await this.client.indices.delete({index:`${temp_name}products`});
-                await this.client.indices.delete({index:`${temp_name}variants`});
+                await this.client.indices.delete({ index: [`temp` + `${temp_name}-products`, `temp` + `${temp_name}-variants`] });
             }
         };
 
@@ -383,18 +385,9 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(ctx: RequestContext, dropIndices = true): Promise<Job> {
+    async reindex(ctx: RequestContext): Promise<Job> {
         const { indexPrefix } = this.options;
-        const job = await this.elasticsearchIndexService.reindex(ctx, dropIndices);
-        // tslint:disable-next-line:no-non-null-assertion
-        return job!;
-    }
-
-    /**
-     * Reindexes all in current Channel without dropping indices.
-     */
-    async updateAll(ctx: RequestContext): Promise<Job> {
-        const job = await this.elasticsearchIndexService.reindex(ctx, false);
+        const job = await this.elasticsearchIndexService.reindex(ctx);
         // tslint:disable-next-line:no-non-null-assertion
         return job!;
     }
