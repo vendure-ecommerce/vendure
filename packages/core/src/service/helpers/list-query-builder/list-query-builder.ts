@@ -253,11 +253,29 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                                 );
                             }),
                         );
-                        qb.setParameters({
-                            nonDefaultLanguageCode: languageCode,
-                            defaultLanguageCode: this.configService.defaultLanguageCode,
-                        });
+                    } else {
+                        qb1.orWhere(
+                            new Brackets(qb2 => {
+                                const translationEntity = translationColumns[0].entityMetadata.target;
+                                const subQb1 = this.connection.rawConnection
+                                    .createQueryBuilder(translationEntity, 'translation')
+                                    .where(`translation.base = ${alias}.id`)
+                                    .andWhere('translation.languageCode = :defaultLanguageCode');
+                                const subQb2 = this.connection.rawConnection
+                                    .createQueryBuilder(translationEntity, 'translation')
+                                    .where(`translation.base = ${alias}.id`)
+                                    .andWhere('translation.languageCode != :defaultLanguageCode');
+
+                                qb2.where(`NOT EXISTS (${subQb1.getQuery()})`).andWhere(
+                                    `EXISTS (${subQb2.getQuery()})`,
+                                );
+                            }),
+                        );
                     }
+                    qb.setParameters({
+                        nonDefaultLanguageCode: languageCode,
+                        defaultLanguageCode: this.configService.defaultLanguageCode,
+                    });
                 }),
             );
         }

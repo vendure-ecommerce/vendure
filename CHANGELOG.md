@@ -1,3 +1,23 @@
+## <small>1.1.1 (2021-07-19)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly display currency names in all languages ([bf728d6](https://github.com/vendure-ecommerce/vendure/commit/bf728d6)), closes [#971](https://github.com/vendure-ecommerce/vendure/issues/971)
+* **admin-ui** Correctly refund shipping amount when refunding an order ([42ef9bf](https://github.com/vendure-ecommerce/vendure/commit/42ef9bf)), closes [#989](https://github.com/vendure-ecommerce/vendure/issues/989)
+* **admin-ui** Fix affix logic of CurrencyInputComponent ([bcb57b0](https://github.com/vendure-ecommerce/vendure/commit/bcb57b0)), closes [#971](https://github.com/vendure-ecommerce/vendure/issues/971)
+* **admin-ui** Fix broken image re-ordering drag-drop ([e052b25](https://github.com/vendure-ecommerce/vendure/commit/e052b25)), closes [#982](https://github.com/vendure-ecommerce/vendure/issues/982)
+* **admin-ui** Fix Russian & Ukrainian translations ([5061a43](https://github.com/vendure-ecommerce/vendure/commit/5061a43))
+* **admin-ui** Fix saving relation custom fields on ProductVariants ([fb38c68](https://github.com/vendure-ecommerce/vendure/commit/fb38c68))
+* **core** Correct handling of non-default languages in ListQueryBuilder ([837840e](https://github.com/vendure-ecommerce/vendure/commit/837840e)), closes [#980](https://github.com/vendure-ecommerce/vendure/issues/980)
+* **core** Correctly handle nested parent collection query in Shop API ([2445e48](https://github.com/vendure-ecommerce/vendure/commit/2445e48)), closes [#981](https://github.com/vendure-ecommerce/vendure/issues/981)
+* **core** Do not crash if asset filesize is over max size limit ([b289cc8](https://github.com/vendure-ecommerce/vendure/commit/b289cc8)), closes [#990](https://github.com/vendure-ecommerce/vendure/issues/990)
+* **core** Fix race condition in worker when populating DB schema ([7ae1e94](https://github.com/vendure-ecommerce/vendure/commit/7ae1e94)), closes [#205](https://github.com/vendure-ecommerce/vendure/issues/205) [#462](https://github.com/vendure-ecommerce/vendure/issues/462)
+* **core** Handle SqlJobQueueStrategy errors without crashing worker ([5d483f6](https://github.com/vendure-ecommerce/vendure/commit/5d483f6))
+* **core** Handling of GlobalSettings edge-case bug ([8d23966](https://github.com/vendure-ecommerce/vendure/commit/8d23966)), closes [#987](https://github.com/vendure-ecommerce/vendure/issues/987)
+* **core** Update relation custom fields when updating Asset ([510025a](https://github.com/vendure-ecommerce/vendure/commit/510025a)), closes [#952](https://github.com/vendure-ecommerce/vendure/issues/952)
+* **ui-devkit** Fix baseHref setting when using npm ([511c2ed](https://github.com/vendure-ecommerce/vendure/commit/511c2ed)), closes [#916](https://github.com/vendure-ecommerce/vendure/issues/916) [#993](https://github.com/vendure-ecommerce/vendure/issues/993)
+
 ## 1.1.0 (2021-07-01)
 
 
