@@ -113,11 +113,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
                 const date = new Date();
                 const temp_name = date.valueOf();
-                const temp_index = `temp` + `${temp_name}-` + indexName;
-                // ToDo Implement some random to fix race conflict of worker and server Math.random().toString(36).substring(7);
+                const nameSalt = Math.random().toString(36).substring(7);
+                const temp_index = `temp-` + `${temp_name}-${nameSalt}-` + indexName;
+
                 await createIndices(
                     this.client,
-                    `temp` + `${temp_name}-`,
+                    `temp-` + `${temp_name}-${nameSalt}-`,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
                     this.configService.entityIdStrategy.primaryKeyType,
@@ -131,9 +132,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     if (tempSettings[param]) delete tempSettings[param];
                     if (existedSettings[param]) delete existedSettings[param];
                 }
-                // ToDo Research why after recreation schema differ
                 if (!equal(tempSettings, existedSettings))
-                    Logger.warn(`Index "${index}" schema differ from index definition in vendure config! Consider to reindex data.`, loggerCtx);
+                    Logger.warn(`Index "${index}" settings differ from index setting in vendure config! Consider to reindex data.`, loggerCtx);
                 else {
                     const existedIndexMappings = await this.client.indices.getMapping({ index });
                     const existedMappings = existedIndexMappings.body[Object.keys(existedIndexMappings.body)[0]].mappings;
@@ -141,10 +141,10 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     const tempIndexMappings = await this.client.indices.getMapping({ index: temp_index });
                     const tempMappings = tempIndexMappings.body[temp_index].mappings;
                     if (!equal(tempMappings, existedMappings))
-                        Logger.warn(`Index "${index}" schema differ from index definition in vendure config! Consider to reindex data.`, loggerCtx);
+                        Logger.warn(`Index "${index}" mapping differ from index mapping in vendure config! Consider to reindex data.`, loggerCtx);
                 }
 
-                await this.client.indices.delete({ index: [`temp` + `${temp_name}-products`, `temp` + `${temp_name}-variants`] });
+                await this.client.indices.delete({ index: [`temp-` + `${temp_name}-${nameSalt}-products`, `temp-` + `${temp_name}-${nameSalt}-variants`] });
             }
         };
 

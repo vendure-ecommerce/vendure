@@ -104,7 +104,7 @@ export async function createIndices(client: Client, prefix: string, indexSetting
                 index,
                 body: {
                     mappings: {
-                        properties: variantMappings,
+                        properties: productMappings,
                     },
                     settings: indexSettings,
                 },
@@ -119,7 +119,7 @@ export async function createIndices(client: Client, prefix: string, indexSetting
                 index: alias,
                 body: {
                     mappings: {
-                        properties: variantMappings,
+                        properties: productMappings,
                     },
                     settings: indexSettings,
                 },
