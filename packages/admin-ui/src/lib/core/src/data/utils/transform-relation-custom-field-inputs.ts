@@ -48,5 +48,5 @@ function transformRelations<T>(input: T, customFieldConfig: CustomFieldConfig[])
 }
 
 function hasCustomFields(input: any): input is { customFields: { [key: string]: any } } {
-    return input != null && input.hasOwnProperty('customFields');
+    return input != null && input.hasOwnProperty('customFields') && typeof input.customFields === 'object';
 }

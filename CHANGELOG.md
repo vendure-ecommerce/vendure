@@ -1,3 +1,10 @@
+## <small>1.1.2 (2021-07-20)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix error when saving Product ([dbf6c00](https://github.com/vendure-ecommerce/vendure/commit/dbf6c00))
+
 ## <small>1.1.1 (2021-07-19)</small>
 
 
