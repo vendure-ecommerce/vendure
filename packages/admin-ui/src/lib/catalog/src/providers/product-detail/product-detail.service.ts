@@ -165,7 +165,7 @@ export class ProductDetailService {
 
             const productOldName = findTranslation(product, languageCode)?.name;
             const productNewName = findTranslation(productInput, languageCode)?.name;
-            if (productOldName && productNewName && autoUpdate) {
+            if (productOldName && productNewName && productOldName !== productNewName && autoUpdate) {
                 for (const variant of product.variants) {
                     const currentVariantName = findTranslation(variant, languageCode)?.name || '';
                     let variantInput: UpdateProductVariantInput;
