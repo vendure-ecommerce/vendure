@@ -84,7 +84,7 @@ export const config: VendureConfig = {
     AdminUiPlugin.init({
       port: 3002,
       app: compileUiExtensions({
-        outputPath: path.join(__dirname, '../__admin-ui'),
+        outputPath: path.join(__dirname, '../admin-ui'),
         extensions: [{
           // Points to the path containing our Angular "glue code" module
           extensionPath: path.join(__dirname, 'ui-extension/modules'),
@@ -124,7 +124,7 @@ To ensure things are working we can now build our React app by running `yarn bui
 
 Once build, we can start the Vendure server.
 
-The `compileUiExtensions()` function returns a `compile()` function which will be invoked by the AdminUiPlugin upon server bootstrap. During this compilation process, a new directory will be generated at `/__admin-ui` (as specified by the `outputPath` option) which will contains the uncompiled sources of your new Admin UI app.
+The `compileUiExtensions()` function returns a `compile()` function which will be invoked by the AdminUiPlugin upon server bootstrap. During this compilation process, a new directory will be generated at `/admin-ui` (as specified by the `outputPath` option) which will contains the un-compiled sources of your new Admin UI app.
 
 Next, these source files will be run through the Angular compiler, the output of which will be visible in the console.
 
