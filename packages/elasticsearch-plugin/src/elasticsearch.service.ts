@@ -107,44 +107,45 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             } else {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
 
-                const existedIndexSettings = await this.client.indices.getSettings({ index });
-                const existedSettings = existedIndexSettings.body[Object.keys(existedIndexSettings.body)[0]].settings.index;
+                const existingIndexSettingsResult = await this.client.indices.getSettings({ index });
+                const existingIndexSettings = existingIndexSettingsResult.body[Object.keys(existingIndexSettingsResult.body)[0]].settings.index;
 
-
-                const date = new Date();
-                const temp_name = date.valueOf();
+                const tempName = new Date().getTime();
                 const nameSalt = Math.random().toString(36).substring(7);
-                const temp_index = `temp-` + `${temp_name}-${nameSalt}-` + indexName;
+                const tempPrefix = `temp-` + `${tempName}-${nameSalt}-`;
+                const tempIndex = tempPrefix + indexName;
 
                 await createIndices(
                     this.client,
-                    `temp-` + `${temp_name}-${nameSalt}-`,
+                    tempPrefix,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
                     this.configService.entityIdStrategy.primaryKeyType,
                     false,
                 );
-                const tempIndexSettings = await this.client.indices.getSettings({ index: temp_index });
-                const tempSettings = tempIndexSettings.body[temp_index].settings.index;
+                const tempIndexSettingsResult = await this.client.indices.getSettings({ index: tempIndex });
+                const tempIndexSettings = tempIndexSettingsResult.body[tempIndex].settings.index;
 
-                const index_params_to_exclude = [`routing`, `number_of_shards`, `provided_name`, `creation_date`, `number_of_replicas`, `uuid`, `version`];
-                for (const param of index_params_to_exclude) {
-                    if (tempSettings[param]) delete tempSettings[param];
-                    if (existedSettings[param]) delete existedSettings[param];
+                const indexParamsToExclude = [`routing`, `number_of_shards`, `provided_name`,
+                    `creation_date`, `number_of_replicas`, `uuid`, `version`];
+                for (const param of indexParamsToExclude) {
+                    delete tempIndexSettings[param];
+                    delete existingIndexSettings[param];
                 }
-                if (!equal(tempSettings, existedSettings))
-                    Logger.warn(`Index "${index}" settings differ from index setting in vendure config! Consider to reindex data.`, loggerCtx);
+                if (!equal(tempIndexSettings, existingIndexSettings))
+                    Logger.warn(`Index "${index}" settings differs from index setting in vendure config! Consider re-indexing the data.`, loggerCtx);
                 else {
-                    const existedIndexMappings = await this.client.indices.getMapping({ index });
-                    const existedMappings = existedIndexMappings.body[Object.keys(existedIndexMappings.body)[0]].mappings;
+                    const existingIndexMappingsResult = await this.client.indices.getMapping({ index });
+                    const existingIndexMappings = existingIndexMappingsResult.body[Object.keys(existingIndexMappingsResult.body)[0]].mappings;
 
-                    const tempIndexMappings = await this.client.indices.getMapping({ index: temp_index });
-                    const tempMappings = tempIndexMappings.body[temp_index].mappings;
-                    if (!equal(tempMappings, existedMappings))
-                        Logger.warn(`Index "${index}" mapping differ from index mapping in vendure config! Consider to reindex data.`, loggerCtx);
+                    const tempIndexMappingsResult = await this.client.indices.getMapping({ index: tempIndex });
+                    const tempIndexMappings = tempIndexMappingsResult.body[tempIndex].mappings;
+                    if (!equal(tempIndexMappings, existingIndexMappings))
+                        // tslint:disable-next-line:max-line-length
+                        Logger.warn(`Index "${index}" mapping differs from index mapping in vendure config! Consider re-indexing the data.`, loggerCtx);
                 }
 
-                await this.client.indices.delete({ index: [`temp-` + `${temp_name}-${nameSalt}-products`, `temp-` + `${temp_name}-${nameSalt}-variants`] });
+                await this.client.indices.delete({ index: [tempPrefix+`products`, tempPrefix+`variants`] });
             }
         };
 

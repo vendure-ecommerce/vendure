@@ -57,75 +57,52 @@ export async function createIndices(client: Client, prefix: string, indexSetting
         ...indexMappingProperties,
     };
 
-    const date = new Date();
-    const unixtimestampPostfix = date.valueOf();
+    const unixtimestampPostfix = new Date().getTime();
+
+    const createIndex = async (mappings:{ [prop in keyof any]: any }, index: string, alias: string) => {
+        if (mapAlias) {
+            await client.indices.create({
+                index,
+                body: {
+                    mappings: {
+                        properties: mappings,
+                    },
+                    settings: indexSettings,
+                },
+            });
+            await client.indices.putAlias({
+                index,
+                name: alias,
+            });
+            Logger.verbose(`Created index "${index}"`, loggerCtx);
+        } else {
+            await client.indices.create({
+                index: alias,
+                body: {
+                    mappings: {
+                        properties: mappings,
+                    },
+                    settings: indexSettings,
+                },
+            });
+            Logger.verbose(`Created index "${alias}"`, loggerCtx);
+        }
+    }
 
     try {
         const index = prefix + VARIANT_INDEX_NAME + `${unixtimestampPostfix}`;
         const alias = prefix + VARIANT_INDEX_NAME + aliasPostfix;
 
-        if (mapAlias) {
-            await client.indices.create({
-                index,
-                body: {
-                    mappings: {
-                        properties: variantMappings,
-                    },
-                    settings: indexSettings,
-                },
-            });
-            await client.indices.putAlias({
-                index,
-                name: alias,
-            });
-            Logger.verbose(`Created index "${index}"`, loggerCtx);
-        } else {
-            await client.indices.create({
-                index: alias,
-                body: {
-                    mappings: {
-                        properties: variantMappings,
-                    },
-                    settings: indexSettings,
-                },
-            });
-            Logger.verbose(`Created index "${alias}"`, loggerCtx);
-        }
-
+        await createIndex(variantMappings, index,alias);
     } catch (e) {
         Logger.error(JSON.stringify(e, null, 2), loggerCtx);
     }
+
     try {
         const index = prefix + PRODUCT_INDEX_NAME + `${unixtimestampPostfix}`;
         const alias = prefix + PRODUCT_INDEX_NAME + aliasPostfix;
 
-        if (mapAlias) {
-            await client.indices.create({
-                index,
-                body: {
-                    mappings: {
-                        properties: productMappings,
-                    },
-                    settings: indexSettings,
-                },
-            });
-            await client.indices.putAlias({
-                index,
-                name: alias,
-            });
-            Logger.verbose(`Created index "${index}"`, loggerCtx);
-        } else {
-            await client.indices.create({
-                index: alias,
-                body: {
-                    mappings: {
-                        properties: productMappings,
-                    },
-                    settings: indexSettings,
-                },
-            });
-            Logger.verbose(`Created index "${alias}"`, loggerCtx);
-        }
+        await createIndex(productMappings, index,alias);
     } catch (e) {
         Logger.error(JSON.stringify(e, null, 2), loggerCtx);
     }
