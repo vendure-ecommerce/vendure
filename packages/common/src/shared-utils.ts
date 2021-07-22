@@ -84,7 +84,8 @@ export function generateAllCombinations<T>(
 
 /**
  * @description
- * Returns the input field name of a relation custom field.
+ * Returns the input field name of a custom field, taking into account that "relation" type custom
+ * field inputs are suffixed with "Id" or "Ids".
  */
 export function getGraphQlInputName(config: { name: string; type: string; list?: boolean }): string {
     if (config.type === 'relation') {
