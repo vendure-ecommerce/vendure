@@ -203,7 +203,7 @@ export interface SearchConfig {
      * @default
      * 10000
      */
-    totalItemsMaxSize?: number|boolean;
+    totalItemsMaxSize?: number | boolean;
 
     // prettier-ignore
     /**
@@ -355,7 +355,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     connectionAttemptInterval: 5000,
     indexPrefix: 'vendure-',
     indexSettings: {},
-    indexMappingProperties:{},
+    indexMappingProperties: {},
     batchSize: 2000,
     searchConfig: {
         facetValueMaxSize: 50,

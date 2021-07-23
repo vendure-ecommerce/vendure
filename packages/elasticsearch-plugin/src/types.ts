@@ -90,7 +90,7 @@ export type SearchRequestBody = {
     sort?: any[];
     from?: number;
     size?: number;
-    track_total_hits?: number|boolean,
+    track_total_hits?: number | boolean;
     aggs?: any;
 };
 

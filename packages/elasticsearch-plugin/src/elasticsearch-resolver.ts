@@ -12,7 +12,8 @@ import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticSearchInput, SearchPriceData } from './types';
 
 @Resolver('SearchResponse')
-export class ShopElasticSearchResolver implements Omit<SearchResolver, 'facetValues' | 'collections' | 'reindex' > {
+export class ShopElasticSearchResolver
+    implements Omit<SearchResolver, 'facetValues' | 'collections' | 'reindex'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()

@@ -108,7 +108,9 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
 
                 const existingIndexSettingsResult = await this.client.indices.getSettings({ index });
-                const existingIndexSettings = existingIndexSettingsResult.body[Object.keys(existingIndexSettingsResult.body)[0]].settings.index;
+                const existingIndexSettings =
+                    existingIndexSettingsResult.body[Object.keys(existingIndexSettingsResult.body)[0]]
+                        .settings.index;
 
                 const tempName = new Date().getTime();
                 const nameSalt = Math.random().toString(36).substring(7);
@@ -126,26 +128,45 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 const tempIndexSettingsResult = await this.client.indices.getSettings({ index: tempIndex });
                 const tempIndexSettings = tempIndexSettingsResult.body[tempIndex].settings.index;
 
-                const indexParamsToExclude = [`routing`, `number_of_shards`, `provided_name`,
-                    `creation_date`, `number_of_replicas`, `uuid`, `version`];
+                const indexParamsToExclude = [
+                    `routing`,
+                    `number_of_shards`,
+                    `provided_name`,
+                    `creation_date`,
+                    `number_of_replicas`,
+                    `uuid`,
+                    `version`,
+                ];
                 for (const param of indexParamsToExclude) {
                     delete tempIndexSettings[param];
                     delete existingIndexSettings[param];
                 }
                 if (!equal(tempIndexSettings, existingIndexSettings))
-                    Logger.warn(`Index "${index}" settings differs from index setting in vendure config! Consider re-indexing the data.`, loggerCtx);
+                    Logger.warn(
+                        `Index "${index}" settings differs from index setting in vendure config! Consider re-indexing the data.`,
+                        loggerCtx,
+                    );
                 else {
                     const existingIndexMappingsResult = await this.client.indices.getMapping({ index });
-                    const existingIndexMappings = existingIndexMappingsResult.body[Object.keys(existingIndexMappingsResult.body)[0]].mappings;
+                    const existingIndexMappings =
+                        existingIndexMappingsResult.body[Object.keys(existingIndexMappingsResult.body)[0]]
+                            .mappings;
 
-                    const tempIndexMappingsResult = await this.client.indices.getMapping({ index: tempIndex });
+                    const tempIndexMappingsResult = await this.client.indices.getMapping({
+                        index: tempIndex,
+                    });
                     const tempIndexMappings = tempIndexMappingsResult.body[tempIndex].mappings;
                     if (!equal(tempIndexMappings, existingIndexMappings))
                         // tslint:disable-next-line:max-line-length
-                        Logger.warn(`Index "${index}" mapping differs from index mapping in vendure config! Consider re-indexing the data.`, loggerCtx);
+                        Logger.warn(
+                            `Index "${index}" mapping differs from index mapping in vendure config! Consider re-indexing the data.`,
+                            loggerCtx,
+                        );
                 }
 
-                await this.client.indices.delete({ index: [tempPrefix+`products`, tempPrefix+`variants`] });
+                await this.client.indices.delete({
+                    index: [tempPrefix + `products`, tempPrefix + `variants`],
+                });
             }
         };
 
@@ -449,17 +470,17 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     ): { productAsset: SearchResultAsset | undefined; productVariantAsset: SearchResultAsset | undefined } {
         const productAsset: SearchResultAsset | undefined = source.productAssetId
             ? {
-                id: source.productAssetId.toString(),
-                preview: source.productPreview,
-                focalPoint: source.productPreviewFocalPoint,
-            }
+                  id: source.productAssetId.toString(),
+                  preview: source.productPreview,
+                  focalPoint: source.productPreviewFocalPoint,
+              }
             : undefined;
         const productVariantAsset: SearchResultAsset | undefined = source.productVariantAssetId
             ? {
-                id: source.productVariantAssetId.toString(),
-                preview: source.productVariantPreview,
-                focalPoint: source.productVariantPreviewFocalPoint,
-            }
+                  id: source.productVariantAssetId.toString(),
+                  preview: source.productVariantPreview,
+                  focalPoint: source.productVariantPreviewFocalPoint,
+              }
             : undefined;
         return { productAsset, productVariantAsset };
     }
