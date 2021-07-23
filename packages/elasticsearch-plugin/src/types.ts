@@ -156,7 +156,6 @@ export interface ReindexMessageResponse {
 
 export type ReindexMessageData = {
     ctx: SerializedRequestContext;
-    dropIndices: boolean;
 };
 
 export type UpdateProductMessageData = {
