@@ -23,7 +23,7 @@ import {
 import { Observable } from 'rxjs';
 
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
-import { createIndices } from './indexing-utils';
+import { createIndices, getIndexNameByAlias } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     BulkOperation,
@@ -214,19 +214,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 const operations: Array<BulkProductOperation | BulkVariantOperation> = [];
 
                 const reindexTempName = new Date().getTime();
+                const productIndexName = this.options.indexPrefix + PRODUCT_INDEX_NAME;
+                const variantIndexName = this.options.indexPrefix + VARIANT_INDEX_NAME;
+                const reindexProductAliasName = productIndexName + `-reindex-${reindexTempName}`;
+                const reindexVariantAliasName = variantIndexName + `-reindex-${reindexTempName}`;
                 try {
-                    const getIndexNameByAlias = async (aliasName: string) => {
-                        const aliasExist = await this.client.indices.existsAlias({ name: aliasName });
-                        if (aliasExist.body) {
-                            const alias = await this.client.indices.getAlias({
-                                name: aliasName,
-                            });
-                            return Object.keys(alias.body)[0];
-                        } else {
-                            return aliasName;
-                        }
-                    };
-
                     await createIndices(
                         this.client,
                         this.options.indexPrefix,
@@ -236,45 +228,41 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         true,
                         `-reindex-${reindexTempName}`,
                     );
-                    const reindexProductAliasName =
-                        this.options.indexPrefix + PRODUCT_INDEX_NAME + `-reindex-${reindexTempName}`;
-                    const reindexVariantAliasName =
-                        this.options.indexPrefix + VARIANT_INDEX_NAME + `-reindex-${reindexTempName}`;
-                    const reindexProductIndexName = await getIndexNameByAlias(reindexProductAliasName);
-                    const reindexVariantIndexName = await getIndexNameByAlias(reindexVariantAliasName);
+
+                    const reindexProductIndexName = await getIndexNameByAlias(
+                        this.client,
+                        reindexProductAliasName,
+                    );
+                    const reindexVariantIndexName = await getIndexNameByAlias(
+                        this.client,
+                        reindexVariantAliasName,
+                    );
 
                     const originalProductAliasExist = await this.client.indices.existsAlias({
-                        name: this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                        name: productIndexName,
                     });
                     const originalVariantAliasExist = await this.client.indices.existsAlias({
-                        name: this.options.indexPrefix + VARIANT_INDEX_NAME,
+                        name: variantIndexName,
                     });
                     const originalProductIndexExist = await this.client.indices.exists({
-                        index: this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                        index: productIndexName,
                     });
                     const originalVariantIndexExist = await this.client.indices.exists({
-                        index: this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                        index: variantIndexName,
                     });
 
-                    const originalProductIndexName = await getIndexNameByAlias(
-                        this.options.indexPrefix + PRODUCT_INDEX_NAME,
-                    );
-                    const originalVariantIndexName = await getIndexNameByAlias(
-                        this.options.indexPrefix + VARIANT_INDEX_NAME,
-                    );
+                    const originalProductIndexName = await getIndexNameByAlias(this.client, productIndexName);
+                    const originalVariantIndexName = await getIndexNameByAlias(this.client, variantIndexName);
 
                     if (originalVariantAliasExist.body || originalVariantIndexExist.body) {
                         await this.client.reindex({
                             refresh: true,
                             body: {
                                 source: {
-                                    index: this.options.indexPrefix + VARIANT_INDEX_NAME,
+                                    index: variantIndexName,
                                 },
                                 dest: {
-                                    index:
-                                        this.options.indexPrefix +
-                                        VARIANT_INDEX_NAME +
-                                        `-reindex-${reindexTempName}`,
+                                    index: reindexVariantAliasName,
                                 },
                             },
                         });
@@ -284,13 +272,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                             refresh: true,
                             body: {
                                 source: {
-                                    index: this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                                    index: productIndexName,
                                 },
                                 dest: {
-                                    index:
-                                        this.options.indexPrefix +
-                                        PRODUCT_INDEX_NAME +
-                                        `-reindex-${reindexTempName}`,
+                                    index: reindexProductAliasName,
                                 },
                             },
                         });
@@ -300,31 +285,25 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         {
                             remove: {
                                 index: reindexVariantIndexName,
-                                alias:
-                                    this.options.indexPrefix +
-                                    VARIANT_INDEX_NAME +
-                                    `-reindex-${reindexTempName}`,
+                                alias: reindexVariantAliasName,
                             },
                         },
                         {
                             remove: {
                                 index: reindexProductIndexName,
-                                alias:
-                                    this.options.indexPrefix +
-                                    PRODUCT_INDEX_NAME +
-                                    `-reindex-${reindexTempName}`,
+                                alias: reindexProductAliasName,
                             },
                         },
                         {
                             add: {
                                 index: reindexVariantIndexName,
-                                alias: this.options.indexPrefix + VARIANT_INDEX_NAME,
+                                alias: variantIndexName,
                             },
                         },
                         {
                             add: {
                                 index: reindexProductIndexName,
-                                alias: this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                                alias: productIndexName,
                             },
                         },
                     ];
@@ -333,12 +312,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         actions.push({
                             remove: {
                                 index: originalProductIndexName,
-                                alias: this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                                alias: productIndexName,
                             },
                         });
                     } else if (originalProductIndexExist.body) {
                         await this.client.indices.delete({
-                            index: [this.options.indexPrefix + PRODUCT_INDEX_NAME],
+                            index: [productIndexName],
                         });
                     }
 
@@ -346,12 +325,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         actions.push({
                             remove: {
                                 index: originalVariantIndexName,
-                                alias: this.options.indexPrefix + VARIANT_INDEX_NAME,
+                                alias: variantIndexName,
                             },
                         });
                     } else if (originalVariantIndexExist.body) {
                         await this.client.indices.delete({
-                            index: [this.options.indexPrefix + VARIANT_INDEX_NAME],
+                            index: [variantIndexName],
                         });
                     }
 
@@ -379,12 +358,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     Logger.warn(JSON.stringify(e), loggerCtx);
                 } finally {
                     const reindexVariantAliasExist = await this.client.indices.existsAlias({
-                        name: this.options.indexPrefix + VARIANT_INDEX_NAME + `-reindex-${reindexTempName}`,
+                        name: reindexVariantAliasName,
                     });
                     if (reindexVariantAliasExist.body) {
                         const reindexVariantAliasResult = await this.client.indices.getAlias({
-                            name:
-                                this.options.indexPrefix + VARIANT_INDEX_NAME + `-reindex-${reindexTempName}`,
+                            name: reindexVariantAliasName,
                         });
                         const reindexVariantIndexName = Object.keys(reindexVariantAliasResult.body)[0];
                         await this.client.indices.delete({
@@ -392,12 +370,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         });
                     }
                     const reindexProductAliasExist = await this.client.indices.existsAlias({
-                        name: this.options.indexPrefix + PRODUCT_INDEX_NAME + `-reindex-${reindexTempName}`,
+                        name: reindexProductAliasName,
                     });
                     if (reindexProductAliasExist.body) {
                         const reindexProductAliasResult = await this.client.indices.getAlias({
-                            name:
-                                this.options.indexPrefix + PRODUCT_INDEX_NAME + `-reindex-${reindexTempName}`,
+                            name: reindexProductAliasName,
                         });
                         const reindexProductIndexName = Object.keys(reindexProductAliasResult.body)[0];
                         await this.client.indices.delete({
