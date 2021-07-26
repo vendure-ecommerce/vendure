@@ -212,7 +212,10 @@ export class AdminUiPlugin implements NestModule {
             adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
             apiHost: propOrDefault('apiHost', 'auto'),
             apiPort: propOrDefault('apiPort', 'auto'),
-            tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod || 'cookie'),
+            tokenMethod: propOrDefault(
+                'tokenMethod',
+                authOptions.tokenMethod === 'bearer' ? 'bearer' : 'cookie',
+            ),
             authTokenHeaderKey: propOrDefault(
                 'authTokenHeaderKey',
                 authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,

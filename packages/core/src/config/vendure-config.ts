@@ -296,9 +296,11 @@ export interface AuthOptions {
      * `authTokenHeaderKey` in the server's CORS configuration (adding `Access-Control-Expose-Headers: vendure-auth-token`
      * by default).
      *
+     * From v1.2.0 is is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
+     *
      * @default 'cookie'
      */
-    tokenMethod?: 'cookie' | 'bearer';
+    tokenMethod?: 'cookie' | 'bearer' | ReadonlyArray<'cookie' | 'bearer'>;
     /**
      * @description
      * Options related to the handling of cookies when using the 'cookie' tokenMethod.

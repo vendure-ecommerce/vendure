@@ -55,7 +55,10 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
-    if (config.authOptions.tokenMethod === 'cookie') {
+    const { tokenMethod } = config.authOptions;
+    const usingCookie =
+        tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
+    if (usingCookie) {
         const { cookieOptions } = config.authOptions;
         app.use(cookieSession(cookieOptions));
     }
@@ -186,7 +189,10 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
  * in the CORS options, making sure to preserve any user-configured exposedHeaders.
  */
 function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
-    if (config.authOptions.tokenMethod === 'bearer') {
+    const { tokenMethod } = config.authOptions;
+    const isUsingBearerToken =
+        tokenMethod === 'bearer' || (Array.isArray(tokenMethod) && tokenMethod.includes('bearer'));
+    if (isUsingBearerToken) {
         const authTokenHeaderKey = config.authOptions.authTokenHeaderKey;
         const corsOptions = config.apiOptions.cors;
         if (typeof corsOptions !== 'boolean') {
