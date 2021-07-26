@@ -38,7 +38,7 @@ Using bearer tokens involes a bit more work on your part: you'll need to manuall
 
 The workflow would be as follows:
 
-1. Certain mutations and queries initiate a session (e.g. logging in, adding and item to an order etc.). When this happens, the response will contain a HTTP header which [by default is called `'vendure-auth-token'`]({{< relref "auth-options" >}}#authtokenheaderkey).
+1. Certain mutations and queries initiate a session (e.g. logging in, adding an item to an order etc.). When this happens, the response will contain a HTTP header which [by default is called `'vendure-auth-token'`]({{< relref "auth-options" >}}#authtokenheaderkey).
 2. So your http client would need to check for the presence of this header each time it receives a response from the server.
 3. If the `'vendure-auth-token'` header is present, read the value and store it because this is your bearer token.
 4. Attach this bearer token to each subsequent request as `Authorization: Bearer <token>`.
