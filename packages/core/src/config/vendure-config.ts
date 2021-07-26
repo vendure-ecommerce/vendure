@@ -565,7 +565,7 @@ export interface CatalogOptions {
      *
      * @default defaultCollectionFilters
      */
-    collectionFilters: Array<CollectionFilter<any>>;
+    collectionFilters?: Array<CollectionFilter<any>>;
     /**
      * @description
      * Defines the strategy used for calculating the price of ProductVariants based
@@ -573,7 +573,7 @@ export interface CatalogOptions {
      *
      * @default DefaultTaxCalculationStrategy
      */
-    productVariantPriceCalculationStrategy: ProductVariantPriceCalculationStrategy;
+    productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
     /**
      * @description
      * Defines how the `ProductVariant.stockLevel` value is obtained. It is usually not desirable
@@ -585,7 +585,7 @@ export interface CatalogOptions {
      *
      * @default DefaultStockDisplayStrategy
      */
-    stockDisplayStrategy: StockDisplayStrategy;
+    stockDisplayStrategy?: StockDisplayStrategy;
 }
 
 /**
@@ -875,6 +875,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     apiOptions: Required<ApiOptions>;
     assetOptions: Required<AssetOptions>;
     authOptions: Required<AuthOptions>;
+    catalogOptions: Required<CatalogOptions>;
     customFields: Required<CustomFields>;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
