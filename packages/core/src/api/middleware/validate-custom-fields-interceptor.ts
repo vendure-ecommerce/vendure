@@ -2,6 +2,7 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { ModuleRef } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import {
     GraphQLInputType,
     GraphQLList,
@@ -105,7 +106,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         injector: Injector,
     ) {
         for (const [key, value] of Object.entries(customFieldsObject)) {
-            const config = customFieldConfig.find(c => c.name === key);
+            const config = customFieldConfig.find(c => getGraphQlInputName(c) === key);
             if (config) {
                 await validateCustomFieldValue(config, value, injector, languageCode);
             }

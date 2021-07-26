@@ -28,6 +28,7 @@ import { FastImporterService } from './fast-importer.service';
 export interface ImportProgress extends ImportInfo {
     currentProduct: string;
 }
+
 export type OnProgressFn = (progess: ImportProgress) => void;
 
 @Injectable()
@@ -149,6 +150,10 @@ export class Importer {
             if (createProductAssets.errors.length) {
                 errors = errors.concat(createProductAssets.errors);
             }
+            const customFields = this.processCustomFieldValues(
+                product.customFields,
+                this.configService.customFields.Product,
+            );
             const createdProductId = await this.fastImporter.createProduct({
                 featuredAssetId: productAssets.length ? productAssets[0].id : undefined,
                 assetIds: productAssets.map(a => a.id),
@@ -159,12 +164,10 @@ export class Importer {
                         name: product.name,
                         description: product.description,
                         slug: product.slug,
+                        customFields,
                     },
                 ],
-                customFields: this.processCustomFieldValues(
-                    product.customFields,
-                    this.configService.customFields.Product,
-                ),
+                customFields,
             });
 
             const optionsMap: { [optionName: string]: ID } = {};

@@ -76,7 +76,7 @@ The Admin UI ships with language files only for English and Spanish as of versio
         AdminUiPlugin.init({
           port: 3002,
           app: compileUiExtensions({
-            outputPath: path.join(__dirname, '../__admin-ui'),
+            outputPath: path.join(__dirname, '../admin-ui'),
             extensions: [{
                translations: {
                  de: path.join(__dirname, 'translations/de.json'),

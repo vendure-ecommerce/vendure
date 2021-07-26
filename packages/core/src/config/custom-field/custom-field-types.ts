@@ -20,7 +20,8 @@ export type DefaultValueType<T extends CustomFieldType> =
     T extends 'string' | 'localeString' ? string :
         T extends 'int' | 'float' ? number :
             T extends 'boolean' ? boolean :
-                T extends 'datetime' ? Date : never;
+                T extends 'datetime' ? Date :
+                    T extends 'relation' ? any : never;
 
 export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends CustomField> = Omit<
     C,
