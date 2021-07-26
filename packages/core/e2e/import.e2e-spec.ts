@@ -28,6 +28,10 @@ describe('Import resolver', () => {
                     type: 'string',
                     list: true,
                 },
+                {
+                    name: 'localName',
+                    type: 'localeString',
+                },
             ],
             ProductVariant: [{ type: 'int', name: 'weight' }],
         },
@@ -76,7 +80,7 @@ describe('Import resolver', () => {
         });
 
         expect(result.importProducts.errors).toEqual([
-            'Invalid Record Length: header length is 18, got 1 on line 8',
+            'Invalid Record Length: header length is 19, got 1 on line 8',
         ]);
         expect(result.importProducts.imported).toBe(4);
         expect(result.importProducts.processed).toBe(4);
@@ -122,6 +126,7 @@ describe('Import resolver', () => {
                                     id
                                 }
                                 keywords
+                                localName
                             }
                             variants {
                                 id
@@ -235,5 +240,11 @@ describe('Import resolver', () => {
         expect(easel.customFields.keywords).toEqual([]);
         expect(pencils.customFields.keywords).toEqual([]);
         expect(smock.customFields.keywords).toEqual(['apron', 'clothing']);
+
+        // Import localeString custom fields
+        expect(paperStretcher.customFields.localName).toEqual('localPPS');
+        expect(easel.customFields.localName).toEqual('localMabef');
+        expect(pencils.customFields.localName).toEqual('localGiotto');
+        expect(smock.customFields.localName).toEqual('localSmock');
     }, 20000);
 });
