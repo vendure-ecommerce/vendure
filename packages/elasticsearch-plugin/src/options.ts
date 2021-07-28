@@ -61,6 +61,30 @@ export interface ElasticsearchOptions {
      * [These options](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index-modules.html#index-modules-settings)
      * are directly passed to index settings. To apply some settings indices will be recreated.
      *
+     * @example
+     * ```TypeScript
+     * // Configuring an English stemmer
+     * indexSettings: {
+     *   analysis: {
+     *     analyzer: {
+     *       custom_analyzer: {
+     *         tokenizer: 'standard',
+     *         filter: [
+     *           'lowercase',
+     *           'english_stemmer'
+     *         ]
+     *       }
+     *     },
+     *     filter : {
+     *       english_stemmer : {
+     *         type : 'stemmer',
+     *         name : 'english'
+     *       }
+     *     }
+     *   }
+     * },
+     * ```
+     *
      * @since 1.2.0
      * @default
      * {}
@@ -71,6 +95,23 @@ export interface ElasticsearchOptions {
      * This option allow to redefine or define new properties in mapping. More about elastic
      * [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
      * After changing this option indices will be recreated.
+     *
+     * @example
+     * ```TypeScript
+     * // Configuring custom analyzer for the `productName` field.
+     * indexMappingProperties: {
+     *   productName: {
+     *     type: 'text',
+     *     analyzer:'custom_analyzer',
+     *     fields: {
+     *       keyword: {
+     *         type: 'keyword',
+     *         ignore_above: 256,
+     *       }
+     *     }
+     *   }
+     * }
+     * ```
      *
      * @since 1.2.0
      * @default
