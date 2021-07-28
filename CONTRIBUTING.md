@@ -22,6 +22,18 @@ If you would like to contribute a bugfix, please first create an issue detailing
 
 Again, please create a feature request detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below. New feature pull requests should be made against the `minor` branch.
 
+When adding new public APIs to support your new feature, add a `@since 1.2.0` tag (where "1.2.0" corresponds to what will be the next minor version) to the doc block. This will let readers of the documentation know the version in which the API was introduced. See the [docs readme](./docs/README.md) for more details on the valid docs tags.
+
+```TypeScript
+/**
+ * @description
+ * Sets the value of the new API thing.
+ *
+ * @since 1.2.0
+ */
+myNewApi: number;
+```
+
 ## Commit message format
 
 This repo uses [Conventional Commits](https://www.conventionalcommits.org).

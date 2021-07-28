@@ -61,6 +61,7 @@ export interface ElasticsearchOptions {
      * [These options](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/index-modules.html#index-modules-settings)
      * are directly passed to index settings. To apply some settings indices will be recreated.
      *
+     * @since 1.2.0
      * @default
      * {}
      */
@@ -71,6 +72,7 @@ export interface ElasticsearchOptions {
      * [mapping](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping.html)
      * After changing this option indices will be recreated.
      *
+     * @since 1.2.0
      * @default
      * {}
      */
@@ -187,6 +189,7 @@ export interface SearchConfig {
      * The maximum number of Collections to return from the search query. Internally, this
      * value sets the "size" property of an Elasticsearch aggregation.
      *
+     * @since 1.1.0
      * @default
      * 50
      */
@@ -200,6 +203,7 @@ export interface SearchConfig {
      * If this parameter is set to "False", totalItems will be returned as 0.
      * If this parameter is set to integer, accurate count of totalItems will be returned not bigger than integer.
      *
+     * @since 1.2.0
      * @default
      * 10000
      */
