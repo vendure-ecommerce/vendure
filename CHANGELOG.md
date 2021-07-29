@@ -1,3 +1,14 @@
+## <small>1.1.3 (2021-07-29)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix case sensitivity in product variant filter ([02f9995](https://github.com/vendure-ecommerce/vendure/commit/02f9995))
+* **core** Correct typings for VendureConfig.catalogOptions ([73e859b](https://github.com/vendure-ecommerce/vendure/commit/73e859b))
+* **core** Fix update of ProductVariant with relation custom fields ([6e794c0](https://github.com/vendure-ecommerce/vendure/commit/6e794c0)), closes [#997](https://github.com/vendure-ecommerce/vendure/issues/997)
+* **core** Fix validation of relation custom fields ([fc3a9c5](https://github.com/vendure-ecommerce/vendure/commit/fc3a9c5)), closes [#1000](https://github.com/vendure-ecommerce/vendure/issues/1000)
+* **core** Import localeString custom fields from csv ([d25ea26](https://github.com/vendure-ecommerce/vendure/commit/d25ea26)), closes [#1001](https://github.com/vendure-ecommerce/vendure/issues/1001)
+
 ## <small>1.1.2 (2021-07-20)</small>
 
 
