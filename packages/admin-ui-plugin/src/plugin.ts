@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, NestModule, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
+import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiAppConfig,
@@ -11,6 +11,7 @@ import {
     createProxyHandler,
     Logger,
     PluginCommonModule,
+    ProcessContext,
     registerPluginStartupMessage,
     VendurePlugin,
 } from '@vendure/core';
@@ -95,7 +96,7 @@ export interface AdminUiPluginOptions {
 export class AdminUiPlugin implements NestModule {
     private static options: AdminUiPluginOptions;
 
-    constructor(private configService: ConfigService) {}
+    constructor(private configService: ConfigService, private processContext: ProcessContext) {}
 
     /**
      * @description
@@ -107,6 +108,9 @@ export class AdminUiPlugin implements NestModule {
     }
 
     async configure(consumer: MiddlewareConsumer) {
+        if (this.processContext.isWorker) {
+            return;
+        }
         const { app, hostname, route, adminUiConfig } = AdminUiPlugin.options;
         const adminUiAppPath = AdminUiPlugin.isDevModeApp(app)
             ? path.join(app.sourcePath, 'src')
