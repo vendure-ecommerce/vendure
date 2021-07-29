@@ -7,6 +7,7 @@ import {
     JobQueueService,
     Logger,
     PluginCommonModule,
+    ProcessContext,
     registerPluginStartupMessage,
     Type,
     VendurePlugin,
@@ -177,6 +178,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
         private moduleRef: ModuleRef,
         private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
+        private processContext: ProcessContext,
     ) {}
 
     /**
@@ -211,7 +213,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
     configure(consumer: MiddlewareConsumer) {
         const options = EmailPlugin.options;
 
-        if (isDevModeOptions(options)) {
+        if (isDevModeOptions(options) && this.processContext.isServer) {
             Logger.info('Creating dev mailbox middleware', loggerCtx);
             this.devMailbox = new DevMailbox();
             consumer.apply(this.devMailbox.serve(options)).forRoutes(options.route);
