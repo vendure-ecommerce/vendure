@@ -12,6 +12,7 @@ export * from './entity/index';
 export * from './data-import/index';
 export * from './service/index';
 export * from './i18n/index';
+export * from './worker/index';
 export * from '@vendure/common/lib/shared-types';
 export {
     Permission,
