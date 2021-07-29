@@ -36,11 +36,16 @@ For a production Vendure server, there are a few security-related points to cons
 
 ## Health/Readiness Checks
 
-If you wish to deploy with Kubernetes or some similar system, you can make use of the health check endpoint. This is a regular REST route (note: _not_ GraphQL), available at `/health`.
+If you wish to deploy with Kubernetes or some similar system, you can make use of the health check endpoints. 
+
+### Server
+
+This is a regular REST route (note: _not_ GraphQL), available at `/health`.
 
 ```text 
 REQUEST: GET http://localhost:3000/health
 ```
+ 
 ```json
 {
   "status": "ok",
@@ -59,6 +64,33 @@ REQUEST: GET http://localhost:3000/health
 ```
 
 Health checks are built on the [Nestjs Terminus module](https://docs.nestjs.com/recipes/terminus). You can also add your own health checks by creating plugins that make use of the [HealthCheckRegistryService]({{< relref "health-check-registry-service" >}}).
+
+### Worker
+
+Although the worker is not designed as an HTTP server, it contains a minimal HTTP server specifically to support HTTP health checks. To enable this, you need to call the `startHealthCheckServer()` method after bootstrapping the worker:
+
+```TypeScript
+bootstrapWorker(config)
+  .then(worker => worker.startJobQueue())
+  .then(worker => worker.startHealthCheckServer({ port: 3020 }))
+  .catch(err => {
+    console.log(err);
+  });
+```
+This will make the `/health` endpoint available. When the worker instance is running, it will return the following:
+
+```text 
+REQUEST: GET http://localhost:3020/health
+```
+
+```json
+{
+  "status": "ok"
+}
+```
+{{< alert >}}
+**Note:** there is also an _internal_ health check mechanism for the worker, which does not uses HTTP. This is used by the server's own health check to verify whether at least one worker is running. It works by adding a `check-worker-health` job to the JobQueue and checking that it got processed.
+{{< /alert >}}
 
 ## Admin UI
 

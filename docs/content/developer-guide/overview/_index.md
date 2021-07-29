@@ -13,7 +13,7 @@ Here is a simplified diagram of the Vendure application architecture:
 
 ## Entry Points
 
-As you can see in the diagram, there are two entry points into the application: [`bootstrap()`]({{< relref "bootstrap" >}}) and [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}), which start the main server and the [worker]({{< relref "vendure-worker" >}}) respectively. Communication between server and worker(s) is done via the [Job Queue]({{< relref "/docs/developer-guide/job-queue" >}}).
+As you can see in the diagram, there are two entry points into the application: [`bootstrap()`]({{< relref "bootstrap" >}}) and [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}), which start the main server and the [worker]({{< relref "/docs/developer-guide/vendure-worker" >}}) respectively. Communication between server and worker(s) is done via the [Job Queue]({{< relref "/docs/developer-guide/job-queue" >}}).
 
 ## GraphQL APIs
 
