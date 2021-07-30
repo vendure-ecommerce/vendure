@@ -3,6 +3,7 @@ import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestj
 
 import { ConfigService } from '../config/config.service';
 import { isInspectableJobQueueStrategy } from '../config/job-queue/inspectable-job-queue-strategy';
+import { Logger } from '../config/logger/vendure-logger';
 import { JobQueue } from '../job-queue/job-queue';
 import { JobQueueService } from '../job-queue/job-queue.service';
 
@@ -38,6 +39,7 @@ export class WorkerHealthIndicator extends HealthIndicator implements OnModuleIn
             try {
                 isHealthy = !!(await job.updates({ timeoutMs: 10000 }).toPromise());
             } catch (e) {
+                Logger.error(e.message);
                 isHealthy = false;
             }
             const result = this.getStatus('worker', isHealthy);

@@ -1,0 +1,83 @@
+import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '@vendure/core';
+
+import { BullMQJobQueueStrategy } from './bullmq-job-queue-strategy';
+import { BULLMQ_PLUGIN_OPTIONS } from './constants';
+import { RedisHealthIndicator } from './redis-health-indicator';
+import { BullMQPluginOptions } from './types';
+
+/**
+ * @description
+ * This plugin is a drop-in replacement of the DefaultJobQueuePlugin, which implements a push-based
+ * job queue strategy built on top of the popular [BullMQ](https://github.com/taskforcesh/bullmq) library.
+ *
+ * {{% alert "warning" %}}
+ * This plugin was newly released with Vendure v1.2.0 and has yet to receive thorough real-world testing.
+ * {{% /alert %}}
+ *
+ * ## Advantages over the DefaultJobQueuePlugin
+ *
+ * The advantage of this approach is that jobs are stored in Redis rather than in the database. For more complex
+ * applications with many job queues and/or multiple worker instances, this can massively reduce the load on the
+ * DB server. The reason for this is that the DefaultJobQueuePlugin uses polling to check for new jobs. By default
+ * it will poll every 200ms. A typical Vendure instance uses at least 3 queues (handling emails, collections, search index),
+ * so even with a single worker instance this results in 15 queries per second to the DB constantly. Adding more
+ * custom queues and multiple worker instances can easily result in 50 or 100 queries per second. At this point
+ * performance may be impacted.
+ *
+ * Using this plugin, no polling is needed, as BullMQ will _push_ jobs to the worker(s) as and when they are added
+ * to the queue. This results in significantly more scalable performance characteristics, as well as lower latency
+ * in processing jobs.
+ *
+ * ## Installation
+ *
+ * `yarn add \@vendure/job-queue-plugin bullmq`
+ *
+ * or
+ *
+ * `npm install \@vendure/job-queue-plugin bullmq`
+ *
+ * @example
+ * ```ts
+ * import { BullMQJobQueuePlugin } from '\@vendure/job-queue-plugin/packages/bullmq';
+ *
+ * const config: VendureConfig = {
+ *   // Add an instance of the plugin to the plugins array
+ *   plugins: [
+ *     BullMQJobQueuePlugin.init({
+ *       connection: {
+ *         port: 6379
+ *       }
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
+ * @docsCategory job-queue-plugin
+ */
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    configuration: config => {
+        config.jobQueueOptions.jobQueueStrategy = new BullMQJobQueueStrategy();
+        return config;
+    },
+    providers: [
+        { provide: BULLMQ_PLUGIN_OPTIONS, useFactory: () => BullMQJobQueuePlugin.options },
+        RedisHealthIndicator,
+    ],
+})
+export class BullMQJobQueuePlugin {
+    static options: BullMQPluginOptions;
+
+    /**
+     * @description
+     * Configures the plugin.
+     */
+    static init(options: BullMQPluginOptions) {
+        this.options = options;
+        return this;
+    }
+
+    constructor(private registry: HealthCheckRegistryService, private redis: RedisHealthIndicator) {
+        registry.registerIndicatorFunction(() => this.redis.isHealthy('redis (job queue)'));
+    }
+}

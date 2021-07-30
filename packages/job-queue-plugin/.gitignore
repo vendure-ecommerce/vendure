@@ -1,4 +1,4 @@
 preview/output
 yarn-error.log
-lib
+/package
 e2e/__data__/*.sqlite

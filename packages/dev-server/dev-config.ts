@@ -11,8 +11,11 @@ import {
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
+
+import { JobQueueTestPlugin } from './test-plugins/job-queue-test/job-queue-test-plugin';
 
 /**
  * Config settings used during development
@@ -64,7 +67,9 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin,
-        DefaultJobQueuePlugin,
+        BullMQJobQueuePlugin.init({}),
+        // DefaultJobQueuePlugin,
+        // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
         //     port: 9200,
