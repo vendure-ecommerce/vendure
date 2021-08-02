@@ -5693,6 +5693,16 @@ export type GetFacetListQuery = { facets: (
     & { items: Array<FacetWithValuesFragment> }
   ) };
 
+export type GetFacetListSimpleQueryVariables = Exact<{
+  options?: Maybe<FacetListOptions>;
+}>;
+
+
+export type GetFacetListSimpleQuery = { facets: (
+    Pick<FacetList, 'totalItems'>
+    & { items: Array<Pick<Facet, 'id' | 'name'>> }
+  ) };
+
 export type DeleteProductMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -7597,6 +7607,13 @@ export namespace GetFacetList {
   export type Query = GetFacetListQuery;
   export type Facets = (NonNullable<GetFacetListQuery['facets']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetFacetListQuery['facets']>)['items']>)[number]>;
+}
+
+export namespace GetFacetListSimple {
+  export type Variables = GetFacetListSimpleQueryVariables;
+  export type Query = GetFacetListSimpleQuery;
+  export type Facets = (NonNullable<GetFacetListSimpleQuery['facets']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetFacetListSimpleQuery['facets']>)['items']>)[number]>;
 }
 
 export namespace DeleteProduct {

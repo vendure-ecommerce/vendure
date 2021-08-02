@@ -249,7 +249,7 @@ export const GET_FACET_LIST = gql`
 `;
 
 export const GET_FACET_LIST_SIMPLE = gql`
-    query GetFacetList($options: FacetListOptions) {
+    query GetFacetListSimple($options: FacetListOptions) {
         facets(options: $options) {
             items {
                 id

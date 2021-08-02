@@ -40,9 +40,11 @@ export type Query = {
   eligibleShippingMethods: Array<ShippingMethodQuote>;
   /** Returns a list of payment methods and their eligibility based on the current active Order */
   eligiblePaymentMethods: Array<PaymentMethodQuote>;
-  /** Returns information about the current authenticated User */
+  /** A list of Facets available to the shop */
   facets: FacetList;
+  /** Returns a Facet by its id */
   facet?: Maybe<Facet>;
+  /** Returns information about the current authenticated User */
   me?: Maybe<CurrentUser>;
   /** Returns the possible next states that the activeOrder can transition to */
   nextOrderStates: Array<Scalars['String']>;
