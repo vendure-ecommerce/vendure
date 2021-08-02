@@ -32,7 +32,7 @@ import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_FACET,
-    GET_FACET_LIST,
+    GET_FACET_LIST, GET_FACET_LIST_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_FACET,
     UPDATE_PRODUCT,
@@ -43,7 +43,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 // tslint:disable:no-non-null-assertion
 
 describe('Facet resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     let brandFacet: FacetWithValues.Fragment;
     let speakerTypeFacet: FacetWithValues.Fragment;
@@ -85,6 +85,7 @@ describe('Facet resolver', () => {
             input: {
                 id: speakerTypeFacet.id,
                 translations: [{ languageCode: LanguageCode.en, name: 'Speaker Category' }],
+                isPrivate: true
             },
         });
 
@@ -155,6 +156,14 @@ describe('Facet resolver', () => {
 
         brandFacet = items[0];
         speakerTypeFacet = items[1];
+    });
+
+    it('facets by shop-api', async () => {
+        const result = await shopClient.query<GetFacetList.Query>(GET_FACET_LIST_SIMPLE);
+
+        const { items } = result.facets;
+        expect(items.length).toBe(1);
+        expect(items[0].name).toBe('category');
     });
 
     it('facet', async () => {
