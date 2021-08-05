@@ -348,7 +348,7 @@ export interface AuthOptions {
      * `password` property - doing so will result in an error. Instead, the password is set at a later stage
      * (once the email with the verification token has been opened) via the `verifyCustomerAccount` mutation.
      *
-     * @defaut true
+     * @default true
      */
     requireVerification?: boolean;
     /**
