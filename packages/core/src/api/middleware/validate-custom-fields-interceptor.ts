@@ -51,12 +51,15 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
                 for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
                     if (this.inputsWithCustomFields.has(typeName)) {
                         if (variables[inputName]) {
-                            await this.validateInput(
-                                typeName,
-                                ctx.languageCode,
-                                injector,
+                            const inputVariables: Array<Record<string, any>> = Array.isArray(
                                 variables[inputName],
-                            );
+                            )
+                                ? variables[inputName]
+                                : [variables[inputName]];
+
+                            for (const inputVariable of inputVariables) {
+                                await this.validateInput(typeName, ctx.languageCode, injector, inputVariable);
+                            }
                         }
                     }
                 }
