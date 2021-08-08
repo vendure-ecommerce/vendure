@@ -60,6 +60,36 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
     ]);
 }
 
+export async function testMatchFirstSku(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                term: 'L2201308',
+                groupByProduct: true,
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName)).toEqual([
+        'Laptop',
+    ]);
+}
+
+export async function testMatchSecondSku(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                term: 'L2201508',
+                groupByProduct: true,
+            },
+        },
+    );
+    expect(result.search.items.map(i => i.productName)).toEqual([
+        'Laptop',
+    ]);
+}
+
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
     const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
         SEARCH_PRODUCTS_SHOP,

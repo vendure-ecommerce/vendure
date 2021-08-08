@@ -77,7 +77,9 @@ import {
     testMatchFacetValueFiltersOrWithAnd,
     testMatchFacetValueFiltersWithFacetIdsAnd,
     testMatchFacetValueFiltersWithFacetIdsOr,
+    testMatchFirstSku,
     testMatchSearchTerm,
+    testMatchSecondSku,
     testNoGrouping,
     testPriceRanges,
     testSinglePrices,
@@ -159,6 +161,10 @@ describe('Elasticsearch plugin', () => {
         it('no grouping', () => testNoGrouping(shopClient));
 
         it('matches search term', () => testMatchSearchTerm(shopClient));
+
+        it('matches search first sku', () => testMatchFirstSku(shopClient));
+
+        it('matches search second sku', () => testMatchSecondSku(shopClient));
 
         it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(shopClient));
 
