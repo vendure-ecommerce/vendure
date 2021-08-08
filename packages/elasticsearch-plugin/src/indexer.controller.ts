@@ -830,7 +830,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             ? variants.filter(v => v.featuredAsset)[0].featuredAsset
             : null;
         const productTranslation = this.getTranslation(first.product, languageCode);
-        const variantTranslation = this.getTranslation(first, languageCode);
+        const variantTranslationNames = variants.map(v => this.getTranslation(v, languageCode).name).join(` `);
         const collectionTranslations = variants.reduce(
             (translations, variant) => [
                 ...translations,
@@ -842,7 +842,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const item: ProductIndexItem = {
             channelId,
             languageCode,
-            sku: first.sku,
+            sku: variants.map(v=>v.sku).join(` `),
             slug: productTranslation.slug,
             productId: first.product.id,
             productName: productTranslation.name,
@@ -850,7 +850,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             productPreview: productAsset ? productAsset.preview : '',
             productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             productVariantId: first.id,
-            productVariantName: variantTranslation.name,
+            productVariantName: variantTranslationNames,
             productVariantAssetId: variantAsset ? variantAsset.id : undefined,
             productVariantPreview: variantAsset ? variantAsset.preview : '',
             productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
