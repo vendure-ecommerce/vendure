@@ -45,6 +45,9 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { TagService } from './tag.service';
+
+import { camelCase } from 'typeorm/util/StringUtils';
+
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -557,15 +560,19 @@ export class AssetService {
 
     private getHostEntityIdProperty(entity: EntityWithAssets): string {
         const entityName = entity.constructor.name;
-        switch (entityName) {
-            case 'Product':
-                return 'productId';
-            case 'ProductVariant':
-                return 'productVariantId';
-            case 'Collection':
-                return 'collectionId';
-            default:
-                throw new InternalServerError('error.could-not-find-matching-orderable-asset');
+        try {
+            switch (entityName) {
+                case 'Product':
+                    return 'productId';
+                case 'ProductVariant':
+                    return 'productVariantId';
+                case 'Collection':
+                    return 'collectionId';
+                default:
+                    return `${camelCase(entityName, true)}Id`;
+            }   
+        } catch (error) {
+            throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
     }
 
