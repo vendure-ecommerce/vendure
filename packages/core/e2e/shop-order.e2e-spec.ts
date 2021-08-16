@@ -548,6 +548,9 @@ describe('Shop orders', () => {
                 'Only 100 items were added to the order due to insufficient stock',
             );
 
+            const order = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(order.activeOrder?.lines[1].quantity).toBe(100);
+
             const { adjustOrderLine: adjustLine2 } = await shopClient.query<
                 AdjustItemQuantity.Mutation,
                 AdjustItemQuantity.Variables
