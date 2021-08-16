@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { pick } from '@vendure/common/lib/pick';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 
@@ -51,7 +52,7 @@ export class CustomFieldRelationService {
                         entity.customFields = { ...entity.customFields, [field.name]: relations };
                         await this.connection
                             .getRepository(ctx, entityType)
-                            .save(entity as any, { reload: false });
+                            .save(pick(entity, ['id', 'customFields']) as any, { reload: false });
                     }
                 }
             }

@@ -1,7 +1,6 @@
-import { CdkDrag, CdkDragMove, CdkDropList, CdkDropListGroup, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ViewportRuler } from '@angular/cdk/overlay';
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -10,7 +9,6 @@ import {
     Input,
     Optional,
     Output,
-    ViewChild,
 } from '@angular/core';
 import {
     Asset,
@@ -41,25 +39,18 @@ export interface AssetChange {
     styleUrls: ['./product-assets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductAssetsComponent implements AfterViewInit {
+export class ProductAssetsComponent {
     @Input('assets') set assetsSetter(val: Asset[]) {
         // create a new non-readonly array of assets
         this.assets = val.slice();
     }
+
     @Input() featuredAsset: Asset | undefined;
     @HostBinding('class.compact')
     @Input()
     compact = false;
     @Output() change = new EventEmitter<AssetChange>();
-    @ViewChild('dlg', { static: false, read: CdkDropListGroup }) listGroup: CdkDropListGroup<CdkDropList>;
-    @ViewChild('dl', { static: false, read: CdkDropList }) placeholder: CdkDropList;
 
-    public target: CdkDropList | null;
-    public targetIndex: number;
-    public source: CdkDropList | null;
-    public sourceIndex: number;
-    public dragIndex: number;
-    public activeContainer;
     public assets: Asset[] = [];
 
     private readonly updateCollectionPermissions = [Permission.UpdateCatalog, Permission.UpdateCollection];
@@ -79,15 +70,6 @@ export class ProductAssetsComponent implements AfterViewInit {
         private viewportRuler: ViewportRuler,
         @Optional() private collectionDetailComponent?: CollectionDetailComponent,
     ) {}
-
-    ngAfterViewInit() {
-        const phElement = this.placeholder.element.nativeElement;
-
-        phElement.style.display = 'none';
-        if (phElement.parentElement) {
-            phElement.parentElement.removeChild(phElement);
-        }
-    }
 
     selectAssets() {
         this.modalService
@@ -140,114 +122,8 @@ export class ProductAssetsComponent implements AfterViewInit {
         });
     }
 
-    dragMoved(e: CdkDragMove) {
-        const point = this.getPointerPositionOnPage(e.event);
-
-        this.listGroup._items.forEach(dropList => {
-            if (__isInsideDropListClientRect(dropList, point.x, point.y)) {
-                this.activeContainer = dropList;
-                return;
-            }
-        });
+    dropListDropped(event: CdkDragDrop<number>) {
+        moveItemInArray(this.assets, event.previousContainer.data, event.container.data);
+        this.emitChangeEvent(this.assets, this.featuredAsset);
     }
-
-    dropListDropped() {
-        if (!this.target || !this.source) {
-            return;
-        }
-
-        const phElement = this.placeholder.element.nativeElement;
-        // tslint:disable-next-line:no-non-null-assertion
-        const parent = phElement.parentElement!;
-
-        phElement.style.display = 'none';
-
-        parent.removeChild(phElement);
-        parent.appendChild(phElement);
-        parent.insertBefore(this.source.element.nativeElement, parent.children[this.sourceIndex]);
-
-        this.target = null;
-        this.source = null;
-
-        if (this.sourceIndex !== this.targetIndex) {
-            moveItemInArray(this.assets, this.sourceIndex, this.targetIndex);
-            this.emitChangeEvent(this.assets, this.featuredAsset);
-        }
-    }
-
-    dropListEnterPredicate = (drag: CdkDrag, drop: CdkDropList) => {
-        if (drop === this.placeholder) {
-            return true;
-        }
-        if (drop !== this.activeContainer) {
-            return false;
-        }
-
-        const phElement = this.placeholder.element.nativeElement;
-        const sourceElement = drag.dropContainer.element.nativeElement;
-        const dropElement = drop.element.nativeElement;
-        const children = dropElement.parentElement && dropElement.parentElement.children;
-
-        const dragIndex = __indexOf(children, this.source ? phElement : sourceElement);
-        const dropIndex = __indexOf(children, dropElement);
-
-        if (!this.source) {
-            this.sourceIndex = dragIndex;
-            this.source = drag.dropContainer;
-
-            phElement.style.width = sourceElement.clientWidth + 'px';
-            phElement.style.height = sourceElement.clientHeight + 'px';
-
-            if (sourceElement.parentElement) {
-                sourceElement.parentElement.removeChild(sourceElement);
-            }
-        }
-
-        this.targetIndex = dropIndex;
-        this.target = drop;
-
-        phElement.style.display = '';
-        if (dropElement.parentElement) {
-            dropElement.parentElement.insertBefore(
-                phElement,
-                dropIndex > dragIndex ? dropElement.nextSibling : dropElement,
-            );
-        }
-
-        this.placeholder._dropListRef.enter(
-            drag._dragRef,
-            drag.element.nativeElement.offsetLeft,
-            drag.element.nativeElement.offsetTop,
-        );
-        return false;
-    };
-
-    /** Determines the point of the page that was touched by the user. */
-    getPointerPositionOnPage(event: MouseEvent | TouchEvent) {
-        // `touches` will be empty for start/end events so we have to fall back to `changedTouches`.
-        const point = __isTouchEvent(event) ? event.touches[0] || event.changedTouches[0] : event;
-        const scrollPosition = this.viewportRuler.getViewportScrollPosition();
-
-        return {
-            x: point.pageX - scrollPosition.left,
-            y: point.pageY - scrollPosition.top,
-        };
-    }
-}
-
-function __indexOf(collection: HTMLCollection | null, node: HTMLElement) {
-    if (!collection) {
-        return -1;
-    }
-    return Array.prototype.indexOf.call(collection, node);
-}
-
-/** Determines whether an event is a touch event. */
-function __isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
-    return event.type.startsWith('touch');
-}
-
-function __isInsideDropListClientRect(dropList: CdkDropList, x: number, y: number) {
-    const { top, bottom, left, right } = dropList.element.nativeElement.getBoundingClientRect();
-    return y >= top && y <= bottom && x >= left && x <= right;
 }

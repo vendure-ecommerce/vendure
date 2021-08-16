@@ -1,5 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { CustomFields, mergeConfig, TransactionalConnection } from '@vendure/core';
+import { Asset, CustomFields, mergeConfig, TransactionalConnection } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -81,6 +81,15 @@ const customConfig = mergeConfig(testConfig, {
                 validate: async (value, injector) => {
                     await new Promise(resolve => setTimeout(resolve, 1));
                     return `async error`;
+                },
+            },
+            {
+                name: 'validateRelation',
+                type: 'relation',
+                entity: Asset,
+                validate: async value => {
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                    return `relation error`;
                 },
             },
             {
@@ -217,6 +226,7 @@ describe('Custom fields', () => {
                 { name: 'validateFn2', type: 'string', list: false },
                 { name: 'validateFn3', type: 'string', list: false },
                 { name: 'validateFn4', type: 'string', list: false },
+                { name: 'validateRelation', type: 'relation', list: false },
                 { name: 'stringWithOptions', type: 'string', list: false },
                 { name: 'nonPublic', type: 'string', list: false },
                 { name: 'public', type: 'string', list: false },
@@ -613,6 +623,23 @@ describe('Custom fields', () => {
                     }
                 `);
             }, `async error`),
+        );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1000
+        it(
+            'supports validation of relation types',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { validateRelationId: "T_1" } }) {
+                            id
+                            customFields {
+                                validateFn4
+                            }
+                        }
+                    }
+                `);
+            }, `relation error`),
         );
     });
 

@@ -3,6 +3,7 @@ import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import fs from 'fs-extra';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -325,6 +326,40 @@ describe('Asset resolver', () => {
                     ],
                 },
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/990
+        it('errors if the filesize is too large', async () => {
+            /**
+             * Based on https://stackoverflow.com/a/49433633/772859
+             */
+            function createEmptyFileOfSize(fileName: string, sizeInBytes: number) {
+                return new Promise((resolve, reject) => {
+                    const fh = fs.openSync(fileName, 'w');
+                    fs.writeSync(fh, 'ok', Math.max(0, sizeInBytes - 2));
+                    fs.closeSync(fh);
+                    resolve(true);
+                });
+            }
+
+            const twentyOneMib = 22020096;
+            const filename = path.join(__dirname, 'fixtures/assets/temp_large_file.pdf');
+            await createEmptyFileOfSize(filename, twentyOneMib);
+
+            try {
+                const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                    mutation: CREATE_ASSETS,
+                    filePaths: [filename],
+                    mapVariables: filePaths => ({
+                        input: filePaths.map(p => ({ file: null })),
+                    }),
+                });
+                fail('Should have thrown');
+            } catch (e) {
+                expect(e.message).toContain('File truncated as it exceeds the 20971520 byte size limit');
+            } finally {
+                fs.rmSync(filename);
+            }
         });
     });
 

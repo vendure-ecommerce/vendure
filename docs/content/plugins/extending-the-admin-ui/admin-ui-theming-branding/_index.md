@@ -47,7 +47,7 @@ You can replace the Vendure logos and favicon with your own brand logo:
       plugins: [
         AdminUiPlugin.init({
           app: compileUiExtensions({
-            outputPath: path.join(__dirname, '__admin-ui'),
+            outputPath: path.join(__dirname, 'admin-ui'),
             extensions: [
               setBranding({
                 // The small logo appears in the top left of the screen  
@@ -91,7 +91,7 @@ Much of the visual styling of the Admin UI can be customized by providing your o
       plugins: [
         AdminUiPlugin.init({
           app: compileUiExtensions({
-            outputPath: path.join(__dirname, '__admin-ui'),
+            outputPath: path.join(__dirname, 'admin-ui'),
             extensions: [{
               globalStyles: path.join(__dirname, 'my-theme.scss')
             }],

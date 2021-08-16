@@ -26,6 +26,7 @@ import {
     GetAssetList,
     GetCollection,
     GetCollectionBreadcrumbs,
+    GetCollectionNestedParents,
     GetCollectionProducts,
     GetCollections,
     GetCollectionsForProducts,
@@ -578,6 +579,15 @@ describe('Collection resolver', () => {
                     },
                 },
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/981
+        it('nested parent field in shop API', async () => {
+            const { collections } = await shopClient.query<GetCollectionNestedParents.Query>(
+                GET_COLLECTION_NESTED_PARENTS,
+            );
+
+            expect(collections.items[0].parent?.name).toBe(ROOT_COLLECTION_NAME);
         });
 
         it('children field', async () => {
@@ -1872,6 +1882,26 @@ const GET_PRODUCT_COLLECTIONS_WITH_PARENT = gql`
                 parent {
                     id
                     name
+                }
+            }
+        }
+    }
+`;
+
+const GET_COLLECTION_NESTED_PARENTS = gql`
+    query GetCollectionNestedParents {
+        collections {
+            items {
+                id
+                name
+                parent {
+                    name
+                    parent {
+                        name
+                        parent {
+                            name
+                        }
+                    }
                 }
             }
         }

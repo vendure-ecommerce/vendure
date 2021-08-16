@@ -22,6 +22,7 @@ Object {
       "stretching",
       "watercolor",
     ],
+    "localName": "localPPS",
     "owner": Object {
       "id": "T_1",
     },
@@ -120,6 +121,7 @@ Object {
   "assets": Array [],
   "customFields": Object {
     "keywords": Array [],
+    "localName": "localMabef",
     "owner": Object {
       "id": "T_1",
     },
@@ -167,6 +169,7 @@ Object {
   "assets": Array [],
   "customFields": Object {
     "keywords": Array [],
+    "localName": "localGiotto",
     "owner": Object {
       "id": "T_1",
     },
@@ -261,6 +264,7 @@ Object {
       "apron",
       "clothing",
     ],
+    "localName": "localSmock",
     "owner": Object {
       "id": "T_1",
     },

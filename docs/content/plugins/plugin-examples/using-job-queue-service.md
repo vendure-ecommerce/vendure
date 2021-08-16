@@ -44,8 +44,8 @@ class ProductVideoService implements OnModuleInit {
   constructor(private jobQueueService: JobQueueService,
               private connection: TransactionalConnection) {}
 
-  onModuleInit() {
-    this.jobQueue = this.jobQueueService.createQueue({
+  async onModuleInit() {
+    this.jobQueue = await this.jobQueueService.createQueue({
       name: 'transcode-video',
       process: async job => {
         // Here we define how each job in the queue will be processed.

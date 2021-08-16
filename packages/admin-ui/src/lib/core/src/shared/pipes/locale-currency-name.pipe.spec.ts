@@ -3,15 +3,15 @@ import { LocaleCurrencyNamePipe } from './locale-currency-name.pipe';
 describe('LocaleCurrencyNamePipe', () => {
     const pipe = new LocaleCurrencyNamePipe();
     it('full output', () => {
-        expect(pipe.transform('usd')).toBe('US dollars ($)');
-        expect(pipe.transform('gbp')).toBe('British pounds (£)');
-        expect(pipe.transform('CNY')).toBe('Chinese yuan (CN¥)');
+        expect(pipe.transform('usd')).toBe('US Dollar ($)');
+        expect(pipe.transform('gbp')).toBe('British Pound (£)');
+        expect(pipe.transform('CNY')).toBe('Chinese Yuan (CN¥)');
     });
 
     it('name output', () => {
-        expect(pipe.transform('usd', 'name')).toBe('US dollars');
-        expect(pipe.transform('gbp', 'name')).toBe('British pounds');
-        expect(pipe.transform('CNY', 'name')).toBe('Chinese yuan');
+        expect(pipe.transform('usd', 'name')).toBe('US Dollar');
+        expect(pipe.transform('gbp', 'name')).toBe('British Pound');
+        expect(pipe.transform('CNY', 'name')).toBe('Chinese Yuan');
     });
 
     it('symbol output', () => {
@@ -26,7 +26,7 @@ describe('LocaleCurrencyNamePipe', () => {
     });
 
     it('returns code for unknown codes', () => {
-        expect(pipe.transform('zzz')).toBe('ZZZ (ZZZ)');
+        expect(pipe.transform('zzz')).toBe('zzz (ZZZ)');
     });
 
     it('returns empty string for empty input', () => {

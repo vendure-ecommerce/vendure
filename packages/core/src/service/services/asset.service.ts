@@ -235,20 +235,32 @@ export class AssetService {
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
-        const { createReadStream, filename, mimetype } = await input.file;
-        const stream = createReadStream();
-        const result = await this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
-        if (input.tags) {
-            const tags = await this.tagService.valuesToTags(ctx, input.tags);
-            result.tags = tags;
-            await this.connection.getRepository(ctx, Asset).save(result);
-        }
-        this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
-        return result;
+        return new Promise(async (resolve, reject) => {
+            const { createReadStream, filename, mimetype } = await input.file;
+            const stream = createReadStream();
+            stream.on('error', (err: any) => {
+                reject(err);
+            });
+            const result = await this.createAssetInternal(
+                ctx,
+                stream,
+                filename,
+                mimetype,
+                input.customFields,
+            );
+            if (isGraphQlErrorResult(result)) {
+                resolve(result);
+                return;
+            }
+            await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
+            if (input.tags) {
+                const tags = await this.tagService.valuesToTags(ctx, input.tags);
+                result.tags = tags;
+                await this.connection.getRepository(ctx, Asset).save(result);
+            }
+            this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
+            resolve(result);
+        });
     }
 
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
@@ -259,6 +271,7 @@ export class AssetService {
             input.focalPoint.y = to3dp(input.focalPoint.y);
         }
         patchEntity(asset, omit(input, ['tags']));
+        await this.customFieldRelationService.updateRelations(ctx, Asset, input, asset);
         if (input.tags) {
             asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
         }

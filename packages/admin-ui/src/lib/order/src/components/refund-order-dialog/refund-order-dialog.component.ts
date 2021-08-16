@@ -139,7 +139,7 @@ export class RefundOrderDialogComponent
                 refund: {
                     lines: refundLines,
                     reason: this.reason,
-                    shipping: this.refundShipping ? this.order.shipping : 0,
+                    shipping: this.refundShipping ? this.order.shippingWithTax : 0,
                     adjustment: this.adjustment,
                     paymentId: payment.id,
                 },

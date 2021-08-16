@@ -149,8 +149,8 @@ export class ProductDetailComponent
                     ? variants.filter(v => {
                           const lcTerm = term.toLocaleLowerCase();
                           return (
-                              v.name.toLocaleLowerCase().includes(term) ||
-                              v.sku.toLocaleLowerCase().includes(term)
+                              v.name.toLocaleLowerCase().includes(lcTerm) ||
+                              v.sku.toLocaleLowerCase().includes(lcTerm)
                           );
                       })
                     : variants;

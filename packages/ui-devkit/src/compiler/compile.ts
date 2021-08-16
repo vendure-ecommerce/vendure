@@ -40,21 +40,23 @@ export function compileUiExtensions(
 }
 
 function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[]): AdminUiAppConfig {
-    const cmd = shouldUseYarn() ? 'yarn' : 'npm';
+    const usingYarn = shouldUseYarn();
+    const cmd = usingYarn ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const buildProcess = spawn(
-                cmd,
-                ['run', 'build', `--outputPath=${distPath}`, `--base-href=${baseHref}`],
-                {
-                    cwd: outputPath,
-                    shell: true,
-                    stdio: 'inherit',
-                },
-            );
+            const commandArgs = ['run', 'build', `--outputPath=${distPath}`, `--base-href=${baseHref}`];
+            if (!usingYarn) {
+                // npm requires `--` before any command line args being passed to a script
+                commandArgs.splice(2, 0, '--');
+            }
+            const buildProcess = spawn(cmd, commandArgs, {
+                cwd: outputPath,
+                shell: true,
+                stdio: 'inherit',
+            });
 
             buildProcess.on('close', code => {
                 if (code !== 0) {

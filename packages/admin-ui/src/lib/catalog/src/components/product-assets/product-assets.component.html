@@ -44,22 +44,17 @@
 </ng-template>
 
 <ng-template #assetList>
-    <div class="all-assets" [class.compact]="compact" cdkDropListGroup #dlg>
+    <div class="all-assets" [class.compact]="compact" cdkDropListGroup>
         <div
+            *ngFor="let asset of assets; let index = index"
+            class="drop-list"
             cdkDropList
-            #dl
+            cdkDropListOrientation="horizontal"
+            [cdkDropListData]="index"
             [cdkDropListDisabled]="!(updatePermissions | hasPermission)"
-            [cdkDropListEnterPredicate]="dropListEnterPredicate"
-            (cdkDropListDropped)="dropListDropped()"
-        ></div>
-        <div
-            *ngFor="let asset of assets"
-            cdkDropList
-            [cdkDropListDisabled]="!(updatePermissions | hasPermission)"
-            [cdkDropListEnterPredicate]="dropListEnterPredicate"
-            (cdkDropListDropped)="dropListDropped()"
+            (cdkDropListDropped)="dropListDropped($event)"
         >
-            <vdr-dropdown cdkDrag (cdkDragMoved)="dragMoved($event)">
+            <vdr-dropdown cdkDrag>
                 <div
                     class="asset-thumb"
                     vdrDropdownTrigger

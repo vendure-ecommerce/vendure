@@ -86,18 +86,24 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
 
         return new Promise(async (resolve, reject) => {
             if (isSQLite) {
-                // SQLite driver does not support concurrent transactions. See https://github.com/typeorm/typeorm/issues/1884
-                const result = await this.getNextAndSetAsRunning(connection.manager, queueName, false);
-                resolve(result);
+                try {
+                    // SQLite driver does not support concurrent transactions. See https://github.com/typeorm/typeorm/issues/1884
+                    const result = await this.getNextAndSetAsRunning(connection.manager, queueName, false);
+                    resolve(result);
+                } catch (e) {
+                    reject(e);
+                }
             } else {
                 // Selecting the next job is wrapped in a transaction so that we can
                 // set a lock on that row and immediately update the status to "RUNNING".
                 // This prevents multiple worker processes from taking the same job when
                 // running concurrent workers.
-                connection.transaction(async transactionManager => {
-                    const result = await this.getNextAndSetAsRunning(transactionManager, queueName, true);
-                    resolve(result);
-                });
+                connection
+                    .transaction(async transactionManager => {
+                        const result = await this.getNextAndSetAsRunning(transactionManager, queueName, true);
+                        resolve(result);
+                    })
+                    .catch(err => reject(err));
             }
         });
     }

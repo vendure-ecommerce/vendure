@@ -24,7 +24,7 @@
     "check-imports": "ts-node scripts/check-imports.ts",
     "check-angular-versions": "ts-node scripts/check-angular-versions.ts",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
-    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push",
+    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push --force-publish",
     "publish-local": "lerna version --no-git-tag-version && cd scripts && ./publish-to-verdaccio.sh"
   },
   "devDependencies": {

@@ -19,9 +19,9 @@ import { CreateQueueOptions, JobData } from './types';
  *
  *   private jobQueue: JobQueue<{ videoId: string; }>;
  *
- *   onModuleInit() {
+ *   async onModuleInit() {
  *     // The JobQueue is created on initialization
- *     this.jobQueue = this.jobQueueService.createQueue({
+ *     this.jobQueue = await this.jobQueueService.createQueue({
  *       name: 'transcode-video',
  *       process: async job => {
  *         return await this.transcodeVideo(job.data.videoId);
