@@ -44,9 +44,9 @@ export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
             return of(of(this.emptyEntity));
         } else {
             const stream = this.entityStream(id || '').pipe(
-                takeUntil(navigateAway$),
                 filter(notNullOrUndefined),
                 shareReplay(1),
+                takeUntil(navigateAway$),
             );
 
             return stream.pipe(
