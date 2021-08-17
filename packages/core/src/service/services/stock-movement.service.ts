@@ -85,7 +85,8 @@ export class StockMovementService {
         for (const line of order.lines) {
             const productVariant = await this.connection
             .getRepository(ctx, ProductVariant)
-            .where(`productvariant.id = ${line.productVariant.id}`)
+            .createQueryBuilder()
+            .andWhere(`productvariant.id = ${line.productVariant.id}`)
             .getOne();
             const allocation = new Allocation({
                 productVariant,
@@ -130,7 +131,8 @@ export class StockMovementService {
         for (const lineRow of orderLinesMap.values()) {
             const productVariant = await this.connection
             .getRepository(ctx, ProductVariant)
-            .where(`productvariant.id = ${lineRow.line.productVariant.id}`)
+            .createQueryBuilder()
+            .andWhere(`productvariant.id = ${lineRow.line.productVariant.id}`)
             .getOne();
             const sale = new Sale({
                 productVariant,
