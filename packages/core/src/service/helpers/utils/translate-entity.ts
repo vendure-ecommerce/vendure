@@ -15,7 +15,8 @@ export type TranslatableRelationsKeys<T> = {
     T[K] extends string[] ? never :
     T[K] extends number[] ? never :
     T[K] extends boolean[] ? never :
-    K extends 'translations' ? never : K
+    K extends 'translations' ? never :
+    K extends 'customFields' ? never : K
 }[keyof T];
 
 // prettier-ignore
