@@ -92,8 +92,14 @@
                         (click)="move(collection, item.id)"
                         [disabled]="!(hasUpdatePermission$ | async)"
                     >
-                        <clr-icon shape="child-arrow"></clr-icon>
-                        {{ item.path }}
+                        <div class="move-to-item">
+                            <div class="move-icon">
+                                <clr-icon shape="child-arrow"></clr-icon>
+                            </div>
+                            <div class="path">
+                                {{ item.path }}
+                            </div>
+                        </div>
                     </button>
                     <div class="dropdown-divider"></div>
                     <button
