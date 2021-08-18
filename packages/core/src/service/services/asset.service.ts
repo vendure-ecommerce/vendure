@@ -560,20 +560,16 @@ export class AssetService {
 
     private getHostEntityIdProperty(entity: EntityWithAssets): string {
         const entityName = entity.constructor.name;
-        try {
-            switch (entityName) {
-                case 'Product':
-                    return 'productId';
-                case 'ProductVariant':
-                    return 'productVariantId';
-                case 'Collection':
-                    return 'collectionId';
-                default:
-                    return `${camelCase(entityName, true)}Id`;
-            }   
-        } catch (error) {
-            throw new InternalServerError('error.could-not-find-matching-orderable-asset');
-        }
+        switch (entityName) {
+            case 'Product':
+                return 'productId';
+            case 'ProductVariant':
+                return 'productVariantId';
+            case 'Collection':
+                return 'collectionId';
+            default:
+                return `${camelCase(entityName, true)}Id`;
+        }   
     }
 
     private validateMimeType(mimeType: string): boolean {
