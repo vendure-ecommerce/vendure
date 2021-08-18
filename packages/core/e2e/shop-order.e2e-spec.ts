@@ -64,6 +64,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
     ADD_PAYMENT,
     ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
@@ -81,9 +82,7 @@ import {
     SET_CUSTOMER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
-    TEST_ORDER_FRAGMENT,
     TRANSITION_TO_STATE,
-    UPDATED_ORDER_FRAGMENT,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -1852,27 +1851,6 @@ const SET_ORDER_CUSTOM_FIELDS = gql`
             }
         }
     }
-`;
-
-export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
-    mutation AddItemToOrderWithCustomFields(
-        $productVariantId: ID!
-        $quantity: Int!
-        $customFields: OrderLineCustomFieldsInput
-    ) {
-        addItemToOrder(
-            productVariantId: $productVariantId
-            quantity: $quantity
-            customFields: $customFields
-        ) {
-            ...UpdatedOrder
-            ... on ErrorResult {
-                errorCode
-                message
-            }
-        }
-    }
-    ${UPDATED_ORDER_FRAGMENT}
 `;
 
 export const LOG_OUT = gql`

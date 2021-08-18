@@ -703,3 +703,24 @@ export const GET_PRODUCT_WITH_STOCK_LEVEL = gql`
         }
     }
 `;
+
+export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
+    mutation AddItemToOrderWithCustomFields(
+        $productVariantId: ID!
+        $quantity: Int!
+        $customFields: OrderLineCustomFieldsInput
+    ) {
+        addItemToOrder(
+            productVariantId: $productVariantId
+            quantity: $quantity
+            customFields: $customFields
+        ) {
+            ...UpdatedOrder
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
