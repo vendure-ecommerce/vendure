@@ -45,6 +45,9 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { TagService } from './tag.service';
+
+import { camelCase } from 'typeorm/util/StringUtils';
+
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -565,8 +568,8 @@ export class AssetService {
             case 'Collection':
                 return 'collectionId';
             default:
-                throw new InternalServerError('error.could-not-find-matching-orderable-asset');
-        }
+                return `${camelCase(entityName, true)}Id`;
+        }   
     }
 
     private validateMimeType(mimeType: string): boolean {
