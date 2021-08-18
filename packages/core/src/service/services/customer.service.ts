@@ -544,7 +544,7 @@ export class CustomerService {
             customer = patchEntity(existing, input);
             customer.channels.push(await this.connection.getEntityOrThrow(ctx, Channel, ctx.channelId));
         } else {
-            customer = new Customer(input);
+            customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
             this.channelService.assignToCurrentChannel(customer, ctx);
             this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
         }
