@@ -14,6 +14,7 @@ import {
     ModalService,
     ModifyOrderInput,
     NotificationService,
+    OrderAddressFragment,
     OrderDetail,
     ProductSelectorSearch,
     ServerConfigService,
@@ -137,6 +138,7 @@ export class OrderEditorComponent
                     countryCode: new FormControl(order.shippingAddress?.countryCode),
                     phoneNumber: new FormControl(order.shippingAddress?.phoneNumber),
                 });
+                this.addAddressCustomFieldsFormGroup(this.shippingAddressForm, order.shippingAddress);
             }
             if (!this.billingAddressForm) {
                 this.billingAddressForm = new FormGroup({
@@ -150,6 +152,7 @@ export class OrderEditorComponent
                     countryCode: new FormControl(order.billingAddress?.countryCode),
                     phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
                 });
+                this.addAddressCustomFieldsFormGroup(this.billingAddressForm, order.billingAddress);
             }
             this.orderLineCustomFieldsFormArray = new FormArray([]);
             for (const line of order.lines) {
@@ -428,6 +431,21 @@ export class OrderEditorComponent
                     this.router.navigate(['../'], { relativeTo: this.route });
                 }
             });
+    }
+
+    private addAddressCustomFieldsFormGroup(
+        parentFormGroup: FormGroup,
+        address?: OrderAddressFragment | null,
+    ) {
+        if (address && this.addressCustomFields.length) {
+            const addressCustomFieldsFormGroup = new FormGroup({});
+            for (const customFieldDef of this.addressCustomFields) {
+                const name = customFieldDef.name;
+                const value = (address as any).customFields?.[name];
+                addressCustomFieldsFormGroup.addControl(name, new FormControl(value));
+            }
+            parentFormGroup.addControl('customFields', addressCustomFieldsFormGroup);
+        }
     }
 
     protected setFormValues(entity: OrderDetail.Fragment, languageCode: LanguageCode): void {
