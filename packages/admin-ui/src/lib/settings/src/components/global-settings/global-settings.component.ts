@@ -2,12 +2,18 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
-import { CustomFieldConfig, GlobalSettings, LanguageCode, Permission } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
-import { switchMap, tap } from 'rxjs/operators';
+import {
+    BaseDetailComponent,
+    CustomFieldConfig,
+    DataService,
+    GlobalSettings,
+    LanguageCode,
+    LocalStorageService,
+    NotificationService,
+    Permission,
+    ServerConfigService,
+} from '@vendure/admin-ui/core';
+import { switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-global-settings',
@@ -29,6 +35,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
+        private localStorageService: LocalStorageService,
     ) {
         super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('GlobalSettings');
@@ -80,8 +87,15 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
                     }
                 }),
                 switchMap(() => this.serverConfigService.refreshGlobalSettings()),
+                withLatestFrom(this.dataService.client.uiState().single$),
             )
-            .subscribe();
+            .subscribe(([{ globalSettings }, { uiState }]) => {
+                const availableLangs = globalSettings.availableLanguages;
+                if (availableLangs.length && !availableLangs.includes(uiState.contentLanguage)) {
+                    this.dataService.client.setContentLanguage(availableLangs[0]).subscribe();
+                    this.localStorageService.set('contentLanguageCode', availableLangs[0]);
+                }
+            });
     }
 
     protected setFormValues(entity: GlobalSettings, languageCode: LanguageCode): void {
