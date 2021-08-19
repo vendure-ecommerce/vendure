@@ -198,6 +198,13 @@ export function addGraphQLCustomFields(
                 }
             `;
         }
+        if (schema.getType('UpdateOrderAddressInput')) {
+            customFieldTypeDefs += `
+                extend input UpdateOrderAddressInput {
+                    customFields: UpdateAddressCustomFieldsInput
+                }
+            `;
+        }
     } else {
         if (schema.getType('OrderAddress')) {
             customFieldTypeDefs += `
