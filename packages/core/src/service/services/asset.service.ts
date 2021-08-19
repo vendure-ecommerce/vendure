@@ -19,6 +19,7 @@ import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import { Readable, Stream } from 'stream';
+import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
@@ -45,8 +46,6 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { TagService } from './tag.service';
-
-import { camelCase } from 'typeorm/util/StringUtils';
 
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
@@ -568,8 +567,8 @@ export class AssetService {
             case 'Collection':
                 return 'collectionId';
             default:
-                return `${camelCase(entityName, true)}Id`;
-        }   
+                return `${camelCase(entityName)}Id`;
+        }
     }
 
     private validateMimeType(mimeType: string): boolean {
