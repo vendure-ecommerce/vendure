@@ -567,7 +567,7 @@ export class AssetService {
             case 'Collection':
                 return 'collectionId';
             default:
-                return `${camelCase(entityName, true)}Id`;
+                return `${camelCase(entityName)}Id`;
         }
     }
 

@@ -1,10 +1,10 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, HostBinding, Inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs/operators';
 
 import { DataService } from './data/providers/data.service';
+import { ServerConfigService } from './data/server-config';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
 
 @Component({
@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
 
     constructor(
         private dataService: DataService,
+        private serverConfigService: ServerConfigService,
         private localStorageService: LocalStorageService,
         @Inject(DOCUMENT) private document?: any,
     ) {
@@ -36,11 +37,30 @@ export class AppComponent implements OnInit {
                 this._document?.body.setAttribute('data-theme', theme);
             });
 
+        // Once logged in, keep the localStorage "contentLanguageCode" in sync with the
+        // uiState. Also perform a check to ensure that the current contentLanguage is
+        // one of the availableLanguages per GlobalSettings.
         this.dataService.client
-            .uiState()
-            .mapStream(data => data.uiState.contentLanguage)
-            .subscribe(code => {
-                this.localStorageService.set('contentLanguageCode', code);
+            .userStatus()
+            .mapStream(({ userStatus }) => userStatus.isLoggedIn)
+            .pipe(
+                filter(loggedIn => loggedIn === true),
+                switchMap(() => {
+                    return this.dataService.client.uiState().mapStream(data => data.uiState.contentLanguage);
+                }),
+                switchMap(contentLang => {
+                    return this.serverConfigService
+                        .getAvailableLanguages()
+                        .pipe(map(available => [contentLang, available] as const));
+                }),
+            )
+            .subscribe({
+                next: ([contentLanguage, availableLanguages]) => {
+                    this.localStorageService.set('contentLanguageCode', contentLanguage);
+                    if (availableLanguages.length && !availableLanguages.includes(contentLanguage)) {
+                        this.dataService.client.setContentLanguage(availableLanguages[0]).subscribe();
+                    }
+                },
             });
     }
 }

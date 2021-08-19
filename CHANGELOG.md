@@ -1,3 +1,11 @@
+## <small>1.1.5 (2021-08-19)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix regression from v1.1.4 which broke Admin UI ([63ad437](https://github.com/vendure-ecommerce/vendure/commit/63ad437)), closes [#1045](https://github.com/vendure-ecommerce/vendure/issues/1045)
+* **core** Correct camel casing for custom orderable asset ids ([cd18431](https://github.com/vendure-ecommerce/vendure/commit/cd18431)), closes [#1035](https://github.com/vendure-ecommerce/vendure/issues/1035)
+
 ## <small>1.1.4 (2021-08-19)</small>
 
 
