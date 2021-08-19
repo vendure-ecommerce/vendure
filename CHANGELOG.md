@@ -1,3 +1,21 @@
+## <small>1.1.4 (2021-08-19)</small>
+
+
+#### Fixes
+
+* **admin-ui** Apply variant name auto-generation for new translations ([df3d3f4](https://github.com/vendure-ecommerce/vendure/commit/df3d3f4)), closes [#600](https://github.com/vendure-ecommerce/vendure/issues/600)
+* **admin-ui** Correctly display OrderLine custom field values ([496ce5e](https://github.com/vendure-ecommerce/vendure/commit/496ce5e)), closes [#1031](https://github.com/vendure-ecommerce/vendure/issues/1031)
+* **admin-ui** Correctly set content lang based on available langs ([d9531fd](https://github.com/vendure-ecommerce/vendure/commit/d9531fd)), closes [#1033](https://github.com/vendure-ecommerce/vendure/issues/1033)
+* **admin-ui** Fix Channel dropdown auto-select in Safari (#1040) ([aee8416](https://github.com/vendure-ecommerce/vendure/commit/aee8416)), closes [#1040](https://github.com/vendure-ecommerce/vendure/issues/1040) [#1036](https://github.com/vendure-ecommerce/vendure/issues/1036)
+* **admin-ui** Improve display of long Collection paths in dropdown ([4d7032b](https://github.com/vendure-ecommerce/vendure/commit/4d7032b)), closes [#1042](https://github.com/vendure-ecommerce/vendure/issues/1042)
+* **core** Allow custom host id when creating new entity with orderable assets (#1035) ([aeaf308](https://github.com/vendure-ecommerce/vendure/commit/aeaf308)), closes [#1035](https://github.com/vendure-ecommerce/vendure/issues/1035) [#1034](https://github.com/vendure-ecommerce/vendure/issues/1034)
+* **core** Fix custom field validation when updating ProductVariants ([372b4af](https://github.com/vendure-ecommerce/vendure/commit/372b4af)), closes [#1014](https://github.com/vendure-ecommerce/vendure/issues/1014)
+* **core** Fix incorrect quantity adjustment (#983) ([2441ce7](https://github.com/vendure-ecommerce/vendure/commit/2441ce7)), closes [#983](https://github.com/vendure-ecommerce/vendure/issues/983) [#931](https://github.com/vendure-ecommerce/vendure/issues/931)
+* **core** Fix publishing CustomerEvent without customer ID ([03cd5d7](https://github.com/vendure-ecommerce/vendure/commit/03cd5d7))
+* **core** Fix stock movements when multiple OrderLines have same ProductVariant ([1b05f38](https://github.com/vendure-ecommerce/vendure/commit/1b05f38)), closes [#1028](https://github.com/vendure-ecommerce/vendure/issues/1028)
+* **core** Improve def of Translated<T> to allow customField typings ([3911059](https://github.com/vendure-ecommerce/vendure/commit/3911059)), closes [#1021](https://github.com/vendure-ecommerce/vendure/issues/1021)
+* **core** Loosen type def for ErrorResultUnion ([43ce722](https://github.com/vendure-ecommerce/vendure/commit/43ce722))
+
 ## <small>1.1.3 (2021-07-29)</small>
 
 

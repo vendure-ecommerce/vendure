@@ -501,6 +501,49 @@ describe('Product resolver', () => {
                 expect(product.slug).toBe(en_translation.slug);
             });
         });
+
+        describe('product.variants', () => {
+            it('returns product variants', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: 'T_1',
+                });
+
+                expect(product?.variants.length).toBe(4);
+            });
+
+            it('returns product variants in existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.en },
+                );
+
+                expect(product?.variants.length).toBe(4);
+            });
+
+            it('returns product variants in non-existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.ru },
+                );
+
+                expect(product?.variants.length).toBe(4);
+            });
+        });
     });
 
     describe('productVariants list query', () => {

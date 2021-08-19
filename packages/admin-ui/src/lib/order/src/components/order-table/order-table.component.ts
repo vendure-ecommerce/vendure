@@ -38,8 +38,8 @@ export class OrderTableComponent implements OnInit {
     }
 
     private getLineCustomFields() {
-        const formGroup = new FormGroup({});
         for (const line of this.order.lines) {
+            const formGroup = new FormGroup({});
             const result = this.orderLineCustomFields
                 .map(config => {
                     const value = (line as any).customFields[config.name];

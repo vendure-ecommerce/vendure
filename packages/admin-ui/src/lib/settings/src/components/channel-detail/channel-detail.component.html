@@ -73,6 +73,7 @@
             formControlName="defaultTaxZoneId"
             [vdrDisabled]="!(updatePermission | hasPermission)"
         >
+            <option selected value style="display: none"></option>
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
@@ -95,6 +96,7 @@
             formControlName="defaultShippingZoneId"
             [vdrDisabled]="!(updatePermission | hasPermission)"
         >
+            <option selected value style="display: none"></option>            
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>

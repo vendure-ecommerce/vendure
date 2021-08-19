@@ -64,6 +64,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
     ADD_PAYMENT,
     ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
@@ -81,7 +82,6 @@ import {
     SET_CUSTOMER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
-    TEST_ORDER_FRAGMENT,
     TRANSITION_TO_STATE,
     UPDATED_ORDER_FRAGMENT,
 } from './graphql/shop-definitions';
@@ -109,7 +109,7 @@ describe('Shop orders', () => {
                 ],
             },
             orderOptions: {
-                orderItemsLimit: 99,
+                orderItemsLimit: 199,
             },
         }),
     );
@@ -473,12 +473,12 @@ describe('Shop orders', () => {
                 AddItemToOrder.Variables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
-                quantity: 100,
+                quantity: 200,
             });
 
             orderResultGuard.assertErrorResult(addItemToOrder);
             expect(addItemToOrder.message).toBe(
-                'Cannot add items. An order may consist of a maximum of 99 items',
+                'Cannot add items. An order may consist of a maximum of 199 items',
             );
             expect(addItemToOrder.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
         });
@@ -520,17 +520,60 @@ describe('Shop orders', () => {
             expect(adjustOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
         });
 
+        it('adjustOrderLine with quantity > stockOnHand only allows user to have stock on hand', async () => {
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 111,
+            });
+            orderResultGuard.assertErrorResult(addItemToOrder);
+            // Insufficient stock error should return because there are only 100 available
+            expect(addItemToOrder.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
+
+            // But it should still add the item to the order
+            expect(addItemToOrder!.order.lines[1].quantity).toBe(100);
+
+            const { adjustOrderLine } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: 'T_8',
+                quantity: 101,
+            });
+            orderResultGuard.assertErrorResult(adjustOrderLine);
+            expect(adjustOrderLine.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
+            expect(adjustOrderLine.message).toBe(
+                'Only 100 items were added to the order due to insufficient stock',
+            );
+
+            const order = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(order.activeOrder?.lines[1].quantity).toBe(100);
+
+            const { adjustOrderLine: adjustLine2 } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: 'T_8',
+                quantity: 0,
+            });
+            orderResultGuard.assertSuccess(adjustLine2);
+            expect(adjustLine2!.lines.length).toBe(1);
+            expect(adjustLine2!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
+        });
+
         it('adjustOrderLine errors when going beyond orderItemsLimit', async () => {
             const { adjustOrderLine } = await shopClient.query<
                 AdjustItemQuantity.Mutation,
                 AdjustItemQuantity.Variables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: firstOrderLineId,
-                quantity: 100,
+                quantity: 200,
             });
             orderResultGuard.assertErrorResult(adjustOrderLine);
             expect(adjustOrderLine.message).toBe(
-                'Cannot add items. An order may consist of a maximum of 99 items',
+                'Cannot add items. An order may consist of a maximum of 199 items',
             );
             expect(adjustOrderLine.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
         });
@@ -1811,6 +1854,14 @@ const SET_ORDER_CUSTOM_FIELDS = gql`
     }
 `;
 
+export const LOG_OUT = gql`
+    mutation LogOut {
+        logout {
+            success
+        }
+    }
+`;
+
 export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
     mutation AddItemToOrderWithCustomFields(
         $productVariantId: ID!
@@ -1830,12 +1881,4 @@ export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
         }
     }
     ${UPDATED_ORDER_FRAGMENT}
-`;
-
-export const LOG_OUT = gql`
-    mutation LogOut {
-        logout {
-            success
-        }
-    }
 `;

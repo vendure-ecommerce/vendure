@@ -71,7 +71,7 @@ export interface GlobalStylesExtension {
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
  *
- * See [Extending the Admin UI](/docs/developer-guide/plugins/extending-the-admin-ui/) for
+ * See [Extending the Admin UI](/docs/plugins/extending-the-admin-ui/) for
  * detailed instructions.
  *
  * @docsCategory UiDevkit
