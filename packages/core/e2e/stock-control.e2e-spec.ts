@@ -49,7 +49,6 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
-    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
     ADD_PAYMENT,
     GET_PRODUCT_WITH_STOCK_LEVEL,
     SET_SHIPPING_ADDRESS,
@@ -933,6 +932,29 @@ describe('Stock control', () => {
     describe('OrderLines with same variant but different custom fields', () => {
         let orderId: string;
 
+        const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = `
+            mutation AddItemToOrderWithCustomFields(
+                $productVariantId: ID!
+                $quantity: Int!
+                $customFields: OrderLineCustomFieldsInput
+            ) {
+                addItemToOrder(
+                    productVariantId: $productVariantId
+                    quantity: $quantity
+                    customFields: $customFields
+                ) {
+                    ... on Order {
+                        id
+                        lines { id }
+                    }
+                    ... on ErrorResult {
+                        errorCode
+                        message
+                    }
+                }
+            }
+        `;
+
         it('correctly allocates stock', async () => {
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
 
@@ -941,7 +963,7 @@ describe('Stock control', () => {
 
             expect(variant2.stockAllocated).toBe(0);
 
-            await shopClient.query<AddItemToOrder.Mutation, any>(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS, {
+            await shopClient.query<AddItemToOrder.Mutation, any>(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
                 productVariantId: variant2.id,
                 quantity: 1,
                 customFields: {
@@ -949,7 +971,7 @@ describe('Stock control', () => {
                 },
             });
             const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, any>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS),
                 {
                     productVariantId: variant2.id,
                     quantity: 1,
