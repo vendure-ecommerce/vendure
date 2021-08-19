@@ -8,7 +8,6 @@ import {
     DataService,
     GlobalSettings,
     LanguageCode,
-    LocalStorageService,
     NotificationService,
     Permission,
     ServerConfigService,
@@ -35,7 +34,6 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
-        private localStorageService: LocalStorageService,
     ) {
         super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('GlobalSettings');
@@ -93,7 +91,6 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
                 const availableLangs = globalSettings.availableLanguages;
                 if (availableLangs.length && !availableLangs.includes(uiState.contentLanguage)) {
                     this.dataService.client.setContentLanguage(availableLangs[0]).subscribe();
-                    this.localStorageService.set('contentLanguageCode', availableLangs[0]);
                 }
             });
     }

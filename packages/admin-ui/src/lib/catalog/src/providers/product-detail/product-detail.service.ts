@@ -163,9 +163,9 @@ export class ProductDetailService {
         if (productInput) {
             updateOperations.push(this.dataService.product.updateProduct(productInput));
 
-            const productOldName = findTranslation(product, languageCode)?.name;
+            const productOldName = findTranslation(product, languageCode)?.name ?? '';
             const productNewName = findTranslation(productInput, languageCode)?.name;
-            if (productOldName && productNewName && productOldName !== productNewName && autoUpdate) {
+            if (productNewName && productOldName !== productNewName && autoUpdate) {
                 for (const variant of product.variants) {
                     const currentVariantName = findTranslation(variant, languageCode)?.name || '';
                     let variantInput: UpdateProductVariantInput;
@@ -181,11 +181,21 @@ export class ProductDetailService {
                     }
                     const variantTranslation = findTranslation(variantInput, languageCode);
                     if (variantTranslation) {
-                        variantTranslation.name = replaceLast(
-                            variantTranslation.name,
-                            productOldName,
-                            productNewName,
-                        );
+                        if (variantTranslation.name) {
+                            variantTranslation.name = replaceLast(
+                                variantTranslation.name,
+                                productOldName,
+                                productNewName,
+                            );
+                        } else {
+                            // The variant translation was falsy, which occurs
+                            // when defining the product name for a new translation
+                            // language that had not yet been defined.
+                            variantTranslation.name = [
+                                productNewName,
+                                ...variant.options.map(o => o.name),
+                            ].join(' ');
+                        }
                     }
                 }
             }
