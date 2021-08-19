@@ -8,7 +8,6 @@ import { createUploadLink } from 'apollo-upload-client';
 
 import { getAppConfig } from '../app.config';
 import { introspectionResult } from '../common/introspection-result-wrapper';
-import { getDefaultUiLanguage } from '../common/utilities/get-default-ui-language';
 import { LocalStorageService } from '../providers/local-storage/local-storage.service';
 
 import { CheckJobsLink } from './check-jobs-link';
@@ -81,29 +80,6 @@ export function createApollo(
 }
 
 /**
- * On bootstrap, this function will fetch the available languages from the GlobalSettings and compare it
- * to the currently-configured content language to ensure that the content language is actually one
- * of the available languages.
- */
-export function initContentLanguage(
-    serverConfigService: ServerConfigService,
-    localStorageService: LocalStorageService,
-    dataService: DataService,
-): () => Promise<any> {
-    // Why store in a intermediate variable? https://github.com/angular/angular/issues/23629
-    const result = async () => {
-        const availableLanguages = await serverConfigService.getAvailableLanguages().toPromise();
-        const contentLang = localStorageService.get('contentLanguageCode') || getDefaultUiLanguage();
-        if (availableLanguages.length && !availableLanguages.includes(contentLang)) {
-            dataService.client.setContentLanguage(availableLanguages[0]).subscribe(() => {
-                localStorageService.set('contentLanguageCode', availableLanguages[0]);
-            });
-        }
-    };
-    return result;
-}
-
-/**
  * The DataModule is responsible for all API calls *and* serves as the source of truth for global app
  * state via the apollo-link-state package.
  */
@@ -127,12 +103,6 @@ export function initContentLanguage(
             multi: true,
             useFactory: initializeServerConfigService,
             deps: [ServerConfigService],
-        },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useFactory: initContentLanguage,
-            deps: [ServerConfigService, LocalStorageService, DataService],
         },
     ],
 })
