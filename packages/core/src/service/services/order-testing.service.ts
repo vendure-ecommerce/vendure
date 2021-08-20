@@ -7,8 +7,8 @@ import {
     TestShippingMethodQuote,
     TestShippingMethodResult,
 } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
-import { ID } from '../../../../common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ConfigService } from '../../config/config.service';
