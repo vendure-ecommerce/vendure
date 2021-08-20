@@ -1,5 +1,6 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { ImportInfo, MutationImportProductsArgs, Permission } from '@vendure/common/lib/generated-types';
+import { lastValueFrom } from 'rxjs';
 
 import { Importer } from '../../../data-import/providers/importer/importer';
 import { RequestContext } from '../../common/request-context';
@@ -18,6 +19,6 @@ export class ImportResolver {
     ): Promise<ImportInfo> {
         const { createReadStream, filename, mimetype, encoding } = await args.csvFile;
         const stream = createReadStream();
-        return this.importer.parseAndImport(stream, ctx).toPromise();
+        return lastValueFrom(this.importer.parseAndImport(stream, ctx));
     }
 }

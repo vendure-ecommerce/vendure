@@ -41,7 +41,7 @@
     "handlebars": "^4.7.6",
     "listr": "^0.14.3",
     "prompts": "^2.3.2",
-    "rxjs": "^6.6.3",
+    "rxjs": "^7.3.0",
     "semver": "^7.3.2",
     "tcp-port-used": "^1.0.1"
   }

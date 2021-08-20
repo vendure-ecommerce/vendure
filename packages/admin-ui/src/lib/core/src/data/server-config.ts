@@ -1,4 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 
 import {
     CustomFieldConfig,
@@ -43,17 +44,16 @@ export class ServerConfigService {
      * Fetch the ServerConfig. Should be run on app init (in case user is already logged in) and on successful login.
      */
     getServerConfig() {
-        return this.baseDataService
-            .query<GetServerConfig.Query>(GET_SERVER_CONFIG)
-            .single$.toPromise()
-            .then(
-                result => {
-                    this._serverConfig = result.globalSettings.serverConfig;
-                },
-                err => {
-                    // Let the error fall through to be caught by the http interceptor.
-                },
-            );
+        return lastValueFrom(
+            this.baseDataService.query<GetServerConfig.Query>(GET_SERVER_CONFIG).single$,
+        ).then(
+            result => {
+                this._serverConfig = result.globalSettings.serverConfig;
+            },
+            err => {
+                // Let the error fall through to be caught by the http interceptor.
+            },
+        );
     }
 
     getAvailableLanguages() {

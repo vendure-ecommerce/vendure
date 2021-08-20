@@ -1,8 +1,7 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
-import { interval, race, Subject, Subscription } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, interval, lastValueFrom, race, Subject, Subscription } from 'rxjs';
 import { filter, switchMap, take, throttleTime } from 'rxjs/operators';
 
 import { Logger } from '../config/logger/vendure-logger';
@@ -76,8 +75,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                         );
                         const stopSignal$ = this.queueStopped$.pipe(take(1));
 
-                        race(fromPromise(this.process(nextJob)), cancellationSignal$, stopSignal$)
-                            .toPromise()
+                        lastValueFrom(race(from(this.process(nextJob)), cancellationSignal$, stopSignal$))
                             .then(
                                 result => {
                                     if (result === STOP_SIGNAL) {
