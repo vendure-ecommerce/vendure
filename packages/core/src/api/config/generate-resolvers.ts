@@ -83,7 +83,7 @@ export function generateResolvers(
         DateTime: GraphQLDateTime,
         Node: dummyResolveType,
         PaginatedList: dummyResolveType,
-        Upload: GraphQLUpload || dummyResolveType,
+        Upload: (GraphQLUpload as any) || dummyResolveType,
         SearchResultPrice: {
             __resolveType(value: any) {
                 return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
