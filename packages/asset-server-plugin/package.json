@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "file-type": "^16.2.0",
-    "fs-extra": "^9.1.0",
-    "sharp": "~0.28.3"
+    "fs-extra": "^10.0.0",
+    "sharp": "~0.29.0"
   }
 }
