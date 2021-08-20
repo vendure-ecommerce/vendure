@@ -35,10 +35,10 @@
     "url": "https://github.com/vendure-ecommerce/vendure/issues"
   },
   "dependencies": {
-    "@angular-devkit/build-angular": "0.1102.4",
-    "@angular/cli": "11.2.4",
-    "@angular/compiler": "11.2.5",
-    "@angular/compiler-cli": "11.2.5",
+    "@angular-devkit/build-angular": "12.2.2",
+    "@angular/cli": "12.2.2",
+    "@angular/compiler": "12.2.2",
+    "@angular/compiler-cli": "12.2.2",
     "@vendure/admin-ui": "^1.1.5",
     "@vendure/common": "^1.1.5",
     "chalk": "^4.1.0",
