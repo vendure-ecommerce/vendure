@@ -384,9 +384,13 @@ export class SettingsDataService {
     }
 
     getAllJobs(options?: JobListOptions) {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_JOBS_LIST, {
-            options,
-        });
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(
+            GET_JOBS_LIST,
+            {
+                options,
+            },
+            'cache-first',
+        );
     }
 
     getJobQueues() {
