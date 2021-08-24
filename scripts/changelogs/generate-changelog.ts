@@ -24,6 +24,7 @@ const VALID_SCOPES: string[] = [
     'elasticsearch-plugin',
     'email-plugin',
     'email',
+    'job-queue-plugin',
     'testing',
     'ui-devkit',
 ];
