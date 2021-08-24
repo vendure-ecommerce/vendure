@@ -52,6 +52,24 @@ import { BullMQPluginOptions } from './types';
  * };
  * ```
  *
+ * ## Concurrency
+ *
+ * The default concurrency of a single worker is 3, i.e. up to 3 jobs will be processed at the same time.
+ * You can change the concurrency in the `workerOptions` passed to the `init()` method:
+ *
+ * @example
+ * ```TypeScript
+ * const config: VendureConfig = {
+ *   plugins: [
+ *     BullMQJobQueuePlugin.init({
+ *       workerOptions: {
+ *         concurrency: 10,
+ *       },
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
  * @docsCategory job-queue-plugin
  */
 @VendurePlugin({

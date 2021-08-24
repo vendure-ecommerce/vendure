@@ -10,13 +10,14 @@ import {
     Logger,
     PaginatedList,
 } from '@vendure/core';
-import Bull, { Processor, Queue, QueueScheduler, Worker } from 'bullmq';
+import Bull, { Processor, Queue, QueueScheduler, Worker, WorkerOptions } from 'bullmq';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { BullMQPluginOptions } from './types';
 
 const QUEUE_NAME = 'vendure-job-queue';
+const DEFAULT_CONCURRENCY = 3;
 
 /**
  * @description
@@ -181,7 +182,11 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     ): Promise<void> {
         this.queueNameProcessFnMap.set(queueName, process);
         if (!this.worker) {
-            this.worker = new Worker(QUEUE_NAME, this.workerProcessor).on('error', (e: any) =>
+            const options: WorkerOptions = {
+                concurrency: DEFAULT_CONCURRENCY,
+                ...this.options.workerOptions,
+            };
+            this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options).on('error', (e: any) =>
                 Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack),
             );
         }
