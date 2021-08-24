@@ -77,7 +77,7 @@ export class EventBus implements OnModuleDestroy {
 
     /** @internal */
     onModuleDestroy(): any {
-        this.destroy$.next(null);
+        this.destroy$.next();
     }
 
     /**

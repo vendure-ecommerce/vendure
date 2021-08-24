@@ -5,7 +5,7 @@ import { GetChannels, ProductVariantFragment } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { Dialog } from '@vendure/admin-ui/core';
-import { combineLatest, from, lastValueFrom, Observable } from 'rxjs';
+import { combineLatest, from, Observable } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
 @Component({
@@ -110,15 +110,15 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
         const variants: ProductVariantFragment[] = [];
 
         for (let i = 0; i < this.productIds.length && variants.length < take; i++) {
-            const productVariants$ = this.dataService.product
+            const productVariants = await this.dataService.product
                 .getProduct(this.productIds[i])
                 .mapSingle(({ product }) => {
                     const _variants = product ? product.variants : [];
                     return _variants.filter(v =>
                         this.isProductVariantMode ? this.productVariantIds?.includes(v.id) : true,
                     );
-                });
-            const productVariants = await lastValueFrom(productVariants$);
+                })
+                .toPromise();
             variants.push(...(productVariants || []));
         }
         return variants.slice(0, take);

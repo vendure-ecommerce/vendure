@@ -154,21 +154,21 @@ describe('JobQueueService', () => {
 
         expect(await getStates()).toEqual([JobState.RUNNING, JobState.PENDING, JobState.PENDING]);
 
-        subject.next(undefined);
+        subject.next();
         await tick();
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.PENDING, JobState.PENDING]);
 
         await tick(queuePollInterval);
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.RUNNING, JobState.PENDING]);
 
-        subject.next(undefined);
+        subject.next();
         await tick();
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
 
         await tick(queuePollInterval);
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
 
-        subject.next(undefined);
+        subject.next();
         await tick();
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
 
@@ -203,14 +203,14 @@ describe('JobQueueService', () => {
 
         expect(await getStates()).toEqual([JobState.RUNNING, JobState.RUNNING, JobState.PENDING]);
 
-        subject.next(undefined);
+        subject.next();
         await tick();
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
 
         await tick(queuePollInterval);
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
 
-        subject.next(undefined);
+        subject.next();
         await tick();
         expect(await getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
 

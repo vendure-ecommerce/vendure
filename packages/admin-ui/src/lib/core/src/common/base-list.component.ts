@@ -87,7 +87,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-        this.listQuery.completed$.next(null);
+        this.listQuery.completed$.next();
     }
 
     setPageNumber(page: number) {

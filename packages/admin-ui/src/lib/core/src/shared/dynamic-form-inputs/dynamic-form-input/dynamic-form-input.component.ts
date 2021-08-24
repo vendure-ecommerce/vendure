@@ -184,7 +184,7 @@ export class DynamicFormInputComponent
     }
 
     ngOnDestroy() {
-        this.destroy$.next(null);
+        this.destroy$.next();
         this.destroy$.complete();
     }
 
@@ -210,7 +210,7 @@ export class DynamicFormInputComponent
             id: this.listId++,
             control: new FormControl((this.def as ConfigArgDefinition).defaultValue ?? null),
         });
-        this.renderList$.next(null);
+        this.renderList$.next();
     }
 
     moveListItem(event: CdkDragDrop<InputListItem>) {
@@ -218,7 +218,7 @@ export class DynamicFormInputComponent
             moveItemInArray(this.listItems, event.previousIndex, event.currentIndex);
             this.listFormArray.removeAt(event.previousIndex);
             this.listFormArray.insert(event.currentIndex, event.item.data.control);
-            this.renderList$.next(null);
+            this.renderList$.next();
         }
     }
 
@@ -228,7 +228,7 @@ export class DynamicFormInputComponent
             item.componentRef?.destroy();
             this.listFormArray.removeAt(index);
             this.listItems = this.listItems.filter(i => i !== item);
-            this.renderList$.next(null);
+            this.renderList$.next();
         }
     }
 
@@ -269,11 +269,11 @@ export class DynamicFormInputComponent
                             control: new FormControl(getConfigArgValue(value)),
                         } as InputListItem),
                 );
-                this.renderList$.next(null);
+                this.renderList$.next();
             }
         } else {
             this.listItems = [];
-            this.renderList$.next(null);
+            this.renderList$.next();
         }
         this.changeDetectorRef.markForCheck();
     }

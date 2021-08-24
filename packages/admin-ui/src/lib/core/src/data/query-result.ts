@@ -64,7 +64,7 @@ export class QueryResult<T, V = Record<string, any>> {
             take(1),
             map(result => result.data),
             finalize(() => {
-                this.completed$.next(null);
+                this.completed$.next();
                 this.completed$.complete();
             }),
         );
@@ -78,7 +78,7 @@ export class QueryResult<T, V = Record<string, any>> {
             filter(result => result.networkStatus === NetworkStatus.ready),
             map(result => result.data),
             finalize(() => {
-                this.completed$.next(null);
+                this.completed$.next();
                 this.completed$.complete();
             }),
         );

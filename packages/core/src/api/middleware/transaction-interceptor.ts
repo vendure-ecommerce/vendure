@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { firstValueFrom, lastValueFrom, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { retryWhen, take, tap } from 'rxjs/operators';
 import { QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
@@ -47,7 +47,7 @@ export class TransactionInterceptor implements NestInterceptor {
             // If a QueryRunner already exists on the RequestContext, there must be an existing
             // outer transaction in progress. In that case, we just execute the work function
             // as usual without needing to further wrap in a transaction.
-            return firstValueFrom(work());
+            return work().toPromise();
         }
         const queryRunner = this.connection.rawConnection.createQueryRunner();
         if (mode === 'auto') {
@@ -57,8 +57,8 @@ export class TransactionInterceptor implements NestInterceptor {
 
         try {
             const maxRetries = 5;
-            const result = await lastValueFrom(
-                work().pipe(
+            const result = await work()
+                .pipe(
                     retryWhen(errors =>
                         errors.pipe(
                             tap(err => {
@@ -69,8 +69,8 @@ export class TransactionInterceptor implements NestInterceptor {
                             take(maxRetries),
                         ),
                     ),
-                ),
-            );
+                )
+                .toPromise();
             if (queryRunner.isTransactionActive) {
                 await queryRunner.commitTransaction();
             }

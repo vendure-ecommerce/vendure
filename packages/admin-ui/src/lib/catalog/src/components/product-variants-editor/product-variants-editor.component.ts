@@ -361,9 +361,9 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         const obsoleteVariants = this.getObsoleteVariants();
         if (obsoleteVariants.length) {
             const deleteOperations = obsoleteVariants.map(v =>
-                this.dataService.product.deleteProductVariant(v.id),
+                this.dataService.product.deleteProductVariant(v.id).pipe(map(() => input)),
             );
-            return forkJoin(...deleteOperations).pipe(map(() => input));
+            return forkJoin(...deleteOperations);
         } else {
             return of(input);
         }

@@ -45,7 +45,7 @@
     "chokidar": "^3.5.1",
     "fs-extra": "^10.0.0",
     "glob": "^7.1.6",
-    "rxjs": "^7.3.0"
+    "rxjs": "^6.6.6"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^11.2.0",

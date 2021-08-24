@@ -56,7 +56,7 @@ export class HealthCheckService {
     }
 
     refresh() {
-        this._refresh.next(null);
+        this._refresh.next();
     }
 
     private checkHealth() {

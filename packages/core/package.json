@@ -38,14 +38,14 @@
     "cli/**/*"
   ],
   "dependencies": {
-    "@graphql-tools/stitch": "^8.2.0",
-    "@nestjs/common": "8.0.6",
-    "@nestjs/core": "8.0.6",
-    "@nestjs/graphql": "8.0.2",
-    "@nestjs/platform-express": "8.0.6",
-    "@nestjs/terminus": "8.0.0-next.7",
-    "@nestjs/testing": "8.0.6",
-    "@nestjs/typeorm": "8.0.2",
+    "@graphql-tools/stitch": "^7.5.3",
+    "@nestjs/common": "7.6.17",
+    "@nestjs/core": "7.6.17",
+    "@nestjs/graphql": "7.10.6",
+    "@nestjs/platform-express": "7.6.17",
+    "@nestjs/terminus": "7.2.0",
+    "@nestjs/testing": "7.6.17",
+    "@nestjs/typeorm": "7.1.5",
     "@types/fs-extra": "^9.0.1",
     "@vendure/common": "^1.1.5",
     "apollo-server-express": "2.24.1",
@@ -72,7 +72,7 @@
     "nanoid": "^3.1.23",
     "progress": "^2.0.3",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.3.0",
+    "rxjs": "^6.6.3",
     "typeorm": "0.2.31"
   },
   "devDependencies": {

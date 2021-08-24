@@ -64,7 +64,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.queryResult.completed$.next(null);
+        this.queryResult.completed$.next();
     }
 
     onRearrange(event: RearrangeEvent) {

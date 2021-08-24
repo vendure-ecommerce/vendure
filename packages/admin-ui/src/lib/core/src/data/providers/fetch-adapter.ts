@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
 
 /**
  * An adapter that allows the Angular HttpClient to be used as a replacement for the global `fetch` function.
@@ -15,19 +14,20 @@ export class FetchAdapter {
         const url = typeof input === 'string' ? input : input.url;
         const method = typeof input === 'string' ? (init.method ? init.method : 'GET') : input.method;
 
-        return lastValueFrom(
-            this.httpClient.request(method, url, {
+        return this.httpClient
+            .request(method, url, {
                 body: init.body,
                 headers: init.headers as any,
                 observe: 'response',
                 responseType: 'json',
                 withCredentials: true,
-            }),
-        ).then(result => {
-            return new Response(JSON.stringify(result.body), {
-                status: result.status,
-                statusText: result.statusText,
+            })
+            .toPromise()
+            .then(result => {
+                return new Response(JSON.stringify(result.body), {
+                    status: result.status,
+                    statusText: result.statusText,
+                });
             });
-        });
     };
 }
