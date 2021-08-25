@@ -5,6 +5,12 @@ import { addStream } from './add-stream';
 // tslint:disable-next-line:no-var-requires
 const conventionalChangelogCore = require('conventional-changelog-core');
 
+if (process.env.SKIP_CHANGELOG || process.env.npm_config_argv?.includes('publish-prerelease')) {
+    // tslint:disable-next-line:no-console
+    console.log(`Skipping changelog generation for pre-release`);
+    process.exit(0);
+}
+
 /**
  * The types of commit which will be included in the changelog.
  */
