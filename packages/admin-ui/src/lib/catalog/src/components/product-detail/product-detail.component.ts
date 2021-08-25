@@ -20,6 +20,7 @@ import {
     ProductWithVariants,
     ServerConfigService,
     TaxCategory,
+    unicodePatternValidator,
     UpdateProductInput,
     UpdateProductMutation,
     UpdateProductOptionInput,
@@ -80,7 +81,8 @@ export interface SelectedAssets {
 })
 export class ProductDetailComponent
     extends BaseDetailComponent<ProductWithVariants.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     activeTab$: Observable<TabName>;
     product$: Observable<ProductWithVariants.Fragment>;
     variants$: Observable<ProductWithVariants.Variants[]>;
@@ -123,7 +125,7 @@ export class ProductDetailComponent
                 enabled: true,
                 name: ['', Validators.required],
                 autoUpdateVariantNames: true,
-                slug: '',
+                slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
                 description: '',
                 facetValueIds: [[]],
                 customFields: this.formBuilder.group(

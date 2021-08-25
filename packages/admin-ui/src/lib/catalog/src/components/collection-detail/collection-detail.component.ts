@@ -28,6 +28,7 @@ import {
     NotificationService,
     Permission,
     ServerConfigService,
+    unicodePatternValidator,
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -44,7 +45,8 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
 })
 export class CollectionDetailComponent
     extends BaseDetailComponent<Collection.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
     assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
@@ -67,7 +69,7 @@ export class CollectionDetailComponent
         this.customFields = this.getCustomFieldConfig('Collection');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
-            slug: '',
+            slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
             description: '',
             visible: false,
             filters: this.formBuilder.array([]),

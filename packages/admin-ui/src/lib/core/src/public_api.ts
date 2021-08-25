@@ -204,3 +204,4 @@ export * from './shared/pipes/string-to-color.pipe';
 export * from './shared/pipes/time-ago.pipe';
 export * from './shared/providers/routing/can-deactivate-detail-guard';
 export * from './shared/shared.module';
+export * from './validators/unicode-pattern.validator';
