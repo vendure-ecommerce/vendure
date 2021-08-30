@@ -411,23 +411,23 @@ export class ProductVariantService {
             ...input,
         };
         delete inputWithoutPrice.price;
-        await this.translatableSaver.update({
+        const updatedVariant = await this.translatableSaver.update({
             ctx,
             input: inputWithoutPrice,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
-            beforeSave: async updatedVariant => {
+            beforeSave: async v => {
                 if (input.taxCategoryId) {
                     const taxCategory = await this.taxCategoryService.findOne(ctx, input.taxCategoryId);
                     if (taxCategory) {
-                        updatedVariant.taxCategory = taxCategory;
+                        v.taxCategory = taxCategory;
                     }
                 }
                 if (input.facetValueIds) {
                     const facetValuesInOtherChannels = existingVariant.facetValues.filter(fv =>
                         fv.channels.every(channel => !idsAreEqual(channel.id, ctx.channelId)),
                     );
-                    updatedVariant.facetValues = [
+                    v.facetValues = [
                         ...facetValuesInOtherChannels,
                         ...(await this.facetValueService.findByIds(ctx, input.facetValueIds)),
                     ];
@@ -440,15 +440,15 @@ export class ProductVariantService {
                         input.stockOnHand,
                     );
                 }
-                await this.assetService.updateFeaturedAsset(ctx, updatedVariant, input);
-                await this.assetService.updateEntityAssets(ctx, updatedVariant, input);
+                await this.assetService.updateFeaturedAsset(ctx, v, input);
+                await this.assetService.updateEntityAssets(ctx, v, input);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
                 taxCategoryId: input.taxCategoryId,
             },
         });
-        await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, existingVariant);
+        await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, updatedVariant);
         if (input.price != null) {
             const variantPriceRepository = this.connection.getRepository(ctx, ProductVariantPrice);
             const variantPrice = await variantPriceRepository.findOne({
@@ -463,7 +463,7 @@ export class ProductVariantService {
             variantPrice.price = input.price;
             await variantPriceRepository.save(variantPrice);
         }
-        return existingVariant.id;
+        return updatedVariant.id;
     }
 
     /**
