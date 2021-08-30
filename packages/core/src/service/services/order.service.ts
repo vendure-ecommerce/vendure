@@ -213,7 +213,7 @@ export class OrderService {
         if (order) {
             for (const line of order.lines) {
                 line.productVariant = translateDeep(
-                    await this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx),
+                    await this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx, order),
                     ctx.languageCode,
                 );
             }
@@ -1348,10 +1348,8 @@ export class OrderService {
         updatedOrderLine?: OrderLine,
     ): Promise<Order> {
         if (updatedOrderLine) {
-            const {
-                orderItemPriceCalculationStrategy,
-                changedPriceHandlingStrategy,
-            } = this.configService.orderOptions;
+            const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =
+                this.configService.orderOptions;
             let priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
                 ctx,
                 updatedOrderLine.productVariant,

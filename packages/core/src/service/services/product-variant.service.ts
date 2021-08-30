@@ -19,7 +19,14 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { Channel, OrderLine, ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
+import {
+    Channel,
+    Order,
+    OrderLine,
+    ProductOptionGroup,
+    ProductVariantPrice,
+    TaxCategory,
+} from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
@@ -551,7 +558,11 @@ export class ProductVariantService {
     /**
      * Populates the `price` field with the price for the specified channel.
      */
-    async applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): Promise<ProductVariant> {
+    async applyChannelPriceAndTax(
+        variant: ProductVariant,
+        ctx: RequestContext,
+        order?: Order,
+    ): Promise<ProductVariant> {
         const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
         if (!channelPrice) {
             throw new InternalServerError(`error.no-price-found-for-channel`, {
@@ -561,7 +572,9 @@ export class ProductVariantService {
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
-        const activeTaxZone = taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel);
+        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
+            taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
+        );
         if (!activeTaxZone) {
             throw new InternalServerError(`error.no-active-tax-zone`);
         }

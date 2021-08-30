@@ -130,7 +130,11 @@ export class OrderModifier {
             ],
         });
         lineWithRelations.productVariant = translateDeep(
-            await this.productVariantService.applyChannelPriceAndTax(lineWithRelations.productVariant, ctx),
+            await this.productVariantService.applyChannelPriceAndTax(
+                lineWithRelations.productVariant,
+                ctx,
+                order,
+            ),
             ctx.languageCode,
         );
         order.lines.push(lineWithRelations);

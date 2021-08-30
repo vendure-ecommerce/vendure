@@ -119,7 +119,7 @@ export class OrderTestingService {
                 line.productVariantId,
                 { relations: ['taxCategory'] },
             );
-            await this.productVariantService.applyChannelPriceAndTax(productVariant, ctx);
+            await this.productVariantService.applyChannelPriceAndTax(productVariant, ctx, mockOrder);
             const orderLine = new OrderLine({
                 productVariant,
                 items: [],

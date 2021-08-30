@@ -3,6 +3,7 @@ import { filterAsync } from '@vendure/common/lib/filter-async';
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { InternalServerError } from '../../../common/error/errors';
 import { netPriceOf } from '../../../common/tax-utils';
 import { idsAreEqual } from '../../../common/utils';
@@ -27,6 +28,7 @@ export class OrderCalculator {
         private taxRateService: TaxRateService,
         private shippingMethodService: ShippingMethodService,
         private shippingCalculator: ShippingCalculator,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     /**
@@ -43,7 +45,10 @@ export class OrderCalculator {
     ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
-        const activeTaxZone = taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order);
+        const activeTaxZone = await this.requestContextCache.get(ctx, 'activeTaxZone', () =>
+            taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
+        );
+
         let taxZoneChanged = false;
         if (!activeTaxZone) {
             throw new InternalServerError(`error.no-active-tax-zone`);

@@ -3,6 +3,7 @@ import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/gener
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
@@ -1537,6 +1538,7 @@ function createTestModule() {
     return Test.createTestingModule({
         providers: [
             OrderCalculator,
+            RequestContextCacheService,
             { provide: TaxRateService, useClass: MockTaxRateService },
             { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
             {
