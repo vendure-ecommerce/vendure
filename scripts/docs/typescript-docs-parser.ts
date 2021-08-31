@@ -1,19 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import ts, { HeritageClause } from 'typescript';
+import ts, { HeritageClause, JSDocTag, SyntaxKind } from 'typescript';
 
 import { notNullOrUndefined } from '../../packages/common/src/shared-utils';
 
 import {
-    ClassInfo,
     DocsPage,
-    InterfaceInfo,
     MemberInfo,
     MethodInfo,
     MethodParameterInfo,
     ParsedDeclaration,
     PropertyInfo,
-    TypeAliasInfo,
     ValidDeclaration,
 } from './typescript-docgen-types';
 
@@ -272,11 +269,11 @@ export class TypescriptDocsParser {
                     fullText = member.getText();
                 }
                 this.parseTags(member, {
-                    description: tag => (description += tag.comment || ''),
-                    example: tag => (description += this.formatExampleCode(tag.comment)),
-                    default: tag => (defaultValue = tag.comment || ''),
-                    internal: tag => (isInternal = true),
-                    since: tag => (since = tag.comment || undefined),
+                    description: comment => (description += comment || ''),
+                    example: comment => (description += this.formatExampleCode(comment)),
+                    default: comment => (defaultValue = comment || ''),
+                    internal: comment => (isInternal = true),
+                    since: comment => (since = comment || undefined),
                 });
                 if (isInternal) {
                     continue;
@@ -321,13 +318,23 @@ export class TypescriptDocsParser {
         return result;
     }
 
+    private tagCommentText(tag: JSDocTag): string {
+        if (!tag.comment) {
+            return '';
+        }
+        if (typeof tag.comment === 'string') {
+            return tag.comment;
+        }
+        return tag.comment.map(t => (t.kind === SyntaxKind.JSDocText ? t.text : t.getText())).join('');
+    }
+
     /**
      * Reads the @docsWeight JSDoc tag from the interface.
      */
     private getDeclarationWeight(statement: ValidDeclaration): number {
         let weight = 10;
         this.parseTags(statement, {
-            docsWeight: tag => (weight = Number.parseInt(tag.comment || '10', 10)),
+            docsWeight: comment => (weight = Number.parseInt(comment || '10', 10)),
         });
         return weight;
     }
@@ -335,7 +342,7 @@ export class TypescriptDocsParser {
     private getDocsPage(statement: ValidDeclaration): string | undefined {
         let docsPage: string | undefined;
         this.parseTags(statement, {
-            docsPage: tag => (docsPage = tag.comment),
+            docsPage: comment => (docsPage = comment),
         });
         return docsPage;
     }
@@ -346,7 +353,7 @@ export class TypescriptDocsParser {
     private getSince(statement: ValidDeclaration): string | undefined {
         let since: string | undefined;
         this.parseTags(statement, {
-            since: tag => (since = tag.comment),
+            since: comment => (since = comment),
         });
         return since;
     }
@@ -357,8 +364,8 @@ export class TypescriptDocsParser {
     private getDeclarationDescription(statement: ValidDeclaration): string {
         let description = '';
         this.parseTags(statement, {
-            description: tag => (description += tag.comment),
-            example: tag => (description += this.formatExampleCode(tag.comment)),
+            description: comment => (description += comment),
+            example: comment => (description += this.formatExampleCode(comment)),
         });
         return this.restoreAtTokens(description);
     }
@@ -369,7 +376,7 @@ export class TypescriptDocsParser {
     private getDocsCategory(statement: ValidDeclaration): string | undefined {
         let category: string | undefined;
         this.parseTags(statement, {
-            docsCategory: tag => (category = tag.comment || ''),
+            docsCategory: comment => (category = comment || ''),
         });
         return this.kebabCase(category);
     }
@@ -393,13 +400,13 @@ export class TypescriptDocsParser {
      */
     private parseTags<T extends ts.Node>(
         node: T,
-        tagMatcher: { [tagName: string]: (tag: ts.JSDocTag) => void },
+        tagMatcher: { [tagName: string]: (tagComment: string) => void },
     ): void {
         const jsDocTags = ts.getJSDocTags(node);
         for (const tag of jsDocTags) {
             const tagName = tag.tagName.text;
             if (tagMatcher[tagName]) {
-                tagMatcher[tagName](tag);
+                tagMatcher[tagName](this.tagCommentText(tag));
             }
         }
     }
