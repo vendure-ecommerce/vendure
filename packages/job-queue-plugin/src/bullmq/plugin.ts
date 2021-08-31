@@ -52,6 +52,33 @@ import { BullMQPluginOptions } from './types';
  * };
  * ```
  *
+ * ### Running Redis locally
+ *
+ * To develop with this plugin, you'll need an instance of Redis to connect to. Here's a docker-compose config
+ * that will set up [Redis](https://redis.io/) as well as [Redis Commander](https://github.com/joeferner/redis-commander),
+ * which is a web-based UI for interacting with Redis:
+ *
+ * ```YAML
+ * version: "3"
+ * services:
+ *   redis:
+ *     image: bitnami/redis:6.2
+ *     hostname: redis
+ *     container_name: redis
+ *     environment:
+ *       - ALLOW_EMPTY_PASSWORD=yes
+ *     ports:
+ *       - "6379:6379"
+ *   redis-commander:
+ *     container_name: redis-commander
+ *     hostname: redis-commander
+ *     image: rediscommander/redis-commander:latest
+ *     environment:
+ *       - REDIS_HOSTS=local:redis:6379
+ *     ports:
+ *       - "8085:8081"
+ * ```
+ *
  * ## Concurrency
  *
  * The default concurrency of a single worker is 3, i.e. up to 3 jobs will be processed at the same time.

@@ -21,18 +21,21 @@ export interface BullMQPluginOptions {
      * @description
      * Additional options used when instantiating the BullMQ
      * Queue instance.
+     * See the [BullMQ QueueOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.queueoptions.md)
      */
     queueOptions?: Exclude<QueueOptions, 'connection'>;
     /**
      * @description
      * Additional options used when instantiating the BullMQ
      * Worker instance.
+     * See the [BullMQ WorkerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.workeroptions.md)
      */
     workerOptions?: Exclude<WorkerOptions, 'connection'>;
     /**
      * @description
      * Additional options used when instantiating the BullMQ
      * QueueScheduler instance.
+     * See the [BullMQ QueueSchedulerOptions docs](https://github.com/taskforcesh/bullmq/blob/master/docs/gitbook/api/bullmq.queuescheduleroptions.md)
      */
     schedulerOptions?: Exclude<QueueSchedulerOptions, 'connection'>;
 }
