@@ -241,6 +241,7 @@
                                 <span class="option-group-name">{{ optionGroupName(option.groupId) }}</span>
                                 {{ optionName(option) }}
                             </vdr-chip>
+                            <a [routerLink]="['./', 'options']" class="btn btn-link btn-sm">{{ 'catalog.edit-options' | translate }}...</a>
                         </div>
                     </div>
                     <div class="flex-spacer"></div>

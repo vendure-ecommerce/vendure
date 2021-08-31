@@ -20,6 +20,7 @@ import { OptionValueInputComponent } from './components/option-value-input/optio
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
@@ -54,6 +55,7 @@ import { VariantPriceDetailComponent } from './components/variant-price-detail/v
         AssignProductsToChannelDialogComponent,
         AssetDetailComponent,
         ConfirmVariantDeletionDialogComponent,
+        ProductOptionsEditorComponent,
     ],
 })
 export class CatalogModule {}

@@ -32,6 +32,8 @@ export const TAG_FRAGMENT = gql`
 export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
     fragment ProductOptionGroup on ProductOptionGroup {
         id
+        createdAt
+        updatedAt
         code
         languageCode
         name
@@ -46,6 +48,8 @@ export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
 export const PRODUCT_OPTION_FRAGMENT = gql`
     fragment ProductOption on ProductOption {
         id
+        createdAt
+        updatedAt
         code
         languageCode
         name
@@ -525,6 +529,15 @@ export const PRODUCT_SELECTOR_SEARCH = gql`
     }
 `;
 
+export const UPDATE_PRODUCT_OPTION_GROUP = gql`
+    mutation UpdateProductOptionGroup($input: UpdateProductOptionGroupInput!) {
+        updateProductOptionGroup(input: $input) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+`;
+
 export const UPDATE_PRODUCT_OPTION = gql`
     mutation UpdateProductOption($input: UpdateProductOptionInput!) {
         updateProductOption(input: $input) {
@@ -551,9 +564,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
             updatedAt
             name
             optionGroups {
-                id
-                name
-                code
+                ...ProductOptionGroup
                 options {
                     ...ProductOption
                 }
@@ -579,6 +590,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
             }
         }
     }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
     ${PRODUCT_OPTION_FRAGMENT}
 `;
 

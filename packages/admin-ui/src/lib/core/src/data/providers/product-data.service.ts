@@ -50,6 +50,8 @@ import {
     UpdateProduct,
     UpdateProductInput,
     UpdateProductOption,
+    UpdateProductOptionGroup,
+    UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
@@ -90,6 +92,7 @@ import {
     UPDATE_ASSET,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
+    UPDATE_PRODUCT_OPTION_GROUP,
     UPDATE_PRODUCT_VARIANTS,
     UPDATE_TAG,
 } from '../definitions/product-definitions';
@@ -305,6 +308,15 @@ export class ProductDataService {
                 input: pick(input, ['id', 'code', 'translations', 'customFields']),
             },
         );
+    }
+
+    updateProductOptionGroup(input: UpdateProductOptionGroupInput) {
+        return this.baseDataService.mutate<
+            UpdateProductOptionGroup.Mutation,
+            UpdateProductOptionGroup.Variables
+        >(UPDATE_PRODUCT_OPTION_GROUP, {
+            input: pick(input, ['id', 'code', 'translations', 'customFields']),
+        });
     }
 
     getProductOptionGroups(filterTerm?: string) {
