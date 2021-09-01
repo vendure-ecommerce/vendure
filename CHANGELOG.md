@@ -1,3 +1,35 @@
+## 1.2.0 (2021-09-01)
+
+
+#### Features
+
+* **admin-ui** Add admin-ui Italian translation (#998) ([657a32b](https://github.com/vendure-ecommerce/vendure/commit/657a32b)), closes [#998](https://github.com/vendure-ecommerce/vendure/issues/998)
+* **admin-ui** Allow editing ProductOptionGroup names & options ([55d9784](https://github.com/vendure-ecommerce/vendure/commit/55d9784)), closes [#965](https://github.com/vendure-ecommerce/vendure/issues/965)
+* **admin-ui** Allow OrderAddress custom fields to be modified ([175e61a](https://github.com/vendure-ecommerce/vendure/commit/175e61a)), closes [#979](https://github.com/vendure-ecommerce/vendure/issues/979)
+* **admin-ui** Auto-select newly uploaded assets in AssetPickerDialog ([96cc8f9](https://github.com/vendure-ecommerce/vendure/commit/96cc8f9))
+* **admin-ui** Support non-latin Product/Collection slugs ([fac735f](https://github.com/vendure-ecommerce/vendure/commit/fac735f)), closes [#1006](https://github.com/vendure-ecommerce/vendure/issues/1006)
+* **core** Add  Russian and Ukrainian translation for server messages (#973) ([5b4a166](https://github.com/vendure-ecommerce/vendure/commit/5b4a166)), closes [#973](https://github.com/vendure-ecommerce/vendure/issues/973)
+* **core** Add Facet queries to Shop API (#1016) ([d6a049c](https://github.com/vendure-ecommerce/vendure/commit/d6a049c)), closes [#1016](https://github.com/vendure-ecommerce/vendure/issues/1016) [#1013](https://github.com/vendure-ecommerce/vendure/issues/1013)
+* **core** Allow cookie & bearer session tokens at the same time ([fc6b890](https://github.com/vendure-ecommerce/vendure/commit/fc6b890)), closes [#960](https://github.com/vendure-ecommerce/vendure/issues/960)
+* **core** Allow OrderAddress custom fields to be modified ([c622f1f](https://github.com/vendure-ecommerce/vendure/commit/c622f1f)), closes [#979](https://github.com/vendure-ecommerce/vendure/issues/979)
+* **core** Always pass current Order to TaxZoneStrategy calls ([7b76a7c](https://github.com/vendure-ecommerce/vendure/commit/7b76a7c)), closes [#1048](https://github.com/vendure-ecommerce/vendure/issues/1048)
+* **core** Export I18nModule as part of PluginCommonModule ([cd8f3d4](https://github.com/vendure-ecommerce/vendure/commit/cd8f3d4)), closes [#966](https://github.com/vendure-ecommerce/vendure/issues/966)
+* **core** Export ProcessContextModule from PluginCommonModule ([b787acb](https://github.com/vendure-ecommerce/vendure/commit/b787acb))
+* **core** Implement health check server for worker ([fd374b3](https://github.com/vendure-ecommerce/vendure/commit/fd374b3)), closes [#994](https://github.com/vendure-ecommerce/vendure/issues/994)
+* **core** Implement internal health check for worker ([812b2cb](https://github.com/vendure-ecommerce/vendure/commit/812b2cb)), closes [#994](https://github.com/vendure-ecommerce/vendure/issues/994)
+* **elasticsearch-plugin** Add ability to customize index options and mappings ([92587e5](https://github.com/vendure-ecommerce/vendure/commit/92587e5)), closes [#995](https://github.com/vendure-ecommerce/vendure/issues/995) [#995](https://github.com/vendure-ecommerce/vendure/issues/995) [#995](https://github.com/vendure-ecommerce/vendure/issues/995) [#995](https://github.com/vendure-ecommerce/vendure/issues/995)
+* **job-queue-plugin** Create BullMQJobQueuePlugin ([ba9f5d0](https://github.com/vendure-ecommerce/vendure/commit/ba9f5d0))
+* **job-queue-plugin** Set default concurrency ([0e971e7](https://github.com/vendure-ecommerce/vendure/commit/0e971e7))
+
+#### Fixes
+
+* **admin-ui-plugin** Do not run server logic in worker context ([7c30f0e](https://github.com/vendure-ecommerce/vendure/commit/7c30f0e))
+* **admin-ui** Fix fetch loop on job list view ([29c306a](https://github.com/vendure-ecommerce/vendure/commit/29c306a)), closes [#1049](https://github.com/vendure-ecommerce/vendure/issues/1049)
+* **asset-server-plugin** Do not run server logic in worker context ([c3a67b6](https://github.com/vendure-ecommerce/vendure/commit/c3a67b6))
+* **core** Correctly persist ProductVariant customFields ([e59f52e](https://github.com/vendure-ecommerce/vendure/commit/e59f52e)), closes [#1056](https://github.com/vendure-ecommerce/vendure/issues/1056)
+* **core** Fix incorrect common import paths ([568e4b2](https://github.com/vendure-ecommerce/vendure/commit/568e4b2))
+* **email-plugin** Do not run server logic in worker context ([f5b6ddc](https://github.com/vendure-ecommerce/vendure/commit/f5b6ddc))
+
 ## <small>1.1.5 (2021-08-19)</small>
 
 
