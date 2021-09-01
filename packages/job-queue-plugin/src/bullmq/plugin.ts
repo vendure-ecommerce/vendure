@@ -38,7 +38,7 @@ import { BullMQPluginOptions } from './types';
  *
  * @example
  * ```ts
- * import { BullMQJobQueuePlugin } from '\@vendure/job-queue-plugin/packages/bullmq';
+ * import { BullMQJobQueuePlugin } from '\@vendure/job-queue-plugin/package/bullmq';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
