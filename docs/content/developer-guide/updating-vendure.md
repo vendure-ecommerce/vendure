@@ -18,10 +18,10 @@ to the latest. All the Vendure packages have the same version, and are all relea
 {
   // ...
   "dependencies": {
--    "@vendure/common": "0.10.1",
-+    "@vendure/common": "0.11.0",
--    "@vendure/core": "0.10.1",
-+    "@vendure/core": "0.11.0",
+-    "@vendure/common": "1.1.5",
++    "@vendure/common": "1.2.0",
+-    "@vendure/core": "1.1.5",
++    "@vendure/core": "1.2.0",
      // etc.
   }
 }
@@ -29,14 +29,13 @@ to the latest. All the Vendure packages have the same version, and are all relea
 
 Then run `npm install` or `yarn install` depending on which package manager you prefer.
 
+## Admin UI changes
+
+If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`]({{< relref "compile-ui-extensions" >}}) function, then you'll need to **delete and re-compile your admin-ui directory after upgrading** (this is the directory specified by the [`outputPath`]({{< relref "ui-extension-compiler-options" >}}#outputpath) property).
+
 ## Breaking changes
 
-Vendure follows the [SemVer convention](https://semver.org/) for version numbering. While in beta (pre-v1.0.0), this means breaking changes are possible in each release:
-
-> Major version zero is all about rapid development. If you’re changing the API every day you should either still be in version 0.y.z or on a separate development branch working on the next major version.
- [[source]](https://semver.org/#doesnt-this-discourage-rapid-development-and-fast-iteration)
-
-In practice, we aim to introduce breaking changes in **minor versions** and non-breaking changes in **patch versions**. So v0.10.0 -> v0.11.0 will contain breaking changes, whereas v0.11.0 -> v0.11.1 should not.
+Vendure follows the [SemVer convention](https://semver.org/) for version numbering. This means that breaking changes will only be introduced with changes to the major version (the first of the 3 digits in the version).
 
 ### What kinds of breaking changes can be expected?
 
@@ -73,6 +72,3 @@ If you are using Vendure providers (services, JobQueue, EventBus etc.) in your c
 
 The best way to check whether this is the case is to build your entire project after upgrading, to see if any new TypeScript compiler errors emerge.
 
-### Admin UI changes
-
-If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`]({{< relref "compile-ui-extensions" >}}) function, then you'll need to delete and re-compile your admin-ui directory after upgrading (this is the directory specified by the [`outputPath`]({{< relref "ui-extension-compiler-options" >}}#outputpath) property).
