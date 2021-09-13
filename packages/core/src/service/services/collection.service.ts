@@ -48,7 +48,7 @@ type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collection
 
 @Injectable()
 export class CollectionService implements OnModuleInit {
-    private rootCollection: Collection | undefined;
+    private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
 
     constructor(
@@ -569,16 +569,16 @@ export class CollectionService implements OnModuleInit {
             }),
         );
 
-        const newRoot = new Collection({
-            isRoot: true,
-            position: 0,
-            translations: [rootTranslation],
-            channels: [ctx.channel],
-            filters: [],
-        });
-
-        await this.connection.getRepository(ctx, Collection).save(newRoot);
-        this.rootCollection = newRoot;
-        return newRoot;
+        const newRoot = await this.connection.getRepository(ctx, Collection).save(
+            new Collection({
+                isRoot: true,
+                position: 0,
+                translations: [rootTranslation],
+                channels: [ctx.channel],
+                filters: [],
+            }),
+        );
+        this.rootCollection = translateDeep(newRoot, ctx.languageCode);
+        return this.rootCollection;
     }
 }
