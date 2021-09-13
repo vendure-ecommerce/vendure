@@ -1,5 +1,9 @@
 @import 'variables';
 
+:host {
+    flex: 1;
+}
+
 .list-container {
     border: 1px solid var(--color-component-border-200);
     border-radius: 3px;

@@ -129,6 +129,10 @@
         display: flex;
         color: var(--color-grey-400);
     }
+
+    ::ng-deep .clr-control-container {
+        width: 100%;
+    }
 }
 
 .channel-assignment {
