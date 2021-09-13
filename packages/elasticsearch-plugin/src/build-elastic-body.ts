@@ -90,15 +90,14 @@ export function buildElasticBody(
         ensureBoolFilterExists(query);
         query.bool.filter.push({ term: { enabled: true } });
     }
+
     if (priceRange) {
         ensureBoolFilterExists(query);
-        query.bool.filter = query.bool.filter.concat(createPriceFilters(priceRange, false, !!groupByProduct));
+        query.bool.filter = query.bool.filter.concat(createPriceFilters(priceRange, false));
     }
     if (priceRangeWithTax) {
         ensureBoolFilterExists(query);
-        query.bool.filter = query.bool.filter.concat(
-            createPriceFilters(priceRangeWithTax, true, !!groupByProduct),
-        );
+        query.bool.filter = query.bool.filter.concat(createPriceFilters(priceRangeWithTax, true));
     }
 
     const sortArray = [];
@@ -109,19 +108,34 @@ export function buildElasticBody(
             });
         }
         if (sort.price) {
-            const priceField = groupByProduct ? 'priceMin' : 'price';
+            // const priceField = groupByProduct ? 'priceMin' : 'price';
+            const priceField = 'price';
             sortArray.push({ [priceField]: { order: sort.price === SortOrder.ASC ? 'asc' : 'desc' } });
         }
     }
-    return {
-        query: searchConfig.mapQuery
-            ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
-            : query,
-        sort: sortArray,
-        from: skip || 0,
-        size: take || 10,
-        track_total_hits: searchConfig.totalItemsMaxSize,
-    };
+
+    if (groupByProduct) {
+        return {
+            query: searchConfig.mapQuery
+                ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
+                : query,
+            sort: sortArray,
+            from: skip || 0,
+            size: take || 10,
+            track_total_hits: searchConfig.totalItemsMaxSize,
+            collapse: { field: `productId` },
+        };
+    } else {
+        return {
+            query: searchConfig.mapQuery
+                ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
+                : query,
+            sort: sortArray,
+            from: skip || 0,
+            size: take || 10,
+            track_total_hits: searchConfig.totalItemsMaxSize,
+        };
+    }
 }
 
 function ensureBoolFilterExists(query: { bool: { filter?: any } }) {
@@ -130,35 +144,16 @@ function ensureBoolFilterExists(query: { bool: { filter?: any } }) {
     }
 }
 
-function createPriceFilters(range: PriceRange, withTax: boolean, groupByProduct: boolean): any[] {
+function createPriceFilters(range: PriceRange, withTax: boolean): any[] {
     const withTaxFix = withTax ? 'WithTax' : '';
-    if (groupByProduct) {
-        return [
-            {
-                range: {
-                    [`price${withTaxFix}Min`]: {
-                        gte: range.min,
-                    },
+    return [
+        {
+            range: {
+                ['price' + withTaxFix]: {
+                    gte: range.min,
+                    lte: range.max,
                 },
             },
-            {
-                range: {
-                    [`price${withTaxFix}Max`]: {
-                        lte: range.max,
-                    },
-                },
-            },
-        ];
-    } else {
-        return [
-            {
-                range: {
-                    ['price' + withTaxFix]: {
-                        gte: range.min,
-                        lte: range.max,
-                    },
-                },
-            },
-        ];
-    }
+        },
+    ];
 }
