@@ -66,7 +66,7 @@ export class UnauthorizedError extends I18nError {
  */
 export class ForbiddenError extends I18nError {
     constructor() {
-        super('error.forbidden', {}, 'FORBIDDEN', LogLevel.Warn);
+        super('error.forbidden', {}, 'FORBIDDEN', LogLevel.Verbose);
     }
 }
 
