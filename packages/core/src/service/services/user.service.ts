@@ -80,7 +80,8 @@ export class UserService {
         }
         const authenticationMethod = new NativeAuthenticationMethod();
         if (this.configService.authOptions.requireVerification) {
-            authenticationMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
+            authenticationMethod.verificationToken =
+                this.verificationTokenGenerator.generateVerificationToken();
             user.verified = false;
         } else {
             user.verified = true;
@@ -169,7 +170,8 @@ export class UserService {
             return;
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
-        nativeAuthMethod.passwordResetToken = await this.verificationTokenGenerator.generateVerificationToken();
+        nativeAuthMethod.passwordResetToken =
+            await this.verificationTokenGenerator.generateVerificationToken();
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
@@ -199,6 +201,30 @@ export class UserService {
         }
     }
 
+    /**
+     * Changes the User identifier without an email verification step, so this should be only used when
+     * an Administrator is setting a new email address.
+     */
+    async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
+        const user = await this.getUserById(ctx, userId);
+        if (!user) {
+            return;
+        }
+        const nativeAuthMethod = user.getNativeAuthenticationMethod();
+        user.identifier = newIdentifier;
+        nativeAuthMethod.identifier = newIdentifier;
+        nativeAuthMethod.identifierChangeToken = null;
+        nativeAuthMethod.pendingIdentifier = null;
+        await this.connection
+            .getRepository(ctx, NativeAuthenticationMethod)
+            .save(nativeAuthMethod, { reload: false });
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
+    }
+
+    /**
+     * Changes the User identifier as part of the storefront flow used by Customers to set a
+     * new email address.
+     */
     async changeIdentifierByToken(
         ctx: RequestContext,
         token: string,
