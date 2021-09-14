@@ -60,9 +60,21 @@ export class ProductSearchInputComponent {
         if (!this.isFacetValueItem(item)) {
             return false;
         }
+
+        const cix = term.indexOf(':');
+        const facetName = cix > -1 ? term.toLowerCase().slice(0, cix) : null;
+        const facetVal = cix > -1 ? term.toLowerCase().slice(cix + 1) : term.toLowerCase();
+
+        if (facetName) {
+            return (
+                item.facetValue.facet.name.toLowerCase().includes(facetName) &&
+                item.facetValue.name.toLocaleLowerCase().includes(facetVal)
+            );
+        }
+
         return (
-            item.facetValue.name.toLowerCase().startsWith(term.toLowerCase()) ||
-            item.facetValue.facet.name.toLowerCase().startsWith(term.toLowerCase())
+            item.facetValue.name.toLowerCase().includes(term.toLowerCase()) ||
+            item.facetValue.facet.name.toLowerCase().includes(term.toLowerCase())
         );
     };
 
