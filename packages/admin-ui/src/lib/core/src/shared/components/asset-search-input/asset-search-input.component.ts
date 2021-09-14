@@ -41,7 +41,7 @@ export class AssetSearchInputComponent {
         });
 
         tags.map(tag => {
-            return items.find(item => this.isTag(item) && item.id === tag.id);
+            return items?.find(item => this.isTag(item) && item.id === tag.id);
         })
             .filter(notNullOrUndefined)
             .forEach(item => {
@@ -77,9 +77,7 @@ export class AssetSearchInputComponent {
             }
         }
 
-        const searchTermItem = searchTermItems[searchTermItems.length - 1] as
-            | { label: string }
-            | undefined;
+        const searchTermItem = searchTermItems[searchTermItems.length - 1] as { label: string } | undefined;
 
         const searchTerm = searchTermItem ? searchTermItem.label : '';
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -36,10 +36,12 @@ import { ProductSearchInputComponent } from '../product-search-input/product-sea
 })
 export class ProductListComponent
     extends BaseListComponent<SearchProducts.Query, SearchProducts.Items, SearchProducts.Variables>
-    implements OnInit {
+    implements OnInit, AfterViewInit
+{
     searchTerm = '';
     facetValueIds: string[] = [];
     groupByProduct = true;
+    selectedFacetValueIds$: Observable<string[]>;
     facetValues$: Observable<SearchProducts.FacetValues[]>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
@@ -55,6 +57,25 @@ export class ProductListComponent
         route: ActivatedRoute,
     ) {
         super(router, route);
+        this.route.queryParamMap
+            .pipe(
+                map(qpm => qpm.get('q')),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(term => {
+                this.searchTerm = term || '';
+                if (this.productSearchInput) {
+                    this.productSearchInput.setSearchTerm(term);
+                }
+            });
+        this.selectedFacetValueIds$ = this.route.queryParamMap.pipe(map(qpm => qpm.getAll('fvids')));
+
+        this.selectedFacetValueIds$.pipe(takeUntil(this.destroy$)).subscribe(ids => {
+            this.facetValueIds = ids;
+            if (this.productSearchInput) {
+                this.productSearchInput.setFacetValues(ids);
+            }
+        });
         super.setQueryFn(
             (...args: any[]) =>
                 this.dataService.product.searchProducts(this.searchTerm, ...args).refetchOnChannelChange(),
@@ -75,31 +96,25 @@ export class ProductListComponent
 
     ngOnInit() {
         super.ngOnInit();
+
         this.facetValues$ = this.result$.pipe(map(data => data.search.facetValues));
-        // this.facetValues$ = of([]);
-        this.route.queryParamMap
-            .pipe(
-                map(qpm => qpm.get('q')),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(term => {
-                this.productSearchInput.setSearchTerm(term);
+
+        this.facetValues$
+            .pipe(take(1), delay(100), withLatestFrom(this.selectedFacetValueIds$))
+            .subscribe(([__, ids]) => {
+                this.productSearchInput.setFacetValues(ids);
             });
-
-        const fvids$ = this.route.queryParamMap.pipe(map(qpm => qpm.getAll('fvids')));
-
-        fvids$.pipe(takeUntil(this.destroy$)).subscribe(ids => {
-            this.productSearchInput.setFacetValues(ids);
-        });
-
-        this.facetValues$.pipe(take(1), delay(100), withLatestFrom(fvids$)).subscribe(([__, ids]) => {
-            this.productSearchInput.setFacetValues(ids);
-        });
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
         this.contentLanguage$ = this.dataService.client
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
+    }
+
+    ngAfterViewInit() {
+        if (this.productSearchInput && this.searchTerm) {
+            setTimeout(() => this.productSearchInput.setSearchTerm(this.searchTerm));
+        }
     }
 
     setSearchTerm(term: string) {

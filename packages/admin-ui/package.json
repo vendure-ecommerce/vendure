@@ -34,7 +34,7 @@
     "@clr/core": "^4.0.15",
     "@clr/icons": "^12.0.2",
     "@clr/ui": "^12.0.2",
-    "@ng-select/ng-select": "^6.1.0",
+    "@ng-select/ng-select": "^7.2.0",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
     "@vendure/common": "^1.2.0",
