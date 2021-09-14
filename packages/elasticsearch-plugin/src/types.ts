@@ -8,7 +8,6 @@ import {
     SearchResult,
 } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
 import { Asset, SerializedRequestContext } from '@vendure/core';
 
 export type ElasticSearchInput = SearchInput & {
@@ -51,6 +50,7 @@ export type VariantIndexItem = Omit<
         price: number;
         priceWithTax: number;
         collectionSlugs: string[];
+        productEnabled: boolean;
         productPriceMin: number;
         productPriceMax: number;
         productPriceWithTaxMin: number;
@@ -80,6 +80,7 @@ export type ProductIndexItem = IndexItemAssets & {
     collectionSlugs: string[];
     channelIds: ID[];
     enabled: boolean;
+    productEnabled: boolean;
     priceMin: number;
     priceMax: number;
     priceWithTaxMin: number;

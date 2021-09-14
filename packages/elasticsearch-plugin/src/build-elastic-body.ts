@@ -108,34 +108,24 @@ export function buildElasticBody(
             });
         }
         if (sort.price) {
-            // const priceField = groupByProduct ? 'priceMin' : 'price';
             const priceField = 'price';
             sortArray.push({ [priceField]: { order: sort.price === SortOrder.ASC ? 'asc' : 'desc' } });
         }
     }
 
+    const body: SearchRequestBody = {
+        query: searchConfig.mapQuery
+            ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
+            : query,
+        sort: sortArray,
+        from: skip || 0,
+        size: take || 10,
+        track_total_hits: searchConfig.totalItemsMaxSize,
+    };
     if (groupByProduct) {
-        return {
-            query: searchConfig.mapQuery
-                ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
-                : query,
-            sort: sortArray,
-            from: skip || 0,
-            size: take || 10,
-            track_total_hits: searchConfig.totalItemsMaxSize,
-            collapse: { field: `productId` },
-        };
-    } else {
-        return {
-            query: searchConfig.mapQuery
-                ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
-                : query,
-            sort: sortArray,
-            from: skip || 0,
-            size: take || 10,
-            track_total_hits: searchConfig.totalItemsMaxSize,
-        };
+        body.collapse = { field: `productId` };
     }
+    return body;
 }
 
 function ensureBoolFilterExists(query: { bool: { filter?: any } }) {

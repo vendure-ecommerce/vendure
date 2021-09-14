@@ -466,7 +466,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     updatedProductVariants.forEach(v => (v.enabled = false));
                 }
                 Logger.verbose(`Updating Product (${productId})`, loggerCtx);
-                const languageVariants = product.translations.map(t => t.languageCode);
+                const languageVariants: LanguageCode[] = [];
+                languageVariants.push(...product.translations.map(t => t.languageCode));
+                for (const variant of product.variants) {
+                    languageVariants.push(...variant.translations.map(t => t.languageCode));
+                }
 
                 for (const channel of product.channels) {
                     const channelCtx = new RequestContext({
@@ -562,9 +566,14 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
         Logger.verbose(`Deleting 1 Product (id: ${productId})`, loggerCtx);
         const operations: BulkVariantOperation[] = [];
+        const languageVariants: LanguageCode[] = [];
+        languageVariants.push(...product.translations.map(t => t.languageCode));
+        for (const variant of product.variants) {
+            languageVariants.push(...variant.translations.map(t => t.languageCode));
+        }
+
         for (const { id: channelId } of channels) {
-            const languageVariants = product.translations.map(t => t.languageCode);
-            for (const languageCode of languageVariants) {
+            for (const languageCode of unique(languageVariants)) {
                 operations.push({
                     index: VARIANT_INDEX_NAME,
                     operation: {
@@ -579,6 +588,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             ...(await this.deleteVariantsInternalOperations(
                 product.variants,
                 channels.map(c => c.id),
+                languageVariants,
             )),
         );
         return operations;
@@ -587,12 +597,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private async deleteVariantsInternalOperations(
         variants: ProductVariant[],
         channelIds: ID[],
+        languageVariants: LanguageCode[],
     ): Promise<BulkVariantOperation[]> {
         Logger.verbose(`Deleting ${variants.length} ProductVariants`, loggerCtx);
         const operations: BulkVariantOperation[] = [];
         for (const variant of variants) {
             for (const channelId of channelIds) {
-                const languageVariants = variant.translations.map(t => t.languageCode);
                 for (const languageCode of languageVariants) {
                     operations.push({
                         index: VARIANT_INDEX_NAME,
@@ -721,6 +731,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             collectionIds: v.collections.map(c => c.id.toString()),
             collectionSlugs: collectionTranslations.map(c => c.slug),
             enabled: v.enabled && v.product.enabled,
+            productEnabled: variants.some(variant => variant.enabled) && v.product.enabled,
             productPriceMin: Math.min(...prices),
             productPriceMax: Math.max(...prices),
             productPriceWithTaxMin: Math.min(...pricesWithTax),
@@ -785,6 +796,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             collectionIds: [],
             collectionSlugs: [],
             enabled: false,
+            productEnabled: false,
             productPriceMin: 0,
             productPriceMax: 0,
             productPriceWithTaxMin: 0,

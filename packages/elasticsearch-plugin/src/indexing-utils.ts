@@ -41,6 +41,7 @@ export async function createIndices(
         collectionSlugs: keyword,
         channelIds: keyword,
         enabled: { type: 'boolean' },
+        productEnabled: { type: 'boolean' },
         productAssetId: keyword,
         productPreview: textWithKeyword,
         productPreviewFocalPoint: { type: 'object' },

@@ -335,28 +335,20 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
-        if (groupByProduct) {
-            elasticSearchBody.aggs = {
-                collection: {
-                    terms: {
-                        field,
-                        size: this.options.searchConfig.collectionMaxSize,
-                    },
-                    aggs: {
-                        total: {
-                            cardinality: {
-                                field: `productId`,
-                            },
-                        },
-                    },
+        elasticSearchBody.aggs = {
+            collection: {
+                terms: {
+                    field,
+                    size: this.options.searchConfig.collectionMaxSize,
                 },
-            };
-        } else {
-            elasticSearchBody.aggs = {
-                collection: {
-                    terms: {
-                        field,
-                        size: this.options.searchConfig.collectionMaxSize,
+            },
+        };
+
+        if (groupByProduct) {
+            elasticSearchBody.aggs.collection.aggs = {
+                total: {
+                    cardinality: {
+                        field: `productId`,
                     },
                 },
             };
@@ -463,7 +455,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
         const source = hit._source;
-        const { productAsset, productVariantAsset } = ElasticsearchService.getSearchResultAssets(source);
+        const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
             productAsset,
@@ -488,11 +480,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
         const source = hit._source;
-        const { productAsset, productVariantAsset } = ElasticsearchService.getSearchResultAssets(source);
+        const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
             productAsset,
             productVariantAsset,
+            enabled: source.productEnabled,
             productId: source.productId.toString(),
             productName: source.productName,
             productVariantId: source.productVariantId.toString(),
@@ -517,7 +510,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return result;
     }
 
-    private static getSearchResultAssets(source: ProductIndexItem | VariantIndexItem): {
+    private getSearchResultAssets(source: ProductIndexItem | VariantIndexItem): {
         productAsset: SearchResultAsset | undefined;
         productVariantAsset: SearchResultAsset | undefined;
     } {
