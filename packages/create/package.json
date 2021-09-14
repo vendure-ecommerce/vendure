@@ -16,6 +16,8 @@
     "watch": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json -w",
     "lint": "tslint --fix --project ./"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "publishConfig": {
     "access": "public"
   },

@@ -13,6 +13,8 @@
     "graphql",
     "typescript"
   ],
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "private": false,
   "license": "MIT",
   "scripts": {

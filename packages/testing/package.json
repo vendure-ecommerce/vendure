@@ -22,6 +22,8 @@
     "type": "git",
     "url": "git+https://github.com/vendure-ecommerce/vendure.git"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "watch": "tsc -p ./tsconfig.build.json -w",
