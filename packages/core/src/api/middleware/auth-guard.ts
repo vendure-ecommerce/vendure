@@ -7,6 +7,7 @@ import { GraphQLResolveInfo } from 'graphql';
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
+import { LogLevel } from '../../config/logger/vendure-logger';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Customer } from '../../entity/customer/customer.entity';
 import { ChannelService } from '../../service/services/channel.service';
@@ -76,7 +77,7 @@ export class AuthGuard implements CanActivate {
             const canActivate =
                 requestContext.userHasPermissions(permissions) || requestContext.authorizedAsOwnerOnly;
             if (!canActivate) {
-                throw new ForbiddenError();
+                throw new ForbiddenError(LogLevel.Verbose);
             } else {
                 return canActivate;
             }

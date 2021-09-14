@@ -39,7 +39,7 @@ export class ProductSearchInputComponent {
         });
 
         ids.map(id => {
-            return items.find(item => this.isFacetValueItem(item) && item.facetValue.id === id);
+            return items?.find(item => this.isFacetValueItem(item) && item.facetValue.id === id);
         })
             .filter(notNullOrUndefined)
             .forEach(item => {

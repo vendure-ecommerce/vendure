@@ -3256,10 +3256,10 @@
   dependencies:
     uuid "8.3.1"
 
-"@ng-select/ng-select@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.npmjs.org/@ng-select/ng-select/-/ng-select-6.1.0.tgz#c0575d963a1871dcf72d38186598c7c71d26dd49"
-  integrity sha512-uro/zIjL+TRWzbrzNN9IjIusOeLfhCn9cIr5Bq3AsJyxyU7Gdj9kOD5wVrrQ0NVkaQ1BJMcWmUvmYGBXLI6cnA==
+"@ng-select/ng-select@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.npmjs.org/@ng-select/ng-select/-/ng-select-7.2.0.tgz#5f496fdbe1de238f49c79ff714350113c09419d7"
+  integrity sha512-o4A8DAIV36lOy3xzIE0cYH5psACcIYDOfU3XzQQ+/WCKO1ChNH0cXUWtOAI1B/AF1yW/NpADxPPbFcrknAuYaA==
   dependencies:
     tslib "^2.0.0"
 

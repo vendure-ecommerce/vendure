@@ -14,6 +14,8 @@
     "test": "jest --config ./jest.config.js",
     "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=asset-server-plugin"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "publishConfig": {
     "access": "public"
   },

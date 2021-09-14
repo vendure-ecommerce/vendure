@@ -60,30 +60,32 @@
                 <div class="clr-row">
                     <div class="clr-col">
                         <section class="form-block" formGroupName="product">
-                            <ng-container *vdrIfMultichannel>
-                                <vdr-form-item
-                                    [label]="'common.channels' | translate"
-                                    *vdrIfDefaultChannelActive
-                                >
-                                    <div class="flex channel-assignment">
-                                        <ng-container *ngFor="let channel of productChannels$ | async">
-                                            <vdr-chip
-                                                *ngIf="!isDefaultChannel(channel.code)"
-                                                icon="times-circle"
-                                                (iconClick)="removeFromChannel(channel.id)"
-                                            >
-                                                <vdr-channel-badge
-                                                    [channelCode]="channel.code"
-                                                ></vdr-channel-badge>
-                                                {{ channel.code | channelCodeToLabel }}
-                                            </vdr-chip>
-                                        </ng-container>
-                                        <button class="btn btn-sm" (click)="assignToChannel()">
-                                            <clr-icon shape="layers"></clr-icon>
-                                            {{ 'catalog.assign-to-channel' | translate }}
-                                        </button>
-                                    </div>
-                                </vdr-form-item>
+                            <ng-container *ngIf="!(isNew$ | async)">
+                                <ng-container *vdrIfMultichannel>
+                                    <vdr-form-item
+                                        [label]="'common.channels' | translate"
+                                        *vdrIfDefaultChannelActive
+                                    >
+                                        <div class="flex channel-assignment">
+                                            <ng-container *ngFor="let channel of productChannels$ | async">
+                                                <vdr-chip
+                                                    *ngIf="!isDefaultChannel(channel.code)"
+                                                    icon="times-circle"
+                                                    (iconClick)="removeFromChannel(channel.id)"
+                                                >
+                                                    <vdr-channel-badge
+                                                        [channelCode]="channel.code"
+                                                    ></vdr-channel-badge>
+                                                    {{ channel.code | channelCodeToLabel }}
+                                                </vdr-chip>
+                                            </ng-container>
+                                            <button class="btn btn-sm" (click)="assignToChannel()">
+                                                <clr-icon shape="layers"></clr-icon>
+                                                {{ 'catalog.assign-to-channel' | translate }}
+                                            </button>
+                                        </div>
+                                    </vdr-form-item>
+                                </ng-container>
                             </ng-container>
                             <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
                                 <input
@@ -109,7 +111,7 @@
                                     />
                                     <label>{{
                                         'catalog.auto-update-product-variant-name' | translate
-                                    }}</label>
+                                        }}</label>
                                 </clr-checkbox-wrapper>
                             </div>
                             <vdr-form-field

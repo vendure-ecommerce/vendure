@@ -111,13 +111,8 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
         process.exit(0);
     }
 
-    const {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        migrationSource,
-        readmeSource,
-    } = await generateSources(root, answers);
+    const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
+        await generateSources(root, answers);
     return {
         indexSource,
         indexWorkerSource,
@@ -148,13 +143,8 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
     };
-    const {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        migrationSource,
-        readmeSource,
-    } = await generateSources(root, ciAnswers);
+    const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
+        await generateSources(root, ciAnswers);
     return {
         indexSource,
         indexWorkerSource,
@@ -184,6 +174,15 @@ async function generateSources(
 }> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
+    /**
+     * Helper to escape single quotes only. Used when generating the config file since e.g. passwords
+     * might use special chars (`< > ' "` etc) which Handlebars would be default convert to HTML entities.
+     * Instead, we disable escaping and use this custom helper to escape only the single quote character.
+     */
+    Handlebars.registerHelper('escapeSingle', (aString: unknown) => {
+        return typeof aString === 'string' ? aString.replace(`'`, `\\'`) : aString;
+    });
+
     const templateContext = {
         ...answers,
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
@@ -194,7 +193,7 @@ async function generateSources(
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
     };
     const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
-    const configSource = Handlebars.compile(configTemplate)(templateContext);
+    const configSource = Handlebars.compile(configTemplate, { noEscape: true })(templateContext);
     const indexTemplate = await fs.readFile(assetPath('index.hbs'), 'utf-8');
     const indexSource = Handlebars.compile(indexTemplate)(templateContext);
     const indexWorkerTemplate = await fs.readFile(assetPath('index-worker.hbs'), 'utf-8');

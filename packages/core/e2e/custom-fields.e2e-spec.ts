@@ -98,6 +98,12 @@ const customConfig = mergeConfig(testConfig, {
                 options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
             },
             {
+                name: 'nullableStringWithOptions',
+                type: 'string',
+                nullable: true,
+                options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
+            },
+            {
                 name: 'nonPublic',
                 type: 'string',
                 defaultValue: 'hi!',
@@ -228,6 +234,7 @@ describe('Custom fields', () => {
                 { name: 'validateFn4', type: 'string', list: false },
                 { name: 'validateRelation', type: 'relation', list: false },
                 { name: 'stringWithOptions', type: 'string', list: false },
+                { name: 'nullableStringWithOptions', type: 'string', list: false },
                 { name: 'nonPublic', type: 'string', list: false },
                 { name: 'public', type: 'string', list: false },
                 { name: 'longString', type: 'string', list: false },
@@ -388,7 +395,7 @@ describe('Custom fields', () => {
         const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
             gql`
-                mutation($stringValue: String!) {
+                mutation ($stringValue: String!) {
                     updateProduct(input: { id: "T_1", customFields: { longString: $stringValue } }) {
                         id
                         customFields {
@@ -407,7 +414,7 @@ describe('Custom fields', () => {
         const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
             gql`
-                mutation($stringValue: String!) {
+                mutation ($stringValue: String!) {
                     updateProduct(
                         input: {
                             id: "T_1"
@@ -468,6 +475,20 @@ describe('Custom fields', () => {
                 }
             `);
             expect(updateProduct.customFields.stringWithOptions).toBe('medium');
+        });
+
+        it('nullable string option with null', async () => {
+            const { updateProduct } = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { nullableStringWithOptions: null } }) {
+                        id
+                        customFields {
+                            nullableStringWithOptions
+                        }
+                    }
+                }
+            `);
+            expect(updateProduct.customFields.nullableStringWithOptions).toBeNull();
         });
 
         it(

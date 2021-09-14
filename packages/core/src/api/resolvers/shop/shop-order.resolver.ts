@@ -26,17 +26,16 @@ import {
     UpdateOrderItemsResult,
 } from '@vendure/common/lib/generated-shop-types';
 import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
-import ms from 'ms';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
-import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
+import { ForbiddenError } from '../../../common/error/errors';
 import {
     AlreadyLoggedInError,
     NoActiveOrderError,
 } from '../../../common/error/generated-graphql-shop-errors';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
-import { ConfigService } from '../../../config';
+import { ConfigService, LogLevel } from '../../../config';
 import { Country } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ActiveOrderService, CountryService } from '../../../service';
@@ -112,7 +111,7 @@ export class ShopOrderResolver {
             }
             // We throw even if the order does not exist, since giving a different response
             // opens the door to an enumeration attack to find valid order codes.
-            throw new ForbiddenError();
+            throw new ForbiddenError(LogLevel.Verbose);
         }
     }
 

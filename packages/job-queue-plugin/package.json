@@ -16,6 +16,8 @@
     "e2e-wip": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --runInBand --package=job-queue-plugin",
     "ci": "yarn build"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "publishConfig": {
     "access": "public"
   },

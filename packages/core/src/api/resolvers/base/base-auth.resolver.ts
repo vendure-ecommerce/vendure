@@ -19,7 +19,7 @@ import {
 } from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
-import { Logger } from '../../../config/logger/vendure-logger';
+import { Logger, LogLevel } from '../../../config/logger/vendure-logger';
 import { User } from '../../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
 import { AdministratorService } from '../../../service/services/administrator.service';
@@ -39,9 +39,10 @@ export class BaseAuthResolver {
         protected administratorService: AdministratorService,
         protected configService: ConfigService,
     ) {
-        this.nativeAuthStrategyIsConfigured = !!this.configService.authOptions.shopAuthenticationStrategy.find(
-            strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
-        );
+        this.nativeAuthStrategyIsConfigured =
+            !!this.configService.authOptions.shopAuthenticationStrategy.find(
+                strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
+            );
     }
 
     /**
@@ -87,12 +88,12 @@ export class BaseAuthResolver {
     async me(ctx: RequestContext, apiType: ApiType) {
         const userId = ctx.activeUserId;
         if (!userId) {
-            throw new ForbiddenError();
+            throw new ForbiddenError(LogLevel.Verbose);
         }
         if (apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(ctx, userId);
             if (!administrator) {
-                throw new ForbiddenError();
+                throw new ForbiddenError(LogLevel.Verbose);
             }
         }
         const user = userId && (await this.userService.getUserById(ctx, userId));

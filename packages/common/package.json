@@ -10,6 +10,8 @@
     "test": "jest --config ./jest.config.js",
     "ci": "yarn build"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "publishConfig": {
     "access": "public"
   },

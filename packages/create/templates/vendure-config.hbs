@@ -45,15 +45,15 @@ const path = require('path');
     },
     authOptions: {
         superadminCredentials: {
-            identifier: '{{ superadminIdentifier }}',
-            password: '{{ superadminPassword }}',
+            identifier: '{{{ escapeSingle superadminIdentifier }}}',
+            password: '{{{ escapeSingle superadminPassword }}}',
         },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
         synchronize: true, // turn this off for production
         logging: false,
-        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{ dbName }}'{{/if}},
+        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{{ escapeSingle dbName }}}'{{/if}},
         {{#if isSQLjs}}
         location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,
@@ -61,8 +61,8 @@ const path = require('path');
         {{#if requiresConnection}}
         host: '{{ dbHost }}',
         port: {{ dbPort }},
-        username: '{{ dbUserName }}',
-        password: '{{ dbPassword }}',
+        username: '{{{ escapeSingle dbUserName }}}',
+        password: '{{{ escapeSingle dbPassword }}}',
         {{/if}}
         migrations: [path.join(__dirname, '../migrations/*.ts')],
     },

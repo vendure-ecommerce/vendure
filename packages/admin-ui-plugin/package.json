@@ -13,6 +13,8 @@
     "lint": "tslint --fix --project ./",
     "compile": "tsc -p ./tsconfig.build.json"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "publishConfig": {
     "access": "public"
   },
