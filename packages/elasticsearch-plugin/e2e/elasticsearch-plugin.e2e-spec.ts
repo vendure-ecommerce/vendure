@@ -38,7 +38,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate
+    UpdateTaxRate,
 } from '../../core/e2e/graphql/generated-e2e-admin-types';
 import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
@@ -277,8 +277,8 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
-        ]);
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
         });
 
         it('returns correct collections when grouped by product', async () => {
@@ -291,7 +291,7 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
@@ -1188,9 +1188,10 @@ describe('Elasticsearch plugin', () => {
 
             it('indexes product variant-level languages', async () => {
                 const { search: search1 } = await searchInLanguage(LanguageCode.fr, false);
-
-                expect(search1.items[0].productName).toBe('Laptop');
-                expect(search1.items[0].productVariantName).toBe('laptop variant fr');
+                expect(search1.items.length ? search1.items[0].productName : undefined).toBe('Laptop');
+                expect(search1.items.length ? search1.items[0].productVariantName : undefined).toBe(
+                    'laptop variant fr',
+                );
             });
         });
     });

@@ -116,7 +116,7 @@ describe('buildElasticBody()', () => {
 
     it('facetValueFilters OR', () => {
         const result = buildElasticBody(
-            { facetValueFilters: [ { or: ['1', '2'] }] },
+            { facetValueFilters: [{ or: ['1', '2'] }] },
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
@@ -262,7 +262,7 @@ describe('buildElasticBody()', () => {
                 CHANNEL_ID,
                 LanguageCode.en,
             );
-            expect(result.sort).toEqual([{ priceMin: { order: 'asc' } }]);
+            expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
     });
 
@@ -302,6 +302,9 @@ describe('buildElasticBody()', () => {
         );
 
         expect(result).toEqual({
+            collapse: {
+                field: 'productId',
+            },
             from: 0,
             size: 25,
             query: {
@@ -451,14 +454,8 @@ describe('buildElasticBody()', () => {
                         LANGUAGE_CODE_TERM,
                         {
                             range: {
-                                priceMin: {
+                                price: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceMax: {
                                     lte: 1500,
                                 },
                             },
@@ -482,14 +479,8 @@ describe('buildElasticBody()', () => {
                         LANGUAGE_CODE_TERM,
                         {
                             range: {
-                                priceWithTaxMin: {
+                                priceWithTax: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceWithTaxMax: {
                                     lte: 1500,
                                 },
                             },
@@ -524,14 +515,8 @@ describe('buildElasticBody()', () => {
                         { term: { collectionIds: '3' } },
                         {
                             range: {
-                                priceWithTaxMin: {
+                                priceWithTax: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceWithTaxMax: {
                                     lte: 1500,
                                 },
                             },

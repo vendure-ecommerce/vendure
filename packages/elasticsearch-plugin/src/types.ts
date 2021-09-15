@@ -50,6 +50,16 @@ export type VariantIndexItem = Omit<
         price: number;
         priceWithTax: number;
         collectionSlugs: string[];
+        productEnabled: boolean;
+        productPriceMin: number;
+        productPriceMax: number;
+        productPriceWithTaxMin: number;
+        productPriceWithTaxMax: number;
+        productFacetIds: ID[];
+        productFacetValueIds: ID[];
+        productCollectionIds: ID[];
+        productCollectionSlugs: string[];
+        productChannelIds: ID[];
         [customMapping: string]: any;
     };
 
@@ -70,6 +80,7 @@ export type ProductIndexItem = IndexItemAssets & {
     collectionSlugs: string[];
     channelIds: ID[];
     enabled: boolean;
+    productEnabled: boolean;
     priceMin: number;
     priceMax: number;
     priceWithTaxMin: number;
@@ -92,6 +103,7 @@ export type SearchRequestBody = {
     size?: number;
     track_total_hits?: number | boolean;
     aggs?: any;
+    collapse?: any;
 };
 
 export type SearchResponseBody<T = any> = {
@@ -115,7 +127,7 @@ export type SearchResponseBody<T = any> = {
         [key: string]: {
             doc_count_error_upper_bound: 0;
             sum_other_doc_count: 89;
-            buckets: Array<{ key: string; doc_count: number }>;
+            buckets: Array<{ key: string; doc_count: number; total: { value: number } }>;
             value: any;
         };
     };

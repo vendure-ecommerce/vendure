@@ -1,8 +1,8 @@
 import { Client } from '@elastic/elasticsearch';
 import { ID, Logger } from '@vendure/core';
 
-import { loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
-import { ProductIndexItem, VariantIndexItem } from './types';
+import { loggerCtx, VARIANT_INDEX_NAME } from './constants';
+import { VariantIndexItem } from './types';
 
 export async function createIndices(
     client: Client,
@@ -23,7 +23,8 @@ export async function createIndices(
         },
     };
     const keyword = { type: 'keyword' };
-    const commonMappings = {
+
+    const variantMappings: { [prop in keyof VariantIndexItem]: any } = {
         sku: textWithKeyword,
         slug: textWithKeyword,
         productId: keyword,
@@ -40,25 +41,22 @@ export async function createIndices(
         collectionSlugs: keyword,
         channelIds: keyword,
         enabled: { type: 'boolean' },
+        productEnabled: { type: 'boolean' },
         productAssetId: keyword,
         productPreview: textWithKeyword,
         productPreviewFocalPoint: { type: 'object' },
         productVariantAssetId: keyword,
         productVariantPreview: textWithKeyword,
         productVariantPreviewFocalPoint: { type: 'object' },
-    };
-
-    const productMappings: { [prop in keyof ProductIndexItem]: any } = {
-        ...commonMappings,
-        priceMin: { type: 'long' },
-        priceMax: { type: 'long' },
-        priceWithTaxMin: { type: 'long' },
-        priceWithTaxMax: { type: 'long' },
-        ...indexMappingProperties,
-    };
-
-    const variantMappings: { [prop in keyof VariantIndexItem]: any } = {
-        ...commonMappings,
+        productChannelIds: keyword,
+        productCollectionIds: keyword,
+        productCollectionSlugs: keyword,
+        productFacetIds: keyword,
+        productFacetValueIds: keyword,
+        productPriceMax: { type: 'long' },
+        productPriceMin: { type: 'long' },
+        productPriceWithTaxMax: { type: 'long' },
+        productPriceWithTaxMin: { type: 'long' },
         price: { type: 'long' },
         priceWithTax: { type: 'long' },
         ...indexMappingProperties,
@@ -104,27 +102,11 @@ export async function createIndices(
     } catch (e) {
         Logger.error(JSON.stringify(e, null, 2), loggerCtx);
     }
-
-    try {
-        const index = prefix + PRODUCT_INDEX_NAME + `${unixtimestampPostfix}`;
-        const alias = prefix + PRODUCT_INDEX_NAME + aliasPostfix;
-
-        await createIndex(productMappings, index, alias);
-    } catch (e) {
-        Logger.error(JSON.stringify(e, null, 2), loggerCtx);
-    }
 }
 
 export async function deleteIndices(client: Client, prefix: string) {
     try {
         const index = await getIndexNameByAlias(client, prefix + VARIANT_INDEX_NAME);
-        await client.indices.delete({ index });
-        Logger.verbose(`Deleted index "${index}"`, loggerCtx);
-    } catch (e) {
-        Logger.error(e, loggerCtx);
-    }
-    try {
-        const index = await getIndexNameByAlias(client, prefix + PRODUCT_INDEX_NAME);
         await client.indices.delete({ index });
         Logger.verbose(`Deleted index "${index}"`, loggerCtx);
     } catch (e) {
@@ -144,20 +126,6 @@ export async function deleteByChannel(client: Client, prefix: string, channelId:
             },
         });
         Logger.verbose(`Deleted index "${index} for channel "${channelId}"`, loggerCtx);
-    } catch (e) {
-        Logger.error(e, loggerCtx);
-    }
-    try {
-        const index = prefix + PRODUCT_INDEX_NAME;
-        await client.deleteByQuery({
-            index,
-            body: {
-                query: {
-                    match: { channelId },
-                },
-            },
-        });
-        Logger.verbose(`Deleted index "${index}" for channel "${channelId}"`, loggerCtx);
     } catch (e) {
         Logger.error(e, loggerCtx);
     }
