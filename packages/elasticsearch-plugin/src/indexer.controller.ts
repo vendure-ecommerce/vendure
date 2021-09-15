@@ -471,6 +471,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 for (const variant of product.variants) {
                     languageVariants.push(...variant.translations.map(t => t.languageCode));
                 }
+                const uniqueLanguageVariants = unique(languageVariants);
 
                 for (const channel of product.channels) {
                     const channelCtx = new RequestContext({
@@ -487,7 +488,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     for (const variant of variantsInChannel) {
                         await this.productVariantService.applyChannelPriceAndTax(variant, channelCtx);
                     }
-                    for (const languageCode of languageVariants) {
+                    for (const languageCode of uniqueLanguageVariants) {
                         if (variantsInChannel.length) {
                             for (const variant of variantsInChannel) {
                                 operations.push(
@@ -571,9 +572,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         for (const variant of product.variants) {
             languageVariants.push(...variant.translations.map(t => t.languageCode));
         }
+        const uniqueLanguageVariants = unique(languageVariants);
 
         for (const { id: channelId } of channels) {
-            for (const languageCode of unique(languageVariants)) {
+            for (const languageCode of uniqueLanguageVariants) {
                 operations.push({
                     index: VARIANT_INDEX_NAME,
                     operation: {
@@ -588,7 +590,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             ...(await this.deleteVariantsInternalOperations(
                 product.variants,
                 channels.map(c => c.id),
-                languageVariants,
+                uniqueLanguageVariants,
             )),
         );
         return operations;
