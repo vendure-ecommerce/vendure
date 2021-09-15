@@ -13,22 +13,6 @@
 * **core** Update login credentials when changing customer email address ([1ebc872](https://github.com/vendure-ecommerce/vendure/commit/1ebc872)), closes [#1071](https://github.com/vendure-ecommerce/vendure/issues/1071)
 * **create** Do not HTML escape strings used in the config file ([954c03a](https://github.com/vendure-ecommerce/vendure/commit/954c03a)), closes [#1070](https://github.com/vendure-ecommerce/vendure/issues/1070)
 
-
-## Unreleased (2021-09-15)
-
-
-#### Fixes
-
-* **admin-ui** Add missing Spanish translation strings and fix a few typos (#1079) ([bd22dc5](https://github.com/vendure-ecommerce/vendure/commit/bd22dc5)), closes [#1079](https://github.com/vendure-ecommerce/vendure/issues/1079)
-* **admin-ui** Hide "assign to channel" button when creating Product ([ffeeaf6](https://github.com/vendure-ecommerce/vendure/commit/ffeeaf6)), closes [#1059](https://github.com/vendure-ecommerce/vendure/issues/1059)
-* **admin-ui** Keep product search bar in sync with url params ([58d5634](https://github.com/vendure-ecommerce/vendure/commit/58d5634)), closes [#1053](https://github.com/vendure-ecommerce/vendure/issues/1053)
-* **admin-ui** More consistent width of default custom field controls ([001207f](https://github.com/vendure-ecommerce/vendure/commit/001207f)), closes [#1077](https://github.com/vendure-ecommerce/vendure/issues/1077)
-* **core** Fix validation for nullable custom string fields with options ([9afa145](https://github.com/vendure-ecommerce/vendure/commit/9afa145)), closes [#1083](https://github.com/vendure-ecommerce/vendure/issues/1083)
-* **core** Improve log level of ForbiddenError to reduce log noise ([5be1dfe](https://github.com/vendure-ecommerce/vendure/commit/5be1dfe)), closes [#1080](https://github.com/vendure-ecommerce/vendure/issues/1080)
-* **core** Translate root Collection on first creation ([46659c7](https://github.com/vendure-ecommerce/vendure/commit/46659c7)), closes [#1068](https://github.com/vendure-ecommerce/vendure/issues/1068)
-* **core** Update login credentials when changing customer email address ([1ebc872](https://github.com/vendure-ecommerce/vendure/commit/1ebc872)), closes [#1071](https://github.com/vendure-ecommerce/vendure/issues/1071)
-* **create** Do not HTML escape strings used in the config file ([954c03a](https://github.com/vendure-ecommerce/vendure/commit/954c03a)), closes [#1070](https://github.com/vendure-ecommerce/vendure/issues/1070)
-
 ## 1.2.0 (2021-09-01)
 
 
