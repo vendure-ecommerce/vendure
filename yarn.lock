@@ -1413,6 +1413,11 @@
     terminal-link "^2.1.1"
     yargs "^16.2.0"
 
+"@braintree/wrap-promise@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@braintree/wrap-promise/-/wrap-promise-2.1.0.tgz#7e27ffc5dacd2d71533b0c42506eea8e7c2e50fa"
+  integrity sha512-UIrJB+AfKU0CCfbMoWrsGpd2D/hBpY/SGgFI6WRHPOwhaZ3g9rz1weiJ6eb6L9KgVyunT7s2tckcPkbHw+NzeA==
+
 "@cds/city@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npmjs.org/@cds/city/-/city-1.1.0.tgz#5b7323750d3d64671ce2e3a804bcf260fbea1154"
@@ -3759,6 +3764,13 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/braintree@^2.22.15":
+  version "2.22.15"
+  resolved "https://registry.npmjs.org/@types/braintree/-/braintree-2.22.15.tgz#b19a0e501f8ad9a3c245438c41408c31216d7257"
+  integrity sha512-e+C+3GRGUxaW6HbAXBrByCw2dK8qC9KZAOWg+H0cR2KWD3e2lyc2d2VIKnmzjsh5zT4yIhzewj2ga0kSCMt9sA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/component-emitter@^1.2.10":
   version "1.2.10"
   resolved "https://registry.npmjs.org/@types/component-emitter/-/component-emitter-1.2.10.tgz#ef5b1589b9f16544642e473db5ea5639107ef3ea"
@@ -5874,6 +5886,15 @@ braces@^3.0.1, braces@^3.0.2, braces@~3.0.2:
   dependencies:
     fill-range "^7.0.1"
 
+braintree@^3.0.0:
+  version "3.7.0"
+  resolved "https://registry.npmjs.org/braintree/-/braintree-3.7.0.tgz#0f3ebcfab59362787788084f6c4a31365f4cacf1"
+  integrity sha512-UmMBTyRQeNeoMZQINOpbEc44fpzLNWG4tOjRdPG3EaarQeHiRJJ+E09/0ViOMQ8JVJ/OaK3swapPUt60lBeqew==
+  dependencies:
+    "@braintree/wrap-promise" "2.1.0"
+    dateformat "4.5.1"
+    xml2js "0.4.23"
+
 browser-process-hrtime@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
@@ -7446,6 +7467,11 @@ date-format@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/date-format/-/date-format-3.0.0.tgz#eb8780365c7d2b1511078fb491e6479780f3ad95"
   integrity sha512-eyTcpKOcamdhWJXj56DpQMo1ylSQpcGtGKXcU0Tb97+K56/CF5amAqqqNj0+KvA0iw2ynxtHWFsPDSClCxe48w==
+
+dateformat@4.5.1:
+  version "4.5.1"
+  resolved "https://registry.npmjs.org/dateformat/-/dateformat-4.5.1.tgz#c20e7a9ca77d147906b6dc2261a8be0a5bd2173c"
+  integrity sha512-OD0TZ+B7yP7ZgpJf5K2DIbj3FZvFvxgFUuaqA/V5zTjAtAAXZ1E8bktHxmAGs4x5b7PflqA9LeQ84Og7wYtF7Q==
 
 dateformat@^3.0.0, dateformat@^3.0.3:
   version "3.0.3"
@@ -19191,7 +19217,7 @@ xml2js@0.4.19:
     sax ">=0.6.0"
     xmlbuilder "~9.0.1"
 
-xml2js@^0.4.17, xml2js@^0.4.23:
+xml2js@0.4.23, xml2js@^0.4.17, xml2js@^0.4.23:
   version "0.4.23"
   resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.4.23.tgz#a0c69516752421eb2ac758ee4d4ccf58843eac66"
   integrity sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==
