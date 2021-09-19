@@ -321,7 +321,7 @@ export class ProductVariantService {
             ids.push(id);
         }
         const createdVariants = await this.findByIds(ctx, ids);
-        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'updated'));
+        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'created'));
         return createdVariants;
     }
 
