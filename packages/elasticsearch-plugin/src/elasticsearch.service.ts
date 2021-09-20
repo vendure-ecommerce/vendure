@@ -267,7 +267,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const { groupByProduct } = input;
-        const buckets = await this.getDistinctBucketsOfField(ctx, input, enabledOnly, `facetValueIds`);
+        const buckets = await this.getDistinctBucketsOfField(ctx, input, enabledOnly, `facetValueIds`,this.options.searchConfig.facetValueMaxSize);
 
         const facetValues = await this.facetValueService.findByIds(
             ctx,
@@ -297,7 +297,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         enabledOnly: boolean = false,
     ): Promise<Array<{ collection: Collection; count: number }>> {
         const { groupByProduct } = input;
-        const buckets = await this.getDistinctBucketsOfField(ctx, input, enabledOnly, `collectionIds`);
+        const buckets = await this.getDistinctBucketsOfField(ctx, input, enabledOnly, `collectionIds`,this.options.searchConfig.collectionMaxSize);
 
         const collections = await this.collectionService.findByIds(
             ctx,
@@ -323,6 +323,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         input: ElasticSearchInput,
         enabledOnly: boolean = false,
         field: string,
+        aggregation_max_size: number,
     ): Promise<Array<{ key: string; doc_count: number; total: { value: number } }>> {
         const { indexPrefix } = this.options;
         const { groupByProduct } = input;
@@ -336,16 +337,16 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {
-            collection: {
+            aggregation_field: {
                 terms: {
                     field,
-                    size: this.options.searchConfig.collectionMaxSize,
+                    size: aggregation_max_size
                 },
             },
         };
 
         if (groupByProduct) {
-            elasticSearchBody.aggs.collection.aggs = {
+            elasticSearchBody.aggs.aggregation_field.aggs = {
                 total: {
                     cardinality: {
                         field: `productId`,
@@ -366,7 +367,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             throw e;
         }
 
-        return body.aggregations ? body.aggregations.collection.buckets : [];
+        return body.aggregations ? body.aggregations.aggregation_field.buckets : [];
     }
 
     async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {
