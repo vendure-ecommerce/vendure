@@ -128,13 +128,22 @@ The `@vendure/core` package exposes a [`populate()` function]({{< relref "popula
 
 ```TypeScript
 // populate-server.ts
-import { bootstrap } from '@vendure/core';
+import { bootstrap, DefaultJobQueuePlugin } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
 
 import { config } from './vendure-config.ts';
 import { initialData } from './my-initial-data.ts';
 
 const productsCsvFile = path.join(__dirname, 'path/to/products.csv')
+
+const populateConfig = {
+  ...config,
+  plugins: (config.plugins || []).filter(
+    // Remove your JobQueuePlugin during populating to avoid
+    // generating lots of unnecessary jobs as the Collections get created.
+    plugin => plugin !== DefaultJobQueuePlugin,
+  ),
+}
 
 populate(
   () => bootstrap(config),
