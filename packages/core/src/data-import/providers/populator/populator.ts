@@ -4,7 +4,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
+import { defaultShippingCalculator, defaultShippingEligibilityChecker, Logger } from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
 import { Channel, Collection, FacetValue, TaxCategory } from '../../../entity';
 import {
@@ -55,13 +55,44 @@ export class Populator {
      */
     async populateInitialData(data: InitialData) {
         const { channel, ctx } = await this.createRequestContext(data);
-
-        const zoneMap = await this.populateCountries(ctx, data.countries);
-        await this.populateTaxRates(ctx, data.taxRates, zoneMap);
-        await this.populateShippingMethods(ctx, data.shippingMethods);
-        await this.populatePaymentMethods(ctx, data.paymentMethods);
-        await this.setChannelDefaults(zoneMap, data, channel);
-        await this.populateRoles(ctx, data.roles);
+        let zoneMap: ZoneMap;
+        try {
+            zoneMap = await this.populateCountries(ctx, data.countries);
+        } catch (e) {
+            Logger.error(`Could not populate countries`);
+            Logger.error(e, 'populator', e.stack);
+            throw e;
+        }
+        try {
+            await this.populateTaxRates(ctx, data.taxRates, zoneMap);
+        } catch (e) {
+            Logger.error(`Could not populate tax rates`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.populateShippingMethods(ctx, data.shippingMethods);
+        } catch (e) {
+            Logger.error(`Could not populate shipping methods`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.populatePaymentMethods(ctx, data.paymentMethods);
+        } catch (e) {
+            Logger.error(`Could not populate payment methods`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.setChannelDefaults(zoneMap, data, channel);
+        } catch (e) {
+            Logger.error(`Could not set channel defaults`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.populateRoles(ctx, data.roles);
+        } catch (e) {
+            Logger.error(`Could not populate roles`);
+            Logger.error(e, 'populator', e.stack);
+        }
     }
 
     /**
