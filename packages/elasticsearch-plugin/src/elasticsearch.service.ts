@@ -19,7 +19,7 @@ import equal from 'fast-deep-equal/es6';
 import { buildElasticBody } from './build-elastic-body';
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
-import { createIndices } from './indexing-utils';
+import { createIndices, getClient } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,
@@ -48,14 +48,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     }
 
     onModuleInit(): any {
-        const { host, port } = this.options;
-        const node = this.options.clientOptions?.node ?? `${host}:${port}`;
-        this.client = new Client({
-            node,
-            // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
-            // which looks like possibly a TS/definitions bug.
-            ...(this.options.clientOptions as any),
-        });
+        this.client = getClient(this.options);
     }
 
     onModuleDestroy(): any {
@@ -465,9 +458,10 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return result;
     }
 
-    private getSearchResultAssets(
-        source: ProductIndexItem | VariantIndexItem,
-    ): { productAsset: SearchResultAsset | undefined; productVariantAsset: SearchResultAsset | undefined } {
+    private getSearchResultAssets(source: ProductIndexItem | VariantIndexItem): {
+        productAsset: SearchResultAsset | undefined;
+        productVariantAsset: SearchResultAsset | undefined;
+    } {
         const productAsset: SearchResultAsset | undefined = source.productAssetId
             ? {
                   id: source.productAssetId.toString(),
