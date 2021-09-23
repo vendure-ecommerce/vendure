@@ -247,7 +247,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
                 return;
             }
             if (this.jobQueue) {
-                await this.jobQueue.add(result);
+                await this.jobQueue.add(result, { retries: 5 });
             } else if (this.testingProcessor) {
                 await this.testingProcessor.process(result);
             }

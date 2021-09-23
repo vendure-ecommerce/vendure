@@ -87,7 +87,7 @@ export class EmailProcessor {
             } else {
                 Logger.error(String(err), loggerCtx);
             }
-            return false;
+            throw err;
         }
     }
 }
