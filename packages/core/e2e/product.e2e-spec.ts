@@ -1371,6 +1371,33 @@ describe('Product resolver', () => {
                 expect(updatedVariant.price).toBe(432);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/1101
+            it('after update, the updatedAt should be modified', async () => {
+                // Pause for a second to ensure the updatedAt date is more than 1s
+                // later than the createdAt date, since sqlite does not seem to store
+                // down to millisecond resolution.
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const firstVariant = variants[0];
+                const { updateProductVariants } = await adminClient.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            translations: firstVariant.translations,
+                            sku: 'ABCD',
+                            price: 432,
+                        },
+                    ],
+                });
+
+                const updatedVariant = updateProductVariants.find(v => v?.id === variants[0].id);
+
+                expect(updatedVariant?.updatedAt).not.toBe(updatedVariant?.createdAt);
+            });
+
             it('updateProductVariants updates assets', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<

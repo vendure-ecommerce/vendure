@@ -5253,6 +5253,8 @@ export type AssetFragment = Pick<
 export type ProductVariantFragment = Pick<
     ProductVariant,
     | 'id'
+    | 'createdAt'
+    | 'updatedAt'
     | 'enabled'
     | 'languageCode'
     | 'name'
