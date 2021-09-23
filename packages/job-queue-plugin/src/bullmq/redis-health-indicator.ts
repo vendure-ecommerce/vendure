@@ -14,11 +14,7 @@ export class RedisHealthIndicator extends HealthIndicator {
         super();
     }
     async isHealthy(key: string, timeoutMs = 5000): Promise<HealthIndicatorResult> {
-        let connection: RedisConnection;
-        connection = new RedisConnection({
-            ...this.options.connection,
-            connectTimeout: 10000,
-        });
+        const connection = new RedisConnection(this.options.connection);
         const pingResult = await new Promise(async (resolve, reject) => {
             try {
                 connection.on('error', err => {

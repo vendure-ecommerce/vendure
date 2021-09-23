@@ -185,6 +185,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             const options: WorkerOptions = {
                 concurrency: DEFAULT_CONCURRENCY,
                 ...this.options.workerOptions,
+                connection: this.options.connection,
             };
             this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options).on('error', (e: any) =>
                 Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack),
