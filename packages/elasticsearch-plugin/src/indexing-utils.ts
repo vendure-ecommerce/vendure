@@ -1,7 +1,8 @@
 import { Client } from '@elastic/elasticsearch';
-import { ID, Logger } from '@vendure/core';
+import { DeepRequired, ID, Logger } from '@vendure/core';
 
 import { loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
+import { ElasticsearchOptions } from './options';
 import { ProductIndexItem, VariantIndexItem } from './types';
 
 export async function createIndices(
@@ -161,6 +162,19 @@ export async function deleteByChannel(client: Client, prefix: string, channelId:
     } catch (e) {
         Logger.error(e, loggerCtx);
     }
+}
+
+export function getClient(
+    options: Required<ElasticsearchOptions> | DeepRequired<ElasticsearchOptions>,
+): Client {
+    const { host, port } = options;
+    const node = options.clientOptions?.node ?? `${host}:${port}`;
+    return new Client({
+        node,
+        // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
+        // which looks like possibly a TS/definitions bug.
+        ...(options.clientOptions as any),
+    });
 }
 
 export async function getIndexNameByAlias(client: Client, aliasName: string) {
