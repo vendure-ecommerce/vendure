@@ -111,9 +111,9 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
 
         for (let i = 0; i < this.productIds.length && variants.length < take; i++) {
             const productVariants = await this.dataService.product
-                .getProduct(this.productIds[i])
+                .getProduct(this.productIds[i], { take: this.isProductVariantMode ? undefined : take })
                 .mapSingle(({ product }) => {
-                    const _variants = product ? product.variants : [];
+                    const _variants = product ? product.variantList.items : [];
                     return _variants.filter(v =>
                         this.isProductVariantMode ? this.productVariantIds?.includes(v.id) : true,
                     );

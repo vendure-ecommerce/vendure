@@ -3579,12 +3579,20 @@ export type Product = Node & {
   description: Scalars['String'];
   featuredAsset?: Maybe<Asset>;
   assets: Array<Asset>;
+  /** Returns all ProductVariants */
   variants: Array<ProductVariant>;
+  /** Returns a paginated, sortable, filterable list of ProductVariants */
+  variantList: ProductVariantList;
   optionGroups: Array<ProductOptionGroup>;
   facetValues: Array<FacetValue>;
   translations: Array<ProductTranslation>;
   collections: Array<Collection>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+
+export type ProductVariantListArgs = {
+  options?: Maybe<ProductVariantListOptions>;
 };
 
 export type ProductFilterParameter = {
@@ -6361,7 +6369,7 @@ export type ProductVariantFragment = (
   )> }
 );
 
-export type ProductWithVariantsFragment = (
+export type ProductDetailFragment = (
   { __typename?: 'Product' }
   & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'>
   & { featuredAsset?: Maybe<(
@@ -6376,9 +6384,6 @@ export type ProductWithVariantsFragment = (
   )>, optionGroups: Array<(
     { __typename?: 'ProductOptionGroup' }
     & ProductOptionGroupFragment
-  )>, variants: Array<(
-    { __typename?: 'ProductVariant' }
-    & ProductVariantFragment
   )>, facetValues: Array<(
     { __typename?: 'FacetValue' }
     & Pick<FacetValue, 'id' | 'code' | 'name'>
@@ -6410,22 +6415,40 @@ export type ProductOptionGroupWithOptionsFragment = (
 
 export type UpdateProductMutationVariables = Exact<{
   input: UpdateProductInput;
+  variantListOptions?: Maybe<ProductVariantListOptions>;
 }>;
 
 
 export type UpdateProductMutation = { updateProduct: (
     { __typename?: 'Product' }
-    & ProductWithVariantsFragment
+    & { variantList: (
+      { __typename?: 'ProductVariantList' }
+      & Pick<ProductVariantList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'ProductVariant' }
+        & ProductVariantFragment
+      )> }
+    ) }
+    & ProductDetailFragment
   ) };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
+  variantListOptions?: Maybe<ProductVariantListOptions>;
 }>;
 
 
 export type CreateProductMutation = { createProduct: (
     { __typename?: 'Product' }
-    & ProductWithVariantsFragment
+    & { variantList: (
+      { __typename?: 'ProductVariantList' }
+      & Pick<ProductVariantList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'ProductVariant' }
+        & ProductVariantFragment
+      )> }
+    ) }
+    & ProductDetailFragment
   ) };
 
 export type DeleteProductMutationVariables = Exact<{
@@ -6531,12 +6554,21 @@ export type RemoveOptionGroupFromProductMutation = { removeOptionGroupFromProduc
 
 export type GetProductWithVariantsQueryVariables = Exact<{
   id: Scalars['ID'];
+  variantListOptions?: Maybe<ProductVariantListOptions>;
 }>;
 
 
 export type GetProductWithVariantsQuery = { product?: Maybe<(
     { __typename?: 'Product' }
-    & ProductWithVariantsFragment
+    & { variantList: (
+      { __typename?: 'ProductVariantList' }
+      & Pick<ProductVariantList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'ProductVariant' }
+        & ProductVariantFragment
+      )> }
+    ) }
+    & ProductDetailFragment
   )> };
 
 export type GetProductSimpleQueryVariables = Exact<{
@@ -6866,12 +6898,13 @@ export type GetProductVariantQuery = { productVariant?: Maybe<(
     ) }
   )> };
 
-export type GetProductVariantListQueryVariables = Exact<{
+export type GetProductVariantListSimpleQueryVariables = Exact<{
   options: ProductVariantListOptions;
+  productId?: Maybe<Scalars['ID']>;
 }>;
 
 
-export type GetProductVariantListQuery = { productVariants: (
+export type GetProductVariantListSimpleQuery = { productVariants: (
     { __typename?: 'ProductVariantList' }
     & Pick<ProductVariantList, 'totalItems'>
     & { items: Array<(
@@ -6896,6 +6929,21 @@ export type GetProductVariantListQuery = { productVariants: (
           )> }
         )> }
       ) }
+    )> }
+  ) };
+
+export type GetProductVariantListQueryVariables = Exact<{
+  options: ProductVariantListOptions;
+  productId?: Maybe<Scalars['ID']>;
+}>;
+
+
+export type GetProductVariantListQuery = { productVariants: (
+    { __typename?: 'ProductVariantList' }
+    & Pick<ProductVariantList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'ProductVariant' }
+      & ProductVariantFragment
     )> }
   ) };
 
@@ -9166,16 +9214,15 @@ export namespace ProductVariant {
   export type Channels = NonNullable<(NonNullable<ProductVariantFragment['channels']>)[number]>;
 }
 
-export namespace ProductWithVariants {
-  export type Fragment = ProductWithVariantsFragment;
-  export type FeaturedAsset = (NonNullable<ProductWithVariantsFragment['featuredAsset']>);
-  export type Assets = NonNullable<(NonNullable<ProductWithVariantsFragment['assets']>)[number]>;
-  export type Translations = NonNullable<(NonNullable<ProductWithVariantsFragment['translations']>)[number]>;
-  export type OptionGroups = NonNullable<(NonNullable<ProductWithVariantsFragment['optionGroups']>)[number]>;
-  export type Variants = NonNullable<(NonNullable<ProductWithVariantsFragment['variants']>)[number]>;
-  export type FacetValues = NonNullable<(NonNullable<ProductWithVariantsFragment['facetValues']>)[number]>;
-  export type Facet = (NonNullable<NonNullable<(NonNullable<ProductWithVariantsFragment['facetValues']>)[number]>['facet']>);
-  export type Channels = NonNullable<(NonNullable<ProductWithVariantsFragment['channels']>)[number]>;
+export namespace ProductDetail {
+  export type Fragment = ProductDetailFragment;
+  export type FeaturedAsset = (NonNullable<ProductDetailFragment['featuredAsset']>);
+  export type Assets = NonNullable<(NonNullable<ProductDetailFragment['assets']>)[number]>;
+  export type Translations = NonNullable<(NonNullable<ProductDetailFragment['translations']>)[number]>;
+  export type OptionGroups = NonNullable<(NonNullable<ProductDetailFragment['optionGroups']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<ProductDetailFragment['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<ProductDetailFragment['facetValues']>)[number]>['facet']>);
+  export type Channels = NonNullable<(NonNullable<ProductDetailFragment['channels']>)[number]>;
 }
 
 export namespace ProductOptionGroupWithOptions {
@@ -9189,12 +9236,16 @@ export namespace UpdateProduct {
   export type Variables = UpdateProductMutationVariables;
   export type Mutation = UpdateProductMutation;
   export type UpdateProduct = (NonNullable<UpdateProductMutation['updateProduct']>);
+  export type VariantList = (NonNullable<(NonNullable<UpdateProductMutation['updateProduct']>)['variantList']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<UpdateProductMutation['updateProduct']>)['variantList']>)['items']>)[number]>;
 }
 
 export namespace CreateProduct {
   export type Variables = CreateProductMutationVariables;
   export type Mutation = CreateProductMutation;
   export type CreateProduct = (NonNullable<CreateProductMutation['createProduct']>);
+  export type VariantList = (NonNullable<(NonNullable<CreateProductMutation['createProduct']>)['variantList']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<CreateProductMutation['createProduct']>)['variantList']>)['items']>)[number]>;
 }
 
 export namespace DeleteProduct {
@@ -9254,6 +9305,8 @@ export namespace GetProductWithVariants {
   export type Variables = GetProductWithVariantsQueryVariables;
   export type Query = GetProductWithVariantsQuery;
   export type Product = (NonNullable<GetProductWithVariantsQuery['product']>);
+  export type VariantList = (NonNullable<(NonNullable<GetProductWithVariantsQuery['product']>)['variantList']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductWithVariantsQuery['product']>)['variantList']>)['items']>)[number]>;
 }
 
 export namespace GetProductSimple {
@@ -9409,16 +9462,23 @@ export namespace GetProductVariant {
   export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
 }
 
+export namespace GetProductVariantListSimple {
+  export type Variables = GetProductVariantListSimpleQueryVariables;
+  export type Query = GetProductVariantListSimpleQuery;
+  export type ProductVariants = (NonNullable<GetProductVariantListSimpleQuery['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductVariantListSimpleQuery['productVariants']>)['items']>)[number]>;
+  export type FeaturedAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListSimpleQuery['productVariants']>)['items']>)[number]>['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListSimpleQuery['productVariants']>)['items']>)[number]>['featuredAsset']>)['focalPoint']>);
+  export type Product = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListSimpleQuery['productVariants']>)['items']>)[number]>['product']>);
+  export type _FeaturedAsset = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListSimpleQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListSimpleQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>)['focalPoint']>);
+}
+
 export namespace GetProductVariantList {
   export type Variables = GetProductVariantListQueryVariables;
   export type Query = GetProductVariantListQuery;
   export type ProductVariants = (NonNullable<GetProductVariantListQuery['productVariants']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>;
-  export type FeaturedAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['featuredAsset']>);
-  export type FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['featuredAsset']>)['focalPoint']>);
-  export type Product = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>);
-  export type _FeaturedAsset = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>);
-  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>)['focalPoint']>);
 }
 
 export namespace GetTagList {

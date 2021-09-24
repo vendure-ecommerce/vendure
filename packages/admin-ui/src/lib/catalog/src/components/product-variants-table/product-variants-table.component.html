@@ -1,102 +1,108 @@
-<vdr-data-table [items]="variants">
-    <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'catalog.sku' | translate }}</vdr-dt-column>
-    <ng-container *ngFor="let optionGroup of optionGroups | sort: 'id'">
-        <vdr-dt-column>{{ optionGroup.name }}</vdr-dt-column>
-    </ng-container>
-    <vdr-dt-column>{{ 'catalog.price' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'catalog.stock-on-hand' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
-    <ng-template let-variant="item" let-i="index">
-        <ng-container *ngIf="formGroupMap.get(variant.id) as formGroup" [formGroup]="formGroup">
-            <td class="left align-middle" [class.disabled]="!formGroup.get('enabled')!.value">
-                <div class="card-img">
-                    <div class="featured-asset">
-                        <img
-                            *ngIf="getFeaturedAsset(variant) as featuredAsset; else placeholder"
-                            [src]="featuredAsset | assetPreview: 'tiny'"
-                        />
-                        <ng-template #placeholder>
-                            <div class="placeholder">
-                                <clr-icon shape="image" size="48"></clr-icon>
-                            </div>
-                        </ng-template>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>{{ 'common.name' | translate }}</th>
+            <th>{{ 'catalog.sku' | translate }}</th>
+            <ng-container *ngFor="let optionGroup of optionGroups | sort: 'id'">
+                <th>{{ optionGroup.name }}</th>
+            </ng-container>
+            <th>{{ 'catalog.price' | translate }}</th>
+            <th>{{ 'catalog.stock-on-hand' | translate }}</th>
+            <th>{{ 'common.enabled' | translate }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let variant of variants | paginate: paginationConfig; index as i; trackBy: trackByFn">
+            <ng-container *ngIf="formGroupMap.get(variant.id) as formGroup" [formGroup]="formGroup">
+                <td class="left align-middle" [class.disabled]="!formGroup.get('enabled')!.value">
+                    <div class="card-img">
+                        <div class="featured-asset">
+                            <img
+                                *ngIf="getFeaturedAsset(variant) as featuredAsset; else placeholder"
+                                [src]="featuredAsset | assetPreview: 'tiny'"
+                            />
+                            <ng-template #placeholder>
+                                <div class="placeholder">
+                                    <clr-icon shape="image" size="48"></clr-icon>
+                                </div>
+                            </ng-template>
+                        </div>
                     </div>
-                </div>
-            </td>
-            <td class="left align-middle" [class.disabled]="!formGroup.get('enabled')!.value">
-                <clr-input-container>
-                    <input
-                        clrInput
-                        type="text"
-                        formControlName="name"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        [placeholder]="'common.name' | translate"
-                    />
-                </clr-input-container>
-            </td>
-            <td class="left align-middle" [class.disabled]="!formGroup.get('enabled')!.value">
-                <clr-input-container>
-                    <input
-                        clrInput
-                        type="text"
-                        formControlName="sku"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        [placeholder]="'catalog.sku' | translate"
-                    />
-                </clr-input-container>
-            </td>
-            <ng-container *ngFor="let option of variant.options | sort: 'groupId'">
-                <td
-                    class="left align-middle"
-                    [class.disabled]="!formGroup.get('enabled')!.value"
-                    [style.color]="optionGroupName(option.groupId) | stringToColor"
-                >
-                    {{ option.name }}
+                </td>
+                <td class="left align-middle" [class.disabled]="!formGroup.get('enabled')!.value">
+                    <clr-input-container>
+                        <input
+                            clrInput
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            [placeholder]="'common.name' | translate"
+                        />
+                    </clr-input-container>
+                </td>
+                <td class="left align-middle" [class.disabled]="!formGroup.get('enabled')!.value">
+                    <clr-input-container>
+                        <input
+                            clrInput
+                            type="text"
+                            formControlName="sku"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            [placeholder]="'catalog.sku' | translate"
+                        />
+                    </clr-input-container>
+                </td>
+                <ng-container *ngFor="let option of variant.options | sort: 'groupId'">
+                    <td
+                        class="left align-middle"
+                        [class.disabled]="!formGroup.get('enabled')!.value"
+                        [style.color]="optionGroupName(option.groupId) | stringToColor"
+                    >
+                        {{ option.name }}
+                    </td>
+                </ng-container>
+                <td class="left align-middle price" [class.disabled]="!formGroup.get('enabled')!.value">
+                    <clr-input-container>
+                        <vdr-currency-input
+                            *ngIf="!channelPriceIncludesTax"
+                            clrInput
+                            [currencyCode]="variant.currencyCode"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="price"
+                        ></vdr-currency-input>
+                        <vdr-currency-input
+                            *ngIf="channelPriceIncludesTax"
+                            clrInput
+                            [currencyCode]="variant.currencyCode"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="priceWithTax"
+                        ></vdr-currency-input>
+                    </clr-input-container>
+                </td>
+                <td class="left align-middle stock" [class.disabled]="!formGroup.get('enabled')!.value">
+                    <clr-input-container>
+                        <input
+                            clrInput
+                            type="number"
+                            min="0"
+                            step="1"
+                            formControlName="stockOnHand"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        />
+                    </clr-input-container>
+                </td>
+                <td class="left align-middle stock" [class.disabled]="!formGroup.get('enabled')!.value">
+                    <clr-toggle-wrapper>
+                        <input
+                            type="checkbox"
+                            clrToggle
+                            name="enabled"
+                            formControlName="enabled"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        />
+                    </clr-toggle-wrapper>
                 </td>
             </ng-container>
-            <td class="left align-middle price" [class.disabled]="!formGroup.get('enabled')!.value">
-                <clr-input-container>
-                    <vdr-currency-input
-                        *ngIf="!channelPriceIncludesTax"
-                        clrInput
-                        [currencyCode]="variant.currencyCode"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        formControlName="price"
-                    ></vdr-currency-input>
-                    <vdr-currency-input
-                        *ngIf="channelPriceIncludesTax"
-                        clrInput
-                        [currencyCode]="variant.currencyCode"
-                        [readonly]="!(updatePermission | hasPermission)"
-                        formControlName="priceWithTax"
-                    ></vdr-currency-input>
-                </clr-input-container>
-            </td>
-            <td class="left align-middle stock" [class.disabled]="!formGroup.get('enabled')!.value">
-                <clr-input-container>
-                    <input
-                        clrInput
-                        type="number"
-                        min="0"
-                        step="1"
-                        formControlName="stockOnHand"
-                        [readonly]="!(updatePermission | hasPermission)"
-                    />
-                </clr-input-container>
-            </td>
-            <td class="left align-middle stock" [class.disabled]="!formGroup.get('enabled')!.value">
-                <clr-toggle-wrapper>
-                    <input
-                        type="checkbox"
-                        clrToggle
-                        name="enabled"
-                        formControlName="enabled"
-                        [vdrDisabled]="!(updatePermission | hasPermission)"
-                    />
-                </clr-toggle-wrapper>
-            </td>
-        </ng-container>
-    </ng-template>
-</vdr-data-table>
+        </tr>
+    </tbody>
+</table>

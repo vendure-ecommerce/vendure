@@ -120,8 +120,8 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
     ${ASSET_FRAGMENT}
 `;
 
-export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
-    fragment ProductWithVariants on Product {
+export const PRODUCT_DETAIL_FRAGMENT = gql`
+    fragment ProductDetail on Product {
         id
         createdAt
         updatedAt
@@ -146,9 +146,6 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         optionGroups {
             ...ProductOptionGroup
         }
-        variants {
-            ...ProductVariant
-        }
         facetValues {
             id
             code
@@ -164,7 +161,6 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
         }
     }
     ${PRODUCT_OPTION_GROUP_FRAGMENT}
-    ${PRODUCT_VARIANT_FRAGMENT}
     ${ASSET_FRAGMENT}
 `;
 
@@ -193,21 +189,35 @@ export const PRODUCT_OPTION_GROUP_WITH_OPTIONS_FRAGMENT = gql`
 `;
 
 export const UPDATE_PRODUCT = gql`
-    mutation UpdateProduct($input: UpdateProductInput!) {
+    mutation UpdateProduct($input: UpdateProductInput!, $variantListOptions: ProductVariantListOptions) {
         updateProduct(input: $input) {
-            ...ProductWithVariants
+            ...ProductDetail
+            variantList(options: $variantListOptions) {
+                items {
+                    ...ProductVariant
+                }
+                totalItems
+            }
         }
     }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+    ${PRODUCT_DETAIL_FRAGMENT}
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
 export const CREATE_PRODUCT = gql`
-    mutation CreateProduct($input: CreateProductInput!) {
+    mutation CreateProduct($input: CreateProductInput!, $variantListOptions: ProductVariantListOptions) {
         createProduct(input: $input) {
-            ...ProductWithVariants
+            ...ProductDetail
+            variantList(options: $variantListOptions) {
+                items {
+                    ...ProductVariant
+                }
+                totalItems
+            }
         }
     }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+    ${PRODUCT_DETAIL_FRAGMENT}
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
 export const DELETE_PRODUCT = gql`
@@ -317,12 +327,19 @@ export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
 `;
 
 export const GET_PRODUCT_WITH_VARIANTS = gql`
-    query GetProductWithVariants($id: ID!) {
+    query GetProductWithVariants($id: ID!, $variantListOptions: ProductVariantListOptions) {
         product(id: $id) {
-            ...ProductWithVariants
+            ...ProductDetail
+            variantList(options: $variantListOptions) {
+                items {
+                    ...ProductVariant
+                }
+                totalItems
+            }
         }
     }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+    ${PRODUCT_DETAIL_FRAGMENT}
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
 export const GET_PRODUCT_SIMPLE = gql`
@@ -671,9 +688,9 @@ export const GET_PRODUCT_VARIANT = gql`
     }
 `;
 
-export const GET_PRODUCT_VARIANT_LIST = gql`
-    query GetProductVariantList($options: ProductVariantListOptions!) {
-        productVariants(options: $options) {
+export const GET_PRODUCT_VARIANT_LIST_SIMPLE = gql`
+    query GetProductVariantListSimple($options: ProductVariantListOptions!, $productId: ID) {
+        productVariants(options: $options, productId: $productId) {
             items {
                 id
                 name
@@ -701,6 +718,18 @@ export const GET_PRODUCT_VARIANT_LIST = gql`
             totalItems
         }
     }
+`;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantList($options: ProductVariantListOptions!, $productId: ID) {
+        productVariants(options: $options, productId: $productId) {
+            items {
+                ...ProductVariant
+            }
+            totalItems
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;
 
 export const GET_TAG_LIST = gql`

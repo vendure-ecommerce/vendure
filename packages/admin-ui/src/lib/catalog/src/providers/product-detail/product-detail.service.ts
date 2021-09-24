@@ -6,8 +6,8 @@ import {
     DeletionResult,
     FacetWithValues,
     findTranslation,
+    GetProductWithVariants,
     LanguageCode,
-    ProductWithVariants,
     UpdateProductInput,
     UpdateProductMutation,
     UpdateProductOptionInput,
@@ -151,7 +151,7 @@ export class ProductDetailService {
     }
 
     updateProduct(updateOptions: {
-        product: ProductWithVariants.Fragment;
+        product: GetProductWithVariants.Product;
         languageCode: LanguageCode;
         autoUpdate: boolean;
         productInput?: UpdateProductInput;
@@ -160,95 +160,118 @@ export class ProductDetailService {
         const { product, languageCode, autoUpdate, productInput, variantsInput } = updateOptions;
         const updateOperations: Array<Observable<UpdateProductMutation | UpdateProductVariantsMutation>> = [];
         const updateVariantsInput = variantsInput || [];
-        if (productInput) {
-            updateOperations.push(this.dataService.product.updateProduct(productInput));
 
-            const productOldName = findTranslation(product, languageCode)?.name ?? '';
-            const productNewName = findTranslation(productInput, languageCode)?.name;
-            if (productNewName && productOldName !== productNewName && autoUpdate) {
-                for (const variant of product.variants) {
-                    const currentVariantName = findTranslation(variant, languageCode)?.name || '';
-                    let variantInput: UpdateProductVariantInput;
-                    const existingVariantInput = updateVariantsInput.find(i => i.id === variant.id);
-                    if (existingVariantInput) {
-                        variantInput = existingVariantInput;
-                    } else {
-                        variantInput = {
-                            id: variant.id,
-                            translations: [{ languageCode, name: currentVariantName }],
-                        };
-                        updateVariantsInput.push(variantInput);
-                    }
-                    const variantTranslation = findTranslation(variantInput, languageCode);
-                    if (variantTranslation) {
-                        if (variantTranslation.name) {
-                            variantTranslation.name = replaceLast(
-                                variantTranslation.name,
-                                productOldName,
-                                productNewName,
-                            );
-                        } else {
-                            // The variant translation was falsy, which occurs
-                            // when defining the product name for a new translation
-                            // language that had not yet been defined.
-                            variantTranslation.name = [
-                                productNewName,
-                                ...variant.options.map(o => o.name),
-                            ].join(' ');
+        const variants$ = autoUpdate
+            ? this.dataService.product
+                  .getProductVariants({}, product.id)
+                  .mapSingle(({ productVariants }) => productVariants.items)
+            : of([]);
+
+        return variants$.pipe(
+            mergeMap(variants => {
+                if (productInput) {
+                    updateOperations.push(this.dataService.product.updateProduct(productInput));
+                    const productOldName = findTranslation(product, languageCode)?.name ?? '';
+                    const productNewName = findTranslation(productInput, languageCode)?.name;
+                    if (productNewName && productOldName !== productNewName && autoUpdate) {
+                        for (const variant of variants) {
+                            const currentVariantName = findTranslation(variant, languageCode)?.name || '';
+                            let variantInput: UpdateProductVariantInput;
+                            const existingVariantInput = updateVariantsInput.find(i => i.id === variant.id);
+                            if (existingVariantInput) {
+                                variantInput = existingVariantInput;
+                            } else {
+                                variantInput = {
+                                    id: variant.id,
+                                    translations: [{ languageCode, name: currentVariantName }],
+                                };
+                                updateVariantsInput.push(variantInput);
+                            }
+                            const variantTranslation = findTranslation(variantInput, languageCode);
+                            if (variantTranslation) {
+                                if (variantTranslation.name) {
+                                    variantTranslation.name = replaceLast(
+                                        variantTranslation.name,
+                                        productOldName,
+                                        productNewName,
+                                    );
+                                } else {
+                                    // The variant translation was falsy, which occurs
+                                    // when defining the product name for a new translation
+                                    // language that had not yet been defined.
+                                    variantTranslation.name = [
+                                        productNewName,
+                                        ...variant.options.map(o => o.name),
+                                    ].join(' ');
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
-        if (updateVariantsInput.length) {
-            updateOperations.push(this.dataService.product.updateProductVariants(updateVariantsInput));
-        }
-        return forkJoin(updateOperations);
+                if (updateVariantsInput.length) {
+                    updateOperations.push(
+                        this.dataService.product.updateProductVariants(updateVariantsInput),
+                    );
+                }
+                return forkJoin(updateOperations);
+            }),
+        );
     }
 
     updateProductOption(
         input: UpdateProductOptionInput & { autoUpdate: boolean },
-        product: ProductWithVariants.Fragment,
+        product: GetProductWithVariants.Product,
         languageCode: LanguageCode,
     ) {
-        let updateProductVariantNames$: Observable<any> = of([]);
-        if (input.autoUpdate) {
-            // Update any ProductVariants' names which include the option name
-            let oldOptionName: string | undefined;
-            const newOptionName = findTranslation(input, languageCode)?.name;
-            if (!newOptionName) {
-                updateProductVariantNames$ = of([]);
-            }
-            const variantsToUpdate: UpdateProductVariantInput[] = [];
-            for (const variant of product.variants) {
-                if (variant.options.map(o => o.id).includes(input.id)) {
-                    if (!oldOptionName) {
-                        oldOptionName = findTranslation(
-                            variant.options.find(o => o.id === input.id),
-                            languageCode,
-                        )?.name;
+        const variants$ = input.autoUpdate
+            ? this.dataService.product
+                  .getProductVariants({}, product.id)
+                  .mapSingle(({ productVariants }) => productVariants.items)
+            : of([]);
+
+        return variants$.pipe(
+            mergeMap(variants => {
+                let updateProductVariantNames$: Observable<any> = of([]);
+                if (input.autoUpdate) {
+                    // Update any ProductVariants' names which include the option name
+                    let oldOptionName: string | undefined;
+                    const newOptionName = findTranslation(input, languageCode)?.name;
+                    if (!newOptionName) {
+                        updateProductVariantNames$ = of([]);
                     }
-                    const variantName = findTranslation(variant, languageCode)?.name || '';
-                    if (oldOptionName && newOptionName && variantName.includes(oldOptionName)) {
-                        variantsToUpdate.push({
-                            id: variant.id,
-                            translations: [
-                                {
+                    const variantsToUpdate: UpdateProductVariantInput[] = [];
+                    for (const variant of variants) {
+                        if (variant.options.map(o => o.id).includes(input.id)) {
+                            if (!oldOptionName) {
+                                oldOptionName = findTranslation(
+                                    variant.options.find(o => o.id === input.id),
                                     languageCode,
-                                    name: replaceLast(variantName, oldOptionName, newOptionName),
-                                },
-                            ],
-                        });
+                                )?.name;
+                            }
+                            const variantName = findTranslation(variant, languageCode)?.name || '';
+                            if (oldOptionName && newOptionName && variantName.includes(oldOptionName)) {
+                                variantsToUpdate.push({
+                                    id: variant.id,
+                                    translations: [
+                                        {
+                                            languageCode,
+                                            name: replaceLast(variantName, oldOptionName, newOptionName),
+                                        },
+                                    ],
+                                });
+                            }
+                        }
+                    }
+                    if (variantsToUpdate.length) {
+                        updateProductVariantNames$ =
+                            this.dataService.product.updateProductVariants(variantsToUpdate);
                     }
                 }
-            }
-            if (variantsToUpdate.length) {
-                updateProductVariantNames$ = this.dataService.product.updateProductVariants(variantsToUpdate);
-            }
-        }
-        return this.dataService.product
-            .updateProductOption(input)
-            .pipe(mergeMap(() => updateProductVariantNames$));
+                return this.dataService.product
+                    .updateProductOption(input)
+                    .pipe(mergeMap(() => updateProductVariantNames$));
+            }),
+        );
     }
 
     deleteProductVariant(id: string, productId: string) {

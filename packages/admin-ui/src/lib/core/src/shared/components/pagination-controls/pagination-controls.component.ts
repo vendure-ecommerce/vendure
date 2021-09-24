@@ -7,6 +7,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginationControlsComponent {
+    @Input() id?: number;
     @Input() currentPage: number;
     @Input() itemsPerPage: number;
     @Input() totalItems: number;

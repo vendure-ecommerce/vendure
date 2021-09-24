@@ -29,6 +29,7 @@ import {
     GetProductSimple,
     GetProductVariant,
     GetProductVariantList,
+    GetProductVariantListSimple,
     GetProductVariantOptions,
     GetProductWithVariants,
     GetTag,
@@ -80,6 +81,7 @@ import {
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT,
     GET_PRODUCT_VARIANT_LIST,
+    GET_PRODUCT_VARIANT_LIST_SIMPLE,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     GET_TAG,
@@ -134,11 +136,12 @@ export class ProductDataService {
         });
     }
 
-    getProduct(id: string) {
+    getProduct(id: string, variantListOptions?: ProductVariantListOptions) {
         return this.baseDataService.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
             GET_PRODUCT_WITH_VARIANTS,
             {
                 id,
+                variantListOptions,
             },
         );
     }
@@ -152,10 +155,17 @@ export class ProductDataService {
         );
     }
 
-    getProductVariants(options: ProductVariantListOptions) {
+    getProductVariantsSimple(options: ProductVariantListOptions, productId?: string) {
+        return this.baseDataService.query<
+            GetProductVariantListSimple.Query,
+            GetProductVariantListSimple.Variables
+        >(GET_PRODUCT_VARIANT_LIST_SIMPLE, { options, productId });
+    }
+
+    getProductVariants(options: ProductVariantListOptions, productId?: string) {
         return this.baseDataService.query<GetProductVariantList.Query, GetProductVariantList.Variables>(
             GET_PRODUCT_VARIANT_LIST,
-            { options },
+            { options, productId },
         );
     }
 
