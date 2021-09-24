@@ -364,6 +364,8 @@ export class CollectionService implements OnModuleInit {
                 collectionIds: [collection.id],
             });
         }
+        const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
+        this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
