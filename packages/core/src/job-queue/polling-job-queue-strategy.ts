@@ -23,8 +23,26 @@ import { JobData } from './types';
 export type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => number;
 
 export interface PollingJobQueueStrategyConfig {
+    /**
+     * @description
+     * How many jobs from a given queue to process concurrently.
+     *
+     * @default 1
+     */
     concurrency?: number;
+    /**
+     * @description
+     * The interval in ms between polling the database for new jobs.
+     *
+     * @description 200
+     */
     pollInterval?: number | ((queueName: string) => number);
+    /**
+     * @description
+     * The strategy used to decide how long to wait before retrying a failed job.
+     *
+     * @default () => 1000
+     */
     backoffStrategy?: BackoffStrategy;
 }
 
@@ -177,7 +195,7 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
         if (concurrencyOrConfig && isObject(concurrencyOrConfig)) {
             this.concurrency = concurrencyOrConfig.concurrency ?? 1;
             this.pollInterval = concurrencyOrConfig.pollInterval ?? 200;
-            this.backOffStrategy = concurrencyOrConfig.backoffStrategy;
+            this.backOffStrategy = concurrencyOrConfig.backoffStrategy ?? (() => 1000);
         } else {
             this.concurrency = concurrencyOrConfig ?? 1;
             this.pollInterval = maybePollInterval ?? 200;

@@ -220,10 +220,15 @@ export class ProductService {
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             channelId: ctx.channelId,
+            relations: ['variants'],
         });
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
+        await this.productVariantService.softDelete(
+            ctx,
+            product.variants.map(v => v.id),
+        );
         return {
             result: DeletionResult.DELETED,
         };

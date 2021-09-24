@@ -22,8 +22,8 @@ import {
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 
-import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from './constants';
-import { createIndices, getIndexNameByAlias } from './indexing-utils';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
+import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     BulkOperation,
@@ -83,10 +83,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     ) {}
 
     onModuleInit(): any {
-        const { host, port } = this.options;
-        this.client = new Client({
-            node: `${host}:${port}`,
-        });
+        this.client = getClient(this.options);
     }
 
     onModuleDestroy(): any {

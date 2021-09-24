@@ -251,33 +251,36 @@ export class CustomerService {
         });
 
         if (hasEmailAddress(input)) {
-            const existingCustomerInChannel = await this.connection
-                .getRepository(ctx, Customer)
-                .createQueryBuilder('customer')
-                .leftJoin('customer.channels', 'channel')
-                .where('channel.id = :channelId', { channelId: ctx.channelId })
-                .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
-                .andWhere('customer.id != :customerId', { customerId: input.id })
-                .andWhere('customer.deletedAt is null')
-                .getOne();
+            if (input.emailAddress !== customer.emailAddress) {
+                const existingCustomerInChannel = await this.connection
+                    .getRepository(ctx, Customer)
+                    .createQueryBuilder('customer')
+                    .leftJoin('customer.channels', 'channel')
+                    .where('channel.id = :channelId', { channelId: ctx.channelId })
+                    .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                    .andWhere('customer.id != :customerId', { customerId: input.id })
+                    .andWhere('customer.deletedAt is null')
+                    .getOne();
 
-            if (existingCustomerInChannel) {
-                return new EmailAddressConflictAdminError();
-            }
-
-            if (customer.user) {
-                const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
-                    ctx,
-                    input.emailAddress,
-                );
-
-                if (
-                    existingUserWithEmailAddress &&
-                    !idsAreEqual(customer.user.id, existingUserWithEmailAddress.id)
-                ) {
+                if (existingCustomerInChannel) {
                     return new EmailAddressConflictAdminError();
                 }
-                await this.userService.changeNativeIdentifier(ctx, customer.user.id, input.emailAddress);
+
+                if (customer.user) {
+                    const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
+                        ctx,
+                        input.emailAddress,
+                    );
+
+                    if (
+                        existingUserWithEmailAddress &&
+                        !idsAreEqual(customer.user.id, existingUserWithEmailAddress.id)
+                    ) {
+                        return new EmailAddressConflictAdminError();
+                    }
+
+                    await this.userService.changeNativeIdentifier(ctx, customer.user.id, input.emailAddress);
+                }
             }
         }
 

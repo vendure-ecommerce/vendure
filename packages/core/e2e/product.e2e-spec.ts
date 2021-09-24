@@ -1371,6 +1371,33 @@ describe('Product resolver', () => {
                 expect(updatedVariant.price).toBe(432);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/1101
+            it('after update, the updatedAt should be modified', async () => {
+                // Pause for a second to ensure the updatedAt date is more than 1s
+                // later than the createdAt date, since sqlite does not seem to store
+                // down to millisecond resolution.
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const firstVariant = variants[0];
+                const { updateProductVariants } = await adminClient.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            translations: firstVariant.translations,
+                            sku: 'ABCD',
+                            price: 432,
+                        },
+                    ],
+                });
+
+                const updatedVariant = updateProductVariants.find(v => v?.id === variants[0].id);
+
+                expect(updatedVariant?.updatedAt).not.toBe(updatedVariant?.createdAt);
+            });
+
             it('updateProductVariants updates assets', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
@@ -1590,7 +1617,7 @@ describe('Product resolver', () => {
 
     describe('deletion', () => {
         let allProducts: GetProductList.Items[];
-        let productToDelete: GetProductList.Items;
+        let productToDelete: GetProductWithVariants.Product;
 
         beforeAll(async () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
@@ -1607,24 +1634,45 @@ describe('Product resolver', () => {
         });
 
         it('deletes a product', async () => {
-            productToDelete = allProducts[0];
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: allProducts[0].id,
+            });
             const result = await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(
                 DELETE_PRODUCT,
-                { id: productToDelete.id },
+                { id: product!.id },
             );
 
             expect(result.deleteProduct).toEqual({ result: DeletionResult.DELETED });
+
+            productToDelete = product!;
         });
 
         it('cannot get a deleted product', async () => {
-            const result = await adminClient.query<
+            const { product } = await adminClient.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: productToDelete.id,
             });
 
-            expect(result.product).toBe(null);
+            expect(product).toBe(null);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1096
+        it('variants of deleted product are also deleted', async () => {
+            for (const variant of productToDelete.variants) {
+                const { productVariant } = await adminClient.query<
+                    GetProductVariant.Query,
+                    GetProductVariant.Variables
+                >(GET_PRODUCT_VARIANT, {
+                    id: variant.id,
+                });
+
+                expect(productVariant).toBe(null);
+            }
         });
 
         it('deleted product omitted from list', async () => {

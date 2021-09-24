@@ -102,7 +102,10 @@ export class ProductVariantService {
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
         const relations = ['product', 'product.featuredAsset', 'taxCategory'];
         return this.connection
-            .findOneInChannel(ctx, ProductVariant, productVariantId, ctx.channelId, { relations })
+            .findOneInChannel(ctx, ProductVariant, productVariantId, ctx.channelId, {
+                relations,
+                where: { deletedAt: null },
+            })
             .then(async result => {
                 if (result) {
                     return translateDeep(await this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
@@ -321,7 +324,7 @@ export class ProductVariantService {
             ids.push(id);
         }
         const createdVariants = await this.findByIds(ctx, ids);
-        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'updated'));
+        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'created'));
         return createdVariants;
     }
 
@@ -498,11 +501,14 @@ export class ProductVariantService {
         return this.connection.getRepository(ctx, ProductVariantPrice).save(variantPrice);
     }
 
-    async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, id);
-        variant.deletedAt = new Date();
-        await this.connection.getRepository(ctx, ProductVariant).save(variant, { reload: false });
-        this.eventBus.publish(new ProductVariantEvent(ctx, [variant], 'deleted'));
+    async softDelete(ctx: RequestContext, id: ID | ID[]): Promise<DeletionResponse> {
+        const ids = Array.isArray(id) ? id : [id];
+        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(ids);
+        for (const variant of variants) {
+            variant.deletedAt = new Date();
+        }
+        await this.connection.getRepository(ctx, ProductVariant).save(variants, { reload: false });
+        this.eventBus.publish(new ProductVariantEvent(ctx, variants, 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };

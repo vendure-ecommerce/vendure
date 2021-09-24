@@ -5541,7 +5541,7 @@ export type GetCustomerQuery = { customer?: Maybe<(
       & Pick<OrderList, 'totalItems'>
       & { items: Array<(
         { __typename?: 'Order' }
-        & Pick<Order, 'id' | 'code' | 'state' | 'total' | 'currencyCode' | 'updatedAt'>
+        & Pick<Order, 'id' | 'code' | 'state' | 'totalWithTax' | 'currencyCode' | 'updatedAt'>
       )> }
     ) }
     & CustomerFragment

@@ -35,6 +35,8 @@ export const ASSET_FRAGMENT = gql`
 export const PRODUCT_VARIANT_FRAGMENT = gql`
     fragment ProductVariant on ProductVariant {
         id
+        createdAt
+        updatedAt
         enabled
         languageCode
         name

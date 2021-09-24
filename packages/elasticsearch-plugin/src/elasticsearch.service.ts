@@ -19,7 +19,7 @@ import equal from 'fast-deep-equal/es6';
 import { buildElasticBody } from './build-elastic-body';
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
-import { createIndices } from './indexing-utils';
+import { createIndices, getClient } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,
@@ -48,14 +48,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     }
 
     onModuleInit(): any {
-        const { host, port } = this.options;
-        const node = this.options.clientOptions?.node ?? `${host}:${port}`;
-        this.client = new Client({
-            node,
-            // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
-            // which looks like possibly a TS/definitions bug.
-            ...(this.options.clientOptions as any),
-        });
+        this.client = getClient(this.options);
     }
 
     onModuleDestroy(): any {
@@ -267,7 +260,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const { groupByProduct } = input;
-        const buckets = await this.getDistinctBucketsOfField(ctx, input, enabledOnly, `facetValueIds`,this.options.searchConfig.facetValueMaxSize);
+        const buckets = await this.getDistinctBucketsOfField(
+            ctx,
+            input,
+            enabledOnly,
+            `facetValueIds`,
+            this.options.searchConfig.facetValueMaxSize,
+        );
 
         const facetValues = await this.facetValueService.findByIds(
             ctx,
@@ -297,7 +296,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         enabledOnly: boolean = false,
     ): Promise<Array<{ collection: Collection; count: number }>> {
         const { groupByProduct } = input;
-        const buckets = await this.getDistinctBucketsOfField(ctx, input, enabledOnly, `collectionIds`,this.options.searchConfig.collectionMaxSize);
+        const buckets = await this.getDistinctBucketsOfField(
+            ctx,
+            input,
+            enabledOnly,
+            `collectionIds`,
+            this.options.searchConfig.collectionMaxSize,
+        );
 
         const collections = await this.collectionService.findByIds(
             ctx,
@@ -340,7 +345,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             aggregation_field: {
                 terms: {
                     field,
-                    size: aggregation_max_size
+                    size: aggregation_max_size,
                 },
             },
         };

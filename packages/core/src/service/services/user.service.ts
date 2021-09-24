@@ -210,7 +210,14 @@ export class UserService {
         if (!user) {
             return;
         }
-        const nativeAuthMethod = user.getNativeAuthenticationMethod();
+        const nativeAuthMethod = user.authenticationMethods.find(
+            (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+        );
+        if (!nativeAuthMethod) {
+            // If the NativeAuthenticationMethod is not configured, then
+            // there is nothing to do.
+            return;
+        }
         user.identifier = newIdentifier;
         nativeAuthMethod.identifier = newIdentifier;
         nativeAuthMethod.identifierChangeToken = null;
