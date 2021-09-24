@@ -154,7 +154,7 @@ export class ProductVariantService {
             'featuredAsset',
         ];
 
-        return this.listQueryBuilder
+        const qb = this.listQueryBuilder
             .build(ProductVariant, options, {
                 relations,
                 orderBy: { id: 'ASC' },
@@ -166,25 +166,29 @@ export class ProductVariantService {
             })
             .innerJoinAndSelect('productvariant.product', 'product', 'product.id = :productId', {
                 productId,
-            })
-            .getManyAndCount()
-            .then(async ([variants, totalItems]) => {
-                const items = await Promise.all(
-                    variants.map(async variant => {
-                        const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
-                        return translateDeep(variantWithPrices, ctx.languageCode, [
-                            'options',
-                            'facetValues',
-                            ['facetValues', 'facet'],
-                        ]);
-                    }),
-                );
-
-                return {
-                    items,
-                    totalItems,
-                };
             });
+
+        if (ctx.apiType === 'shop') {
+            qb.andWhere('productvariant.enabled = :enabled', { enabled: true });
+        }
+
+        return qb.getManyAndCount().then(async ([variants, totalItems]) => {
+            const items = await Promise.all(
+                variants.map(async variant => {
+                    const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
+                    return translateDeep(variantWithPrices, ctx.languageCode, [
+                        'options',
+                        'facetValues',
+                        ['facetValues', 'facet'],
+                    ]);
+                }),
+            );
+
+            return {
+                items,
+                totalItems,
+            };
+        });
     }
 
     getVariantsByCollectionId(

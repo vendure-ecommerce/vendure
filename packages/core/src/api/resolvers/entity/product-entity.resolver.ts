@@ -1,5 +1,7 @@
-import { Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { ProductVariantListOptions } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
@@ -51,10 +53,18 @@ export class ProductEntityResolver {
     async variants(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
-        @Api() apiType: ApiType,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, product.id);
-        return variants.filter(v => (apiType === 'admin' ? true : v.enabled));
+        return variants;
+    }
+
+    @ResolveField()
+    async variantList(
+        @Ctx() ctx: RequestContext,
+        @Parent() product: Product,
+        @Args() args: { options: ProductVariantListOptions },
+    ): Promise<PaginatedList<ProductVariant>> {
+        return this.productVariantService.getVariantsByProductId(ctx, product.id, args.options);
     }
 
     @ResolveField()

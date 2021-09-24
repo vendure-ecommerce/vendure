@@ -8,7 +8,10 @@ type Product implements Node {
     description: String!
     featuredAsset: Asset
     assets: [Asset!]!
+    "Returns all ProductVariants"
     variants: [ProductVariant!]!
+    "Returns a paginated, sortable, filterable list of ProductVariants"
+    variantList(options: ProductVariantListOptions): ProductVariantList!
     optionGroups: [ProductOptionGroup!]!
     facetValues: [FacetValue!]!
     translations: [ProductTranslation!]!
