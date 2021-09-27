@@ -8,8 +8,12 @@ query {
       productVariantId
       productName
       productVariantName
-      productPreview
-      productVariantPreview
+      productAsset {
+          preview
+      }
+      productVariantAsset {
+          preview
+      }
       price {
         ... on PriceRange {
           min

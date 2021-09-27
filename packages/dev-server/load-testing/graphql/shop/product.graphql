@@ -58,7 +58,6 @@ fragment ProductVariant on ProductVariant {
   name
   price
   currencyCode
-  priceIncludesTax
   priceWithTax
   taxRateApplied {
     id

@@ -2,6 +2,7 @@
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import {
     defaultConfig,
+    DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
@@ -62,6 +63,9 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
                 route: 'assets',
             }),
             DefaultSearchPlugin,
+            DefaultJobQueuePlugin.init({
+                pollInterval: 1000,
+            }),
         ],
     });
 }
