@@ -44,12 +44,6 @@ import { ChannelService } from './channel.service';
 export class PromotionService {
     availableConditions: PromotionCondition[] = [];
     availableActions: PromotionAction[] = [];
-    /**
-     * All active AdjustmentSources are cached in memory becuase they are needed
-     * every time an order is changed, which will happen often. Caching them means
-     * a DB call is not required newly each time.
-     */
-    private activePromotions: Promotion[] = [];
 
     constructor(
         private connection: TransactionalConnection,
@@ -91,16 +85,6 @@ export class PromotionService {
         return this.availableActions.map(x => x.toGraphQlType(ctx));
     }
 
-    /**
-     * Returns all active AdjustmentSources.
-     */
-    async getActivePromotions(): Promise<Promotion[]> {
-        if (!this.activePromotions.length) {
-            await this.updatePromotions();
-        }
-        return this.activePromotions;
-    }
-
     async createPromotion(
         ctx: RequestContext,
         input: CreatePromotionInput,
@@ -126,7 +110,6 @@ export class PromotionService {
         }
         this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
-        await this.updatePromotions();
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
@@ -153,7 +136,6 @@ export class PromotionService {
         }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
-        await this.updatePromotions();
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
@@ -264,15 +246,6 @@ export class PromotionService {
             ? input.actions.map(c => this.configArgService.getByCode('PromotionAction', c.code))
             : [];
         return [...conditions, ...actions].reduce((score, op) => score + op.priorityValue, 0);
-    }
-
-    /**
-     * Update the activeSources cache.
-     */
-    private async updatePromotions() {
-        this.activePromotions = await this.connection.getRepository(Promotion).find({
-            where: { enabled: true },
-        });
     }
 
     private validateRequiredConditions(
