@@ -274,8 +274,12 @@ export class ProductVariantService {
      * for purchase by Customers.
      */
     async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
-        // TODO: Use caching (RequestContextCacheService) to reduce DB calls
-        const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
+        const { outOfStockThreshold, trackInventory } = await this.requestCache.get(
+            ctx,
+            'globalSettings',
+            () => this.globalSettingsService.getSettings(ctx),
+        );
+
         const inventoryNotTracked =
             variant.trackInventory === GlobalFlag.FALSE ||
             (variant.trackInventory === GlobalFlag.INHERIT && trackInventory === false);
@@ -581,7 +585,7 @@ export class ProductVariantService {
             });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
-        const zones = this.zoneService.findAll(ctx);
+        const zones = this.requestCache.get(ctx, 'allZones', () => this.zoneService.findAll(ctx));
         const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
