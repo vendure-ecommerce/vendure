@@ -383,7 +383,7 @@ export class ProductVariantService {
                 variant.product = { id: input.productId } as any;
                 variant.taxCategory = { id: input.taxCategoryId } as any;
                 await this.assetService.updateFeaturedAsset(ctx, variant, input);
-                this.channelService.assignToCurrentChannel(variant, ctx);
+                await this.channelService.assignToCurrentChannel(variant, ctx);
             },
             typeOrmSubscriberData: {
                 channelId: ctx.channelId,
@@ -401,7 +401,7 @@ export class ProductVariantService {
             );
         }
 
-        const defaultChannelId = this.channelService.getDefaultChannel().id;
+        const defaultChannelId = (await this.channelService.getDefaultChannel()).id;
         await this.createOrUpdateProductVariantPrice(ctx, createdVariant.id, input.price, ctx.channelId);
         if (!idsAreEqual(ctx.channelId, defaultChannelId)) {
             // When creating a ProductVariant _not_ in the default Channel, we still need to
@@ -585,7 +585,7 @@ export class ProductVariantService {
             });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
-        const zones = this.requestCache.get(ctx, 'allZones', () => this.zoneService.findAll(ctx));
+        const zones = await this.requestCache.get(ctx, 'allZones', () => this.zoneService.findAll(ctx));
         const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
@@ -670,7 +670,8 @@ export class ProductVariantService {
         if (!hasPermission) {
             throw new ForbiddenError();
         }
-        if (idsAreEqual(input.channelId, this.channelService.getDefaultChannel().id)) {
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
             throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
         }
         const variants = await this.connection

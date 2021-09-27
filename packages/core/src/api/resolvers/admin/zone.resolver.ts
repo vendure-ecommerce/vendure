@@ -23,7 +23,7 @@ export class ZoneResolver {
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadZone)
-    zones(@Ctx() ctx: RequestContext): Zone[] {
+    zones(@Ctx() ctx: RequestContext): Promise<Zone[]> {
         return this.zoneService.findAll(ctx);
     }
 

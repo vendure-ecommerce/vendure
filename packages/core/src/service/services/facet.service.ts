@@ -99,7 +99,7 @@ export class FacetService {
             translationType: FacetTranslation,
             beforeSave: async f => {
                 f.code = await this.ensureUniqueCode(ctx, f.code);
-                this.channelService.assignToCurrentChannel(f, ctx);
+                await this.channelService.assignToCurrentChannel(f, ctx);
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);

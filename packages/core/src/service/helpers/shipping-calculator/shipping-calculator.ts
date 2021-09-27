@@ -28,9 +28,9 @@ export class ShippingCalculator {
         order: Order,
         skipIds: ID[] = [],
     ): Promise<EligibleShippingMethod[]> {
-        const shippingMethods = this.shippingMethodService
-            .getActiveShippingMethods(ctx.channel)
-            .filter(method => !skipIds.includes(method.id));
+        const shippingMethods = (await this.shippingMethodService.getActiveShippingMethods(ctx)).filter(
+            method => !skipIds.includes(method.id),
+        );
 
         const checkEligibilityPromises = shippingMethods.map(method =>
             this.checkEligibilityByShippingMethod(ctx, order, method),

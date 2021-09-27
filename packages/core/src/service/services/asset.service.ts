@@ -475,7 +475,7 @@ export class AssetService {
             focalPoint: null,
             customFields,
         });
-        this.channelService.assignToCurrentChannel(asset, ctx);
+        await this.channelService.assignToCurrentChannel(asset, ctx);
         return this.connection.getRepository(ctx, Asset).save(asset);
     }
 

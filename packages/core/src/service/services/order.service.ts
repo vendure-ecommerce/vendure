@@ -341,7 +341,7 @@ export class OrderService {
                 newOrder.customer = customer;
             }
         }
-        this.channelService.assignToCurrentChannel(newOrder, ctx);
+        await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
         const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
         if (isGraphQlErrorResult(transitionResult)) {

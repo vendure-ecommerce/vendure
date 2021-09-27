@@ -208,7 +208,7 @@ export class CustomerService {
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
-        this.channelService.assignToCurrentChannel(customer, ctx);
+        await this.channelService.assignToCurrentChannel(customer, ctx);
         const createdCustomer = await this.connection.getRepository(ctx, Customer).save(customer);
         await this.customFieldRelationService.updateRelations(ctx, Customer, input, createdCustomer);
         await this.historyService.createHistoryEntryForCustomer({
@@ -564,7 +564,7 @@ export class CustomerService {
             customer.channels.push(await this.connection.getEntityOrThrow(ctx, Channel, ctx.channelId));
         } else {
             customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
-            this.channelService.assignToCurrentChannel(customer, ctx);
+            await this.channelService.assignToCurrentChannel(customer, ctx);
             this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);

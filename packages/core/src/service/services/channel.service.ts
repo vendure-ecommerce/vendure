@@ -16,6 +16,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
+import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -32,7 +33,7 @@ import { GlobalSettingsService } from './global-settings.service';
 
 @Injectable()
 export class ChannelService {
-    private allChannels: Channel[] = [];
+    private allChannels: SelfRefreshingCache<Channel[]>;
 
     constructor(
         private connection: TransactionalConnection,
@@ -47,15 +48,20 @@ export class ChannelService {
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
-        await this.updateAllChannels();
+        this.allChannels = await createSelfRefreshingCache({
+            name: 'ChannelService.allChannels',
+            ttl: 10000,
+            refreshFn: () => this.findAll(RequestContext.empty()),
+        });
     }
 
     /**
      * Assigns a ChannelAware entity to the default Channel as well as any channel
      * specified in the RequestContext.
      */
-    assignToCurrentChannel<T extends ChannelAware>(entity: T, ctx: RequestContext): T {
-        const channelIds = unique([ctx.channelId, this.getDefaultChannel().id]);
+    async assignToCurrentChannel<T extends ChannelAware>(entity: T, ctx: RequestContext): Promise<T> {
+        const defaultChannel = await this.getDefaultChannel();
+        const channelIds = unique([ctx.channelId, defaultChannel.id]);
         entity.channels = channelIds.map(id => ({ id })) as any;
         return entity;
     }
@@ -105,12 +111,13 @@ export class ChannelService {
     /**
      * Given a channel token, returns the corresponding Channel if it exists.
      */
-    getChannelFromToken(token: string): Channel {
-        if (this.allChannels.length === 1 || token === '') {
+    async getChannelFromToken(token: string): Promise<Channel> {
+        const allChannels = await this.allChannels.value();
+        if (allChannels.length === 1 || token === '') {
             // there is only the default channel, so return it
             return this.getDefaultChannel();
         }
-        const channel = this.allChannels.find(c => c.token === token);
+        const channel = allChannels.find(c => c.token === token);
         if (!channel) {
             throw new ChannelNotFoundError(token);
         }
@@ -120,8 +127,9 @@ export class ChannelService {
     /**
      * Returns the default Channel.
      */
-    getDefaultChannel(): Channel {
-        const defaultChannel = this.allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
+    async getDefaultChannel(): Promise<Channel> {
+        const allChannels = await this.allChannels.value();
+        const defaultChannel = allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
 
         if (!defaultChannel) {
             throw new InternalServerError(`error.default-channel-not-found`);
@@ -166,7 +174,7 @@ export class ChannelService {
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
-        await this.updateAllChannels(ctx);
+        await this.allChannels.refresh();
         return channel;
     }
 
@@ -199,7 +207,7 @@ export class ChannelService {
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
-        await this.updateAllChannels(ctx);
+        await this.allChannels.refresh();
         return assertFound(this.findOne(ctx, channel.id));
     }
 
@@ -261,9 +269,5 @@ export class ChannelService {
                 return new LanguageNotAvailableError(input.defaultLanguageCode);
             }
         }
-    }
-
-    private async updateAllChannels(ctx?: RequestContext) {
-        this.allChannels = await this.findAll(ctx || RequestContext.empty());
     }
 }

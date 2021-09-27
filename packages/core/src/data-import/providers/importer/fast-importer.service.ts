@@ -42,7 +42,7 @@ export class FastImporterService {
     ) {}
 
     async initialize() {
-        this.defaultChannel = this.channelService.getDefaultChannel();
+        this.defaultChannel = await this.channelService.getDefaultChannel();
     }
 
     async createProduct(input: CreateProductInput): Promise<ID> {

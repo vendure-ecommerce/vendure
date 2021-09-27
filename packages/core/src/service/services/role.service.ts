@@ -216,6 +216,7 @@ export class RoleService {
             superAdminRole.permissions = assignablePermissions;
             await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
         } catch (err) {
+            const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),
                 {
@@ -223,7 +224,7 @@ export class RoleService {
                     description: SUPER_ADMIN_ROLE_DESCRIPTION,
                     permissions: assignablePermissions,
                 },
-                [this.channelService.getDefaultChannel()],
+                [defaultChannel],
             );
         }
     }
@@ -235,6 +236,7 @@ export class RoleService {
         try {
             await this.getCustomerRole();
         } catch (err) {
+            const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),
                 {
@@ -242,7 +244,7 @@ export class RoleService {
                     description: CUSTOMER_ROLE_DESCRIPTION,
                     permissions: [Permission.Authenticated],
                 },
-                [this.channelService.getDefaultChannel()],
+                [defaultChannel],
             );
         }
     }

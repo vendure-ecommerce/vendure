@@ -65,7 +65,7 @@ export class PaymentMethodService {
                 input.checker,
             );
         }
-        this.channelService.assignToCurrentChannel(paymentMethod, ctx);
+        await this.channelService.assignToCurrentChannel(paymentMethod, ctx);
         return this.connection.getRepository(ctx, PaymentMethod).save(paymentMethod);
     }
 

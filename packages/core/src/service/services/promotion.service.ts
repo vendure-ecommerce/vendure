@@ -108,7 +108,7 @@ export class PromotionService {
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
             return new MissingConditionsError();
         }
-        this.channelService.assignToCurrentChannel(promotion, ctx);
+        await this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
@@ -153,7 +153,8 @@ export class PromotionService {
         ctx: RequestContext,
         input: AssignPromotionsToChannelInput,
     ): Promise<Promotion[]> {
-        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
             throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
         }
         const promotions = await this.connection.findByIdsInChannel(
@@ -170,7 +171,8 @@ export class PromotionService {
     }
 
     async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) {
-        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
             throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
         }
         const promotions = await this.connection.findByIdsInChannel(

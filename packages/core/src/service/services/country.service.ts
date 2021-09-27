@@ -83,7 +83,6 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
-        await this.zoneService.updateZonesCache(ctx);
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -94,7 +93,6 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
-        await this.zoneService.updateZonesCache(ctx);
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -112,7 +110,6 @@ export class CountryService {
                 message: ctx.translate('message.country-used-in-addresses', { count: addressesUsingCountry }),
             };
         } else {
-            await this.zoneService.updateZonesCache(ctx);
             await this.connection.getRepository(ctx, Country).remove(country);
             return {
                 result: DeletionResult.DELETED,

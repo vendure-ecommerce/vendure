@@ -249,7 +249,7 @@ export class Importer {
     ): Promise<ID[]> {
         const facetValueIds: ID[] = [];
         const ctx = new RequestContext({
-            channel: this.channelService.getDefaultChannel(),
+            channel: await this.channelService.getDefaultChannel(),
             apiType: 'admin',
             isAuthorized: true,
             authorizedAsOwnerOnly: false,

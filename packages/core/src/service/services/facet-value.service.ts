@@ -82,9 +82,9 @@ export class FacetValueService {
             input,
             entityType: FacetValue,
             translationType: FacetValueTranslation,
-            beforeSave: fv => {
+            beforeSave: async fv => {
                 fv.facet = facet;
-                this.channelService.assignToCurrentChannel(fv, ctx);
+                await this.channelService.assignToCurrentChannel(fv, ctx);
             },
         });
         await this.customFieldRelationService.updateRelations(
