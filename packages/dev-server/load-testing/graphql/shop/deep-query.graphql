@@ -101,6 +101,7 @@
                 id
                 name
             }
+            stockLevel
             taxRateApplied {
                 category {
                     id

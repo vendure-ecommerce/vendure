@@ -30,6 +30,7 @@ if (require.main === module) {
         if (code === 0) {
             return bootstrap(getLoadTestConfig('cookie'))
                 .then(async app => {
+                    // await app.get(JobQueueService).start();
                     const summaries: LoadTestSummary[] = [];
                     for (const script of scriptsToRun) {
                         const summary = await runLoadTestScript(script);

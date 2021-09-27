@@ -47,7 +47,10 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
             orderItemsLimit: 99999,
         },
         logger: new DefaultLogger({ level: LogLevel.Info }),
-        dbConnectionOptions: getMysqlConnectionOptions(count),
+        dbConnectionOptions:
+            process.env.DB === 'postgres'
+                ? getPostgresConnectionOptions(count)
+                : getMysqlConnectionOptions(count),
         authOptions: {
             tokenMethod,
             requireVerification: false,
