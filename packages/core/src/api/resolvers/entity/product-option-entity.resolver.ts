@@ -1,6 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translated } from '../../../common/types/locale-types';
 import { assertFound } from '../../../common/utils';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
@@ -16,6 +17,7 @@ export class ProductOptionEntityResolver {
     constructor(
         private productOptionGroupService: ProductOptionGroupService,
         private localeStringHydrator: LocaleStringHydrator,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @ResolveField()
@@ -32,6 +34,8 @@ export class ProductOptionEntityResolver {
         if (option.group) {
             return option.group;
         }
-        return assertFound(this.productOptionGroupService.findOne(ctx, option.groupId));
+        return this.requestContextCache.get(ctx, `ProductOptionEntityResolver.group(${option.groupId})`, () =>
+            assertFound(this.productOptionGroupService.findOne(ctx, option.groupId)),
+        );
     }
 }
