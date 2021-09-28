@@ -144,6 +144,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
         activeQueues: [],
+        enableWorkerHealthCheck: false,
     },
     customFields: {
         Address: [],

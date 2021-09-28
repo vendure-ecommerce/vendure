@@ -743,6 +743,20 @@ export interface JobQueueOptions {
      * If its empty all queues will be run
      */
     activeQueues?: string[];
+    /**
+     * @description
+     * When set to `true`, a health check will be run on the worker. This is done by
+     * adding a `check-worker-health` job to the job queue, which, when successfully
+     * processed by the worker, indicates that it is healthy.
+     *
+     * **Important Note:** This health check is unreliable and can be affected by
+     * existing long running jobs, see [this issue](https://github.com/vendure-ecommerce/vendure/issues/1112)
+     * for further details. For this reason, the health check will be removed entirely in the next major version.
+     *
+     * @since 1.3.0
+     * @default false
+     */
+    enableWorkerHealthCheck?: boolean;
 }
 
 /**
