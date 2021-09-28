@@ -138,7 +138,8 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
-    setEntityIdStrategy(config.entityIdStrategy, entities);
+    const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
+    setEntityIdStrategy(entityIdStrategy, entities);
     const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
     if (!customFieldValidationResult.valid) {
         process.exitCode = 1;

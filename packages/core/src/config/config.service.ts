@@ -55,7 +55,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.defaultLanguageCode;
     }
 
-    get entityOptions(): Required<EntityOptions> {
+    get entityOptions(): Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions {
         return this.activeConfig.entityOptions;
     }
 

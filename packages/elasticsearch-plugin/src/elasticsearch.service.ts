@@ -95,7 +95,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     indexPrefix,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
-                    this.configService.entityIdStrategy.primaryKeyType,
                 );
             } else {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
@@ -115,7 +114,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     tempPrefix,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
-                    this.configService.entityIdStrategy.primaryKeyType,
                     false,
                 );
                 const tempIndexSettingsResult = await this.client.indices.getSettings({ index: tempIndex });

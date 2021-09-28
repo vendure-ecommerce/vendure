@@ -754,6 +754,17 @@ export interface JobQueueOptions {
 export interface EntityOptions {
     /**
      * @description
+     * Defines the strategy used for both storing the primary keys of entities
+     * in the database, and the encoding & decoding of those ids when exposing
+     * entities via the API. The default uses a simple auto-increment integer
+     * strategy.
+     *
+     * @since 1.3.0
+     * @default AutoIncrementIdStrategy
+     */
+    entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
      * Channels get cached in-memory as they are accessed very frequently. This
      * setting determines how long the cache lives (in ms) until it is considered stale and
      * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
@@ -841,6 +852,7 @@ export interface VendureConfig {
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
      *
+     * @deprecated Use entityOptions.entityIdStrategy instead
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
@@ -911,7 +923,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     authOptions: Required<AuthOptions>;
     catalogOptions: Required<CatalogOptions>;
     customFields: Required<CustomFields>;
-    entityOptions: Required<EntityOptions>;
+    entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
     orderOptions: Required<OrderOptions>;

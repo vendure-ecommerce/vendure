@@ -10,7 +10,6 @@ export async function createIndices(
     prefix: string,
     indexSettings: object,
     indexMappingProperties: object,
-    primaryKeyType: 'increment' | 'uuid',
     mapAlias = true,
     aliasPostfix = ``,
 ) {

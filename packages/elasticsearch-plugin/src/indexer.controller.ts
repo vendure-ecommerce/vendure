@@ -215,7 +215,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         this.options.indexPrefix,
                         this.options.indexSettings,
                         this.options.indexMappingProperties,
-                        this.configService.entityIdStrategy.primaryKeyType,
                         true,
                         `-reindex-${reindexTempName}`,
                     );
