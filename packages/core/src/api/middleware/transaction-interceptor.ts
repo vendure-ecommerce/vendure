@@ -6,7 +6,7 @@ import { QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
 
 import { REQUEST_CONTEXT_KEY, TRANSACTION_MANAGER_KEY } from '../../common/constants';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { parseContext } from '../common/parse-context';
 import { RequestContext } from '../common/request-context';
 import { TransactionMode, TRANSACTION_MODE_METADATA_KEY } from '../decorators/transaction.decorator';

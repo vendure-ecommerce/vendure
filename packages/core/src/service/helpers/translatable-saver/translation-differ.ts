@@ -4,7 +4,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { Translatable, Translation, TranslationInput } from '../../../common/types/locale-types';
 import { foundIn, not } from '../../../common/utils';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 
 export type TranslationContructor<T> = new (
     input?: DeepPartial<TranslationInput<T>> | DeepPartial<Translation<T>>,

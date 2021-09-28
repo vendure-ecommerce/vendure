@@ -12,13 +12,13 @@ import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Address } from '../../entity';
 import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ZoneService } from './zone.service';
 

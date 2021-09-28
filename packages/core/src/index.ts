@@ -3,6 +3,7 @@ export { generateMigration, revertLastMigration, runMigrations } from './migrate
 export * from './api/index';
 export * from './common/index';
 export * from './config/index';
+export * from './connection/index';
 export * from './event-bus/index';
 export * from './health-check/index';
 export * from './job-queue/index';

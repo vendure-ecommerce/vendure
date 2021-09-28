@@ -4,10 +4,10 @@ import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class GlobalSettingsService {

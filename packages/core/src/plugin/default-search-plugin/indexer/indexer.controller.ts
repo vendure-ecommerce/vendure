@@ -11,12 +11,12 @@ import { Translatable, Translation } from '../../../common/types/locale-types';
 import { asyncObservable, idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     ProductChannelMessageData,
@@ -431,9 +431,9 @@ export class IndexerController {
         translatable: T,
         languageCode: LanguageCode,
     ): Translation<T> {
-        return ((translatable.translations.find(t => t.languageCode === languageCode) ||
+        return (translatable.translations.find(t => t.languageCode === languageCode) ||
             translatable.translations.find(t => t.languageCode === this.configService.defaultLanguageCode) ||
-            translatable.translations[0]) as unknown) as Translation<T>;
+            translatable.translations[0]) as unknown as Translation<T>;
     }
 
     private getFacetIds(variant: ProductVariant): string[] {

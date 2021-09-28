@@ -10,10 +10,10 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions, Taggable } from '../../common/types/common-types';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Tag } from '../../entity/tag/tag.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class TagService {

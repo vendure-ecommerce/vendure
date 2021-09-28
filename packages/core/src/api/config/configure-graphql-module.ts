@@ -7,6 +7,7 @@ import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
 import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
@@ -14,7 +15,6 @@ import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationService } from '../../service/helpers/custom-field-relation/custom-field-relation.service';
 import { ServiceModule } from '../../service/service.module';
 import { ProductVariantService } from '../../service/services/product-variant.service';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 import { ApiSharedModule } from '../api-internal-modules';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { IdCodecService } from '../common/id-codec.service';
@@ -77,7 +77,7 @@ export function configureGraphQLModule(
             GraphQLTypesLoader,
             CustomFieldRelationResolverService,
         ],
-        imports: [ConfigModule, I18nModule, ApiSharedModule, ServiceModule.forRoot()],
+        imports: [ConfigModule, I18nModule, ApiSharedModule, ServiceModule],
     });
 }
 

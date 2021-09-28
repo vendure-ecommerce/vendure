@@ -45,4 +45,4 @@ export * from './services/tax-category.service';
 export * from './services/tax-rate.service';
 export * from './services/user.service';
 export * from './services/zone.service';
-export * from './transaction/transactional-connection';
+export * from '../connection/transactional-connection';

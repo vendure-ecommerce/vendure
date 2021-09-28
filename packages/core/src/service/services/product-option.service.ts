@@ -9,13 +9,13 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class ProductOptionService {

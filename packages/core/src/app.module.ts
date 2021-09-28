@@ -20,7 +20,7 @@ import { ServiceModule } from './service/service.module';
         ApiModule,
         PluginModule.forRoot(),
         HealthCheckModule,
-        ServiceModule.forRoot(),
+        ServiceModule,
     ],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {

@@ -12,6 +12,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -22,7 +23,6 @@ import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ProductVariantService } from './product-variant.service';
 

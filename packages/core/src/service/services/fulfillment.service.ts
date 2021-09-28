@@ -11,6 +11,7 @@ import {
 } from '../../common/error/generated-graphql-admin-errors';
 import { OrderStateTransitionError } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -19,7 +20,6 @@ import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillm
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class FulfillmentService {

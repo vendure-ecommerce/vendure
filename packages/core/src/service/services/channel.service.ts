@@ -20,6 +20,7 @@ import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/sel
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
@@ -27,7 +28,6 @@ import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { GlobalSettingsService } from './global-settings.service';
 

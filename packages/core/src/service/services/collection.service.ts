@@ -21,6 +21,7 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetValue } from '../../entity';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
@@ -38,13 +39,16 @@ import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
-type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[]; applyToChangedVariantsOnly?: boolean; };
+type ApplyCollectionFiltersJobData = {
+    ctx: SerializedRequestContext;
+    collectionIds: ID[];
+    applyToChangedVariantsOnly?: boolean;
+};
 
 @Injectable()
 export class CollectionService implements OnModuleInit {
@@ -64,8 +68,7 @@ export class CollectionService implements OnModuleInit {
         private slugValidator: SlugValidator,
         private configArgService: ConfigArgService,
         private customFieldRelationService: CustomFieldRelationService,
-    ) {
-    }
+    ) {}
 
     async onModuleInit() {
         const productEvents$ = this.eventBus.ofType(ProductEvent);
@@ -100,7 +103,10 @@ export class CollectionService implements OnModuleInit {
                     }
                     completed++;
                     if (collection) {
-                        const affectedVariantIds = await this.applyCollectionFiltersInternal(collection, job.data.applyToChangedVariantsOnly);
+                        const affectedVariantIds = await this.applyCollectionFiltersInternal(
+                            collection,
+                            job.data.applyToChangedVariantsOnly,
+                        );
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                         this.eventBus.publish(
                             new CollectionModificationEvent(ctx, collection, affectedVariantIds),
@@ -441,7 +447,10 @@ export class CollectionService implements OnModuleInit {
      * This param is used when we update collection and collection filters are changed to update all
      * variants (because other attributes of collection can be changed https://github.com/vendure-ecommerce/vendure/issues/1015)
      */
-    private async applyCollectionFiltersInternal(collection: Collection, applyToChangedVariantsOnly = true): Promise<ID[]> {
+    private async applyCollectionFiltersInternal(
+        collection: Collection,
+        applyToChangedVariantsOnly = true,
+    ): Promise<ID[]> {
         const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
             ancestors.reduce(
                 (filters, c) => [...filters, ...(c.filters || [])],
@@ -472,17 +481,10 @@ export class CollectionService implements OnModuleInit {
         const postIdsSet = new Set(postIds);
 
         if (applyToChangedVariantsOnly) {
-            return [
-                ...preIds.filter(id => !postIdsSet.has(id)),
-                ...postIds.filter(id => !preIdsSet.has(id)),
-            ];
+            return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds.filter(id => !preIdsSet.has(id))];
         } else {
-            return [
-                ...preIds.filter(id => !postIdsSet.has(id)),
-                ...postIds,
-            ];
+            return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds];
         }
-
     }
 
     /**

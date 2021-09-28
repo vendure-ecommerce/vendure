@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
+import { ConnectionModule } from '../connection/connection.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { HealthCheckModule } from '../health-check/health-check.module';
 import { I18nModule } from '../i18n/i18n.module';
@@ -29,7 +30,8 @@ import { ServiceModule } from '../service/service.module';
     imports: [
         EventBusModule,
         ConfigModule,
-        ServiceModule.forPlugin(),
+        ConnectionModule.forPlugin(),
+        ServiceModule,
         JobQueueModule,
         HealthCheckModule,
         CacheModule,
@@ -39,7 +41,8 @@ import { ServiceModule } from '../service/service.module';
     exports: [
         EventBusModule,
         ConfigModule,
-        ServiceModule.forPlugin(),
+        ConnectionModule.forPlugin(),
+        ServiceModule,
         JobQueueModule,
         HealthCheckModule,
         CacheModule,

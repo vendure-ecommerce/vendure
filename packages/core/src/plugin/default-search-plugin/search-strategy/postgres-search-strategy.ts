@@ -4,12 +4,16 @@ import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { SearchIndexItem } from '../search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
 import { fieldsToSelect } from './search-strategy-common';
-import { createCollectionIdCountMap, createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
+import {
+    createCollectionIdCountMap,
+    createFacetIdCountMap,
+    mapToSearchResult,
+} from './search-strategy-utils';
 
 /**
  * A weighted fulltext search for PostgeSQL.
@@ -134,14 +138,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
         input: SearchInput,
         forceGroup: boolean = false,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const {
-            term,
-            facetValueFilters,
-            facetValueIds,
-            facetValueOperator,
-            collectionId,
-            collectionSlug,
-        } = input;
+        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } =
+            input;
         // join multiple words with the logical AND operator
         const termLogicalAnd = term ? term.trim().replace(/\s+/g, ' & ') : '';
 

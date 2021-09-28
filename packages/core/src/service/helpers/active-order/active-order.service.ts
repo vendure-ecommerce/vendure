@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../services/order.service';
 import { SessionService } from '../../services/session.service';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 @Injectable()
 export class ActiveOrderService {

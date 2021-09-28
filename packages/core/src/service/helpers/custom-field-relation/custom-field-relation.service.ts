@@ -11,8 +11,8 @@ import {
     HasCustomFields,
     RelationCustomFieldConfig,
 } from '../../../config/custom-field/custom-field-types';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 @Injectable()
 export class CustomFieldRelationService {

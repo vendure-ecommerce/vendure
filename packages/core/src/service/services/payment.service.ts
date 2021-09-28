@@ -18,6 +18,7 @@ import {
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
@@ -28,7 +29,6 @@ import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { PaymentMethodService } from './payment-method.service';
 

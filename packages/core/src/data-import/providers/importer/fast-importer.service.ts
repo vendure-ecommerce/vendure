@@ -8,6 +8,7 @@ import {
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { ProductOptionGroupTranslation } from '../../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
@@ -23,7 +24,6 @@ import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
 import { ChannelService } from '../../../service/services/channel.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 
 /**
  * A service to import entities into the database. This replaces the regular `create` methods of the service layer with faster

@@ -12,11 +12,13 @@ import {
     Repository,
 } from 'typeorm';
 
-import { RequestContext } from '../../api/common/request-context';
-import { TRANSACTION_MANAGER_KEY } from '../../common/constants';
-import { EntityNotFoundError } from '../../common/error/errors';
-import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
-import { VendureEntity } from '../../entity/base/base.entity';
+import { RequestContext } from '../api/common/request-context';
+import { TRANSACTION_MANAGER_KEY } from '../common/constants';
+import { EntityNotFoundError } from '../common/error/errors';
+import { ChannelAware, SoftDeletable } from '../common/types/common-types';
+import { VendureEntity } from '../entity/base/base.entity';
+
+import { TransactionSubscriber } from './transaction-subscriber';
 
 /**
  * @description

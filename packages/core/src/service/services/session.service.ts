@@ -7,6 +7,7 @@ import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from
 import { RequestContext } from '../../api/common/request-context';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Role } from '../../entity/role/role.entity';
@@ -15,7 +16,6 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { OrderService } from './order.service';
 

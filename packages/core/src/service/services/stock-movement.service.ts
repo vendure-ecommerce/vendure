@@ -6,6 +6,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -20,7 +21,6 @@ import { StockMovement } from '../../entity/stock-movement/stock-movement.entity
 import { EventBus } from '../../event-bus/event-bus';
 import { StockMovementEvent } from '../../event-bus/events/stock-movement-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { GlobalSettingsService } from './global-settings.service';
 

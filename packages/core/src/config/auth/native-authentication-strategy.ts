@@ -5,10 +5,10 @@ import gql from 'graphql-tag';
 import { RequestContext } from '../../api/common/request-context';
 import { UnauthorizedError } from '../../common/error/errors';
 import { Injector } from '../../common/injector';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCipher } from '../../service/helpers/password-cipher/password-cipher';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 
 import { AuthenticationStrategy } from './authentication-strategy';
 

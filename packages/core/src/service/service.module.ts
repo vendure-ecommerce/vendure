@@ -1,11 +1,8 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConnectionOptions } from 'typeorm';
+import { Module } from '@nestjs/common';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
-import { ConfigService } from '../config/config.service';
-import { TypeOrmLogger } from '../config/logger/typeorm-logger';
+import { ConnectionModule } from '../connection/connection.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 
@@ -60,7 +57,6 @@ import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
 import { ZoneService } from './services/zone.service';
-import { TransactionalConnection } from './transaction/transactional-connection';
 
 const services = [
     AdministratorService,
@@ -113,13 +109,10 @@ const helpers = [
     ConfigArgService,
     SlugValidator,
     ExternalAuthenticationService,
-    TransactionalConnection,
     CustomFieldRelationService,
     LocaleStringHydrator,
     ActiveOrderService,
 ];
-
-let defaultTypeOrmModule: DynamicModule;
 
 /**
  * The ServiceCoreModule is imported internally by the ServiceModule. It is arranged in this way so that
@@ -127,7 +120,7 @@ let defaultTypeOrmModule: DynamicModule;
  * only run a single time.
  */
 @Module({
-    imports: [ConfigModule, EventBusModule, CacheModule, JobQueueModule],
+    imports: [ConnectionModule, ConfigModule, EventBusModule, CacheModule, JobQueueModule],
     providers: [...services, ...helpers, InitializerService],
     exports: [...services, ...helpers],
 })
@@ -144,40 +137,4 @@ export class ServiceCoreModule {}
     imports: [ServiceCoreModule],
     exports: [ServiceCoreModule],
 })
-export class ServiceModule {
-    static forRoot(): DynamicModule {
-        if (!defaultTypeOrmModule) {
-            defaultTypeOrmModule = TypeOrmModule.forRootAsync({
-                imports: [ConfigModule],
-                useFactory: (configService: ConfigService) => {
-                    const { dbConnectionOptions } = configService;
-                    const logger = ServiceModule.getTypeOrmLogger(dbConnectionOptions);
-                    return {
-                        ...dbConnectionOptions,
-                        logger,
-                    };
-                },
-                inject: [ConfigService],
-            });
-        }
-        return {
-            module: ServiceModule,
-            imports: [defaultTypeOrmModule],
-        };
-    }
-
-    static forPlugin(): DynamicModule {
-        return {
-            module: ServiceModule,
-            imports: [TypeOrmModule.forFeature()],
-        };
-    }
-
-    static getTypeOrmLogger(dbConnectionOptions: ConnectionOptions) {
-        if (!dbConnectionOptions.logger) {
-            return new TypeOrmLogger(dbConnectionOptions.logging);
-        } else {
-            return dbConnectionOptions.logger;
-        }
-    }
-}
+export class ServiceModule {}

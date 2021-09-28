@@ -17,11 +17,11 @@ import {
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { RoleService } from './role.service';
 

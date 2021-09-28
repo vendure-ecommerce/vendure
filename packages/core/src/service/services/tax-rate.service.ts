@@ -12,6 +12,7 @@ import { RequestContextCacheService } from '../../cache';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
@@ -20,7 +21,6 @@ import { EventBus } from '../../event-bus/event-bus';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 const activeTaxRatesKey = 'active-tax-rates';
 

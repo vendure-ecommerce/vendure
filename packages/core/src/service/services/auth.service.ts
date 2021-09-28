@@ -16,13 +16,13 @@ import {
     NATIVE_AUTH_STRATEGY_NAME,
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
 import { LogoutEvent } from '../../event-bus/events/logout-event';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { SessionService } from './session.service';
 

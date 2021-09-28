@@ -5,11 +5,11 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { Translatable } from '../../common/types/locale-types';
 import { ConfigService } from '../../config/config.service';
 import { RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../service/services/product-variant.service';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 
 import { RequestContext } from './request-context';
 

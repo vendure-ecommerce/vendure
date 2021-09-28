@@ -4,14 +4,14 @@ import { Omit } from '@vendure/common/lib/omit';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Collection, FacetValue } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { Job } from '../../job-queue/job';
-import { FacetValueService } from '../../service/services/facet-value.service';
 import { CollectionService } from '../../service/services/collection.service';
+import { FacetValueService } from '../../service/services/facet-value.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 
 import { SearchIndexService } from './indexer/search-index.service';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
@@ -48,7 +48,7 @@ export class FulltextSearchService {
         ctx: RequestContext,
         input: SearchInput,
         enabledOnly: boolean = false,
-    ): Promise<Omit<Omit<SearchResponse, 'facetValues'>,'collections'>> {
+    ): Promise<Omit<Omit<SearchResponse, 'facetValues'>, 'collections'>> {
         const items = await this.searchStrategy.getSearchResults(ctx, input, enabledOnly);
         const totalItems = await this.searchStrategy.getTotalCount(ctx, input, enabledOnly);
         return {
