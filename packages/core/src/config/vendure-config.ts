@@ -747,6 +747,37 @@ export interface JobQueueOptions {
 
 /**
  * @description
+ * Options relating to the internal handling of entities.
+ *
+ * @since 1.3.0
+ */
+export interface EntityOptions {
+    /**
+     * @description
+     * Channels get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.3.0
+     * @default 30000
+     */
+    channelCacheTtl?: number;
+    /**
+     * @description
+     * Zones get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.3.0
+     * @default 30000
+     */
+    zoneCacheTtl?: number;
+}
+
+/**
+ * @description
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
@@ -813,6 +844,7 @@ export interface VendureConfig {
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    entityOptions?: EntityOptions;
     /**
      * @description
      * Configuration settings for data import and export.
@@ -879,6 +911,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     authOptions: Required<AuthOptions>;
     catalogOptions: Required<CatalogOptions>;
     customFields: Required<CustomFields>;
+    entityOptions: Required<EntityOptions>;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
     orderOptions: Required<OrderOptions>;

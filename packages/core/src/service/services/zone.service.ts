@@ -13,6 +13,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { assertFound } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { Channel, TaxRate } from '../../entity';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
@@ -26,12 +27,12 @@ export class ZoneService {
      * We cache all Zones to avoid hitting the DB many times per request.
      */
     private zones: SelfRefreshingCache<Zone[]>;
-    constructor(private connection: TransactionalConnection) {}
+    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
     async initZones() {
         this.zones = await createSelfRefreshingCache({
             name: 'ZoneService.zones',
-            ttl: 10000,
+            ttl: this.configService.entityOptions.zoneCacheTtl,
             refreshFn: () =>
                 this.connection.getRepository(Zone).find({
                     relations: ['members'],

@@ -50,7 +50,7 @@ export class ChannelService {
         await this.ensureDefaultChannelExists();
         this.allChannels = await createSelfRefreshingCache({
             name: 'ChannelService.allChannels',
-            ttl: 10000,
+            ttl: this.configService.entityOptions.channelCacheTtl,
             refreshFn: () => this.findAll(RequestContext.empty()),
         });
     }

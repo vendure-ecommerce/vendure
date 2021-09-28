@@ -102,6 +102,10 @@ export const defaultConfig: RuntimeVendureConfig = {
         timezone: 'Z',
         type: 'mysql',
     },
+    entityOptions: {
+        channelCacheTtl: 30000,
+        zoneCacheTtl: 30000,
+    },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
         promotionActions: defaultPromotionActions,
