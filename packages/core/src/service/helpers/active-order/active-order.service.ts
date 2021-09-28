@@ -5,10 +5,15 @@ import { InternalServerError } from '../../../common/error/errors';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../services/order.service';
 import { SessionService } from '../../services/session.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 @Injectable()
 export class ActiveOrderService {
-    constructor(private sessionService: SessionService, private orderService: OrderService) {}
+    constructor(
+        private sessionService: SessionService,
+        private orderService: OrderService,
+        private connection: TransactionalConnection,
+    ) {}
 
     /**
      * @description
@@ -25,7 +30,13 @@ export class ActiveOrderService {
             throw new InternalServerError(`error.no-active-session`);
         }
         let order = ctx.session.activeOrderId
-            ? await this.orderService.findOne(ctx, ctx.session.activeOrderId)
+            ? await this.connection
+                  .getRepository(ctx, Order)
+                  .createQueryBuilder('order')
+                  .leftJoin('order.channels', 'channel')
+                  .where('order.id = :orderId', { orderId: ctx.session.activeOrderId })
+                  .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+                  .getOne()
             : undefined;
         if (order && order.active === false) {
             // edge case where an inactive order may not have been
