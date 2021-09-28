@@ -1,3 +1,26 @@
+## <small>1.2.2 (2021-09-28)</small>
+
+
+#### Perf
+
+* **core** Cache certain field resolvers to avoid duplicated DB calls ([13697c3](https://github.com/vendure-ecommerce/vendure/commit/13697c3)), closes [#1119](https://github.com/vendure-ecommerce/vendure/issues/1119)
+
+#### Fixes
+
+* **admin-ui** Do not cache active admin details between logins ([20b4b04](https://github.com/vendure-ecommerce/vendure/commit/20b4b04)), closes [#1099](https://github.com/vendure-ecommerce/vendure/issues/1099)
+* **admin-ui** Use correct order total on Customer detail page ([ddc2b0a](https://github.com/vendure-ecommerce/vendure/commit/ddc2b0a))
+* **core**  Fix wrong event type when a variant is created (#1102) ([cc45254](https://github.com/vendure-ecommerce/vendure/commit/cc45254)), closes [#1102](https://github.com/vendure-ecommerce/vendure/issues/1102) [#1095](https://github.com/vendure-ecommerce/vendure/issues/1095)
+* **core** Add missing logging & docs to DefaultJobQueuePlugin ([423f307](https://github.com/vendure-ecommerce/vendure/commit/423f307))
+* **core** Fix collection update event generation (#1114) ([6e7e864](https://github.com/vendure-ecommerce/vendure/commit/6e7e864)), closes [#1114](https://github.com/vendure-ecommerce/vendure/issues/1114) [#1015](https://github.com/vendure-ecommerce/vendure/issues/1015)
+* **core** Fix updating customer email with no NativeAuth configured ([f6d3a52](https://github.com/vendure-ecommerce/vendure/commit/f6d3a52)), closes [#1092](https://github.com/vendure-ecommerce/vendure/issues/1092)
+* **core** Gracefully handle errors when populating initial data ([36c15b2](https://github.com/vendure-ecommerce/vendure/commit/36c15b2))
+* **core** Return correct timestamp values for translated entities ([ded49c4](https://github.com/vendure-ecommerce/vendure/commit/ded49c4)), closes [#1101](https://github.com/vendure-ecommerce/vendure/issues/1101)
+* **core** Soft-delete variants when a product is soft-deleted ([ff1ae90](https://github.com/vendure-ecommerce/vendure/commit/ff1ae90)), closes [#1096](https://github.com/vendure-ecommerce/vendure/issues/1096)
+* **elasticsearch-plugin** Elasticsearch Cloud auth is not set during re-indexing (#1108) ([e40fc1c](https://github.com/vendure-ecommerce/vendure/commit/e40fc1c)), closes [#1108](https://github.com/vendure-ecommerce/vendure/issues/1108) [#1106](https://github.com/vendure-ecommerce/vendure/issues/1106)
+* **email-plugin** Correctly register failed email sending, add retry ([f50708a](https://github.com/vendure-ecommerce/vendure/commit/f50708a))
+* **job-queue-plugin** Add missing logging & backoff settings ([6f7cc34](https://github.com/vendure-ecommerce/vendure/commit/6f7cc34))
+* **job-queue-plugin** Fix redis connection to remote hosts ([9e36873](https://github.com/vendure-ecommerce/vendure/commit/9e36873)), closes [#1097](https://github.com/vendure-ecommerce/vendure/issues/1097)
+
 ## <small>1.2.1 (2021-09-15)</small>
 
 
