@@ -592,10 +592,10 @@ export class ProductVariantService {
         if (!activeTaxZone) {
             throw new InternalServerError(`error.no-active-tax-zone`);
         }
-        const applicableTaxRate = await this.taxRateService.getApplicableTaxRate(
+        const applicableTaxRate = await this.requestCache.get(
             ctx,
-            activeTaxZone,
-            variant.taxCategory,
+            `applicableTaxRate-${activeTaxZone.id}-${variant.taxCategory.id}`,
+            () => this.taxRateService.getApplicableTaxRate(ctx, activeTaxZone, variant.taxCategory),
         );
 
         const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
