@@ -44,7 +44,7 @@ import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
-type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };
+type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[]; applyToChangedVariantsOnly?: boolean; };
 
 @Injectable()
 export class CollectionService implements OnModuleInit {
@@ -64,7 +64,8 @@ export class CollectionService implements OnModuleInit {
         private slugValidator: SlugValidator,
         private configArgService: ConfigArgService,
         private customFieldRelationService: CustomFieldRelationService,
-    ) {}
+    ) {
+    }
 
     async onModuleInit() {
         const productEvents$ = this.eventBus.ofType(ProductEvent);
@@ -99,7 +100,7 @@ export class CollectionService implements OnModuleInit {
                     }
                     completed++;
                     if (collection) {
-                        const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
+                        const affectedVariantIds = await this.applyCollectionFiltersInternal(collection, job.data.applyToChangedVariantsOnly);
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                         this.eventBus.publish(
                             new CollectionModificationEvent(ctx, collection, affectedVariantIds),
@@ -362,7 +363,11 @@ export class CollectionService implements OnModuleInit {
             await this.applyFiltersQueue.add({
                 ctx: ctx.serialize(),
                 collectionIds: [collection.id],
+                applyToChangedVariantsOnly: false,
             });
+        } else {
+            const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
+            this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         }
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -430,8 +435,13 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * Applies the CollectionFilters
+     *
+     * If applyToChangedVariantsOnly (default: true) is true, than apply collection job will process only changed variants
+     * If applyToChangedVariantsOnly (default: true) is false, than apply collection job will process all variants
+     * This param is used when we update collection and collection filters are changed to update all
+     * variants (because other attributes of collection can be changed https://github.com/vendure-ecommerce/vendure/issues/1015)
      */
-    private async applyCollectionFiltersInternal(collection: Collection): Promise<ID[]> {
+    private async applyCollectionFiltersInternal(collection: Collection, applyToChangedVariantsOnly = true): Promise<ID[]> {
         const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
             ancestors.reduce(
                 (filters, c) => [...filters, ...(c.filters || [])],
@@ -460,11 +470,19 @@ export class CollectionService implements OnModuleInit {
         }
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);
-        const difference = [
-            ...preIds.filter(id => !postIdsSet.has(id)),
-            ...postIds.filter(id => !preIdsSet.has(id)),
-        ];
-        return difference;
+
+        if (applyToChangedVariantsOnly) {
+            return [
+                ...preIds.filter(id => !postIdsSet.has(id)),
+                ...postIds.filter(id => !preIdsSet.has(id)),
+            ];
+        } else {
+            return [
+                ...preIds.filter(id => !postIdsSet.has(id)),
+                ...postIds,
+            ];
+        }
+
     }
 
     /**
