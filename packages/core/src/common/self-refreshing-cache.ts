@@ -1,3 +1,5 @@
+import { Json } from '@vendure/common/lib/shared-types';
+
 import { Logger } from '../config/logger/vendure-logger';
 
 /**
@@ -11,6 +13,15 @@ export interface SelfRefreshingCache<V> {
      * the fresh value will be returned.
      */
     value(): Promise<V>;
+
+    /**
+     * @description
+     * Allows a memoized function to be defined. For the given arguments, the `fn` function will
+     * be invoked only once and its output cached and returned.
+     * The results cache is cleared along with the rest of the cache according to the configured
+     * `ttl` value.
+     */
+    memoize<Args extends any[], R>(args: Args, fn: (value: V, ...args: Args) => R): Promise<R>;
 
     /**
      * @description
@@ -43,12 +54,15 @@ export async function createSelfRefreshingCache<V>(
     const initialValue = await refreshFn();
     let value = initialValue;
     let expires = new Date().getTime() + ttl;
+    const memoCache = new Map<string, any>();
+    const hashArgs = (...args: any[]) => JSON.stringify([args, expires]);
     const refreshValue = (): Promise<V> => {
         Logger.debug(`Refreshing the SelfRefreshingCache "${name}"`);
         return refreshFn()
             .then(newValue => {
                 value = newValue;
                 expires = new Date().getTime() + ttl;
+                memoCache.clear();
                 return value;
             })
             .catch(err => {
@@ -60,14 +74,28 @@ export async function createSelfRefreshingCache<V>(
                 return value;
             });
     };
+    const getValue = async (): Promise<V> => {
+        const now = new Date().getTime();
+        if (expires < now) {
+            return refreshValue();
+        }
+        return value;
+    };
+    const memoize = async <Args extends any[], R>(
+        args: Args,
+        fn: (value: V, ...args: Args) => R,
+    ): Promise<R> => {
+        const cached = memoCache.get(hashArgs(args));
+        if (cached) {
+            return cached;
+        }
+        let result: Promise<R>;
+        memoCache.set(hashArgs(args), (result = getValue().then(val => fn(val, ...args))));
+        return result;
+    };
     return {
-        async value() {
-            const now = new Date().getTime();
-            if (expires < now) {
-                return refreshValue();
-            }
-            return value;
-        },
+        value: getValue,
         refresh: refreshValue,
+        memoize,
     };
 }

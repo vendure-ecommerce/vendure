@@ -40,10 +40,11 @@ export class ZoneService {
     }
 
     async findAll(ctx: RequestContext): Promise<Zone[]> {
-        const zones = await this.zones.value();
-        return zones.map(zone => {
-            zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode));
-            return zone;
+        return this.zones.memoize([ctx.languageCode], (zones, languageCode) => {
+            return zones.map(zone => {
+                zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode));
+                return zone;
+            });
         });
     }
 
