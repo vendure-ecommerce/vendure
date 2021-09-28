@@ -435,8 +435,13 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * Applies the CollectionFilters
+     *
+     * If applyToChangedVariantsOnly (default: true) is true, than apply collection job will process only changed variants
+     * If applyToChangedVariantsOnly (default: true) is false, than apply collection job will process all variants
+     * This param is used when we update collection and collection filters are changed to update all
+     * variants (because other attributes of collection can be changed https://github.com/vendure-ecommerce/vendure/issues/1015)
      */
-    private async applyCollectionFiltersInternal(collection: Collection, applyToChangedVariantsOnly?: boolean): Promise<ID[]> {
+    private async applyCollectionFiltersInternal(collection: Collection, applyToChangedVariantsOnly = true): Promise<ID[]> {
         const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
             ancestors.reduce(
                 (filters, c) => [...filters, ...(c.filters || [])],
@@ -466,7 +471,7 @@ export class CollectionService implements OnModuleInit {
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);
 
-        if (applyToChangedVariantsOnly === undefined ? true : applyToChangedVariantsOnly) {
+        if (applyToChangedVariantsOnly) {
             return [
                 ...preIds.filter(id => !postIdsSet.has(id)),
                 ...postIds.filter(id => !preIdsSet.has(id)),
