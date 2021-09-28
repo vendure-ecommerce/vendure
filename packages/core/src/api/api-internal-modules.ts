@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
@@ -152,10 +153,11 @@ export const adminEntityResolvers = [
  * one API module.
  */
 @Module({
-    imports: [ConfigModule, ServiceModule.forRoot()],
+    imports: [ConfigModule, ServiceModule.forRoot(), CacheModule],
     providers: [IdCodecService, ConfigurableOperationCodec, CustomFieldRelationResolverService],
     exports: [
         IdCodecService,
+        CacheModule,
         ConfigModule,
         ConfigurableOperationCodec,
         CustomFieldRelationResolverService,

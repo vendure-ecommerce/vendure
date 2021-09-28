@@ -72,7 +72,6 @@ export class ProductEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
-        const a = info;
         return this.productOptionGroupService.getOptionGroupsByProductId(ctx, product.id);
     }
 

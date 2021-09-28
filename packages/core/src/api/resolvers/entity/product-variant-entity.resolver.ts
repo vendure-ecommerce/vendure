@@ -3,6 +3,7 @@ import { CurrencyCode, StockMovementListOptions } from '@vendure/common/lib/gene
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
 import { Asset, Channel, FacetValue, Product, ProductOption, TaxRate } from '../../../entity';
@@ -23,6 +24,7 @@ export class ProductVariantEntityResolver {
         private productVariantService: ProductVariantService,
         private assetService: AssetService,
         private localeStringHydrator: LocaleStringHydrator,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     @ResolveField()
@@ -67,7 +69,11 @@ export class ProductVariantEntityResolver {
         if (productVariant.product) {
             return productVariant.product;
         }
-        return this.productVariantService.getProductForVariant(ctx, productVariant);
+        return this.requestContextCache.get(
+            ctx,
+            `ProductVariantEntityResolver.product(${productVariant.productId})`,
+            () => this.productVariantService.getProductForVariant(ctx, productVariant),
+        );
     }
 
     @ResolveField()
