@@ -3,12 +3,13 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { SearchIndexItem } from '../search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
 import { fieldsToSelect } from './search-strategy-common';
-import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
+import { createCollectionIdCountMap, createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
 
 /**
  * A weighted fulltext search for MySQL / MariaDB.
@@ -38,6 +39,28 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
         const facetValuesResult = await facetValuesQb.getRawMany();
         return createFacetIdCountMap(facetValuesResult);
+    }
+
+    async getCollectionIds(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<Map<ID, number>> {
+        const collectionsQb = this.connection
+            .getRepository(SearchIndexItem)
+            .createQueryBuilder('si')
+            .select(['MIN(productId)', 'MIN(productVariantId)'])
+            .addSelect('GROUP_CONCAT(collectionIds)', 'collections');
+
+        this.applyTermAndFilters(ctx, collectionsQb, input);
+        if (!input.groupByProduct) {
+            collectionsQb.groupBy('productVariantId');
+        }
+        if (enabledOnly) {
+            collectionsQb.andWhere('si.enabled = :enabled', { enabled: true });
+        }
+        const collectionsResult = await collectionsQb.getRawMany();
+        return createCollectionIdCountMap(collectionsResult);
     }
 
     async getSearchResults(
@@ -108,7 +131,14 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
+        const {
+            term,
+            facetValueFilters,
+            facetValueIds,
+            facetValueOperator,
+            collectionId,
+            collectionSlug,
+        } = input;
 
         if (term && term.length > this.minTermLength) {
             const termScoreQuery = this.connection
@@ -124,11 +154,16 @@ export class MysqlSearchStrategy implements SearchStrategy {
                      MATCH (description) AGAINST (:term)* 1`,
                     'score',
                 )
-                .where('sku LIKE :like_term')
-                .orWhere('MATCH (productName) AGAINST (:term)')
-                .orWhere('MATCH (productVariantName) AGAINST (:term)')
-                .orWhere('MATCH (description) AGAINST (:term)')
-                .setParameters({ term, like_term: `%${term}%` });
+                .where(
+                    new Brackets(qb1 => {
+                        qb1.where('sku LIKE :like_term')
+                            .orWhere('MATCH (productName) AGAINST (:term)')
+                            .orWhere('MATCH (productVariantName) AGAINST (:term)')
+                            .orWhere('MATCH (description) AGAINST (:term)');
+                    }),
+                )
+                .andWhere('channelId = :channelId')
+                .setParameters({ term, like_term: `%${term}%`, channelId: ctx.channelId });
 
             qb.innerJoin(`(${termScoreQuery.getQuery()})`, 'term_result', 'inner_productId = si.productId')
                 .addSelect(input.groupByProduct ? 'MAX(term_result.score)' : 'term_result.score', 'score')
@@ -149,6 +184,35 @@ export class MysqlSearchStrategy implements SearchStrategy {
                         } else {
                             qb1.orWhere(clause, params);
                         }
+                    }
+                }),
+            );
+        }
+        if (facetValueFilters?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const facetValueFilter of facetValueFilters) {
+                        qb1.andWhere(
+                            new Brackets(qb2 => {
+                                if (facetValueFilter.and && facetValueFilter.or?.length) {
+                                    throw new UserInputError('error.facetfilterinput-invalid-input');
+                                }
+                                if (facetValueFilter.and) {
+                                    const placeholder = '_' + facetValueFilter.and;
+                                    const clause = `FIND_IN_SET(:${placeholder}, facetValueIds)`;
+                                    const params = { [placeholder]: facetValueFilter.and };
+                                    qb2.where(clause, params);
+                                }
+                                if (facetValueFilter.or?.length) {
+                                    for (const id of facetValueFilter.or) {
+                                        const placeholder = '_' + id;
+                                        const clause = `FIND_IN_SET(:${placeholder}, facetValueIds)`;
+                                        const params = { [placeholder]: id };
+                                        qb2.orWhere(clause, params);
+                                    }
+                                }
+                            }),
+                        );
                     }
                 }),
             );

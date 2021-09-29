@@ -22,20 +22,20 @@ export class TaxRateResolver {
     constructor(private taxRateService: TaxRateService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings, Permission.ReadCatalog)
+    @Allow(Permission.ReadSettings, Permission.ReadCatalog, Permission.ReadTaxRate)
     taxRates(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRatesArgs): Promise<PaginatedList<TaxRate>> {
         return this.taxRateService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings, Permission.ReadCatalog)
+    @Allow(Permission.ReadSettings, Permission.ReadCatalog, Permission.ReadTaxRate)
     async taxRate(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRateArgs): Promise<TaxRate | undefined> {
         return this.taxRateService.findOne(ctx, args.id);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreateSettings, Permission.CreateTaxRate)
     async createTaxRate(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateTaxRateArgs,
@@ -45,7 +45,7 @@ export class TaxRateResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateTaxRate)
     async updateTaxRate(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateTaxRateArgs,
@@ -55,7 +55,7 @@ export class TaxRateResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteTaxRate)
     async deleteTaxRate(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteTaxRateArgs,

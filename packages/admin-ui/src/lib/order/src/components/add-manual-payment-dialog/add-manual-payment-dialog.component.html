@@ -17,6 +17,6 @@
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
     <button type="submit" (click)="submit()" class="btn btn-primary" [disabled]="form.invalid || form.pristine">
-        {{ 'order.add-payment' | translate }}  ({{ outstandingAmount / 100 | currency: currencyCode }})
+        {{ 'order.add-payment' | translate }}  ({{ outstandingAmount | localeCurrency: currencyCode }})
     </button>
 </ng-template>

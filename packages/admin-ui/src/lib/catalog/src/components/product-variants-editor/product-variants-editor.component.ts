@@ -15,29 +15,31 @@ import {
     ProductOptionGroupWithOptionsFragment,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { pick } from '@vendure/common/lib/pick';
 import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
 
-import { ProductDetailService } from '../../providers/product-detail.service';
+import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
+import { ConfirmVariantDeletionDialogComponent } from '../confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 
-export interface VariantInfo {
+export class GeneratedVariant {
+    isDefault: boolean;
+    options: Array<{ name: string; id?: string }>;
     productVariantId?: string;
     enabled: boolean;
     existing: boolean;
-    options: string[];
     sku: string;
     price: number;
     stock: number;
-}
 
-export interface GeneratedVariant {
-    isDefault: boolean;
-    id: string;
-    options: Array<{ name: string; id?: string }>;
+    constructor(config: Partial<GeneratedVariant>) {
+        for (const key of Object.keys(config)) {
+            this[key] = config[key];
+        }
+    }
 }
-
-const DEFAULT_VARIANT_CODE = '__DEFAULT_VARIANT__';
 
 @Component({
     selector: 'vdr-product-variants-editor',
@@ -47,7 +49,7 @@ const DEFAULT_VARIANT_CODE = '__DEFAULT_VARIANT__';
 })
 export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     formValueChanged = false;
-    variants: GeneratedVariant[] = [];
+    generatedVariants: GeneratedVariant[] = [];
     optionGroups: Array<{
         id?: string;
         isNew: boolean;
@@ -58,7 +60,6 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             locked: boolean;
         }>;
     }>;
-    variantFormValues: { [id: string]: VariantInfo } = {};
     product: GetProductVariantOptions.Product;
     currencyCode: CurrencyCode;
     private languageCode: LanguageCode;
@@ -80,7 +81,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         });
     }
 
-    onFormChanged(variantInfo: VariantInfo) {
+    onFormChanged(variantInfo: GeneratedVariant) {
         this.formValueChanged = true;
         variantInfo.enabled = true;
     }
@@ -90,7 +91,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     getVariantsToAdd() {
-        return Object.values(this.variantFormValues).filter(v => !v.existing && v.enabled);
+        return this.generatedVariants.filter(v => !v.existing && v.enabled);
     }
 
     getVariantName(variant: GeneratedVariant) {
@@ -109,28 +110,36 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
 
     generateVariants() {
         const groups = this.optionGroups.map(g => g.values);
-        const previousVariants = this.variants;
-        this.variants = groups.length
-            ? generateAllCombinations(groups).map((options, i) => ({
-                  isDefault: this.product.variants.length === 1 && i === 0,
-                  id: this.generateOptionsId(options),
-                  options,
-              }))
-            : [{ isDefault: true, id: DEFAULT_VARIANT_CODE, options: [] }];
-
-        this.variants.forEach(variant => {
-            if (!this.variantFormValues[variant.id]) {
-                const prototype = this.getVariantPrototype(variant, previousVariants);
-                this.variantFormValues[variant.id] = {
-                    enabled: false,
-                    existing: false,
-                    options: variant.options.map(o => o.name),
-                    price: prototype.price,
-                    sku: prototype.sku,
-                    stock: prototype.stock,
-                };
-            }
-        });
+        const previousVariants = this.generatedVariants;
+        const generatedVariantFactory = (
+            isDefault: boolean,
+            options: GeneratedVariant['options'],
+            existingVariant?: GetProductVariantOptions.Variants,
+            prototypeVariant?: GetProductVariantOptions.Variants,
+        ): GeneratedVariant => {
+            const prototype = this.getVariantPrototype(options, previousVariants);
+            return new GeneratedVariant({
+                enabled: true,
+                existing: !!existingVariant,
+                productVariantId: existingVariant?.id,
+                isDefault,
+                options,
+                price: existingVariant?.price ?? prototypeVariant?.price ?? prototype.price,
+                sku: existingVariant?.sku ?? prototypeVariant?.sku ?? prototype.sku,
+                stock: existingVariant?.stockOnHand ?? prototypeVariant?.stockOnHand ?? prototype.stock,
+            });
+        };
+        this.generatedVariants = groups.length
+            ? generateAllCombinations(groups).map(options => {
+                  const existingVariant = this.product.variants.find(v =>
+                      this.optionsAreEqual(v.options, options),
+                  );
+                  const prototypeVariant = this.product.variants.find(v =>
+                      this.optionsAreSubset(v.options, options),
+                  );
+                  return generatedVariantFactory(false, options, existingVariant, prototypeVariant);
+              })
+            : [generatedVariantFactory(true, [], this.product.variants[0])];
     }
 
     /**
@@ -138,17 +147,14 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
      * details off.
      */
     private getVariantPrototype(
-        variant: GeneratedVariant,
+        options: GeneratedVariant['options'],
         previousVariants: GeneratedVariant[],
-    ): Pick<VariantInfo, 'sku' | 'price' | 'stock'> {
-        if (variant.isDefault) {
-            return this.variantFormValues[DEFAULT_VARIANT_CODE];
-        }
+    ): Pick<GeneratedVariant, 'sku' | 'price' | 'stock'> {
         const variantsWithSimilarOptions = previousVariants.filter(v =>
-            variant.options.map(o => o.name).filter(name => v.options.map(o => o.name).includes(name)),
+            options.map(o => o.name).filter(name => v.options.map(o => o.name).includes(name)),
         );
         if (variantsWithSimilarOptions.length) {
-            return this.variantFormValues[this.generateOptionsId(variantsWithSimilarOptions[0].options)];
+            return pick(previousVariants[0], ['sku', 'price', 'stock']);
         }
         return {
             sku: '',
@@ -195,8 +201,9 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 values: [],
             }));
 
-        this.confirmDeletionOfDefault()
+        this.checkUniqueSkus()
             .pipe(
+                mergeMap(() => this.confirmDeletionOfObsoleteVariants()),
                 mergeMap(() =>
                     this.productDetailService.createProductOptionGroups(newOptionGroups, this.languageCode),
                 ),
@@ -204,7 +211,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 mergeMap(createdOptionGroups => this.addNewOptionsToGroups(createdOptionGroups)),
                 mergeMap(groupsIds => this.fetchOptionGroups(groupsIds)),
                 mergeMap(groups => this.createNewProductVariants(groups)),
-                mergeMap(res => this.deleteDefaultVariant(res.createProductVariants)),
+                mergeMap(res => this.deleteObsoleteVariants(res.createProductVariants)),
                 mergeMap(variants => this.reFetchProduct(variants)),
             )
             .subscribe({
@@ -218,16 +225,31 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             });
     }
 
-    private confirmDeletionOfDefault(): Observable<boolean> {
-        if (this.product.variants.length === 1) {
+    private checkUniqueSkus() {
+        const withDuplicateSkus = this.generatedVariants.filter((variant, index) => {
+            return this.generatedVariants.find(gv => gv.sku.trim() === variant.sku.trim() && gv !== variant);
+        });
+        if (withDuplicateSkus.length) {
             return this.modalService
                 .dialog({
-                    title: _('catalog.confirm-adding-options-delete-default-title'),
-                    body: _('catalog.confirm-adding-options-delete-default-body'),
-                    buttons: [
-                        { type: 'secondary', label: _('common.cancel') },
-                        { type: 'danger', label: _('catalog.delete-default-variant'), returnValue: true },
-                    ],
+                    title: _('catalog.duplicate-sku-warning'),
+                    body: unique(withDuplicateSkus.map(v => `${v.sku}`)).join(', '),
+                    buttons: [{ label: _('common.close'), returnValue: false, type: 'primary' }],
+                })
+                .pipe(mergeMap(res => EMPTY));
+        } else {
+            return of(true);
+        }
+    }
+
+    private confirmDeletionOfObsoleteVariants(): Observable<boolean> {
+        const obsoleteVariants = this.getObsoleteVariants();
+        if (obsoleteVariants.length) {
+            return this.modalService
+                .fromComponent(ConfirmVariantDeletionDialogComponent, {
+                    locals: {
+                        variants: obsoleteVariants,
+                    },
                 })
                 .pipe(
                     mergeMap(res => {
@@ -237,6 +259,16 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         } else {
             return of(true);
         }
+    }
+
+    private getObsoleteVariants() {
+        return this.product.variants.filter(
+            variant => !this.generatedVariants.find(gv => gv.productVariantId === variant.id),
+        );
+    }
+
+    private hasOnlyDefaultVariant(product: GetProductVariantOptions.Product): boolean {
+        return product.variants.length === 1 && product.optionGroups.length === 0;
     }
 
     private addOptionGroupsToProduct(
@@ -306,14 +338,14 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             .filter(notNullOrUndefined)
             .map(og => og.options)
             .reduce((flat, o) => [...flat, ...o], []);
-        const variants = Object.values(this.variantFormValues)
+        const variants = this.generatedVariants
             .filter(v => v.enabled && !v.existing)
             .map(v => ({
                 price: v.price,
                 sku: v.sku,
                 stock: v.stock,
                 optionIds: v.options
-                    .map(name => options.find(o => o.name === name))
+                    .map(name => options.find(o => o.name === name.name))
                     .filter(notNullOrUndefined)
                     .map(o => o.id),
             }));
@@ -325,13 +357,13 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         );
     }
 
-    private deleteDefaultVariant<T>(input: T): Observable<T> {
-        if (this.product.variants.length === 1) {
-            // If the default single product variant has been replaced by multiple variants,
-            // delete the original default variant.
-            return this.dataService.product
-                .deleteProductVariant(this.product.variants[0].id)
-                .pipe(map(() => input));
+    private deleteObsoleteVariants<T>(input: T): Observable<T> {
+        const obsoleteVariants = this.getObsoleteVariants();
+        if (obsoleteVariants.length) {
+            const deleteOperations = obsoleteVariants.map(v =>
+                this.dataService.product.deleteProductVariant(v.id).pipe(map(() => input)),
+            );
+            return forkJoin(...deleteOperations);
         } else {
             return of(input);
         }
@@ -347,15 +379,15 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         }
     }
 
-    private initOptionsAndVariants() {
-        this.route.data
-            .pipe(
-                switchMap(data => data.entity as Observable<GetProductVariantOptions.Product>),
-                take(1),
-            )
-            .subscribe(product => {
-                this.product = product;
-                this.optionGroups = product.optionGroups.map(og => {
+    initOptionsAndVariants() {
+        this.dataService.product
+            // tslint:disable-next-line:no-non-null-assertion
+            .getProductVariantsOptions(this.route.snapshot.paramMap.get('id')!)
+            // tslint:disable-next-line:no-non-null-assertion
+            .mapSingle(({ product }) => product!)
+            .subscribe(p => {
+                this.product = p;
+                this.optionGroups = p.optionGroups.map(og => {
                     return {
                         id: og.id,
                         isNew: false,
@@ -367,34 +399,21 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                         })),
                     };
                 });
-                this.variantFormValues = this.getExistingVariants(product.variants);
                 this.generateVariants();
             });
     }
 
-    private getExistingVariants(
-        variants: GetProductVariantOptions.Variants[],
-    ): { [id: string]: VariantInfo } {
-        return variants.reduce((all, v) => {
-            const id = v.options.length ? this.generateOptionsId(v.options) : DEFAULT_VARIANT_CODE;
-            return {
-                ...all,
-                [id]: {
-                    productVariantId: v.id,
-                    enabled: true,
-                    existing: true,
-                    options: v.options.map(o => o.name),
-                    sku: v.sku,
-                    price: v.price,
-                    stock: v.stockOnHand,
-                },
-            };
-        }, {});
+    private optionsAreEqual(a: Array<{ name: string }>, b: Array<{ name: string }>): boolean {
+        return this.toOptionString(a) === this.toOptionString(b);
     }
 
-    private generateOptionsId(options: GeneratedVariant['options']): string {
-        return options
-            .map(o => o.name)
+    private optionsAreSubset(a: Array<{ name: string }>, b: Array<{ name: string }>): boolean {
+        return this.toOptionString(b).includes(this.toOptionString(a));
+    }
+
+    private toOptionString(o: Array<{ name: string }>): string {
+        return o
+            .map(x => x.name)
             .sort()
             .join('|');
     }

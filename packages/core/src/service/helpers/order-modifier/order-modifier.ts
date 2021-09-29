@@ -24,13 +24,15 @@ import { OrderModification } from '../../../entity/order-modification/order-modi
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { CountryService } from '../../services/country.service';
-import { PaymentMethodService } from '../../services/payment-method.service';
+import { PaymentService } from '../../services/payment.service';
 import { ProductVariantService } from '../../services/product-variant.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
+import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
 import { patchEntity } from '../utils/patch-entity';
 import { translateDeep } from '../utils/translate-entity';
@@ -52,41 +54,58 @@ export class OrderModifier {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private orderCalculator: OrderCalculator,
-        private paymentMethodService: PaymentMethodService,
+        private paymentService: PaymentService,
         private countryService: CountryService,
         private stockMovementService: StockMovementService,
         private productVariantService: ProductVariantService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     /**
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
      */
-    async constrainQuantityToSaleable(ctx: RequestContext, variant: ProductVariant, quantity: number) {
-        let correctedQuantity = quantity;
+    async constrainQuantityToSaleable(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        quantity: number,
+        existingQuantity = 0,
+    ) {
+        let correctedQuantity = quantity + existingQuantity;
         const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
         if (saleableStockLevel < correctedQuantity) {
-            correctedQuantity = Math.max(saleableStockLevel, 0);
+            correctedQuantity = Math.max(saleableStockLevel - existingQuantity, 0);
         }
         return correctedQuantity;
+    }
+
+    async getExistingOrderLine(
+        ctx: RequestContext,
+        order: Order,
+        productVariantId: ID,
+        customFields?: { [key: string]: any },
+    ): Promise<OrderLine | undefined> {
+        for (const line of order.lines) {
+            const match =
+                idsAreEqual(line.productVariant.id, productVariantId) &&
+                (await this.customFieldsAreEqual(ctx, line, customFields, line.customFields));
+            if (match) {
+                return line;
+            }
+        }
     }
 
     /**
      * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
      * if no existing line is found.
      */
-    async getOrCreateItemOrderLine(
+    async getOrCreateOrderLine(
         ctx: RequestContext,
         order: Order,
         productVariantId: ID,
         customFields?: { [key: string]: any },
     ) {
-        const existingOrderLine = order.lines.find(line => {
-            return (
-                idsAreEqual(line.productVariant.id, productVariantId) &&
-                this.customFieldsAreEqual(customFields, line.customFields)
-            );
-        });
+        const existingOrderLine = await this.getExistingOrderLine(ctx, order, productVariantId, customFields);
         if (existingOrderLine) {
             return existingOrderLine;
         }
@@ -100,6 +119,7 @@ export class OrderModifier {
                 customFields,
             }),
         );
+        await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
         const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
             relations: [
                 'items',
@@ -110,7 +130,11 @@ export class OrderModifier {
             ],
         });
         lineWithRelations.productVariant = translateDeep(
-            this.productVariantService.applyChannelPriceAndTax(lineWithRelations.productVariant, ctx),
+            await this.productVariantService.applyChannelPriceAndTax(
+                lineWithRelations.productVariant,
+                ctx,
+                order,
+            ),
             ctx.languageCode,
         );
         order.lines.push(lineWithRelations);
@@ -130,31 +154,34 @@ export class OrderModifier {
         order: Order,
     ): Promise<OrderLine> {
         const currentQuantity = orderLine.quantity;
-        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
 
         if (currentQuantity < quantity) {
             if (!orderLine.items) {
                 orderLine.items = [];
             }
-            const productVariant = orderLine.productVariant;
-            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
-                ctx,
-                productVariant,
-                orderLine.customFields || {},
-            );
-            const taxRate = productVariant.taxRateApplied;
+            const newOrderItems = [];
             for (let i = currentQuantity; i < quantity; i++) {
-                const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
+                newOrderItems.push(
                     new OrderItem({
-                        listPrice: price,
-                        listPriceIncludesTax: priceIncludesTax,
+                        listPrice: orderLine.productVariant.listPrice,
+                        listPriceIncludesTax: orderLine.productVariant.listPriceIncludesTax,
                         adjustments: [],
                         taxLines: [],
-                        line: orderLine,
+                        lineId: orderLine.id,
                     }),
                 );
-                orderLine.items.push(orderItem);
             }
+            const { identifiers } = await this.connection
+                .getRepository(ctx, OrderItem)
+                .createQueryBuilder()
+                .insert()
+                .into(OrderItem)
+                .values(newOrderItems)
+                .execute();
+            newOrderItems.forEach((item, i) => (item.id = identifiers[i].id));
+            orderLine.items = await this.connection
+                .getRepository(ctx, OrderItem)
+                .find({ where: { line: orderLine } });
         } else if (quantity < currentQuantity) {
             if (order.active) {
                 // When an Order is still active, it is fine to just delete
@@ -162,7 +189,12 @@ export class OrderModifier {
                 const keepItems = orderLine.items.slice(0, quantity);
                 const removeItems = orderLine.items.slice(quantity);
                 orderLine.items = keepItems;
-                await this.connection.getRepository(ctx, OrderItem).remove(removeItems);
+                await this.connection
+                    .getRepository(ctx, OrderItem)
+                    .createQueryBuilder()
+                    .delete()
+                    .whereInIds(removeItems.map(i => i.id))
+                    .execute();
             } else {
                 // When an Order is not active (i.e. Customer checked out), then we don't want to just
                 // delete the OrderItems - instead we will cancel them
@@ -217,7 +249,7 @@ export class OrderModifier {
             }
 
             const customFields = (row as any).customFields || {};
-            const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId, customFields);
+            const orderLine = await this.getOrCreateOrderLine(ctx, order, productVariantId, customFields);
             const correctedQuantity = await this.constrainQuantityToSaleable(
                 ctx,
                 orderLine.productVariant,
@@ -338,7 +370,7 @@ export class OrderModifier {
         if (input.updateBillingAddress) {
             order.billingAddress = {
                 ...order.billingAddress,
-                ...input.updateShippingAddress,
+                ...input.updateBillingAddress,
             };
             if (input.updateBillingAddress.countryCode) {
                 const country = await this.countryService.findOneByCode(
@@ -352,7 +384,11 @@ export class OrderModifier {
         }
 
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
-        await this.orderCalculator.applyPriceAdjustments(ctx, order, [], updatedOrderLines, {
+        const promotions = await this.connection.getRepository(ctx, Promotion).find({
+            where: { enabled: true, deletedAt: null },
+            order: { priorityScore: 'ASC' },
+        });
+        await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
 
@@ -375,7 +411,7 @@ export class OrderModifier {
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
             if (payment) {
-                const refund = await this.paymentMethodService.createRefund(
+                const refund = await this.paymentService.createRefund(
                     ctx,
                     refundInput,
                     order,
@@ -420,16 +456,52 @@ export class OrderModifier {
         });
     }
 
-    private customFieldsAreEqual(
+    private async customFieldsAreEqual(
+        ctx: RequestContext,
+        orderLine: OrderLine,
         inputCustomFields: { [key: string]: any } | null | undefined,
         existingCustomFields?: { [key: string]: any },
-    ): boolean {
+    ): Promise<boolean> {
         if (inputCustomFields == null && typeof existingCustomFields === 'object') {
             // A null value for an OrderLine customFields input is the equivalent
             // of every property of an existing customFields object being null.
             return Object.values(existingCustomFields).every(v => v === null);
         }
-        return JSON.stringify(inputCustomFields) === JSON.stringify(existingCustomFields);
+        const customFieldDefs = this.configService.customFields.OrderLine;
+
+        const customFieldRelations = customFieldDefs.filter(d => d.type === 'relation');
+        let lineWithCustomFieldRelations: OrderLine | undefined;
+        if (customFieldRelations.length) {
+            // for relation types, we need to actually query the DB and check if there is an
+            // existing entity assigned.
+            lineWithCustomFieldRelations = await this.connection
+                .getRepository(ctx, OrderLine)
+                .findOne(orderLine.id, {
+                    relations: customFieldRelations.map(r => `customFields.${r.name}`),
+                });
+        }
+
+        for (const def of customFieldDefs) {
+            const key = def.name;
+            const existingValue = existingCustomFields?.[key];
+            if (existingValue !== undefined) {
+                const valuesMatch =
+                    JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(existingValue);
+                const undefinedMatchesNull = existingValue === null && inputCustomFields?.[key] === undefined;
+                if (!valuesMatch && !undefinedMatchesNull) {
+                    return false;
+                }
+            } else if (def.type === 'relation') {
+                const inputId = `${key}Id`;
+                const inputValue = inputCustomFields?.[inputId];
+                // tslint:disable-next-line:no-non-null-assertion
+                const existingRelation = (lineWithCustomFieldRelations!.customFields as any)[key];
+                if (inputValue && inputValue !== existingRelation?.id) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private async getProductVariantOrThrow(

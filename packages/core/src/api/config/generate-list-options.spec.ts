@@ -199,11 +199,11 @@ describe('generateListOptions()', () => {
         expect(printType(result.getType('PersonListOptions')!)).toBe(
             removeLeadingWhitespace(`
                     input PersonListOptions {
+                      categoryId: ID
                       skip: Int
                       take: Int
                       sort: PersonSortParameter
                       filter: PersonFilterParameter
-                      categoryId: ID
                     }`),
         );
 

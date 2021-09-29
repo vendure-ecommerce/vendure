@@ -1,0 +1,34 @@
+{
+  "name": "@vendure/job-queue-plugin",
+  "version": "1.2.2",
+  "license": "MIT",
+  "main": "package/index.js",
+  "types": "package/index.d.ts",
+  "files": [
+    "package/**/*"
+  ],
+  "private": false,
+  "scripts": {
+    "watch": "tsc -p ./tsconfig.build.json --watch",
+    "build": "rimraf package && tsc -p ./tsconfig.build.json",
+    "lint": "tslint --fix --project ./",
+    "test": "jest --config ./jest.config.js",
+    "e2e-wip": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --runInBand --package=job-queue-plugin",
+    "ci": "yarn build"
+  },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@google-cloud/pubsub": "^2.8.0",
+    "@types/redis": "^2.8.28",
+    "@vendure/common": "^1.2.2",
+    "@vendure/core": "^1.2.2",
+    "bullmq": "^1.40.1",
+    "redis": "^3.0.2",
+    "rimraf": "^3.0.2",
+    "typescript": "4.3.5"
+  }
+}

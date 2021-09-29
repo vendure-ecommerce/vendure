@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Move into the project root
+dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+cd "$dir"
+
 # A shell script which publishes all packages to a local Verdaccio registry for testing / local dev purposes
 
 if [[ -z "${VERDACCIO_URL}" ]]; then
@@ -19,4 +23,5 @@ cd ../elasticsearch-plugin && npm publish -reg $VERDACCIO &&\
 cd ../email-plugin && npm publish -reg $VERDACCIO &&\
 cd ../testing && npm publish -reg $VERDACCIO &&\
 cd ../ui-devkit && npm publish -reg $VERDACCIO &&\
+cd ../job-queue-plugin && npm publish -reg $VERDACCIO &&\
 cd ../admin-ui/package && npm publish -reg $VERDACCIO

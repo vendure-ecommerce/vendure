@@ -1,5 +1,5 @@
 import { LanguageCode, LogicalOperator, PriceRange, SortOrder } from '@vendure/common/lib/generated-types';
-import { DeepRequired, ID } from '@vendure/core';
+import { DeepRequired, ID, UserInputError } from '@vendure/core';
 
 import { SearchConfig } from './options';
 import { ElasticSearchInput, SearchRequestBody } from './types';
@@ -26,6 +26,7 @@ export function buildElasticBody(
         sort,
         priceRangeWithTax,
         priceRange,
+        facetValueFilters,
     } = input;
     const query: any = {
         bool: {},
@@ -58,6 +59,24 @@ export function buildElasticBody(
                 bool: { [operator]: facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
             },
         ]);
+    }
+    if (facetValueFilters && facetValueFilters.length) {
+        ensureBoolFilterExists(query);
+        facetValueFilters.forEach(facetValueFilter => {
+            if (facetValueFilter.and && facetValueFilter.or && facetValueFilter.or.length) {
+                throw new UserInputError('error.facetfilterinput-invalid-input');
+            }
+
+            if (facetValueFilter.and) {
+                query.bool.filter.push({ term: { facetValueIds: facetValueFilter.and } });
+            }
+
+            if (facetValueFilter.or && facetValueFilter.or.length) {
+                query.bool.filter.push({
+                    bool: { ['should']: facetValueFilter.or.map(id => ({ term: { facetValueIds: id } })) },
+                });
+            }
+        });
     }
     if (collectionId) {
         ensureBoolFilterExists(query);
@@ -101,6 +120,7 @@ export function buildElasticBody(
         sort: sortArray,
         from: skip || 0,
         size: take || 10,
+        track_total_hits: searchConfig.totalItemsMaxSize,
     };
 }
 

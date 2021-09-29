@@ -5,6 +5,6 @@
 <div *ngIf="!priceIncludesTax" class="value">
     {{
         'catalog.price-with-tax-in-default-zone'
-            | translate: { price: grossPrice$ | async | currency: currencyCode, rate: taxRate$ | async }
+            | translate: { price: grossPrice$ | async | localeCurrency: currencyCode, rate: taxRate$ | async }
     }}
 </div>

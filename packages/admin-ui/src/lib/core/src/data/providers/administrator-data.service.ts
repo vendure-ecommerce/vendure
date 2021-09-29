@@ -51,12 +51,8 @@ export class AdministratorDataService {
         );
     }
 
-    getActiveAdministrator(fetchPolicy: FetchPolicy = 'cache-first') {
-        return this.baseDataService.query<GetActiveAdministrator.Query>(
-            GET_ACTIVE_ADMINISTRATOR,
-            {},
-            fetchPolicy,
-        );
+    getActiveAdministrator() {
+        return this.baseDataService.query<GetActiveAdministrator.Query>(GET_ACTIVE_ADMINISTRATOR, {});
     }
 
     getAdministrator(id: string) {

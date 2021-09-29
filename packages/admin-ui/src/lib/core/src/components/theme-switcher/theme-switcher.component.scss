@@ -1,0 +1,36 @@
+:host {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button.theme-toggle {
+    position: relative;
+    padding-left: 20px;
+    border: none;
+    background: transparent;
+    color: var(--clr-dropdown-item-color);
+    cursor: pointer;
+}
+
+.theme-icon {
+    position: absolute;
+    top: 0px;
+    left: 6px;
+    z-index: 0;
+    opacity: 0.2;
+    color: var(--color-text-300);
+    transition: opacity 0.3s, left 0.3s;
+
+    &.active {
+        z-index: 1;
+        left: 0px;
+        opacity: 1;
+    }
+    &.default.active {
+        color: #d6ae3f;
+    }
+    &.dark.active {
+        color: #ffdf3a;
+    }
+}

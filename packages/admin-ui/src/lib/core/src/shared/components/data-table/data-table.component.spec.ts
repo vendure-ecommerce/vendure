@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { TestingCommonModule } from '../../../../../../testing/testing-common.module';
@@ -13,18 +13,20 @@ describe('DataTableComponent', () => {
     let component: DataTableComponent<any>;
     let fixture: ComponentFixture<DataTableComponent<any>>;
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            imports: [NgxPaginationModule, TestingCommonModule],
-            declarations: [
-                DataTableComponent,
-                DataTableColumnComponent,
-                PaginationControlsComponent,
-                ItemsPerPageControlsComponent,
-                SelectToggleComponent,
-            ],
-        }).compileComponents();
-    }));
+    beforeEach(
+        waitForAsync(() => {
+            TestBed.configureTestingModule({
+                imports: [NgxPaginationModule, TestingCommonModule],
+                declarations: [
+                    DataTableComponent,
+                    DataTableColumnComponent,
+                    PaginationControlsComponent,
+                    ItemsPerPageControlsComponent,
+                    SelectToggleComponent,
+                ],
+            }).compileComponents();
+        }),
+    );
 
     beforeEach(() => {
         fixture = TestBed.createComponent(DataTableComponent);

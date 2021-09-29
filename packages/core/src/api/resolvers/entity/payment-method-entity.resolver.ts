@@ -9,12 +9,4 @@ import { Ctx } from '../../decorators/request-context.decorator';
 @Resolver('PaymentMethod')
 export class PaymentMethodEntityResolver {
     constructor(private paymentMethodService: PaymentMethodService) {}
-
-    @ResolveField()
-    async definition(
-        @Ctx() ctx: RequestContext,
-        @Parent() paymentMethod: PaymentMethod,
-    ): Promise<ConfigurableOperationDefinition> {
-        return this.paymentMethodService.getPaymentMethodHandler(paymentMethod.code).toGraphQlType(ctx);
-    }
 }

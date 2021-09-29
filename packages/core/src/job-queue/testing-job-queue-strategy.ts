@@ -6,9 +6,9 @@ import { Job } from './job';
  * An in-memory {@link JobQueueStrategy} design for testing purposes.
  */
 export class TestingJobQueueStrategy extends InMemoryJobQueueStrategy {
-    prePopulate(jobs: Job[]) {
+    async prePopulate(jobs: Job[]) {
         for (const job of jobs) {
-            this.add(job);
+            await this.add(job);
         }
     }
 }

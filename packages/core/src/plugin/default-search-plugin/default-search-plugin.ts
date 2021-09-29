@@ -1,3 +1,4 @@
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
@@ -12,7 +13,7 @@ import { ProductVariantChannelEvent } from '../../event-bus/events/product-varia
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { PluginCommonModule } from '../plugin-common.module';
-import { OnVendureBootstrap, VendurePlugin } from '../vendure-plugin';
+import { VendurePlugin } from '../vendure-plugin';
 
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
@@ -56,20 +57,17 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [FulltextSearchService, SearchIndexService],
+    providers: [FulltextSearchService, SearchIndexService, IndexerController],
     adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
     shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
     entities: [SearchIndexItem],
-    workers: [IndexerController],
 })
-export class DefaultSearchPlugin implements OnVendureBootstrap {
+export class DefaultSearchPlugin implements OnApplicationBootstrap {
     /** @internal */
     constructor(private eventBus: EventBus, private searchIndexService: SearchIndexService) {}
 
     /** @internal */
-    async onVendureBootstrap() {
-        this.searchIndexService.initJobQueue();
-
+    async onApplicationBootstrap() {
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
                 return this.searchIndexService.deleteProduct(event.ctx, event.product);

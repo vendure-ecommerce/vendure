@@ -30,6 +30,7 @@ import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
     AssignProductsToChannel,
+    AssignPromotionToChannel,
     ChannelFragment,
     CreateChannel,
     CreateCustomerGroup,
@@ -53,6 +54,7 @@ import {
     GetActiveOrder,
     GetOrderPromotionsByCode,
     RemoveCouponCode,
+    RemoveItemFromOrder,
     SetCustomerForOrder,
     SetShippingMethod,
     TestOrderFragmentFragment,
@@ -61,6 +63,7 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PROMOTIONS_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_CUSTOMER_GROUP,
     CREATE_PROMOTION,
@@ -76,6 +79,7 @@ import {
     GET_ACTIVE_ORDER,
     GET_ORDER_PROMOTIONS_BY_CODE,
     REMOVE_COUPON_CODE,
+    REMOVE_ITEM_FROM_ORDER,
     SET_CUSTOMER,
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
@@ -110,7 +114,15 @@ describe('Promotions applied to Orders', () => {
 
     beforeAll(async () => {
         await server.init({
-            initialData,
+            initialData: {
+                ...initialData,
+                paymentMethods: [
+                    {
+                        name: testSuccessfulPaymentMethod.code,
+                        handler: { code: testSuccessfulPaymentMethod.code, arguments: [] },
+                    },
+                ],
+            },
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
             customerCount: 2,
         });
@@ -241,6 +253,13 @@ describe('Promotions applied to Orders', () => {
             expect(removeCouponCode!.totalWithTax).toBe(6000);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/649
+        it('discounts array cleared after coupon code removed', async () => {
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder?.discounts).toEqual([]);
+        });
+
         it('order history records removal', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
@@ -334,7 +353,7 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.totalWithTax).toBe(0);
             expect(adjustOrderLine!.discounts[0].description).toBe('Free if order total greater than 100');
-            expect(adjustOrderLine!.discounts[0].amount).toBe(-12000);
+            expect(adjustOrderLine!.discounts[0].amountWithTax).toBe(-12000);
 
             await deletePromotion(promotion.id);
         });
@@ -382,7 +401,7 @@ describe('Promotions applied to Orders', () => {
             expect(res2!.discounts[0].description).toBe(
                 'Free if order contains 2 items with Sale facet value',
             );
-            expect(res2!.discounts[0].amount).toBe(-1320);
+            expect(res2!.discounts[0].amountWithTax).toBe(-1320);
 
             await deletePromotion(promotion.id);
         });
@@ -433,7 +452,7 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.total).toBe(0);
             expect(adjustOrderLine!.discounts[0].description).toBe('Free if buying 3 or more offer products');
-            expect(adjustOrderLine!.discounts[0].amount).toBe(-13200);
+            expect(adjustOrderLine!.discounts[0].amountWithTax).toBe(-13200);
 
             await deletePromotion(promotion.id);
         });
@@ -471,7 +490,7 @@ describe('Promotions applied to Orders', () => {
             expect(addItemToOrder!.totalWithTax).toBe(0);
             expect(addItemToOrder!.discounts.length).toBe(1);
             expect(addItemToOrder!.discounts[0].description).toBe('Free for group members');
-            expect(addItemToOrder!.discounts[0].amount).toBe(-6000);
+            expect(addItemToOrder!.discounts[0].amountWithTax).toBe(-6000);
 
             await adminClient.query<RemoveCustomersFromGroup.Mutation, RemoveCustomersFromGroup.Variables>(
                 REMOVE_CUSTOMERS_FROM_GROUP,
@@ -498,6 +517,7 @@ describe('Promotions applied to Orders', () => {
 
     describe('default PromotionActions', () => {
         const TAX_INCLUDED_CHANNEL_TOKEN = 'tax_included_channel';
+        let taxIncludedChannel: ChannelFragment;
 
         beforeAll(async () => {
             // Create a channel where the prices include tax, so we can ensure
@@ -516,7 +536,7 @@ describe('Promotions applied to Orders', () => {
                     token: TAX_INCLUDED_CHANNEL_TOKEN,
                 },
             });
-            const taxIncludedChannel = createChannel as ChannelFragment;
+            taxIncludedChannel = createChannel as ChannelFragment;
             await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
                 ASSIGN_PRODUCT_TO_CHANNEL,
                 {
@@ -532,6 +552,18 @@ describe('Promotions applied to Orders', () => {
         beforeEach(async () => {
             await shopClient.asAnonymousUser();
         });
+
+        async function assignPromotionToTaxIncludedChannel(promotionId: string | string[]) {
+            await adminClient.query<AssignPromotionToChannel.Mutation, AssignPromotionToChannel.Variables>(
+                ASSIGN_PROMOTIONS_TO_CHANNEL,
+                {
+                    input: {
+                        promotionIds: Array.isArray(promotionId) ? promotionId : [promotionId],
+                        channelId: taxIncludedChannel.id,
+                    },
+                },
+            );
+        }
 
         describe('orderPercentageDiscount', () => {
             const couponCode = '50%_off_order';
@@ -550,6 +582,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -624,6 +657,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -713,6 +747,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -849,6 +884,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -966,6 +1002,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel(promotion.id);
             });
 
             afterAll(async () => {
@@ -1087,6 +1124,7 @@ describe('Promotions applied to Orders', () => {
                         },
                     ],
                 });
+                await assignPromotionToTaxIncludedChannel([promotion1.id, promotion2.id]);
             });
 
             afterAll(async () => {
@@ -1370,6 +1408,54 @@ describe('Promotions applied to Orders', () => {
                 expect(activeOrder!.couponCodes).toEqual([]);
             });
         });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/710
+    it('removes order-level discount made invalid by removing OrderLine', async () => {
+        const promotion = await createPromotion({
+            enabled: true,
+            name: 'Test Promo',
+            conditions: [minOrderAmountCondition(10000)],
+            actions: [
+                {
+                    code: orderFixedDiscount.code,
+                    arguments: [{ name: 'discount', value: '1000' }],
+                },
+            ],
+        });
+
+        await shopClient.asAnonymousUser();
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: getVariantBySlug('item-1000').id,
+            quantity: 8,
+        });
+        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
+            ADD_ITEM_TO_ORDER,
+            {
+                productVariantId: getVariantBySlug('item-5000').id,
+                quantity: 1,
+            },
+        );
+        orderResultGuard.assertSuccess(addItemToOrder);
+        expect(addItemToOrder!.discounts.length).toBe(1);
+        expect(addItemToOrder!.discounts[0].description).toBe('Test Promo');
+
+        const { activeOrder: check1 } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+        expect(check1!.discounts.length).toBe(1);
+        expect(check1!.discounts[0].description).toBe('Test Promo');
+
+        const { removeOrderLine } = await shopClient.query<
+            RemoveItemFromOrder.Mutation,
+            RemoveItemFromOrder.Variables
+        >(REMOVE_ITEM_FROM_ORDER, {
+            orderLineId: addItemToOrder.lines[1].id,
+        });
+
+        orderResultGuard.assertSuccess(removeOrderLine);
+        expect(removeOrderLine.discounts.length).toBe(0);
+
+        const { activeOrder: check2 } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+        expect(check2!.discounts.length).toBe(0);
     });
 
     async function getProducts() {

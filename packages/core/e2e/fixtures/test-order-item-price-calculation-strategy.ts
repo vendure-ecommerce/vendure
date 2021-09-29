@@ -20,7 +20,7 @@ export class TestOrderItemPriceCalculationStrategy implements OrderItemPriceCalc
         }
         return {
             price,
-            priceIncludesTax: productVariant.priceIncludesTax,
+            priceIncludesTax: productVariant.listPriceIncludesTax,
         };
     }
 }

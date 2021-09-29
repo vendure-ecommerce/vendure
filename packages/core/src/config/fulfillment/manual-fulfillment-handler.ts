@@ -8,17 +8,11 @@ export const manualFulfillmentHandler = new FulfillmentHandler({
     args: {
         method: {
             type: 'string',
-            config: {
-                options: [
-                    { value: 'next_day' },
-                    { value: 'first_class' },
-                    { value: 'priority' },
-                    { value: 'standard' },
-                ],
-            },
+            required: false,
         },
         trackingCode: {
             type: 'string',
+            required: false,
         },
     },
     createFulfillment: (ctx, orders, orderItems, args) => {

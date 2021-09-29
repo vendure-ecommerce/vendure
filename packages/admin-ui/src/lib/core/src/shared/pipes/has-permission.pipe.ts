@@ -19,7 +19,7 @@ import { DataService } from '../../data/providers/data.service';
 export class HasPermissionPipe implements PipeTransform, OnDestroy {
     private hasPermission = false;
     private currentPermissions$: Observable<string[]>;
-    private permission: string | null = null;
+    private lastPermissions: string | null = null;
     private subscription: Subscription;
 
     constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {
@@ -28,13 +28,15 @@ export class HasPermissionPipe implements PipeTransform, OnDestroy {
             .mapStream(data => data.userStatus.permissions);
     }
 
-    transform(permission: string): any {
-        if (this.permission !== permission) {
-            this.permission = permission;
+    transform(input: string | string[]): any {
+        const requiredPermissions = Array.isArray(input) ? input : [input];
+        const requiredPermissionsString = requiredPermissions.join(',');
+        if (this.lastPermissions !== requiredPermissionsString) {
+            this.lastPermissions = requiredPermissionsString;
             this.hasPermission = false;
             this.dispose();
             this.subscription = this.currentPermissions$.subscribe(permissions => {
-                this.hasPermission = permissions.includes(permission);
+                this.hasPermission = this.checkPermissions(permissions, requiredPermissions);
                 this.changeDetectorRef.markForCheck();
             });
         }
@@ -44,6 +46,15 @@ export class HasPermissionPipe implements PipeTransform, OnDestroy {
 
     ngOnDestroy() {
         this.dispose();
+    }
+
+    private checkPermissions(userPermissions: string[], requiredPermissions: string[]): boolean {
+        for (const perm of requiredPermissions) {
+            if (userPermissions.includes(perm)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private dispose() {

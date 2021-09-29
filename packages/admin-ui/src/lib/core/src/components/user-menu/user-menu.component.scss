@@ -8,7 +8,7 @@
 }
 
 .user-name {
-    color: $color-grey-200;
+    color: var(--color-grey-200);
     margin-right: 12px;
     @media screen and (max-width: $breakpoint-small) {
         display: none;
@@ -18,7 +18,3 @@
 .trigger clr-icon {
     color: white;
 }
-.btn.btn-outline:hover {
-    background-color: #e1f1f62e;
-}
-

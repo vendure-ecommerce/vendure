@@ -1,4 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { customAlphabet } from 'nanoid';
 
 import { UserInputError } from '../../common/error/errors';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -88,17 +89,33 @@ export const variantNameCollectionFilter = new CollectionFilter({
     code: 'variant-name-filter',
     description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
     apply: (qb, args) => {
-        qb.leftJoin('productVariant.translations', 'translation');
+        const translationAlias = `variant_name_filter_translation`;
+        const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 6);
+        const termName = `term_${nanoid()}`;
+        const hasJoinOnTranslations = !!qb.expressionMap.joinAttributes.find(
+            ja => ja.entityOrProperty === 'productVariant.translations',
+        );
+        if (!hasJoinOnTranslations) {
+            qb.leftJoin('productVariant.translations', translationAlias);
+        }
         const LIKE = qb.connection.options.type === 'postgres' ? 'ILIKE' : 'LIKE';
         switch (args.operator) {
             case 'contains':
-                return qb.andWhere(`translation.name ${LIKE} :term`, { term: `%${args.term}%` });
+                return qb.andWhere(`${translationAlias}.name ${LIKE} :${termName}`, {
+                    [termName]: `%${args.term}%`,
+                });
             case 'doesNotContain':
-                return qb.andWhere(`translation.name NOT ${LIKE} :term`, { term: `%${args.term}%` });
+                return qb.andWhere(`${translationAlias}.name NOT ${LIKE} :${termName}`, {
+                    [termName]: `%${args.term}%`,
+                });
             case 'startsWith':
-                return qb.andWhere(`translation.name ${LIKE} :term`, { term: `${args.term}%` });
+                return qb.andWhere(`${translationAlias}.name ${LIKE} :${termName}`, {
+                    [termName]: `${args.term}%`,
+                });
             case 'endsWith':
-                return qb.andWhere(`translation.name ${LIKE} :term`, { term: `%${args.term}` });
+                return qb.andWhere(`${translationAlias}.name ${LIKE} :${termName}`, {
+                    [termName]: `%${args.term}`,
+                });
             default:
                 throw new UserInputError(`${args.operator} is not a valid operator`);
         }

@@ -3,4 +3,5 @@ type TaxCategory implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     name: String!
+    isDefault: Boolean!
 }

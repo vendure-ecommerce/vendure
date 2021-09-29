@@ -9,7 +9,11 @@ export const initialData: InitialData = {
         { name: 'Reduced Tax', percentage: 10 },
         { name: 'Zero Tax', percentage: 0 },
     ],
-    shippingMethods: [{ name: 'Standard Shipping', price: 500 }, { name: 'Express Shipping', price: 1000 }],
+    shippingMethods: [
+        { name: 'Standard Shipping', price: 500 },
+        { name: 'Express Shipping', price: 1000 },
+    ],
+    paymentMethods: [],
     countries: [
         { name: 'Australia', code: 'AU', zone: 'Oceania' },
         { name: 'Austria', code: 'AT', zone: 'Europe' },

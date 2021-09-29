@@ -6,7 +6,14 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { STATIC_ASSETS_OUTPUT_DIR } from './constants';
-import { AdminUiExtension, Extension, StaticAssetDefinition } from './types';
+import {
+    AdminUiExtension,
+    Extension,
+    GlobalStylesExtension,
+    StaticAssetDefinition,
+    StaticAssetExtension,
+    TranslationExtension,
+} from './types';
 
 export const logger = {
     log: (message: string) => console.log(chalk.green(message)),
@@ -80,10 +87,22 @@ export function normalizeExtensions(extensions?: AdminUiExtension[]): Array<Requ
             id = hash.digest('hex');
         }
 
-        return { staticAssets: [], translations: {}, ...e, id };
+        return { staticAssets: [], translations: {}, globalStyles: [], ...e, id };
     });
 }
 
 export function isAdminUiExtension(input: Extension): input is AdminUiExtension {
     return input.hasOwnProperty('extensionPath');
+}
+
+export function isTranslationExtension(input: Extension): input is TranslationExtension {
+    return input.hasOwnProperty('translations');
+}
+
+export function isStaticAssetExtension(input: Extension): input is StaticAssetExtension {
+    return input.hasOwnProperty('staticAssets');
+}
+
+export function isGlobalStylesExtension(input: Extension): input is GlobalStylesExtension {
+    return input.hasOwnProperty('globalStyles');
 }

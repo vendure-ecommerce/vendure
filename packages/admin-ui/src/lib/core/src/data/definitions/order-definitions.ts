@@ -2,10 +2,11 @@ import { gql } from 'apollo-angular';
 
 import { ERROR_RESULT_FRAGMENT } from './shared-definitions';
 
-export const ADJUSTMENT_FRAGMENT = gql`
-    fragment Adjustment on Adjustment {
+export const DISCOUNT_FRAGMENT = gql`
+    fragment Discount on Discount {
         adjustmentSource
         amount
+        amountWithTax
         description
         type
     }
@@ -54,6 +55,11 @@ export const ORDER_FRAGMENT = gql`
             firstName
             lastName
         }
+        shippingLines {
+            shippingMethod {
+                name
+            }
+        }
     }
 `;
 
@@ -86,7 +92,7 @@ export const ORDER_LINE_FRAGMENT = gql`
             stockOnHand
         }
         discounts {
-            ...Adjustment
+            ...Discount
         }
         unitPrice
         unitPriceWithTax
@@ -138,7 +144,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             taxRate
         }
         discounts {
-            ...Adjustment
+            ...Discount
         }
         promotions {
             id
@@ -179,6 +185,8 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             amount
             method
             state
+            nextStates
+            errorMessage
             metadata
             refunds {
                 id
@@ -223,7 +231,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             }
         }
     }
-    ${ADJUSTMENT_FRAGMENT}
+    ${DISCOUNT_FRAGMENT}
     ${ORDER_ADDRESS_FRAGMENT}
     ${FULFILLMENT_FRAGMENT}
     ${ORDER_LINE_FRAGMENT}
@@ -276,10 +284,40 @@ export const SETTLE_PAYMENT = gql`
     ${ERROR_RESULT_FRAGMENT}
 `;
 
+export const TRANSITION_PAYMENT_TO_STATE = gql`
+    mutation TransitionPaymentToState($id: ID!, $state: String!) {
+        transitionPaymentToState(id: $id, state: $state) {
+            ... on Payment {
+                id
+                transactionId
+                amount
+                method
+                state
+                metadata
+            }
+            ...ErrorResult
+            ... on PaymentStateTransitionError {
+                transitionError
+            }
+        }
+    }
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
 export const CREATE_FULFILLMENT = gql`
     mutation CreateFulfillment($input: FulfillOrderInput!) {
         addFulfillmentToOrder(input: $input) {
             ...Fulfillment
+            ... on CreateFulfillmentError {
+                errorCode
+                message
+                fulfillmentHandlerError
+            }
+            ... on FulfillmentStateTransitionError {
+                errorCode
+                message
+                transitionError
+            }
             ...ErrorResult
         }
     }

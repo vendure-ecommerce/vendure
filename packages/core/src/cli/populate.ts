@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplicationContext } from '@nestjs/common';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -12,11 +12,11 @@ import { logColored } from './cli-utils';
  *
  * @docsCategory import-export
  */
-export async function populate(
-    bootstrapFn: () => Promise<INestApplication | undefined>,
+export async function populate<T extends INestApplicationContext>(
+    bootstrapFn: () => Promise<T | undefined>,
     initialDataPathOrObject: string | object,
     productsCsvPath?: string,
-): Promise<INestApplication> {
+): Promise<T> {
     const app = await bootstrapFn();
     if (!app) {
         throw new Error('Could not bootstrap the Vendure app');
@@ -48,7 +48,7 @@ export async function populate(
 }
 
 export async function populateInitialData(
-    app: INestApplication,
+    app: INestApplicationContext,
     initialData: import('@vendure/core').InitialData,
     loggingFn?: (message: string) => void,
 ) {
@@ -65,7 +65,7 @@ export async function populateInitialData(
 }
 
 export async function populateCollections(
-    app: INestApplication,
+    app: INestApplicationContext,
     initialData: import('@vendure/core').InitialData,
     loggingFn?: (message: string) => void,
 ) {
@@ -84,7 +84,7 @@ export async function populateCollections(
 }
 
 export async function importProductsFromCsv(
-    app: INestApplication,
+    app: INestApplicationContext,
     productsCsvPath: string,
     languageCode: import('@vendure/core').LanguageCode,
 ): Promise<import('@vendure/core').ImportProgress> {

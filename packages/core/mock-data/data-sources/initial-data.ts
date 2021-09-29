@@ -1,16 +1,91 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 
 import { InitialData } from '../../src/data-import';
 
 export const initialData: InitialData = {
     defaultLanguage: LanguageCode.en,
     defaultZone: 'Europe',
+    roles: [
+        {
+            code: 'administrator',
+            description: 'Administrator',
+            permissions: [
+                Permission.CreateCatalog,
+                Permission.ReadCatalog,
+                Permission.UpdateCatalog,
+                Permission.DeleteCatalog,
+                Permission.CreateSettings,
+                Permission.ReadSettings,
+                Permission.UpdateSettings,
+                Permission.DeleteSettings,
+                Permission.CreateCustomer,
+                Permission.ReadCustomer,
+                Permission.UpdateCustomer,
+                Permission.DeleteCustomer,
+                Permission.CreateCustomerGroup,
+                Permission.ReadCustomerGroup,
+                Permission.UpdateCustomerGroup,
+                Permission.DeleteCustomerGroup,
+                Permission.CreateOrder,
+                Permission.ReadOrder,
+                Permission.UpdateOrder,
+                Permission.DeleteOrder,
+                Permission.CreateSystem,
+                Permission.ReadSystem,
+                Permission.UpdateSystem,
+                Permission.DeleteSystem,
+            ],
+        },
+        {
+            code: 'order-manager',
+            description: 'Order manager',
+            permissions: [
+                Permission.CreateOrder,
+                Permission.ReadOrder,
+                Permission.UpdateOrder,
+                Permission.DeleteOrder,
+                Permission.ReadCustomer,
+                Permission.ReadPaymentMethod,
+                Permission.ReadShippingMethod,
+                Permission.ReadPromotion,
+                Permission.ReadCountry,
+                Permission.ReadZone,
+            ],
+        },
+        {
+            code: 'inventory-manager',
+            description: 'Inventory manager',
+            permissions: [
+                Permission.CreateCatalog,
+                Permission.ReadCatalog,
+                Permission.UpdateCatalog,
+                Permission.DeleteCatalog,
+                Permission.CreateTag,
+                Permission.ReadTag,
+                Permission.UpdateTag,
+                Permission.DeleteTag,
+                Permission.ReadCustomer,
+            ],
+        },
+    ],
     taxRates: [
         { name: 'Standard Tax', percentage: 20 },
         { name: 'Reduced Tax', percentage: 10 },
         { name: 'Zero Tax', percentage: 0 },
     ],
-    shippingMethods: [{ name: 'Standard Shipping', price: 500 }, { name: 'Express Shipping', price: 1000 }],
+    shippingMethods: [
+        { name: 'Standard Shipping', price: 500 },
+        { name: 'Express Shipping', price: 1000 },
+    ],
+    paymentMethods: [
+        {
+            name: 'Standard Payment',
+            handler: {
+                code: 'dummy-payment-handler',
+                arguments: [{ name: 'automaticSettle', value: 'false' }],
+            },
+        },
+    ],
     collections: [
         {
             name: 'Electronics',

@@ -1,15 +1,30 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { PaginationInstance } from 'ngx-pagination';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, finalize, map, takeUntil, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { debounceTime, delay, finalize, map, take as rxjsTake, takeUntil, tap } from 'rxjs/operators';
 
-import { Asset, GetAssetList, SortOrder } from '../../../common/generated-types';
+import {
+    Asset,
+    CreateAssets,
+    GetAssetList,
+    LogicalOperator,
+    SortOrder,
+    TagFragment,
+} from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';
 import { Dialog } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
+import { AssetGalleryComponent } from '../asset-gallery/asset-gallery.component';
+import { AssetSearchInputComponent } from '../asset-search-input/asset-search-input.component';
 
 /**
  * A dialog which allows the creation and selection of assets.
@@ -20,17 +35,26 @@ import { NotificationService } from '../../../providers/notification/notificatio
     styleUrls: ['./asset-picker-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Asset[]> {
+export class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDestroy, Dialog<Asset[]> {
     assets$: Observable<GetAssetList.Items[]>;
+    allTags$: Observable<TagFragment[]>;
     paginationConfig: PaginationInstance = {
         currentPage: 1,
         itemsPerPage: 25,
         totalItems: 1,
     };
+    @ViewChild('assetSearchInputComponent')
+    private assetSearchInputComponent: AssetSearchInputComponent;
+    @ViewChild('assetGalleryComponent')
+    private assetGalleryComponent: AssetGalleryComponent;
+
+    multiSelect = true;
+    initialTags: string[] = [];
 
     resolveWith: (result?: Asset[]) => void;
     selection: Asset[] = [];
-    searchTerm = new FormControl('');
+    searchTerm$ = new BehaviorSubject<string | undefined>(undefined);
+    filterByTags$ = new BehaviorSubject<TagFragment[] | undefined>(undefined);
     uploading = false;
     private listQuery: QueryResult<GetAssetList.Query, GetAssetList.Variables>;
     private destroy$ = new Subject<void>();
@@ -39,19 +63,30 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
 
     ngOnInit() {
         this.listQuery = this.dataService.product.getAssetList(this.paginationConfig.itemsPerPage, 0);
+        this.allTags$ = this.dataService.product.getTagList().mapSingle(data => data.tags.items);
         this.assets$ = this.listQuery.stream$.pipe(
-            tap((result) => (this.paginationConfig.totalItems = result.assets.totalItems)),
-            map((result) => result.assets.items),
+            tap(result => (this.paginationConfig.totalItems = result.assets.totalItems)),
+            map(result => result.assets.items),
         );
-        this.searchTerm.valueChanges
-            .pipe(debounceTime(250), takeUntil(this.destroy$))
-            .subscribe((searchTerm) => {
-                this.fetchPage(
-                    this.paginationConfig.currentPage,
-                    this.paginationConfig.itemsPerPage,
-                    searchTerm,
-                );
-            });
+        this.searchTerm$.pipe(debounceTime(250), takeUntil(this.destroy$)).subscribe(() => {
+            this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
+        });
+        this.filterByTags$.pipe(debounceTime(100), takeUntil(this.destroy$)).subscribe(() => {
+            this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
+        });
+    }
+
+    ngAfterViewInit() {
+        if (0 < this.initialTags.length) {
+            this.allTags$
+                .pipe(
+                    rxjsTake(1),
+                    map(allTags => allTags.filter(tag => this.initialTags.includes(tag.value))),
+                    tap(tags => this.filterByTags$.next(tags)),
+                    delay(1),
+                )
+                .subscribe(tags => this.assetSearchInputComponent.setTags(tags));
+        }
     }
 
     ngOnDestroy(): void {
@@ -61,20 +96,12 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
 
     pageChange(page: number) {
         this.paginationConfig.currentPage = page;
-        this.fetchPage(
-            this.paginationConfig.currentPage,
-            this.paginationConfig.itemsPerPage,
-            this.searchTerm.value,
-        );
+        this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
     }
 
     itemsPerPageChange(itemsPerPage: number) {
         this.paginationConfig.itemsPerPage = itemsPerPage;
-        this.fetchPage(
-            this.paginationConfig.currentPage,
-            this.paginationConfig.itemsPerPage,
-            this.searchTerm.value,
-        );
+        this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
     }
 
     cancel() {
@@ -91,22 +118,24 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
             this.dataService.product
                 .createAssets(files)
                 .pipe(finalize(() => (this.uploading = false)))
-                .subscribe((res) => {
-                    this.fetchPage(
-                        this.paginationConfig.currentPage,
-                        this.paginationConfig.itemsPerPage,
-                        this.searchTerm.value,
-                    );
+                .subscribe(res => {
+                    this.fetchPage(this.paginationConfig.currentPage, this.paginationConfig.itemsPerPage);
                     this.notificationService.success(_('asset.notify-create-assets-success'), {
                         count: files.length,
                     });
+                    const assets = res.createAssets.filter(
+                        a => a.__typename === 'Asset',
+                    ) as CreateAssets.AssetInlineFragment[];
+                    this.assetGalleryComponent.selectMultiple(assets);
                 });
         }
     }
 
-    private fetchPage(currentPage: number, itemsPerPage: number, searchTerm?: string) {
+    private fetchPage(currentPage: number, itemsPerPage: number) {
         const take = +itemsPerPage;
         const skip = (currentPage - 1) * +itemsPerPage;
+        const searchTerm = this.searchTerm$.value;
+        const tags = this.filterByTags$.value?.map(t => t.value);
         this.listQuery.ref.refetch({
             options: {
                 skip,
@@ -119,6 +148,8 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
                 sort: {
                     createdAt: SortOrder.DESC,
                 },
+                tags,
+                tagsOperator: LogicalOperator.AND,
             },
         });
     }

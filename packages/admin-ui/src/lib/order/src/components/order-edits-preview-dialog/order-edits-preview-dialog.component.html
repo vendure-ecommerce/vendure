@@ -3,7 +3,7 @@
 
 <h4 class="h4">
     {{ 'order.modify-order-price-difference' | translate }}:
-    <strong>{{ priceDifference / 100 | currency: order.currencyCode }}</strong>
+    <strong>{{ priceDifference | localeCurrency: order.currencyCode }}</strong>
 </h4>
 <div *ngIf="priceDifference < 0">
 <clr-select-container>
@@ -14,7 +14,7 @@
             [ngValue]="payment"
         >
             #{{ payment.id }} {{ payment.method }}:
-            {{ payment.amount / 100 | currency: order.currencyCode }}
+            {{ payment.amount | localeCurrency: order.currencyCode }}
         </option>
     </select>
 </clr-select-container>

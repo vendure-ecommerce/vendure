@@ -1,6 +1,5 @@
-@import "variables";
 
 .last-login {
     margin-left: 6px;
-    color: $color-grey-500;
+    color: var(--color-grey-500);
 }

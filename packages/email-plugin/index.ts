@@ -1,5 +1,5 @@
 export * from './src/default-email-handlers';
-export * from './src/email-sender';
+export * from './src/nodemailer-email-sender';
 export * from './src/event-handler';
 export * from './src/event-listener';
 export * from './src/handlebars-mjml-generator';

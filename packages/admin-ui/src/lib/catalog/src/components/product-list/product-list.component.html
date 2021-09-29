@@ -7,7 +7,7 @@
                 (searchTermChange)="setSearchTerm($event)"
                 (facetValueChange)="setFacetValueIds($event)"
             ></vdr-product-search-input>
-            <vdr-dropdown class="search-settings-menu">
+            <vdr-dropdown class="search-settings-menu mr3">
                 <button type="button" class="icon-button" vdrDropdownTrigger>
                     <clr-icon shape="cog"></clr-icon>
                 </button>
@@ -16,21 +16,28 @@
                         type="button"
                         vdrDropdownItem
                         (click)="rebuildSearchIndex()"
-                        [disabled]="!('UpdateCatalog' | hasPermission)"
+                        [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                     >
                         {{ 'catalog.rebuild-search-index' | translate }}
                     </button>
                 </vdr-dropdown-menu>
             </vdr-dropdown>
         </div>
-        <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" />
-            <label>{{ 'catalog.group-by-product' | translate }}</label>
-        </clr-checkbox-wrapper>
+        <div class="flex wrap">
+            <clr-checkbox-wrapper class="mt2">
+                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct"/>
+                <label>{{ 'catalog.group-by-product' | translate }}</label>
+            </clr-checkbox-wrapper>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+        </div>
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateCatalog'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateCatalog', 'CreateProduct']">
             <clr-icon shape="plus"></clr-icon>
             <span class="full-label">{{ 'catalog.create-new-product' | translate }}</span>
         </a>
@@ -58,7 +65,9 @@
                     [src]="asset | assetPreview:'tiny'"
                 />
                 <ng-template #imagePlaceholder>
-                    <div class="placeholder"><clr-icon shape="image" size="48"></clr-icon></div>
+                    <div class="placeholder">
+                        <clr-icon shape="image" size="48"></clr-icon>
+                    </div>
                 </ng-template>
             </div>
         </td>
@@ -86,7 +95,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteProduct(result.productId)"
-                        [disabled]="!('DeleteCatalog' | hasPermission)"
+                        [disabled]="!(['DeleteCatalog', 'DeleteProduct'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

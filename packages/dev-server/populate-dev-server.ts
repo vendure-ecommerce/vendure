@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../core/typings.d.ts" />
-import { bootstrap, defaultConfig, mergeConfig } from '@vendure/core';
+import { bootstrap, defaultConfig, JobQueueService, mergeConfig } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
 import { clearAllTables, populateCustomers } from '@vendure/testing';
 import path from 'path';
@@ -26,16 +26,17 @@ if (require.main === module) {
             importExportOptions: {
                 importAssetsDir: path.join(__dirname, '../core/mock-data/assets'),
             },
-            workerOptions: {
-                runInMainProcess: true,
-            },
             customFields: {},
         }),
     );
     clearAllTables(populateConfig, true)
         .then(() =>
             populate(
-                () => bootstrap(populateConfig),
+                () =>
+                    bootstrap(populateConfig).then(async app => {
+                        await app.get(JobQueueService).start();
+                        return app;
+                    }),
                 initialData,
                 path.join(__dirname, '../create/assets/products.csv'),
             ),

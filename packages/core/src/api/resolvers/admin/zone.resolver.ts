@@ -22,34 +22,34 @@ export class ZoneResolver {
     constructor(private zoneService: ZoneService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadZone)
     zones(@Ctx() ctx: RequestContext): Zone[] {
         return this.zoneService.findAll(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadZone)
     async zone(@Ctx() ctx: RequestContext, @Args() args: QueryZoneArgs): Promise<Zone | undefined> {
         return this.zoneService.findOne(ctx, args.id);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreateSettings, Permission.CreateZone)
     async createZone(@Ctx() ctx: RequestContext, @Args() args: MutationCreateZoneArgs): Promise<Zone> {
         return this.zoneService.create(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateZone)
     async updateZone(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateZoneArgs): Promise<Zone> {
         return this.zoneService.update(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteZone)
     async deleteZone(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteZoneArgs,
@@ -59,7 +59,7 @@ export class ZoneResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateZone)
     async addMembersToZone(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddMembersToZoneArgs,
@@ -69,7 +69,7 @@ export class ZoneResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateZone)
     async removeMembersFromZone(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveMembersFromZoneArgs,

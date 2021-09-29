@@ -12,7 +12,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 
 import { getAppConfig } from '../../app.config';
 import { AuthService } from '../../providers/auth/auth.service';
@@ -44,7 +44,15 @@ export class DefaultInterceptor implements HttpInterceptor {
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.dataService.client.startRequest().subscribe();
-        return next.handle(req).pipe(
+        return this.dataService.client.uiState().single$.pipe(
+            switchMap(({ uiState }) => {
+                const request = req.clone({
+                    setParams: {
+                        languageCode: uiState?.contentLanguage ?? '',
+                    },
+                });
+                return next.handle(request);
+            }),
             tap(
                 event => {
                     if (event instanceof HttpResponse) {

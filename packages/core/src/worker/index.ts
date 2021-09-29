@@ -1,3 +1,2 @@
-export * from './async-observable';
-export * from './worker.service';
-export * from './types';
+export * from './vendure-worker';
+export * from './worker-health.service';

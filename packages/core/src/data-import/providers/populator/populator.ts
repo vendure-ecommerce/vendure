@@ -4,17 +4,29 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
+import { defaultShippingCalculator, defaultShippingEligibilityChecker, Logger } from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
 import { Channel, Collection, FacetValue, TaxCategory } from '../../../entity';
-import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
+import {
+    CollectionService,
+    FacetValueService,
+    PaymentMethodService,
+    RoleService,
+    ShippingMethodService,
+} from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
 import { SearchService } from '../../../service/services/search.service';
 import { TaxCategoryService } from '../../../service/services/tax-category.service';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { ZoneService } from '../../../service/services/zone.service';
-import { CollectionFilterDefinition, CountryDefinition, InitialData, ZoneMap } from '../../types';
+import {
+    CollectionFilterDefinition,
+    CountryDefinition,
+    InitialData,
+    RoleDefinition,
+    ZoneMap,
+} from '../../types';
 import { AssetImporter } from '../asset-importer/asset-importer';
 
 /**
@@ -29,10 +41,12 @@ export class Populator {
         private taxRateService: TaxRateService,
         private taxCategoryService: TaxCategoryService,
         private shippingMethodService: ShippingMethodService,
+        private paymentMethodService: PaymentMethodService,
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private searchService: SearchService,
         private assetImporter: AssetImporter,
+        private roleService: RoleService,
     ) {}
 
     /**
@@ -41,11 +55,44 @@ export class Populator {
      */
     async populateInitialData(data: InitialData) {
         const { channel, ctx } = await this.createRequestContext(data);
-
-        const zoneMap = await this.populateCountries(ctx, data.countries);
-        await this.populateTaxRates(ctx, data.taxRates, zoneMap);
-        await this.populateShippingMethods(ctx, data.shippingMethods);
-        await this.setChannelDefaults(zoneMap, data, channel);
+        let zoneMap: ZoneMap;
+        try {
+            zoneMap = await this.populateCountries(ctx, data.countries);
+        } catch (e) {
+            Logger.error(`Could not populate countries`);
+            Logger.error(e, 'populator', e.stack);
+            throw e;
+        }
+        try {
+            await this.populateTaxRates(ctx, data.taxRates, zoneMap);
+        } catch (e) {
+            Logger.error(`Could not populate tax rates`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.populateShippingMethods(ctx, data.shippingMethods);
+        } catch (e) {
+            Logger.error(`Could not populate shipping methods`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.populatePaymentMethods(ctx, data.paymentMethods);
+        } catch (e) {
+            Logger.error(`Could not populate payment methods`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.setChannelDefaults(zoneMap, data, channel);
+        } catch (e) {
+            Logger.error(`Could not set channel defaults`);
+            Logger.error(e, 'populator', e.stack);
+        }
+        try {
+            await this.populateRoles(ctx, data.roles);
+        } catch (e) {
+            Logger.error(`Could not populate roles`);
+            Logger.error(e, 'populator', e.stack);
+        }
     }
 
     /**
@@ -94,7 +141,21 @@ export class Populator {
         switch (filter.code) {
             case 'facet-value-filter':
                 const facetValueIds = filter.args.facetValueNames
-                    .map(name => allFacetValues.find(fv => fv.name === name))
+                    .map(name =>
+                        allFacetValues.find(fv => {
+                            let facetName;
+                            let valueName = name;
+                            if (name.includes(':')) {
+                                [facetName, valueName] = name.split(':');
+                                return (
+                                    (fv.name === valueName || fv.code === valueName) &&
+                                    (fv.facet.name === facetName || fv.facet.code === facetName)
+                                );
+                            } else {
+                                return fv.name === valueName || fv.code === valueName;
+                            }
+                        }),
+                    )
                     .filter(notNullOrUndefined)
                     .map(fv => fv.id);
                 return {
@@ -208,11 +269,33 @@ export class Populator {
                     arguments: [
                         { name: 'rate', value: method.price.toString() },
                         { name: 'taxRate', value: '0' },
+                        { name: 'includesTax', value: 'auto' },
                     ],
                 },
                 code: normalizeString(method.name, '-'),
                 translations: [{ languageCode: ctx.languageCode, name: method.name, description: '' }],
             });
+        }
+    }
+
+    private async populatePaymentMethods(ctx: RequestContext, paymentMethods: InitialData['paymentMethods']) {
+        for (const method of paymentMethods) {
+            await this.paymentMethodService.create(ctx, {
+                name: method.name,
+                code: normalizeString(method.name, '-'),
+                description: '',
+                enabled: true,
+                handler: method.handler,
+            });
+        }
+    }
+
+    private async populateRoles(ctx: RequestContext, roles?: RoleDefinition[]) {
+        if (!roles) {
+            return;
+        }
+        for (const roleDef of roles) {
+            await this.roleService.create(ctx, roleDef);
         }
     }
 }

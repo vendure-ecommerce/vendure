@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DataProxy, MutationUpdaterFn, WatchQueryFetchPolicy } from '@apollo/client/core';
+import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Apollo } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
@@ -15,6 +16,7 @@ import {
     isEntityCreateOrUpdateMutation,
     removeReadonlyCustomFields,
 } from '../utils/remove-readonly-custom-fields';
+import { transformRelationCustomFieldInputs } from '../utils/transform-relation-custom-field-inputs';
 
 @Injectable()
 export class BaseDataService {
@@ -56,7 +58,7 @@ export class BaseDataService {
         update?: MutationUpdaterFn<T>,
     ): Observable<T> {
         const withCustomFields = addCustomFields(mutation, this.customFields);
-        const withoutReadonlyFields = this.removeReadonlyCustomFieldsFromVariables(mutation, variables);
+        const withoutReadonlyFields = this.prepareCustomFields(mutation, variables);
 
         return this.apollo
             .mutate<T, V>({
@@ -67,12 +69,15 @@ export class BaseDataService {
             .pipe(map(result => result.data as T));
     }
 
-    private removeReadonlyCustomFieldsFromVariables<V>(mutation: DocumentNode, variables: V): V {
+    private prepareCustomFields<V>(mutation: DocumentNode, variables: V): V {
         const entity = isEntityCreateOrUpdateMutation(mutation);
         if (entity) {
             const customFieldConfig = this.customFields[entity];
             if (variables && customFieldConfig) {
-                return removeReadonlyCustomFields(variables, customFieldConfig);
+                let variablesClone = simpleDeepClone(variables as any);
+                variablesClone = removeReadonlyCustomFields(variablesClone, customFieldConfig);
+                variablesClone = transformRelationCustomFieldInputs(variablesClone, customFieldConfig);
+                return variablesClone;
             }
         }
         return variables;

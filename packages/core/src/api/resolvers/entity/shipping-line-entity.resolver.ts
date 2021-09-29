@@ -15,7 +15,7 @@ export class ShippingLineEntityResolver {
             // Does not need to be decoded because it is an internal property
             // which is never exposed to the outside world.
             const shippingMethodId = shippingLine.shippingMethodId;
-            return this.shippingMethodService.findOne(ctx, shippingMethodId);
+            return this.shippingMethodService.findOne(ctx, shippingMethodId, true);
         } else {
             return null;
         }

@@ -1,5 +1,7 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Injector, RequestContext, VendureEvent, WorkerMessage } from '@vendure/core';
+import { Injector, RequestContext, VendureEvent } from '@vendure/core';
+import { Attachment } from 'nodemailer/lib/mailer';
 
 import { EmailEventHandler } from './event-handler';
 
@@ -56,6 +58,22 @@ export interface EmailPluginOptions {
      * email.
      */
     globalTemplateVars?: { [key: string]: any };
+    /**
+     * @description
+     * An optional allowed EmailSender, used to allow custom implementations of the send functionality
+     * while still utilizing the existing emailPlugin functionality.
+     *
+     * @default NodemailerEmailSender
+     */
+    emailSender?: EmailSender;
+    /**
+     * @description
+     * An optional allowed EmailGenerator, used to allow custom email generation functionality to
+     * better match with custom email sending functionality.
+     *
+     * @default HandlebarsMjmlGenerator
+     */
+    emailGenerator?: EmailGenerator;
 }
 
 /**
@@ -74,11 +92,9 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
     outputPath: string;
     /**
      * @description
-     * If set, a "mailbox" server will be started which will serve the contents of the
-     * `outputPath` similar to a web-based email client, available at the route `/mailbox`,
-     * e.g. http://localhost:3000/mailbox.
+     * The route to the dev mailbox server.
      */
-    mailboxPort?: number;
+    route: string;
 }
 
 /**
@@ -219,7 +235,8 @@ export interface FileTransportOptions {
 
 /**
  * @description
- * Does nothing with the generated email. Mainly intended for use in testing where we don't care about the email transport.
+ * Does nothing with the generated email. Intended for use in testing where we don't care about the email transport,
+ * or when using a custom {@link EmailSender} which does not require transport options.
  *
  * @docsCategory EmailPlugin
  * @docsPage Transport Options
@@ -235,11 +252,15 @@ export interface NoopTransportOptions {
  * @docsCategory EmailPlugin
  * @docsPage Email Plugin Types
  */
-export interface EmailDetails {
+export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
     from: string;
     recipient: string;
     subject: string;
     body: string;
+    attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 }
 
 /**
@@ -260,7 +281,55 @@ export interface TestingTransportOptions {
 
 /**
  * @description
+ * An EmailSender is responsible for sending the email, e.g. via an SMTP connection
+ * or using some other mail-sending API. By default, the EmailPlugin uses the
+ * {@link NodemailerEmailSender}, but it is also possible to supply a custom implementation:
+ *
+ * @example
+ * ```TypeScript
+ * const sgMail = require('\@sendgrid/mail');
+ *
+ * sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+ *
+ * class SendgridEmailSender implements EmailSender {
+ *   async send(email: EmailDetails) {
+ *     await sgMail.send({
+ *       to: email.recipient,
+ *       from: email.from,
+ *       subject: email.subject,
+ *       html: email.body,
+ *     });
+ *   }
+ * }
+ *
+ * const config: VendureConfig = {
+ *   logger: new DefaultLogger({ level: LogLevel.Debug })
+ *   // ...
+ *   plugins: [
+ *     EmailPlugin.init({
+ *        // ... template, handlers config omitted
+ *       transport: { type: 'none' },
+ *        emailSender: new SendgridEmailSender(),
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage EmailSender
+ * @docsWeight 0
+ */
+export interface EmailSender {
+    send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
+}
+
+/**
+ * @description
  * An EmailGenerator generates the subject and body details of an email.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage EmailGenerator
+ * @docsWeight 0
  */
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
     /**
@@ -279,7 +348,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
         subject: string,
         body: string,
         templateVars: { [key: string]: any },
-    ): Omit<EmailDetails, 'recipient'>;
+    ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
 }
 
 /**
@@ -287,11 +356,32 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
  * A function used to load async data for use by an {@link EmailEventHandler}.
  *
  * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
  */
 export type LoadDataFn<Event extends EventWithContext, R> = (context: {
     event: Event;
     injector: Injector;
 }) => Promise<R>;
+
+export type OptionalToNullable<O> = {
+    [K in keyof O]-?: undefined extends O[K] ? NonNullable<O[K]> | null : O[K];
+};
+
+/**
+ * @description
+ * An object defining a file attachment for an email. Based on the object described
+ * [here in the Nodemailer docs](https://nodemailer.com/message/attachments/), but
+ * only uses the `path` property to define a filesystem path or a URL pointing to
+ * the attachment file.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string };
+
+export type SerializedAttachment = OptionalToNullable<
+    Omit<EmailAttachment, 'content'> & { content: string | null }
+>;
 
 export type IntermediateEmailDetails = {
     type: string;
@@ -300,8 +390,104 @@ export type IntermediateEmailDetails = {
     templateVars: any;
     subject: string;
     templateFile: string;
+    attachments: SerializedAttachment[];
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 };
 
-export class EmailWorkerMessage extends WorkerMessage<IntermediateEmailDetails, boolean> {
-    static readonly pattern = 'send-email';
+/**
+ * @description
+ * Configures the {@link EmailEventHandler} to handle a particular channel & languageCode
+ * combination.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export interface EmailTemplateConfig {
+    /**
+     * @description
+     * Specifies the channel to which this configuration will apply. If set to `'default'`, it will be applied to all
+     * channels.
+     */
+    channelCode: string | 'default';
+    /**
+     * @description
+     * Specifies the languageCode to which this configuration will apply. If set to `'default'`, it will be applied to all
+     * languages.
+     */
+    languageCode: LanguageCode | 'default';
+    /**
+     * @description
+     * Defines the file name of the Handlebars template file to be used to when generating this email.
+     */
+    templateFile: string;
+    /**
+     * @description
+     * A string defining the email subject line. Handlebars variables defined in the `templateVars` object may
+     * be used inside the subject.
+     */
+    subject: string;
 }
+
+/**
+ * @description
+ * A function used to define template variables available to email templates.
+ * See {@link EmailEventHandler}.setTemplateVars().
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetTemplateVarsFn<Event> = (
+    event: Event,
+    globals: { [key: string]: any },
+) => { [key: string]: any };
+
+/**
+ * @description
+ * A function used to define attachments to be sent with the email.
+ * See https://nodemailer.com/message/attachments/ for more information about
+ * how attachments work in Nodemailer.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+
+/**
+ * @description
+ * Optional address-related fields for sending the email.
+ *
+ * @since 1.1.0
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export interface OptionalAddressFields {
+    /**
+     * @description
+     * Comma separated list of recipients email addresses that will appear on the _Cc:_ field
+     */
+    cc?: string;
+    /**
+     * @description
+     * Comma separated list of recipients email addresses that will appear on the _Bcc:_ field
+     */
+    bcc?: string;
+    /**
+     * @description
+     * An email address that will appear on the _Reply-To:_ field
+     */
+    replyTo?: string;
+}
+
+/**
+ * @description
+ * A function used to set the {@link OptionalAddressFields}.
+ *
+ * @since 1.1.0
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetOptionalAddressFieldsFn<Event> = (
+    event: Event,
+) => OptionalAddressFields | Promise<OptionalAddressFields>;

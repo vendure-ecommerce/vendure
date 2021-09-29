@@ -56,18 +56,20 @@ describe('Role resolver', () => {
         expect(result.roles.totalItems).toBe(2);
     });
 
-    it(
-        'createRole with invalid permission',
-        assertThrowsWithMessage(async () => {
+    it('createRole with invalid permission', async () => {
+        try {
             await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
                 input: {
                     code: 'test',
                     description: 'test role',
-                    permissions: ['bad permission' as any],
+                    permissions: ['ReadCatalogx' as any],
                 },
             });
-        }, 'Variable "$input" got invalid value "bad permission" at "input.permissions[0]"'),
-    );
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.response.errors[0]?.extensions.code).toBe('BAD_USER_INPUT');
+        }
+    });
 
     it('createRole with no permissions includes Authenticated', async () => {
         const { createRole } = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(

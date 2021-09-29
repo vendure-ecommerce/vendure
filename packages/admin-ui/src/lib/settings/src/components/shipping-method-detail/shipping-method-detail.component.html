@@ -23,7 +23,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
-                *vdrIfPermissions="'UpdateSettings'"
+                *vdrIfPermissions="updatePermission"
                 [disabled]="
                     detailForm.pristine || detailForm.invalid || !selectedChecker || !selectedCalculator
                 "
@@ -40,32 +40,32 @@
             id="name"
             type="text"
             formControlName="name"
-            [readonly]="!('UpdateSettings' | hasPermission)"
+            [readonly]="!(updatePermission | hasPermission)"
             (input)="updateCode(shippingMethod.code, $event.target.value)"
         />
     </vdr-form-field>
     <vdr-form-field
         [label]="'common.code' | translate"
         for="code"
-        [readOnlyToggle]="'UpdateSettings' | hasPermission"
+        [readOnlyToggle]="updatePermission | hasPermission"
     >
         <input
             id="code"
             type="text"
             formControlName="code"
-            [readonly]="!('UpdateSettings' | hasPermission)"
+            [readonly]="!(updatePermission | hasPermission)"
         />
     </vdr-form-field>
     <vdr-rich-text-editor
         formControlName="description"
-        [readonly]="!('UpdateSettings' | hasPermission)"
+        [readonly]="!(updatePermission | hasPermission)"
         [label]="'common.description' | translate"
     ></vdr-rich-text-editor>
     <vdr-form-field [label]="'settings.fulfillment-handler' | translate" for="fulfillmentHandler" class="mb2">
         <select
             name="fulfillmentHandler"
             formControlName="fulfillmentHandler"
-            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
             <option *ngFor="let handler of fulfillmentHandlers" [value]="handler.code">
                 {{ handler.code }}: {{ handler.description }}
@@ -92,7 +92,7 @@
                 *ngIf="selectedChecker && selectedCheckerDefinition"
                 [operation]="selectedChecker"
                 [operationDefinition]="selectedCheckerDefinition"
-                [readonly]="!('UpdateSettings' | hasPermission)"
+                [readonly]="!(updatePermission | hasPermission)"
                 (remove)="selectedChecker = null"
                 formControlName="checker"
             ></vdr-configurable-input>
@@ -121,7 +121,7 @@
                 *ngIf="selectedCalculator && selectedCalculatorDefinition"
                 [operation]="selectedCalculator"
                 [operationDefinition]="selectedCalculatorDefinition"
-                [readonly]="!('UpdateSettings' | hasPermission)"
+                [readonly]="!(updatePermission | hasPermission)"
                 (remove)="selectedCalculator = null"
                 formControlName="calculator"
             ></vdr-configurable-input>

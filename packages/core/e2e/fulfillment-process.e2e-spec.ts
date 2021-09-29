@@ -1,5 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
-import { CustomFulfillmentProcess, manualFulfillmentHandler, mergeConfig } from '@vendure/core';
+import {
+    CustomFulfillmentProcess,
+    manualFulfillmentHandler,
+    mergeConfig,
+    TransactionalConnection,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 
@@ -38,7 +43,7 @@ describe('Fulfillment process', () => {
     const VALIDATION_ERROR_MESSAGE = 'Fulfillment must have a tracking code';
     const customOrderProcess: CustomFulfillmentProcess<'AwaitingPickup'> = {
         init(injector) {
-            initSpy(injector.getConnection().name);
+            initSpy(injector.get(TransactionalConnection).rawConnection.name);
         },
         transitions: {
             Pending: {
@@ -90,7 +95,15 @@ describe('Fulfillment process', () => {
 
     beforeAll(async () => {
         await server.init({
-            initialData,
+            initialData: {
+                ...initialData,
+                paymentMethods: [
+                    {
+                        name: testSuccessfulPaymentMethod.code,
+                        handler: { code: testSuccessfulPaymentMethod.code, arguments: [] },
+                    },
+                ],
+            },
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
@@ -155,6 +168,11 @@ describe('Fulfillment process', () => {
     });
 
     describe('CustomFulfillmentProcess', () => {
+        it('is injectable', () => {
+            expect(initSpy).toHaveBeenCalled();
+            expect(initSpy.mock.calls[0][0]).toBe('default');
+        });
+
         it('replaced transition target', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillments.Query,

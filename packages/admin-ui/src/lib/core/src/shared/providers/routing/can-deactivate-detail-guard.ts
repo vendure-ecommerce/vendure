@@ -7,12 +7,6 @@ import { map } from 'rxjs/operators';
 import { DeactivateAware } from '../../../common/deactivate-aware';
 import { ModalService } from '../../../providers/modal/modal.service';
 
-/**
- * When added to the [state object](https://angular.io/api/router/NavigationExtras#state), this will
- * skip the CanDeactivateDetailGuard.
- */
-export const IGNORE_CAN_DEACTIVATE_GUARD = 'IGNORE_CAN_DEACTIVATE_GUARD';
-
 @Injectable()
 export class CanDeactivateDetailGuard implements CanDeactivate<DeactivateAware> {
     constructor(private modalService: ModalService, private router: Router) {}
@@ -23,12 +17,6 @@ export class CanDeactivateDetailGuard implements CanDeactivate<DeactivateAware> 
         currentState: RouterStateSnapshot,
         nextState?: RouterStateSnapshot,
     ): boolean | Observable<boolean> {
-        const nav = this.router.getCurrentNavigation();
-        if (nav) {
-            if (nav.extras.state && nav.extras.state[IGNORE_CAN_DEACTIVATE_GUARD] != null) {
-                return true;
-            }
-        }
         if (!component.canDeactivate()) {
             return this.modalService
                 .dialog({

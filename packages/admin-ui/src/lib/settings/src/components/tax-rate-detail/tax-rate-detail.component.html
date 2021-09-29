@@ -18,7 +18,7 @@
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="!saveButtonEnabled()"
-                *vdrIfPermissions="'UpdateSettings'"
+                *vdrIfPermissions="updatePermission"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -32,7 +32,7 @@
             id="name"
             type="text"
             formControlName="name"
-            [readonly]="!('UpdateSettings' | hasPermission)"
+            [readonly]="!(updatePermission | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field [label]="'common.enabled' | translate" for="enabled">
@@ -42,7 +42,7 @@
                 clrToggle
                 id="enabled"
                 formControlName="enabled"
-                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+                [vdrDisabled]="!(updatePermission | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
@@ -53,7 +53,7 @@
                 type="number"
                 step="0.1"
                 formControlName="value"
-                [readonly]="!('UpdateSettings' | hasPermission)"
+                [readonly]="!(updatePermission | hasPermission)"
             />
         </vdr-affixed-input>
     </vdr-form-field>
@@ -62,7 +62,7 @@
             clrSelect
             name="taxCategoryId"
             formControlName="taxCategoryId"
-            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
             <option *ngFor="let taxCategory of taxCategories$ | async" [value]="taxCategory.id">
                 {{ taxCategory.name }}
@@ -74,7 +74,7 @@
             clrSelect
             name="zoneId"
             formControlName="zoneId"
-            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>

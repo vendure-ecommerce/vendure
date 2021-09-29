@@ -11,10 +11,12 @@ import {
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
+    findTranslation,
     GetActiveChannel,
     getConfigArgValue,
     LanguageCode,
     NotificationService,
+    Permission,
     ServerConfigService,
     ShippingMethod,
     TestShippingMethodInput,
@@ -52,6 +54,7 @@ export class ShippingMethodDetailComponent
     testDataUpdated = false;
     testResult$: Observable<TestShippingMethodResult | undefined>;
     customFields: CustomFieldConfig[];
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateShippingMethod];
     private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
 
     constructor(
@@ -69,7 +72,7 @@ export class ShippingMethodDetailComponent
             code: ['', Validators.required],
             name: ['', Validators.required],
             description: '',
-            fulfillmentHandler: '',
+            fulfillmentHandler: ['', Validators.required],
             checker: {},
             calculator: {},
             customFields: this.formBuilder.group(
@@ -80,10 +83,10 @@ export class ShippingMethodDetailComponent
 
     ngOnInit() {
         this.init();
-        combineLatest(
+        combineLatest([
             this.dataService.shippingMethod.getShippingMethodOperations().single$,
             this.entity$.pipe(take(1)),
-        ).subscribe(([data, entity]) => {
+        ]).subscribe(([data, entity]) => {
             this.checkers = data.shippingEligibilityCheckers;
             this.calculators = data.shippingCalculators;
             this.fulfillmentHandlers = data.fulfillmentHandlers;
@@ -150,6 +153,8 @@ export class ShippingMethodDetailComponent
         this.selectedChecker = configurableDefinitionToInstance(checker);
         const formControl = this.detailForm.get('checker');
         if (formControl) {
+            formControl.clearValidators();
+            formControl.updateValueAndValidity({ onlySelf: true });
             formControl.patchValue(this.selectedChecker);
         }
         this.detailForm.markAsDirty();
@@ -160,6 +165,8 @@ export class ShippingMethodDetailComponent
         this.selectedCalculator = configurableDefinitionToInstance(calculator);
         const formControl = this.detailForm.get('calculator');
         if (formControl) {
+            formControl.clearValidators();
+            formControl.updateValueAndValidity({ onlySelf: true });
             formControl.patchValue(this.selectedCalculator);
         }
         this.detailForm.markAsDirty();
@@ -171,7 +178,7 @@ export class ShippingMethodDetailComponent
         if (!selectedChecker || !selectedCalculator) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
+        combineLatest([this.entity$, this.languageCode$])
             .pipe(
                 take(1),
                 mergeMap(([shippingMethod, languageCode]) => {
@@ -211,7 +218,7 @@ export class ShippingMethodDetailComponent
         if (!selectedChecker || !selectedCalculator) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
+        combineLatest([this.entity$, this.languageCode$])
             .pipe(
                 take(1),
                 mergeMap(([shippingMethod, languageCode]) => {
@@ -294,7 +301,7 @@ export class ShippingMethodDetailComponent
     }
 
     protected setFormValues(shippingMethod: ShippingMethod.Fragment, languageCode: LanguageCode): void {
-        const currentTranslation = shippingMethod.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(shippingMethod, languageCode);
         this.detailForm.patchValue({
             name: currentTranslation?.name ?? '',
             description: currentTranslation?.description ?? '',
@@ -303,14 +310,18 @@ export class ShippingMethodDetailComponent
             checker: shippingMethod.checker || {},
             calculator: shippingMethod.calculator || {},
         });
-        this.selectedChecker = shippingMethod.checker && {
-            code: shippingMethod.checker.code,
-            args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
-        };
-        this.selectedCalculator = shippingMethod.calculator && {
-            code: shippingMethod.calculator?.code,
-            args: shippingMethod.calculator?.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
-        };
+        if (!this.selectedChecker) {
+            this.selectedChecker = shippingMethod.checker && {
+                code: shippingMethod.checker.code,
+                args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+            };
+        }
+        if (!this.selectedCalculator) {
+            this.selectedCalculator = shippingMethod.calculator && {
+                code: shippingMethod.calculator?.code,
+                args: shippingMethod.calculator?.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+            };
+        }
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
 

@@ -17,7 +17,7 @@
             <button
                 class="btn btn-primary"
                 (click)="save()"
-                *vdrIfPermissions="'SuperAdmin'"
+                *vdrIfPermissions="['SuperAdmin', 'UpdateChannel']"
                 [disabled]="!saveButtonEnabled()"
             >
                 {{ 'common.update' | translate }}
@@ -28,19 +28,19 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'common.code' | translate" for="code">
-        <input id="code" type="text" [readonly]="!('SuperAdmin' | hasPermission)" formControlName="code" />
+        <input id="code" type="text" [readonly]="!(updatePermission | hasPermission)" formControlName="code" />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
-        <input id="token" type="text" [readonly]="!('SuperAdmin' | hasPermission)" formControlName="token" />
+        <input id="token" type="text" [readonly]="!(updatePermission | hasPermission)" formControlName="token" />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
         <select
             clrSelect
             name="currencyCode"
             formControlName="currencyCode"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
-            <option *ngFor="let code of currencyCodes" [value]="code">{{ code | currencyName }}</option>
+            <option *ngFor="let code of currencyCodes" [value]="code">{{ code | localeCurrencyName }}</option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'common.default-language' | translate" for="defaultLanguage">
@@ -48,11 +48,11 @@
             clrSelect
             name="defaultLanguageCode"
             formControlName="defaultLanguageCode"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
-            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode"
-                >{{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})</option
-            >
+            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode">
+                {{ languageCode | localeLanguageName }} ({{ languageCode | uppercase }})
+            </option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
@@ -62,7 +62,7 @@
                 clrToggle
                 id="pricesIncludeTax"
                 formControlName="pricesIncludeTax"
-                [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+                [vdrDisabled]="!(updatePermission | hasPermission)"
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
@@ -71,12 +71,17 @@
             clrSelect
             name="defaultTaxZoneId"
             formControlName="defaultTaxZoneId"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
+            <option selected value style="display: none"></option>
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
-    <clr-alert *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId" clrAlertType="danger" [clrAlertClosable]="false">
+    <clr-alert
+        *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId"
+        clrAlertType="danger"
+        [clrAlertClosable]="false"
+    >
         <clr-alert-item>
             <span class="alert-text">
                 {{ 'error.no-default-tax-zone-set' | translate }}
@@ -89,16 +94,33 @@
             clrSelect
             name="defaultShippingZoneId"
             formControlName="defaultShippingZoneId"
-            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
         >
+            <option selected value style="display: none"></option>            
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
-    <clr-alert *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId" clrAlertType="warning" [clrAlertClosable]="false">
+    <clr-alert
+        *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId"
+        clrAlertType="warning"
+        [clrAlertClosable]="false"
+    >
         <clr-alert-item>
             <span class="alert-text">
                 {{ 'error.no-default-shipping-zone-set' | translate }}
             </span>
         </clr-alert-item>
     </clr-alert>
+
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="Channel"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
 </form>

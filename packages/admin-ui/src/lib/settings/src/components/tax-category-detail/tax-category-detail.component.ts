@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, Permission } from '@vendure/admin-ui/core';
 import {
     ConfigurableOperation,
     CreateTaxCategoryInput,
@@ -22,10 +22,12 @@ import { mergeMap, take } from 'rxjs/operators';
     styleUrls: ['./tax-category-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.Fragment>
+export class TaxCategoryDetailComponent
+    extends BaseDetailComponent<TaxCategory.Fragment>
     implements OnInit, OnDestroy {
     taxCategory$: Observable<TaxCategory.Fragment>;
     detailForm: FormGroup;
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxCategory];
 
     private taxCondition: ConfigurableOperation;
     private taxAction: ConfigurableOperation;
@@ -42,7 +44,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
         super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
-            taxRate: [0, Validators.required],
+            isDefault: false,
         });
     }
 
@@ -64,9 +66,9 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
             return;
         }
         const formValue = this.detailForm.value;
-        const input = { name: formValue.name } as CreateTaxCategoryInput;
+        const input = { name: formValue.name, isDefault: formValue.isDefault } as CreateTaxCategoryInput;
         this.dataService.settings.createTaxCategory(input).subscribe(
-            (data) => {
+            data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'TaxCategory',
                 });
@@ -74,7 +76,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createTaxCategory.id], { relativeTo: this.route });
             },
-            (err) => {
+            err => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'TaxCategory',
                 });
@@ -90,23 +92,24 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
         this.taxCategory$
             .pipe(
                 take(1),
-                mergeMap((taxCategory) => {
+                mergeMap(taxCategory => {
                     const input = {
                         id: taxCategory.id,
                         name: formValue.name,
+                        isDefault: formValue.isDefault,
                     } as UpdateTaxCategoryInput;
                     return this.dataService.settings.updateTaxCategory(input);
                 }),
             )
             .subscribe(
-                (data) => {
+                data => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'TaxCategory',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'TaxCategory',
                     });
@@ -120,6 +123,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
     protected setFormValues(entity: TaxCategory.Fragment, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             name: entity.name,
+            isDefault: entity.isDefault,
         });
     }
 }

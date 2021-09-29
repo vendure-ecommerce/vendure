@@ -45,9 +45,12 @@ import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { CustomerAddressEvent } from '../../event-bus/events/customer-address-event';
+import { CustomerEvent } from '../../event-bus/events/customer-event';
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { addressToLine } from '../helpers/utils/address-to-line';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -70,6 +73,7 @@ export class CustomerService {
         private eventBus: EventBus,
         private historyService: HistoryService,
         private channelService: ChannelService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     findAll(
@@ -206,7 +210,7 @@ export class CustomerService {
         }
         this.channelService.assignToCurrentChannel(customer, ctx);
         const createdCustomer = await this.connection.getRepository(ctx, Customer).save(customer);
-
+        await this.customFieldRelationService.updateRelations(ctx, Customer, input, createdCustomer);
         await this.historyService.createHistoryEntryForCustomer({
             ctx,
             customerId: createdCustomer.id,
@@ -226,6 +230,7 @@ export class CustomerService {
                 },
             });
         }
+        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created'));
         return createdCustomer;
     }
 
@@ -241,27 +246,47 @@ export class CustomerService {
         const hasEmailAddress = (i: any): i is UpdateCustomerInput & { emailAddress: string } =>
             Object.hasOwnProperty.call(i, 'emailAddress');
 
-        if (hasEmailAddress(input)) {
-            const existingCustomerInChannel = await this.connection
-                .getRepository(ctx, Customer)
-                .createQueryBuilder('customer')
-                .leftJoin('customer.channels', 'channel')
-                .where('channel.id = :channelId', { channelId: ctx.channelId })
-                .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
-                .andWhere('customer.id != :customerId', { customerId: input.id })
-                .andWhere('customer.deletedAt is null')
-                .getOne();
-
-            if (existingCustomerInChannel) {
-                return new EmailAddressConflictAdminError();
-            }
-        }
-
         const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id, {
             channelId: ctx.channelId,
         });
+
+        if (hasEmailAddress(input)) {
+            if (input.emailAddress !== customer.emailAddress) {
+                const existingCustomerInChannel = await this.connection
+                    .getRepository(ctx, Customer)
+                    .createQueryBuilder('customer')
+                    .leftJoin('customer.channels', 'channel')
+                    .where('channel.id = :channelId', { channelId: ctx.channelId })
+                    .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                    .andWhere('customer.id != :customerId', { customerId: input.id })
+                    .andWhere('customer.deletedAt is null')
+                    .getOne();
+
+                if (existingCustomerInChannel) {
+                    return new EmailAddressConflictAdminError();
+                }
+
+                if (customer.user) {
+                    const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
+                        ctx,
+                        input.emailAddress,
+                    );
+
+                    if (
+                        existingUserWithEmailAddress &&
+                        !idsAreEqual(customer.user.id, existingUserWithEmailAddress.id)
+                    ) {
+                        return new EmailAddressConflictAdminError();
+                    }
+
+                    await this.userService.changeNativeIdentifier(ctx, customer.user.id, input.emailAddress);
+                }
+            }
+        }
+
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
+        await this.customFieldRelationService.updateRelations(ctx, Customer, input, updatedCustomer);
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
@@ -270,6 +295,7 @@ export class CustomerService {
                 input,
             },
         });
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated'));
         return assertFound(this.findOne(ctx, customer.id));
     }
 
@@ -331,7 +357,9 @@ export class CustomerService {
         if (!user.verified) {
             user = await this.userService.setVerificationToken(ctx, user);
         }
+
         customer.user = user;
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
@@ -367,9 +395,12 @@ export class CustomerService {
         if (isGraphQlErrorResult(result)) {
             return result;
         }
-        const customer = await this.findOneByUserId(ctx, result.id);
+        const customer = await this.findOneByUserId(ctx, result.id, false);
         if (!customer) {
             throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        if (ctx.channelId) {
+            await this.channelService.assignToChannels(ctx, Customer, customer.id, [ctx.channelId]);
         }
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
@@ -532,8 +563,9 @@ export class CustomerService {
             customer = patchEntity(existing, input);
             customer.channels.push(await this.connection.getEntityOrThrow(ctx, Channel, ctx.channelId));
         } else {
-            customer = new Customer(input);
+            customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
             this.channelService.assignToCurrentChannel(customer, ctx);
+            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);
     }
@@ -551,6 +583,7 @@ export class CustomerService {
             country,
         });
         const createdAddress = await this.connection.getRepository(ctx, Address).save(address);
+        await this.customFieldRelationService.updateRelations(ctx, Address, input, createdAddress);
         customer.addresses.push(createdAddress);
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         await this.enforceSingleDefaultAddress(ctx, createdAddress.id, input);
@@ -560,6 +593,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
+        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created'));
         return createdAddress;
     }
 
@@ -583,6 +617,7 @@ export class CustomerService {
         }
         let updatedAddress = patchEntity(address, input);
         updatedAddress = await this.connection.getRepository(ctx, Address).save(updatedAddress);
+        await this.customFieldRelationService.updateRelations(ctx, Address, input, updatedAddress);
         await this.enforceSingleDefaultAddress(ctx, input.id, input);
 
         await this.historyService.createHistoryEntryForCustomer({
@@ -594,6 +629,7 @@ export class CustomerService {
                 input,
             },
         });
+        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated'));
         return updatedAddress;
     }
 
@@ -621,6 +657,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
+        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted'));
         return true;
     }
 
@@ -633,6 +670,7 @@ export class CustomerService {
             .update({ id: customerId }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, customer.user!.id);
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };

@@ -36,7 +36,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
     ngOnInit() {
         const countries$ = this.searchTerm.valueChanges.pipe(
             startWith(null),
-            switchMap(term => this.dataService.settings.getCountries(9999, 0, term).stream$),
+            switchMap(term => this.dataService.settings.getCountries(999, 0, term).stream$),
             tap(data => (this.countries = data.countries.items)),
             map(data => data.countries.items),
         );
@@ -76,7 +76,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
                         this.notificationService.success(_('common.notify-delete-success'), {
                             entity: 'Country',
                         });
-                        this.dataService.settings.getCountries(9999, 0).single$.subscribe();
+                        this.dataService.settings.getCountries(999, 0).single$.subscribe();
                     } else {
                         this.notificationService.error(response.deleteCountry.message || '');
                     }

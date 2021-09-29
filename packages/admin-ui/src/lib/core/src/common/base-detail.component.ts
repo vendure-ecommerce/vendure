@@ -29,23 +29,21 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
 
     init() {
         this.entity$ = this.route.data.pipe(
-            switchMap((data) => (data.entity as Observable<Entity>).pipe(takeUntil(this.destroy$))),
-            tap((entity) => (this.id = entity.id)),
+            switchMap(data => (data.entity as Observable<Entity>).pipe(takeUntil(this.destroy$))),
+            tap(entity => (this.id = entity.id)),
             shareReplay(1),
         );
         this.isNew$ = this.entity$.pipe(
-            map((entity) => entity.id === ''),
+            map(entity => entity.id === ''),
             shareReplay(1),
         );
         this.languageCode$ = this.route.paramMap.pipe(
-            map((paramMap) => paramMap.get('lang')),
-            switchMap((lang) => {
+            map(paramMap => paramMap.get('lang')),
+            switchMap(lang => {
                 if (lang) {
                     return of(lang as LanguageCode);
                 } else {
-                    return this.dataService.settings
-                        .getActiveChannel()
-                        .mapSingle((data) => data.activeChannel.defaultLanguageCode);
+                    return this.dataService.client.uiState().mapSingle(data => data.uiState.contentLanguage);
                 }
             }),
             distinctUntilChanged(),
@@ -69,6 +67,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
 
     setLanguage(code: LanguageCode) {
         this.setQueryParam('lang', code);
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 
     canDeactivate(): boolean {

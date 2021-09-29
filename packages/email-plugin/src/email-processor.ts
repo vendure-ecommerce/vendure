@@ -1,30 +1,42 @@
+import { Inject, Injectable } from '@nestjs/common';
 import { InternalServerError, Logger } from '@vendure/core';
 import fs from 'fs-extra';
 
+import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions } from './common';
-import { loggerCtx } from './constants';
-import { EmailSender } from './email-sender';
+import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
+import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { TemplateLoader } from './template-loader';
-import { EmailPluginOptions, EmailTransportOptions, IntermediateEmailDetails } from './types';
+import {
+    EmailDetails,
+    EmailGenerator,
+    EmailPluginOptions,
+    EmailSender,
+    EmailTransportOptions,
+    IntermediateEmailDetails,
+} from './types';
 
 /**
  * This class combines the template loading, generation, and email sending - the actual "work" of
- * the EmailPlugin. It is arranged this way primarily to accomodate easier testing, so that the
+ * the EmailPlugin. It is arranged this way primarily to accommodate easier testing, so that the
  * tests can be run without needing all the JobQueue stuff which would require a full e2e test.
  */
+@Injectable()
 export class EmailProcessor {
     protected templateLoader: TemplateLoader;
     protected emailSender: EmailSender;
-    protected generator: HandlebarsMjmlGenerator;
+    protected generator: EmailGenerator;
     protected transport: EmailTransportOptions;
 
-    constructor(protected options: EmailPluginOptions) {}
+    constructor(@Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions) {}
 
     async init() {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
-        this.emailSender = new EmailSender();
-        this.generator = new HandlebarsMjmlGenerator();
+        this.emailSender = this.options.emailSender ? this.options.emailSender : new NodemailerEmailSender();
+        this.generator = this.options.emailGenerator
+            ? this.options.emailGenerator
+            : new HandlebarsMjmlGenerator();
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);
         }
@@ -59,7 +71,14 @@ export class EmailProcessor {
                 bodySource,
                 data.templateVars,
             );
-            const emailDetails = { ...generated, recipient: data.recipient };
+            const emailDetails: EmailDetails = {
+                ...generated,
+                recipient: data.recipient,
+                attachments: deserializeAttachments(data.attachments),
+                cc: data.cc,
+                bcc: data.bcc,
+                replyTo: data.replyTo,
+            };
             await this.emailSender.send(emailDetails, this.transport);
             return true;
         } catch (err: unknown) {
@@ -68,7 +87,7 @@ export class EmailProcessor {
             } else {
                 Logger.error(String(err), loggerCtx);
             }
-            return false;
+            throw err;
         }
     }
 }

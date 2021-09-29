@@ -1,5 +1,5 @@
 /* tslint:disable:no-console */
-import { INestApplication, INestMicroservice } from '@nestjs/common';
+import { INestApplicationContext } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { VendureConfig } from '@vendure/core';
 import { importProductsFromCsv, populateCollections, populateInitialData } from '@vendure/core/cli';
@@ -12,17 +12,17 @@ import { populateCustomers } from './populate-customers';
 /**
  * Clears all tables from the database and populates with (deterministic) random data.
  */
-export async function populateForTesting(
+export async function populateForTesting<T extends INestApplicationContext>(
     config: Required<VendureConfig>,
-    bootstrapFn: (config: VendureConfig) => Promise<[INestApplication, INestMicroservice | undefined]>,
+    bootstrapFn: (config: VendureConfig) => Promise<T>,
     options: TestServerOptions,
-): Promise<[INestApplication, INestMicroservice | undefined]> {
+): Promise<T> {
     (config.dbConnectionOptions as any).logging = false;
     const logging = options.logging === undefined ? true : options.logging;
     const originalRequireVerification = config.authOptions.requireVerification;
     config.authOptions.requireVerification = false;
 
-    const [app, worker] = await bootstrapFn(config);
+    const app = await bootstrapFn(config);
 
     const logFn = (message: string) => (logging ? console.log(message) : null);
 
@@ -32,10 +32,10 @@ export async function populateForTesting(
     await populateCustomers(options.customerCount ?? 10, config, logging);
 
     config.authOptions.requireVerification = originalRequireVerification;
-    return [app, worker];
+    return app;
 }
 
-async function populateProducts(app: INestApplication, productsCsvPath: string, logging: boolean) {
+async function populateProducts(app: INestApplicationContext, productsCsvPath: string, logging: boolean) {
     const importResult = await importProductsFromCsv(app, productsCsvPath, LanguageCode.en);
     if (importResult.errors && importResult.errors.length) {
         console.log(`${importResult.errors.length} errors encountered when importing product data:`);

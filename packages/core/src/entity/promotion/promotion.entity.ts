@@ -12,7 +12,7 @@ import {
     PromotionOrderAction,
     PromotionShippingAction,
 } from '../../config/promotion/promotion-action';
-import { PromotionCondition } from '../../config/promotion/promotion-condition';
+import { PromotionCondition, PromotionConditionState } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
@@ -32,6 +32,12 @@ export interface ApplyShippingActionArgs {
     shippingLine: ShippingLine;
     order: Order;
 }
+
+export interface PromotionState {
+    [code: string]: PromotionConditionState;
+}
+
+export type PromotionTestResult = boolean | PromotionState;
 
 /**
  * @description
@@ -113,8 +119,10 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     async apply(
         ctx: RequestContext,
         args: ApplyOrderActionArgs | ApplyOrderItemActionArgs | ApplyShippingActionArgs,
+        state?: PromotionState,
     ): Promise<Adjustment | undefined> {
         let amount = 0;
+        state = state || {};
 
         for (const action of this.actions) {
             const promotionAction = this.allActions[action.code];
@@ -122,19 +130,19 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
                 if (this.isOrderItemArg(args)) {
                     const { orderItem, orderLine } = args;
                     amount += Math.round(
-                        await promotionAction.execute(ctx, orderItem, orderLine, action.args),
+                        await promotionAction.execute(ctx, orderItem, orderLine, action.args, state),
                     );
                 }
             } else if (promotionAction instanceof PromotionOrderAction) {
                 if (this.isOrderArg(args)) {
                     const { order } = args;
-                    amount += Math.round(await promotionAction.execute(ctx, order, action.args));
+                    amount += Math.round(await promotionAction.execute(ctx, order, action.args, state));
                 }
             } else if (promotionAction instanceof PromotionShippingAction) {
                 if (this.isShippingArg(args)) {
                     const { shippingLine, order } = args;
                     amount += Math.round(
-                        await promotionAction.execute(ctx, shippingLine, order, action.args),
+                        await promotionAction.execute(ctx, shippingLine, order, action.args, state),
                     );
                 }
             }
@@ -149,7 +157,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
     }
 
-    async test(ctx: RequestContext, order: Order): Promise<boolean> {
+    async test(ctx: RequestContext, order: Order): Promise<PromotionTestResult> {
         if (this.endsAt && this.endsAt < new Date()) {
             return false;
         }
@@ -159,13 +167,21 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         if (this.couponCode && !order.couponCodes.includes(this.couponCode)) {
             return false;
         }
+        const promotionState: PromotionState = {};
         for (const condition of this.conditions) {
             const promotionCondition = this.allConditions[condition.code];
-            if (!promotionCondition || !(await promotionCondition.check(ctx, order, condition.args))) {
+            if (!promotionCondition) {
                 return false;
             }
+            const applicableOrConditionState = await promotionCondition.check(ctx, order, condition.args);
+            if (!applicableOrConditionState) {
+                return false;
+            }
+            if (typeof applicableOrConditionState === 'object') {
+                promotionState[condition.code] = applicableOrConditionState;
+            }
         }
-        return true;
+        return promotionState;
     }
     private isShippingAction(
         value: PromotionItemAction | PromotionOrderAction | PromotionShippingAction,

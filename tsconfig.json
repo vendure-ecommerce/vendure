@@ -12,6 +12,7 @@
     "strict": true,
     "strictPropertyInitialization": false,
     "sourceMap": false,
-    "newLine": "LF"
+    "newLine": "LF",
+    "resolveJsonModule": true
   }
 }

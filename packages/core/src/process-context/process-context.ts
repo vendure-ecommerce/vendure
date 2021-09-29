@@ -1,30 +1,49 @@
 import { Injectable } from '@nestjs/common';
 
+type ProcessContextType = 'server' | 'worker';
+let currentContext: ProcessContextType = 'server';
+
 /**
  * @description
- * The ProcessContext can be injected into your providers in order to know whether that provider
+ * The ProcessContext can be injected into your providers & modules in order to know whether it
  * is being executed in the context of the main Vendure server or the worker.
+ *
+ * @example
+ * ```TypeScript
+ * import { Injectable, OnApplicationBootstrap } from '\@nestjs/common';
+ * import { ProcessContext } from '\@vendure/core';
+ *
+ * \@Injectable()
+ * export class MyService implements OnApplicationBootstrap {
+ *   constructor(private processContext: ProcessContext) {}
+ *
+ *   onApplicationBootstrap() {
+ *     if (this.processContext.isServer) {
+ *       // code which will only execute when running in
+ *       // the server process
+ *     }
+ *   }
+ * }
+ * ```
  *
  * @docsCategory common
  */
-@Injectable()
 export class ProcessContext {
-    protected _isServer: boolean;
-
     get isServer(): boolean {
-        return this._isServer;
+        return currentContext === 'server';
     }
     get isWorker(): boolean {
-        return !this._isServer;
+        return currentContext === 'worker';
     }
 }
 
-@Injectable()
-export class ServerProcessContext extends ProcessContext {
-    protected _isServer = true;
-}
-
-@Injectable()
-export class WorkerProcessContext extends ProcessContext {
-    protected _isServer = false;
+/**
+ * @description
+ * Should only be called in the core bootstrap functions in order to establish
+ * the current process context.
+ *
+ * @internal
+ */
+export function setProcessContext(context: ProcessContextType) {
+    currentContext = context;
 }

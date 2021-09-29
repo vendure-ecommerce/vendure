@@ -1,8 +1,5 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
-import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { PluginDefinition } from 'apollo-server-core';
-import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
 import { getConfig } from './config-helpers';
@@ -21,10 +18,8 @@ import {
     PromotionOptions,
     RuntimeVendureConfig,
     ShippingOptions,
-    SuperadminCredentials,
     TaxOptions,
     VendureConfig,
-    WorkerOptions,
 } from './vendure-config';
 
 @Injectable()
@@ -71,7 +66,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.dbConnectionOptions;
     }
 
-    get promotionOptions(): PromotionOptions {
+    get promotionOptions(): Required<PromotionOptions> {
         return this.activeConfig.promotionOptions;
     }
 
@@ -83,8 +78,8 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.orderOptions as Required<OrderOptions>;
     }
 
-    get paymentOptions(): PaymentOptions {
-        return this.activeConfig.paymentOptions;
+    get paymentOptions(): Required<PaymentOptions> {
+        return this.activeConfig.paymentOptions as Required<PaymentOptions>;
     }
 
     get taxOptions(): Required<TaxOptions> {
@@ -105,10 +100,6 @@ export class ConfigService implements VendureConfig {
 
     get logger(): VendureLogger {
         return this.activeConfig.logger;
-    }
-
-    get workerOptions(): WorkerOptions {
-        return this.activeConfig.workerOptions;
     }
 
     get jobQueueOptions(): Required<JobQueueOptions> {

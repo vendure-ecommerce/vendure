@@ -30,7 +30,10 @@ export interface NavMenuItem {
     routerLink: RouterLinkDefinition;
     onClick?: (event: MouseEvent) => void;
     icon?: string;
-    requiresPermission?: string;
+    /**
+     * Control the display of this item based on the user permissions.
+     */
+    requiresPermission?: string | ((userPermissions: string[]) => boolean);
     statusBadge?: Observable<NavMenuBadge>;
 }
 
@@ -42,7 +45,10 @@ export interface NavMenuSection {
     id: string;
     label: string;
     items: NavMenuItem[];
-    requiresPermission?: string;
+    /**
+     * Control the display of this item based on the user permissions.
+     */
+    requiresPermission?: string | ((userPermissions: string[]) => boolean);
     collapsible?: boolean;
     collapsedByDefault?: boolean;
 }

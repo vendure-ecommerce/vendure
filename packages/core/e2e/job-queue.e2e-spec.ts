@@ -1,12 +1,13 @@
 import { DefaultJobQueuePlugin, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { PluginWithJobQueue } from './fixtures/test-plugins/with-job-queue';
-import { GetRunningJobs, JobState } from './graphql/generated-e2e-admin-types';
+import { CancelJob, GetRunningJobs, JobState } from './graphql/generated-e2e-admin-types';
 import { GET_RUNNING_JOBS } from './graphql/shared-definitions';
 
 describe('JobQueue', () => {
@@ -37,10 +38,11 @@ describe('JobQueue', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
+        PluginWithJobQueue.jobSubject.complete();
         await server.destroy();
     });
 
-    function getJobsInTestQueue() {
+    function getJobsInTestQueue(state?: JobState) {
         return adminClient
             .query<GetRunningJobs.Query, GetRunningJobs.Variables>(GET_RUNNING_JOBS, {
                 options: {
@@ -48,6 +50,11 @@ describe('JobQueue', () => {
                         queueName: {
                             eq: 'test',
                         },
+                        ...(state
+                            ? {
+                                  state: { eq: state },
+                              }
+                            : {}),
                     },
                 },
             })
@@ -88,7 +95,7 @@ describe('JobQueue', () => {
     );
 
     it('complete job after restart', async () => {
-        PluginWithJobQueue.jobSubject.complete();
+        PluginWithJobQueue.jobSubject.next();
 
         await sleep(300);
         const jobs = await getJobsInTestQueue();
@@ -98,8 +105,54 @@ describe('JobQueue', () => {
         expect(jobs.items[0].id).toBe(testJobId);
         expect(PluginWithJobQueue.jobHasDoneWork).toBe(true);
     });
+
+    it('cancels a running job', async () => {
+        PluginWithJobQueue.jobHasDoneWork = false;
+        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/run-job`;
+        await adminClient.fetch(restControllerUrl);
+
+        await sleep(300);
+        const jobs = await getJobsInTestQueue(JobState.RUNNING);
+
+        expect(jobs.items.length).toBe(1);
+        expect(jobs.items[0].state).toBe(JobState.RUNNING);
+        expect(PluginWithJobQueue.jobHasDoneWork).toBe(false);
+        const jobId = jobs.items[0].id;
+
+        const { cancelJob } = await adminClient.query<CancelJob.Mutation, CancelJob.Variables>(CANCEL_JOB, {
+            id: jobId,
+        });
+
+        expect(cancelJob.state).toBe(JobState.CANCELLED);
+        expect(cancelJob.isSettled).toBe(true);
+        expect(cancelJob.settledAt).not.toBeNull();
+
+        const jobs2 = await getJobsInTestQueue(JobState.CANCELLED);
+        expect(jobs.items.length).toBe(1);
+        expect(jobs.items[0].id).toBe(jobId);
+    });
+
+    it('subscribe to result of job', async () => {
+        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/run-job/subscribe`;
+        const result = await adminClient.fetch(restControllerUrl);
+
+        expect(await result.text()).toBe('42!');
+        const jobs = await getJobsInTestQueue(JobState.RUNNING);
+        expect(jobs.items.length).toBe(0);
+    });
 });
 
 function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+const CANCEL_JOB = gql`
+    mutation CancelJob($id: ID!) {
+        cancelJob(jobId: $id) {
+            id
+            state
+            isSettled
+            settledAt
+        }
+    }
+`;

@@ -31,7 +31,7 @@
     }
 
     .ProseMirror-selectednode {
-        outline: 2px solid #8cf;
+        outline: 2px solid var(--color-primary-500);
     }
 
     /* Make sure li selections wrap around markers */
@@ -47,7 +47,7 @@
         right: -2px;
         top: -2px;
         bottom: -2px;
-        border: 2px solid #8cf;
+        border: 2px solid var(--color-primary-500);
         pointer-events: none;
     }
 
@@ -72,7 +72,7 @@
     }
 
     .ProseMirror-menuseparator {
-        border-right: 1px solid #ddd;
+        border-right: 1px solid var(--color-component-border-200);
         margin-right: 3px;
     }
 
@@ -110,8 +110,8 @@
     .ProseMirror-menu-submenu {
         position: absolute;
         background: white;
-        color: #666;
-        border: 1px solid #aaa;
+        color: var(--color-grey-600);
+        border: 1px solid var(--color-component-border-200);
         padding: 2px;
     }
 
@@ -126,7 +126,7 @@
     }
 
     .ProseMirror-menu-dropdown-item:hover {
-        background: #f2f2f2;
+        background: var(--color-component-bg-100);
     }
 
     .ProseMirror-menu-submenu-wrap {
@@ -153,12 +153,12 @@
     }
 
     .ProseMirror-menu-active {
-        background: #eee;
+        background: var(--color-component-bg-100);
         border-radius: 4px;
     }
 
     .ProseMirror-menu-active {
-        background: #eee;
+        background: var(--color-component-bg-100);
         border-radius: 4px;
     }
 
@@ -176,12 +176,12 @@
         border-top-right-radius: inherit;
         position: relative;
         min-height: 1em;
-        color: #666;
+        color: var(--color-grey-600);
         padding: 1px 6px;
         top: 0;
         left: 0;
         right: 0;
-        background: white;
+        background: var(--color-component-bg-100);
         z-index: 10;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
@@ -243,7 +243,7 @@
 
     .ProseMirror blockquote {
         padding-left: 1em;
-        border-left: 3px solid #eee;
+        border-left: 3px solid var(--color-grey-100);
         margin-left: 0;
         margin-right: 0;
     }
@@ -262,12 +262,12 @@
         margin: 0;
         font-weight: normal;
         font-size: 100%;
-        color: #444;
+        color: var(--color-grey-500);
     }
 
     .ProseMirror-prompt input[type='text'],
     .ProseMirror-prompt textarea {
-        background: #eee;
+        background: var(--color-component-bg-100);
         border: none;
         outline: none;
     }
@@ -280,7 +280,7 @@
         position: absolute;
         left: 2px;
         top: 1px;
-        color: #666;
+        color: var(--color-grey-400);
         border: none;
         background: transparent;
         padding: 0;
@@ -292,8 +292,8 @@
     }
 
     .ProseMirror-invalid {
-        background: #ffc;
-        border: 1px solid #cc7;
+        background: var(--color-warning-200);
+        border: 1px solid var(--color-warning-300);
         border-radius: 4px;
         padding: 5px 10px;
         position: absolute;
@@ -307,7 +307,7 @@
 
     #editor,
     .editor {
-        background: white;
+        background: var(--color-form-input-bg);
         color: black;
         background-clip: padding-box;
         border-radius: 4px;
@@ -334,5 +334,6 @@
 
     .ProseMirror p {
         margin-bottom: 0.5rem;
+        color: var(--color-grey-800);
     }
 }

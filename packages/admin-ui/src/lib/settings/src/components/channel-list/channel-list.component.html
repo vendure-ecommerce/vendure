@@ -35,7 +35,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteChannel(channel.id)"
-                        [disabled]="!('SuperAdmin' | hasPermission)"
+                        [disabled]="!(['SuperAdmin', 'DeleteChannel'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

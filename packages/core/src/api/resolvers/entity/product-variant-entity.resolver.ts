@@ -1,13 +1,15 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
-import { Asset, Channel, FacetValue, Product, ProductOption } from '../../../entity';
+import { Asset, Channel, FacetValue, Product, ProductOption, TaxRate } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
+import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
@@ -18,7 +20,46 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductVariant')
 export class ProductVariantEntityResolver {
-    constructor(private productVariantService: ProductVariantService, private assetService: AssetService) {}
+    constructor(
+        private productVariantService: ProductVariantService,
+        private assetService: AssetService,
+        private localeStringHydrator: LocaleStringHydrator,
+        private requestContextCache: RequestContextCacheService,
+    ) {}
+
+    @ResolveField()
+    async name(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, productVariant, 'name');
+    }
+
+    @ResolveField()
+    async price(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<number> {
+        return this.productVariantService.hydratePriceFields(ctx, productVariant, 'price');
+    }
+
+    @ResolveField()
+    async priceWithTax(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<number> {
+        return this.productVariantService.hydratePriceFields(ctx, productVariant, 'priceWithTax');
+    }
+
+    @ResolveField()
+    async currencyCode(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<CurrencyCode> {
+        return this.productVariantService.hydratePriceFields(ctx, productVariant, 'currencyCode');
+    }
+
+    @ResolveField()
+    async taxRateApplied(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<TaxRate> {
+        return this.productVariantService.hydratePriceFields(ctx, productVariant, 'taxRateApplied');
+    }
 
     @ResolveField()
     async product(
@@ -28,7 +69,11 @@ export class ProductVariantEntityResolver {
         if (productVariant.product) {
             return productVariant.product;
         }
-        return this.productVariantService.getProductForVariant(ctx, productVariant);
+        return this.requestContextCache.get(
+            ctx,
+            `ProductVariantEntityResolver.product(${productVariant.productId})`,
+            () => this.productVariantService.getProductForVariant(ctx, productVariant),
+        );
     }
 
     @ResolveField()
@@ -67,16 +112,30 @@ export class ProductVariantEntityResolver {
         @Parent() productVariant: ProductVariant,
         @Api() apiType: ApiType,
     ): Promise<Array<Translated<FacetValue>>> {
+        if (productVariant.facetValues?.length === 0) {
+            return [];
+        }
         let facetValues: Array<Translated<FacetValue>>;
-        if (productVariant.facetValues) {
+        if (productVariant.facetValues?.[0]?.channels) {
             facetValues = productVariant.facetValues as Array<Translated<FacetValue>>;
         } else {
             facetValues = await this.productVariantService.getFacetValuesForVariant(ctx, productVariant.id);
         }
-        if (apiType === 'shop') {
-            facetValues = facetValues.filter(fv => !fv.facet.isPrivate);
-        }
-        return facetValues;
+
+        return facetValues.filter(fv => {
+            if (!fv.channels.find(c => idsAreEqual(c.id, ctx.channelId))) {
+                return false;
+            }
+            if (apiType === 'shop' && fv.facet.isPrivate) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    @ResolveField()
+    async stockLevel(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<string> {
+        return this.productVariantService.getDisplayStockLevel(ctx, productVariant);
     }
 }
 
@@ -103,16 +162,7 @@ export class ProductVariantAdminEntityResolver {
     @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<Channel[]> {
         const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
-        if (!isDefaultChannel && productVariant.channels) {
-            return productVariant.channels;
-        } else {
-            const channels = await this.productVariantService.getProductVariantChannels(
-                ctx,
-                productVariant.id,
-            );
-            return channels.filter(channel =>
-                isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId),
-            );
-        }
+        const channels = await this.productVariantService.getProductVariantChannels(ctx, productVariant.id);
+        return channels.filter(channel => (isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId)));
     }
 }

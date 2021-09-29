@@ -8,6 +8,7 @@ type Query {
 type Mutation {
     "Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted."
     removeSettledJobs(queueNames: [String!], olderThan: DateTime): Int!
+    cancelJob(jobId: ID!): Job!
 }
 
 """
@@ -22,6 +23,7 @@ enum JobState {
     COMPLETED
     RETRYING
     FAILED
+    CANCELLED
 }
 
 input JobListOptions

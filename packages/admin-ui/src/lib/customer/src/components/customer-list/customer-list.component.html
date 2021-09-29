@@ -2,10 +2,17 @@
     <vdr-ab-left>
         <input
             type="text"
-            name="searchTerm"
-            [formControl]="searchTerm"
+            name="emailSearchTerm"
+            [formControl]="emailSearchTerm"
             [placeholder]="'customer.search-customers-by-email' | translate"
-            class="clr-input search-input"
+            class="search-input ml3"
+        />
+        <input
+            type="text"
+            name="lastNameSearchTerm"
+            [formControl]="lastNameSearchTerm"
+            [placeholder]="'customer.search-customers-by-last-name' | translate"
+            class="search-input ml3"
         />
     </vdr-ab-left>
     <vdr-ab-right>

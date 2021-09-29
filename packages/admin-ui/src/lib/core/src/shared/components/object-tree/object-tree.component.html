@@ -9,7 +9,7 @@
     [class.expanded]="expanded"
 >
     <li *ngFor="let entry of entries">
-        <span class="key">{{ entry.key }}:</span>
+        <span class="key" *ngIf="entry.key">{{ entry.key }}:</span>
         <ng-container *ngIf="isObject(entry.value)">
             <vdr-object-tree [value]="entry.value" [isArrayItem]="valueIsArray"></vdr-object-tree>
         </ng-container>

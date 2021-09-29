@@ -8,6 +8,16 @@ describe('InMemoryJobQueueStrategy', () => {
     let strategy: InMemoryJobQueueStrategy;
     beforeEach(() => {
         strategy = new InMemoryJobQueueStrategy();
+        // init with mock injector & ProcessContext
+        strategy.init({
+            get() {
+                return { isWorker: false };
+            },
+        } as any);
+    });
+
+    afterEach(async () => {
+        await strategy.destroy();
     });
 
     describe('findMany options', () => {
@@ -56,7 +66,7 @@ describe('InMemoryJobQueueStrategy', () => {
 
         async function getIdResultsFor(options: JobListOptions): Promise<string[]> {
             const result = await strategy.findMany(options);
-            return result.items.map((j) => j.id as string);
+            return result.items.map(j => j.id as string);
         }
 
         it('take & skip', async () => {

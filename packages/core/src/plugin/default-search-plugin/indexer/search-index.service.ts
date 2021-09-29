@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import { Observable } from 'rxjs';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -10,121 +11,94 @@ import { Product } from '../../../entity/product/product.entity';
 import { Job } from '../../../job-queue/job';
 import { JobQueue } from '../../../job-queue/job-queue';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
-import { WorkerMessage } from '../../../worker/types';
-import { WorkerService } from '../../../worker/worker.service';
-import {
-    AssignProductToChannelMessage,
-    AssignVariantToChannelMessage,
-    DeleteAssetMessage,
-    DeleteProductMessage,
-    DeleteVariantMessage,
-    ReindexMessage,
-    ReindexMessageResponse,
-    RemoveProductFromChannelMessage,
-    RemoveVariantFromChannelMessage,
-    UpdateAssetMessage,
-    UpdateIndexQueueJobData,
-    UpdateProductMessage,
-    UpdateVariantMessage,
-    UpdateVariantsByIdMessage,
-} from '../types';
+import { ReindexMessageResponse, UpdateIndexQueueJobData } from '../types';
 
-let updateIndexQueue: JobQueue<UpdateIndexQueueJobData> | undefined;
+import { IndexerController } from './indexer.controller';
 
 /**
  * This service is responsible for messaging the {@link IndexerController} with search index updates.
  */
 @Injectable()
-export class SearchIndexService {
-    constructor(private workerService: WorkerService, private jobService: JobQueueService) {}
+export class SearchIndexService implements OnApplicationBootstrap {
+    private updateIndexQueue: JobQueue<UpdateIndexQueueJobData>;
 
-    initJobQueue() {
-        updateIndexQueue = this.jobService.createQueue({
+    constructor(private jobService: JobQueueService, private indexerController: IndexerController) {}
+
+    async onApplicationBootstrap() {
+        this.updateIndexQueue = await this.jobService.createQueue({
             name: 'update-search-index',
-            concurrency: 1,
             process: job => {
                 const data = job.data;
                 switch (data.type) {
                     case 'reindex':
                         Logger.verbose(`sending ReindexMessage`);
-                        this.sendMessageWithProgress(job, new ReindexMessage(data));
-                        break;
+                        return this.jobWithProgress(job, this.indexerController.reindex(data));
                     case 'update-product':
-                        this.sendMessage(job, new UpdateProductMessage(data));
-                        break;
+                        return this.indexerController.updateProduct(data);
                     case 'update-variants':
-                        this.sendMessage(job, new UpdateVariantMessage(data));
-                        break;
+                        return this.indexerController.updateVariants(data);
                     case 'delete-product':
-                        this.sendMessage(job, new DeleteProductMessage(data));
-                        break;
+                        return this.indexerController.deleteProduct(data);
                     case 'delete-variant':
-                        this.sendMessage(job, new DeleteVariantMessage(data));
-                        break;
+                        return this.indexerController.deleteVariant(data);
                     case 'update-variants-by-id':
-                        this.sendMessageWithProgress(job, new UpdateVariantsByIdMessage(data));
-                        break;
+                        return this.jobWithProgress(job, this.indexerController.updateVariantsById(data));
                     case 'update-asset':
-                        this.sendMessage(job, new UpdateAssetMessage(data));
-                        break;
+                        return this.indexerController.updateAsset(data);
                     case 'delete-asset':
-                        this.sendMessage(job, new DeleteAssetMessage(data));
-                        break;
+                        return this.indexerController.deleteAsset(data);
                     case 'assign-product-to-channel':
-                        this.sendMessage(job, new AssignProductToChannelMessage(data));
-                        break;
+                        return this.indexerController.assignProductToChannel(data);
                     case 'remove-product-from-channel':
-                        this.sendMessage(job, new RemoveProductFromChannelMessage(data));
-                        break;
+                        return this.indexerController.removeProductFromChannel(data);
                     case 'assign-variant-to-channel':
-                        this.sendMessage(job, new AssignVariantToChannelMessage(data));
-                        break;
+                        return this.indexerController.assignVariantToChannel(data);
                     case 'remove-variant-from-channel':
-                        this.sendMessage(job, new RemoveVariantFromChannelMessage(data));
-                        break;
+                        return this.indexerController.removeVariantFromChannel(data);
                     default:
                         assertNever(data);
+                        return Promise.resolve();
                 }
             },
         });
     }
 
     reindex(ctx: RequestContext) {
-        return this.addJobToQueue({ type: 'reindex', ctx: ctx.serialize() });
+        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() });
     }
 
     updateProduct(ctx: RequestContext, product: Product) {
-        this.addJobToQueue({ type: 'update-product', ctx: ctx.serialize(), productId: product.id });
+        this.updateIndexQueue.add({ type: 'update-product', ctx: ctx.serialize(), productId: product.id });
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        this.addJobToQueue({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
+        this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
-        this.addJobToQueue({ type: 'delete-product', ctx: ctx.serialize(), productId: product.id });
+        this.updateIndexQueue.add({ type: 'delete-product', ctx: ctx.serialize(), productId: product.id });
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        this.addJobToQueue({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
+        this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        this.addJobToQueue({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
+        this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        this.addJobToQueue({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+        this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     deleteAsset(ctx: RequestContext, asset: Asset) {
-        this.addJobToQueue({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
+        this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        this.addJobToQueue({
+        this.updateIndexQueue.add({
             type: 'assign-product-to-channel',
             ctx: ctx.serialize(),
             productId,
@@ -133,7 +107,7 @@ export class SearchIndexService {
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        this.addJobToQueue({
+        this.updateIndexQueue.add({
             type: 'remove-product-from-channel',
             ctx: ctx.serialize(),
             productId,
@@ -142,7 +116,7 @@ export class SearchIndexService {
     }
 
     assignVariantToChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
-        this.addJobToQueue({
+        this.updateIndexQueue.add({
             type: 'assign-variant-to-channel',
             ctx: ctx.serialize(),
             productVariantId,
@@ -151,7 +125,7 @@ export class SearchIndexService {
     }
 
     removeVariantFromChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
-        this.addJobToQueue({
+        this.updateIndexQueue.add({
             type: 'remove-variant-from-channel',
             ctx: ctx.serialize(),
             productVariantId,
@@ -159,47 +133,36 @@ export class SearchIndexService {
         });
     }
 
-    private addJobToQueue(data: UpdateIndexQueueJobData) {
-        if (updateIndexQueue) {
-            return updateIndexQueue.add(data);
-        }
-    }
-
-    private sendMessage(job: Job<any>, message: WorkerMessage<any, any>) {
-        this.workerService.send(message).subscribe({
-            complete: () => job.complete(true),
-            error: err => {
-                Logger.error(err);
-                job.fail(err);
-            },
-        });
-    }
-
-    private sendMessageWithProgress(job: Job<any>, message: ReindexMessage | UpdateVariantsByIdMessage) {
-        let total: number | undefined;
-        let duration = 0;
-        let completed = 0;
-        this.workerService.send(message).subscribe({
-            next: (response: ReindexMessageResponse) => {
-                if (!total) {
-                    total = response.total;
-                }
-                duration = response.duration;
-                completed = response.completed;
-                const progress = total === 0 ? 100 : Math.ceil((completed / total) * 100);
-                job.setProgress(progress);
-            },
-            complete: () => {
-                job.complete({
-                    success: true,
-                    indexedItemCount: total,
-                    timeTaken: duration,
-                });
-            },
-            error: (err: any) => {
-                Logger.error(JSON.stringify(err));
-                job.fail();
-            },
+    private jobWithProgress(
+        job: Job<UpdateIndexQueueJobData>,
+        ob: Observable<ReindexMessageResponse>,
+    ): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let total: number | undefined;
+            let duration = 0;
+            let completed = 0;
+            ob.subscribe({
+                next: (response: ReindexMessageResponse) => {
+                    if (!total) {
+                        total = response.total;
+                    }
+                    duration = response.duration;
+                    completed = response.completed;
+                    const progress = total === 0 ? 100 : Math.ceil((completed / total) * 100);
+                    job.setProgress(progress);
+                },
+                complete: () => {
+                    resolve({
+                        success: true,
+                        indexedItemCount: total,
+                        timeTaken: duration,
+                    });
+                },
+                error: (err: any) => {
+                    Logger.error(JSON.stringify(err));
+                    reject(err);
+                },
+            });
         });
     }
 }

@@ -4,7 +4,6 @@ import { ModuleRef } from '@nestjs/core';
 import { ConfigurableOperationDef } from '../common/configurable-operation';
 import { Injector } from '../common/injector';
 import { InjectableStrategy } from '../common/types/injectable-strategy';
-import { ProcessContext } from '../process-context/process-context';
 
 import { ConfigService } from './config.service';
 
@@ -13,35 +12,16 @@ import { ConfigService } from './config.service';
     exports: [ConfigService],
 })
 export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdown {
-    constructor(
-        private configService: ConfigService,
-        private moduleRef: ModuleRef,
-        private processContext: ProcessContext,
-    ) {}
+    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {}
 
     async onApplicationBootstrap() {
-        if (this.runInjectableStrategyLifecycleHooks()) {
-            await this.initInjectableStrategies();
-            await this.initConfigurableOperations();
-        }
+        await this.initInjectableStrategies();
+        await this.initConfigurableOperations();
     }
 
     async onApplicationShutdown(signal?: string) {
-        if (this.runInjectableStrategyLifecycleHooks()) {
-            await this.destroyInjectableStrategies();
-            await this.destroyConfigurableOperations();
-        }
-    }
-
-    /**
-     * The lifecycle hooks of the configured strategies should be run if we are on the main
-     * server process _or_ if we are on the worker running independently of the main process.
-     */
-    private runInjectableStrategyLifecycleHooks(): boolean {
-        return (
-            this.processContext.isServer ||
-            (this.processContext.isWorker && !this.configService.workerOptions.runInMainProcess)
-        );
+        await this.destroyInjectableStrategies();
+        await this.destroyConfigurableOperations();
     }
 
     private async initInjectableStrategies() {
@@ -80,8 +60,15 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             assetPreviewStrategy,
             assetStorageStrategy,
         } = this.configService.assetOptions;
-        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
-        const { adminAuthenticationStrategy, shopAuthenticationStrategy } = this.configService.authOptions;
+        const {
+            productVariantPriceCalculationStrategy,
+            stockDisplayStrategy,
+        } = this.configService.catalogOptions;
+        const {
+            adminAuthenticationStrategy,
+            shopAuthenticationStrategy,
+            sessionCacheStrategy,
+        } = this.configService.authOptions;
         const { taxZoneStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
         const {
@@ -90,12 +77,16 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             orderItemPriceCalculationStrategy,
             process,
             orderCodeStrategy,
+            orderByCodeAccessStrategy,
             stockAllocationStrategy,
         } = this.configService.orderOptions;
+        const { customFulfillmentProcess } = this.configService.shippingOptions;
+        const { customPaymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy } = this.configService;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
+            sessionCacheStrategy,
             assetNamingStrategy,
             assetPreviewStrategy,
             assetStorageStrategy,
@@ -104,16 +95,20 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             mergeStrategy,
             checkoutMergeStrategy,
             orderCodeStrategy,
+            orderByCodeAccessStrategy,
             entityIdStrategy,
             productVariantPriceCalculationStrategy,
             orderItemPriceCalculationStrategy,
             ...process,
+            ...customFulfillmentProcess,
+            ...customPaymentProcess,
             stockAllocationStrategy,
+            stockDisplayStrategy,
         ];
     }
 
     private getConfigurableOperations(): Array<ConfigurableOperationDef<any>> {
-        const { paymentMethodHandlers } = this.configService.paymentOptions;
+        const { paymentMethodHandlers, paymentMethodEligibilityCheckers } = this.configService.paymentOptions;
         const { collectionFilters } = this.configService.catalogOptions;
         const { promotionActions, promotionConditions } = this.configService.promotionOptions;
         const {
@@ -122,6 +117,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             fulfillmentHandlers,
         } = this.configService.shippingOptions;
         return [
+            ...(paymentMethodEligibilityCheckers || []),
             ...paymentMethodHandlers,
             ...collectionFilters,
             ...(promotionActions || []),

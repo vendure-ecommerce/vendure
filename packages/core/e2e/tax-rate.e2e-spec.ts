@@ -16,7 +16,7 @@ import {
     GetTaxRates,
     UpdateTaxRate,
 } from './graphql/generated-e2e-admin-types';
-import { UPDATE_TAX_RATE } from './graphql/shared-definitions';
+import { GET_TAX_RATES_LIST, UPDATE_TAX_RATE } from './graphql/shared-definitions';
 
 describe('TaxRate resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
@@ -102,18 +102,6 @@ describe('TaxRate resolver', () => {
         expect(taxRates.items.find(x => x.id === 'T_3')).toBeUndefined();
     });
 });
-
-export const GET_TAX_RATES_LIST = gql`
-    query GetTaxRates {
-        taxRates {
-            items {
-                ...TaxRate
-            }
-            totalItems
-        }
-    }
-    ${TAX_RATE_FRAGMENT}
-`;
 
 export const GET_TAX_RATE = gql`
     query GetTaxRate($id: ID!) {

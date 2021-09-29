@@ -16,6 +16,7 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillment-state-transition-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -27,6 +28,7 @@ export class FulfillmentService {
         private fulfillmentStateMachine: FulfillmentStateMachine,
         private eventBus: EventBus,
         private configService: ConfigService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     async create(
@@ -56,15 +58,24 @@ export class FulfillmentService {
             }
             return new CreateFulfillmentError(message);
         }
-        const newFulfillment = new Fulfillment({
-            method: '',
-            trackingCode: '',
-            ...fulfillmentPartial,
-            orderItems: items,
-            state: this.fulfillmentStateMachine.getInitialState(),
-            handlerCode: fulfillmentHandler.code,
-        });
-        return this.connection.getRepository(ctx, Fulfillment).save(newFulfillment);
+
+        const newFulfillment = await this.connection.getRepository(ctx, Fulfillment).save(
+            new Fulfillment({
+                method: '',
+                trackingCode: '',
+                ...fulfillmentPartial,
+                orderItems: items,
+                state: this.fulfillmentStateMachine.getInitialState(),
+                handlerCode: fulfillmentHandler.code,
+            }),
+        );
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            Fulfillment,
+            fulfillmentPartial,
+            newFulfillment,
+        );
+        return newFulfillment;
     }
 
     async findOneOrThrow(

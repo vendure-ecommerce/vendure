@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, PermissionDefinition } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, CustomFieldConfig, PermissionDefinition } from '@vendure/admin-ui/core';
 import {
     Administrator,
     CreateAdministratorInput,
@@ -16,6 +16,7 @@ import {
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { CUSTOMER_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 
@@ -34,6 +35,7 @@ export interface PermissionsByChannel {
 export class AdminDetailComponent
     extends BaseDetailComponent<GetAdministrator.Administrator>
     implements OnInit, OnDestroy {
+    customFields: CustomFieldConfig[];
     administrator$: Observable<GetAdministrator.Administrator>;
     permissionDefinitions: PermissionDefinition[];
     allRoles$: Observable<Role.Fragment[]>;
@@ -56,19 +58,25 @@ export class AdminDetailComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('Administrator');
         this.detailForm = this.formBuilder.group({
             emailAddress: ['', Validators.required],
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             password: [''],
             roles: [[]],
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
     ngOnInit() {
         this.init();
         this.administrator$ = this.entity$;
-        this.allRoles$ = this.dataService.administrator.getRoles(99999).mapStream(item => item.roles.items);
+        this.allRoles$ = this.dataService.administrator
+            .getRoles(999)
+            .mapStream(item => item.roles.items.filter(i => i.code !== CUSTOMER_ROLE_CODE));
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
             if (!userStatus.permissions.includes(Permission.UpdateAdministrator)) {
                 const rolesSelect = this.detailForm.get('roles');
@@ -82,6 +90,10 @@ export class AdminDetailComponent
 
     ngOnDestroy(): void {
         this.destroy();
+    }
+
+    customFieldIsSet(name: string): boolean {
+        return !!this.detailForm.get(['customFields', name]);
     }
 
     rolesChanged(roles: Role[]) {
@@ -116,6 +128,7 @@ export class AdminDetailComponent
             firstName: formValue.firstName,
             lastName: formValue.lastName,
             password: formValue.password,
+            customFields: formValue.customFields,
             roleIds: formValue.roles.map(role => role.id),
         };
         this.dataService.administrator.createAdministrator(administrator).subscribe(
@@ -147,6 +160,7 @@ export class AdminDetailComponent
                         firstName: formValue.firstName,
                         lastName: formValue.lastName,
                         password: formValue.password,
+                        customFields: formValue.customFields,
                         roleIds: formValue.roles.map(role => role.id),
                     };
                     return this.dataService.administrator.updateAdministrator(administrator);
@@ -175,6 +189,18 @@ export class AdminDetailComponent
             lastName: administrator.lastName,
             roles: administrator.user.roles,
         });
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value = (administrator as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
+                }
+            }
+        }
         const passwordControl = this.detailForm.get('password');
         if (passwordControl) {
             if (!administrator.id) {

@@ -30,7 +30,7 @@ This package also contains scripts for load testing the Vendure server. The load
 
 Load testing is done with [k6](https://docs.k6.io/), and to run them you will need k6 installed and (in Windows) available in your PATH environment variable so that it can be run with the command `k6`.
 
-The load tests assume the existence of the following tables in the MySQL database:
+The load tests assume the existence of the following tables in the  database:
 
 * `vendure-load-testing-1000`
 * `vendure-load-testing-10000`

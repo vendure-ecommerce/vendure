@@ -18,16 +18,10 @@ export interface CreateQueueOptions<T extends JobData<T>> {
     name: string;
     /**
      * @description
-     * How many jobs of this type may be run concurrently.
+     * Defines the work to be done for each job in the queue. The returned promise
+     * should resolve when the job is complete, or be rejected in case of an error.
      */
-    concurrency: number;
-    /**
-     * @description
-     * Defines the work to be done for each job in the queue. When the work is complete,
-     * `job.complete()` should be called, and for any errors, `job.fail()` should be called.
-     * Unhandled exceptions will automatically call `job.fail()`.
-     */
-    process: (job: Job<T>) => any | Promise<any>;
+    process: (job: Job<T>) => Promise<any>;
 }
 
 /**

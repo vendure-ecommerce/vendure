@@ -82,17 +82,27 @@ export type ID = string | number;
  * -----        |---------                              |---------------
  * string       | varchar                               | String
  * localeString | varchar                               | String
+ * text         | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ * relation     | many-to-one / many-to-many relation   | As specified in config
  *
  * Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
  * are available for that custom field.
  *
  * @docsCategory custom-fields
  */
-export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
+export type CustomFieldType =
+    | 'string'
+    | 'localeString'
+    | 'int'
+    | 'float'
+    | 'boolean'
+    | 'datetime'
+    | 'relation'
+    | 'text';
 
 /**
  * @description
@@ -125,7 +135,9 @@ export type DefaultFormComponentId =
     | 'product-selector-form-input'
     | 'customer-group-form-input'
     | 'text-form-input'
-    | 'password-form-input';
+    | 'textarea-form-input'
+    | 'password-form-input'
+    | 'relation-form-input';
 
 /**
  * @description
@@ -145,7 +157,11 @@ type DefaultFormConfigHash = {
     'product-selector-form-input': {};
     'customer-group-form-input': {};
     'text-form-input': {};
+    'textarea-form-input': {
+        spellcheck?: boolean;
+    };
     'password-form-input': {};
+    'relation-form-input': {};
 };
 
 export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
@@ -227,6 +243,25 @@ export interface AdminUiConfig {
      * screen.
      */
     loginUrl?: string;
+    /**
+     * @description
+     * The custom brand name.
+     */
+    brand?: string;
+    /**
+     * @description
+     * Option to hide vendure branding.
+     *
+     * @default false
+     */
+    hideVendureBranding?: boolean;
+    /**
+     * @description
+     * Option to hide version.
+     *
+     * @default false
+     */
+    hideVersion?: boolean;
 }
 
 /**

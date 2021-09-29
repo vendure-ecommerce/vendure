@@ -18,6 +18,7 @@ export class TaxCategoryResolver extends BaseEntityResolver<TaxCategory.Fragment
                 createdAt: '',
                 updatedAt: '',
                 name: '',
+                isDefault: false,
             },
             id => dataService.settings.getTaxCategory(id).mapStream(data => data.taxCategory),
         );

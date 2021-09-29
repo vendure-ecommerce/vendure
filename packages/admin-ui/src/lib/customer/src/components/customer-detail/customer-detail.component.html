@@ -3,7 +3,7 @@
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <vdr-customer-status-label [customer]="entity$ | async"></vdr-customer-status-label>
-            <div class="last-login" *ngIf="(entity$ | async)?.user?.lastLogin as lastLogin" [title]="lastLogin | date:'medium'">
+            <div class="last-login" *ngIf="(entity$ | async)?.user?.lastLogin as lastLogin" [title]="lastLogin | localeDate:'medium'">
                 {{ 'customer.last-login' | translate }}: {{ lastLogin | timeAgo }}
             </div>
         </div>
@@ -21,6 +21,7 @@
         </button>
         <ng-template #updateButton>
             <button
+                *vdrIfPermissions="'UpdateCustomer'"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="!(addressDefaultsUpdated || (detailForm.valid && detailForm.dirty))"
@@ -95,7 +96,7 @@
         {{ 'customer.not-a-member-of-any-groups' | translate }}
     </ng-template>
     <div>
-        <button class="btn btn-sm btn-secondary" (click)="addToGroup()">
+        <button class="btn btn-sm btn-secondary" (click)="addToGroup()" *vdrIfPermissions="'UpdateCustomerGroup'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.add-customer-to-group' | translate }}
         </button>
@@ -112,10 +113,11 @@
             [isDefaultShipping]="defaultShippingAddressId === addressForm.value.id"
             [addressForm]="addressForm"
             [customFields]="addressCustomFields"
+            [editable]="['UpdateCustomer'] | hasPermission"
             (setAsDefaultBilling)="setDefaultBillingAddressId($event)"
             (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
         ></vdr-address-card>
-        <button class="btn btn-secondary" (click)="addAddress()">
+        <button class="btn btn-secondary" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.create-new-address' | translate }}
         </button>
@@ -139,8 +141,8 @@
             <ng-template let-order="item">
                 <td class="left">{{ order.code }}</td>
                 <td class="left">{{ order.state }}</td>
-                <td class="left">{{ order.total / 100 | currency: order.currencyCode }}</td>
-                <td class="left">{{ order.updatedAt | date: 'medium' }}</td>
+                <td class="left">{{ order.totalWithTax | localeCurrency: order.currencyCode }}</td>
+                <td class="left">{{ order.updatedAt | localeDate: 'medium' }}</td>
                 <td class="right">
                     <vdr-table-row-action
                         iconShape="shopping-cart"

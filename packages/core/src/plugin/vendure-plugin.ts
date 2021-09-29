@@ -1,6 +1,7 @@
-import { INestApplication, INestMicroservice, Module } from '@nestjs/common';
+import { Module, Provider, Type as NestType } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
 import { DocumentNode } from 'graphql';
@@ -39,15 +40,9 @@ export interface VendurePluginMetadata extends ModuleMetadata {
     adminApiExtensions?: APIExtensionDefinition;
     /**
      * @description
-     * The plugin may define [Nestjs microservice controllers](https://docs.nestjs.com/microservices/basics#request-response)
-     * which are run in the Worker context.
-     */
-    workers?: Array<Type<any>>;
-    /**
-     * @description
      * The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
      */
-    entities?: Array<Type<any>>;
+    entities?: Array<Type<any>> | (() => Array<Type<any>>);
 }
 /**
  * @description
@@ -135,85 +130,26 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
             }
         }
         const nestModuleMetadata = pick(pluginMetadata, Object.values(MODULE_METADATA) as any);
+        // Automatically add any of the Plugin's "providers" to the "exports" array. This is done
+        // because when a plugin defines GraphQL resolvers, these resolvers are used to dynamically
+        // created a new Module in the ApiModule, and if those resolvers depend on any providers,
+        // the must be exported. See the function {@link createDynamicGraphQlModulesForPlugins}
+        // for the implementation.
+        // However, we must omit any global providers (https://github.com/vendure-ecommerce/vendure/issues/837)
+        const nestGlobalProviderTokens = [APP_INTERCEPTOR, APP_FILTER, APP_GUARD, APP_PIPE];
+        const exportedProviders = (nestModuleMetadata.providers || []).filter(provider => {
+            if (isNamedProvider(provider)) {
+                if (nestGlobalProviderTokens.includes(provider.provide as any)) {
+                    return false;
+                }
+            }
+            return true;
+        });
+        nestModuleMetadata.exports = [...(nestModuleMetadata.exports || []), ...exportedProviders];
         Module(nestModuleMetadata)(target);
     };
 }
 
-/**
- * @description
- * A plugin which implements a static `beforeVendureBootstrap` method with this type can define logic to run
- * before the Vendure server (and the underlying Nestjs application) is bootstrapped. This is called
- * _after_ the Nestjs application has been created, but _before_ the `app.listen()` method is invoked.
- *
- * @docsCategory plugin
- * @docsPage Plugin Lifecycle Methods
- */
-export type BeforeVendureBootstrap = (app: INestApplication) => void | Promise<void>;
-
-/**
- * @description
- * A plugin which implements a static `beforeVendureWorkerBootstrap` method with this type can define logic to run
- * before the Vendure worker (and the underlying Nestjs microservice) is bootstrapped. This is called
- * _after_ the Nestjs microservice has been created, but _before_ the `microservice.listen()` method is invoked.
- *
- * @docsCategory plugin
- * @docsPage Plugin Lifecycle Methods
- */
-export type BeforeVendureWorkerBootstrap = (app: INestMicroservice) => void | Promise<void>;
-
-/**
- * @description
- * A plugin which implements this interface can define logic to run when the Vendure server is initialized.
- *
- * For example, this could be used to call out to an external API or to set up {@link EventBus} listeners.
- *
- * @docsCategory plugin
- * @docsPage Plugin Lifecycle Methods
- */
-export interface OnVendureBootstrap {
-    onVendureBootstrap(): void | Promise<void>;
+function isNamedProvider(provider: Provider): provider is Exclude<Provider, NestType<any>> {
+    return provider.hasOwnProperty('provide');
 }
-
-/**
- * @description
- * A plugin which implements this interface can define logic to run when the Vendure worker is initialized.
- *
- * For example, this could be used to start or connect to a server or databased used by the worker.
- *
- * @docsCategory plugin
- * @docsPage Plugin Lifecycle Methods
- */
-export interface OnVendureWorkerBootstrap {
-    onVendureWorkerBootstrap(): void | Promise<void>;
-}
-
-/**
- * @description
- * A plugin which implements this interface can define logic to run before Vendure server is closed.
- *
- * For example, this could be used to clean up any processes started by the {@link OnVendureBootstrap} method.
- *
- * @docsCategory plugin
- * @docsPage Plugin Lifecycle Methods
- */
-export interface OnVendureClose {
-    onVendureClose(): void | Promise<void>;
-}
-
-/**
- * @description
- * A plugin which implements this interface can define logic to run before Vendure worker is closed.
- *
- * For example, this could be used to close any open connections to external services.
- *
- * @docsCategory plugin
- * @docsPage Plugin Lifecycle Methods
- */
-export interface OnVendureWorkerClose {
-    onVendureWorkerClose(): void | Promise<void>;
-}
-
-export type PluginLifecycleMethods = OnVendureBootstrap &
-    OnVendureWorkerBootstrap &
-    OnVendureClose &
-    OnVendureWorkerClose;

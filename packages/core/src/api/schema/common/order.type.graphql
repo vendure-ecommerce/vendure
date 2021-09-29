@@ -23,9 +23,7 @@ type Order implements Node {
     methods.
     """
     surcharges: [Surcharge!]!
-    "Order-level adjustments to the order total, such as discounts from promotions"
-    adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
-    discounts: [Adjustment!]!
+    discounts: [Discount!]!
     "An array of all coupon codes applied to the Order"
     couponCodes: [String!]!
     "Promotions applied to the order. Only gets populated after the payment process has completed."
@@ -94,22 +92,21 @@ type OrderList implements PaginatedList {
     totalItems: Int!
 }
 
-type ShippingMethodQuote {
-    id: ID!
-    price: Int!
-    priceWithTax: Int!
-    name: String!
-    description: String!
-    metadata: JSON
-}
-
 type ShippingLine {
     shippingMethod: ShippingMethod!
     price: Int!
     priceWithTax: Int!
     discountedPrice: Int!
     discountedPriceWithTax: Int!
-    discounts: [Adjustment!]!
+    discounts: [Discount!]!
+}
+
+type Discount {
+    adjustmentSource: String!
+    type: AdjustmentType!
+    description: String!
+    amount: Int!
+    amountWithTax: Int!
 }
 
 type OrderItem implements Node {
@@ -141,7 +138,6 @@ type OrderItem implements Node {
     "The proratedUnitPrice including tax"
     proratedUnitPriceWithTax: Int!
     unitTax: Int!
-    unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
     adjustments: [Adjustment!]!
     taxLines: [TaxLine!]!
@@ -159,6 +155,14 @@ type OrderLine implements Node {
     unitPrice: Int!
     "The price of a single unit, including tax but excluding discounts"
     unitPriceWithTax: Int!
+    """
+    Non-zero if the unitPrice has changed since it was initially added to Order
+    """
+    unitPriceChangeSinceAdded: Int!
+    """
+    Non-zero if the unitPriceWithTax has changed since it was initially added to Order
+    """
+    unitPriceWithTaxChangeSinceAdded: Int!
     """
     The price of a single unit including discounts, excluding tax.
 
@@ -180,7 +184,6 @@ type OrderLine implements Node {
     proratedUnitPriceWithTax: Int!
     quantity: Int!
     items: [OrderItem!]!
-    totalPrice: Int! @deprecated(reason: "Use `linePriceWithTax` instead")
     taxRate: Float!
     """
     The total price of the line excluding tax and discounts.
@@ -204,8 +207,7 @@ type OrderLine implements Node {
     proratedLinePriceWithTax: Int!
     "The total tax on this line"
     lineTax: Int!
-    adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
-    discounts: [Adjustment!]!
+    discounts: [Discount!]!
     taxLines: [TaxLine!]!
     order: Order!
 }

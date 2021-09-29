@@ -1,0 +1,12 @@
+@startuml
+!include theme.puml
+hide footbox
+title Job Queue Sequence
+
+"Vendure Server" -> "Job Queue": JobQueue.add() Job 1
+"Vendure Server" -> "Job Queue": JobQueue.add() Job 2
+"Job Queue" -> "Worker": process() Job 1
+...
+"Job Queue" <-- "Worker": Job 1 complete
+"Job Queue" -> "Worker": process() Job 2
+@enduml

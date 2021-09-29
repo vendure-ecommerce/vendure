@@ -1,24 +1,27 @@
 <ng-template vdrDialogTitle>
     <div class="title-row">
-        {{ 'asset.select-assets' | translate }}
+        <span>{{ 'asset.select-assets' | translate }}</span>
+        <div class="flex-spacer"></div>
         <vdr-asset-file-input
+            class="ml3"
             (selectFiles)="createAssets($event)"
             [uploading]="uploading"
             dropZoneTarget=".modal-content"
         ></vdr-asset-file-input>
     </div>
 </ng-template>
-<input
-    type="text"
-    name="searchTerm"
-    [formControl]="searchTerm"
-    [placeholder]="'asset.search-asset-name' | translate"
-    class="clr-input search-input"
-/>
+<vdr-asset-search-input
+    class="mb2"
+    [tags]="allTags$ | async"
+    (searchTermChange)="searchTerm$.next($event)"
+    (tagsChange)="filterByTags$.next($event)"
+    #assetSearchInputComponent
+></vdr-asset-search-input>
 <vdr-asset-gallery
     [assets]="(assets$ | async)! | paginate: paginationConfig"
-    [multiSelect]="true"
+    [multiSelect]="multiSelect"
     (selectionChange)="selection = $event"
+    #assetGalleryComponent
 ></vdr-asset-gallery>
 
 <div class="paging-controls">

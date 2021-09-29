@@ -1,7 +1,5 @@
 import { Permission } from '@vendure/common/lib/generated-types';
 
-import { DEFAULT_PERMISSIONS } from './constants';
-
 /**
  * @description
  * Configures a {@link PermissionDefinition}
@@ -146,7 +144,10 @@ export class PermissionDefinition {
  * @docsWeight 1
  */
 export class CrudPermissionDefinition extends PermissionDefinition {
-    constructor(name: string) {
+    constructor(
+        name: string,
+        private descriptionFn?: (operation: 'create' | 'read' | 'update' | 'delete') => string,
+    ) {
         super({ name });
     }
 
@@ -154,7 +155,10 @@ export class CrudPermissionDefinition extends PermissionDefinition {
     getMetadata(): PermissionMetadata[] {
         return ['Create', 'Read', 'Update', 'Delete'].map(operation => ({
             name: `${operation}${this.config.name}`,
-            description: `Grants permission to ${operation.toLocaleLowerCase()} ${this.config.name}`,
+            description:
+                typeof this.descriptionFn === 'function'
+                    ? this.descriptionFn(operation.toLocaleLowerCase() as any)
+                    : `Grants permission to ${operation.toLocaleLowerCase()} ${this.config.name}`,
             assignable: true,
             internal: false,
         }));
@@ -195,9 +199,4 @@ export class CrudPermissionDefinition extends PermissionDefinition {
     get Delete(): Permission {
         return `Delete${this.config.name}` as Permission;
     }
-}
-
-export function getAllPermissionsMetadata(customPermissions: PermissionDefinition[]): PermissionMetadata[] {
-    const allPermissions = [...DEFAULT_PERMISSIONS, ...customPermissions];
-    return allPermissions.reduce((all, def) => [...all, ...def.getMetadata()], [] as PermissionMetadata[]);
 }

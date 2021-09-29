@@ -26,7 +26,7 @@ export class CustomerGroupFormInputComponent implements FormInputComponent, OnIn
     ngOnInit() {
         this.customerGroups$ = this.dataService.customer
             .getCustomerGroupList({
-                take: 9999,
+                take: 1000,
             })
             .mapSingle(res => res.customerGroups.items)
             .pipe(startWith([]));

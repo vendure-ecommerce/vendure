@@ -30,6 +30,11 @@ type ProductList implements PaginatedList {
     totalItems: Int!
 }
 
+type ProductVariantList implements PaginatedList {
+    items: [ProductVariant!]!
+    totalItems: Int!
+}
+
 type ProductVariant implements Node {
     id: ID!
     product: Product!
@@ -43,8 +48,8 @@ type ProductVariant implements Node {
     assets: [Asset!]!
     price: Int!
     currencyCode: CurrencyCode!
-    priceIncludesTax: Boolean! @deprecated(reason: "price now always excludes tax")
     priceWithTax: Int!
+    stockLevel: String!
     taxRateApplied: TaxRate!
     taxCategory: TaxCategory!
     options: [ProductOption!]!

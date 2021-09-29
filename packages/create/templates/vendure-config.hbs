@@ -1,5 +1,5 @@
 {{#if isTs }}import{{ else }}const{{/if}} {
-    examplePaymentHandler,
+    dummyPaymentHandler,
     DefaultJobQueuePlugin,
     DefaultSearchPlugin,{{#if isTs}}
     VendureConfig,{{/if}}
@@ -45,19 +45,15 @@ const path = require('path');
     },
     authOptions: {
         superadminCredentials: {
-            identifier: '{{ superadminIdentifier }}',
-            password: '{{ superadminPassword }}',
+            identifier: '{{{ escapeSingle superadminIdentifier }}}',
+            password: '{{{ escapeSingle superadminPassword }}}',
         },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
-        {{#if requiresConnection}}
         synchronize: true, // turn this off for production
-        {{else}}
-        synchronize: false, // not working with SQLite/SQL.js, see https://github.com/typeorm/typeorm/issues/2576
-        {{/if}}
         logging: false,
-        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{ dbName }}'{{/if}},
+        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{{ escapeSingle dbName }}}'{{/if}},
         {{#if isSQLjs}}
         location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,
@@ -65,27 +61,26 @@ const path = require('path');
         {{#if requiresConnection}}
         host: '{{ dbHost }}',
         port: {{ dbPort }},
-        username: '{{ dbUserName }}',
-        password: '{{ dbPassword }}',
+        username: '{{{ escapeSingle dbUserName }}}',
+        password: '{{{ escapeSingle dbPassword }}}',
         {{/if}}
         migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
     paymentOptions: {
-        paymentMethodHandlers: [examplePaymentHandler],
+        paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
     plugins: [
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),
-            port: 3001,
         }),
         DefaultJobQueuePlugin,
         DefaultSearchPlugin,
         EmailPlugin.init({
             devMode: true,
             outputPath: path.join(__dirname, '../static/email/test-emails'),
-            mailboxPort: 3003,
+            route: 'mailbox',
             handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../static/email/templates'),
             globalTemplateVars: {
@@ -96,7 +91,10 @@ const path = require('path');
                 changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
             },
         }),
-        AdminUiPlugin.init({ port: 3002 }),
+        AdminUiPlugin.init({
+            route: 'admin',
+            port: 3002,
+        }),
     ],
 };
 {{#if isTs}}

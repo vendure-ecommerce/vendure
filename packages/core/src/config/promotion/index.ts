@@ -1,8 +1,10 @@
+import { buyXGetYFreeAction } from './actions/buy-x-get-y-free-action';
 import { discountOnItemWithFacets } from './actions/facet-values-percentage-discount-action';
 import { freeShipping } from './actions/free-shipping-action';
 import { orderFixedDiscount } from './actions/order-fixed-discount-action';
 import { orderPercentageDiscount } from './actions/order-percentage-discount-action';
 import { productsPercentageDiscount } from './actions/product-percentage-discount-action';
+import { buyXGetYFreeCondition } from './conditions/buy-x-get-y-free-condition';
 import { containsProducts } from './conditions/contains-products-condition';
 import { customerGroup } from './conditions/customer-group-condition';
 import { hasFacetValues } from './conditions/has-facet-values-condition';
@@ -25,10 +27,12 @@ export const defaultPromotionActions = [
     discountOnItemWithFacets,
     productsPercentageDiscount,
     freeShipping,
+    buyXGetYFreeAction,
 ];
 export const defaultPromotionConditions = [
     minimumOrderAmount,
     hasFacetValues,
     containsProducts,
     customerGroup,
+    buyXGetYFreeCondition,
 ];

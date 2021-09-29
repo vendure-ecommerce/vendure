@@ -22,6 +22,7 @@ import {
     GetProductList,
     GetProductSimple,
     GetProductVariant,
+    GetProductVariantList,
     GetProductWithVariants,
     LanguageCode,
     ProductVariantFragment,
@@ -251,6 +252,48 @@ describe('Product resolver', () => {
             expect(product.slug).toBe('curvy-monitor');
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/820
+        it('by slug with multiple assets', async () => {
+            const { product: product1 } = await adminClient.query<
+                GetProductSimple.Query,
+                GetProductSimple.Variables
+            >(GET_PRODUCT_SIMPLE, { id: 'T_1' });
+            const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: product1!.id,
+                        assetIds: ['T_1', 'T_2', 'T_3'],
+                    },
+                },
+            );
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, { slug: product1!.slug });
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.assets.map(a => a.id)).toEqual(['T_1', 'T_2', 'T_3']);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/538
+        it('falls back to default language slug', async () => {
+            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: 'curvy-monitor' },
+                { languageCode: LanguageCode.de },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe('curvy-monitor');
+        });
+
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {
@@ -319,6 +362,403 @@ describe('Product resolver', () => {
 
             expect(result.product).toBeNull();
         });
+
+        it('returns null when slug not found', async () => {
+            const result = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                slug: 'bad_slug',
+            });
+
+            expect(result.product).toBeNull();
+        });
+
+        describe('product query with translations', () => {
+            let translatedProduct: ProductWithVariants.Fragment;
+            let en_translation: ProductWithVariants.Translations;
+            let de_translation: ProductWithVariants.Translations;
+
+            beforeAll(async () => {
+                const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                    CREATE_PRODUCT,
+                    {
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'en Pineapple',
+                                    slug: 'en-pineapple',
+                                    description: 'A delicious pineapple',
+                                },
+                                {
+                                    languageCode: LanguageCode.de,
+                                    name: 'de Ananas',
+                                    slug: 'de-ananas',
+                                    description: 'Eine köstliche Ananas',
+                                },
+                            ],
+                        },
+                    },
+                );
+                translatedProduct = result.createProduct;
+                en_translation = translatedProduct.translations.find(
+                    t => t.languageCode === LanguageCode.en,
+                )!;
+                de_translation = translatedProduct.translations.find(
+                    t => t.languageCode === LanguageCode.de,
+                )!;
+            });
+
+            it('en slug without translation arg', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('de slug without translation arg', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('en slug with translation en', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.en });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('de slug with translation en', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.en });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+
+            it('en slug with translation de', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: en_translation.slug }, { languageCode: LanguageCode.de });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(de_translation.slug);
+            });
+
+            it('de slug with translation de', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.de });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(de_translation.slug);
+            });
+
+            it('de slug with translation ru', async () => {
+                const { product } = await adminClient.query<
+                    GetProductSimple.Query,
+                    GetProductSimple.Variables
+                >(GET_PRODUCT_SIMPLE, { slug: de_translation.slug }, { languageCode: LanguageCode.ru });
+
+                if (!product) {
+                    fail('Product not found');
+                    return;
+                }
+                expect(product.slug).toBe(en_translation.slug);
+            });
+        });
+
+        describe('product.variants', () => {
+            it('returns product variants', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: 'T_1',
+                });
+
+                expect(product?.variants.length).toBe(4);
+            });
+
+            it('returns product variants in existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.en },
+                );
+
+                expect(product?.variants.length).toBe(4);
+            });
+
+            it('returns product variants in non-existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.ru },
+                );
+
+                expect(product?.variants.length).toBe(4);
+            });
+        });
+    });
+
+    describe('productVariants list query', () => {
+        it('returns list', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_34',
+                    name: 'Bonsai Tree',
+                    price: 1999,
+                    priceWithTax: 2399,
+                    sku: 'B01MXFLUSV',
+                },
+                {
+                    id: 'T_24',
+                    name: 'Boxing Gloves',
+                    price: 3304,
+                    priceWithTax: 3965,
+                    sku: 'B000ZYLPPU',
+                },
+                {
+                    id: 'T_19',
+                    name: 'Camera Lens',
+                    price: 10400,
+                    priceWithTax: 12480,
+                    sku: 'B0012UUP02',
+                },
+            ]);
+        });
+
+        it('sort by price', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_23',
+                    name: 'Skipping Rope',
+                    price: 799,
+                    priceWithTax: 959,
+                    sku: 'B07CNGXVXT',
+                },
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
+                },
+                {
+                    id: 'T_32',
+                    name: 'Spiky Cactus',
+                    price: 1550,
+                    priceWithTax: 1860,
+                    sku: 'SC011001',
+                },
+            ]);
+        });
+
+        it('sort by priceWithTax', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        priceWithTax: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_23',
+                    name: 'Skipping Rope',
+                    price: 799,
+                    priceWithTax: 959,
+                    sku: 'B07CNGXVXT',
+                },
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
+                },
+                {
+                    id: 'T_32',
+                    name: 'Spiky Cactus',
+                    price: 1550,
+                    priceWithTax: 1860,
+                    sku: 'SC011001',
+                },
+            ]);
+        });
+
+        it('filter by price', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    filter: {
+                        price: {
+                            between: {
+                                start: 1400,
+                                end: 1500,
+                            },
+                        },
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
+                },
+            ]);
+        });
+
+        it('filter by priceWithTax', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    filter: {
+                        priceWithTax: {
+                            between: {
+                                start: 1400,
+                                end: 1500,
+                            },
+                        },
+                    },
+                },
+            });
+
+            // Note the results are incorrect. This is a design trade-off. See the
+            // commend on the ProductVariant.priceWithTax annotation for explanation.
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    priceWithTax: 1798,
+                    sku: 'B00XI87KV8',
+                },
+            ]);
+        });
+
+        it('returns variants for particular product by id', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+                productId: 'T_1',
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_1',
+                    name: 'Laptop 13 inch 8GB',
+                    price: 129900,
+                    priceWithTax: 155880,
+                    sku: 'L2201308',
+                },
+                {
+                    id: 'T_2',
+                    name: 'Laptop 15 inch 8GB',
+                    price: 139900,
+                    priceWithTax: 167880,
+                    sku: 'L2201508',
+                },
+                {
+                    id: 'T_3',
+                    name: 'Laptop 13 inch 16GB',
+                    priceWithTax: 263880,
+                    price: 219900,
+                    sku: 'L2201316',
+                },
+            ]);
+        });
     });
 
     describe('productVariant query', () => {
@@ -346,6 +786,7 @@ describe('Product resolver', () => {
     });
 
     describe('product mutation', () => {
+        let newTranslatedProduct: ProductWithVariants.Fragment;
         let newProduct: ProductWithVariants.Fragment;
         let newProductWithAssets: ProductWithVariants.Fragment;
 
@@ -376,7 +817,7 @@ describe('Product resolver', () => {
                 'A baked potato',
                 'Eine baked Erdapfel',
             ]);
-            newProduct = result.createProduct;
+            newTranslatedProduct = result.createProduct;
         });
 
         it('createProduct creates a new Product with assets', async () => {
@@ -406,6 +847,27 @@ describe('Product resolver', () => {
             expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
             newProductWithAssets = result.createProduct;
+        });
+
+        it('createProduct creates a disabled Product', async () => {
+            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        enabled: false,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Small apple',
+                                slug: 'en-small-apple',
+                                description: 'A small apple',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.createProduct.enabled).toBe(false);
+            newProduct = result.createProduct;
         });
 
         it('updateProduct updates a Product', async () => {
@@ -882,7 +1344,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'A ProductVariant already exists with the options:'),
+                }, 'A ProductVariant with the selected options already exists: Variant 1'),
             );
 
             it('updateProductVariants updates variants', async () => {
@@ -907,6 +1369,33 @@ describe('Product resolver', () => {
                 }
                 expect(updatedVariant.sku).toBe('ABC');
                 expect(updatedVariant.price).toBe(432);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1101
+            it('after update, the updatedAt should be modified', async () => {
+                // Pause for a second to ensure the updatedAt date is more than 1s
+                // later than the createdAt date, since sqlite does not seem to store
+                // down to millisecond resolution.
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const firstVariant = variants[0];
+                const { updateProductVariants } = await adminClient.query<
+                    UpdateProductVariants.Mutation,
+                    UpdateProductVariants.Variables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: firstVariant.id,
+                            translations: firstVariant.translations,
+                            sku: 'ABCD',
+                            price: 432,
+                        },
+                    ],
+                });
+
+                const updatedVariant = updateProductVariants.find(v => v?.id === variants[0].id);
+
+                expect(updatedVariant?.updatedAt).not.toBe(updatedVariant?.createdAt);
             });
 
             it('updateProductVariants updates assets', async () => {
@@ -1074,12 +1563,61 @@ describe('Product resolver', () => {
                     deletedVariant.options.map(o => o.code).sort(),
                 );
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/980
+            it('creating variants in a non-default language', async () => {
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'Ananas',
+                                slug: 'ananas',
+                                description: 'Yummy Ananas',
+                            },
+                        ],
+                    },
+                });
+
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: createProduct.id,
+                            sku: 'AN1110111',
+                            optionIds: [],
+                            translations: [{ languageCode: LanguageCode.de, name: 'Ananas Klein' }],
+                        },
+                    ],
+                });
+
+                expect(createProductVariants.length).toBe(1);
+                expect(createProductVariants[0]?.name).toBe('Ananas Klein');
+
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: createProduct.id,
+                    },
+                    { languageCode: LanguageCode.en },
+                );
+
+                expect(product?.variants.length).toBe(1);
+            });
         });
     });
 
     describe('deletion', () => {
         let allProducts: GetProductList.Items[];
-        let productToDelete: GetProductList.Items;
+        let productToDelete: GetProductWithVariants.Product;
 
         beforeAll(async () => {
             const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
@@ -1096,24 +1634,45 @@ describe('Product resolver', () => {
         });
 
         it('deletes a product', async () => {
-            productToDelete = allProducts[0];
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: allProducts[0].id,
+            });
             const result = await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(
                 DELETE_PRODUCT,
-                { id: productToDelete.id },
+                { id: product!.id },
             );
 
             expect(result.deleteProduct).toEqual({ result: DeletionResult.DELETED });
+
+            productToDelete = product!;
         });
 
         it('cannot get a deleted product', async () => {
-            const result = await adminClient.query<
+            const { product } = await adminClient.query<
                 GetProductWithVariants.Query,
                 GetProductWithVariants.Variables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: productToDelete.id,
             });
 
-            expect(result.product).toBe(null);
+            expect(product).toBe(null);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1096
+        it('variants of deleted product are also deleted', async () => {
+            for (const variant of productToDelete.variants) {
+                const { productVariant } = await adminClient.query<
+                    GetProductVariant.Query,
+                    GetProductVariant.Variables
+                >(GET_PRODUCT_VARIANT, {
+                    id: variant.id,
+                });
+
+                expect(productVariant).toBe(null);
+            }
         });
 
         it('deleted product omitted from list', async () => {
@@ -1186,6 +1745,20 @@ describe('Product resolver', () => {
             );
             expect(result.createProduct.slug).toBe(productToDelete.slug);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/800
+        it('product can be fetched by slug of a deleted product', async () => {
+            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: productToDelete.slug },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe(productToDelete.slug);
+        });
     });
 });
 
@@ -1222,6 +1795,21 @@ export const GET_PRODUCT_VARIANT = gql`
         productVariant(id: $id) {
             id
             name
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantLIST($options: ProductVariantListOptions, $productId: ID) {
+        productVariants(options: $options, productId: $productId) {
+            items {
+                id
+                name
+                sku
+                price
+                priceWithTax
+            }
+            totalItems
         }
     }
 `;

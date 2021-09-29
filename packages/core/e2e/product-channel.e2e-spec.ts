@@ -10,23 +10,30 @@ import {
     AssignProductVariantsToChannel,
     CreateAdministrator,
     CreateChannel,
+    CreateProduct,
+    CreateProductVariants,
     CreateRole,
     CurrencyCode,
     GetProductWithVariants,
     LanguageCode,
     Permission,
+    ProductVariantFragment,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_ADMINISTRATOR,
     CREATE_CHANNEL,
+    CREATE_PRODUCT,
+    CREATE_PRODUCT_VARIANTS,
     CREATE_ROLE,
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -195,6 +202,7 @@ describe('ChannelAware Products and ProductVariants', () => {
         });
 
         it('does not assign Product to same channel twice', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { assignProductsToChannel } = await adminClient.query<
                 AssignProductsToChannel.Mutation,
                 AssignProductsToChannel.Variables
@@ -295,7 +303,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: product1.id,
             });
-            expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
+            expect(product!.channels.map(c => c.id).sort()).toEqual(['T_3']);
             expect(product!.variants.map(v => v.price)).toEqual([
                 Math.round((product1.variants[0].price * PRICE_FACTOR) / 1.2),
             ]);
@@ -303,6 +311,19 @@ describe('ChannelAware Products and ProductVariants', () => {
             expect(product!.variants.map(v => v.priceWithTax)).toEqual([
                 product1.variants[0].price * PRICE_FACTOR,
             ]);
+
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { product: check } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: product1.id,
+            });
+
+            // from the default channel, all channels are visible
+            expect(check?.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
+            expect(check?.variants[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
+            expect(check?.variants[1].channels.map(c => c.id).sort()).toEqual(['T_1']);
         });
 
         it('does not assign ProductVariant to same channel twice', async () => {
@@ -392,5 +413,78 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1']);
         });
+    });
+
+    describe('creating Product in sub-channel', () => {
+        let createdProduct: CreateProduct.CreateProduct;
+        let createdVariant: ProductVariantFragment;
+
+        it('creates a Product in sub-channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const { createProduct } = await adminClient.query<
+                CreateProduct.Mutation,
+                CreateProduct.Variables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel Product',
+                            slug: 'channel-product',
+                            description: 'Channel product',
+                        },
+                    ],
+                },
+            });
+            const { createProductVariants } = await adminClient.query<
+                CreateProductVariants.Mutation,
+                CreateProductVariants.Variables
+            >(CREATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        productId: createProduct.id,
+                        sku: 'PV1',
+                        optionIds: [],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
+                    },
+                ],
+            });
+
+            createdProduct = createProduct;
+            createdVariant = createProductVariants[0]!;
+
+            // from sub-channel, only that channel is visible
+            expect(createdProduct.channels.map(c => c.id).sort()).toEqual(['T_2']);
+            expect(createdVariant.channels.map(c => c.id).sort()).toEqual(['T_2']);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: createProduct.id,
+            });
+
+            // from the default channel, all channels are visible
+            expect(product?.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
+            expect(product?.variants[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+    });
+
+    describe('updating Product in sub-channel', () => {
+        it(
+            'throws if attempting to update a Product which is not assigned to that Channel',
+            assertThrowsWithMessage(async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_2',
+                        translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
+                    },
+                });
+            }, `No Product with the id '2' could be found`),
+        );
     });
 });

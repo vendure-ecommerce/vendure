@@ -29,4 +29,10 @@ describe('normalizeString()', () => {
     it('allows a subset of non-alphanumeric characters to pass through', () => {
         expect(normalizeString('-_.')).toBe('-_.');
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/679
+    it('replaces single quotation marks', () => {
+        expect(normalizeString('Capture d’écran')).toBe('capture decran');
+        expect(normalizeString('Capture d‘écran')).toBe('capture decran');
+    });
 });

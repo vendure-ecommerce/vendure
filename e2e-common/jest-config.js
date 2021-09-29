@@ -14,7 +14,7 @@ module.exports = {
     reporters: ['default', path.join(__dirname, 'custom-reporter.js')],
     globals: {
         'ts-jest': {
-            tsConfig: '<rootDir>/config/tsconfig.e2e.json',
+            tsconfig: '<rootDir>/config/tsconfig.e2e.json',
             diagnostics: false,
             isolatedModules: true,
         },

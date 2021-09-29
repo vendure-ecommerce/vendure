@@ -10,6 +10,8 @@ import { ProductVariant } from '../product-variant/product-variant.entity';
  * or out.
  *
  * @docsCategory entities
+ * @docsPage StockMovement
+ * @docsWeight 0
  */
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'discriminator' } })

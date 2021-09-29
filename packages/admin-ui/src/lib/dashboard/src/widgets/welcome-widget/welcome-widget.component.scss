@@ -1,9 +1,8 @@
-@import "variables";
 
 :host {
     display: flex;
     justify-content: space-between;
 }
 .placeholder {
-    color: $color-grey-200;
+    color: var(--color-grey-200);
 }
