@@ -33,7 +33,7 @@ import { GlobalSettingsService } from './global-settings.service';
 
 @Injectable()
 export class ChannelService {
-    private allChannels: SelfRefreshingCache<Channel[]>;
+    private allChannels: SelfRefreshingCache<Channel[], [RequestContext]>;
 
     constructor(
         private connection: TransactionalConnection,
@@ -51,7 +51,7 @@ export class ChannelService {
         this.allChannels = await createSelfRefreshingCache({
             name: 'ChannelService.allChannels',
             ttl: this.configService.entityOptions.channelCacheTtl,
-            refreshFn: () => this.findAll(RequestContext.empty()),
+            refresh: { fn: ctx => this.findAll(ctx), defaultArgs: [RequestContext.empty()] },
         });
     }
 
@@ -174,7 +174,7 @@ export class ChannelService {
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
-        await this.allChannels.refresh();
+        await this.allChannels.refresh(ctx);
         return channel;
     }
 
@@ -207,7 +207,7 @@ export class ChannelService {
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
-        await this.allChannels.refresh();
+        await this.allChannels.refresh(ctx);
         return assertFound(this.findOne(ctx, channel.id));
     }
 

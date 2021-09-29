@@ -6,7 +6,7 @@ import { Logger } from '../config/logger/vendure-logger';
  * @description
  * A cache which automatically refreshes itself if the value is found to be stale.
  */
-export interface SelfRefreshingCache<V> {
+export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
     /**
      * @description
      * The current value of the cache. If the value is stale, the data will be refreshed and then
@@ -28,13 +28,16 @@ export interface SelfRefreshingCache<V> {
      * Force a refresh of the value, e.g. when it is known that the value has changed such as after
      * an update operation to the source data in the database.
      */
-    refresh(): Promise<V>;
+    refresh(...args: RefreshArgs): Promise<V>;
 }
 
-export interface SelfRefreshingCacheConfig<V> {
+export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
     name: string;
     ttl: number;
-    refreshFn: () => Promise<V>;
+    refresh: {
+        fn: (...args: RefreshArgs) => Promise<V>;
+        defaultArgs: RefreshArgs;
+    };
 }
 
 /**
@@ -47,18 +50,19 @@ export interface SelfRefreshingCacheConfig<V> {
  * value has expired, it will still be returned and the `refreshFn` will be triggered to update the value in the
  * background.
  */
-export async function createSelfRefreshingCache<V>(
-    config: SelfRefreshingCacheConfig<V>,
-): Promise<SelfRefreshingCache<V>> {
-    const { ttl, name, refreshFn } = config;
-    const initialValue = await refreshFn();
+export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
+    config: SelfRefreshingCacheConfig<V, RefreshArgs>,
+): Promise<SelfRefreshingCache<V, RefreshArgs>> {
+    const { ttl, name, refresh } = config;
+    const initialValue = await refresh.fn(...refresh.defaultArgs);
     let value = initialValue;
     let expires = new Date().getTime() + ttl;
     const memoCache = new Map<string, any>();
     const hashArgs = (...args: any[]) => JSON.stringify([args, expires]);
-    const refreshValue = (): Promise<V> => {
+    const refreshValue = (...args: RefreshArgs): Promise<V> => {
         Logger.debug(`Refreshing the SelfRefreshingCache "${name}"`);
-        return refreshFn()
+        return refresh
+            .fn(...args)
             .then(newValue => {
                 value = newValue;
                 expires = new Date().getTime() + ttl;
@@ -77,7 +81,7 @@ export async function createSelfRefreshingCache<V>(
     const getValue = async (): Promise<V> => {
         const now = new Date().getTime();
         if (expires < now) {
-            return refreshValue();
+            return refreshValue(...refresh.defaultArgs);
         }
         return value;
     };

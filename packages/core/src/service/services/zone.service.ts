@@ -26,17 +26,20 @@ export class ZoneService {
     /**
      * We cache all Zones to avoid hitting the DB many times per request.
      */
-    private zones: SelfRefreshingCache<Zone[]>;
+    private zones: SelfRefreshingCache<Zone[], [RequestContext]>;
     constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
     async initZones() {
         this.zones = await createSelfRefreshingCache({
             name: 'ZoneService.zones',
             ttl: this.configService.entityOptions.zoneCacheTtl,
-            refreshFn: () =>
-                this.connection.getRepository(Zone).find({
-                    relations: ['members'],
-                }),
+            refresh: {
+                fn: ctx =>
+                    this.connection.getRepository(ctx, Zone).find({
+                        relations: ['members'],
+                    }),
+                defaultArgs: [RequestContext.empty()],
+            },
         });
     }
 
@@ -69,7 +72,7 @@ export class ZoneService {
             zone.members = await this.getCountriesFromIds(ctx, input.memberIds);
         }
         const newZone = await this.connection.getRepository(ctx, Zone).save(zone);
-        await this.zones.refresh();
+        await this.zones.refresh(ctx);
         return assertFound(this.findOne(ctx, newZone.id));
     }
 
@@ -77,7 +80,7 @@ export class ZoneService {
         const zone = await this.connection.getEntityOrThrow(ctx, Zone, input.id);
         const updatedZone = patchEntity(zone, input);
         await this.connection.getRepository(ctx, Zone).save(updatedZone, { reload: false });
-        await this.zones.refresh();
+        await this.zones.refresh(ctx);
         return assertFound(this.findOne(ctx, zone.id));
     }
 
@@ -115,7 +118,7 @@ export class ZoneService {
             };
         } else {
             await this.connection.getRepository(ctx, Zone).remove(zone);
-            await this.zones.refresh();
+            await this.zones.refresh(ctx);
             return {
                 result: DeletionResult.DELETED,
                 message: '',
@@ -131,7 +134,7 @@ export class ZoneService {
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
         await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
-        await this.zones.refresh();
+        await this.zones.refresh(ctx);
         return assertFound(this.findOne(ctx, zone.id));
     }
 
@@ -144,7 +147,7 @@ export class ZoneService {
         });
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id));
         await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
-        await this.zones.refresh();
+        await this.zones.refresh(ctx);
         return assertFound(this.findOne(ctx, zone.id));
     }
 
