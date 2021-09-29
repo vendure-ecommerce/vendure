@@ -3,6 +3,7 @@ import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/gener
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
@@ -25,8 +26,8 @@ import {
     MockTaxRateService,
     taxCategoryReduced,
     taxCategoryStandard,
+    taxCategoryZero,
 } from '../../../testing/order-test-utils';
-import { WorkerService } from '../../../worker/worker.service';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
@@ -590,6 +591,69 @@ describe('OrderCalculator', () => {
                     expect(order.totalWithTax).toBe(50);
                     assertOrderTotalsAddUp(order);
                 });
+
+                it('prices include tax at 0%', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 100,
+                                taxCategory: taxCategoryZero,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(50);
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.discounts[0].description).toBe('50% off order');
+                    expect(order.totalWithTax).toBe(50);
+                    assertOrderTotalsAddUp(order);
+                });
+            });
+
+            it('correct proration', async () => {
+                const promotion = new Promotion({
+                    id: 1,
+                    name: '$5 off order',
+                    conditions: [{ code: alwaysTrueCondition.code, args: [] }],
+                    promotionConditions: [alwaysTrueCondition],
+                    actions: [
+                        {
+                            code: fixedDiscountOrderAction.code,
+                            args: [],
+                        },
+                    ],
+                    promotionActions: [fixedDiscountOrderAction],
+                });
+
+                const ctx = createRequestContext({ pricesIncludeTax: true });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 500,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 1,
+                        },
+                        {
+                            listPrice: 500,
+                            taxCategory: taxCategoryZero,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                expect(order.subTotalWithTax).toBe(500);
+                expect(order.discounts.length).toBe(1);
+                expect(order.discounts[0].description).toBe('$5 off order');
+                expect(order.lines[0].proratedLinePriceWithTax).toBe(250);
+                expect(order.lines[1].proratedLinePriceWithTax).toBe(250);
+                expect(order.totalWithTax).toBe(500);
+                assertOrderTotalsAddUp(order);
             });
         });
 
@@ -1030,7 +1094,7 @@ describe('OrderCalculator', () => {
                     ]);
 
                     expect(order.subTotal).toBe(5719);
-                    expect(order.subTotalWithTax).toBe(6440);
+                    expect(order.subTotalWithTax).toBe(6448);
                     assertOrderTotalsAddUp(order);
                 });
 
@@ -1062,7 +1126,7 @@ describe('OrderCalculator', () => {
                         $5OffOrderPromo,
                     ]);
 
-                    expect(order.subTotal).toBe(5084);
+                    expect(order.subTotal).toBe(5082);
                     expect(order.subTotalWithTax).toBe(5719);
                     assertOrderTotalsAddUp(order);
                 });
@@ -1474,6 +1538,7 @@ function createTestModule() {
     return Test.createTestingModule({
         providers: [
             OrderCalculator,
+            RequestContextCacheService,
             { provide: TaxRateService, useClass: MockTaxRateService },
             { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
             {
@@ -1495,7 +1560,6 @@ function createTestModule() {
             { provide: ListQueryBuilder, useValue: {} },
             { provide: ConfigService, useClass: MockConfigService },
             { provide: EventBus, useValue: { publish: () => ({}) } },
-            { provide: WorkerService, useValue: { send: () => ({}) } },
             { provide: ZoneService, useValue: { findAll: () => [] } },
         ],
     }).compile();
@@ -1510,6 +1574,16 @@ function assertOrderTotalsAddUp(order: Order) {
         expect(line.linePrice).toBe(itemUnitPriceSum);
         const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
         expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
+
+        const pricesIncludeTax = line.firstItem?.listPriceIncludesTax;
+
+        if (pricesIncludeTax) {
+            const lineDiscountsAmountWithTaxSum = summate(line.discounts, 'amountWithTax');
+            expect(line.linePriceWithTax + lineDiscountsAmountWithTaxSum).toBe(line.proratedLinePriceWithTax);
+        } else {
+            const lineDiscountsAmountSum = summate(line.discounts, 'amount');
+            expect(line.linePrice + lineDiscountsAmountSum).toBe(line.proratedLinePrice);
+        }
     }
     const taxableLinePriceSum = summate(order.lines, 'proratedLinePrice');
     const surchargeSum = summate(order.surcharges, 'price');
@@ -1521,12 +1595,15 @@ function assertOrderTotalsAddUp(order: Order) {
     const orderDiscountsSum = order.discounts
         .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
         .reduce((sum, d) => sum + d.amount, 0);
+    const orderDiscountsWithTaxSum = order.discounts
+        .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+        .reduce((sum, d) => sum + d.amountWithTax, 0);
 
     // The sum of the display prices + order discounts should in theory exactly
     // equal the subTotalWithTax. In practice, there are occasionally 1cent differences
     // cause by rounding errors. This should be tolerable.
     const differenceBetweenSumAndActual = Math.abs(
-        displayPriceWithTaxSum + orderDiscountsSum + surchargeWithTaxSum - order.subTotalWithTax,
+        displayPriceWithTaxSum + orderDiscountsWithTaxSum + surchargeWithTaxSum - order.subTotalWithTax,
     );
     expect(differenceBetweenSumAndActual).toBeLessThanOrEqual(1);
 }

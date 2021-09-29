@@ -2,14 +2,18 @@ name: Build & Test
 
 on:
   push:
-    branches-ignore:
-      - 'vendure-io'
+    branches:
+      - master
+      - major
+      - minor
   pull_request:
     branches:
       - master
+      - major
+      - minor
 env:
   CI: true
-  node: 12.x
+  node: 14.x
 jobs:
   build:
     name: build

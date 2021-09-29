@@ -8,8 +8,10 @@ import {
     CreateCountryInput,
     createUpdatedTranslatable,
     DataService,
+    findTranslation,
     LanguageCode,
     NotificationService,
+    Permission,
     ServerConfigService,
     UpdateCountryInput,
 } from '@vendure/admin-ui/core';
@@ -26,6 +28,7 @@ export class CountryDetailComponent
     implements OnInit, OnDestroy {
     country$: Observable<Country.Fragment>;
     detailForm: FormGroup;
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateCountry];
 
     constructor(
         router: Router,
@@ -126,7 +129,7 @@ export class CountryDetailComponent
     }
 
     protected setFormValues(country: Country, languageCode: LanguageCode): void {
-        const currentTranslation = country.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(country, languageCode);
 
         this.detailForm.patchValue({
             code: country.code,

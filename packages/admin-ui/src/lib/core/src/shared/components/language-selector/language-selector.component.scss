@@ -1,4 +1,3 @@
-@import "variables";
 .code {
-    color: $color-grey-400;
+    color: var(--color-grey-400);
 }

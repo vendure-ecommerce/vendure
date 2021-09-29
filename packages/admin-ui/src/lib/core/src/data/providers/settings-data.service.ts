@@ -3,10 +3,13 @@ import { pick } from '@vendure/common/lib/pick';
 
 import {
     AddMembersToZone,
+    CancelJob,
     CreateChannel,
     CreateChannelInput,
     CreateCountry,
     CreateCountryInput,
+    CreatePaymentMethod,
+    CreatePaymentMethodInput,
     CreateTaxCategory,
     CreateTaxCategoryInput,
     CreateTaxRate,
@@ -15,6 +18,7 @@ import {
     CreateZoneInput,
     DeleteChannel,
     DeleteCountry,
+    DeletePaymentMethod,
     DeleteTaxCategory,
     DeleteTaxRate,
     DeleteZone,
@@ -31,6 +35,7 @@ import {
     GetJobsById,
     GetPaymentMethod,
     GetPaymentMethodList,
+    GetPaymentMethodOperations,
     GetTaxCategories,
     GetTaxCategory,
     GetTaxRate,
@@ -57,13 +62,16 @@ import {
 } from '../../common/generated-types';
 import {
     ADD_MEMBERS_TO_ZONE,
+    CANCEL_JOB,
     CREATE_CHANNEL,
     CREATE_COUNTRY,
+    CREATE_PAYMENT_METHOD,
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
     DELETE_CHANNEL,
     DELETE_COUNTRY,
+    DELETE_PAYMENT_METHOD,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
     DELETE_ZONE,
@@ -80,6 +88,7 @@ import {
     GET_JOB_QUEUE_LIST,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
+    GET_PAYMENT_METHOD_OPERATIONS,
     GET_TAX_CATEGORIES,
     GET_TAX_CATEGORY,
     GET_TAX_RATE,
@@ -315,6 +324,15 @@ export class SettingsDataService {
         );
     }
 
+    createPaymentMethod(input: CreatePaymentMethodInput) {
+        return this.baseDataService.mutate<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+            CREATE_PAYMENT_METHOD,
+            {
+                input,
+            },
+        );
+    }
+
     updatePaymentMethod(input: UpdatePaymentMethodInput) {
         return this.baseDataService.mutate<UpdatePaymentMethod.Mutation, UpdatePaymentMethod.Variables>(
             UPDATE_PAYMENT_METHOD,
@@ -322,6 +340,20 @@ export class SettingsDataService {
                 input,
             },
         );
+    }
+
+    deletePaymentMethod(id: string, force: boolean) {
+        return this.baseDataService.mutate<DeletePaymentMethod.Mutation, DeletePaymentMethod.Variables>(
+            DELETE_PAYMENT_METHOD,
+            {
+                id,
+                force,
+            },
+        );
+    }
+
+    getPaymentMethodOperations() {
+        return this.baseDataService.query<GetPaymentMethodOperations.Query>(GET_PAYMENT_METHOD_OPERATIONS);
     }
 
     getGlobalSettings(fetchPolicy?: WatchQueryFetchPolicy) {
@@ -352,9 +384,13 @@ export class SettingsDataService {
     }
 
     getAllJobs(options?: JobListOptions) {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_JOBS_LIST, {
-            options,
-        });
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(
+            GET_JOBS_LIST,
+            {
+                options,
+            },
+            'cache-first',
+        );
     }
 
     getJobQueues() {
@@ -370,6 +406,12 @@ export class SettingsDataService {
                     },
                 },
             },
+        });
+    }
+
+    cancelJob(id: string) {
+        return this.baseDataService.mutate<CancelJob.Mutation, CancelJob.Variables>(CANCEL_JOB, {
+            id,
         });
     }
 }

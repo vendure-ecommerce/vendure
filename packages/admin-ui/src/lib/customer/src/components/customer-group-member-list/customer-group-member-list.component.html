@@ -3,7 +3,7 @@
     name="searchTerm"
     [formControl]="filterTermControl"
     [placeholder]="'customer.search-customers-by-email' | translate"
-    class="clr-input search-input"
+    class="search-input"
 />
 
 <vdr-data-table
@@ -14,7 +14,7 @@
     (pageChange)="setContentsPageNumber($event)"
     (itemsPerPageChange)="setContentsItemsPerPage($event)"
     [allSelected]="areAllSelected()"
-    [isRowSelectedFn]="('UpdateCustomer' | hasPermission) && isMemberSelected"
+    [isRowSelectedFn]="('UpdateCustomerGroup' | hasPermission) && isMemberSelected"
     (rowSelectChange)="toggleSelectMember($event)"
     (allSelectChange)="toggleSelectAll()"
 >

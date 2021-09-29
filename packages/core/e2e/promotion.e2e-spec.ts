@@ -1,6 +1,11 @@
 import { pick } from '@vendure/common/lib/pick';
 import { PromotionAction, PromotionCondition, PromotionOrderAction } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -9,7 +14,11 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
+    AssignPromotionToChannel,
+    ChannelFragment,
+    CreateChannel,
     CreatePromotion,
+    CurrencyCode,
     DeletePromotion,
     DeletionResult,
     ErrorCode,
@@ -19,9 +28,15 @@ import {
     LanguageCode,
     Promotion,
     PromotionFragment,
+    RemovePromotionFromChannel,
     UpdatePromotion,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_PROMOTION } from './graphql/shared-definitions';
+import {
+    ASSIGN_PROMOTIONS_TO_CHANNEL,
+    CREATE_CHANNEL,
+    CREATE_PROMOTION,
+    REMOVE_PROMOTIONS_FROM_CHANNEL,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
@@ -207,11 +222,109 @@ describe('Promotion resolver', () => {
         expect(result.promotionConditions).toMatchSnapshot();
     });
 
+    describe('channels', () => {
+        const SECOND_CHANNEL_TOKEN = 'SECOND_CHANNEL_TOKEN';
+        let secondChannel: ChannelFragment;
+        beforeAll(async () => {
+            const { createChannel } = await adminClient.query<
+                CreateChannel.Mutation,
+                CreateChannel.Variables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    pricesIncludeTax: true,
+                    currencyCode: CurrencyCode.EUR,
+                    defaultTaxZoneId: 'T_1',
+                    defaultShippingZoneId: 'T_2',
+                },
+            });
+            secondChannel = createChannel as any;
+        });
+
+        it('does not list Promotions not in active channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { promotions } = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+
+            expect(promotions.totalItems).toBe(0);
+            expect(promotions.items).toEqual([]);
+        });
+
+        it('does not return Promotion not in active channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { promotion: result } = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
+                GET_PROMOTION,
+                {
+                    id: promotion.id,
+                },
+            );
+
+            expect(result).toBeNull();
+        });
+
+        it('assignPromotionsToChannel', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { assignPromotionsToChannel } = await adminClient.query<
+                AssignPromotionToChannel.Mutation,
+                AssignPromotionToChannel.Variables
+            >(ASSIGN_PROMOTIONS_TO_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    promotionIds: [promotion.id],
+                },
+            });
+
+            expect(assignPromotionsToChannel).toEqual([{ id: promotion.id, name: promotion.name }]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { promotion: result } = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
+                GET_PROMOTION,
+                {
+                    id: promotion.id,
+                },
+            );
+            expect(result?.id).toBe(promotion.id);
+
+            const { promotions } = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            expect(promotions.totalItems).toBe(1);
+            expect(promotions.items.map(pick(['id']))).toEqual([{ id: promotion.id }]);
+        });
+
+        it('removePromotionsFromChannel', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removePromotionsFromChannel } = await adminClient.query<
+                RemovePromotionFromChannel.Mutation,
+                RemovePromotionFromChannel.Variables
+            >(REMOVE_PROMOTIONS_FROM_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    promotionIds: [promotion.id],
+                },
+            });
+
+            expect(removePromotionsFromChannel).toEqual([{ id: promotion.id, name: promotion.name }]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { promotion: result } = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(
+                GET_PROMOTION,
+                {
+                    id: promotion.id,
+                },
+            );
+            expect(result).toBeNull();
+
+            const { promotions } = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
+            expect(promotions.totalItems).toBe(0);
+        });
+    });
+
     describe('deletion', () => {
         let allPromotions: GetPromotionList.Items[];
         let promotionToDelete: GetPromotionList.Items;
 
         beforeAll(async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const result = await adminClient.query<GetPromotionList.Query>(GET_PROMOTION_LIST);
             allPromotions = result.promotions.items;
         });

@@ -1,41 +1,34 @@
-import { Module, OnApplicationShutdown, OnModuleDestroy } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { Module, OnApplicationShutdown } from '@nestjs/common';
 
 import { ConfigModule } from '../config/config.module';
 import { Logger } from '../config/logger/vendure-logger';
+import { I18nModule } from '../i18n/i18n.module';
 import { PluginModule } from '../plugin/plugin.module';
 import { ProcessContextModule } from '../process-context/process-context.module';
 import { ServiceModule } from '../service/service.module';
 
-import { MessageInterceptor } from './message-interceptor';
-import { WorkerMonitor } from './worker-monitor';
-import { WorkerServiceModule } from './worker-service.module';
+import { WorkerHealthService } from './worker-health.service';
 
+/**
+ * This is the main module used when bootstrapping the worker process via
+ * `bootstrapWorker()`. It contains the same imports as the AppModule except
+ * for the ApiModule, which is not needed for the worker. Omitting the ApiModule
+ * greatly increases startup time (about 4x in testing).
+ */
 @Module({
     imports: [
+        ProcessContextModule,
         ConfigModule,
-        ServiceModule.forWorker(),
-        PluginModule.forWorker(),
-        WorkerServiceModule,
-        ProcessContextModule.forWorker(),
+        I18nModule,
+        PluginModule.forRoot(),
+        ServiceModule.forRoot(),
     ],
-    providers: [
-        WorkerMonitor,
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: MessageInterceptor,
-        },
-    ],
+    providers: [WorkerHealthService],
 })
-export class WorkerModule implements OnModuleDestroy, OnApplicationShutdown {
-    constructor(private monitor: WorkerMonitor) {}
-    onModuleDestroy() {
-        return this.monitor.waitForOpenTasksToComplete();
-    }
-
-    onApplicationShutdown(signal?: string) {
+export class WorkerModule implements OnApplicationShutdown {
+    async onApplicationShutdown(signal?: string) {
         if (signal) {
-            Logger.info('Worker Received shutdown signal:' + signal);
+            Logger.info('Received shutdown signal:' + signal);
         }
     }
 }

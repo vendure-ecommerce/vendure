@@ -16,12 +16,14 @@ const specFileToIgnore = [
     'plugin.e2e-spec',
     'shop-definitions',
     'custom-fields.e2e-spec',
+    'custom-field-relations.e2e-spec',
     'order-item-price-calculation-strategy.e2e-spec',
     'list-query-builder.e2e-spec',
     'shop-order.e2e-spec',
     'database-transactions.e2e-spec',
     'custom-permissions.e2e-spec',
     'parallel-transactions.e2e-spec',
+    'order-merge.e2e-spec',
 ];
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,

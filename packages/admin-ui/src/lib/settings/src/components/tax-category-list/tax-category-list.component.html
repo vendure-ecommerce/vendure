@@ -1,7 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="tax-category-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateTaxCategory']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-tax-category' | translate }}
         </a>
@@ -12,8 +12,12 @@
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
     <ng-template let-taxCategory="item">
         <td class="left align-middle">{{ taxCategory.name }}</td>
+        <td class="left align-middle">
+            <vdr-chip *ngIf="taxCategory.isDefault">{{ 'common.default-tax-category' | translate }}</vdr-chip>
+        </td>
         <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"
@@ -32,7 +36,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteTaxCategory(taxCategory)"
-                        [disabled]="!('DeleteSettings' | hasPermission)"
+                        [disabled]="!(['DeleteSettings', 'DeleteTaxCategory'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

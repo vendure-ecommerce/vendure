@@ -1,7 +1,30 @@
+import { ID } from '@vendure/common/lib/shared-types';
+
 import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+
+/**
+ * @description
+ * The result of the {@link OrderMergeStrategy} `merge` method.
+ *
+ * @docsCategory orders
+ * @docsPage OrderMergeStrategy
+ */
+export interface MergedOrderLine {
+    orderLineId: ID;
+    quantity: number;
+    customFields?: any;
+}
+
+export function toMergedOrderLine(line: OrderLine): MergedOrderLine {
+    return {
+        orderLineId: line.id,
+        quantity: line.quantity,
+        customFields: line.customFields,
+    };
+}
 
 /**
  * @description
@@ -12,6 +35,8 @@ import { Order } from '../../entity/order/order.entity';
  * of OrderLines. The OrderMergeStrategy defines the rules governing this reconciliation.
  *
  * @docsCategory orders
+ * @docsPage OrderMergeStrategy
+ * @docsWeight 0
  */
 export interface OrderMergeStrategy extends InjectableStrategy {
     /**
@@ -19,5 +44,5 @@ export interface OrderMergeStrategy extends InjectableStrategy {
      * Merges the lines of the guest Order with those of the existing Order which is associated
      * with the active customer.
      */
-    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): OrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[];
 }

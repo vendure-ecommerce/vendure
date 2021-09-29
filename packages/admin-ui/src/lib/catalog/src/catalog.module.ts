@@ -12,6 +12,7 @@ import { CollectionDetailComponent } from './components/collection-detail/collec
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
 import { CollectionTreeNodeComponent } from './components/collection-tree/collection-tree-node.component';
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
+import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
@@ -19,6 +20,7 @@ import { OptionValueInputComponent } from './components/option-value-input/optio
 import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsListComponent } from './components/product-variants-list/product-variants-list.component';
@@ -52,6 +54,8 @@ import { VariantPriceDetailComponent } from './components/variant-price-detail/v
         ProductVariantsEditorComponent,
         AssignProductsToChannelDialogComponent,
         AssetDetailComponent,
+        ConfirmVariantDeletionDialogComponent,
+        ProductOptionsEditorComponent,
     ],
 })
 export class CatalogModule {}

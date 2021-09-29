@@ -1,4 +1,6 @@
-import generate = require('nanoid/generate');
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 16);
 
 /**
  * Generates a random, human-readable string of numbers and upper-case letters
@@ -16,5 +18,5 @@ import generate = require('nanoid/generate');
  * reach a probability of 1% that a collision would occur.
  */
 export function generatePublicId(): string {
-    return generate('123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 16);
+    return nanoid();
 }

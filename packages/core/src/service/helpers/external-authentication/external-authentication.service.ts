@@ -4,7 +4,6 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
-import { Collection } from '../../../entity/collection/collection.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
@@ -92,13 +91,21 @@ export class ExternalAuthenticationService {
             lastName?: string;
         },
     ): Promise<User> {
-        const customerRole = await this.roleService.getCustomerRole();
-        const newUser = new User({
-            identifier: config.emailAddress,
-            roles: [customerRole],
-            verified: config.verified || false,
-        });
+        let user: User;
 
+        const existingUser = await this.findExistingCustomerUserByEmailAddress(ctx, config.emailAddress);
+
+        if (existingUser) {
+            user = existingUser;
+        } else {
+            const customerRole = await this.roleService.getCustomerRole();
+            user = new User({
+                identifier: config.emailAddress,
+                roles: [customerRole],
+                verified: config.verified || false,
+                authenticationMethods: [],
+            });
+        }
         const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
             new ExternalAuthenticationMethod({
                 externalIdentifier: config.externalIdentifier,
@@ -106,15 +113,21 @@ export class ExternalAuthenticationService {
             }),
         );
 
-        newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
+        user.authenticationMethods = [...(user.authenticationMethods || []), authMethod];
+        const savedUser = await this.connection.getRepository(ctx, User).save(user);
 
-        const customer = new Customer({
-            emailAddress: config.emailAddress,
-            firstName: config.firstName,
-            lastName: config.lastName,
-            user: savedUser,
-        });
+        let customer: Customer;
+        const existingCustomer = await this.customerService.findOneByUserId(ctx, savedUser.id);
+        if (existingCustomer) {
+            customer = existingCustomer;
+        } else {
+            customer = new Customer({
+                emailAddress: config.emailAddress,
+                firstName: config.firstName,
+                lastName: config.lastName,
+                user: savedUser,
+            });
+        }
         this.channelService.assignToCurrentChannel(customer, ctx);
         await this.connection.getRepository(ctx, Customer).save(customer);
 
@@ -187,14 +200,39 @@ export class ExternalAuthenticationService {
         return newUser;
     }
 
-    findUser(ctx: RequestContext, strategy: string, externalIdentifier: string): Promise<User | undefined> {
-        return this.connection
+    async findUser(
+        ctx: RequestContext,
+        strategy: string,
+        externalIdentifier: string,
+    ): Promise<User | undefined> {
+        const usersWithMatchingIdentifier = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
-            .where('authMethod.strategy = :strategy', { strategy })
             .andWhere('authMethod.externalIdentifier = :externalIdentifier', { externalIdentifier })
             .andWhere('user.deletedAt IS NULL')
+            .getMany();
+
+        const matchingUser = usersWithMatchingIdentifier.find(user =>
+            user.authenticationMethods.find(
+                m => m instanceof ExternalAuthenticationMethod && m.strategy === strategy,
+            ),
+        );
+
+        return matchingUser;
+    }
+
+    private async findExistingCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string) {
+        const customer = await this.connection
+            .getRepository(ctx, Customer)
+            .createQueryBuilder('customer')
+            .leftJoinAndSelect('customer.user', 'user')
+            .leftJoin('customer.channels', 'channel')
+            .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
+            .andWhere('customer.emailAddress = :emailAddress', { emailAddress })
+            .andWhere('user.deletedAt IS NULL')
             .getOne();
+
+        return customer?.user;
     }
 }

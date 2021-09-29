@@ -1,7 +1,6 @@
-@import "variables";
 
 .info-button {
-    color: $color-grey-500;
+    color: var(--color-icon-button);
 }
 .entity-info {
     margin: 0 12px;

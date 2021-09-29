@@ -1,4 +1,3 @@
-@import "variables";
 
 vdr-custom-field-control {
     margin-bottom: 6px;
@@ -7,7 +6,7 @@ vdr-custom-field-control {
 
 .custom-field-form {
     ::ng-deep .clr-control-label {
-        color: $color-grey-400;
+        color: var(--color-grey-400);
     }
 
     &.editable {

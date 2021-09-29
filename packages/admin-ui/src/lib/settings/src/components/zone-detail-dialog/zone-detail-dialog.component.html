@@ -4,7 +4,7 @@
 </ng-template>
 
 <vdr-form-field [label]="'common.name' | translate" for="name">
-    <input id="name" type="text" [(ngModel)]="zone.name" [readonly]="!('UpdateSettings' | hasPermission)" />
+    <input id="name" type="text" [(ngModel)]="zone.name" [readonly]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)" />
 </vdr-form-field>
 
 <ng-template vdrDialogButtons>

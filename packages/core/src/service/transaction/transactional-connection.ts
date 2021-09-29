@@ -19,10 +19,37 @@ import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { VendureEntity } from '../../entity/base/base.entity';
 
 /**
+ * @description
+ * Options used by the {@link TransactionalConnection} `getEntityOrThrow` method.
+ *
  * @docsCategory data-access
  */
-export interface FindEntityOptions extends FindOneOptions {
+export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
+    /**
+     * @description
+     * An optional channelId to limit results to entities assigned to the given Channel. Should
+     * only be used when getting entities that implement the {@link ChannelAware} interface.
+     */
     channelId?: ID;
+    /**
+     * @description
+     * If set to a positive integer, it will retry getting the entity in case it is initially not
+     * found. This can be useful when working with the {@link EventBus} and subscribing to the
+     * creation of new Entities which may on first attempt be inaccessible due to an ongoing
+     * transaction.
+     *
+     * @since 1.1.0
+     * @default 0
+     */
+    retries?: number;
+    /**
+     * @description
+     * Specifies the delay in ms to wait between retries.
+     *
+     * @since 1.1.0
+     * @default 25
+     */
+    retryDelay?: number;
 }
 
 /**
@@ -128,20 +155,50 @@ export class TransactionalConnection {
     /**
      * @description
      * Finds an entity of the given type by ID, or throws an `EntityNotFoundError` if none
-     * is found.
+     * is found. Can be configured to retry (using the `retries` option) in the event of the
+     * entity not being found on the first attempt. This can be useful when attempting to access
+     * an entity which was just created and may be inaccessible due to an ongoing transaction.
      */
     async getEntityOrThrow<T extends VendureEntity>(
         ctx: RequestContext,
         entityType: Type<T>,
         id: ID,
-        options: FindEntityOptions = {},
+        options: GetEntityOrThrowOptions<T> = {},
+    ): Promise<T> {
+        const { retries, retryDelay } = options;
+        if (retries == null || retries <= 0) {
+            return this.getEntityOrThrowInternal(ctx, entityType, id, options);
+        } else {
+            let err: any;
+            const retriesInt = Math.ceil(retries);
+            const delay = Math.ceil(Math.max(retryDelay || 25, 1));
+            for (let attempt = 0; attempt < retriesInt; attempt++) {
+                try {
+                    const result = await this.getEntityOrThrowInternal(ctx, entityType, id, options);
+                    return result;
+                } catch (e) {
+                    err = e;
+                    if (attempt < retriesInt - 1) {
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+            throw err;
+        }
+    }
+
+    private async getEntityOrThrowInternal<T extends VendureEntity>(
+        ctx: RequestContext,
+        entityType: Type<T>,
+        id: ID,
+        options: GetEntityOrThrowOptions = {},
     ): Promise<T> {
         let entity: T | undefined;
         if (options.channelId != null) {
             const { channelId, ...optionsWithoutChannelId } = options;
             entity = await this.findOneInChannel(
                 ctx,
-                entityType,
+                entityType as Type<T & ChannelAware>,
                 id,
                 options.channelId,
                 optionsWithoutChannelId,
@@ -163,7 +220,7 @@ export class TransactionalConnection {
      * Like the TypeOrm `Repository.findOne()` method, but limits the results to
      * the given Channel.
      */
-    findOneInChannel<T extends ChannelAware | VendureEntity>(
+    findOneInChannel<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
         entity: Type<T>,
         id: ID,

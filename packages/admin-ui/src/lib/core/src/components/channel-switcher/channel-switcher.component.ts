@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { filter, map, startWith } from 'rxjs/operators';
 
 import { CurrentUserChannel } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
@@ -16,12 +17,26 @@ import { LocalStorageService } from '../../providers/local-storage/local-storage
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelSwitcherComponent implements OnInit {
+    readonly displayFilterThreshold = 10;
     channels$: Observable<CurrentUserChannel[]>;
+    channelCount$: Observable<number>;
+    filterControl = new FormControl('');
     activeChannelCode$: Observable<string>;
     constructor(private dataService: DataService, private localStorageService: LocalStorageService) {}
 
     ngOnInit() {
-        this.channels$ = this.dataService.client.userStatus().mapStream(data => data.userStatus.channels);
+        const channels$ = this.dataService.client.userStatus().mapStream(data => data.userStatus.channels);
+        const filterTerm$ = this.filterControl.valueChanges.pipe<string>(startWith(''));
+        this.channels$ = combineLatest(channels$, filterTerm$).pipe(
+            map(([channels, filterTerm]) => {
+                return filterTerm
+                    ? channels.filter(c =>
+                          c.code.toLocaleLowerCase().includes(filterTerm.toLocaleLowerCase()),
+                      )
+                    : channels;
+            }),
+        );
+        this.channelCount$ = channels$.pipe(map(channels => channels.length));
         const activeChannel$ = this.dataService.client
             .userStatus()
             .mapStream(data => data.userStatus.channels.find(c => c.id === data.userStatus.activeChannelId))
@@ -35,6 +50,7 @@ export class ChannelSwitcherComponent implements OnInit {
             if (activeChannel) {
                 this.localStorageService.set('activeChannelToken', activeChannel.token);
             }
+            this.filterControl.patchValue('');
         });
     }
 }

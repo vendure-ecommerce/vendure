@@ -17,7 +17,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "aot": true,
             "baseHref": "/",
             "outputPath": "dist",
             "index": "src/index.html",
@@ -25,19 +24,29 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
+              {
+                "glob": "**/*.*",
+                "input": "static-assets",
+                "output": "assets"
+              },
               "src/favicon.ico",
+              {
+                "glob": "favicon.ico",
+                "input": "static-assets",
+                "output": "/"
+              },
               "src/vendure-ui-config.json",
               "src/theme.min.css",
               "src/assets",
               "src/i18n-messages",
               {
-                "glob": "**/*.*",
+                "glob": "logo-*.png",
                 "input": "static-assets",
                 "output": "assets"
               }
             ],
             "styles": [
-              "src/styles/styles.scss"
+              "src/global-styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -51,7 +60,13 @@
               "lodash",
               "apollo-upload-client",
               "@vendure/common/lib/simple-deep-clone"
-            ]
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -67,17 +82,19 @@
                   "with": "src/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "styles": {
+                  "inlineCritical": false
+                }
+              },
               "outputHashing": "all",
-              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": false
+              "vendorChunk": false
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",

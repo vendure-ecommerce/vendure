@@ -29,11 +29,6 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
             apiOptions: {
                 port: 4050,
             },
-            workerOptions: {
-                options: {
-                    port: 4055,
-                },
-            },
             entityIdStrategy: new UuidIdStrategy(),
             logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [

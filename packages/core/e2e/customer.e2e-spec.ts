@@ -32,6 +32,7 @@ import {
     GetCustomerList,
     GetCustomerOrders,
     GetCustomerWithUser,
+    Me,
     UpdateAddress,
     UpdateCustomer,
     UpdateCustomerNote,
@@ -45,6 +46,7 @@ import {
     GET_CUSTOMER,
     GET_CUSTOMER_HISTORY,
     GET_CUSTOMER_LIST,
+    ME,
     UPDATE_ADDRESS,
     UPDATE_CUSTOMER,
     UPDATE_CUSTOMER_NOTE,
@@ -64,6 +66,7 @@ let sendEmailFn: jest.Mock;
 })
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
+
     onModuleInit() {
         this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
             sendEmailFn(event);
@@ -482,6 +485,14 @@ describe('Customer resolver', () => {
             customerErrorGuard.assertSuccess(updateCustomer);
 
             expect(updateCustomer.emailAddress).toBe('unique-email@test.com');
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1071
+        it('updates the associated User email address', async () => {
+            await shopClient.asUserWithCredentials('unique-email@test.com', 'test');
+            const { me } = await shopClient.query<Me.Query>(ME);
+
+            expect(me?.identifier).toBe('unique-email@test.com');
         });
     });
 

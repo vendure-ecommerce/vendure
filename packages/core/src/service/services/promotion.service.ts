@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { ApplyCouponCodeResult } from '@vendure/common/lib/generated-shop-types';
 import {
-    Adjustment,
-    AdjustmentType,
+    AssignPromotionsToChannelInput,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
-    ConfigurableOperationInput,
     CreatePromotionInput,
     CreatePromotionResult,
     DeletionResponse,
     DeletionResult,
+    RemovePromotionsFromChannelInput,
     UpdatePromotionInput,
     UpdatePromotionResult,
 } from '@vendure/common/lib/generated-types';
@@ -19,7 +18,7 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
-import { UserInputError } from '../../common/error/errors';
+import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
 import {
     CouponCodeExpiredError,
@@ -28,12 +27,13 @@ import {
 } from '../../common/error/generated-graphql-shop-errors';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -56,6 +56,7 @@ export class PromotionService {
         private configService: ConfigService,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
+        private configArgService: ConfigArgService,
     ) {
         this.availableConditions = this.configService.promotionOptions.promotionConditions || [];
         this.availableActions = this.configService.promotionOptions.promotionActions || [];
@@ -104,6 +105,11 @@ export class PromotionService {
         ctx: RequestContext,
         input: CreatePromotionInput,
     ): Promise<ErrorResultUnion<CreatePromotionResult, Promotion>> {
+        const conditions = input.conditions.map(c =>
+            this.configArgService.parseInput('PromotionCondition', c),
+        );
+        const actions = input.actions.map(a => this.configArgService.parseInput('PromotionAction', a));
+        this.validateRequiredConditions(conditions, actions);
         const promotion = new Promotion({
             name: input.name,
             enabled: input.enabled,
@@ -111,8 +117,8 @@ export class PromotionService {
             perCustomerUsageLimit: input.perCustomerUsageLimit,
             startsAt: input.startsAt,
             endsAt: input.endsAt,
-            conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
-            actions: input.actions.map(a => this.parseOperationArgs('action', a)),
+            conditions,
+            actions,
             priorityScore: this.calculatePriorityScore(input),
         });
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
@@ -133,10 +139,14 @@ export class PromotionService {
         });
         const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
-            updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));
+            updatedPromotion.conditions = input.conditions.map(c =>
+                this.configArgService.parseInput('PromotionCondition', c),
+            );
         }
         if (input.actions) {
-            updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
+            updatedPromotion.actions = input.actions.map(a =>
+                this.configArgService.parseInput('PromotionAction', a),
+            );
         }
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
             return new MissingConditionsError();
@@ -155,6 +165,43 @@ export class PromotionService {
         return {
             result: DeletionResult.DELETED,
         };
+    }
+
+    async assignPromotionsToChannel(
+        ctx: RequestContext,
+        input: AssignPromotionsToChannelInput,
+    ): Promise<Promotion[]> {
+        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+            throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
+        }
+        const promotions = await this.connection.findByIdsInChannel(
+            ctx,
+            Promotion,
+            input.promotionIds,
+            ctx.channelId,
+            {},
+        );
+        for (const promotion of promotions) {
+            await this.channelService.assignToChannels(ctx, Promotion, promotion.id, [input.channelId]);
+        }
+        return promotions;
+    }
+
+    async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) {
+        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+            throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
+        }
+        const promotions = await this.connection.findByIdsInChannel(
+            ctx,
+            Promotion,
+            input.promotionIds,
+            ctx.channelId,
+            {},
+        );
+        for (const promotion of promotions) {
+            await this.channelService.removeFromChannels(ctx, Promotion, promotion.id, [input.channelId]);
+        }
+        return promotions;
     }
 
     async validateCouponCode(
@@ -208,42 +255,15 @@ export class PromotionService {
 
         return qb.getCount();
     }
-    /**
-     * Converts the input values of the "create" and "update" mutations into the format expected by the AdjustmentSource entity.
-     */
-    private parseOperationArgs(
-        type: 'condition' | 'action',
-        input: ConfigurableOperationInput,
-    ): ConfigurableOperation {
-        const match = this.getAdjustmentOperationByCode(type, input.code);
-        const output: ConfigurableOperation = {
-            code: input.code,
-            args: input.arguments,
-        };
-        return output;
-    }
 
     private calculatePriorityScore(input: CreatePromotionInput | UpdatePromotionInput): number {
         const conditions = input.conditions
-            ? input.conditions.map(c => this.getAdjustmentOperationByCode('condition', c.code))
+            ? input.conditions.map(c => this.configArgService.getByCode('PromotionCondition', c.code))
             : [];
         const actions = input.actions
-            ? input.actions.map(c => this.getAdjustmentOperationByCode('action', c.code))
+            ? input.actions.map(c => this.configArgService.getByCode('PromotionAction', c.code))
             : [];
         return [...conditions, ...actions].reduce((score, op) => score + op.priorityValue, 0);
-    }
-
-    private getAdjustmentOperationByCode(
-        type: 'condition' | 'action',
-        code: string,
-    ): PromotionCondition | PromotionAction {
-        const available: Array<PromotionAction | PromotionCondition> =
-            type === 'condition' ? this.availableConditions : this.availableActions;
-        const match = available.find(a => a.code === code);
-        if (!match) {
-            throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
-        }
-        return match;
     }
 
     /**
@@ -253,5 +273,29 @@ export class PromotionService {
         this.activePromotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
         });
+    }
+
+    private validateRequiredConditions(
+        conditions: ConfigurableOperation[],
+        actions: ConfigurableOperation[],
+    ) {
+        const conditionCodes: Record<string, string> = conditions.reduce(
+            (codeMap, { code }) => ({ ...codeMap, [code]: code }),
+            {},
+        );
+        for (const { code: actionCode } of actions) {
+            const actionDef = this.configArgService.getByCode('PromotionAction', actionCode);
+            const actionDependencies: PromotionCondition[] = actionDef.conditions || [];
+            if (!actionDependencies || actionDependencies.length === 0) {
+                continue;
+            }
+            const missingConditions = actionDependencies.filter(condition => !conditionCodes[condition.code]);
+            if (missingConditions.length) {
+                throw new UserInputError('error.conditions-required-for-action', {
+                    action: actionCode,
+                    conditions: missingConditions.map(c => c.code).join(', '),
+                });
+            }
+        }
     }
 }

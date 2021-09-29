@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
     CreateZoneInput,
     DeletionResponse,
@@ -20,14 +20,14 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
-export class ZoneService implements OnModuleInit {
+export class ZoneService {
     /**
      * We cache all Zones to avoid hitting the DB many times per request.
      */
     private zones: Zone[] = [];
     constructor(private connection: TransactionalConnection) {}
 
-    onModuleInit() {
+    initZones() {
         return this.updateZonesCache();
     }
 

@@ -1,6 +1,8 @@
 import { Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 
 import { Translated } from '../../../common/types/locale-types';
+import { idsAreEqual } from '../../../common/utils';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
@@ -8,6 +10,7 @@ import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
@@ -26,7 +29,23 @@ export class ProductEntityResolver {
         private productOptionGroupService: ProductOptionGroupService,
         private assetService: AssetService,
         private productService: ProductService,
+        private localeStringHydrator: LocaleStringHydrator,
     ) {}
+
+    @ResolveField()
+    name(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'name');
+    }
+
+    @ResolveField()
+    slug(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'slug');
+    }
+
+    @ResolveField()
+    description(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'description');
+    }
 
     @ResolveField()
     async variants(
@@ -34,7 +53,7 @@ export class ProductEntityResolver {
         @Parent() product: Product,
         @Api() apiType: ApiType,
     ): Promise<Array<Translated<ProductVariant>>> {
-        const variants = await this.productVariantService.getVariantsByProductId(ctx, product.id);
+        const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, product.id);
         return variants.filter(v => (apiType === 'admin' ? true : v.enabled));
     }
 
@@ -53,7 +72,6 @@ export class ProductEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
-        const a = info;
         return this.productOptionGroupService.getOptionGroupsByProductId(ctx, product.id);
     }
 
@@ -62,10 +80,16 @@ export class ProductEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
     ): Promise<Array<Translated<FacetValue>>> {
-        if (product.facetValues) {
-            return product.facetValues as Array<Translated<FacetValue>>;
+        if (product.facetValues?.length === 0) {
+            return [];
         }
-        return this.productService.getFacetValuesForProduct(ctx, product.id);
+        let facetValues: Array<Translated<FacetValue>>;
+        if (product.facetValues?.[0]?.channels) {
+            facetValues = product.facetValues as Array<Translated<FacetValue>>;
+        } else {
+            facetValues = await this.productService.getFacetValuesForProduct(ctx, product.id);
+        }
+        return facetValues.filter(fv => fv.channels.find(c => idsAreEqual(c.id, ctx.channelId)));
     }
 
     @ResolveField()
@@ -88,10 +112,8 @@ export class ProductAdminEntityResolver {
 
     @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Channel[]> {
-        if (product.channels) {
-            return product.channels;
-        } else {
-            return this.productService.getProductChannels(ctx, product.id);
-        }
+        const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
+        const channels = product.channels || (await this.productService.getProductChannels(ctx, product.id));
+        return channels.filter(channel => (isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId)));
     }
 }

@@ -24,13 +24,13 @@ export class ChannelResolver {
     constructor(private channelService: ChannelService, private roleService: RoleService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadChannel)
     channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
         return this.channelService.findAll(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadChannel)
     async channel(@Ctx() ctx: RequestContext, @Args() args: QueryChannelArgs): Promise<Channel | undefined> {
         return this.channelService.findOne(ctx, args.id);
     }

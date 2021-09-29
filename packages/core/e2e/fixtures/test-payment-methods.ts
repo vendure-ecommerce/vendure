@@ -1,4 +1,4 @@
-import { PaymentMethodHandler } from '@vendure/core';
+import { Payment, PaymentMethodHandler, TransactionalConnection } from '@vendure/core';
 
 import { LanguageCode } from '../graphql/generated-e2e-admin-types';
 
@@ -49,6 +49,29 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
 });
 
 /**
+ * A method that can be used to pay for only part of the order (allowing us to test multiple payments
+ * per order).
+ */
+export const partialPaymentMethod = new PaymentMethodHandler({
+    code: 'partial-payment-method',
+    description: [{ languageCode: LanguageCode.en, value: 'Partial Payment Method' }],
+    args: {},
+    createPayment: (ctx, order, amount, args, metadata) => {
+        return {
+            amount: metadata.amount,
+            state: metadata.authorizeOnly ? 'Authorized' : 'Settled',
+            transactionId: '12345',
+            metadata: { public: metadata },
+        };
+    },
+    settlePayment: () => {
+        return {
+            success: true,
+        };
+    },
+});
+
+/**
  * A payment method which includes a createRefund method.
  */
 export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
@@ -68,9 +91,43 @@ export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
     },
     createRefund: (ctx, input, amount, order, payment, args) => {
         return {
-            amount,
             state: 'Settled',
             transactionId: 'abc123',
+        };
+    },
+});
+
+let connection: TransactionalConnection;
+/**
+ * A payment method where a Refund attempt will fail the first time
+ */
+export const singleStageRefundFailingPaymentMethod = new PaymentMethodHandler({
+    code: 'single-stage-refund-failing-payment-method',
+    description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
+    args: {},
+    init: injector => {
+        connection = injector.get(TransactionalConnection);
+    },
+    createPayment: (ctx, order, amount, args, metadata) => {
+        return {
+            amount,
+            state: 'Settled',
+            transactionId: '12345',
+            metadata,
+        };
+    },
+    settlePayment: () => {
+        return { success: true };
+    },
+    createRefund: async (ctx, input, amount, order, payment, args) => {
+        const paymentWithRefunds = await connection
+            .getRepository(ctx, Payment)
+            .findOne(payment.id, { relations: ['refunds'] });
+        const isFirstRefundAttempt = paymentWithRefunds?.refunds.length === 0;
+        const metadata = isFirstRefundAttempt ? { errorMessage: 'Service temporarily unavailable' } : {};
+        return {
+            state: isFirstRefundAttempt ? 'Failed' : 'Settled',
+            metadata,
         };
     },
 });
@@ -98,6 +155,7 @@ export const failsToSettlePaymentMethod = new PaymentMethodHandler({
     settlePayment: () => {
         return {
             success: false,
+            state: 'Cancelled',
             errorMessage: 'Something went horribly wrong',
             metadata: {
                 privateSettlePaymentData: 'secret',

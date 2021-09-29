@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -13,6 +14,7 @@ import { ConfigService } from '../../../config/config.service';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
@@ -78,7 +80,7 @@ export class OrderStateMachine {
                 .getRepository(data.ctx, OrderModification)
                 .find({ where: { order: data.order }, relations: ['refund', 'payment'] });
             if (toState === 'ArrangingAdditionalPayment') {
-                if (modifications.every(modification => modification.isSettled)) {
+                if (0 < modifications.length && modifications.every(modification => modification.isSettled)) {
                     return `message.cannot-transition-no-additional-payments-needed`;
                 }
             } else {
@@ -100,6 +102,20 @@ export class OrderStateMachine {
                 return `message.cannot-transition-from-arranging-additional-payment`;
             }
         }
+        if (fromState === 'AddingItems') {
+            const variantIds = unique(data.order.lines.map(l => l.productVariant.id));
+            const qb = this.connection
+                .getRepository(data.ctx, ProductVariant)
+                .createQueryBuilder('variant')
+                .leftJoin('variant.product', 'product')
+                .where('variant.deletedAt IS NULL')
+                .andWhere('product.deletedAt IS NULL')
+                .andWhere('variant.id IN (:...variantIds)', { variantIds });
+            const availableVariants = await qb.getMany();
+            if (availableVariants.length !== variantIds.length) {
+                return `message.cannot-transition-order-contains-products-which-are-unavailable`;
+            }
+        }
         if (toState === 'ArrangingPayment') {
             if (data.order.lines.length === 0) {
                 return `message.cannot-transition-to-payment-when-order-is-empty`;
@@ -108,8 +124,11 @@ export class OrderStateMachine {
                 return `message.cannot-transition-to-payment-without-customer`;
             }
         }
-        if (toState === 'PaymentAuthorized' && !orderTotalIsCovered(data.order, 'Authorized')) {
-            return `message.cannot-transition-without-authorized-payments`;
+        if (toState === 'PaymentAuthorized') {
+            const hasAnAuthorizedPayment = !!data.order.payments.find(p => p.state === 'Authorized');
+            if (!orderTotalIsCovered(data.order, ['Authorized', 'Settled']) || !hasAnAuthorizedPayment) {
+                return `message.cannot-transition-without-authorized-payments`;
+            }
         }
         if (toState === 'PaymentSettled' && !orderTotalIsCovered(data.order, 'Settled')) {
             return `message.cannot-transition-without-settled-payments`;
@@ -150,14 +169,14 @@ export class OrderStateMachine {
      */
     private async onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
         const { ctx, order } = data;
-        const { stockAllocationStrategy } = this.configService.orderOptions;
-        if (
-            fromState === 'ArrangingPayment' &&
-            (toState === 'PaymentAuthorized' || toState === 'PaymentSettled')
-        ) {
-            order.active = false;
-            order.orderPlacedAt = new Date();
-            await this.promotionService.addPromotionsToOrder(ctx, order);
+        const { stockAllocationStrategy, orderPlacedStrategy } = this.configService.orderOptions;
+        if (order.active) {
+            const shouldSetAsPlaced = orderPlacedStrategy.shouldSetAsPlaced(ctx, fromState, toState, order);
+            if (shouldSetAsPlaced) {
+                order.active = false;
+                order.orderPlacedAt = new Date();
+                await this.promotionService.addPromotionsToOrder(ctx, order);
+            }
         }
         const shouldAllocateStock = await stockAllocationStrategy.shouldAllocateStock(
             ctx,

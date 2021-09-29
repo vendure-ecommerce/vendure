@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ADMIN_UI_VERSION, AUTH_REDIRECT_PARAM, AuthService } from '@vendure/admin-ui/core';
+import { ADMIN_UI_VERSION, AuthService, AUTH_REDIRECT_PARAM, getAppConfig } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-login',
@@ -13,6 +13,9 @@ export class LoginComponent {
     rememberMe = false;
     version = ADMIN_UI_VERSION;
     errorMessage: string | undefined;
+    brand = getAppConfig().brand;
+    hideVendureBranding = getAppConfig().hideVendureBranding;
+    hideVersion = getAppConfig().hideVersion;
 
     constructor(private authService: AuthService, private router: Router) {}
 

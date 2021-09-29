@@ -1,0 +1,93 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+        <vdr-language-selector
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="languageCode$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+        <div class="flex center">
+            <div class="mr2">
+                <clr-checkbox-wrapper>
+                    <input
+                        clrCheckbox
+                        type="checkbox"
+                        id="auto-update"
+                        [(ngModel)]="autoUpdateVariantNames"
+                    />
+                    <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
+                </clr-checkbox-wrapper>
+            </div>
+            <button
+                *vdrIfPermissions="updatePermission"
+                class="btn btn-primary"
+                (click)="save()"
+                [disabled]="detailForm.pristine || detailForm.invalid"
+            >
+                {{ 'common.update' | translate }}
+            </button>
+        </div>
+    </vdr-ab-right>
+</vdr-action-bar>
+<form class="form" [formGroup]="detailForm" *ngIf="optionGroups$ | async as optionGroups">
+    <div formGroupName="optionGroups" class="clr-row">
+        <div class="clr-col-12 clr-col-xl-6" *ngFor="let optionGroup of getOptionGroups(); index as i">
+            <section class="card" [formArrayName]="i">
+                <div class="card-header option-group-header">
+                    <vdr-entity-info [entity]="optionGroup.value"></vdr-entity-info>
+                    <div class="ml2">{{ optionGroup.value.code }}</div>
+                </div>
+                <div class="card-block">
+                    <vdr-form-field [label]="'common.name' | translate" for="name">
+                        <input
+                            [id]="'name-' + i"
+                            type="text"
+                            formControlName="name"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'common.code' | translate" for="code">
+                        <input
+                            [id]="'code-' + i"
+                            type="text"
+                            [readonly]="!(updatePermission | hasPermission)"
+                            formControlName="code"
+                        />
+                    </vdr-form-field>
+                </div>
+                <section class="card-block">
+                    <table class="facet-values-list table mt2 mb4" formGroupName="options">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>{{ 'common.name' | translate }}</th>
+                                <th>{{ 'common.code' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                class="facet-value"
+                                *ngFor="let option of getOptions(optionGroup); let i = index"
+                                [formGroupName]="i"
+                            >
+                                <td class="align-middle">
+                                    <vdr-entity-info [entity]="option.value"></vdr-entity-info>
+                                </td>
+                                <td class="align-middle">
+                                    <input
+                                        type="text"
+                                        formControlName="name"
+                                        [readonly]="!(updatePermission | hasPermission)"
+                                    />
+                                </td>
+                                <td class="align-middle"><input type="text" formControlName="code" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </section>
+        </div>
+    </div>
+</form>

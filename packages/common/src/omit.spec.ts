@@ -3,6 +3,22 @@ import { omit } from './omit';
 declare const File: any;
 
 describe('omit()', () => {
+    let patchedFileClass = false;
+    beforeAll(() => {
+        // In Node.js there is no File constructor, so we need to patch
+        // a mock version.
+        if (typeof File === 'undefined') {
+            (global as any).File = class MockFile {};
+            patchedFileClass = true;
+        }
+    });
+
+    afterAll(() => {
+        if (patchedFileClass) {
+            delete (global as any).File;
+        }
+    });
+
     it('returns a new object', () => {
         const obj = { foo: 1, bar: 2 };
         expect(omit(obj, ['bar'])).not.toBe(obj);

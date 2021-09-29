@@ -25,7 +25,7 @@ export class VariantPriceDetailComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         const taxRates$ = this.dataService.settings
-            .getTaxRates(99999, 0, 'cache-first')
+            .getTaxRates(999, 0, 'cache-first')
             .mapStream(data => data.taxRates.items);
         const activeChannel$ = this.dataService.settings
             .getActiveChannel('cache-first')
@@ -51,7 +51,7 @@ export class VariantPriceDetailComponent implements OnInit, OnChanges {
 
         this.grossPrice$ = combineLatest(this.taxRate$, this.priceChange$).pipe(
             map(([taxRate, price]) => {
-                return Math.round(price * ((100 + taxRate) / 100)) / 100;
+                return Math.round(price * ((100 + taxRate) / 100));
             }),
         );
     }

@@ -1,4 +1,3 @@
-@import "variables";
 
 :host {
     display: flex;
@@ -21,9 +20,9 @@ input.selected-datetime {
     margin: 0;
     border-radius: 0;
     border-left: none;
-    border-color: $color-grey-300;
+    border-color: var(--color-component-border-200);
     background-color: white;
-    color: $color-grey-500;
+    color: var(--color-grey-500);
     display: none;
     &.visible {
         display: block;
@@ -42,8 +41,8 @@ input.selected-datetime {
 table.calendar-table {
     padding: 6px;
     &:focus {
-        outline: 1px solid $color-primary-500;
-        box-shadow: 0 0 1px 2px $color-primary-100;
+        outline: 1px solid var(--color-primary-500);
+        box-shadow: 0 0 1px 2px var(--color-primary-100);
     }
     td {
         width: 24px;
@@ -52,31 +51,31 @@ table.calendar-table {
         user-select: none;
     }
     .day-cell {
-        background-color: $color-grey-200;
-        color: $color-grey-500;
+        background-color: var(--color-component-bg-200);
+        color: var(--color-grey-500);
 
         cursor: pointer;
         transition: background-color 0.1s;
         &.current-month {
             background-color: white;
-            color: $color-grey-800;
+            color: var(--color-grey-800);
         }
         &.selected {
-            background-color: $color-primary-500;
+            background-color: var(--color-primary-500);
             color: white;
         }
         &.viewing:not(.selected) {
-            background-color: $color-primary-200;
+            background-color: var(--color-primary-200);
         }
         &.today {
-            border: 1px solid $color-grey-400;
+            border: 1px solid var(--color-component-border-300);
         }
         &:hover:not(.selected):not(.disabled) {
-            background-color: $color-primary-100;
+            background-color: var(--color-primary-100);
         }
         &.disabled {
             cursor: default;
-            color: $color-grey-300;
+            color: var(--color-grey-300);
         }
     }
 }

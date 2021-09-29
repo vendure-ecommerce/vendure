@@ -33,7 +33,7 @@ export class DefaultLogger implements VendureLogger {
         minute: 'numeric',
         day: 'numeric',
         month: 'numeric',
-    };
+    } as const;
     private static originalLogLevel: LogLevel;
 
     constructor(options?: { level?: LogLevel; timestamp?: boolean }) {

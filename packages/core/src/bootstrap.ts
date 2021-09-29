@@ -1,6 +1,5 @@
-import { INestApplication, INestMicroservice } from '@nestjs/common';
+import { INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { TcpClientOptions, Transport } from '@nestjs/microservices';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
@@ -17,8 +16,9 @@ import { registerCustomEntityFields } from './entity/register-custom-entity-fiel
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
-import { getProxyMiddlewareCliGreetings } from './plugin/plugin-utils';
-import { BeforeVendureBootstrap, BeforeVendureWorkerBootstrap } from './plugin/vendure-plugin';
+import { getPluginStartupMessages } from './plugin/plugin-utils';
+import { setProcessContext } from './process-context/process-context';
+import { VendureWorker } from './worker/vendure-worker';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -46,7 +46,8 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
-    const { hostname, port, cors } = config.apiOptions;
+    setProcessContext('server');
+    const { hostname, port, cors, middleware } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
@@ -54,103 +55,67 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
-    await runBeforeBootstrapHooks(config, app);
-    if (config.authOptions.tokenMethod === 'cookie') {
-        const { sessionSecret, cookieOptions } = config.authOptions;
-        app.use(
-            cookieSession({
-                ...cookieOptions,
-                // TODO: Remove once the deprecated sessionSecret field is removed
-                ...(sessionSecret ? { secret: sessionSecret } : {}),
-            }),
-        );
+    const { tokenMethod } = config.authOptions;
+    const usingCookie =
+        tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
+    if (usingCookie) {
+        const { cookieOptions } = config.authOptions;
+        app.use(cookieSession(cookieOptions));
     }
+    const earlyMiddlewares = middleware.filter(mid => mid.beforeListen);
+    earlyMiddlewares.forEach(mid => {
+        app.use(mid.route, mid.handler);
+    });
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
-    if (config.workerOptions.runInMainProcess) {
-        try {
-            const worker = await bootstrapWorkerInternal(config);
-            Logger.warn(`Worker is running in main process. This is not recommended for production.`);
-            Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
-            closeWorkerOnAppClose(app, worker);
-        } catch (e) {
-            Logger.error(`Could not start the worker process: ${e.message || e}`, 'Vendure Worker');
-        }
-    }
     logWelcomeMessage(config);
     return app;
 }
 
 /**
  * @description
- * Bootstraps the Vendure worker. Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}) or see the worker-specific options
- * defined in {@link WorkerOptions}.
+ * Bootstraps a Vendure worker. Resolves to a {@link VendureWorker} object containing a reference to the underlying
+ * NestJs [standalone application](https://docs.nestjs.com/standalone-applications) as well as convenience
+ * methods for starting the job queue and health check server.
+ *
+ * Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}).
  *
  * @example
  * ```TypeScript
  * import { bootstrapWorker } from '\@vendure/core';
  * import { config } from './vendure-config';
  *
- * bootstrapWorker(config).catch(err => {
+ * bootstrapWorker(config)
+ *   .then(worker => worker.startJobQueue())
+ *   .then(worker => worker.startHealthCheckServer({ port: 3020 }))
+ *   .catch(err => {
  *     console.log(err);
- * });
+ *   });
  * ```
  * @docsCategory worker
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
-    if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {
-        Logger.useLogger(userConfig.logger || new DefaultLogger());
-        const errorMessage = `Cannot bootstrap worker when "runInMainProcess" is set to true`;
-        Logger.error(errorMessage, 'Vendure Worker');
-        throw new Error(errorMessage);
-    } else {
-        try {
-            const vendureConfig = await preBootstrapConfig(userConfig);
-            return await bootstrapWorkerInternal(vendureConfig);
-        } catch (e) {
-            Logger.error(`Could not start the worker process: ${e.message}`, 'Vendure Worker');
-            throw e;
-        }
-    }
-}
-
-async function bootstrapWorkerInternal(
-    vendureConfig: Readonly<RuntimeVendureConfig>,
-): Promise<INestMicroservice> {
+export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<VendureWorker> {
+    const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
-    if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
-        (config.logger as any).setDefaultContext('Vendure Worker');
+    if (config.logger instanceof DefaultLogger) {
+        config.logger.setDefaultContext('Vendure Worker');
     }
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
 
-    const workerModule = await import('./worker/worker.module');
+    setProcessContext('worker');
     DefaultLogger.hideNestBoostrapLogs();
-    const workerApp = await NestFactory.createMicroservice(workerModule.WorkerModule, {
-        transport: config.workerOptions.transport,
+
+    const WorkerModule = await import('./worker/worker.module').then(m => m.WorkerModule);
+    const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
-        options: config.workerOptions.options,
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
     workerApp.enableShutdownHooks();
     await validateDbTablesForWorker(workerApp);
-    await runBeforeWorkerBootstrapHooks(config, workerApp);
-    // A work-around to correctly handle errors when attempting to start the
-    // microservice server listening.
-    // See https://github.com/nestjs/nest/issues/2777
-    // TODO: Remove if & when the above issue is resolved.
-    await new Promise((resolve, reject) => {
-        const tcpServer = (workerApp as any).server.server;
-        if (tcpServer) {
-            tcpServer.on('error', (e: any) => {
-                reject(e);
-            });
-        }
-        workerApp.listenAsync().then(resolve);
-    });
-    workerWelcomeMessage(config);
-    return workerApp;
+    Logger.info('Vendure Worker is ready');
+    return new VendureWorker(workerApp);
 }
 
 /**
@@ -160,7 +125,6 @@ export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
 ): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
-        checkForDeprecatedOptions(userConfig);
         setConfig(userConfig);
     }
 
@@ -225,7 +189,10 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
  * in the CORS options, making sure to preserve any user-configured exposedHeaders.
  */
 function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
-    if (config.authOptions.tokenMethod === 'bearer') {
+    const { tokenMethod } = config.authOptions;
+    const isUsingBearerToken =
+        tokenMethod === 'bearer' || (Array.isArray(tokenMethod) && tokenMethod.includes('bearer'));
+    if (isUsingBearerToken) {
         const authTokenHeaderKey = config.authOptions.authTokenHeaderKey;
         const corsOptions = config.apiOptions.cors;
         if (typeof corsOptions !== 'boolean') {
@@ -246,62 +213,6 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
     }
 }
 
-export async function runBeforeBootstrapHooks(config: Readonly<RuntimeVendureConfig>, app: INestApplication) {
-    function hasBeforeBootstrapHook(
-        plugin: any,
-    ): plugin is { beforeVendureBootstrap: BeforeVendureBootstrap } {
-        return typeof plugin.beforeVendureBootstrap === 'function';
-    }
-    for (const plugin of config.plugins) {
-        if (hasBeforeBootstrapHook(plugin)) {
-            await plugin.beforeVendureBootstrap(app);
-        }
-    }
-}
-
-export async function runBeforeWorkerBootstrapHooks(
-    config: Readonly<RuntimeVendureConfig>,
-    worker: INestMicroservice,
-) {
-    function hasBeforeBootstrapHook(
-        plugin: any,
-    ): plugin is { beforeVendureWorkerBootstrap: BeforeVendureWorkerBootstrap } {
-        return typeof plugin.beforeVendureWorkerBootstrap === 'function';
-    }
-    for (const plugin of config.plugins) {
-        if (hasBeforeBootstrapHook(plugin)) {
-            await plugin.beforeVendureWorkerBootstrap(worker);
-        }
-    }
-}
-
-/**
- * Monkey-patches the app's .close() method to also close the worker microservice
- * instance too.
- */
-function closeWorkerOnAppClose(app: INestApplication, worker: INestMicroservice) {
-    // A Nest app is a nested Proxy. By getting the prototype we are
-    // able to access and override the actual close() method.
-    const appPrototype = Object.getPrototypeOf(app);
-    const appClose = appPrototype.close.bind(app);
-    appPrototype.close = async () => {
-        return Promise.all([appClose(), worker.close()]);
-    };
-}
-
-function workerWelcomeMessage(config: VendureConfig) {
-    let transportString = '';
-    let connectionString = '';
-    const transport = (config.workerOptions && config.workerOptions.transport) || Transport.TCP;
-    transportString = ` with ${Transport[transport]} transport`;
-    const options = (config.workerOptions as TcpClientOptions).options;
-    if (options) {
-        const { host, port } = options;
-        connectionString = ` at ${host || 'localhost'}:${port}`;
-    }
-    Logger.info(`Vendure Worker started${transportString}${connectionString}`);
-}
-
 function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
@@ -309,11 +220,14 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     } catch (e) {
         version = ' unknown';
     }
-    const { port, shopApiPath, adminApiPath } = config.apiOptions;
-    const apiCliGreetings: Array<[string, string]> = [];
-    apiCliGreetings.push(['Shop API', `http://localhost:${port}/${shopApiPath}`]);
-    apiCliGreetings.push(['Admin API', `http://localhost:${port}/${adminApiPath}`]);
-    apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
+    const { port, shopApiPath, adminApiPath, hostname } = config.apiOptions;
+    const apiCliGreetings: Array<readonly [string, string]> = [];
+    const pathToUrl = (path: string) => `http://${hostname || 'localhost'}:${port}/${path}`;
+    apiCliGreetings.push(['Shop API', pathToUrl(shopApiPath)]);
+    apiCliGreetings.push(['Admin API', pathToUrl(adminApiPath)]);
+    apiCliGreetings.push(
+        ...getPluginStartupMessages().map(({ label, path }) => [label, pathToUrl(path)] as const),
+    );
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
     const title = `Vendure server (v${version}) now running on port ${port}`;
     const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
@@ -325,7 +239,7 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     Logger.info(`=`.repeat(maxLineLength));
 }
 
-function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
+function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): string[] {
     const columnWidth = Math.max(...lines.map(l => l[0].length)) + 2;
     return lines.map(l => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }
@@ -351,9 +265,9 @@ function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonl
  * before allowing the rest of the worker bootstrap to continue.
  * @param worker
  */
-async function validateDbTablesForWorker(worker: INestMicroservice) {
+async function validateDbTablesForWorker(worker: INestApplicationContext) {
     const connection: Connection = worker.get(getConnectionToken());
-    await new Promise(async (resolve, reject) => {
+    await new Promise<void>(async (resolve, reject) => {
         const checkForTables = async (): Promise<boolean> => {
             try {
                 const adminCount = await connection.getRepository(Administrator).count();
@@ -383,24 +297,4 @@ async function validateDbTablesForWorker(worker: INestMicroservice) {
         }
         reject(`Could not validate DB table structure. Aborting bootstrap.`);
     });
-}
-
-function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
-    const deprecatedApiOptions = [
-        'hostname',
-        'port',
-        'adminApiPath',
-        'shopApiPath',
-        'channelTokenKey',
-        'cors',
-        'middleware',
-        'apolloServerPlugins',
-    ];
-    const deprecatedOptionsUsed = deprecatedApiOptions.filter(option => config.hasOwnProperty(option));
-    if (deprecatedOptionsUsed.length) {
-        throw new Error(
-            `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +
-                `They have been moved to the "apiOptions" object. Please update your configuration.`,
-        );
-    }
 }

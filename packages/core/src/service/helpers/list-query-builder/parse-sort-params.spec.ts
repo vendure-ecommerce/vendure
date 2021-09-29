@@ -1,4 +1,5 @@
 import { Type } from '@vendure/common/lib/shared-types';
+import { DefaultNamingStrategy } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
@@ -134,6 +135,7 @@ export class MockConnection {
     private columnsMap = new Map<Type<any>, Array<Partial<ColumnMetadata>>>();
     private relationsMap = new Map<Type<any>, Array<Partial<RelationMetadata>>>();
     setColumns(entity: Type<any>, value: Array<Partial<ColumnMetadata>>) {
+        value.forEach(v => (v.propertyPath = v.propertyName));
         this.columnsMap.set(entity, value);
     }
     setRelations(entity: Type<any>, value: Array<Partial<RelationMetadata>>) {
@@ -146,6 +148,7 @@ export class MockConnection {
             relations: this.relationsMap.get(entity) || [],
         };
     };
+    namingStrategy = new DefaultNamingStrategy();
     readonly options = {
         type: 'sqljs',
     };

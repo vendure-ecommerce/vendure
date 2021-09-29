@@ -19,7 +19,7 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
-import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -31,7 +31,7 @@ export class UserService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private roleService: RoleService,
-        private passwordCipher: PasswordCiper,
+        private passwordCipher: PasswordCipher,
         private verificationTokenGenerator: VerificationTokenGenerator,
     ) {}
 
@@ -67,9 +67,21 @@ export class UserService {
         identifier: string,
         password?: string,
     ): Promise<User> {
+        const checkUser = user.id != null && (await this.getUserById(ctx, user.id));
+        if (checkUser) {
+            if (
+                !!checkUser.authenticationMethods.find(
+                    (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+                )
+            ) {
+                // User already has a NativeAuthenticationMethod registered, so just return.
+                return user;
+            }
+        }
         const authenticationMethod = new NativeAuthenticationMethod();
         if (this.configService.authOptions.requireVerification) {
-            authenticationMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
+            authenticationMethod.verificationToken =
+                this.verificationTokenGenerator.generateVerificationToken();
             user.verified = false;
         } else {
             user.verified = true;
@@ -158,7 +170,8 @@ export class UserService {
             return;
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
-        nativeAuthMethod.passwordResetToken = await this.verificationTokenGenerator.generateVerificationToken();
+        nativeAuthMethod.passwordResetToken =
+            await this.verificationTokenGenerator.generateVerificationToken();
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
@@ -188,6 +201,37 @@ export class UserService {
         }
     }
 
+    /**
+     * Changes the User identifier without an email verification step, so this should be only used when
+     * an Administrator is setting a new email address.
+     */
+    async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
+        const user = await this.getUserById(ctx, userId);
+        if (!user) {
+            return;
+        }
+        const nativeAuthMethod = user.authenticationMethods.find(
+            (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+        );
+        if (!nativeAuthMethod) {
+            // If the NativeAuthenticationMethod is not configured, then
+            // there is nothing to do.
+            return;
+        }
+        user.identifier = newIdentifier;
+        nativeAuthMethod.identifier = newIdentifier;
+        nativeAuthMethod.identifierChangeToken = null;
+        nativeAuthMethod.pendingIdentifier = null;
+        await this.connection
+            .getRepository(ctx, NativeAuthenticationMethod)
+            .save(nativeAuthMethod, { reload: false });
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
+    }
+
+    /**
+     * Changes the User identifier as part of the storefront flow used by Customers to set a
+     * new email address.
+     */
     async changeIdentifierByToken(
         ctx: RequestContext,
         token: string,

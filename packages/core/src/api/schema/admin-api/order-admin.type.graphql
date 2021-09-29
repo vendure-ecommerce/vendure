@@ -7,6 +7,10 @@ type Fulfillment {
     nextStates: [String!]!
 }
 
+type Payment {
+    nextStates: [String!]!
+}
+
 type OrderModification implements Node {
     id: ID!
     createdAt: DateTime!

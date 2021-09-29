@@ -1,7 +1,7 @@
 import { DynamicModule } from '@nestjs/common';
+import { Type } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { Type } from '../../../common/lib/shared-types';
-import { notNullOrUndefined } from '../../../common/lib/shared-utils';
 import { getConfig } from '../config/config-helpers';
 
 import { getModuleMetadata, graphQLResolversFor, isDynamicModule } from './plugin-metadata';
@@ -22,11 +22,11 @@ export function createDynamicGraphQlModulesForPlugins(apiType: 'shop' | 'admin')
                 const className = dynamicClassName(pluginModule, apiType);
                 dynamicApiModuleClassMap[className] = class {};
                 Object.defineProperty(dynamicApiModuleClassMap[className], 'name', { value: className });
-                const { imports, providers } = getModuleMetadata(pluginModule);
+                const { imports } = getModuleMetadata(pluginModule);
                 return {
                     module: dynamicApiModuleClassMap[className],
-                    imports,
-                    providers: [...providers, ...resolvers],
+                    imports: [pluginModule, ...imports],
+                    providers: [...resolvers],
                 };
             }
         })

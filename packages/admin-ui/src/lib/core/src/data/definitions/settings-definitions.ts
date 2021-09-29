@@ -1,6 +1,10 @@
 import { gql } from 'apollo-angular';
 
-import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, ERROR_RESULT_FRAGMENT } from './shared-definitions';
+import {
+    CONFIGURABLE_OPERATION_DEF_FRAGMENT,
+    CONFIGURABLE_OPERATION_FRAGMENT,
+    ERROR_RESULT_FRAGMENT,
+} from './shared-definitions';
 
 export const COUNTRY_FRAGMENT = gql`
     fragment Country on Country {
@@ -171,6 +175,7 @@ export const TAX_CATEGORY_FRAGMENT = gql`
         createdAt
         updatedAt
         name
+        isDefault
     }
 `;
 
@@ -374,17 +379,18 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        name
         code
+        description
         enabled
-        configArgs {
-            name
-            value
+        checker {
+            ...ConfigurableOperation
         }
-        definition {
-            ...ConfigurableOperationDef
+        handler {
+            ...ConfigurableOperation
         }
     }
-    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
 export const GET_PAYMENT_METHOD_LIST = gql`
@@ -399,9 +405,30 @@ export const GET_PAYMENT_METHOD_LIST = gql`
     ${PAYMENT_METHOD_FRAGMENT}
 `;
 
+export const GET_PAYMENT_METHOD_OPERATIONS = gql`
+    query GetPaymentMethodOperations {
+        paymentMethodEligibilityCheckers {
+            ...ConfigurableOperationDef
+        }
+        paymentMethodHandlers {
+            ...ConfigurableOperationDef
+        }
+    }
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
+`;
+
 export const GET_PAYMENT_METHOD = gql`
     query GetPaymentMethod($id: ID!) {
         paymentMethod(id: $id) {
+            ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const CREATE_PAYMENT_METHOD = gql`
+    mutation CreatePaymentMethod($input: CreatePaymentMethodInput!) {
+        createPaymentMethod(input: $input) {
             ...PaymentMethod
         }
     }
@@ -415,6 +442,15 @@ export const UPDATE_PAYMENT_METHOD = gql`
         }
     }
     ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const DELETE_PAYMENT_METHOD = gql`
+    mutation DeletePaymentMethod($id: ID!, $force: Boolean) {
+        deletePaymentMethod(id: $id, force: $force) {
+            result
+            message
+        }
+    }
 `;
 
 export const GLOBAL_SETTINGS_FRAGMENT = gql`
@@ -494,6 +530,12 @@ export const LOCALE_STRING_CUSTOM_FIELD_FRAGMENT = gql`
     }
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
+export const TEXT_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment TextCustomField on TextCustomFieldConfig {
+        ...CustomFieldConfig
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
 export const BOOLEAN_CUSTOM_FIELD_FRAGMENT = gql`
     fragment BooleanCustomField on BooleanCustomFieldConfig {
         ...CustomFieldConfig
@@ -527,6 +569,14 @@ export const DATE_TIME_CUSTOM_FIELD_FRAGMENT = gql`
     }
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
+export const RELATION_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment RelationCustomField on RelationCustomFieldConfig {
+        ...CustomFieldConfig
+        entity
+        scalarFields
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
 
 export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     fragment CustomFields on CustomField {
@@ -535,6 +585,9 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         }
         ... on LocaleStringCustomFieldConfig {
             ...LocaleStringCustomField
+        }
+        ... on TextCustomFieldConfig {
+            ...TextCustomField
         }
         ... on BooleanCustomFieldConfig {
             ...BooleanCustomField
@@ -548,13 +601,18 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         ... on DateTimeCustomFieldConfig {
             ...DateTimeCustomField
         }
+        ... on RelationCustomFieldConfig {
+            ...RelationCustomField
+        }
     }
     ${STRING_CUSTOM_FIELD_FRAGMENT}
     ${LOCALE_STRING_CUSTOM_FIELD_FRAGMENT}
+    ${TEXT_CUSTOM_FIELD_FRAGMENT}
     ${BOOLEAN_CUSTOM_FIELD_FRAGMENT}
     ${INT_CUSTOM_FIELD_FRAGMENT}
     ${FLOAT_CUSTOM_FIELD_FRAGMENT}
     ${DATE_TIME_CUSTOM_FIELD_FRAGMENT}
+    ${RELATION_CUSTOM_FIELD_FRAGMENT}
 `;
 
 export const GET_SERVER_CONFIG = gql`
@@ -574,6 +632,15 @@ export const GET_SERVER_CONFIG = gql`
                 }
                 customFieldConfig {
                     Address {
+                        ...CustomFields
+                    }
+                    Administrator {
+                        ...CustomFields
+                    }
+                    Asset {
+                        ...CustomFields
+                    }
+                    Channel {
                         ...CustomFields
                     }
                     Collection {
@@ -679,6 +746,15 @@ export const GET_JOB_QUEUE_LIST = gql`
             running
         }
     }
+`;
+
+export const CANCEL_JOB = gql`
+    mutation CancelJob($id: ID!) {
+        cancelJob(jobId: $id) {
+            ...JobInfo
+        }
+    }
+    ${JOB_INFO_FRAGMENT}
 `;
 
 export const REINDEX = gql`

@@ -12,6 +12,10 @@
 <vdr-form-field [label]="'common.code' | translate" for="code">
     <input id="code" type="text" #codeInput="ngModel" required [(ngModel)]="code" pattern="[a-z0-9_-]+" />
 </vdr-form-field>
+<clr-checkbox-wrapper>
+    <input type="checkbox" clrCheckbox [(ngModel)]="updateVariantName" />
+    <label>{{ 'catalog.auto-update-option-variant-name' | translate }}</label>
+</clr-checkbox-wrapper>
 <section *ngIf="customFields.length">
     <label>{{ 'common.custom-fields' | translate }}</label>
     <ng-container *ngFor="let customField of customFields">
@@ -20,7 +24,7 @@
             entityName="ProductOption"
             [customFieldsFormGroup]="customFieldsForm"
             [customField]="customField"
-            [readonly]="!('UpdateCatalog' | hasPermission)"
+            [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
         ></vdr-custom-field-control>
     </ng-container>
 </section>
@@ -30,7 +34,11 @@
     <button
         type="submit"
         (click)="update()"
-        [disabled]="nameInput.invalid || codeInput.invalid || (nameInput.pristine && codeInput.pristine && customFieldsForm.pristine)"
+        [disabled]="
+            nameInput.invalid ||
+            codeInput.invalid ||
+            (nameInput.pristine && codeInput.pristine && customFieldsForm.pristine)
+        "
         class="btn btn-primary"
     >
         {{ 'catalog.update-product-option' | translate }}

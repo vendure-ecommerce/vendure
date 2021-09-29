@@ -23,12 +23,11 @@ const sections: DocsSectionConfig[] = [
             'packages/asset-server-plugin/src/',
             'packages/email-plugin/src/',
             'packages/elasticsearch-plugin/src/',
+            'packages/job-queue-plugin/src/',
             'packages/testing/src/',
             'packages/ui-devkit/src/',
         ],
-        exclude: [
-            /generated-shop-types/,
-        ],
+        exclude: [/generated-shop-types/],
         outputPath: 'typescript-api',
     },
 ];
@@ -89,8 +88,9 @@ function generateTypescriptDocs(config: DocsSectionConfig[], isWatchMode: boolea
 
         if (generatedCount) {
             console.log(
-                `Generated ${generatedCount} typescript api docs for "${outputPath}" in ${+new Date() -
-                    timeStart}ms`,
+                `Generated ${generatedCount} typescript api docs for "${outputPath}" in ${
+                    +new Date() - timeStart
+                }ms`,
             );
         }
     }
@@ -101,7 +101,7 @@ function toHash(title: string): string {
 }
 
 function absOutputPath(outputPath: string): string {
-    return path.join(__dirname, '../../docs/content/docs/', outputPath);
+    return path.join(__dirname, '../../docs/content/', outputPath);
 }
 
 function getSourceFilePaths(sourceDirs: string[], excludePatterns: RegExp[] = []): string[] {

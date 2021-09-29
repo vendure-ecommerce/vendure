@@ -1,13 +1,11 @@
-import { DNSHealthIndicator, TerminusModule } from '@nestjs/terminus';
+import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
-    createProxyHandler,
-    HealthCheckRegistryService,
     Logger,
-    OnVendureBootstrap,
-    OnVendureClose,
     PluginCommonModule,
+    ProcessContext,
+    registerPluginStartupMessage,
     RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
@@ -15,7 +13,6 @@ import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
 import { fromBuffer } from 'file-type';
 import fs from 'fs-extra';
-import { Server } from 'http';
 import path from 'path';
 
 import { loggerCtx } from './constants';
@@ -124,11 +121,10 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * @docsCategory AssetServerPlugin
  */
 @VendurePlugin({
-    imports: [PluginCommonModule, TerminusModule],
+    imports: [PluginCommonModule],
     configuration: config => AssetServerPlugin.configure(config),
 })
-export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
-    private server: Server;
+export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     private static assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
     private presets: ImageTransformPreset[] = [
@@ -139,11 +135,6 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
     private static options: AssetServerOptions;
-
-    constructor(
-        private healthCheckRegistryService: HealthCheckRegistryService,
-        private dns: DNSHealthIndicator,
-    ) {}
 
     /**
      * @description
@@ -166,15 +157,16 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.assetOptions.assetNamingStrategy =
             this.options.namingStrategy || new HashedAssetNamingStrategy();
-        config.apiOptions.middleware.push({
-            handler: createProxyHandler({ ...this.options, label: 'Asset Server' }),
-            route: this.options.route,
-        });
         return config;
     }
 
+    constructor(private processContext: ProcessContext) {}
+
     /** @internal */
-    onVendureBootstrap(): void | Promise<void> {
+    onApplicationBootstrap(): void | Promise<void> {
+        if (this.processContext.isWorker) {
+            return;
+        }
         if (AssetServerPlugin.options.presets) {
             for (const preset of AssetServerPlugin.options.presets) {
                 const existingIndex = this.presets.findIndex(p => p.name === preset.name);
@@ -188,37 +180,24 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
 
         const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
         fs.ensureDirSync(cachePath);
-        this.createAssetServer();
-        const { hostname, port } = AssetServerPlugin.options;
     }
 
-    /** @internal */
-    onVendureClose(): Promise<void> {
-        return new Promise(resolve => {
-            this.server.close(() => resolve());
-        });
+    configure(consumer: MiddlewareConsumer) {
+        if (this.processContext.isWorker) {
+            return;
+        }
+        Logger.info('Creating asset server middleware', loggerCtx);
+        consumer.apply(this.createAssetServer()).forRoutes(AssetServerPlugin.options.route);
+        registerPluginStartupMessage('Asset server', AssetServerPlugin.options.route);
     }
 
     /**
      * Creates the image server instance
      */
     private createAssetServer() {
-        const assetServer = express();
-        assetServer.get('/health', (req, res) => {
-            res.send('ok');
-        });
+        const assetServer = express.Router();
         assetServer.use(this.sendAsset(), this.generateTransformedImage());
-
-        this.server = assetServer.listen(AssetServerPlugin.options.port, () => {
-            const addressInfo = this.server.address();
-            if (addressInfo && typeof addressInfo !== 'string') {
-                const { address, port } = addressInfo;
-                Logger.info(`Asset server listening on "http://localhost:${port}"`, loggerCtx);
-                this.healthCheckRegistryService.registerIndicatorFunction(() =>
-                    this.dns.pingCheck('asset-server', `http://localhost:${port}/health`),
-                );
-            }
-        });
+        return assetServer;
     }
 
     /**
@@ -273,9 +252,11 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                         }
                         res.set('Content-Type', `image/${(await image.metadata()).format}`);
                         res.send(imageBuffer);
+                        return;
                     } catch (e) {
                         Logger.error(e, 'AssetServerPlugin', e.stack);
                         res.status(500).send(e.message);
+                        return;
                     }
                 }
             }

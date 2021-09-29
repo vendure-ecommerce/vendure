@@ -1,9 +1,10 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever, getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
     extendSchema,
     GraphQLInputObjectType,
+    GraphQLList,
     GraphQLSchema,
     InputObjectTypeDefinitionNode,
     ObjectTypeDefinitionNode,
@@ -45,10 +46,21 @@ export function addGraphQLCustomFields(
             },
         );
 
+        for (const fieldDef of customEntityFields) {
+            if (fieldDef.type === 'relation') {
+                if (!schema.getType(fieldDef.graphQLType || fieldDef.entity.name)) {
+                    throw new Error(
+                        `The GraphQL type "${fieldDef.graphQLType}" specified by the ${entityName}.${fieldDef.name} custom field does not exist`,
+                    );
+                }
+            }
+        }
+
         const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
         const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
         const writeableLocaleStringFields = localeStringFields.filter(field => !field.readonly);
         const writeableNonLocaleStringFields = nonLocaleStringFields.filter(field => !field.readonly);
+        const filterableFields = customEntityFields.filter(field => field.type !== 'relation');
 
         if (schema.getType(entityName)) {
             if (customEntityFields.length) {
@@ -61,16 +73,6 @@ export function addGraphQLCustomFields(
                         customFields: ${entityName}CustomFields
                     }
                 `;
-
-                // For custom fields on the Address entity, we also extend the OrderAddress
-                // type (which is used to store address snapshots on Orders)
-                if (entityName === 'Address' && schema.getType('OrderAddress')) {
-                    customFieldTypeDefs += `
-                        extend type OrderAddress {
-                            customFields: ${entityName}CustomFields
-                        }
-                    `;
-                }
             } else {
                 customFieldTypeDefs += `
                     extend type ${entityName} {
@@ -96,7 +98,11 @@ export function addGraphQLCustomFields(
             if (writeableNonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
-                       ${mapToFields(writeableNonLocaleStringFields, getGraphQlType)}
+                       ${mapToFields(
+                           writeableNonLocaleStringFields,
+                           getGraphQlInputType,
+                           getGraphQlInputName,
+                       )}
                     }
 
                     extend input Create${entityName}Input {
@@ -116,7 +122,11 @@ export function addGraphQLCustomFields(
             if (writeableNonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Update${entityName}CustomFieldsInput {
-                       ${mapToFields(writeableNonLocaleStringFields, getGraphQlType)}
+                       ${mapToFields(
+                           writeableNonLocaleStringFields,
+                           getGraphQlInputType,
+                           getGraphQlInputName,
+                       )}
                     }
 
                     extend input Update${entityName}Input {
@@ -140,10 +150,10 @@ export function addGraphQLCustomFields(
                 `;
         }
 
-        if (customEntityFields.length && schema.getType(`${entityName}FilterParameter`)) {
+        if (filterableFields.length && schema.getType(`${entityName}FilterParameter`)) {
             customFieldTypeDefs += `
                     extend input ${entityName}FilterParameter {
-                         ${mapToFields(customEntityFields, getFilterOperator)}
+                         ${mapToFields(filterableFields, getFilterOperator)}
                     }
                 `;
         }
@@ -178,6 +188,33 @@ export function addGraphQLCustomFields(
         }
     }
 
+    if (customFieldConfig.Address?.length) {
+        // For custom fields on the Address entity, we also extend the OrderAddress
+        // type (which is used to store address snapshots on Orders)
+        if (schema.getType('OrderAddress')) {
+            customFieldTypeDefs += `
+                extend type OrderAddress {
+                    customFields: AddressCustomFields
+                }
+            `;
+        }
+        if (schema.getType('UpdateOrderAddressInput')) {
+            customFieldTypeDefs += `
+                extend input UpdateOrderAddressInput {
+                    customFields: UpdateAddressCustomFieldsInput
+                }
+            `;
+        }
+    } else {
+        if (schema.getType('OrderAddress')) {
+            customFieldTypeDefs += `
+                extend type OrderAddress {
+                    customFields: JSON
+                }
+        `;
+        }
+    }
+
     return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
@@ -202,6 +239,21 @@ export function addServerConfigCustomFields(
     return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
+export function addActiveAdministratorCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    administratorCustomFields: CustomFieldConfig[],
+) {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    const extension = `
+        extend input UpdateActiveAdministratorInput {
+            customFields: ${
+                0 < administratorCustomFields?.length ? 'UpdateAdministratorCustomFieldsInput' : 'JSON'
+            }
+        }
+    `;
+    return extendSchema(schema, parse(extension));
+}
+
 /**
  * If CustomFields are defined on the Customer entity, then an extra `customFields` field is added to
  * the `RegisterCustomerInput` so that public writable custom fields can be set when a new customer
@@ -223,7 +275,7 @@ export function addRegisterCustomerCustomFieldsInput(
     }
     const customFieldTypeDefs = `
         input RegisterCustomerCustomFieldsInput {
-            ${mapToFields(publicWritableCustomFields, getGraphQlType)}
+            ${mapToFields(publicWritableCustomFields, getGraphQlInputType, getGraphQlInputName)}
         }
 
         extend input RegisterCustomerInput {
@@ -267,7 +319,8 @@ export function addOrderLineCustomFieldsInput(
     orderLineCustomFields: CustomFieldConfig[],
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    if (!orderLineCustomFields || orderLineCustomFields.length === 0) {
+    const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
+    if (!publicCustomFields || publicCustomFields.length === 0) {
         return schema;
     }
     const schemaConfig = schema.toConfig();
@@ -277,8 +330,12 @@ export function addOrderLineCustomFieldsInput(
     }
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
-        fields: orderLineCustomFields.reduce((fields, field) => {
-            return { ...fields, [field.name]: { type: schema.getType(getGraphQlType(field.type)) } };
+        fields: publicCustomFields.reduce((fields, field) => {
+            const name = getGraphQlInputName(field);
+            // tslint:disable-next-line:no-non-null-assertion
+            const primitiveType = schema.getType(getGraphQlInputType(field))!;
+            const type = field.list === true ? new GraphQLList(primitiveType) : primitiveType;
+            return { ...fields, [name]: { type } };
         }, {}),
     });
     schemaConfig.types.push(input);
@@ -293,6 +350,7 @@ export function addOrderLineCustomFieldsInput(
             defaultValue: null,
             extensions: null,
             astNode: null,
+            deprecationReason: null,
         });
     }
     if (adjustOrderLineMutation) {
@@ -303,6 +361,7 @@ export function addOrderLineCustomFieldsInput(
             defaultValue: null,
             extensions: null,
             astNode: null,
+            deprecationReason: null,
         });
     }
 
@@ -329,43 +388,58 @@ export function addOrderLineCustomFieldsInput(
     return extendedSchema;
 }
 
-type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
-
 /**
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
-function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
-    return fieldDefs
+function mapToFields(
+    fieldDefs: CustomFieldConfig[],
+    typeFn: (def: CustomFieldConfig) => string | undefined,
+    nameFn?: (def: Pick<CustomFieldConfig, 'name' | 'type' | 'list'>) => string,
+): string {
+    const res = fieldDefs
         .map(field => {
-            const primitiveType = typeFn(field.type);
+            const primitiveType = typeFn(field);
+            if (!primitiveType) {
+                return;
+            }
             const finalType = field.list ? `[${primitiveType}!]` : primitiveType;
-            return `${field.name}: ${finalType}`;
+            const name = nameFn ? nameFn(field) : field.name;
+            return `${name}: ${finalType}`;
         })
-        .join('\n');
+        .filter(x => x != null);
+    return res.join('\n');
 }
 
-function getFilterOperator(type: CustomFieldType): string {
-    switch (type) {
+function getFilterOperator(config: CustomFieldConfig): string | undefined {
+    switch (config.type) {
         case 'datetime':
             return 'DateOperators';
         case 'string':
         case 'localeString':
+        case 'text':
             return 'StringOperators';
         case 'boolean':
             return 'BooleanOperators';
         case 'int':
         case 'float':
             return 'NumberOperators';
+        case 'relation':
+            return undefined;
         default:
-            assertNever(type);
+            assertNever(config);
     }
     return 'String';
 }
 
-function getGraphQlType(type: CustomFieldType): GraphQLFieldType {
-    switch (type) {
+function getGraphQlInputType(config: CustomFieldConfig): string {
+    return config.type === 'relation' ? `ID` : getGraphQlType(config);
+}
+
+function getGraphQlType(config: CustomFieldConfig): string {
+    switch (config.type) {
         case 'string':
         case 'localeString':
+        case 'text':
             return 'String';
         case 'datetime':
             return 'DateTime';
@@ -375,8 +449,10 @@ function getGraphQlType(type: CustomFieldType): GraphQLFieldType {
             return 'Int';
         case 'float':
             return 'Float';
+        case 'relation':
+            return config.graphQLType || config.entity.name;
         default:
-            assertNever(type);
+            assertNever(config);
     }
     return 'String';
 }

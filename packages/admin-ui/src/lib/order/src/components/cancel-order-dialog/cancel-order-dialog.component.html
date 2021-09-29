@@ -25,7 +25,7 @@
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
                 <td class="align-middle quantity">{{ line.quantity }}</td>
                 <td class="align-middle quantity">
-                    {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
+                    {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
                 </td>
                 <td class="align-middle fulfil">
                     <input

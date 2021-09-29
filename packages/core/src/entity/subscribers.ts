@@ -1,6 +1,10 @@
 import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
 
-import { CALCULATED_PROPERTIES } from '../common/calculated-decorator';
+import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../common/calculated-decorator';
+
+interface EntityPrototype {
+    [CALCULATED_PROPERTIES]: CalculatedColumnDefinition[];
+}
 
 @EventSubscriber()
 export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
@@ -19,15 +23,18 @@ export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
      */
     private moveCalculatedGettersToInstance(entity: any) {
         if (entity) {
-            const prototype = Object.getPrototypeOf(entity);
+            const prototype: EntityPrototype = Object.getPrototypeOf(entity);
             if (prototype.hasOwnProperty(CALCULATED_PROPERTIES)) {
-                for (const property of prototype[CALCULATED_PROPERTIES]) {
-                    const getterDescriptor = Object.getOwnPropertyDescriptor(prototype, property);
+                for (const calculatedPropertyDef of prototype[CALCULATED_PROPERTIES]) {
+                    const getterDescriptor = Object.getOwnPropertyDescriptor(
+                        prototype,
+                        calculatedPropertyDef.name,
+                    );
                     const getFn = getterDescriptor && getterDescriptor.get;
-                    if (getFn && !entity.hasOwnProperty(property)) {
+                    if (getFn && !entity.hasOwnProperty(calculatedPropertyDef.name)) {
                         const boundGetFn = getFn.bind(entity);
                         Object.defineProperties(entity, {
-                            [property]: {
+                            [calculatedPropertyDef.name]: {
                                 get: () => boundGetFn(),
                                 enumerable: true,
                             },

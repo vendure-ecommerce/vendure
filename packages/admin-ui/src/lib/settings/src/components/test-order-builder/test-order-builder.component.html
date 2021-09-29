@@ -20,7 +20,7 @@
             <td class="align-middle name">{{ line.name }}</td>
             <td class="align-middle sku">{{ line.sku }}</td>
             <td class="align-middle unit-price">
-                {{ line.unitPriceWithTax / 100 | currency: currencyCode }}
+                {{ line.unitPriceWithTax | localeCurrency: currencyCode }}
             </td>
             <td class="align-middle quantity">
                 <input
@@ -35,7 +35,7 @@
                 </button>
             </td>
             <td class="align-middle total">
-                {{ (line.unitPriceWithTax * line.quantity) / 100 | currency: currencyCode }}
+                {{ (line.unitPriceWithTax * line.quantity) | localeCurrency: currencyCode }}
             </td>
         </tr>
         <tr class="sub-total">
@@ -44,7 +44,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ subTotal / 100 | currency: currencyCode }}</td>
+            <td>{{ subTotal | localeCurrency: currencyCode }}</td>
         </tr>
     </table>
 

@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
@@ -9,29 +8,25 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { RequestContext } from '../../../api/common/request-context';
 import { AsyncQueue } from '../../../common/async-queue';
 import { Translatable, Translation } from '../../../common/types/locale-types';
+import { asyncObservable, idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
-import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
-import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
-    AssignProductToChannelMessage,
-    AssignVariantToChannelMessage,
-    DeleteAssetMessage,
-    DeleteProductMessage,
-    DeleteVariantMessage,
-    ReindexMessage,
-    RemoveProductFromChannelMessage,
-    RemoveVariantFromChannelMessage,
-    UpdateAssetMessage,
-    UpdateProductMessage,
-    UpdateVariantMessage,
-    UpdateVariantsByIdMessage,
+    ProductChannelMessageData,
+    ReindexMessageData,
+    ReindexMessageResponse,
+    UpdateAssetMessageData,
+    UpdateProductMessageData,
+    UpdateVariantMessageData,
+    UpdateVariantsByIdMessageData,
+    VariantChannelMessageData,
 } from '../types';
 
 export const BATCH_SIZE = 1000;
@@ -47,11 +42,12 @@ export const variantRelations = [
     'collections',
     'taxCategory',
     'channels',
+    'channels.defaultTaxZone',
 ];
 
 export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
 
-@Controller()
+@Injectable()
 export class IndexerController {
     private queue = new AsyncQueue('search-index');
 
@@ -61,8 +57,7 @@ export class IndexerController {
         private configService: ConfigService,
     ) {}
 
-    @MessagePattern(ReindexMessage.pattern)
-    reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
+    reindex({ ctx: rawContext }: ReindexMessageData): Observable<ReindexMessageResponse> {
         const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async observer => {
             const timeStart = Date.now();
@@ -84,8 +79,7 @@ export class IndexerController {
                     .take(BATCH_SIZE)
                     .skip(i * BATCH_SIZE)
                     .getMany();
-                const hydratedVariants = this.hydrateVariants(ctx, variants);
-                await this.saveVariants(ctx.channelId, hydratedVariants);
+                await this.saveVariants(variants);
                 observer.next({
                     total: count,
                     completed: Math.min((i + 1) * BATCH_SIZE, count),
@@ -101,11 +95,10 @@ export class IndexerController {
         });
     }
 
-    @MessagePattern(UpdateVariantsByIdMessage.pattern)
     updateVariantsById({
         ctx: rawContext,
         ids,
-    }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
+    }: UpdateVariantsByIdMessageData): Observable<ReindexMessageResponse> {
         const ctx = RequestContext.deserialize(rawContext);
 
         return asyncObservable(async observer => {
@@ -123,8 +116,7 @@ export class IndexerController {
                         relations: variantRelations,
                         where: { deletedAt: null },
                     });
-                    const variants = this.hydrateVariants(ctx, batch);
-                    await this.saveVariants(ctx.channelId, variants);
+                    await this.saveVariants(batch);
                     observer.next({
                         total: ids.length,
                         completed: Math.min((i + 1) * BATCH_SIZE, ids.length),
@@ -141,117 +133,88 @@ export class IndexerController {
         });
     }
 
-    @MessagePattern(UpdateProductMessage.pattern)
-    updateProduct(data: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
+    async updateProduct(data: UpdateProductMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateProductInChannel(ctx, data.productId, ctx.channelId);
-        });
+        return this.updateProductInChannel(ctx, data.productId, ctx.channelId);
     }
 
-    @MessagePattern(UpdateVariantMessage.pattern)
-    updateVariants(data: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
+    async updateVariants(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateVariantsInChannel(ctx, data.variantIds, ctx.channelId);
-        });
+        return this.updateVariantsInChannel(ctx, data.variantIds, ctx.channelId);
     }
 
-    @MessagePattern(DeleteProductMessage.pattern)
-    deleteProduct(data: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
+    async deleteProduct(data: UpdateProductMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
-        });
+        return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
     }
 
-    @MessagePattern(DeleteVariantMessage.pattern)
-    deleteVariant(data: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
+    async deleteVariant(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
-            if (variants.length) {
-                await this.removeSearchIndexItems(
-                    ctx.languageCode,
-                    ctx.channelId,
-                    variants.map(v => v.id),
-                );
-            }
-            return true;
-        });
+        const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
+        if (variants.length) {
+            const languageVariants = unique([
+                ...variants
+                    .reduce((vt, v) => [...vt, ...v.translations], [] as Array<Translation<ProductVariant>>)
+                    .map(t => t.languageCode),
+            ]);
+            await this.removeSearchIndexItems(
+                ctx.channelId,
+                variants.map(v => v.id),
+                languageVariants,
+            );
+        }
+        return true;
     }
 
-    @MessagePattern(AssignProductToChannelMessage.pattern)
-    assignProductToChannel(
-        data: AssignProductToChannelMessage['data'],
-    ): Observable<AssignProductToChannelMessage['response']> {
+    async assignProductToChannel(data: ProductChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateProductInChannel(ctx, data.productId, data.channelId);
-        });
+        return this.updateProductInChannel(ctx, data.productId, data.channelId);
     }
 
-    @MessagePattern(RemoveProductFromChannelMessage.pattern)
-    removeProductFromChannel(
-        data: RemoveProductFromChannelMessage['data'],
-    ): Observable<RemoveProductFromChannelMessage['response']> {
+    async removeProductFromChannel(data: ProductChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.deleteProductInChannel(ctx, data.productId, data.channelId);
-        });
+        return this.deleteProductInChannel(ctx, data.productId, data.channelId);
     }
 
-    @MessagePattern(AssignVariantToChannelMessage.pattern)
-    assignVariantToChannel(
-        data: AssignVariantToChannelMessage['data'],
-    ): Observable<AssignProductToChannelMessage['response']> {
+    async assignVariantToChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateVariantsInChannel(ctx, [data.productVariantId], data.channelId);
-        });
+        return this.updateVariantsInChannel(ctx, [data.productVariantId], data.channelId);
     }
 
-    @MessagePattern(RemoveVariantFromChannelMessage.pattern)
-    removeVariantFromChannel(
-        data: RemoveVariantFromChannelMessage['data'],
-    ): Observable<RemoveProductFromChannelMessage['response']> {
+    async removeVariantFromChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            await this.removeSearchIndexItems(ctx.languageCode, data.channelId, [data.productVariantId]);
-            return true;
-        });
+        const variant = await this.connection.getRepository(ProductVariant).findOne(data.productVariantId);
+        const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
+        await this.removeSearchIndexItems(data.channelId, [data.productVariantId], languageVariants);
+        return true;
     }
 
-    @MessagePattern(UpdateAssetMessage.pattern)
-    updateAsset(data: UpdateAssetMessage['data']): Observable<UpdateAssetMessage['response']> {
-        return asyncObservable(async () => {
-            const id = data.asset.id;
-            function getFocalPoint(point?: { x: number; y: number }) {
-                return point && point.x && point.y ? point : null;
-            }
-            const focalPoint = getFocalPoint(data.asset.focalPoint);
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productAssetId: id }, { productPreviewFocalPoint: focalPoint });
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productVariantAssetId: id }, { productVariantPreviewFocalPoint: focalPoint });
-            return true;
-        });
+    async updateAsset(data: UpdateAssetMessageData): Promise<boolean> {
+        const id = data.asset.id;
+
+        function getFocalPoint(point?: { x: number; y: number }) {
+            return point && point.x && point.y ? point : null;
+        }
+
+        const focalPoint = getFocalPoint(data.asset.focalPoint);
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productAssetId: id }, { productPreviewFocalPoint: focalPoint });
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productVariantAssetId: id }, { productVariantPreviewFocalPoint: focalPoint });
+        return true;
     }
 
-    @MessagePattern(DeleteAssetMessage.pattern)
-    deleteAsset(data: DeleteAssetMessage['data']): Observable<DeleteAssetMessage['response']> {
-        return asyncObservable(async () => {
-            const id = data.asset.id;
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productAssetId: id }, { productAssetId: null });
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productVariantAssetId: id }, { productVariantAssetId: null });
-            return true;
-        });
+    async deleteAsset(data: UpdateAssetMessageData): Promise<boolean> {
+        const id = data.asset.id;
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productAssetId: id }, { productAssetId: null });
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productVariantAssetId: id }, { productVariantAssetId: null });
+        return true;
     }
 
     private async updateProductInChannel(
@@ -263,20 +226,26 @@ export class IndexerController {
             relations: ['variants'],
         });
         if (product) {
-            let updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
+            const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
                 product.variants.map(v => v.id),
                 {
                     relations: variantRelations,
                     where: { deletedAt: null },
                 },
             );
-            if (product.enabled === false) {
-                updatedVariants.forEach(v => (v.enabled = false));
-            }
-            Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
-            updatedVariants = this.hydrateVariants(ctx, updatedVariants);
-            if (updatedVariants.length) {
-                await this.saveVariants(channelId, updatedVariants);
+            if (updatedVariants.length === 0) {
+                await this.saveSyntheticVariant(ctx, product);
+            } else {
+                if (product.enabled === false) {
+                    updatedVariants.forEach(v => (v.enabled = false));
+                }
+                const variantsInCurrentChannel = updatedVariants.filter(
+                    v => !!v.channels.find(c => idsAreEqual(c.id, ctx.channelId)),
+                );
+                Logger.verbose(`Updating ${variantsInCurrentChannel.length} variants`, workerLoggerCtx);
+                if (variantsInCurrentChannel.length) {
+                    await this.saveVariants(variantsInCurrentChannel);
+                }
             }
         }
         return true;
@@ -292,9 +261,8 @@ export class IndexerController {
             where: { deletedAt: null },
         });
         if (variants) {
-            const updatedVariants = this.hydrateVariants(ctx, variants);
-            Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
-            await this.saveVariants(channelId, updatedVariants);
+            Logger.verbose(`Updating ${variants.length} variants`, workerLoggerCtx);
+            await this.saveVariants(variants);
         }
         return true;
     }
@@ -308,9 +276,16 @@ export class IndexerController {
             relations: ['variants'],
         });
         if (product) {
+            const languageVariants = unique([
+                ...product.translations.map(t => t.languageCode),
+                ...product.variants
+                    .reduce((vt, v) => [...vt, ...v.translations], [] as Array<Translation<ProductVariant>>)
+                    .map(t => t.languageCode),
+            ]);
+
             const removedVariantIds = product.variants.map(v => v.id);
             if (removedVariantIds.length) {
-                await this.removeSearchIndexItems(ctx.languageCode, channelId, removedVariantIds);
+                await this.removeSearchIndexItems(channelId, removedVariantIds, languageVariants);
             }
         }
         return true;
@@ -334,59 +309,122 @@ export class IndexerController {
         return qb;
     }
 
-    /**
-     * Given an array of ProductVariants, this method applies the correct taxes and translations.
-     */
-    private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
-        return variants
-            .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
-    }
-
-    private async saveVariants(channelId: ID, variants: ProductVariant[]) {
+    private async saveVariants(variants: ProductVariant[]) {
         const items: SearchIndexItem[] = [];
 
-        for (const v of variants) {
+        await this.removeSyntheticVariants(variants);
+
+        for (const variant of variants) {
             const languageVariants = unique([
-                ...v.translations.map(t => t.languageCode),
-                ...v.product.translations.map(t => t.languageCode),
+                ...variant.translations.map(t => t.languageCode),
+                ...variant.product.translations.map(t => t.languageCode),
             ]);
             for (const languageCode of languageVariants) {
-                const productTranslation = this.getTranslation(v.product, languageCode);
-                const variantTranslation = this.getTranslation(v, languageCode);
-                items.push(
-                    new SearchIndexItem({
-                        productVariantId: v.id,
-                        channelId,
-                        languageCode,
-                        sku: v.sku,
-                        enabled: v.product.enabled === false ? false : v.enabled,
-                        slug: productTranslation.slug,
-                        price: v.price,
-                        priceWithTax: v.priceWithTax,
-                        productId: v.product.id,
-                        productName: productTranslation.name,
-                        description: productTranslation.description,
-                        productVariantName: variantTranslation.name,
-                        productAssetId: v.product.featuredAsset ? v.product.featuredAsset.id : null,
-                        productPreviewFocalPoint: v.product.featuredAsset
-                            ? v.product.featuredAsset.focalPoint
-                            : null,
-                        productVariantPreviewFocalPoint: v.featuredAsset ? v.featuredAsset.focalPoint : null,
-                        productVariantAssetId: v.featuredAsset ? v.featuredAsset.id : null,
-                        productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
-                        productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
-                        channelIds: v.channels.map(c => c.id as string),
-                        facetIds: this.getFacetIds(v),
-                        facetValueIds: this.getFacetValueIds(v),
-                        collectionIds: v.collections.map(c => c.id.toString()),
-                        collectionSlugs: v.collections.map(c => c.slug),
-                    }),
+                const productTranslation = this.getTranslation(variant.product, languageCode);
+                const variantTranslation = this.getTranslation(variant, languageCode);
+                const collectionTranslations = variant.collections.map(c =>
+                    this.getTranslation(c, languageCode),
                 );
+
+                for (const channel of variant.channels) {
+                    const ctx = new RequestContext({
+                        channel,
+                        apiType: 'admin',
+                        authorizedAsOwnerOnly: false,
+                        isAuthorized: true,
+                        session: {} as any,
+                    });
+                    await this.productVariantService.applyChannelPriceAndTax(variant, ctx);
+                    items.push(
+                        new SearchIndexItem({
+                            channelId: channel.id,
+                            languageCode,
+                            productVariantId: variant.id,
+                            price: variant.price,
+                            priceWithTax: variant.priceWithTax,
+                            sku: variant.sku,
+                            enabled: variant.product.enabled === false ? false : variant.enabled,
+                            slug: productTranslation.slug,
+                            productId: variant.product.id,
+                            productName: productTranslation.name,
+                            description: this.constrainDescription(productTranslation.description),
+                            productVariantName: variantTranslation.name,
+                            productAssetId: variant.product.featuredAsset
+                                ? variant.product.featuredAsset.id
+                                : null,
+                            productPreviewFocalPoint: variant.product.featuredAsset
+                                ? variant.product.featuredAsset.focalPoint
+                                : null,
+                            productVariantPreviewFocalPoint: variant.featuredAsset
+                                ? variant.featuredAsset.focalPoint
+                                : null,
+                            productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
+                            productPreview: variant.product.featuredAsset
+                                ? variant.product.featuredAsset.preview
+                                : '',
+                            productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
+                            channelIds: variant.channels.map(c => c.id as string),
+                            facetIds: this.getFacetIds(variant),
+                            facetValueIds: this.getFacetValueIds(variant),
+                            collectionIds: variant.collections.map(c => c.id.toString()),
+                            collectionSlugs: collectionTranslations.map(c => c.slug),
+                        }),
+                    );
+                }
             }
         }
 
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));
+    }
+
+    /**
+     * If a Product has no variants, we create a synthetic variant for the purposes
+     * of making that product visible via the search query.
+     */
+    private async saveSyntheticVariant(ctx: RequestContext, product: Product) {
+        const productTranslation = this.getTranslation(product, ctx.languageCode);
+        const item = new SearchIndexItem({
+            channelId: ctx.channelId,
+            languageCode: ctx.languageCode,
+            productVariantId: 0,
+            price: 0,
+            priceWithTax: 0,
+            sku: '',
+            enabled: false,
+            slug: productTranslation.slug,
+            productId: product.id,
+            productName: productTranslation.name,
+            description: this.constrainDescription(productTranslation.description),
+            productVariantName: productTranslation.name,
+            productAssetId: product.featuredAsset?.id ?? null,
+            productPreviewFocalPoint: product.featuredAsset?.focalPoint ?? null,
+            productVariantPreviewFocalPoint: null,
+            productVariantAssetId: null,
+            productPreview: product.featuredAsset?.preview ?? '',
+            productVariantPreview: '',
+            channelIds: [ctx.channelId.toString()],
+            facetIds: product.facetValues?.map(fv => fv.facet.id.toString()) ?? [],
+            facetValueIds: product.facetValues?.map(fv => fv.id.toString()) ?? [],
+            collectionIds: [],
+            collectionSlugs: [],
+        });
+        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(item));
+    }
+
+    /**
+     * Removes any synthetic variants for the given product
+     */
+    private async removeSyntheticVariants(variants: ProductVariant[]) {
+        const prodIds = unique(variants.map(v => v.productId));
+        for (const productId of prodIds) {
+            await this.queue.push(() =>
+                this.connection.getRepository(SearchIndexItem).delete({
+                    productId,
+                    sku: '',
+                    price: 0,
+                }),
+            );
+        }
     }
 
     private getTranslation<T extends Translatable>(
@@ -415,12 +453,30 @@ export class IndexerController {
     /**
      * Remove items from the search index
      */
-    private async removeSearchIndexItems(languageCode: LanguageCode, channelId: ID, variantIds: ID[]) {
-        const compositeKeys = variantIds.map(id => ({
-            productVariantId: id,
-            channelId,
-            languageCode,
-        })) as any[];
-        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(compositeKeys));
+    private async removeSearchIndexItems(channelId: ID, variantIds: ID[], languageCodes: LanguageCode[]) {
+        const keys: Array<Partial<SearchIndexItem>> = [];
+        for (const productVariantId of variantIds) {
+            for (const languageCode of languageCodes) {
+                keys.push({
+                    productVariantId,
+                    channelId,
+                    languageCode,
+                });
+            }
+        }
+        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(keys as any));
+    }
+
+    /**
+     * Prevent postgres errors from too-long indices
+     * https://github.com/vendure-ecommerce/vendure/issues/745
+     */
+    private constrainDescription(description: string): string {
+        const { type } = this.connection.rawConnection.options;
+        const isPostgresLike = type === 'postgres' || type === 'aurora-data-api-pg' || type === 'cockroachdb';
+        if (isPostgresLike) {
+            return description.substring(0, 2600);
+        }
+        return description;
     }
 }

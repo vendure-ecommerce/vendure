@@ -15,7 +15,7 @@ skinparam TitleFontSize 18
 skinparam Padding 3
 
 skinparam Default {
-  FontName  'Impact'
+  FontName  'Segoe UI'
   FontColor BLACK
   FontSize  14
   FontStyle plain
@@ -85,5 +85,10 @@ skinparam Participant {
 skinparam Actor {
   BackgroundColor BLACK
   BorderColor BLACK
+}
+
+skinparam Object {
+  BorderColor #666666
+  BackgroundColor BACKGROUND
 }
 @enduml

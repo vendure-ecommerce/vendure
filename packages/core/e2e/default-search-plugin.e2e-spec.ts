@@ -2,6 +2,7 @@
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
+    DefaultLogger,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
     mergeConfig,
@@ -20,6 +21,8 @@ import {
     CreateChannel,
     CreateCollection,
     CreateFacet,
+    CreateProduct,
+    CreateProductVariants,
     CurrencyCode,
     DeleteAsset,
     DeleteProduct,
@@ -28,6 +31,7 @@ import {
     Reindex,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    SearchCollections,
     SearchFacetValues,
     SearchGetAssets,
     SearchGetPrices,
@@ -38,7 +42,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate,
+    UpdateTaxRate
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
@@ -47,6 +51,8 @@ import {
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
+    CREATE_PRODUCT,
+    CREATE_PRODUCT_VARIANTS,
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -61,9 +67,16 @@ import {
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
+// Some of these tests have many steps and can timeout
+// on the default of 5s.
+jest.setTimeout(10000);
+
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, { plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin] }),
+        mergeConfig(testConfig, {
+            logger: new DefaultLogger(),
+            plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin],
+        }),
     );
 
     beforeAll(async () => {
@@ -76,6 +89,7 @@ describe('Default search plugin', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
+        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 
@@ -224,6 +238,123 @@ describe('Default search plugin', () => {
         ]);
     }
 
+    async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupByProduct: true,
+                    facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+        ]);
+    }
+
+    async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupByProduct: true,
+                    facetValueFilters: [{ or: ['T_1', 'T_5'] }],
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'Slr Camera',
+            'Spiky Cactus',
+            'Orchid',
+            'Bonsai Tree',
+        ]);
+    }
+
+    async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupByProduct: true,
+                    facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'Slr Camera',
+        ]);
+    }
+
+    async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    facetValueIds: ['T_2', 'T_3'],
+                    facetValueOperator: LogicalOperator.OR,
+                    facetValueFilters: [{ and: 'T_1' }],
+                    groupByProduct: true,
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'Slr Camera',
+        ]);
+    }
+
+    async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    facetValueIds: ['T_1'],
+                    facetValueFilters: [{ and: 'T_3' }],
+                    facetValueOperator: LogicalOperator.AND,
+                    groupByProduct: true,
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'Slr Camera',
+        ]);
+    }
+
     async function testMatchCollectionId(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
@@ -321,6 +452,18 @@ describe('Default search plugin', () => {
 
         it('matches by facetId with OR operator', () => testMatchFacetIdsOr(shopClient));
 
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+
+        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+
+        it('matches by FacetValueFilters with facetId OR operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters with facetId AND operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
+
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
         it('matches by collectionSlug', () => testMatchCollectionSlug(shopClient));
@@ -412,6 +555,34 @@ describe('Default search plugin', () => {
             ]);
         });
 
+        it('returns correct collections when not grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+            ]);
+        });
+
+        it('returns correct collections when grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                ]);
+        });
+
         it('encodes the productId and productVariantId', async () => {
             const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
                 SEARCH_PRODUCTS_SHOP,
@@ -482,6 +653,18 @@ describe('Default search plugin', () => {
         it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(adminClient));
 
         it('matches by facetId with OR operator', () => testMatchFacetIdsOr(adminClient));
+
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+
+        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+
+        it('matches by FacetValueFilters with facetId OR operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters with facetId AND operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
@@ -643,7 +826,7 @@ describe('Default search plugin', () => {
                     'Football',
                     'Running Shoe',
                 ]);
-            });
+            }, 10000);
 
             it('updates index when a Collection created', async () => {
                 const { createCollection } = await adminClient.query<
@@ -762,8 +945,10 @@ describe('Default search plugin', () => {
                     expect(assetId).toBeTruthy();
 
                     await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
-                        id: assetId!,
-                        force: true,
+                        input: {
+                            assetId: assetId!,
+                            force: true,
+                        },
                     });
 
                     await awaitRunningJobs(adminClient);
@@ -869,6 +1054,128 @@ describe('Default search plugin', () => {
                     { productId: 'T_3', enabled: false },
                 ]);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/745
+            it('very long Product descriptions no not cause indexing to fail', async () => {
+                // We generate this long string out of random chars because Postgres uses compression
+                // when storing the string value, so e.g. a long series of a single character will not
+                // reproduce the error.
+                const description = Array.from({ length: 220 })
+                    .map(() => Math.random().toString(36))
+                    .join(' ');
+
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Very long description aabbccdd',
+                                slug: 'very-long-description',
+                                description,
+                            },
+                        ],
+                    },
+                });
+                await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                    CREATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                productId: createProduct.id,
+                                sku: 'VLD01',
+                                price: 100,
+                                translations: [
+                                    { languageCode: LanguageCode.en, name: 'Very long description variant' },
+                                ],
+                            },
+                        ],
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+                const result = await doAdminSearchQuery({ term: 'aabbccdd' });
+                expect(result.search.items.map(i => i.productName)).toEqual([
+                    'Very long description aabbccdd',
+                ]);
+                await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                    id: createProduct.id,
+                });
+            });
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/609
+        describe('Synthetic index items', () => {
+            let createdProductId: string;
+
+            it('creates synthetic index item for Product with no variants', async () => {
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        facetValueIds: ['T_1'],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Strawberry cheesecake',
+                                slug: 'strawberry-cheesecake',
+                                description: 'A yummy dessert',
+                            },
+                        ],
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+                const result = await doAdminSearchQuery({ groupByProduct: true, term: 'strawberry' });
+                expect(
+                    result.search.items.map(
+                        pick([
+                            'productId',
+                            'enabled',
+                            'productName',
+                            'productVariantName',
+                            'slug',
+                            'description',
+                        ]),
+                    ),
+                ).toEqual([
+                    {
+                        productId: createProduct.id,
+                        enabled: false,
+                        productName: 'Strawberry cheesecake',
+                        productVariantName: 'Strawberry cheesecake',
+                        slug: 'strawberry-cheesecake',
+                        description: 'A yummy dessert',
+                    },
+                ]);
+                createdProductId = createProduct.id;
+            });
+
+            it('removes synthetic index item once a variant is created', async () => {
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: createdProductId,
+                            sku: 'SC01',
+                            price: 1399,
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'Strawberry Cheesecake Pie' },
+                            ],
+                        },
+                    ],
+                });
+                await awaitRunningJobs(adminClient);
+
+                const result = await doAdminSearchQuery({ groupByProduct: false, term: 'strawberry' });
+                expect(result.search.items.map(pick(['productVariantName']))).toEqual([
+                    { productVariantName: 'Strawberry Cheesecake Pie' },
+                ]);
+            });
         });
 
         describe('channel handling', () => {
@@ -952,7 +1259,7 @@ describe('Default search plugin', () => {
                 ]);
             }, 10000);
 
-            it('removing product variant to channel', async () => {
+            it('removing product variant from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
                     RemoveProductVariantsFromChannel.Mutation,
@@ -975,6 +1282,103 @@ describe('Default search plugin', () => {
                     'T_10',
                 ]);
             }, 10000);
+
+            it('updating product affects current channel', async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const { updateProduct } = await adminClient.query<
+                    UpdateProduct.Mutation,
+                    UpdateProduct.Variables
+                >(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_3',
+                        enabled: true,
+                        translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search: searchGrouped } = await doAdminSearchQuery({
+                    groupByProduct: true,
+                    term: 'xyz',
+                });
+                expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
+            });
+
+            it('updating product affects other channels', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { search: searchGrouped } = await doAdminSearchQuery({
+                    groupByProduct: true,
+                    term: 'xyz',
+                });
+                expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/896
+            it('removing from channel with multiple languages', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_4',
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'product en',
+                                slug: 'product-en',
+                                description: 'en',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'product de',
+                                slug: 'product-de',
+                                description: 'de',
+                            },
+                        ],
+                    },
+                });
+
+                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
+                    ASSIGN_PRODUCT_TO_CHANNEL,
+                    {
+                        input: { channelId: secondChannel.id, productIds: ['T_4'] },
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                async function searchSecondChannelForDEProduct() {
+                    adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                    const { search } = await adminClient.query<
+                        SearchProductsShop.Query,
+                        SearchProductsShop.Variables
+                    >(
+                        SEARCH_PRODUCTS,
+                        {
+                            input: { term: 'product', groupByProduct: true },
+                        },
+                        { languageCode: LanguageCode.de },
+                    );
+                    return search;
+                }
+
+                const search1 = await searchSecondChannelForDEProduct();
+                expect(search1.items.map(i => i.productName)).toEqual(['product de']);
+
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { removeProductsFromChannel } = await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                    input: {
+                        productIds: ['T_4'],
+                        channelId: secondChannel.id,
+                    },
+                });
+                await awaitRunningJobs(adminClient);
+
+                const search2 = await searchSecondChannelForDEProduct();
+                expect(search2.items.map(i => i.productName)).toEqual([]);
+            });
         });
 
         describe('multiple language handling', () => {
@@ -1078,10 +1482,8 @@ export const SEARCH_PRODUCTS = gql`
                 productName
                 slug
                 description
-                productPreview
                 productVariantId
                 productVariantName
-                productVariantPreview
                 sku
             }
         }
@@ -1095,6 +1497,21 @@ export const SEARCH_GET_FACET_VALUES = gql`
             facetValues {
                 count
                 facetValue {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+export const SEARCH_GET_COLLECTIONS = gql`
+    query SearchCollections($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            collections {
+                count
+                collection {
                     id
                     name
                 }

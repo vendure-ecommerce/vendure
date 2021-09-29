@@ -4,12 +4,14 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
     GetCollectionList,
+    LanguageCode,
     ModalService,
     NotificationService,
     QueryResult,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap, take } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
 
 import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
@@ -23,6 +25,8 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
     items$: Observable<GetCollectionList.Items[]>;
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
     expandAll = false;
     private queryResult: QueryResult<any>;
 
@@ -32,10 +36,11 @@ export class CollectionListComponent implements OnInit, OnDestroy {
         private modalService: ModalService,
         private router: Router,
         private route: ActivatedRoute,
+        private serverConfigService: ServerConfigService,
     ) {}
 
     ngOnInit() {
-        this.queryResult = this.dataService.collection.getCollections(99999, 0).refetchOnChannelChange();
+        this.queryResult = this.dataService.collection.getCollections(1000, 0).refetchOnChannelChange();
         this.items$ = this.queryResult.mapStream(data => data.collections.items).pipe(shareReplay(1));
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
@@ -51,6 +56,11 @@ export class CollectionListComponent implements OnInit, OnDestroy {
                 return '';
             }),
         );
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage)
+            .pipe(tap(() => this.refresh()));
     }
 
     ngOnDestroy() {
@@ -107,6 +117,10 @@ export class CollectionListComponent implements OnInit, OnDestroy {
         const params = { ...this.route.snapshot.params };
         delete params.contents;
         this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 
     private refresh() {

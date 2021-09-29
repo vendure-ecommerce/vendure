@@ -1,4 +1,0 @@
-{{- $operationName := .Get "operation" -}}
-{{- $operationSegment := cond (eq (.Get "type") "query") "queries" "mutations" -}}
-{{- $link := (print "/docs/graphql-api/shop/" $operationSegment  "#" (lower $operationName) ) -}}
-<em>{{ .Get "type" }}</em> <a href="{{ $link }}"><code>{{ $operationName }}</code></a>

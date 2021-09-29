@@ -14,6 +14,7 @@ import {
     ModalService,
     ModifyOrderInput,
     NotificationService,
+    OrderAddressFragment,
     OrderDetail,
     ProductSelectorSearch,
     ServerConfigService,
@@ -125,28 +126,34 @@ export class OrderEditorComponent
                 taxRate: new FormControl(0),
                 taxDescription: new FormControl(''),
             });
-            this.shippingAddressForm = new FormGroup({
-                fullName: new FormControl(order.shippingAddress?.fullName),
-                company: new FormControl(order.shippingAddress?.company),
-                streetLine1: new FormControl(order.shippingAddress?.streetLine1),
-                streetLine2: new FormControl(order.shippingAddress?.streetLine2),
-                city: new FormControl(order.shippingAddress?.city),
-                province: new FormControl(order.shippingAddress?.province),
-                postalCode: new FormControl(order.shippingAddress?.postalCode),
-                countryCode: new FormControl(order.shippingAddress?.countryCode),
-                phoneNumber: new FormControl(order.shippingAddress?.phoneNumber),
-            });
-            this.billingAddressForm = new FormGroup({
-                fullName: new FormControl(order.billingAddress?.fullName),
-                company: new FormControl(order.billingAddress?.company),
-                streetLine1: new FormControl(order.billingAddress?.streetLine1),
-                streetLine2: new FormControl(order.billingAddress?.streetLine2),
-                city: new FormControl(order.billingAddress?.city),
-                province: new FormControl(order.billingAddress?.province),
-                postalCode: new FormControl(order.billingAddress?.postalCode),
-                countryCode: new FormControl(order.billingAddress?.countryCode),
-                phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
-            });
+            if (!this.shippingAddressForm) {
+                this.shippingAddressForm = new FormGroup({
+                    fullName: new FormControl(order.shippingAddress?.fullName),
+                    company: new FormControl(order.shippingAddress?.company),
+                    streetLine1: new FormControl(order.shippingAddress?.streetLine1),
+                    streetLine2: new FormControl(order.shippingAddress?.streetLine2),
+                    city: new FormControl(order.shippingAddress?.city),
+                    province: new FormControl(order.shippingAddress?.province),
+                    postalCode: new FormControl(order.shippingAddress?.postalCode),
+                    countryCode: new FormControl(order.shippingAddress?.countryCode),
+                    phoneNumber: new FormControl(order.shippingAddress?.phoneNumber),
+                });
+                this.addAddressCustomFieldsFormGroup(this.shippingAddressForm, order.shippingAddress);
+            }
+            if (!this.billingAddressForm) {
+                this.billingAddressForm = new FormGroup({
+                    fullName: new FormControl(order.billingAddress?.fullName),
+                    company: new FormControl(order.billingAddress?.company),
+                    streetLine1: new FormControl(order.billingAddress?.streetLine1),
+                    streetLine2: new FormControl(order.billingAddress?.streetLine2),
+                    city: new FormControl(order.billingAddress?.city),
+                    province: new FormControl(order.billingAddress?.province),
+                    postalCode: new FormControl(order.billingAddress?.postalCode),
+                    countryCode: new FormControl(order.billingAddress?.countryCode),
+                    phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
+                });
+                this.addAddressCustomFieldsFormGroup(this.billingAddressForm, order.billingAddress);
+            }
             this.orderLineCustomFieldsFormArray = new FormArray([]);
             for (const line of order.lines) {
                 const formGroup = new FormGroup({});
@@ -208,12 +215,11 @@ export class OrderEditorComponent
     canPreviewChanges(): boolean {
         const { addItems, adjustOrderLines, surcharges } = this.modifyOrderInput;
         return (
-            (!!addItems?.length ||
-                !!surcharges?.length ||
-                !!adjustOrderLines?.length ||
-                (this.shippingAddressForm.dirty && this.shippingAddressForm.valid) ||
-                (this.billingAddressForm.dirty && this.billingAddressForm.valid)) &&
-            this.note !== ''
+            !!addItems?.length ||
+            !!surcharges?.length ||
+            !!adjustOrderLines?.length ||
+            (this.shippingAddressForm.dirty && this.shippingAddressForm.valid) ||
+            (this.billingAddressForm.dirty && this.billingAddressForm.valid)
         );
     }
 
@@ -341,8 +347,12 @@ export class OrderEditorComponent
     previewAndModify(order: OrderDetail.Fragment) {
         const input: ModifyOrderInput = {
             ...this.modifyOrderInput,
+            ...(this.billingAddressForm.dirty ? { updateBillingAddress: this.billingAddressForm.value } : {}),
+            ...(this.shippingAddressForm.dirty
+                ? { updateShippingAddress: this.shippingAddressForm.value }
+                : {}),
             dryRun: true,
-            note: this.note,
+            note: this.note ?? '',
             options: {
                 recalculateShipping: this.recalculateShipping,
             },
@@ -421,6 +431,21 @@ export class OrderEditorComponent
                     this.router.navigate(['../'], { relativeTo: this.route });
                 }
             });
+    }
+
+    private addAddressCustomFieldsFormGroup(
+        parentFormGroup: FormGroup,
+        address?: OrderAddressFragment | null,
+    ) {
+        if (address && this.addressCustomFields.length) {
+            const addressCustomFieldsFormGroup = new FormGroup({});
+            for (const customFieldDef of this.addressCustomFields) {
+                const name = customFieldDef.name;
+                const value = (address as any).customFields?.[name];
+                addressCustomFieldsFormGroup.addControl(name, new FormControl(value));
+            }
+            parentFormGroup.addControl('customFields', addressCustomFieldsFormGroup);
+        }
     }
 
     protected setFormValues(entity: OrderDetail.Fragment, languageCode: LanguageCode): void {

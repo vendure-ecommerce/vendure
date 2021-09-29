@@ -2,8 +2,10 @@ type PaymentMethod implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    name: String!
     code: String!
+    description: String!
     enabled: Boolean!
-    configArgs: [ConfigArg!]!
-    definition: ConfigurableOperationDefinition!
+    checker: ConfigurableOperation
+    handler: ConfigurableOperation!
 }

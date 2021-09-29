@@ -1,6 +1,6 @@
+import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 
-import { DeepPartial } from '../../../../common/lib/shared-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { FulfillmentState } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { VendureEntity } from '../base/base.entity';

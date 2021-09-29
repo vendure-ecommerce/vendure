@@ -63,9 +63,6 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
             };
         },
     });
-    // Attach the options to the middleware function to allow
-    // the info to be logged after bootstrap.
-    (middleware as any).proxyMiddleware = options;
     return middleware;
 }
 
@@ -107,22 +104,16 @@ export interface ProxyOptions {
     basePath?: string;
 }
 
+const pluginStartupMessages: Array<{ label: string; path: string }> = [];
+
 /**
- * Generate CLI greeting lines for any proxy middleware that was set up with the createProxyHandler function.
+ * Use this function to add a line to the bootstrap log output listing a service added
+ * by this plugin.
  */
-export function getProxyMiddlewareCliGreetings(config: RuntimeVendureConfig): Array<[string, string]> {
-    const output: Array<[string, string]> = [];
-    for (const middleware of config.apiOptions.middleware || []) {
-        if ((middleware.handler as any).proxyMiddleware) {
-            const { port, hostname, label, route, basePath } = (middleware.handler as any)
-                .proxyMiddleware as ProxyOptions;
-            output.push([
-                label,
-                `http://${config.apiOptions.hostname || 'localhost'}:${
-                    config.apiOptions.port
-                }/${route}/ -> http://${hostname || 'localhost'}:${port}${basePath ? `/${basePath}` : ''}`,
-            ]);
-        }
-    }
-    return output;
+export function registerPluginStartupMessage(serviceName: string, path: string) {
+    pluginStartupMessages.push({ label: serviceName, path });
+}
+
+export function getPluginStartupMessages(): ReadonlyArray<{ label: string; path: string }> {
+    return pluginStartupMessages;
 }

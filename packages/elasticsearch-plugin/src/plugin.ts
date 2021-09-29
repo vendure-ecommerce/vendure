@@ -1,4 +1,5 @@
 import { NodeOptions } from '@elastic/elasticsearch';
+import { OnApplicationBootstrap } from '@nestjs/common';
 import {
     AssetEvent,
     CollectionModificationEvent,
@@ -7,7 +8,6 @@ import {
     ID,
     idsAreEqual,
     Logger,
-    OnVendureBootstrap,
     PluginCommonModule,
     ProductChannelEvent,
     ProductEvent,
@@ -22,7 +22,11 @@ import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { CustomMappingsResolver } from './custom-mappings.resolver';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
-import { AdminElasticSearchResolver, ShopElasticSearchResolver } from './elasticsearch-resolver';
+import {
+    AdminElasticSearchResolver,
+    EntityElasticSearchResolver,
+    ShopElasticSearchResolver,
+} from './elasticsearch-resolver';
 import { ElasticsearchHealthIndicator } from './elasticsearch.health';
 import { ElasticsearchService } from './elasticsearch.service';
 import { generateSchemaExtensions } from './graphql-schema-extensions';
@@ -196,9 +200,10 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
         ElasticsearchIndexService,
         ElasticsearchService,
         ElasticsearchHealthIndicator,
+        ElasticsearchIndexerController,
         { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
     ],
-    adminApiExtensions: { resolvers: [AdminElasticSearchResolver] },
+    adminApiExtensions: { resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver] },
     shopApiExtensions: {
         resolvers: () => {
             const { options } = ElasticsearchPlugin;
@@ -206,16 +211,15 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
                 0 < Object.keys(options.customProductMappings || {}).length &&
                 0 < Object.keys(options.customProductVariantMappings || {}).length;
             return requiresUnionResolver
-                ? [ShopElasticSearchResolver, CustomMappingsResolver]
-                : [ShopElasticSearchResolver];
+                ? [ShopElasticSearchResolver, EntityElasticSearchResolver, CustomMappingsResolver]
+                : [ShopElasticSearchResolver, EntityElasticSearchResolver];
         },
         // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
         // which looks like possibly a TS/definitions bug.
         schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
     },
-    workers: [ElasticsearchIndexerController],
 })
-export class ElasticsearchPlugin implements OnVendureBootstrap {
+export class ElasticsearchPlugin implements OnApplicationBootstrap {
     private static options: ElasticsearchRuntimeOptions;
 
     /** @internal */
@@ -236,11 +240,10 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
     }
 
     /** @internal */
-    async onVendureBootstrap(): Promise<void> {
-        const { host, port } = ElasticsearchPlugin.options;
+    async onApplicationBootstrap(): Promise<void> {
         const nodeName = this.nodeName();
         try {
-            const pingResult = await this.elasticsearchService.checkConnection();
+            await this.elasticsearchService.checkConnection();
         } catch (e) {
             Logger.error(`Could not connect to Elasticsearch instance at "${nodeName}"`, loggerCtx);
             Logger.error(JSON.stringify(e), loggerCtx);
@@ -252,7 +255,6 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
         Logger.info(`Successfully connected to Elasticsearch instance at "${nodeName}"`, loggerCtx);
 
         await this.elasticsearchService.createIndicesIfNotExists();
-        this.elasticsearchIndexService.initJobQueue();
         this.healthCheckRegistryService.registerIndicatorFunction(() =>
             this.elasticsearchHealthIndicator.isHealthy(),
         );
@@ -337,7 +339,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
             .subscribe(event => {
                 const defaultTaxZone = event.ctx.channel.defaultTaxZone;
                 if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                    return this.elasticsearchService.updateAll(event.ctx);
+                    return this.elasticsearchService.reindex(event.ctx);
                 }
             });
     }

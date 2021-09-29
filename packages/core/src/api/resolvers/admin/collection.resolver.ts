@@ -19,7 +19,6 @@ import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
@@ -34,7 +33,7 @@ export class CollectionResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadCollection)
     async collectionFilters(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
@@ -43,7 +42,7 @@ export class CollectionResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadCollection)
     async collections(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
@@ -55,7 +54,7 @@ export class CollectionResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadCollection)
     async collection(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionArgs,
@@ -77,7 +76,7 @@ export class CollectionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog)
+    @Allow(Permission.CreateCatalog, Permission.CreateCollection)
     async createCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCollectionArgs,
@@ -89,7 +88,7 @@ export class CollectionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateCollection)
     async updateCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCollectionArgs,
@@ -101,7 +100,7 @@ export class CollectionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateCollection)
     async moveCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationMoveCollectionArgs,
@@ -112,7 +111,7 @@ export class CollectionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteCollection)
     async deleteCollection(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteCollectionArgs,

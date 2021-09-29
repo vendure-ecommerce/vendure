@@ -1,6 +1,6 @@
 {
   "name": "@vendure/common",
-  "version": "0.17.3",
+  "version": "1.2.2",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -10,6 +10,8 @@
     "test": "jest --config ./jest.config.js",
     "ci": "yarn build"
   },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
   "publishConfig": {
     "access": "public"
   },
@@ -18,6 +20,6 @@
   ],
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "typescript": "4.0.3"
+    "typescript": "4.3.5"
   }
 }

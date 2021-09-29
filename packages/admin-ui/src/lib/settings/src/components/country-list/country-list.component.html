@@ -5,13 +5,13 @@
             name="searchTerm"
             [formControl]="searchTerm"
             [placeholder]="'settings.search-country-by-name' | translate"
-            class="clr-input search-input"
+            class="search-input"
         />
     </vdr-ab-left>
 
     <vdr-ab-right>
         <vdr-action-bar-items locationId="country-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateCountry']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-country' | translate }}
         </a>
@@ -60,7 +60,7 @@
                         class="delete-button"
                         (click)="deleteCountry(country.id)"
                         vdrDropdownItem
-                        [disabled]="!('DeleteSettings' | hasPermission)"
+                        [disabled]="!(['DeleteSettings', 'DeleteCountry'] | hasPermission)"
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>
                         {{ 'common.delete' | translate }}

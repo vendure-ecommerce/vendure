@@ -10,10 +10,10 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    Asset,
     BaseDetailComponent,
     Collection,
     ConfigurableOperation,
-    ConfigurableOperationDef,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateCollectionInput,
@@ -21,11 +21,14 @@ import {
     CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
+    findTranslation,
     getConfigArgValue,
     LanguageCode,
     ModalService,
     NotificationService,
+    Permission,
     ServerConfigService,
+    unicodePatternValidator,
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -42,12 +45,14 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
 })
 export class CollectionDetailComponent
     extends BaseDetailComponent<Collection.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
-    assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
+    assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
@@ -64,7 +69,7 @@ export class CollectionDetailComponent
         this.customFields = this.getCustomFieldConfig('Collection');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
-            slug: '',
+            slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
             description: '',
             visible: false,
             filters: this.formBuilder.array([]),
@@ -105,7 +110,7 @@ export class CollectionDetailComponent
             .pipe(take(1))
             .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['slug']);
-                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentTranslation = findTranslation(entity, languageCode);
                 const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
                 if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
@@ -216,14 +221,14 @@ export class CollectionDetailComponent
     }
 
     canDeactivate(): boolean {
-        return super.canDeactivate() && !this.assetChanges.assetIds && !this.assetChanges.featuredAssetId;
+        return super.canDeactivate() && !this.assetChanges.assets && !this.assetChanges.featuredAsset;
     }
 
     /**
      * Sets the values of the form on changes to the category or current language.
      */
     protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(entity, languageCode);
 
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',
@@ -274,7 +279,8 @@ export class CollectionDetailComponent
         });
         return {
             ...updatedCategory,
-            ...this.assetChanges,
+            assetIds: this.assetChanges.assets?.map(a => a.id),
+            featuredAssetId: this.assetChanges.featuredAsset?.id,
             isPrivate: !form.value.visible,
             filters: this.mapOperationsToInputs(this.filters, this.detailForm.value.filters),
         };

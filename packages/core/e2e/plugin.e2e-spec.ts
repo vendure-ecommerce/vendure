@@ -5,44 +5,28 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { TestPluginWithAllLifecycleHooks } from './fixtures/test-plugins/with-all-lifecycle-hooks';
 import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensions';
-import { TestPluginWithConfigAndBootstrap } from './fixtures/test-plugins/with-config-and-bootstrap';
+import { TestPluginWithConfig } from './fixtures/test-plugins/with-config';
+import { PluginWithGlobalProviders } from './fixtures/test-plugins/with-global-providers';
 import { TestLazyExtensionPlugin } from './fixtures/test-plugins/with-lazy-api-extensions';
 import { TestPluginWithProvider } from './fixtures/test-plugins/with-provider';
 import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
-import { TestProcessContextPlugin } from './fixtures/test-plugins/with-worker-controller';
 
 describe('Plugins', () => {
-    const bootstrapMockFn = jest.fn();
     const onConstructorFn = jest.fn();
-    const beforeBootstrapFn = jest.fn();
-    const beforeWorkerBootstrapFn = jest.fn();
-    const onBootstrapFn = jest.fn();
-    const onWorkerBootstrapFn = jest.fn();
-    const onCloseFn = jest.fn();
-    const onWorkerCloseFn = jest.fn();
-
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig,
         plugins: [
-            TestPluginWithAllLifecycleHooks.init(
-                onConstructorFn,
-                beforeBootstrapFn,
-                beforeWorkerBootstrapFn,
-                onBootstrapFn,
-                onWorkerBootstrapFn,
-                onCloseFn,
-                onWorkerCloseFn,
-            ),
-            TestPluginWithConfigAndBootstrap.setup(bootstrapMockFn),
+            TestPluginWithAllLifecycleHooks.init(onConstructorFn),
+            TestPluginWithConfig.setup(),
             TestAPIExtensionPlugin,
             TestPluginWithProvider,
             TestLazyExtensionPlugin,
             TestRestPlugin,
-            TestProcessContextPlugin,
+            PluginWithGlobalProviders,
         ],
     });
 
@@ -59,31 +43,8 @@ describe('Plugins', () => {
         await server.destroy();
     });
 
-    it('constructs one instance for each process', () => {
-        expect(onConstructorFn).toHaveBeenCalledTimes(2);
-    });
-
-    it('calls beforeVendureBootstrap', () => {
-        expect(beforeBootstrapFn).toHaveBeenCalledTimes(1);
-        expect(beforeBootstrapFn).toHaveBeenCalledWith(server.app);
-    });
-
-    it('calls beforeVendureWorkerBootstrap', () => {
-        expect(beforeWorkerBootstrapFn).toHaveBeenCalledTimes(1);
-        expect(beforeWorkerBootstrapFn).toHaveBeenCalledWith(server.worker);
-    });
-
-    it('calls onVendureBootstrap', () => {
-        expect(onBootstrapFn).toHaveBeenCalledTimes(1);
-    });
-
-    it('calls onWorkerVendureBootstrap', () => {
-        expect(onWorkerBootstrapFn).toHaveBeenCalledTimes(1);
-    });
-
     it('can modify the config in configure()', () => {
-        expect(bootstrapMockFn).toHaveBeenCalledTimes(1);
-        const configService: ConfigService = bootstrapMockFn.mock.calls[0][0];
+        const configService = server.app.get(ConfigService);
         expect(configService instanceof ConfigService).toBe(true);
         expect(configService.defaultLanguageCode).toBe(LanguageCode.zh);
     });
@@ -172,39 +133,6 @@ describe('Plugins', () => {
             expect(response.status).toBe(500);
             const result = await response.json();
             expect(result.message).toContain('uh oh!');
-        });
-    });
-
-    describe('processContext', () => {
-        it('server context', async () => {
-            const response = await shopClient.fetch(
-                `http://localhost:${testConfig.apiOptions.port}/process-context/server`,
-            );
-            const body = await response.text();
-
-            expect(body).toBe('true');
-        });
-        it('worker context', async () => {
-            const response = await shopClient.fetch(
-                `http://localhost:${testConfig.apiOptions.port}/process-context/worker`,
-            );
-            const body = await response.text();
-
-            expect(body).toBe('true');
-        });
-    });
-
-    describe('on app close', () => {
-        beforeAll(async () => {
-            await server.destroy();
-        });
-
-        it('calls onVendureClose', () => {
-            expect(onCloseFn).toHaveBeenCalled();
-        });
-
-        it('calls onWorkerVendureClose', () => {
-            expect(onWorkerCloseFn).toHaveBeenCalled();
         });
     });
 });

@@ -1,6 +1,7 @@
 import {
     Adjustment,
     CurrencyCode,
+    Discount,
     OrderAddress,
     OrderTaxSummary,
     TaxLine,
@@ -10,7 +11,6 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
-import { taxPayableOn } from '../../common/tax-utils';
 import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
@@ -25,7 +25,6 @@ import { OrderModification } from '../order-modification/order-modification.enti
 import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
-import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
 
 /**
@@ -110,13 +109,14 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     shippingWithTax: number;
 
     @Calculated()
-    get discounts(): Adjustment[] {
-        const groupedAdjustments = new Map<string, Adjustment>();
+    get discounts(): Discount[] {
+        const groupedAdjustments = new Map<string, Discount>();
         for (const line of this.lines) {
             for (const discount of line.discounts) {
                 const adjustment = groupedAdjustments.get(discount.adjustmentSource);
                 if (adjustment) {
                     adjustment.amount += discount.amount;
+                    adjustment.amountWithTax += discount.amountWithTax;
                 } else {
                     groupedAdjustments.set(discount.adjustmentSource, { ...discount });
                 }
@@ -127,6 +127,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
                 const adjustment = groupedAdjustments.get(discount.adjustmentSource);
                 if (adjustment) {
                     adjustment.amount += discount.amount;
+                    adjustment.amountWithTax += discount.amountWithTax;
                 } else {
                     groupedAdjustments.set(discount.adjustmentSource, { ...discount });
                 }
@@ -135,17 +136,64 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         return [...groupedAdjustments.values()];
     }
 
-    @Calculated()
+    @Calculated({
+        query: qb =>
+            qb
+                .leftJoin(
+                    qb1 => {
+                        return qb1
+                            .from(Order, 'order')
+                            .select('order.shipping + order.subTotal', 'total')
+                            .addSelect('order.id', 'oid');
+                    },
+                    't1',
+                    't1.oid = order.id',
+                )
+                .addSelect('t1.total', 'total'),
+        expression: 'total',
+    })
     get total(): number {
         return this.subTotal + (this.shipping || 0);
     }
 
-    @Calculated()
+    @Calculated({
+        query: qb =>
+            qb
+                .leftJoin(
+                    qb1 => {
+                        return qb1
+                            .from(Order, 'order')
+                            .select('order.shippingWithTax + order.subTotalWithTax', 'twt')
+                            .addSelect('order.id', 'oid');
+                    },
+                    't1',
+                    't1.oid = order.id',
+                )
+                .addSelect('t1.twt', 'twt'),
+        expression: 'twt',
+    })
     get totalWithTax(): number {
         return this.subTotalWithTax + (this.shippingWithTax || 0);
     }
 
-    @Calculated()
+    @Calculated({
+        query: qb => {
+            qb.leftJoin(
+                qb1 => {
+                    return qb1
+                        .from(Order, 'order')
+                        .select('COUNT(DISTINCT items.id)', 'qty')
+                        .addSelect('order.id', 'oid')
+                        .leftJoin('order.lines', 'lines')
+                        .leftJoin('lines.items', 'items')
+                        .groupBy('order.id');
+                },
+                't1',
+                't1.oid = order.id',
+            ).addSelect('t1.qty', 'qty');
+        },
+        expression: 'qty',
+    })
     get totalQuantity(): number {
         return summate(this.lines, 'quantity');
     }
@@ -157,22 +205,25 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
             { rate: number; base: number; tax: number; description: string }
         >();
         const taxId = (taxLine: TaxLine): string => `${taxLine.description}:${taxLine.taxRate}`;
-        for (const line of this.lines) {
+        const taxableLines = [...this.lines, ...this.shippingLines];
+        for (const line of taxableLines) {
             const taxRateTotal = summate(line.taxLines, 'taxRate');
             for (const taxLine of line.taxLines) {
                 const id = taxId(taxLine);
                 const row = taxRateMap.get(id);
                 const proportionOfTotalRate = 0 < taxLine.taxRate ? taxLine.taxRate / taxRateTotal : 0;
-                const amount = Math.round(
-                    (line.proratedLinePriceWithTax - line.proratedLinePrice) * proportionOfTotalRate,
-                );
+
+                const lineBase = line instanceof OrderLine ? line.proratedLinePrice : line.discountedPrice;
+                const lineWithTax =
+                    line instanceof OrderLine ? line.proratedLinePriceWithTax : line.discountedPriceWithTax;
+                const amount = Math.round((lineWithTax - lineBase) * proportionOfTotalRate);
                 if (row) {
                     row.tax += amount;
-                    row.base += line.proratedLinePrice;
+                    row.base += lineBase;
                 } else {
                     taxRateMap.set(id, {
                         tax: amount,
-                        base: line.proratedLinePrice,
+                        base: lineBase,
                         description: taxLine.description,
                         rate: taxLine.taxRate,
                     });

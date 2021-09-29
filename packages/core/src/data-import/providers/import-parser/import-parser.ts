@@ -267,6 +267,15 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
     };
 }
 
+function isRelationObject(value: string) {
+    try {
+        const parsed = JSON.parse(value);
+        return parsed && parsed.hasOwnProperty('id');
+    } catch(e) {
+        return false;
+    }
+}
+
 function parseCustomFields(prefix: 'product' | 'variant', r: RawProductRecord): { [name: string]: string } {
     return Object.entries(r)
         .filter(([key, value]) => {
@@ -276,7 +285,7 @@ function parseCustomFields(prefix: 'product' | 'variant', r: RawProductRecord): 
             const fieldName = key.replace(`${prefix}:`, '');
             return {
                 ...output,
-                [fieldName]: value,
+                [fieldName]: isRelationObject(value) ? JSON.parse(value) : value,
             };
         }, {});
 }

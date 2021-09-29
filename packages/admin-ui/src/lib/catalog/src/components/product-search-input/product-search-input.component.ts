@@ -1,17 +1,14 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
+import { SearchProducts, SingleSearchSelectionModelFactory } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-
-import { SearchProducts } from '@vendure/admin-ui/core';
-
-import { ProductSearchSelectionModelFactory } from './product-search-selection-model';
 
 @Component({
     selector: 'vdr-product-search-input',
     templateUrl: './product-search-input.component.html',
     styleUrls: ['./product-search-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: ProductSearchSelectionModelFactory }],
+    providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: SingleSearchSelectionModelFactory }],
 })
 export class ProductSearchInputComponent {
     @Input() facetValueResults: SearchProducts.FacetValues[];
@@ -42,7 +39,7 @@ export class ProductSearchInputComponent {
         });
 
         ids.map(id => {
-            return items.find(item => this.isFacetValueItem(item) && item.facetValue.id === id);
+            return items?.find(item => this.isFacetValueItem(item) && item.facetValue.id === id);
         })
             .filter(notNullOrUndefined)
             .forEach(item => {
@@ -69,14 +66,6 @@ export class ProductSearchInputComponent {
         );
     };
 
-    groupByFacet = (item: SearchProducts.FacetValues | { label: string }) => {
-        if (this.isFacetValueItem(item)) {
-            return item.facetValue.facet.name;
-        } else {
-            return '';
-        }
-    };
-
     onSelectChange(selectedItems: Array<SearchProducts.FacetValues | { label: string }>) {
         if (!Array.isArray(selectedItems)) {
             selectedItems = [selectedItems];
@@ -96,6 +85,10 @@ export class ProductSearchInputComponent {
             this.facetValueChange.emit(facetValueIds);
             this.lastFacetValueIds = facetValueIds;
         }
+    }
+
+    addTagFn(item: any) {
+        return { label: item };
     }
 
     isSearchHeaderSelected(): boolean {

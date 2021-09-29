@@ -12,16 +12,16 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -36,8 +36,9 @@ export class ShippingMethodService {
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private channelService: ChannelService,
-        private shippingConfiguration: ShippingConfiguration,
+        private configArgService: ConfigArgService,
         private translatableSaver: TranslatableSaver,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     async initShippingMethods() {
@@ -67,7 +68,11 @@ export class ShippingMethodService {
             }));
     }
 
-    async findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
+    async findOne(
+        ctx: RequestContext,
+        shippingMethodId: ID,
+        includeDeleted = false,
+    ): Promise<ShippingMethod | undefined> {
         const shippingMethod = await this.connection.findOneInChannel(
             ctx,
             ShippingMethod,
@@ -75,7 +80,7 @@ export class ShippingMethodService {
             ctx.channelId,
             {
                 relations: ['channels'],
-                where: { deletedAt: null },
+                ...(includeDeleted === false ? { where: { deletedAt: null } } : {}),
             },
         );
         return shippingMethod && translateDeep(shippingMethod, ctx.languageCode);
@@ -92,14 +97,18 @@ export class ShippingMethodService {
                     method.code,
                     input.fulfillmentHandler,
                 );
-                method.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
-                method.calculator = this.shippingConfiguration.parseCalculatorInput(input.calculator);
+                method.checker = this.configArgService.parseInput(
+                    'ShippingEligibilityChecker',
+                    input.checker,
+                );
+                method.calculator = this.configArgService.parseInput('ShippingCalculator', input.calculator);
             },
         });
         this.channelService.assignToCurrentChannel(shippingMethod, ctx);
         const newShippingMethod = await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(shippingMethod);
+        await this.customFieldRelationService.updateRelations(ctx, ShippingMethod, input, newShippingMethod);
         await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
@@ -116,10 +125,14 @@ export class ShippingMethodService {
             translationType: ShippingMethodTranslation,
         });
         if (input.checker) {
-            updatedShippingMethod.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
+            updatedShippingMethod.checker = this.configArgService.parseInput(
+                'ShippingEligibilityChecker',
+                input.checker,
+            );
         }
         if (input.calculator) {
-            updatedShippingMethod.calculator = this.shippingConfiguration.parseCalculatorInput(
+            updatedShippingMethod.calculator = this.configArgService.parseInput(
+                'ShippingCalculator',
                 input.calculator,
             );
         }
@@ -132,6 +145,12 @@ export class ShippingMethodService {
         await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(updatedShippingMethod, { reload: false });
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            ShippingMethod,
+            input,
+            updatedShippingMethod,
+        );
         await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
@@ -150,19 +169,21 @@ export class ShippingMethodService {
     }
 
     getShippingEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingEligibilityCheckers.map(x => x.toGraphQlType(ctx));
+        return this.configArgService
+            .getDefinitions('ShippingEligibilityChecker')
+            .map(x => x.toGraphQlType(ctx));
     }
 
     getShippingCalculators(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingCalculators.map(x => x.toGraphQlType(ctx));
+        return this.configArgService.getDefinitions('ShippingCalculator').map(x => x.toGraphQlType(ctx));
     }
 
     getFulfillmentHandlers(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.fulfillmentHandlers.map(x => x.toGraphQlType(ctx));
+        return this.configArgService.getDefinitions('FulfillmentHandler').map(x => x.toGraphQlType(ctx));
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
-        return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
+        return this.activeShippingMethods.filter(sm => sm.channels.find(c => idsAreEqual(c.id, channel.id)));
     }
 
     /**

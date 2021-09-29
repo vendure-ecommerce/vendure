@@ -26,7 +26,7 @@ export class StateI18nTokenPipe implements PipeTransform {
         ArrangingAdditionalPayment: _('state.arranging-additional-payment'),
     };
     transform<T extends unknown>(value: T): T {
-        if (typeof value === 'string') {
+        if (typeof value === 'string' && value.length) {
             const defaultStateToken = this.stateI18nTokens[value as any];
             if (defaultStateToken) {
                 return defaultStateToken;

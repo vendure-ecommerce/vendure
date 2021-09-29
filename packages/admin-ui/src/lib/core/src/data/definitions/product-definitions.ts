@@ -22,9 +22,18 @@ export const ASSET_FRAGMENT = gql`
     }
 `;
 
+export const TAG_FRAGMENT = gql`
+    fragment Tag on Tag {
+        id
+        value
+    }
+`;
+
 export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
     fragment ProductOptionGroup on ProductOptionGroup {
         id
+        createdAt
+        updatedAt
         code
         languageCode
         name
@@ -39,6 +48,8 @@ export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
 export const PRODUCT_OPTION_FRAGMENT = gql`
     fragment ProductOption on ProductOption {
         id
+        createdAt
+        updatedAt
         code
         languageCode
         name
@@ -314,6 +325,19 @@ export const GET_PRODUCT_WITH_VARIANTS = gql`
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
+export const GET_PRODUCT_SIMPLE = gql`
+    query GetProductSimple($id: ID!) {
+        product(id: $id) {
+            id
+            name
+            featuredAsset {
+                ...Asset
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
 export const GET_PRODUCT_LIST = gql`
     query GetProductList($options: ProductListOptions) {
         products(options: $options) {
@@ -363,46 +387,64 @@ export const GET_ASSET_LIST = gql`
         assets(options: $options) {
             items {
                 ...Asset
+                tags {
+                    ...Tag
+                }
             }
             totalItems
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const GET_ASSET = gql`
     query GetAsset($id: ID!) {
         asset(id: $id) {
             ...Asset
+            tags {
+                ...Tag
+            }
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
             ...Asset
+            ... on Asset {
+                tags {
+                    ...Tag
+                }
+            }
             ... on ErrorResult {
                 message
             }
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const UPDATE_ASSET = gql`
     mutation UpdateAsset($input: UpdateAssetInput!) {
         updateAsset(input: $input) {
             ...Asset
+            tags {
+                ...Tag
+            }
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const DELETE_ASSETS = gql`
-    mutation DeleteAssets($ids: [ID!]!, $force: Boolean) {
-        deleteAssets(ids: $ids, force: $force) {
+    mutation DeleteAssets($input: DeleteAssetsInput!) {
+        deleteAssets(input: $input) {
             result
             message
         }
@@ -463,7 +505,6 @@ export const PRODUCT_SELECTOR_SEARCH = gql`
             items {
                 productVariantId
                 productVariantName
-                productPreview
                 productAsset {
                     id
                     preview
@@ -486,6 +527,15 @@ export const PRODUCT_SELECTOR_SEARCH = gql`
             }
         }
     }
+`;
+
+export const UPDATE_PRODUCT_OPTION_GROUP = gql`
+    mutation UpdateProductOptionGroup($input: UpdateProductOptionGroupInput!) {
+        updateProductOptionGroup(input: $input) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
 `;
 
 export const UPDATE_PRODUCT_OPTION = gql`
@@ -514,9 +564,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
             updatedAt
             name
             optionGroups {
-                id
-                name
-                code
+                ...ProductOptionGroup
                 options {
                     ...ProductOption
                 }
@@ -542,6 +590,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
             }
         }
     }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
     ${PRODUCT_OPTION_FRAGMENT}
 `;
 
@@ -599,6 +648,14 @@ export const GET_PRODUCT_VARIANT = gql`
             id
             name
             sku
+            featuredAsset {
+                id
+                preview
+                focalPoint {
+                    x
+                    y
+                }
+            }
             product {
                 id
                 featuredAsset {
@@ -610,6 +667,86 @@ export const GET_PRODUCT_VARIANT = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantList($options: ProductVariantListOptions!) {
+        productVariants(options: $options) {
+            items {
+                id
+                name
+                sku
+                featuredAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+                product {
+                    id
+                    featuredAsset {
+                        id
+                        preview
+                        focalPoint {
+                            x
+                            y
+                        }
+                    }
+                }
+            }
+            totalItems
+        }
+    }
+`;
+
+export const GET_TAG_LIST = gql`
+    query GetTagList($options: TagListOptions) {
+        tags(options: $options) {
+            items {
+                ...Tag
+            }
+            totalItems
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const GET_TAG = gql`
+    query GetTag($id: ID!) {
+        tag(id: $id) {
+            ...Tag
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const CREATE_TAG = gql`
+    mutation CreateTag($input: CreateTagInput!) {
+        createTag(input: $input) {
+            ...Tag
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const UPDATE_TAG = gql`
+    mutation UpdateTag($input: UpdateTagInput!) {
+        updateTag(input: $input) {
+            ...Tag
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const DELETE_TAG = gql`
+    mutation DeleteTag($id: ID!) {
+        deleteTag(id: $id) {
+            message
+            result
         }
     }
 `;

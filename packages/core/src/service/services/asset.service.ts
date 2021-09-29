@@ -1,24 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AssetListOptions,
     AssetType,
+    AssignAssetsToChannelInput,
     CreateAssetInput,
     CreateAssetResult,
     DeletionResponse,
     DeletionResult,
+    LogicalOperator,
+    Permission,
     UpdateAssetInput,
 } from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { unique } from '@vendure/common/lib/unique';
 import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
+import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
-import { InternalServerError } from '../../common/error/errors';
+import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
-import { ListQueryOptions } from '../../common/types/common-types';
+import { ChannelAware } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -29,10 +36,17 @@ import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
+
+import { ChannelService } from './channel.service';
+import { RoleService } from './role.service';
+import { TagService } from './tag.service';
+
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -55,6 +69,10 @@ export class AssetService {
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
+        private tagService: TagService,
+        private channelService: ChannelService,
+        private roleService: RoleService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {
         this.permittedMimeTypes = this.configService.assetOptions.permittedFileTypes
             .map(val => (/\.[\w]+/.test(val) ? mime.lookup(val) || undefined : val))
@@ -66,29 +84,64 @@ export class AssetService {
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Asset | undefined> {
-        return this.connection.getRepository(ctx, Asset).findOne(id);
+        return this.connection.findOneInChannel(ctx, Asset, id, ctx.channelId);
     }
 
-    findAll(ctx: RequestContext, options?: ListQueryOptions<Asset>): Promise<PaginatedList<Asset>> {
-        return this.listQueryBuilder
-            .build(Asset, options, { ctx })
-            .getManyAndCount()
-            .then(([items, totalItems]) => ({
-                items,
-                totalItems,
-            }));
+    findAll(ctx: RequestContext, options?: AssetListOptions): Promise<PaginatedList<Asset>> {
+        const qb = this.listQueryBuilder.build(Asset, options, {
+            ctx,
+            relations: options?.tags ? ['tags', 'channels'] : ['channels'],
+            channelId: ctx.channelId,
+        });
+        const tags = options?.tags;
+        if (tags && tags.length) {
+            const operator = options?.tagsOperator ?? LogicalOperator.AND;
+            const subquery = qb.connection
+                .createQueryBuilder()
+                .select('asset.id')
+                .from(Asset, 'asset')
+                .leftJoin('asset.tags', 'tags')
+                .where(`tags.value IN (:...tags)`);
+
+            if (operator === LogicalOperator.AND) {
+                subquery.groupBy('asset.id').having('COUNT(asset.id) = :tagCount');
+            }
+
+            qb.andWhere(`asset.id IN (${subquery.getQuery()})`).setParameters({
+                tags,
+                tagCount: tags.length,
+            });
+        }
+        return qb.getManyAndCount().then(([items, totalItems]) => ({
+            items,
+            totalItems,
+        }));
     }
 
     async getFeaturedAsset<T extends Omit<EntityWithAssets, 'assets'>>(
         ctx: RequestContext,
         entity: T,
     ): Promise<Asset | undefined> {
-        const entityType: Type<EntityWithAssets> = Object.getPrototypeOf(entity).constructor;
-        const entityWithFeaturedAsset = await this.connection
-            .getRepository(ctx, entityType)
-            .findOne(entity.id, {
-                relations: ['featuredAsset'],
-            });
+        const entityType: Type<T> = Object.getPrototypeOf(entity).constructor;
+        let entityWithFeaturedAsset: T | undefined;
+
+        if (this.channelService.isChannelAware(entity)) {
+            entityWithFeaturedAsset = await this.connection.findOneInChannel(
+                ctx,
+                entityType as Type<T & ChannelAware>,
+                entity.id,
+                ctx.channelId,
+                {
+                    relations: ['featuredAsset'],
+                },
+            );
+        } else {
+            entityWithFeaturedAsset = await this.connection
+                .getRepository(ctx, entityType)
+                .findOne(entity.id, {
+                    relations: ['featuredAsset'],
+                });
+        }
         return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
 
@@ -96,15 +149,43 @@ export class AssetService {
         ctx: RequestContext,
         entity: T,
     ): Promise<Asset[] | undefined> {
-        let assets = entity.assets;
-        if (!assets) {
+        let orderableAssets = entity.assets;
+        if (!orderableAssets) {
             const entityType: Type<EntityWithAssets> = Object.getPrototypeOf(entity).constructor;
-            const entityWithAssets = await this.connection.getRepository(ctx, entityType).findOne(entity.id, {
-                relations: ['assets'],
-            });
-            assets = (entityWithAssets && entityWithAssets.assets) || [];
+            const entityWithAssets = await this.connection
+                .getRepository(ctx, entityType)
+                .createQueryBuilder('entity')
+                .leftJoinAndSelect('entity.assets', 'orderable_asset')
+                .leftJoinAndSelect('orderable_asset.asset', 'asset')
+                .leftJoinAndSelect('asset.channels', 'asset_channel')
+                .where('entity.id = :id', { id: entity.id })
+                .andWhere('asset_channel.id = :channelId', { channelId: ctx.channelId })
+                .getOne();
+
+            orderableAssets = entityWithAssets?.assets ?? [];
+        } else if (0 < orderableAssets.length) {
+            // the Assets are already loaded, but we need to limit them by Channel
+            if (orderableAssets[0].asset?.channels) {
+                orderableAssets = orderableAssets.filter(
+                    a => !!a.asset.channels.map(c => c.id).find(id => idsAreEqual(id, ctx.channelId)),
+                );
+            } else {
+                const assetsInChannel = await this.connection
+                    .getRepository(ctx, Asset)
+                    .createQueryBuilder('asset')
+                    .leftJoinAndSelect('asset.channels', 'asset_channel')
+                    .where('asset.id IN (:...ids)', { ids: orderableAssets.map(a => a.assetId) })
+                    .andWhere('asset_channel.id = :channelId', { channelId: ctx.channelId })
+                    .getMany();
+
+                orderableAssets = orderableAssets.filter(
+                    oa => !!assetsInChannel.find(a => idsAreEqual(a.id, oa.assetId)),
+                );
+            }
+        } else {
+            orderableAssets = [];
         }
-        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
+        return orderableAssets.sort((a, b) => a.position - b.position).map(a => a.asset);
     }
 
     async updateFeaturedAsset<T extends EntityWithAssets>(
@@ -138,9 +219,9 @@ export class AssetService {
         if (!entity.id) {
             throw new InternalServerError('error.entity-must-have-an-id');
         }
-        const { assetIds, featuredAssetId } = input;
+        const { assetIds } = input;
         if (assetIds && assetIds.length) {
-            const assets = await this.connection.getRepository(ctx, Asset).findByIds(assetIds);
+            const assets = await this.connection.findByIdsInChannel(ctx, Asset, assetIds, ctx.channelId, {});
             const sortedAssets = assetIds
                 .map(id => assets.find(a => idsAreEqual(a.id, id)))
                 .filter(notNullOrUndefined);
@@ -156,14 +237,32 @@ export class AssetService {
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
-        const { createReadStream, filename, mimetype } = await input.file;
-        const stream = createReadStream();
-        const result = await this.createAssetInternal(ctx, stream, filename, mimetype);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
-        return result;
+        return new Promise(async (resolve, reject) => {
+            const { createReadStream, filename, mimetype } = await input.file;
+            const stream = createReadStream();
+            stream.on('error', (err: any) => {
+                reject(err);
+            });
+            const result = await this.createAssetInternal(
+                ctx,
+                stream,
+                filename,
+                mimetype,
+                input.customFields,
+            );
+            if (isGraphQlErrorResult(result)) {
+                resolve(result);
+                return;
+            }
+            await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
+            if (input.tags) {
+                const tags = await this.tagService.valuesToTags(ctx, input.tags);
+                result.tags = tags;
+                await this.connection.getRepository(ctx, Asset).save(result);
+            }
+            this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
+            resolve(result);
+        });
     }
 
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
@@ -173,14 +272,28 @@ export class AssetService {
             input.focalPoint.x = to3dp(input.focalPoint.x);
             input.focalPoint.y = to3dp(input.focalPoint.y);
         }
-        patchEntity(asset, input);
+        patchEntity(asset, omit(input, ['tags']));
+        await this.customFieldRelationService.updateRelations(ctx, Asset, input, asset);
+        if (input.tags) {
+            asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
+        }
         const updatedAsset = await this.connection.getRepository(ctx, Asset).save(asset);
         this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated'));
         return updatedAsset;
     }
 
-    async delete(ctx: RequestContext, ids: ID[], force: boolean = false): Promise<DeletionResponse> {
-        const assets = await this.connection.getRepository(ctx, Asset).findByIds(ids);
+    async delete(
+        ctx: RequestContext,
+        ids: ID[],
+        force: boolean = false,
+        deleteFromAllChannels: boolean = false,
+    ): Promise<DeletionResponse> {
+        const assets = await this.connection.findByIdsInChannel(ctx, Asset, ids, ctx.channelId, {
+            relations: ['channels'],
+        });
+        let channelsOfAssets: ID[] = [];
+        assets.forEach(a => a.channels.forEach(c => channelsOfAssets.push(c.id)));
+        channelsOfAssets = unique(channelsOfAssets);
         const usageCount = {
             products: 0,
             variants: 0,
@@ -204,6 +317,91 @@ export class AssetService {
                 }),
             };
         }
+        const hasDeleteAllPermission = await this.hasDeletePermissionForChannels(ctx, channelsOfAssets);
+        if (deleteFromAllChannels && !hasDeleteAllPermission) {
+            throw new ForbiddenError();
+        }
+        if (!deleteFromAllChannels) {
+            await Promise.all(
+                assets.map(async asset => {
+                    await this.channelService.removeFromChannels(ctx, Asset, asset.id, [ctx.channelId]);
+                    this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
+                }),
+            );
+            const isOnlyChannel = channelsOfAssets.length === 1;
+            if (isOnlyChannel) {
+                // only channel, so also delete asset
+                await this.deleteUnconditional(ctx, assets);
+            }
+            return {
+                result: DeletionResult.DELETED,
+            };
+        }
+        // This leaves us with deleteFromAllChannels with force or deleteFromAllChannels with no current usages
+        await Promise.all(
+            assets.map(async asset => {
+                await this.channelService.removeFromChannels(ctx, Asset, asset.id, channelsOfAssets);
+                this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
+            }),
+        );
+        return this.deleteUnconditional(ctx, assets);
+    }
+
+    async assignToChannel(ctx: RequestContext, input: AssignAssetsToChannelInput): Promise<Asset[]> {
+        const hasPermission = await this.roleService.userHasPermissionOnChannel(
+            ctx,
+            input.channelId,
+            Permission.UpdateCatalog,
+        );
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const assets = await this.connection.findByIdsInChannel(
+            ctx,
+            Asset,
+            input.assetIds,
+            ctx.channelId,
+            {},
+        );
+        await Promise.all(
+            assets.map(async asset => {
+                await this.channelService.assignToChannels(ctx, Asset, asset.id, [input.channelId]);
+                return this.eventBus.publish(new AssetChannelEvent(ctx, asset, input.channelId, 'assigned'));
+            }),
+        );
+        return this.connection.findByIdsInChannel(
+            ctx,
+            Asset,
+            assets.map(a => a.id),
+            ctx.channelId,
+            {},
+        );
+    }
+
+    /**
+     * Create an Asset from a file stream created during data import.
+     */
+    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult>;
+    async createFromFileStream(stream: Readable, filePath: string): Promise<CreateAssetResult>;
+    async createFromFileStream(
+        stream: ReadStream | Readable,
+        maybeFilePath?: string,
+    ): Promise<CreateAssetResult> {
+        const filePath = stream instanceof ReadStream ? stream.path : maybeFilePath;
+        if (typeof filePath === 'string') {
+            const filename = path.basename(filePath);
+            const mimetype = mime.lookup(filename) || 'application/octet-stream';
+            return this.createAssetInternal(RequestContext.empty(), stream, filename, mimetype);
+        } else {
+            throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
+        }
+    }
+
+    /**
+     * Unconditionally delete given assets.
+     * Does not remove assets from channels
+     */
+    private async deleteUnconditional(ctx: RequestContext, assets: Asset[]): Promise<DeletionResponse> {
         for (const asset of assets) {
             // Create a new asset so that the id is still available
             // after deletion (the .remove() method sets it to undefined)
@@ -223,17 +421,15 @@ export class AssetService {
     }
 
     /**
-     * Create an Asset from a file stream created during data import.
+     * Check if current user has permissions to delete assets from all channels
      */
-    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult> {
-        const filePath = stream.path;
-        if (typeof filePath === 'string') {
-            const filename = path.basename(filePath);
-            const mimetype = mime.lookup(filename) || 'application/octet-stream';
-            return this.createAssetInternal(RequestContext.empty(), stream, filename, mimetype);
-        } else {
-            throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
-        }
+    private async hasDeletePermissionForChannels(ctx: RequestContext, channelIds: ID[]): Promise<boolean> {
+        const permissions = await Promise.all(
+            channelIds.map(async channelId => {
+                return this.roleService.userHasPermissionOnChannel(ctx, channelId, Permission.DeleteCatalog);
+            }),
+        );
+        return !permissions.includes(false);
     }
 
     private async createAssetInternal(
@@ -241,7 +437,8 @@ export class AssetService {
         stream: Stream,
         filename: string,
         mimetype: string,
-    ): Promise<CreateAssetResult> {
+        customFields?: { [key: string]: any },
+    ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
             return new MimeTypeError(filename, mimetype);
@@ -276,7 +473,9 @@ export class AssetService {
             source: sourceFileIdentifier,
             preview: previewFileIdentifier,
             focalPoint: null,
+            customFields,
         });
+        this.channelService.assignToCurrentChannel(asset, ctx);
         return this.connection.getRepository(ctx, Asset).save(asset);
     }
 
@@ -368,15 +567,18 @@ export class AssetService {
             case 'Collection':
                 return 'collectionId';
             default:
-                throw new InternalServerError('error.could-not-find-matching-orderable-asset');
+                return `${camelCase(entityName)}Id`;
         }
     }
 
     private validateMimeType(mimeType: string): boolean {
         const [type, subtype] = mimeType.split('/');
-        const typeMatch = this.permittedMimeTypes.find(t => t.type === type);
-        if (typeMatch) {
-            return typeMatch.subtype === subtype || typeMatch.subtype === '*';
+        const typeMatches = this.permittedMimeTypes.filter(t => t.type === type);
+
+        for (const match of typeMatches) {
+            if (match.subtype === subtype || match.subtype === '*') {
+                return true;
+            }
         }
         return false;
     }

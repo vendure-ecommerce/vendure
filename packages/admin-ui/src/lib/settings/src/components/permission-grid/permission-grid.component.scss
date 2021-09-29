@@ -1,5 +1,5 @@
-@import "variables";
 
 td.permission-group {
-    background-color: $color-grey-200;
+    max-width: 300px;
+    background-color: var(--color-component-bg-200);
 }

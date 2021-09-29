@@ -32,13 +32,13 @@
                     [label]="'common.price' | translate"
                     *ngIf="testResult?.quote?.price != null"
                 >
-                    {{ testResult.quote?.price / 100 | currency: currencyCode }}
+                    {{ testResult.quote?.price | localeCurrency: currencyCode }}
                 </vdr-labeled-data>
                 <vdr-labeled-data
                     [label]="'common.price-with-tax' | translate"
                     *ngIf="testResult?.quote?.priceWithTax != null"
                 >
-                    {{ testResult.quote?.priceWithTax / 100 | currency: currencyCode }}
+                    {{ testResult.quote?.priceWithTax | localeCurrency: currencyCode }}
                 </vdr-labeled-data>
             </div>
             <vdr-object-tree

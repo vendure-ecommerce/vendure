@@ -34,10 +34,18 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PaymentAuthorized', 'PaymentSettled', 'AddingItems', 'Cancelled'],
     },
     PaymentAuthorized: {
-        to: ['PaymentSettled', 'Cancelled', 'Modifying'],
+        to: ['PaymentSettled', 'Cancelled', 'Modifying', 'ArrangingAdditionalPayment'],
     },
     PaymentSettled: {
-        to: ['PartiallyDelivered', 'Delivered', 'PartiallyShipped', 'Shipped', 'Cancelled', 'Modifying'],
+        to: [
+            'PartiallyDelivered',
+            'Delivered',
+            'PartiallyShipped',
+            'Shipped',
+            'Cancelled',
+            'Modifying',
+            'ArrangingAdditionalPayment',
+        ],
     },
     PartiallyShipped: {
         to: ['Shipped', 'PartiallyDelivered', 'Cancelled', 'Modifying'],
@@ -62,7 +70,14 @@ export const orderStateTransitions: Transitions<OrderState> = {
         ],
     },
     ArrangingAdditionalPayment: {
-        to: ['PaymentAuthorized', 'PaymentSettled', 'PartiallyShipped', 'Shipped', 'PartiallyDelivered'],
+        to: [
+            'PaymentAuthorized',
+            'PaymentSettled',
+            'PartiallyShipped',
+            'Shipped',
+            'PartiallyDelivered',
+            'Cancelled',
+        ],
     },
     Cancelled: {
         to: [],

@@ -12,30 +12,21 @@ import { TaxCategory } from '../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../entity/zone/zone.entity';
 
-export type SimpleLine = { productVariantId: ID; quantity: number; lineId: ID };
+export type SimpleLine = { productVariantId: ID; quantity: number; lineId: ID; customFields?: any };
 
 export function createOrderFromLines(simpleLines: SimpleLine[]): Order {
     const lines = simpleLines.map(
-        ({ productVariantId, quantity, lineId }) =>
+        ({ productVariantId, quantity, lineId, customFields }) =>
             new OrderLine({
                 id: lineId,
                 productVariant: new ProductVariant({ id: productVariantId }),
                 items: Array.from({ length: quantity }).map(() => new OrderItem({})),
+                ...(customFields ? { customFields } : {}),
             }),
     );
 
     return new Order({
         lines,
-    });
-}
-
-export function parseLines(lines: OrderLine[]): SimpleLine[] {
-    return lines.map(line => {
-        return {
-            lineId: line.id,
-            productVariantId: line.productVariant.id,
-            quantity: line.quantity,
-        };
     });
 }
 
@@ -62,6 +53,10 @@ export const taxCategoryStandard = new TaxCategory({
 export const taxCategoryReduced = new TaxCategory({
     id: 'taxCategoryReduced',
     name: 'Reduced Tax',
+});
+export const taxCategoryZero = new TaxCategory({
+    id: 'taxCategoryZero',
+    name: 'Zero Tax',
 });
 export const zoneDefault = new Zone({
     id: 'zoneDefault',
@@ -91,6 +86,14 @@ export const taxRateDefaultReduced = new TaxRate({
     zone: zoneDefault,
     category: taxCategoryReduced,
 });
+export const taxRateDefaultZero = new TaxRate({
+    id: 'taxRateDefaultZero',
+    name: 'Default Zero Tax',
+    value: 0,
+    enabled: true,
+    zone: zoneDefault,
+    category: taxCategoryZero,
+});
 export const taxRateOtherStandard = new TaxRate({
     id: 'taxRateOtherStandard',
     name: 'Other Standard',
@@ -112,6 +115,7 @@ export class MockTaxRateService {
     private activeTaxRates = [
         taxRateDefaultStandard,
         taxRateDefaultReduced,
+        taxRateDefaultZero,
         taxRateOtherStandard,
         taxRateOtherReduced,
     ];
@@ -120,7 +124,7 @@ export class MockTaxRateService {
         /* noop */
     }
 
-    getApplicableTaxRate(zone: Zone, taxCategory: TaxCategory): TaxRate {
+    async getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory): Promise<TaxRate> {
         const rate = this.activeTaxRates.find(r => r.test(zone, taxCategory));
         return rate || taxRateDefaultStandard;
     }

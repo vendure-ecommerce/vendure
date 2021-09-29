@@ -4,10 +4,11 @@ import { Omit } from '@vendure/common/lib/omit';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
-import { FacetValue } from '../../entity';
+import { Collection, FacetValue } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { Job } from '../../job-queue/job';
 import { FacetValueService } from '../../service/services/facet-value.service';
+import { CollectionService } from '../../service/services/collection.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
 import { TransactionalConnection } from '../../service/transaction/transactional-connection';
@@ -31,6 +32,7 @@ export class FulltextSearchService {
         private connection: TransactionalConnection,
         private eventBus: EventBus,
         private facetValueService: FacetValueService,
+        private collectionService: CollectionService,
         private productVariantService: ProductVariantService,
         private searchIndexService: SearchIndexService,
         private searchService: SearchService,
@@ -46,7 +48,7 @@ export class FulltextSearchService {
         ctx: RequestContext,
         input: SearchInput,
         enabledOnly: boolean = false,
-    ): Promise<Omit<SearchResponse, 'facetValues'>> {
+    ): Promise<Omit<Omit<SearchResponse, 'facetValues'>,'collections'>> {
         const items = await this.searchStrategy.getSearchResults(ctx, input, enabledOnly);
         const totalItems = await this.searchStrategy.getTotalCount(ctx, input, enabledOnly);
         return {
@@ -69,6 +71,24 @@ export class FulltextSearchService {
             return {
                 facetValue,
                 count: facetValueIdsMap.get(facetValue.id.toString()) as number,
+            };
+        });
+    }
+
+    /**
+     * Return a list of all Collections which appear in the result set.
+     */
+    async collections(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean = false,
+    ): Promise<Array<{ collection: Collection; count: number }>> {
+        const collectionIdsMap = await this.searchStrategy.getCollectionIds(ctx, input, enabledOnly);
+        const collections = await this.collectionService.findByIds(ctx, Array.from(collectionIdsMap.keys()));
+        return collections.map((collection, index) => {
+            return {
+                collection,
+                count: collectionIdsMap.get(collection.id.toString()) as number,
             };
         });
     }

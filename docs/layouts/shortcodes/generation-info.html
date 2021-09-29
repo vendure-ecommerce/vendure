@@ -1,4 +1,0 @@
-<div class="generation-info">
-    <span class="label">Package:</span> <a href="https://www.npmjs.com/package/{{ .Get "packageName" }}">{{ .Get "packageName" }}</a>
-    <span class="label file">File:</span> <a href="https://github.com/vendure-ecommerce/vendure/blob/master/{{ .Get "sourceFile" }}#L{{ .Get "sourceLine" }}">{{  index (last 1 (split (.Get "sourceFile") "/")) 0 }}</a>
-</div>

@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { graphqlUploadExpress } from 'graphql-upload';
 import path from 'path';
 
+import { ConfigService } from '../config/config.service';
 import { DataImportModule } from '../data-import/data-import.module';
 import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
@@ -35,6 +37,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             debug: configService.apiOptions.shopApiDebug,
             typePaths: ['shop-api', 'common'].map(p => path.join(__dirname, 'schema', p, '*.graphql')),
             resolverModule: ShopApiModule,
+            validationRules: configService.apiOptions.shopApiValidationRules,
         })),
         configureGraphQLModule(configService => ({
             apiType: 'admin',
@@ -43,6 +46,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             debug: configService.apiOptions.adminApiDebug,
             typePaths: ['admin-api', 'common'].map(p => path.join(__dirname, 'schema', p, '*.graphql')),
             resolverModule: AdminApiModule,
+            validationRules: configService.apiOptions.adminApiValidationRules,
         })),
     ],
     providers: [
@@ -69,4 +73,14 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         },
     ],
 })
-export class ApiModule {}
+export class ApiModule implements NestModule {
+    constructor(private configService: ConfigService) {}
+    configure(consumer: MiddlewareConsumer): any {
+        const { adminApiPath, shopApiPath } = this.configService.apiOptions;
+        const { uploadMaxFileSize } = this.configService.assetOptions;
+
+        consumer
+            .apply(graphqlUploadExpress({ maxFileSize: uploadMaxFileSize }))
+            .forRoutes(adminApiPath, shopApiPath);
+    }
+}

@@ -30,6 +30,7 @@ import {
     AddItemToOrder,
     AddPaymentToOrder,
     ErrorCode,
+    GetProductStockLevel,
     PaymentInput,
     SetShippingAddress,
     TestOrderFragmentFragment,
@@ -49,6 +50,7 @@ import {
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
+    GET_PRODUCT_WITH_STOCK_LEVEL,
     SET_SHIPPING_ADDRESS,
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
@@ -60,6 +62,9 @@ describe('Stock control', () => {
         mergeConfig(testConfig, {
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod, twoStagePaymentMethod],
+            },
+            customFields: {
+                OrderLine: [{ name: 'customization', type: 'string', nullable: true }],
             },
         }),
     );
@@ -82,7 +87,19 @@ describe('Stock control', () => {
 
     beforeAll(async () => {
         await server.init({
-            initialData,
+            initialData: {
+                ...initialData,
+                paymentMethods: [
+                    {
+                        name: testSuccessfulPaymentMethod.code,
+                        handler: { code: testSuccessfulPaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: twoStagePaymentMethod.code,
+                        handler: { code: twoStagePaymentMethod.code, arguments: [] },
+                    },
+                ],
+            },
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-stock-control.csv'),
             customerCount: 3,
         });
@@ -457,6 +474,21 @@ describe('Stock control', () => {
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
         });
 
+        it('stockLevel uses DefaultStockDisplayStrategy', async () => {
+            const { product } = await shopClient.query<
+                GetProductStockLevel.Query,
+                GetProductStockLevel.Variables
+            >(GET_PRODUCT_WITH_STOCK_LEVEL, {
+                id: 'T_2',
+            });
+
+            expect(product?.variants.map(v => v.stockLevel)).toEqual([
+                'OUT_OF_STOCK',
+                'IN_STOCK',
+                'IN_STOCK',
+            ]);
+        });
+
         it('does not add an empty OrderLine if zero saleable stock', async () => {
             const variantId = 'T_5';
             const { addItemToOrder } = await shopClient.query<
@@ -475,7 +507,7 @@ describe('Stock control', () => {
             expect((addItemToOrder as any).order.lines.length).toBe(0);
         });
 
-        it('returns InsufficientStockError when tracking inventory', async () => {
+        it('returns InsufficientStockError when tracking inventory & adding too many at once', async () => {
             const variantId = 'T_1';
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrder.Mutation,
@@ -777,7 +809,8 @@ describe('Stock control', () => {
         });
 
         describe('edge cases', () => {
-            const variantId = 'T_5';
+            const variant5Id = 'T_5';
+            const variant6Id = 'T_6';
 
             beforeAll(async () => {
                 // First place an order which creates a backorder (excess of allocated units)
@@ -786,9 +819,16 @@ describe('Stock control', () => {
                     {
                         input: [
                             {
-                                id: variantId,
+                                id: variant5Id,
                                 stockOnHand: 5,
                                 outOfStockThreshold: -20,
+                                trackInventory: GlobalFlag.TRUE,
+                                useGlobalOutOfStockThreshold: false,
+                            },
+                            {
+                                id: variant6Id,
+                                stockOnHand: 3,
+                                outOfStockThreshold: 0,
                                 trackInventory: GlobalFlag.TRUE,
                                 useGlobalOutOfStockThreshold: false,
                             },
@@ -800,7 +840,7 @@ describe('Stock control', () => {
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
                 >(ADD_ITEM_TO_ORDER, {
-                    productVariantId: variantId,
+                    productVariantId: variant5Id,
                     quantity: 25,
                 });
                 orderGuard.assertSuccess(add1);
@@ -815,7 +855,7 @@ describe('Stock control', () => {
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
                 >(ADD_ITEM_TO_ORDER, {
-                    productVariantId: variantId,
+                    productVariantId: variant5Id,
                     quantity: 1,
                 });
                 orderGuard.assertErrorResult(addItemToOrder);
@@ -832,7 +872,7 @@ describe('Stock control', () => {
                     {
                         input: [
                             {
-                                id: variantId,
+                                id: variant5Id,
                                 outOfStockThreshold: -10,
                             },
                         ],
@@ -844,7 +884,7 @@ describe('Stock control', () => {
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
                 >(ADD_ITEM_TO_ORDER, {
-                    productVariantId: variantId,
+                    productVariantId: variant5Id,
                     quantity: 1,
                 });
                 orderGuard.assertErrorResult(addItemToOrder);
@@ -854,6 +894,161 @@ describe('Stock control', () => {
                     `No items were added to the order due to insufficient stock`,
                 );
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/691
+            it('returns InsufficientStockError when tracking inventory & adding too many individually', async () => {
+                await shopClient.asAnonymousUser();
+                const { addItemToOrder: add1 } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: variant6Id,
+                    quantity: 3,
+                });
+
+                orderGuard.assertSuccess(add1);
+
+                const { addItemToOrder: add2 } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: variant6Id,
+                    quantity: 1,
+                });
+
+                orderGuard.assertErrorResult(add2);
+
+                expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
+                expect(add2.message).toBe(`No items were added to the order due to insufficient stock`);
+                expect((add2 as any).quantityAvailable).toBe(0);
+                // Still adds as many as available to the Order
+                expect((add2 as any).order.lines[0].productVariant.id).toBe(variant6Id);
+                expect((add2 as any).order.lines[0].quantity).toBe(3);
+            });
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1028
+    describe('OrderLines with same variant but different custom fields', () => {
+        let orderId: string;
+
+        const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = `
+            mutation AddItemToOrderWithCustomFields(
+                $productVariantId: ID!
+                $quantity: Int!
+                $customFields: OrderLineCustomFieldsInput
+            ) {
+                addItemToOrder(
+                    productVariantId: $productVariantId
+                    quantity: $quantity
+                    customFields: $customFields
+                ) {
+                    ... on Order {
+                        id
+                        lines { id }
+                    }
+                    ... on ErrorResult {
+                        errorCode
+                        message
+                    }
+                }
+            }
+        `;
+
+        it('correctly allocates stock', async () => {
+            await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+
+            const product = await getProductWithStockMovement('T_2');
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant2.stockAllocated).toBe(0);
+
+            await shopClient.query<AddItemToOrder.Mutation, any>(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: variant2.id,
+                quantity: 1,
+                customFields: {
+                    customization: 'foo',
+                },
+            });
+            const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, any>(
+                gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS),
+                {
+                    productVariantId: variant2.id,
+                    quantity: 1,
+                    customFields: {
+                        customization: 'bar',
+                    },
+                },
+            );
+
+            orderGuard.assertSuccess(addItemToOrder);
+            orderId = addItemToOrder.id;
+            // Assert that separate order lines have been created
+            expect(addItemToOrder.lines.length).toBe(2);
+
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        streetLine1: '1 Test Street',
+                        countryCode: 'GB',
+                    } as CreateAddressInput,
+                },
+            );
+            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
+                TRANSITION_TO_STATE,
+                {
+                    state: 'ArrangingPayment',
+                },
+            );
+            const { addPaymentToOrder: order } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: testSuccessfulPaymentMethod.code,
+                    metadata: {},
+                } as PaymentInput,
+            });
+            orderGuard.assertSuccess(order);
+
+            const product2 = await getProductWithStockMovement('T_2');
+            const [variant1_2, variant2_2, variant3_2] = product2!.variants;
+
+            expect(variant2_2.stockAllocated).toBe(2);
+        });
+
+        it('correctly creates Sales', async () => {
+            const product = await getProductWithStockMovement('T_2');
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant2.stockOnHand).toBe(3);
+
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                CREATE_FULFILLMENT,
+                {
+                    input: {
+                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                        handler: {
+                            code: manualFulfillmentHandler.code,
+                            arguments: [
+                                { name: 'method', value: 'test method' },
+                                { name: 'trackingCode', value: 'ABC123' },
+                            ],
+                        },
+                    },
+                },
+            );
+
+            const product2 = await getProductWithStockMovement('T_2');
+            const [variant1_2, variant2_2, variant3_2] = product2!.variants;
+
+            expect(variant2_2.stockAllocated).toBe(0);
+            expect(variant2_2.stockOnHand).toBe(1);
         });
     });
 });

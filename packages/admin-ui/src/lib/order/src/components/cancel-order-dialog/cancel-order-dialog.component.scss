@@ -27,10 +27,10 @@
         }
     }
     tr.ignore {
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
     .is-cancelled td {
         text-decoration: line-through;
-        background-color: $color-grey-200;
+        background-color: var(--color-component-bg-200);
     }
 }

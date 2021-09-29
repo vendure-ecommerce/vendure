@@ -19,6 +19,7 @@ import { FacetDetailComponent } from './components/facet-detail/facet-detail.com
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
+import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { AssetResolver } from './providers/routing/asset-resolver';
 import { CollectionResolver } from './providers/routing/collection-resolver';
@@ -50,6 +51,15 @@ export const catalogRoutes: Route[] = [
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: productVariantEditorBreadcrumb,
+        },
+    },
+    {
+        path: 'products/:id/options',
+        component: ProductOptionsEditorComponent,
+        resolve: createResolveData(ProductVariantsResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: {
+            breadcrumb: productOptionsEditorBreadcrumb,
         },
     },
     {
@@ -126,6 +136,27 @@ export function productVariantEditorBreadcrumb(data: any, params: any) {
                 {
                     label: _('breadcrumb.manage-variants'),
                     link: ['manage-variants'],
+                },
+            ];
+        }),
+    );
+}
+
+export function productOptionsEditorBreadcrumb(data: any, params: any) {
+    return data.entity.pipe(
+        map((entity: any) => {
+            return [
+                {
+                    label: _('breadcrumb.products'),
+                    link: ['../', 'products'],
+                },
+                {
+                    label: `${entity.name}`,
+                    link: ['../', 'products', params.id, { tab: 'variants' }],
+                },
+                {
+                    label: _('breadcrumb.product-options'),
+                    link: ['options'],
                 },
             ];
         }),

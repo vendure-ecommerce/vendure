@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig } from '@vendure/core';
+import { Asset, mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -16,10 +16,14 @@ import {
 import {
     AttemptLogin,
     CreateAddressInput,
+    DeleteProduct,
+    DeleteProductVariant,
     GetCountryList,
     GetCustomer,
     GetCustomerList,
     UpdateCountry,
+    UpdateProduct,
+    UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
     ActiveOrderCustomerFragment,
@@ -49,13 +53,18 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
+    DELETE_PRODUCT,
+    DELETE_PRODUCT_VARIANT,
     GET_COUNTRY_LIST,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
     UPDATE_COUNTRY,
+    UPDATE_PRODUCT,
+    UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
     ADD_PAYMENT,
     ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
@@ -89,11 +98,18 @@ describe('Shop orders', () => {
                 ],
             },
             customFields: {
-                Order: [{ name: 'giftWrap', type: 'boolean', defaultValue: false }],
-                OrderLine: [{ name: 'notes', type: 'string' }],
+                Order: [
+                    { name: 'giftWrap', type: 'boolean', defaultValue: false },
+                    { name: 'orderImage', type: 'relation', entity: Asset },
+                ],
+                OrderLine: [
+                    { name: 'notes', type: 'string' },
+                    { name: 'privateField', type: 'string', public: false },
+                    { name: 'lineImage', type: 'relation', entity: Asset },
+                ],
             },
             orderOptions: {
-                orderItemsLimit: 99,
+                orderItemsLimit: 199,
             },
         }),
     );
@@ -109,7 +125,23 @@ describe('Shop orders', () => {
 
     beforeAll(async () => {
         await server.init({
-            initialData,
+            initialData: {
+                ...initialData,
+                paymentMethods: [
+                    {
+                        name: testSuccessfulPaymentMethod.code,
+                        handler: { code: testSuccessfulPaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: testFailingPaymentMethod.code,
+                        handler: { code: testFailingPaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: testErrorPaymentMethod.code,
+                        handler: { code: testErrorPaymentMethod.code, arguments: [] },
+                    },
+                ],
+            },
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
         });
@@ -211,85 +243,228 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines[0].quantity).toBe(3);
         });
 
-        it('addItemToOrder with equal customFields adds quantity to the existing OrderLine', async () => {
-            const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_2',
+        describe('OrderLine customFields', () => {
+            const GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS = gql`
+                query {
+                    activeOrder {
+                        lines {
+                            id
+                            customFields {
+                                notes
+                                lineImage {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                }
+            `;
+            it('addItemToOrder with private customFields errors', async () => {
+                try {
+                    await shopClient.query<AddItemToOrder.Mutation>(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS, {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            privateField: 'oh no!',
+                        },
+                    });
+                    fail('Should have thrown');
+                } catch (e) {
+                    expect(e.response.errors[0].extensions.code).toBe('BAD_USER_INPUT');
+                }
+            });
+
+            it('addItemToOrder with equal customFields adds quantity to the existing OrderLine', async () => {
+                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note1',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add1);
+                expect(add1!.lines.length).toBe(2);
+                expect(add1!.lines[1].quantity).toBe(1);
+
+                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_2',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note1',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add2);
+                expect(add2!.lines.length).toBe(2);
+                expect(add2!.lines[1].quantity).toBe(2);
+
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[1].id,
+                    },
+                );
+            });
+
+            it('addItemToOrder with different customFields adds quantity to a new OrderLine', async () => {
+                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note2',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add1);
+                expect(add1!.lines.length).toBe(2);
+                expect(add1!.lines[1].quantity).toBe(1);
+
+                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            notes: 'note3',
+                        },
+                    },
+                );
+                orderResultGuard.assertSuccess(add2);
+                expect(add2!.lines.length).toBe(3);
+                expect(add2!.lines[1].quantity).toBe(1);
+                expect(add2!.lines[2].quantity).toBe(1);
+
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[1].id,
+                    },
+                );
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[2].id,
+                    },
+                );
+            });
+
+            it('addItemToOrder with relation customField', async () => {
+                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImageId: 'T_1',
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(2);
+                expect(addItemToOrder!.lines[1].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[1].customFields.lineImage).toEqual({ id: 'T_1' });
+            });
+
+            it('addItemToOrder with equal relation customField adds to quantity', async () => {
+                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImageId: 'T_1',
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(2);
+                expect(addItemToOrder!.lines[1].quantity).toBe(2);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[1].customFields.lineImage).toEqual({ id: 'T_1' });
+            });
+
+            it('addItemToOrder with different relation customField adds new line', async () => {
+                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImageId: 'T_2',
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(3);
+                expect(addItemToOrder!.lines[2].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[2].customFields.lineImage).toEqual({ id: 'T_2' });
+            });
+
+            it('adjustOrderLine updates relation reference', async () => {
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                const ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS = gql`
+                    mutation($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
+                        adjustOrderLine(
+                            orderLineId: $orderLineId
+                            quantity: $quantity
+                            customFields: $customFields
+                        ) {
+                            ... on Order {
+                                lines {
+                                    id
+                                    customFields {
+                                        notes
+                                        lineImage {
+                                            id
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `;
+                const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS, {
+                    orderLineId: activeOrder.lines[2].id,
                     quantity: 1,
                     customFields: {
-                        notes: 'note1',
+                        lineImageId: 'T_1',
                     },
-                },
-            );
-            orderResultGuard.assertSuccess(add1);
-            expect(add1!.lines.length).toBe(2);
-            expect(add1!.lines[1].quantity).toBe(1);
+                });
 
-            const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_2',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note1',
+                expect(adjustOrderLine.lines[2].customFields.lineImage).toEqual({ id: 'T_1' });
+
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: activeOrder!.lines[2].id,
                     },
-                },
-            );
-            orderResultGuard.assertSuccess(add2);
-            expect(add2!.lines.length).toBe(2);
-            expect(add2!.lines[1].quantity).toBe(2);
-
-            await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                REMOVE_ITEM_FROM_ORDER,
-                {
-                    orderLineId: add2!.lines[1].id,
-                },
-            );
-        });
-
-        it('addItemToOrder with different customFields adds quantity to a new OrderLine', async () => {
-            const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_3',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note2',
+                );
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: activeOrder!.lines[1].id,
                     },
-                },
-            );
-            orderResultGuard.assertSuccess(add1);
-            expect(add1!.lines.length).toBe(2);
-            expect(add1!.lines[1].quantity).toBe(1);
-
-            const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
-                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
-                {
-                    productVariantId: 'T_3',
-                    quantity: 1,
-                    customFields: {
-                        notes: 'note3',
-                    },
-                },
-            );
-            orderResultGuard.assertSuccess(add2);
-            expect(add2!.lines.length).toBe(3);
-            expect(add2!.lines[1].quantity).toBe(1);
-            expect(add2!.lines[2].quantity).toBe(1);
-
-            await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                REMOVE_ITEM_FROM_ORDER,
-                {
-                    orderLineId: add2!.lines[1].id,
-                },
-            );
-            await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                REMOVE_ITEM_FROM_ORDER,
-                {
-                    orderLineId: add2!.lines[2].id,
-                },
-            );
+                );
+            });
         });
 
         it('addItemToOrder errors when going beyond orderItemsLimit', async () => {
@@ -298,12 +473,12 @@ describe('Shop orders', () => {
                 AddItemToOrder.Variables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
-                quantity: 100,
+                quantity: 200,
             });
 
             orderResultGuard.assertErrorResult(addItemToOrder);
             expect(addItemToOrder.message).toBe(
-                'Cannot add items. An order may consist of a maximum of 99 items',
+                'Cannot add items. An order may consist of a maximum of 199 items',
             );
             expect(addItemToOrder.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
         });
@@ -345,17 +520,60 @@ describe('Shop orders', () => {
             expect(adjustOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
         });
 
+        it('adjustOrderLine with quantity > stockOnHand only allows user to have stock on hand', async () => {
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 111,
+            });
+            orderResultGuard.assertErrorResult(addItemToOrder);
+            // Insufficient stock error should return because there are only 100 available
+            expect(addItemToOrder.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
+
+            // But it should still add the item to the order
+            expect(addItemToOrder!.order.lines[1].quantity).toBe(100);
+
+            const { adjustOrderLine } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: 'T_8',
+                quantity: 101,
+            });
+            orderResultGuard.assertErrorResult(adjustOrderLine);
+            expect(adjustOrderLine.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
+            expect(adjustOrderLine.message).toBe(
+                'Only 100 items were added to the order due to insufficient stock',
+            );
+
+            const order = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(order.activeOrder?.lines[1].quantity).toBe(100);
+
+            const { adjustOrderLine: adjustLine2 } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: 'T_8',
+                quantity: 0,
+            });
+            orderResultGuard.assertSuccess(adjustLine2);
+            expect(adjustLine2!.lines.length).toBe(1);
+            expect(adjustLine2!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
+        });
+
         it('adjustOrderLine errors when going beyond orderItemsLimit', async () => {
             const { adjustOrderLine } = await shopClient.query<
                 AdjustItemQuantity.Mutation,
                 AdjustItemQuantity.Variables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: firstOrderLineId,
-                quantity: 100,
+                quantity: 200,
             });
             orderResultGuard.assertErrorResult(adjustOrderLine);
             expect(adjustOrderLine.message).toBe(
-                'Cannot add items. An order may consist of a maximum of 99 items',
+                'Cannot add items. An order may consist of a maximum of 199 items',
             );
             expect(adjustOrderLine.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
         });
@@ -844,8 +1062,20 @@ describe('Shop orders', () => {
                 shippingMethods = result.eligibleShippingMethods;
 
                 expect(shippingMethods).toEqual([
-                    { id: 'T_1', price: 500, name: 'Standard Shipping', description: '' },
-                    { id: 'T_2', price: 1000, name: 'Express Shipping', description: '' },
+                    {
+                        id: 'T_1',
+                        price: 500,
+                        code: 'standard-shipping',
+                        name: 'Standard Shipping',
+                        description: '',
+                    },
+                    {
+                        id: 'T_2',
+                        price: 1000,
+                        code: 'express-shipping',
+                        name: 'Express Shipping',
+                        description: '',
+                    },
                 ]);
             });
 
@@ -1133,6 +1363,46 @@ describe('Shop orders', () => {
                     }, `You are not currently authorized to perform this action`),
                 );
             });
+
+            describe('3 hours after the Order has been placed', () => {
+                let dateNowMock: any;
+                beforeAll(() => {
+                    // mock Date.now: add 3 hours
+                    const nowIn3H = Date.now() + 3 * 3600 * 1000;
+                    dateNowMock = jest.spyOn(global.Date, 'now').mockImplementation(() => nowIn3H);
+                });
+
+                it('still works when authenticated as owner', async () => {
+                    authenticatedUserEmailAddress = customers[0].emailAddress;
+                    await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
+                    const result = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
+                        GET_ORDER_BY_CODE,
+                        {
+                            code: activeOrder.code,
+                        },
+                    );
+
+                    expect(result.orderByCode!.id).toBe(activeOrder.id);
+                });
+
+                it(
+                    'access denied when anonymous',
+                    assertThrowsWithMessage(async () => {
+                        await shopClient.asAnonymousUser();
+                        await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
+                            GET_ORDER_BY_CODE,
+                            {
+                                code: activeOrder.code,
+                            },
+                        );
+                    }, `You are not currently authorized to perform this action`),
+                );
+
+                afterAll(() => {
+                    // restore Date.now
+                    dateNowMock.mockRestore();
+                });
+            });
         });
     });
 
@@ -1222,6 +1492,57 @@ describe('Shop orders', () => {
             expect(activeOrder!.lines.length).toBe(2);
             expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
             expect(activeOrder!.lines[1].productVariant.id).toBe('T_2');
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/754
+        it('handles merging when an existing order has OrderLines', async () => {
+            async function setShippingOnActiveOrder() {
+                await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                    SET_SHIPPING_ADDRESS,
+                    {
+                        input: {
+                            streetLine1: '12 the street',
+                            countryCode: 'US',
+                        },
+                    },
+                );
+                const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+                    GET_ELIGIBLE_SHIPPING_METHODS,
+                );
+                await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
+                    SET_SHIPPING_METHOD,
+                    {
+                        id: eligibleShippingMethods[1].id,
+                    },
+                );
+            }
+
+            // Set up an existing order and add a ShippingLine
+            await shopClient.asUserWithCredentials(customers[2].emailAddress, 'test');
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 1,
+            });
+            await setShippingOnActiveOrder();
+
+            // Now start a new guest order
+            await shopClient.query(LOG_OUT);
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_4',
+                quantity: 1,
+            });
+            await setShippingOnActiveOrder();
+
+            // attempt to log in and merge the guest order with the existing order
+            const { login } = await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
+                ATTEMPT_LOGIN,
+                {
+                    username: customers[2].emailAddress,
+                    password: 'test',
+                },
+            );
+
+            expect(login.identifier).toBe(customers[2].emailAddress);
         });
     });
 
@@ -1333,6 +1654,7 @@ describe('Shop orders', () => {
             const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
 
             expect(activeOrder?.customFields).toEqual({
+                orderImage: null,
                 giftWrap: false,
             });
         });
@@ -1340,17 +1662,19 @@ describe('Shop orders', () => {
         it('setting order custom fields', async () => {
             const { setOrderCustomFields } = await shopClient.query(SET_ORDER_CUSTOM_FIELDS, {
                 input: {
-                    customFields: { giftWrap: true },
+                    customFields: { giftWrap: true, orderImageId: 'T_1' },
                 },
             });
 
             expect(setOrderCustomFields?.customFields).toEqual({
+                orderImage: { id: 'T_1' },
                 giftWrap: true,
             });
 
             const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
 
             expect(activeOrder?.customFields).toEqual({
+                orderImage: { id: 'T_1' },
                 giftWrap: true,
             });
         });
@@ -1378,6 +1702,122 @@ describe('Shop orders', () => {
             expect(removeAllOrderLines?.lines.length).toBe(0);
         });
     });
+
+    describe('validation of product variant availability', () => {
+        const bonsaiProductId = 'T_20';
+        const bonsaiVariantId = 'T_34';
+
+        beforeAll(async () => {
+            await shopClient.asAnonymousUser();
+        });
+
+        it(
+            'addItemToOrder errors when product is disabled',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: bonsaiProductId,
+                        enabled: false,
+                    },
+                });
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+
+        it(
+            'addItemToOrder errors when product variant is disabled',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: bonsaiProductId,
+                        enabled: true,
+                    },
+                });
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                id: bonsaiVariantId,
+                                enabled: false,
+                            },
+                        ],
+                    },
+                );
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+        it(
+            'addItemToOrder errors when product is deleted',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                    id: bonsaiProductId,
+                });
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+        it(
+            'addItemToOrder errors when product variant is deleted',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
+                    DELETE_PRODUCT_VARIANT,
+                    {
+                        id: bonsaiVariantId,
+                    },
+                );
+
+                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    productVariantId: bonsaiVariantId,
+                    quantity: 1,
+                });
+            }, `No ProductVariant with the id '34' could be found`),
+        );
+
+        it('errors when transitioning to ArrangingPayment with deleted variant', async () => {
+            const orchidProductId = 'T_19';
+            const orchidVariantId = 'T_33';
+
+            await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: orchidVariantId,
+                quantity: 1,
+            });
+
+            orderResultGuard.assertSuccess(addItemToOrder);
+
+            await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                id: orchidProductId,
+            });
+
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToState.Mutation,
+                TransitionToState.Variables
+            >(TRANSITION_TO_STATE, {
+                state: 'ArrangingPayment',
+            });
+            orderResultGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.transitionError).toBe(
+                `Cannot transition to "ArrangingPayment" because the Order contains ProductVariants which are no longer available`,
+            );
+            expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
+        });
+    });
 });
 
 const GET_ORDER_CUSTOM_FIELDS = gql`
@@ -1386,6 +1826,9 @@ const GET_ORDER_CUSTOM_FIELDS = gql`
             id
             customFields {
                 giftWrap
+                orderImage {
+                    id
+                }
             }
         }
     }
@@ -1398,12 +1841,23 @@ const SET_ORDER_CUSTOM_FIELDS = gql`
                 id
                 customFields {
                     giftWrap
+                    orderImage {
+                        id
+                    }
                 }
             }
             ... on ErrorResult {
                 errorCode
                 message
             }
+        }
+    }
+`;
+
+export const LOG_OUT = gql`
+    mutation LogOut {
+        logout {
+            success
         }
     }
 `;

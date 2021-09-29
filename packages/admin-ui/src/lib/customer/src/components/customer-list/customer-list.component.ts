@@ -10,8 +10,8 @@ import {
     NotificationService,
 } from '@vendure/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
-import { EMPTY } from 'rxjs';
-import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
+import { EMPTY, merge } from 'rxjs';
+import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-customer-list',
@@ -21,7 +21,8 @@ import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 export class CustomerListComponent
     extends BaseListComponent<GetCustomerList.Query, GetCustomerList.Items>
     implements OnInit {
-    searchTerm = new FormControl('');
+    emailSearchTerm = new FormControl('');
+    lastNameSearchTerm = new FormControl('');
     constructor(
         private dataService: DataService,
         router: Router,
@@ -39,7 +40,10 @@ export class CustomerListComponent
                     take,
                     filter: {
                         emailAddress: {
-                            contains: this.searchTerm.value,
+                            contains: this.emailSearchTerm.value,
+                        },
+                        lastName: {
+                            contains: this.lastNameSearchTerm.value,
                         },
                     },
                     sort: {
@@ -52,8 +56,12 @@ export class CustomerListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        this.searchTerm.valueChanges
-            .pipe(debounceTime(250), takeUntil(this.destroy$))
+        merge(this.emailSearchTerm.valueChanges, this.lastNameSearchTerm.valueChanges)
+            .pipe(
+                filter(value => 2 < value.length || value.length === 0),
+                debounceTime(250),
+                takeUntil(this.destroy$),
+            )
             .subscribe(() => this.refresh());
     }
 

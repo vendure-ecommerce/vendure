@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
 import { OrderDetail } from '@vendure/admin-ui/core';
 
 @Component({
@@ -10,8 +9,27 @@ import { OrderDetail } from '@vendure/admin-ui/core';
 })
 export class LineRefundsComponent {
     @Input() line: OrderDetail.Lines;
+    @Input() payments: OrderDetail.Payments[];
 
     getRefundedCount(): number {
-        return this.line.items.filter(i => i.refundId != null && !i.cancelled).length;
+        const refunds =
+            this.payments?.reduce(
+                (all, payment) => [...all, ...payment.refunds],
+                [] as OrderDetail.Refunds[],
+            ) ?? [];
+        return this.line.items.filter(i => {
+            if (i.refundId === null && !i.cancelled) {
+                return false;
+            }
+            if (i.refundId) {
+                const refund = refunds.find(r => r.id === i.refundId);
+                if (refund?.state === 'Failed') {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return false;
+        }).length;
     }
 }

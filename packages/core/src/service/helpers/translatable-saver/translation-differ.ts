@@ -1,10 +1,9 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { EntityNotFoundError } from '../../../common/error/errors';
+import { InternalServerError } from '../../../common/error/errors';
 import { Translatable, Translation, TranslationInput } from '../../../common/types/locale-types';
 import { foundIn, not } from '../../../common/utils';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 export type TranslationContructor<T> = new (
@@ -72,9 +71,7 @@ export class TranslationDiffer<Entity extends Translatable> {
                         .getRepository(ctx, this.translationCtor)
                         .save(translation as any);
                 } catch (err) {
-                    const entityName = entity.constructor.name;
-                    const id = (entity as any).id || 'undefined';
-                    throw new EntityNotFoundError(entityName as any, id);
+                    throw new InternalServerError(err.message);
                 }
                 entity.translations.push(newTranslation);
             }

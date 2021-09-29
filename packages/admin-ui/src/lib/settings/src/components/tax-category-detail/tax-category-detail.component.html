@@ -18,7 +18,7 @@
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="!saveButtonEnabled()"
-                *vdrIfPermissions="'UpdateSettings'"
+                *vdrIfPermissions="updatePermission"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -32,7 +32,18 @@
             id="name"
             type="text"
             formControlName="name"
-            [readonly]="!('UpdateSettings' | hasPermission)"
+            [readonly]="!(updatePermission | hasPermission)"
         />
+    </vdr-form-field>
+    <vdr-form-field [label]="'common.default-tax-category' | translate" for="isDefault">
+        <clr-toggle-wrapper>
+            <input
+                type="checkbox"
+                clrToggle
+                id="isDefault"
+                [vdrDisabled]="!(updatePermission | hasPermission)"
+                formControlName="isDefault"
+            />
+        </clr-toggle-wrapper>
     </vdr-form-field>
 </form>

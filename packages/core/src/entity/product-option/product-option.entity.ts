@@ -1,6 +1,7 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
+import { SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
@@ -17,10 +18,12 @@ import { ProductOptionTranslation } from './product-option-translation.entity';
  * @docsCategory entities
  */
 @Entity()
-export class ProductOption extends VendureEntity implements Translatable, HasCustomFields {
+export class ProductOption extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
     constructor(input?: DeepPartial<ProductOption>) {
         super(input);
     }
+    @Column({ type: Date, nullable: true })
+    deletedAt: Date | null;
 
     name: LocaleString;
 

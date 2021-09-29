@@ -54,6 +54,16 @@ export class CountryService {
             .then(country => country && translateDeep(country, ctx.languageCode));
     }
 
+    /**
+     * Returns an array of enabled Countries, intended for use in a public-facing (ie. Shop) API.
+     */
+    findAllAvailable(ctx: RequestContext): Promise<Array<Translated<Country>>> {
+        return this.connection
+            .getRepository(ctx, Country)
+            .find({ where: { enabled: true } })
+            .then(items => items.map(country => translateDeep(country, ctx.languageCode)));
+    }
+
     async findOneByCode(ctx: RequestContext, countryCode: string): Promise<Translated<Country>> {
         const country = await this.connection.getRepository(ctx, Country).findOne({
             where: {

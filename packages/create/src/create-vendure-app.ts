@@ -43,7 +43,7 @@ program
     })
     .option(
         '--log-level <logLevel>',
-        "Log level, either 'silent', 'info', or 'verbose'",
+        `Log level, either 'silent', 'info', or 'verbose'`,
         /^(silent|info|verbose)$/i,
         'silent',
     )
@@ -51,7 +51,8 @@ program
     .option('--ci', 'Runs without prompts for use in CI scenarios')
     .parse(process.argv);
 
-createApp(projectName, program.useNpm, program.logLevel || 'silent', program.ci);
+const options = program.opts();
+createApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
 
 async function createApp(
     name: string | undefined,
@@ -104,14 +105,6 @@ async function createApp(
             'migration:generate': usingTs ? 'ts-node migration generate' : 'node migration generate',
             'migration:run': usingTs ? 'ts-node migration run' : 'node migration run',
             'migration:revert': usingTs ? 'ts-node migration revert' : 'node migration revert',
-        },
-        /**
-         * A work-around for the breaking update of tslib as described here:
-         * https://github.com/typeorm/typeorm/issues/6054
-         * TODO: Remove this once the TypeScript team come up with a solution
-         */
-        resolutions: {
-            tslib: '1.11.2',
         },
     };
 
@@ -202,7 +195,7 @@ async function createApp(
                     const { populate } = await import(
                         path.join(root, 'node_modules/@vendure/core/cli/populate')
                     );
-                    const { bootstrap, DefaultLogger, LogLevel } = await import(
+                    const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
                         path.join(root, 'node_modules/@vendure/core/dist/index')
                     );
                     const { config } = await import(ctx.configFile);
@@ -216,9 +209,10 @@ async function createApp(
                             : logLevel === 'verbose'
                             ? LogLevel.Verbose
                             : LogLevel.Info;
+
                     const bootstrapFn = async () => {
                         await checkDbConnection(config.dbConnectionOptions, root);
-                        return bootstrap({
+                        const _app = await bootstrap({
                             ...config,
                             apiOptions: {
                                 ...(config.apiOptions ?? {}),
@@ -230,24 +224,20 @@ async function createApp(
                                 synchronize: true,
                             },
                             logger: new DefaultLogger({ level: vendureLogLevel }),
-                            workerOptions: {
-                                runInMainProcess: true,
-                            },
                             importExportOptions: {
                                 importAssetsDir: path.join(assetsDir, 'images'),
                             },
                         });
+                        await _app.get(JobQueueService).start();
+                        return _app;
                     };
-                    let app: any;
-                    if (populateProducts) {
-                        app = await populate(
-                            bootstrapFn,
-                            initialDataPath,
-                            path.join(assetsDir, 'products.csv'),
-                        );
-                    } else {
-                        app = await populate(bootstrapFn, initialDataPath);
-                    }
+
+                    const app = await populate(
+                        bootstrapFn,
+                        initialDataPath,
+                        populateProducts ? path.join(assetsDir, 'products.csv') : undefined,
+                    );
+
                     // Pause to ensure the worker jobs have time to complete.
                     if (isCi) {
                         console.log('[CI] Pausing before close...');

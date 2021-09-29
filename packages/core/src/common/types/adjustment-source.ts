@@ -3,6 +3,8 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 
+export type TestResult = boolean | object;
+
 export abstract class AdjustmentSource extends VendureEntity {
     type: AdjustmentType;
 
@@ -18,6 +20,6 @@ export abstract class AdjustmentSource extends VendureEntity {
         };
     }
 
-    abstract test(...args: any[]): boolean | Promise<boolean>;
+    abstract test(...args: any[]): TestResult | Promise<TestResult>;
     abstract apply(...args: any[]): Adjustment | undefined | Promise<Adjustment | undefined>;
 }

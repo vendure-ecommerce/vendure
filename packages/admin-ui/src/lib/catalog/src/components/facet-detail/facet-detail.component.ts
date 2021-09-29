@@ -11,9 +11,11 @@ import {
     DataService,
     DeletionResult,
     FacetWithValues,
+    findTranslation,
     LanguageCode,
     ModalService,
     NotificationService,
+    Permission,
     ServerConfigService,
     UpdateFacetInput,
     UpdateFacetValueInput,
@@ -36,6 +38,7 @@ export class FacetDetailComponent
     customValueFields: CustomFieldConfig[];
     detailForm: FormGroup;
     values: Array<FacetWithValues.Values | { name: string; code: string }>;
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateFacet];
 
     constructor(
         router: Router,
@@ -107,6 +110,7 @@ export class FacetDetailComponent
             valuesFormArray.insert(
                 valuesFormArray.length,
                 this.formBuilder.group({
+                    id: '',
                     name: ['', Validators.required],
                     code: '',
                 }),
@@ -131,7 +135,7 @@ export class FacetDetailComponent
                     ) as CreateFacetInput;
                     return this.dataService.facet.createFacet(newFacet);
                 }),
-                switchMap(data => this.dataService.facet.getAllFacets(true).single$.pipe(mapTo(data))),
+                switchMap(data => this.dataService.facet.getAllFacets().single$.pipe(mapTo(data))),
             )
             .subscribe(
                 data => {
@@ -194,7 +198,7 @@ export class FacetDetailComponent
 
                     return forkJoin(updateOperations);
                 }),
-                switchMap(() => this.dataService.facet.getAllFacets(true).single$),
+                switchMap(() => this.dataService.facet.getAllFacets().single$),
             )
             .subscribe(
                 () => {
@@ -269,7 +273,7 @@ export class FacetDetailComponent
      * Sets the values of the form on changes to the facet or current language.
      */
     protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(facet, languageCode);
 
         this.detailForm.patchValue({
             facet: {
@@ -296,17 +300,20 @@ export class FacetDetailComponent
         }
 
         const currentValuesFormArray = this.detailForm.get('values') as FormArray;
-        currentValuesFormArray.clear();
         this.values = [...facet.values];
         facet.values.forEach((value, i) => {
-            const valueTranslation =
-                value.translations && value.translations.find(t => t.languageCode === languageCode);
+            const valueTranslation = findTranslation(value, languageCode);
             const group = {
                 id: value.id,
                 code: value.code,
                 name: valueTranslation ? valueTranslation.name : '',
             };
-            currentValuesFormArray.insert(i, this.formBuilder.group(group));
+            const valueControl = currentValuesFormArray.at(i);
+            if (valueControl) {
+                valueControl.setValue(group);
+            } else {
+                currentValuesFormArray.insert(i, this.formBuilder.group(group));
+            }
             if (this.customValueFields.length) {
                 let customValueFieldsGroup = this.detailForm.get(['values', i, 'customFields']) as FormGroup;
                 if (!customValueFieldsGroup) {

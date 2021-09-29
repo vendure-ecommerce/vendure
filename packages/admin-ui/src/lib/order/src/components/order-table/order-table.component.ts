@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { AdjustmentType, CustomFieldConfig, OrderDetail } from '@vendure/admin-ui/core';
 
 @Component({
@@ -11,6 +12,9 @@ export class OrderTableComponent implements OnInit {
     @Input() order: OrderDetail.Fragment;
     @Input() orderLineCustomFields: CustomFieldConfig[];
     orderLineCustomFieldsVisible = false;
+    customFieldsForLine: {
+        [lineId: string]: Array<{ config: CustomFieldConfig; formGroup: FormGroup; value: any }>;
+    } = {};
 
     get visibleOrderLineCustomFields(): CustomFieldConfig[] {
         return this.orderLineCustomFieldsVisible ? this.orderLineCustomFields : [];
@@ -22,6 +26,7 @@ export class OrderTableComponent implements OnInit {
 
     ngOnInit(): void {
         this.orderLineCustomFieldsVisible = this.orderLineCustomFields.length < 2;
+        this.getLineCustomFields();
     }
 
     toggleOrderLineCustomFields() {
@@ -30,6 +35,26 @@ export class OrderTableComponent implements OnInit {
 
     getLineDiscounts(line: OrderDetail.Lines) {
         return line.discounts.filter(a => a.type === AdjustmentType.PROMOTION);
+    }
+
+    private getLineCustomFields() {
+        for (const line of this.order.lines) {
+            const formGroup = new FormGroup({});
+            const result = this.orderLineCustomFields
+                .map(config => {
+                    const value = (line as any).customFields[config.name];
+                    formGroup.addControl(config.name, new FormControl(value));
+                    return {
+                        config,
+                        formGroup,
+                        value,
+                    };
+                })
+                .filter(field => {
+                    return this.orderLineCustomFieldsVisible ? true : field.value != null;
+                });
+            this.customFieldsForLine[line.id] = result;
+        }
     }
 
     getPromotionLink(promotion: OrderDetail.Discounts): any[] {

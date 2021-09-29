@@ -133,7 +133,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
                 if (value === undefined) {
                     value = getDefaultConfigArgValue(arg);
                 }
-                const validators = arg.list ? undefined : Validators.required;
+                const validators = arg.list ? undefined : arg.required ? Validators.required : undefined;
                 this.form.addControl(arg.name, new FormControl(value, validators));
             }
         }

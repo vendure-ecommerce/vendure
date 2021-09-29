@@ -29,7 +29,7 @@ const SCHEMA_FILE = path.join(__dirname, `../../schema-${targetApi}.json`);
 // The absolute URL to the generated api docs section
 const docsUrl = `/docs/graphql-api/${targetApi}/`;
 // The directory in which the markdown files will be saved
-const outputPath = path.join(__dirname, `../../docs/content/docs/graphql-api/${targetApi}`);
+const outputPath = path.join(__dirname, `../../docs/content/graphql-api/${targetApi}`);
 
 const enum FileName {
     ENUM = 'enums',
@@ -53,7 +53,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
     let objectTypesOutput = generateFrontMatter('Types', 3) + `\n\n# Types\n\n`;
     let inputTypesOutput = generateFrontMatter('Input Objects', 4) + `\n\n# Input Objects\n\n`;
     let enumsOutput = generateFrontMatter('Enums', 5) + `\n\n# Enums\n\n`;
-    const sortByName = (a: { name: string; }, b: { name: string; }) => a.name < b.name ? -1 : 1;
+    const sortByName = (a: { name: string }, b: { name: string }) => (a.name < b.name ? -1 : 1);
     const sortedTypes = Object.values(schema.getTypeMap()).sort(sortByName);
     for (const type of sortedTypes) {
         if (type.name.substring(0, 2) === '__') {
@@ -134,10 +134,7 @@ function renderDescription(type: { description?: string | null }): string {
     }
     // Strip any JSDoc tags which may be used to annotate the generated
     // TS types.
-    const stringsToStrip = [
-        /@docsCategory\s+[^\n]+/g,
-        /@description\s+/g,
-    ];
+    const stringsToStrip = [/@docsCategory\s+[^\n]+/g, /@description\s+/g];
     let result = type.description;
     for (const pattern of stringsToStrip) {
         result = result.replace(pattern, '');
@@ -164,7 +161,10 @@ function renderFields(
 }
 
 function renderUnion(type: GraphQLUnionType): string {
-    const unionTypes = type.getTypes().map(t => renderTypeAsLink(t)).join(' | ');
+    const unionTypes = type
+        .getTypes()
+        .map(t => renderTypeAsLink(t))
+        .join(' | ');
     let output = '{{% gql-fields %}}\n';
     output += `union ${type.name} = ${unionTypes}\n`;
     output += '{{% /gql-fields %}}\n\n';
@@ -190,8 +190,8 @@ function renderTypeAsLink(type: GraphQLType): string {
     const fileName = isEnumType(innerType)
         ? FileName.ENUM
         : isInputObjectType(innerType)
-            ? FileName.INPUT
-            : FileName.OBJECT;
+        ? FileName.INPUT
+        : FileName.OBJECT;
     const url = `${docsUrl}${fileName}#${innerType.name.toLowerCase()}`;
     return type.toString().replace(innerType.name, `[${innerType.name}](${url})`);
 }

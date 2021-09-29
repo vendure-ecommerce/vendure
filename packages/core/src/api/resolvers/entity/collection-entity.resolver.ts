@@ -5,6 +5,7 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';
 import { Asset, Collection, Product, ProductVariant } from '../../../entity';
+import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
@@ -19,7 +20,23 @@ export class CollectionEntityResolver {
         private productVariantService: ProductVariantService,
         private collectionService: CollectionService,
         private assetService: AssetService,
+        private localeStringHydrator: LocaleStringHydrator,
     ) {}
+
+    @ResolveField()
+    name(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, collection, 'name');
+    }
+
+    @ResolveField()
+    slug(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, collection, 'slug');
+    }
+
+    @ResolveField()
+    description(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, collection, 'description');
+    }
 
     @ResolveField()
     async productVariants(
@@ -50,19 +67,33 @@ export class CollectionEntityResolver {
     }
 
     @ResolveField()
-    async parent(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection> {
+    async parent(
+        @Ctx() ctx: RequestContext,
+        @Parent() collection: Collection,
+        @Api() apiType: ApiType,
+    ): Promise<Collection | undefined> {
+        let parent: Collection | undefined;
         if (collection.parent) {
-            return collection.parent;
+            parent = collection.parent;
+        } else {
+            parent = await this.collectionService.getParent(ctx, collection.id);
         }
-        return this.collectionService.getParent(ctx, collection.id) as any;
+        return apiType === 'shop' && parent?.isPrivate ? undefined : parent;
     }
 
     @ResolveField()
-    async children(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection[]> {
+    async children(
+        @Ctx() ctx: RequestContext,
+        @Parent() collection: Collection,
+        @Api() apiType: ApiType,
+    ): Promise<Collection[]> {
+        let children: Collection[] = [];
         if (collection.children) {
-            return collection.children;
+            children = collection.children;
+        } else {
+            children = (await this.collectionService.getChildren(ctx, collection.id)) as any;
         }
-        return this.collectionService.getChildren(ctx, collection.id) as any;
+        return children.filter(c => (apiType === 'shop' ? !c.isPrivate : true));
     }
 
     @ResolveField()

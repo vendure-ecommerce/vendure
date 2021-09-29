@@ -1,0 +1,49 @@
+@startuml
+!include theme.puml
+title Default Order Workflow
+
+state Storefront {
+    [*] --> AddingItems: Customer adds an item to the shopping cart
+    state AddingItems {
+        AddingItems: The Order is created and the Customer
+        AddingItems: adds the desired items to it.
+    }
+
+    state ArrangingPayment {
+        ArrangingPayment: Payment provider is used to take payment
+    }
+}
+
+state AdminUI as "Admin UI" #f9c876 {
+    state PaymentAuthorized {
+        PaymentAuthorized: The payment has been authorized by the
+        PaymentAuthorized: payment provider.
+    }
+
+    state PaymentSettled {
+        PaymentSettled: The payment has been settled with the payment
+        PaymentSettled: provider, i.e. the transaction is complete.
+    }
+
+
+    state Shipped {
+        Shipped: All OrderItems have been shipped to the Customer
+    }
+
+    state Delivered #9d9 {
+        Delivered: All OrderItems have arrived with the Customer
+    }
+
+    Delivered --> [*]
+}
+
+AddingItems --> ArrangingPayment
+ArrangingPayment -> PaymentAuthorized: Check out is completed
+PaymentAuthorized --> PaymentSettled
+PaymentSettled --> Shipped: One or more Fulfillments are created
+Shipped --> Delivered: All fulfillments are marked as delivered
+
+
+
+
+@enduml

@@ -1,4 +1,3 @@
-@import "variables";
 
 :host {
     position: relative;
@@ -38,7 +37,7 @@
         border-color: white;
     }
     50% {
-        border-color: $color-warning-500;
+        border-color: var(--color-warning-500);
     }
     100% {
         border-color: white

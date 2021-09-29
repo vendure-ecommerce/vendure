@@ -9,8 +9,7 @@ import {
     SimpleChanges,
     SkipSelf,
 } from '@angular/core';
-import { Permission } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { DataService, Permission } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -48,8 +47,18 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
             .userStatus()
             .mapStream(data => data.userStatus.permissions)
             .pipe(shareReplay(1));
-        this.hasUpdatePermission$ = permissions$.pipe(map(perms => perms.includes(Permission.UpdateCatalog)));
-        this.hasDeletePermission$ = permissions$.pipe(map(perms => perms.includes(Permission.DeleteCatalog)));
+        this.hasUpdatePermission$ = permissions$.pipe(
+            map(
+                perms =>
+                    perms.includes(Permission.UpdateCatalog) || perms.includes(Permission.UpdateCollection),
+            ),
+        );
+        this.hasDeletePermission$ = permissions$.pipe(
+            map(
+                perms =>
+                    perms.includes(Permission.DeleteCatalog) || perms.includes(Permission.DeleteCollection),
+            ),
+        );
     }
 
     ngOnChanges(changes: SimpleChanges) {

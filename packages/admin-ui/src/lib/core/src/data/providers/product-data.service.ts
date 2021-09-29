@@ -15,19 +15,27 @@ import {
     CreateProductOptionInput,
     CreateProductVariantInput,
     CreateProductVariants,
+    CreateTag,
+    CreateTagInput,
     DeleteAssets,
     DeleteProduct,
     DeleteProductVariant,
+    DeleteTag,
     GetAsset,
     GetAssetList,
     GetProductList,
     GetProductOptionGroup,
     GetProductOptionGroups,
+    GetProductSimple,
     GetProductVariant,
+    GetProductVariantList,
     GetProductVariantOptions,
     GetProductWithVariants,
+    GetTag,
+    GetTagList,
     ProductListOptions,
     ProductSelectorSearch,
+    ProductVariantListOptions,
     Reindex,
     RemoveOptionGroupFromProduct,
     RemoveProductsFromChannel,
@@ -36,14 +44,19 @@ import {
     RemoveVariantsFromChannel,
     SearchProducts,
     SortOrder,
+    TagListOptions,
     UpdateAsset,
     UpdateAssetInput,
     UpdateProduct,
     UpdateProductInput,
     UpdateProductOption,
+    UpdateProductOptionGroup,
+    UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
+    UpdateTag,
+    UpdateTagInput,
 } from '../../common/generated-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -54,17 +67,23 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
+    CREATE_TAG,
     DELETE_ASSETS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
+    DELETE_TAG,
     GET_ASSET,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUP,
     GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT,
+    GET_PRODUCT_VARIANT_LIST,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
+    GET_TAG,
+    GET_TAG_LIST,
     PRODUCT_SELECTOR_SEARCH,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     REMOVE_PRODUCTS_FROM_CHANNEL,
@@ -73,7 +92,9 @@ import {
     UPDATE_ASSET,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
+    UPDATE_PRODUCT_OPTION_GROUP,
     UPDATE_PRODUCT_VARIANTS,
+    UPDATE_TAG,
 } from '../definitions/product-definitions';
 import { REINDEX } from '../definitions/settings-definitions';
 
@@ -122,6 +143,22 @@ export class ProductDataService {
         );
     }
 
+    getProductSimple(id: string) {
+        return this.baseDataService.query<GetProductSimple.Query, GetProductSimple.Variables>(
+            GET_PRODUCT_SIMPLE,
+            {
+                id,
+            },
+        );
+    }
+
+    getProductVariants(options: ProductVariantListOptions) {
+        return this.baseDataService.query<GetProductVariantList.Query, GetProductVariantList.Variables>(
+            GET_PRODUCT_VARIANT_LIST,
+            { options },
+        );
+    }
+
     getProductVariant(id: string) {
         return this.baseDataService.query<GetProductVariant.Query, GetProductVariant.Variables>(
             GET_PRODUCT_VARIANT,
@@ -150,6 +187,7 @@ export class ProductDataService {
     createProduct(product: CreateProductInput) {
         const input: CreateProduct.Variables = {
             input: pick(product, [
+                'enabled',
                 'translations',
                 'customFields',
                 'assetIds',
@@ -272,6 +310,15 @@ export class ProductDataService {
         );
     }
 
+    updateProductOptionGroup(input: UpdateProductOptionGroupInput) {
+        return this.baseDataService.mutate<
+            UpdateProductOptionGroup.Mutation,
+            UpdateProductOptionGroup.Variables
+        >(UPDATE_PRODUCT_OPTION_GROUP, {
+            input: pick(input, ['id', 'code', 'translations', 'customFields']),
+        });
+    }
+
     getProductOptionGroups(filterTerm?: string) {
         return this.baseDataService.query<GetProductOptionGroups.Query, GetProductOptionGroups.Variables>(
             GET_PRODUCT_OPTION_GROUPS,
@@ -313,8 +360,10 @@ export class ProductDataService {
 
     deleteAssets(ids: string[], force: boolean) {
         return this.baseDataService.mutate<DeleteAssets.Mutation, DeleteAssets.Variables>(DELETE_ASSETS, {
-            ids,
-            force,
+            input: {
+                assetIds: ids,
+                force,
+            },
         });
     }
 
@@ -352,5 +401,25 @@ export class ProductDataService {
         >(REMOVE_VARIANTS_FROM_CHANNEL, {
             input,
         });
+    }
+
+    getTag(id: string) {
+        return this.baseDataService.query<GetTag.Query, GetTag.Variables>(GET_TAG, { id });
+    }
+
+    getTagList(options?: TagListOptions) {
+        return this.baseDataService.query<GetTagList.Query, GetTagList.Variables>(GET_TAG_LIST, { options });
+    }
+
+    createTag(input: CreateTagInput) {
+        return this.baseDataService.mutate<CreateTag.Mutation, CreateTag.Variables>(CREATE_TAG, { input });
+    }
+
+    updateTag(input: UpdateTagInput) {
+        return this.baseDataService.mutate<UpdateTag.Mutation, UpdateTag.Variables>(UPDATE_TAG, { input });
+    }
+
+    deleteTag(id: string) {
+        return this.baseDataService.mutate<DeleteTag.Mutation, DeleteTag.Variables>(DELETE_TAG, { id });
     }
 }
