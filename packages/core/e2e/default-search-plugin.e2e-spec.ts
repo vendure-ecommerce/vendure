@@ -42,7 +42,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate
+    UpdateTaxRate,
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
@@ -565,7 +565,7 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
@@ -579,8 +579,8 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
-                ]);
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
         });
 
         it('encodes the productId and productVariantId', async () => {

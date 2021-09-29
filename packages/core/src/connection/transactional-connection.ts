@@ -36,9 +36,7 @@ export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
     /**
      * @description
      * If set to a positive integer, it will retry getting the entity in case it is initially not
-     * found. This can be useful when working with the {@link EventBus} and subscribing to the
-     * creation of new Entities which may on first attempt be inaccessible due to an ongoing
-     * transaction.
+     * found.
      *
      * @since 1.1.0
      * @default 0
@@ -157,9 +155,7 @@ export class TransactionalConnection {
     /**
      * @description
      * Finds an entity of the given type by ID, or throws an `EntityNotFoundError` if none
-     * is found. Can be configured to retry (using the `retries` option) in the event of the
-     * entity not being found on the first attempt. This can be useful when attempting to access
-     * an entity which was just created and may be inaccessible due to an ongoing transaction.
+     * is found.
      */
     async getEntityOrThrow<T extends VendureEntity>(
         ctx: RequestContext,

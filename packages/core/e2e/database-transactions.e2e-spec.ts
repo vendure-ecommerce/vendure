@@ -2,11 +2,16 @@ import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { ReplaySubject } from 'rxjs';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { TransactionTestPlugin, TRIGGER_EMAIL } from './fixtures/test-plugins/transaction-test-plugin';
+import {
+    TransactionTestPlugin,
+    TRIGGER_ATTEMPTED_READ_EMAIL,
+    TRIGGER_ATTEMPTED_UPDATE_EMAIL,
+} from './fixtures/test-plugins/transaction-test-plugin';
 
 describe('Transaction infrastructure', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -104,13 +109,25 @@ describe('Transaction infrastructure', () => {
 
     // Testing https://github.com/vendure-ecommerce/vendure/issues/520
     it('passing transaction via EventBus', async () => {
-        TransactionTestPlugin.errorHandler.mockClear();
+        TransactionTestPlugin.reset();
         const { createTestAdministrator } = await adminClient.query(CREATE_ADMIN, {
-            emailAddress: TRIGGER_EMAIL,
+            emailAddress: TRIGGER_ATTEMPTED_UPDATE_EMAIL,
             fail: false,
         });
         await TransactionTestPlugin.eventHandlerComplete$.toPromise();
-        expect(createTestAdministrator.emailAddress).toBe(TRIGGER_EMAIL);
+        expect(createTestAdministrator.emailAddress).toBe(TRIGGER_ATTEMPTED_UPDATE_EMAIL);
+        expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
+    });
+
+    // Testing https://github.com/vendure-ecommerce/vendure/issues/1107
+    it('passing transaction via EventBus with delay in committing transaction', async () => {
+        TransactionTestPlugin.reset();
+        const { createTestAdministrator4 } = await adminClient.query(CREATE_ADMIN4, {
+            emailAddress: TRIGGER_ATTEMPTED_READ_EMAIL,
+            fail: false,
+        });
+        await TransactionTestPlugin.eventHandlerComplete$.toPromise();
+        expect(createTestAdministrator4.emailAddress).toBe(TRIGGER_ATTEMPTED_READ_EMAIL);
         expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
     });
 });
@@ -145,8 +162,17 @@ const CREATE_ADMIN2 = gql`
 `;
 
 const CREATE_ADMIN3 = gql`
-    mutation CreateTestAdmin2($emailAddress: String!, $fail: Boolean!) {
+    mutation CreateTestAdmin3($emailAddress: String!, $fail: Boolean!) {
         createTestAdministrator3(emailAddress: $emailAddress, fail: $fail) {
+            ...CreatedAdmin
+        }
+    }
+    ${ADMIN_FRAGMENT}
+`;
+
+const CREATE_ADMIN4 = gql`
+    mutation CreateTestAdmin4($emailAddress: String!, $fail: Boolean!) {
+        createTestAdministrator4(emailAddress: $emailAddress, fail: $fail) {
             ...CreatedAdmin
         }
     }

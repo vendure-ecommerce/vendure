@@ -6,14 +6,14 @@ import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { TypeOrmLogger } from '../config/logger/typeorm-logger';
 
+import { TransactionSubscriber } from './transaction-subscriber';
 import { TransactionalConnection } from './transactional-connection';
 
 let defaultTypeOrmModule: DynamicModule;
 
 @Module({
-    imports: [],
-    providers: [TransactionalConnection],
-    exports: [TransactionalConnection],
+    providers: [TransactionalConnection, TransactionSubscriber],
+    exports: [TransactionalConnection, TransactionSubscriber],
 })
 export class ConnectionModule {
     static forRoot(): DynamicModule {
