@@ -19,6 +19,7 @@ import { OrderModifier } from './helpers/order-modifier/order-modifier';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCipher } from './helpers/password-cipher/password-cipher';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
+import { ProductPriceApplicator } from './helpers/product-price-applicator/product-price-applicator';
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { SlugValidator } from './helpers/slug-validator/slug-validator';
@@ -112,6 +113,7 @@ const helpers = [
     CustomFieldRelationService,
     LocaleStringHydrator,
     ActiveOrderService,
+    ProductPriceApplicator,
 ];
 
 /**

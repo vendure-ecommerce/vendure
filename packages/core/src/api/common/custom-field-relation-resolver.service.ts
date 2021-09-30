@@ -8,8 +8,8 @@ import { RelationCustomFieldConfig } from '../../config/custom-field/custom-fiel
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { ProductPriceApplicator } from '../../service/helpers/product-price-applicator/product-price-applicator';
 import { translateDeep } from '../../service/helpers/utils/translate-entity';
-import { ProductVariantService } from '../../service/services/product-variant.service';
 
 import { RequestContext } from './request-context';
 
@@ -25,7 +25,7 @@ export class CustomFieldRelationResolverService {
     constructor(
         private connection: TransactionalConnection,
         private configService: ConfigService,
-        private productVariantService: ProductVariantService,
+        private productPriceApplicator: ProductPriceApplicator,
     ) {}
     /**
      * @description
@@ -82,8 +82,6 @@ export class CustomFieldRelationResolverService {
             .of(variant)
             .loadOne();
         variant.taxCategory = taxCategory;
-        // We use the ModuleRef to resolve the ProductVariantService here to
-        // avoid a circular dependency in the Nest DI.
-        return this.productVariantService.applyChannelPriceAndTax(variant, ctx);
+        return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx);
     }
 }

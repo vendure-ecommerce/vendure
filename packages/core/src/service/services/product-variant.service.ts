@@ -10,7 +10,6 @@ import {
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
@@ -38,6 +37,7 @@ import { ProductVariantChannelEvent } from '../../event-bus/events/product-varia
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { samplesEach } from '../helpers/utils/samples-each';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -49,8 +49,6 @@ import { GlobalSettingsService } from './global-settings.service';
 import { RoleService } from './role.service';
 import { StockMovementService } from './stock-movement.service';
 import { TaxCategoryService } from './tax-category.service';
-import { TaxRateService } from './tax-rate.service';
-import { ZoneService } from './zone.service';
 
 @Injectable()
 export class ProductVariantService {
@@ -59,9 +57,7 @@ export class ProductVariantService {
         private configService: ConfigService,
         private taxCategoryService: TaxCategoryService,
         private facetValueService: FacetValueService,
-        private taxRateService: TaxRateService,
         private assetService: AssetService,
-        private zoneService: ZoneService,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
@@ -71,6 +67,7 @@ export class ProductVariantService {
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
         private requestCache: RequestContextCacheService,
+        private productPriceApplicator: ProductPriceApplicator,
     ) {}
 
     async findAll(
@@ -577,40 +574,7 @@ export class ProductVariantService {
         ctx: RequestContext,
         order?: Order,
     ): Promise<ProductVariant> {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
-        if (!channelPrice) {
-            throw new InternalServerError(`error.no-price-found-for-channel`, {
-                variantId: variant.id,
-                channel: ctx.channel.code,
-            });
-        }
-        const { taxZoneStrategy } = this.configService.taxOptions;
-        const zones = await this.requestCache.get(ctx, 'allZones', () => this.zoneService.findAll(ctx));
-        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
-            taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
-        );
-        if (!activeTaxZone) {
-            throw new InternalServerError(`error.no-active-tax-zone`);
-        }
-        const applicableTaxRate = await this.requestCache.get(
-            ctx,
-            `applicableTaxRate-${activeTaxZone.id}-${variant.taxCategory.id}`,
-            () => this.taxRateService.getApplicableTaxRate(ctx, activeTaxZone, variant.taxCategory),
-        );
-
-        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
-        const { price, priceIncludesTax } = await productVariantPriceCalculationStrategy.calculate({
-            inputPrice: channelPrice.price,
-            taxCategory: variant.taxCategory,
-            activeTaxZone,
-            ctx,
-        });
-
-        variant.listPrice = price;
-        variant.listPriceIncludesTax = priceIncludesTax;
-        variant.taxRateApplied = applicableTaxRate;
-        variant.currencyCode = ctx.channel.currencyCode;
-        return variant;
+        return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx, order);
     }
 
     async assignProductVariantsToChannel(

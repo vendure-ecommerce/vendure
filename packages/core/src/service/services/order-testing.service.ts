@@ -21,10 +21,9 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
+import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { translateDeep } from '../helpers/utils/translate-entity';
-
-import { ProductVariantService } from './product-variant.service';
 
 /**
  * This service is responsible for creating temporary mock Orders against which tests can be run, such as
@@ -38,7 +37,7 @@ export class OrderTestingService {
         private shippingCalculator: ShippingCalculator,
         private configArgService: ConfigArgService,
         private configService: ConfigService,
-        private productVariantService: ProductVariantService,
+        private productPriceApplicator: ProductPriceApplicator,
     ) {}
 
     /**
@@ -119,7 +118,7 @@ export class OrderTestingService {
                 line.productVariantId,
                 { relations: ['taxCategory'] },
             );
-            await this.productVariantService.applyChannelPriceAndTax(productVariant, ctx, mockOrder);
+            await this.productPriceApplicator.applyChannelPriceAndTax(productVariant, ctx, mockOrder);
             const orderLine = new OrderLine({
                 productVariant,
                 items: [],

@@ -13,8 +13,8 @@ import {
     LanguageCode,
     Logger,
     Product,
+    ProductPriceApplicator,
     ProductVariant,
-    ProductVariantService,
     RequestContext,
     TransactionalConnection,
     Translatable,
@@ -78,7 +78,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     constructor(
         private connection: TransactionalConnection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
-        private productVariantService: ProductVariantService,
+        private productPriceApplicator: ProductPriceApplicator,
         private configService: ConfigService,
     ) {}
 
@@ -482,7 +482,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         v.channels.map(c => c.id).includes(channelCtx.channelId),
                     );
                     for (const variant of variantsInChannel) {
-                        await this.productVariantService.applyChannelPriceAndTax(variant, channelCtx);
+                        await this.productPriceApplicator.applyChannelPriceAndTax(variant, channelCtx);
                     }
                     for (const languageCode of uniqueLanguageVariants) {
                         if (variantsInChannel.length) {

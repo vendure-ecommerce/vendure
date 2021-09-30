@@ -13,10 +13,9 @@ import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
-import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
-import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     ProductChannelMessageData,
@@ -53,7 +52,7 @@ export class IndexerController {
 
     constructor(
         private connection: TransactionalConnection,
-        private productVariantService: ProductVariantService,
+        private productPriceApplicator: ProductPriceApplicator,
         private configService: ConfigService,
     ) {}
 
@@ -334,7 +333,7 @@ export class IndexerController {
                         isAuthorized: true,
                         session: {} as any,
                     });
-                    await this.productVariantService.applyChannelPriceAndTax(variant, ctx);
+                    await this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx);
                     items.push(
                         new SearchIndexItem({
                             channelId: channel.id,
