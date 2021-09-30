@@ -1,3 +1,7 @@
+## <small>1.2.3 (2021-09-29)</small>
+
+This release fixes an error in the publishing of the TypeScript definitions from v1.2.2.
+
 ## <small>1.2.2 (2021-09-28)</small>
 
 
