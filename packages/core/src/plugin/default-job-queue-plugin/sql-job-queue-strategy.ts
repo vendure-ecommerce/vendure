@@ -5,9 +5,9 @@ import { Brackets, Connection, EntityManager, FindConditions, In, LessThan } fro
 import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
 import { Logger } from '../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Job, JobData } from '../../job-queue';
 import { PollingJobQueueStrategy } from '../../job-queue/polling-job-queue-strategy';
-import { TransactionalConnection } from '../../service';
 import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
 
 import { JobRecord } from './job-record.entity';

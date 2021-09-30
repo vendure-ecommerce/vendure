@@ -9,6 +9,7 @@ import { JobQueueModule } from '../job-queue/job-queue.module';
 import { ActiveOrderService } from './helpers/active-order/active-order.service';
 import { ConfigArgService } from './helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
+import { EntityHydrator } from './helpers/entity-hydrator/entity-hydrator.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
@@ -114,6 +115,7 @@ const helpers = [
     LocaleStringHydrator,
     ActiveOrderService,
     ProductPriceApplicator,
+    EntityHydrator,
 ];
 
 /**

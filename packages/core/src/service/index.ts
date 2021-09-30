@@ -1,5 +1,6 @@
 export * from './helpers/active-order/active-order.service';
 export * from './helpers/config-arg/config-arg.service';
+export * from './helpers/entity-hydrator/entity-hydrator.service';
 export * from './helpers/external-authentication/external-authentication.service';
 export * from './helpers/custom-field-relation/custom-field-relation.service';
 export * from './helpers/fulfillment-state-machine/fulfillment-state';
@@ -46,4 +47,3 @@ export * from './services/tax-category.service';
 export * from './services/tax-rate.service';
 export * from './services/user.service';
 export * from './services/zone.service';
-export * from '../connection/transactional-connection';

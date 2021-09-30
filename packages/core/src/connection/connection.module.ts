@@ -12,6 +12,7 @@ import { TransactionalConnection } from './transactional-connection';
 let defaultTypeOrmModule: DynamicModule;
 
 @Module({
+    imports: [ConfigModule],
     providers: [TransactionalConnection, TransactionSubscriber],
     exports: [TransactionalConnection, TransactionSubscriber],
 })
