@@ -59,6 +59,8 @@ export async function createIndices(
         productPriceWithTaxMin: { type: 'long' },
         price: { type: 'long' },
         priceWithTax: { type: 'long' },
+        inStock: { type: 'boolean' },
+        productInStock: { type: 'boolean' },
         ...indexMappingProperties,
     };
 

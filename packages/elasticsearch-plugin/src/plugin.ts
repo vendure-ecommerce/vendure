@@ -210,7 +210,10 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
             useFactory: () => ElasticsearchPlugin.options.bufferUpdates === true,
         },
     ],
-    adminApiExtensions: { resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver] },
+    adminApiExtensions: {
+        resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver],
+        schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
+    },
     shopApiExtensions: {
         resolvers: () => {
             const { options } = ElasticsearchPlugin;

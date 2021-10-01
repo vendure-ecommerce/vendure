@@ -27,6 +27,7 @@ export function buildElasticBody(
         priceRangeWithTax,
         priceRange,
         facetValueFilters,
+        inStock,
     } = input;
     const query: any = {
         bool: {},
@@ -98,6 +99,15 @@ export function buildElasticBody(
     if (priceRangeWithTax) {
         ensureBoolFilterExists(query);
         query.bool.filter = query.bool.filter.concat(createPriceFilters(priceRangeWithTax, true));
+    }
+
+    if (inStock !== undefined) {
+        ensureBoolFilterExists(query);
+        if (groupByProduct) {
+            query.bool.filter.push({ term: { productInStock: inStock } });
+        } else {
+            query.bool.filter.push({ term: { inStock } });
+        }
     }
 
     const sortArray = [];

@@ -10,6 +10,10 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             prices: SearchResponsePriceData!
         }
 
+        extend type SearchResult {
+            inStock: Boolean
+        }
+
         type SearchResponsePriceData {
             range: PriceRange!
             rangeWithTax: PriceRange!
@@ -25,6 +29,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
         extend input SearchInput {
             priceRange: PriceRangeInput
             priceRangeWithTax: PriceRangeInput
+            inStock: Boolean
         }
 
         input PriceRangeInput {
