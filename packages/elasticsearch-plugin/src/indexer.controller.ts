@@ -744,6 +744,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             ),
             productCollectionSlugs: unique(productCollectionTranslations.map(c => c.slug)),
             productChannelIds: v.product.channels.map(c => c.id),
+            inStock: v.stockOnHand > 0,
+            productInStock: variants.some(variant => variant.stockOnHand > 0),
         };
         const variantCustomMappings = Object.entries(this.options.customProductVariantMappings);
         for (const [name, def] of variantCustomMappings) {
@@ -804,6 +806,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             productCollectionIds: [],
             productCollectionSlugs: [],
             productChannelIds: product.channels.map(c => c.id),
+            inStock: false,
+            productInStock: false
         };
     }
 

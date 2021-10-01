@@ -1,6 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
+import { SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     Collection,
     CollectionService,
@@ -25,6 +25,7 @@ import {
     CustomMapping,
     ElasticSearchInput,
     ElasticSearchResponse,
+    ElasticSearchResult,
     ProductIndexItem,
     SearchHit,
     SearchPriceData,
@@ -457,7 +458,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return job!;
     }
 
-    private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
+    private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
         const source = hit._source;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
@@ -482,7 +483,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return result;
     }
 
-    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
+    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
         const source = hit._source;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
@@ -508,6 +509,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 max: source.productPriceWithTaxMax,
             },
             channelIds: [],
+            inStock: source.productInStock,
             score: hit._score || 0,
         };
         ElasticsearchService.addCustomMappings(result, source, this.options.customProductMappings, true);

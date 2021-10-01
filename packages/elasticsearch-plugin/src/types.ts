@@ -10,13 +10,19 @@ import {
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { Asset, SerializedRequestContext } from '@vendure/core';
 
+export type ElasticSearchResult = SearchResult & {
+    inStock: boolean;
+};
+
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
     priceRangeWithTax?: PriceRange;
+    inStock?: boolean;
 };
 
 export type ElasticSearchResponse = SearchResponse & {
     priceRange: SearchPriceData;
+    items: ElasticSearchResult[];
 };
 
 export type SearchPriceData = {
@@ -61,6 +67,8 @@ export type VariantIndexItem = Omit<
         productCollectionSlugs: string[];
         productChannelIds: ID[];
         [customMapping: string]: any;
+        inStock: boolean;
+        productInStock: boolean;
     };
 
 export type ProductIndexItem = IndexItemAssets & {
