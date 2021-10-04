@@ -1,5 +1,6 @@
 import { Type } from '@vendure/common/lib/shared-types';
 
+import { Job } from '../../job-queue/job';
 import { BackoffStrategy } from '../../job-queue/polling-job-queue-strategy';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
@@ -19,6 +20,7 @@ export interface DefaultJobQueueOptions {
     pollInterval?: number | ((queueName: string) => number);
     concurrency?: number;
     backoffStrategy?: BackoffStrategy;
+    setRetries?: (queueName: string, job: Job) => number;
 }
 
 /**
@@ -74,7 +76,7 @@ export interface DefaultJobQueueOptions {
  * Defines the backoff strategy used when retrying failed jobs. In other words, if a job fails
  * and is configured to be re-tried, how long should we wait before the next attempt?
  *
- * By default a job will be retried as soon as possible, but in some cases this is not desirable. For example,
+ * By default, a job will be retried as soon as possible, but in some cases this is not desirable. For example,
  * a job may interact with an unreliable 3rd-party API which is sensitive to too many requests. In this case, an
  * exponential backoff may be used which progressively increases the delay between each subsequent retry.
  *
@@ -94,6 +96,15 @@ export interface DefaultJobQueueOptions {
  *         // A default delay for all other queues
  *         return 1000;
  *       },
+ *       retries: (queueName, job) => {
+ *         if (queueName === 'send-email') {
+ *           // Override the default number of retries
+ *           // for the 'send-email' job because we have
+ *           // a very unreliable email service.
+ *           return 10;
+ *         }
+ *         return job.retries;
+ *       }
  *     }),
  *   ],
  * };
@@ -106,11 +117,13 @@ export interface DefaultJobQueueOptions {
     imports: [PluginCommonModule],
     entities: [JobRecord],
     configuration: config => {
-        const { pollInterval, concurrency, backoffStrategy } = DefaultJobQueuePlugin.options ?? {};
+        const { pollInterval, concurrency, backoffStrategy, setRetries } =
+            DefaultJobQueuePlugin.options ?? {};
         config.jobQueueOptions.jobQueueStrategy = new SqlJobQueueStrategy({
             concurrency,
             pollInterval,
             backoffStrategy,
+            setRetries,
         });
         return config;
     },
