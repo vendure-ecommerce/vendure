@@ -703,3 +703,21 @@ export const GET_PRODUCT_WITH_STOCK_LEVEL = gql`
         }
     }
 `;
+
+export const GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG = gql`
+    query GetActiveCustomerWithOrdersProductSlug($options: OrderListOptions) {
+        activeCustomer {
+            orders(options: $options) {
+                items {
+                    lines {
+                        productVariant {
+                            product {
+                                slug
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;

@@ -174,7 +174,9 @@ export class TransactionalConnection {
         }
         if (
             !entity ||
-            (entity.hasOwnProperty('deletedAt') && (entity as T & SoftDeletable).deletedAt !== null)
+            (entity.hasOwnProperty('deletedAt') &&
+                (entity as T & SoftDeletable).deletedAt !== null &&
+                options.includeSoftDeleted !== true)
         ) {
             throw new EntityNotFoundError(entityType.name as any, id);
         }

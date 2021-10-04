@@ -2303,19 +2303,12 @@ export type Product = Node & {
     description: Scalars['String'];
     featuredAsset?: Maybe<Asset>;
     assets: Array<Asset>;
-    /** Returns all ProductVariants */
     variants: Array<ProductVariant>;
-    /** Returns a paginated, sortable, filterable list of ProductVariants */
-    variantList: ProductVariantList;
     optionGroups: Array<ProductOptionGroup>;
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
     customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type ProductVariantListArgs = {
-    options?: Maybe<ProductVariantListOptions>;
 };
 
 export type ProductFilterParameter = {
