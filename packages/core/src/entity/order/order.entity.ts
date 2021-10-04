@@ -8,7 +8,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { InternalServerError } from '../../common/error/errors';
@@ -51,7 +51,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * {@link OrderCodeStrategy}. This should be used as an order reference
      * for Customers, rather than the Order's id.
      */
-    @Column() code: string;
+    @Column()
+    @Index({ unique: true })
+    code: string;
 
     @Column('varchar') state: OrderState;
 
