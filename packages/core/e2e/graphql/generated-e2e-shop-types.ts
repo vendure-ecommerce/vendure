@@ -2226,19 +2226,12 @@ export type Product = Node & {
     description: Scalars['String'];
     featuredAsset?: Maybe<Asset>;
     assets: Array<Asset>;
-    /** Returns all ProductVariants */
     variants: Array<ProductVariant>;
-    /** Returns a paginated, sortable, filterable list of ProductVariants */
-    variantList: ProductVariantList;
     optionGroups: Array<ProductOptionGroup>;
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
     customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type ProductVariantListArgs = {
-    options?: Maybe<ProductVariantListOptions>;
 };
 
 export type ProductFilterParameter = {
@@ -3394,6 +3387,16 @@ export type GetProductStockLevelQuery = {
     product?: Maybe<Pick<Product, 'id'> & { variants: Array<Pick<ProductVariant, 'id' | 'stockLevel'>> }>;
 };
 
+export type GetActiveCustomerWithOrdersProductSlugQueryVariables = Exact<{
+    options?: Maybe<OrderListOptions>;
+}>;
+
+export type GetActiveCustomerWithOrdersProductSlugQuery = {
+    activeCustomer?: Maybe<{
+        orders: { items: Array<{ lines: Array<{ productVariant: { product: Pick<Product, 'slug'> } }> }> };
+    }>;
+};
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 export namespace TestOrderFragment {
@@ -3919,5 +3922,64 @@ export namespace GetProductStockLevel {
     export type Product = NonNullable<GetProductStockLevelQuery['product']>;
     export type Variants = NonNullable<
         NonNullable<NonNullable<GetProductStockLevelQuery['product']>['variants']>[number]
+    >;
+}
+
+export namespace GetActiveCustomerWithOrdersProductSlug {
+    export type Variables = GetActiveCustomerWithOrdersProductSlugQueryVariables;
+    export type Query = GetActiveCustomerWithOrdersProductSlugQuery;
+    export type ActiveCustomer = NonNullable<GetActiveCustomerWithOrdersProductSlugQuery['activeCustomer']>;
+    export type Orders = NonNullable<
+        NonNullable<GetActiveCustomerWithOrdersProductSlugQuery['activeCustomer']>['orders']
+    >;
+    export type Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<GetActiveCustomerWithOrdersProductSlugQuery['activeCustomer']>['orders']
+            >['items']
+        >[number]
+    >;
+    export type Lines = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<GetActiveCustomerWithOrdersProductSlugQuery['activeCustomer']>['orders']
+                    >['items']
+                >[number]
+            >['lines']
+        >[number]
+    >;
+    export type ProductVariant = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<
+                                GetActiveCustomerWithOrdersProductSlugQuery['activeCustomer']
+                            >['orders']
+                        >['items']
+                    >[number]
+                >['lines']
+            >[number]
+        >['productVariant']
+    >;
+    export type Product = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<
+                                NonNullable<
+                                    GetActiveCustomerWithOrdersProductSlugQuery['activeCustomer']
+                                >['orders']
+                            >['items']
+                        >[number]
+                    >['lines']
+                >[number]
+            >['productVariant']
+        >['product']
     >;
 }

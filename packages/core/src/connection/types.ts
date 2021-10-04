@@ -31,4 +31,13 @@ export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
      * @default 25
      */
     retryDelay?: number;
+    /**
+     * @description
+     * If set to `true`, soft-deleted entities will be returned. Otherwise they will
+     * throw as if they did not exist.
+     *
+     * @since 1.3.0
+     * @default false
+     */
+    includeSoftDeleted?: boolean;
 }
