@@ -8,7 +8,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { ChannelAware } from '../../common/types/common-types';
@@ -44,7 +44,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         super(input);
     }
 
-    @Column() code: string;
+    @Column()
+    @Index({ unique: true })
+    code: string;
 
     @Column('varchar') state: OrderState;
 
