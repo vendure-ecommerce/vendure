@@ -10,6 +10,7 @@ import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strat
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
@@ -84,6 +85,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
+        passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,

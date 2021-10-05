@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import bcrypt from 'bcrypt';
 
-const SALT_ROUNDS = 12;
+import { ConfigService } from '../../../config/config.service';
 
 /**
- * A cipher which uses bcrypt (https://en.wikipedia.org/wiki/Bcrypt) to hash plaintext password strings.
+ * @description
+ * Used in the {@link NativeAuthenticationStrategy} when hashing and checking user passwords.
  */
 @Injectable()
 export class PasswordCipher {
+    constructor(private configService: ConfigService) {}
     hash(plaintext: string): Promise<string> {
-        return bcrypt.hash(plaintext, SALT_ROUNDS);
+        return this.configService.authOptions.passwordHashingStrategy.hash(plaintext);
     }
 
     check(plaintext: string, hash: string): Promise<boolean> {
-        return bcrypt.compare(plaintext, hash);
+        return this.configService.authOptions.passwordHashingStrategy.check(plaintext, hash);
     }
 }

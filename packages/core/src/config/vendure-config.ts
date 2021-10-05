@@ -13,6 +13,7 @@ import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strate
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
+import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
@@ -296,7 +297,7 @@ export interface AuthOptions {
      * `authTokenHeaderKey` in the server's CORS configuration (adding `Access-Control-Expose-Headers: vendure-auth-token`
      * by default).
      *
-     * From v1.2.0 is is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
+     * From v1.2.0 it is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
      *
      * @default 'cookie'
      */
@@ -390,6 +391,14 @@ export interface AuthOptions {
      * @default []
      */
     customPermissions?: PermissionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the way passwords are hashed when using the {@link NativeAuthenticationStrategy}.
+     *
+     * @default BcryptPasswordHashingStrategy
+     * @since 1.3.0
+     */
+    passwordHashingStrategy?: PasswordHashingStrategy;
 }
 
 /**
