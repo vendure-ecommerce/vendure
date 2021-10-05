@@ -258,6 +258,7 @@ export type BooleanCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
 };
 
 export type BooleanOperators = {
@@ -646,13 +647,17 @@ export type CreatePaymentMethodInput = {
   handler: ConfigurableOperationInput;
 };
 
+export type CreateProductCustomFieldsInput = {
+  coffeeProfileWithMilk?: Maybe<Scalars['String']>;
+};
+
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
   enabled?: Maybe<Scalars['Boolean']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   translations: Array<ProductTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateProductCustomFieldsInput>;
 };
 
 export type CreateProductOptionGroupInput = {
@@ -1097,6 +1102,7 @@ export type CustomField = {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
 };
 
 export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig | TextCustomFieldConfig;
@@ -1251,6 +1257,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
   min?: Maybe<Scalars['String']>;
   max?: Maybe<Scalars['String']>;
   step?: Maybe<Scalars['Int']>;
@@ -1467,6 +1474,7 @@ export type FloatCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
   min?: Maybe<Scalars['Float']>;
   max?: Maybe<Scalars['Float']>;
   step?: Maybe<Scalars['Float']>;
@@ -1620,6 +1628,7 @@ export type IntCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
   min?: Maybe<Scalars['Int']>;
   max?: Maybe<Scalars['Int']>;
   step?: Maybe<Scalars['Int']>;
@@ -2069,6 +2078,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
   pattern?: Maybe<Scalars['String']>;
 };
 
@@ -3593,12 +3603,17 @@ export type Product = Node & {
   facetValues: Array<FacetValue>;
   translations: Array<ProductTranslation>;
   collections: Array<Collection>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductCustomFields>;
 };
 
 
 export type ProductVariantListArgs = {
   options?: Maybe<ProductVariantListOptions>;
+};
+
+export type ProductCustomFields = {
+  __typename?: 'ProductCustomFields';
+  coffeeProfileWithMilk?: Maybe<Scalars['String']>;
 };
 
 export type ProductFilterParameter = {
@@ -3609,6 +3624,7 @@ export type ProductFilterParameter = {
   name?: Maybe<StringOperators>;
   slug?: Maybe<StringOperators>;
   description?: Maybe<StringOperators>;
+  coffeeProfileWithMilk?: Maybe<StringOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -3698,6 +3714,7 @@ export type ProductSortParameter = {
   name?: Maybe<SortOrder>;
   slug?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
+  coffeeProfileWithMilk?: Maybe<SortOrder>;
 };
 
 export type ProductTranslation = {
@@ -4232,6 +4249,7 @@ export type RelationCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
   entity: Scalars['String'];
   scalarFields: Array<Scalars['String']>;
 };
@@ -4566,6 +4584,7 @@ export type StringCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
   pattern?: Maybe<Scalars['String']>;
   options?: Maybe<Array<StringFieldOption>>;
 };
@@ -4744,6 +4763,7 @@ export type TextCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  nullable?: Maybe<Scalars['Boolean']>;
 };
 
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
@@ -4921,6 +4941,10 @@ export type UpdatePaymentMethodInput = {
   handler?: Maybe<ConfigurableOperationInput>;
 };
 
+export type UpdateProductCustomFieldsInput = {
+  coffeeProfileWithMilk?: Maybe<Scalars['String']>;
+};
+
 export type UpdateProductInput = {
   id: Scalars['ID'];
   enabled?: Maybe<Scalars['Boolean']>;
@@ -4928,7 +4952,7 @@ export type UpdateProductInput = {
   assetIds?: Maybe<Array<Scalars['ID']>>;
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   translations?: Maybe<Array<ProductTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateProductCustomFieldsInput>;
 };
 
 export type UpdateProductOptionGroupInput = {
@@ -7556,7 +7580,7 @@ export type UpdateGlobalSettingsMutation = { updateGlobalSettings: (
 
 type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
   { __typename?: 'BooleanCustomFieldConfig' }
-  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7568,7 +7592,7 @@ type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
   { __typename?: 'DateTimeCustomFieldConfig' }
-  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7580,7 +7604,7 @@ type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
   { __typename?: 'FloatCustomFieldConfig' }
-  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7592,7 +7616,7 @@ type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
   { __typename?: 'IntCustomFieldConfig' }
-  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7604,7 +7628,7 @@ type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
   { __typename?: 'LocaleStringCustomFieldConfig' }
-  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7616,7 +7640,7 @@ type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_RelationCustomFieldConfig_Fragment = (
   { __typename?: 'RelationCustomFieldConfig' }
-  & Pick<RelationCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<RelationCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7628,7 +7652,7 @@ type CustomFieldConfig_RelationCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
   { __typename?: 'StringCustomFieldConfig' }
-  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -7640,7 +7664,7 @@ type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_TextCustomFieldConfig_Fragment = (
   { __typename?: 'TextCustomFieldConfig' }
-  & Pick<TextCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & Pick<TextCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly' | 'nullable'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
