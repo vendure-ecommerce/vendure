@@ -1,4 +1,5 @@
 <select clrSelect [formControl]="formControl" [vdrDisabled]="readonly">
+    <option *ngIf="config.nullable" [ngValue]="null"></option>
     <option *ngFor="let option of config.options" [value]="option.value">
         {{ (option | customFieldLabel) || option.label || option.value }}
     </option>
