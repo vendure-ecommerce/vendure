@@ -83,6 +83,12 @@
         <td class="left align-middle">{{ job.createdAt | timeAgo }}</td>
         <td class="left align-middle">
             <vdr-job-state-label [job]="job"></vdr-job-state-label>
+            <div *ngIf="job.state === 'FAILED'" class="retry-info">
+                after {{ job.attempts }} attempts
+            </div>
+            <div *ngIf="job.state === 'RUNNING' || job.state === 'RETRYING'"  class="retry-info">
+                attempting {{ job.attempts + 1 }} of {{ job.retries }}
+            </div>
         </td>
         <td class="left align-middle">{{ job.duration | duration }}</td>
         <td class="left align-middle">

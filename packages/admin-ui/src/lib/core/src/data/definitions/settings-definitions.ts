@@ -706,6 +706,8 @@ export const JOB_INFO_FRAGMENT = gql`
         data
         result
         error
+        retries
+        attempts
     }
 `;
 
