@@ -1024,7 +1024,7 @@ export class OrderService {
 
     private async cancelOrderById(ctx: RequestContext, input: CancelOrderInput) {
         const order = await this.getOrderOrThrow(ctx, input.orderId);
-        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+        if (order.active) {
             return true;
         } else {
             const lines: OrderLineInput[] = order.lines.map(l => ({
@@ -1055,7 +1055,7 @@ export class OrderService {
         if (!idsAreEqual(order.id, input.orderId)) {
             return new MultipleOrderError();
         }
-        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+        if (order.active) {
             return new CancelActiveOrderError(order.state);
         }
         const fullOrder = await this.findOne(ctx, order.id);
