@@ -109,6 +109,29 @@ class TestResolver {
         return admin;
     }
 
+    @Mutation()
+    async createTestAdministrator5(@Ctx() ctx: RequestContext, @Args() args: any) {
+        if (args.noContext === true) {
+            return this.connection.withTransaction(ctx, async _ctx => {
+                const admin = await this.testAdminService.createAdministrator(
+                    _ctx,
+                    args.emailAddress,
+                    args.fail,
+                );
+                return admin;
+            });
+        } else {
+            return this.connection.withTransaction(async _ctx => {
+                const admin = await this.testAdminService.createAdministrator(
+                    _ctx,
+                    args.emailAddress,
+                    args.fail,
+                );
+                return admin;
+            });
+        }
+    }
+
     @Query()
     async verify() {
         const admins = await this.connection.getRepository(Administrator).find();
@@ -130,6 +153,11 @@ class TestResolver {
                 createTestAdministrator2(emailAddress: String!, fail: Boolean!): Administrator
                 createTestAdministrator3(emailAddress: String!, fail: Boolean!): Administrator
                 createTestAdministrator4(emailAddress: String!, fail: Boolean!): Administrator
+                createTestAdministrator5(
+                    emailAddress: String!
+                    fail: Boolean!
+                    noContext: Boolean!
+                ): Administrator
             }
             type VerifyResult {
                 admins: [Administrator!]!

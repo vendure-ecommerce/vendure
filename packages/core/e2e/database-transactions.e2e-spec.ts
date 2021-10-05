@@ -107,6 +107,46 @@ describe('Transaction infrastructure', () => {
         expect(!!verify.users.find((u: any) => u.identifier === 'test4')).toBe(true);
     });
 
+    it('failing mutation inside connection.withTransaction() wrapper with request context', async () => {
+        try {
+            await adminClient.query(CREATE_ADMIN5, {
+                emailAddress: 'test5',
+                fail: true,
+                noContext: false,
+            });
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.message).toContain('Failed!');
+        }
+
+        const { verify } = await adminClient.query(VERIFY_TEST);
+
+        expect(verify.admins.length).toBe(2);
+        expect(verify.users.length).toBe(3);
+        expect(!!verify.admins.find((a: any) => a.emailAddress === 'test5')).toBe(false);
+        expect(!!verify.users.find((u: any) => u.identifier === 'test5')).toBe(false);
+    });
+
+    it('failing mutation inside connection.withTransaction() wrapper without request context', async () => {
+        try {
+            await adminClient.query(CREATE_ADMIN5, {
+                emailAddress: 'test5',
+                fail: true,
+                noContext: true,
+            });
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.message).toContain('Failed!');
+        }
+
+        const { verify } = await adminClient.query(VERIFY_TEST);
+
+        expect(verify.admins.length).toBe(2);
+        expect(verify.users.length).toBe(3);
+        expect(!!verify.admins.find((a: any) => a.emailAddress === 'test5')).toBe(false);
+        expect(!!verify.users.find((u: any) => u.identifier === 'test5')).toBe(false);
+    });
+
     // Testing https://github.com/vendure-ecommerce/vendure/issues/520
     it('passing transaction via EventBus', async () => {
         TransactionTestPlugin.reset();
@@ -173,6 +213,15 @@ const CREATE_ADMIN3 = gql`
 const CREATE_ADMIN4 = gql`
     mutation CreateTestAdmin4($emailAddress: String!, $fail: Boolean!) {
         createTestAdministrator4(emailAddress: $emailAddress, fail: $fail) {
+            ...CreatedAdmin
+        }
+    }
+    ${ADMIN_FRAGMENT}
+`;
+
+const CREATE_ADMIN5 = gql`
+    mutation CreateTestAdmin5($emailAddress: String!, $fail: Boolean!, $noContext: Boolean!) {
+        createTestAdministrator5(emailAddress: $emailAddress, fail: $fail, noContext: $noContext) {
             ...CreatedAdmin
         }
     }
