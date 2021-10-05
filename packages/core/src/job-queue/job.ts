@@ -93,6 +93,9 @@ export class Job<T extends JobData<T> = any> {
     }
 
     get duration(): number {
+        if (this.state === JobState.PENDING || this.state === JobState.RETRYING) {
+            return 0;
+        }
         const end = this._settledAt || new Date();
         return +end - +(this._startedAt || end);
     }
