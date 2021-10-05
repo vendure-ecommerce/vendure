@@ -46,6 +46,8 @@ type Job implements Node {
     error: JSON
     isSettled: Boolean!
     duration: Int!
+    retries: Int!
+    attempts: Int!
 }
 
 type JobQueue {
