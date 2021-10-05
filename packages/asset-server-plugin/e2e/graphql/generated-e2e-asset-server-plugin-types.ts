@@ -1611,6 +1611,8 @@ export type Job = Node & {
     error?: Maybe<Scalars['JSON']>;
     isSettled: Scalars['Boolean'];
     duration: Scalars['Int'];
+    retries: Scalars['Int'];
+    attempts: Scalars['Int'];
 };
 
 export type JobFilterParameter = {
@@ -1622,6 +1624,8 @@ export type JobFilterParameter = {
     progress?: Maybe<NumberOperators>;
     isSettled?: Maybe<BooleanOperators>;
     duration?: Maybe<NumberOperators>;
+    retries?: Maybe<NumberOperators>;
+    attempts?: Maybe<NumberOperators>;
 };
 
 export type JobList = PaginatedList & {
@@ -1649,6 +1653,8 @@ export type JobSortParameter = {
     queueName?: Maybe<SortOrder>;
     progress?: Maybe<SortOrder>;
     duration?: Maybe<SortOrder>;
+    retries?: Maybe<SortOrder>;
+    attempts?: Maybe<SortOrder>;
 };
 
 /**
@@ -3351,12 +3357,19 @@ export type Product = Node & {
     description: Scalars['String'];
     featuredAsset?: Maybe<Asset>;
     assets: Array<Asset>;
+    /** Returns all ProductVariants */
     variants: Array<ProductVariant>;
+    /** Returns a paginated, sortable, filterable list of ProductVariants */
+    variantList: ProductVariantList;
     optionGroups: Array<ProductOptionGroup>;
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductVariantListArgs = {
+    options?: Maybe<ProductVariantListOptions>;
 };
 
 export type ProductFilterParameter = {

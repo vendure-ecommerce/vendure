@@ -1654,6 +1654,8 @@ export type Job = Node & {
   error?: Maybe<Scalars['JSON']>;
   isSettled: Scalars['Boolean'];
   duration: Scalars['Int'];
+  retries: Scalars['Int'];
+  attempts: Scalars['Int'];
 };
 
 export type JobFilterParameter = {
@@ -1665,6 +1667,8 @@ export type JobFilterParameter = {
   progress?: Maybe<NumberOperators>;
   isSettled?: Maybe<BooleanOperators>;
   duration?: Maybe<NumberOperators>;
+  retries?: Maybe<NumberOperators>;
+  attempts?: Maybe<NumberOperators>;
 };
 
 export type JobList = PaginatedList & {
@@ -1694,6 +1698,8 @@ export type JobSortParameter = {
   queueName?: Maybe<SortOrder>;
   progress?: Maybe<SortOrder>;
   duration?: Maybe<SortOrder>;
+  retries?: Maybe<SortOrder>;
+  attempts?: Maybe<SortOrder>;
 };
 
 /**
