@@ -85,12 +85,14 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
+        const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries;
+        const backoff = this.options.setBackoff?.(job.queueName, job) ?? {
+            delay: 1000,
+            type: 'exponential',
+        };
         const bullJob = await this.queue.add(job.queueName, job.data, {
-            attempts: job.retries + 1,
-            backoff: {
-                delay: 1000,
-                type: 'exponential',
-            },
+            attempts: retries + 1,
+            backoff,
         });
         return this.createVendureJob(bullJob);
     }
