@@ -138,7 +138,10 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
         const settledFilter = options?.filter?.isSettled;
         if (settledFilter?.eq != null) {
-            jobTypes = settledFilter.eq === true ? ['completed', 'failed'] : ['wait', 'active', 'repeat'];
+            jobTypes =
+                settledFilter.eq === true
+                    ? ['completed', 'failed']
+                    : ['wait', 'waiting-children', 'active', 'repeat', 'delayed', 'paused'];
         }
         let items: Bull.Job[] = [];
         let jobCounts: { [index: string]: number } = {};
