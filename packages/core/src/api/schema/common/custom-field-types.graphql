@@ -6,6 +6,7 @@ interface CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
 }
 
 type StringCustomFieldConfig implements CustomField {
@@ -17,6 +18,7 @@ type StringCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
     pattern: String
     options: [StringFieldOption!]
 }
@@ -35,6 +37,7 @@ type LocaleStringCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
     pattern: String
 }
 type IntCustomFieldConfig implements CustomField {
@@ -45,6 +48,7 @@ type IntCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
     min: Int
     max: Int
     step: Int
@@ -57,6 +61,7 @@ type FloatCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
     min: Float
     max: Float
     step: Float
@@ -69,6 +74,7 @@ type BooleanCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
 }
 """
 Expects the same validation formats as the `<input type="datetime-local">` HTML element.
@@ -82,6 +88,7 @@ type DateTimeCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
     min: String
     max: String
     step: Int
@@ -95,6 +102,7 @@ type RelationCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
     entity: String!
     scalarFields: [String!]!
 }
@@ -107,6 +115,7 @@ type TextCustomFieldConfig implements CustomField {
     description: [LocalizedString!]
     readonly: Boolean
     internal: Boolean
+    nullable: Boolean
 }
 
 type LocalizedString {
