@@ -60,8 +60,12 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             this.configService.assetOptions;
         const { productVariantPriceCalculationStrategy, stockDisplayStrategy } =
             this.configService.catalogOptions;
-        const { adminAuthenticationStrategy, shopAuthenticationStrategy, sessionCacheStrategy } =
-            this.configService.authOptions;
+        const {
+            adminAuthenticationStrategy,
+            shopAuthenticationStrategy,
+            sessionCacheStrategy,
+            passwordHashingStrategy,
+        } = this.configService.authOptions;
         const { taxZoneStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
         const {
@@ -81,6 +85,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
             sessionCacheStrategy,
+            passwordHashingStrategy,
             assetNamingStrategy,
             assetPreviewStrategy,
             assetStorageStrategy,

@@ -120,7 +120,7 @@ export class TransactionalConnection {
      * }
      * ```
      *
-     * @since v1.3.0
+     * @since 1.3.0
      */
     async withTransaction<T>(work: (ctx: RequestContext) => Promise<T>): Promise<T>;
     async withTransaction<T>(ctx: RequestContext, work: (ctx: RequestContext) => Promise<T>): Promise<T>;
