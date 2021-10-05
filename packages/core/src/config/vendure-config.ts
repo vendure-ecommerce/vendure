@@ -740,7 +740,10 @@ export interface JobQueueOptions {
      * @description
      * Defines the queues that will run in this process.
      * This can be used to configure only certain queues to run in this process.
-     * If its empty all queues will be run
+     * If its empty all queues will be run. Note: this option is primarily intended
+     * to apply to the Worker process. Jobs will _always_ get published to the queue
+     * regardless of this setting, but this setting determines whether they get
+     * _processed_ or not.
      */
     activeQueues?: string[];
     /**
