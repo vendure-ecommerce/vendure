@@ -7,14 +7,15 @@ import { ConfigService } from '../config/config.service';
 import { TypeOrmLogger } from '../config/logger/typeorm-logger';
 
 import { TransactionSubscriber } from './transaction-subscriber';
+import { TransactionWrapper } from './transaction-wrapper';
 import { TransactionalConnection } from './transactional-connection';
 
 let defaultTypeOrmModule: DynamicModule;
 
 @Module({
     imports: [ConfigModule],
-    providers: [TransactionalConnection, TransactionSubscriber],
-    exports: [TransactionalConnection, TransactionSubscriber],
+    providers: [TransactionalConnection, TransactionSubscriber, TransactionWrapper],
+    exports: [TransactionalConnection, TransactionSubscriber, TransactionWrapper],
 })
 export class ConnectionModule {
     static forRoot(): DynamicModule {

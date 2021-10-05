@@ -18,6 +18,7 @@ import { EntityNotFoundError } from '../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../common/types/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
 
+import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
 
 /**
@@ -34,7 +35,10 @@ import { GetEntityOrThrowOptions } from './types';
  */
 @Injectable()
 export class TransactionalConnection {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private transactionWrapper: TransactionWrapper,
+    ) {}
 
     /**
      * @description
@@ -79,6 +83,62 @@ export class TransactionalConnection {
             // tslint:disable-next-line:no-non-null-assertion
             return getRepository(ctxOrTarget ?? maybeTarget!);
         }
+    }
+
+    /**
+     * @description
+     * Allows database operations to be wrapped in a transaction, ensuring that in the event of an error being
+     * thrown at any point, the entire transaction will be rolled back and no changes will be saved.
+     *
+     * In the context of API requests, you should instead use the {@link Transaction} decorator on your resolver or
+     * controller method.
+     *
+     * On the other hand, for code that does not run in the context of a GraphQL/REST request, this method
+     * should be used to protect against non-atomic changes to the data which could leave your data in an
+     * inconsistent state.
+     *
+     * Such situations include function processed by the JobQueue or stand-alone scripts which make use
+     * of Vendure internal services.
+     *
+     * If there is already a {@link RequestContext} object available, you should pass it in as the first
+     * argument in order to add a new transaction to it. If not, omit the first argument and an empty
+     * RequestContext object will be created, which is then used to propagate the transaction to
+     * all inner method calls.
+     *
+     * @example
+     * ```TypeScript
+     * private async transferCredit(fromId: ID, toId: ID, amount: number) {
+     *   await this.connection.withTransaction(ctx => {
+     *     await this.giftCardService.updateCustomerCredit(fromId, -amount);
+     *
+     *     // If some intermediate logic here throws an Error,
+     *     // then all DB transactions will be rolled back and neither Customer's
+     *     // credit balance will have changed.
+     *
+     *     await this.giftCardService.updateCustomerCredit(toId, amount);
+     *   })
+     * }
+     * ```
+     *
+     * @since v1.3.0
+     */
+    async withTransaction<T>(work: (ctx: RequestContext) => Promise<T>): Promise<T>;
+    async withTransaction<T>(ctx: RequestContext, work: (ctx: RequestContext) => Promise<T>): Promise<T>;
+    async withTransaction<T>(
+        ctxOrWork: RequestContext | ((ctx: RequestContext) => Promise<T>),
+        maybeWork?: (ctx: RequestContext) => Promise<T>,
+    ): Promise<T> {
+        let ctx: RequestContext;
+        let work: (ctx: RequestContext) => Promise<T>;
+        if (ctxOrWork instanceof RequestContext) {
+            ctx = ctxOrWork;
+            // tslint:disable-next-line:no-non-null-assertion
+            work = maybeWork!;
+        } else {
+            ctx = RequestContext.empty();
+            work = ctxOrWork;
+        }
+        return this.transactionWrapper.executeInTransaction(ctx, () => work(ctx), 'auto', this.rawConnection);
     }
 
     /**
