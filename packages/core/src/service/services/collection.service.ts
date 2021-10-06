@@ -442,8 +442,8 @@ export class CollectionService implements OnModuleInit {
     /**
      * Applies the CollectionFilters
      *
-     * If applyToChangedVariantsOnly (default: true) is true, than apply collection job will process only changed variants
-     * If applyToChangedVariantsOnly (default: true) is false, than apply collection job will process all variants
+     * If applyToChangedVariantsOnly (default: true) is true, then apply collection job will process only changed variants
+     * If applyToChangedVariantsOnly (default: true) is false, then apply collection job will process all variants
      * This param is used when we update collection and collection filters are changed to update all
      * variants (because other attributes of collection can be changed https://github.com/vendure-ecommerce/vendure/issues/1015)
      */
