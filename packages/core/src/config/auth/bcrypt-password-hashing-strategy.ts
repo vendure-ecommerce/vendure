@@ -12,12 +12,12 @@ const SALT_ROUNDS = 12;
 export class BcryptPasswordHashingStrategy implements PasswordHashingStrategy {
     private bcrypt: any;
 
-    async init() {
+    constructor() {
         // The bcrypt lib is lazily loaded so that if we want to run Vendure
         // in an environment that does not support native Node modules
         // (such as an online sandbox like Stackblitz) the bcrypt dependency
         // does not get loaded when linking the source files on startup.
-        this.bcrypt = await import('bcrypt');
+        this.bcrypt = require('bcrypt');
     }
 
     hash(plaintext: string): Promise<string> {
