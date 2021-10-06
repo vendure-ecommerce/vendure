@@ -67,7 +67,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             passwordHashingStrategy,
         } = this.configService.authOptions;
         const { taxZoneStrategy } = this.configService.taxOptions;
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
+        const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
         const {
             mergeStrategy,
             checkoutMergeStrategy,
@@ -91,6 +91,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             assetStorageStrategy,
             taxZoneStrategy,
             jobQueueStrategy,
+            jobBufferStorageStrategy,
             mergeStrategy,
             checkoutMergeStrategy,
             orderCodeStrategy,

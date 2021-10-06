@@ -2,20 +2,27 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     JobQueue,
     MutationCancelJobArgs,
+    MutationFlushBufferedJobsArgs,
     MutationRemoveSettledJobsArgs,
     Permission,
     QueryJobArgs,
+    QueryJobBufferSizeArgs,
     QueryJobsArgs,
     QueryJobsByIdArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { ConfigService, InspectableJobQueueStrategy, isInspectableJobQueueStrategy } from '../../../config';
 import { JobQueueService } from '../../../job-queue';
+import { JobBuffer } from '../../../job-queue/job-buffer/job-buffer';
 import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver()
 export class JobResolver {
-    constructor(private configService: ConfigService, private jobService: JobQueueService) {}
+    constructor(
+        private configService: ConfigService,
+        private jobService: JobQueueService,
+        private jobBuffer: JobBuffer,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadSystem)
@@ -74,6 +81,20 @@ export class JobResolver {
             return;
         }
         return strategy.cancelJob(args.jobId);
+    }
+
+    @Query()
+    @Allow(Permission.ReadSettings, Permission.ReadSystem)
+    async jobBufferSize(@Args() args: QueryJobBufferSizeArgs) {
+        const bufferSizes = this.jobBuffer.bufferSize(args.processorIds);
+        return Object.entries(bufferSizes).map(([processorId, size]) => ({ processorId, size }));
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateSettings, Permission.UpdateSystem)
+    async flushBufferedJobs(@Args() args: MutationFlushBufferedJobsArgs) {
+        await this.jobBuffer.flush(args.processorIds);
+        return { success: true };
     }
 
     private requireInspectableJobQueueStrategy(): InspectableJobQueueStrategy | undefined {

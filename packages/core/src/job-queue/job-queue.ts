@@ -6,6 +6,7 @@ import { JobQueueStrategy } from '../config';
 import { Logger } from '../config/logger/vendure-logger';
 
 import { Job } from './job';
+import { JobBuffer } from './job-buffer/job-buffer';
 import { SubscribableJob } from './subscribable-job';
 import { CreateQueueOptions, JobConfig, JobData } from './types';
 
@@ -32,7 +33,11 @@ export class JobQueue<Data extends JobData<Data> = {}> {
         return this.running;
     }
 
-    constructor(private options: CreateQueueOptions<Data>, private jobQueueStrategy: JobQueueStrategy) {}
+    constructor(
+        private options: CreateQueueOptions<Data>,
+        private jobQueueStrategy: JobQueueStrategy,
+        private jobBuffer: JobBuffer,
+    ) {}
 
     /** @internal */
     async start() {
@@ -91,11 +96,17 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             queueName: this.options.name,
             retries: options?.retries ?? 0,
         });
-        try {
-            const addedJob = await this.jobQueueStrategy.add(job);
-            return new SubscribableJob(addedJob, this.jobQueueStrategy);
-        } catch (err) {
-            Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
+
+        const isBuffered = await this.jobBuffer.add(job);
+        if (!isBuffered) {
+            try {
+                const addedJob = await this.jobQueueStrategy.add(job);
+                return new SubscribableJob(addedJob, this.jobQueueStrategy);
+            } catch (err) {
+                Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
+                return new SubscribableJob(job, this.jobQueueStrategy);
+            }
+        } else {
             return new SubscribableJob(job, this.jobQueueStrategy);
         }
     }

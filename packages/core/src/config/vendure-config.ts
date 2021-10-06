@@ -8,6 +8,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
+import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-storage-strategy';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
@@ -745,6 +746,7 @@ export interface JobQueueOptions {
      * @default InMemoryJobQueueStrategy
      */
     jobQueueStrategy?: JobQueueStrategy;
+    jobBufferStorageStrategy?: JobBufferStorageStrategy;
     /**
      * @description
      * Defines the queues that will run in this process.

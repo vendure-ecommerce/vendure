@@ -632,17 +632,13 @@ export type CreatePaymentMethodInput = {
     handler: ConfigurableOperationInput;
 };
 
-export type CreateProductCustomFieldsInput = {
-    coffeeProfileWithMilk?: Maybe<Scalars['String']>;
-};
-
 export type CreateProductInput = {
     featuredAssetId?: Maybe<Scalars['ID']>;
     enabled?: Maybe<Scalars['Boolean']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     translations: Array<ProductTranslationInput>;
-    customFields?: Maybe<CreateProductCustomFieldsInput>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductOptionGroupInput = {
@@ -1624,6 +1620,11 @@ export type Job = Node & {
     attempts: Scalars['Int'];
 };
 
+export type JobBufferSize = {
+    processorId: Scalars['String'];
+    size: Scalars['Int'];
+};
+
 export type JobFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     startedAt?: Maybe<DateOperators>;
@@ -2194,6 +2195,7 @@ export type Mutation = {
     /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
     removeSettledJobs: Scalars['Int'];
     cancelJob: Job;
+    flushBufferedJobs: Success;
     settlePayment: SettlePaymentResult;
     addFulfillmentToOrder: AddFulfillmentToOrderResult;
     cancelOrder: CancelOrderResult;
@@ -2499,6 +2501,10 @@ export type MutationRemoveSettledJobsArgs = {
 
 export type MutationCancelJobArgs = {
     jobId: Scalars['ID'];
+};
+
+export type MutationFlushBufferedJobsArgs = {
+    processorIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -3375,15 +3381,11 @@ export type Product = Node & {
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
-    customFields?: Maybe<ProductCustomFields>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductVariantListArgs = {
     options?: Maybe<ProductVariantListOptions>;
-};
-
-export type ProductCustomFields = {
-    coffeeProfileWithMilk?: Maybe<Scalars['String']>;
 };
 
 export type ProductFilterParameter = {
@@ -3394,7 +3396,6 @@ export type ProductFilterParameter = {
     name?: Maybe<StringOperators>;
     slug?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
-    coffeeProfileWithMilk?: Maybe<StringOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -3478,7 +3479,6 @@ export type ProductSortParameter = {
     name?: Maybe<SortOrder>;
     slug?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
-    coffeeProfileWithMilk?: Maybe<SortOrder>;
 };
 
 export type ProductTranslation = {
@@ -3678,6 +3678,7 @@ export type Query = {
     jobs: JobList;
     jobsById: Array<Job>;
     jobQueues: Array<JobQueue>;
+    jobBufferSize: Array<JobBufferSize>;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethods: PaymentMethodList;
@@ -3789,6 +3790,10 @@ export type QueryJobsArgs = {
 
 export type QueryJobsByIdArgs = {
     jobIds: Array<Scalars['ID']>;
+};
+
+export type QueryJobBufferSizeArgs = {
+    processorIds?: Maybe<Array<Scalars['String']>>;
 };
 
 export type QueryOrderArgs = {
@@ -4623,10 +4628,6 @@ export type UpdatePaymentMethodInput = {
     handler?: Maybe<ConfigurableOperationInput>;
 };
 
-export type UpdateProductCustomFieldsInput = {
-    coffeeProfileWithMilk?: Maybe<Scalars['String']>;
-};
-
 export type UpdateProductInput = {
     id: Scalars['ID'];
     enabled?: Maybe<Scalars['Boolean']>;
@@ -4634,7 +4635,7 @@ export type UpdateProductInput = {
     assetIds?: Maybe<Array<Scalars['ID']>>;
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     translations?: Maybe<Array<ProductTranslationInput>>;
-    customFields?: Maybe<UpdateProductCustomFieldsInput>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductOptionGroupInput = {

@@ -2240,15 +2240,11 @@ export type Product = Node & {
     facetValues: Array<FacetValue>;
     translations: Array<ProductTranslation>;
     collections: Array<Collection>;
-    customFields?: Maybe<ProductCustomFields>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductVariantListArgs = {
     options?: Maybe<ProductVariantListOptions>;
-};
-
-export type ProductCustomFields = {
-    coffeeProfileWithMilk?: Maybe<Scalars['String']>;
 };
 
 export type ProductFilterParameter = {
@@ -2258,7 +2254,6 @@ export type ProductFilterParameter = {
     name?: Maybe<StringOperators>;
     slug?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
-    coffeeProfileWithMilk?: Maybe<StringOperators>;
 };
 
 export type ProductList = PaginatedList & {
@@ -2321,7 +2316,6 @@ export type ProductSortParameter = {
     name?: Maybe<SortOrder>;
     slug?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
-    coffeeProfileWithMilk?: Maybe<SortOrder>;
 };
 
 export type ProductTranslation = {

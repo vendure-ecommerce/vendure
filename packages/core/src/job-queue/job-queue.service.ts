@@ -4,6 +4,7 @@ import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types
 import { ConfigService, JobQueueStrategy, Logger } from '../config';
 
 import { loggerCtx } from './constants';
+import { JobBuffer } from './job-buffer/job-buffer';
 import { JobQueue } from './job-queue';
 import { CreateQueueOptions, JobData } from './types';
 
@@ -51,7 +52,7 @@ export class JobQueueService implements OnModuleDestroy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService) {}
+    constructor(private configService: ConfigService, private jobBuffer: JobBuffer) {}
 
     /** @internal */
     onModuleDestroy() {
@@ -66,7 +67,7 @@ export class JobQueueService implements OnModuleDestroy {
     async createQueue<Data extends JobData<Data>>(
         options: CreateQueueOptions<Data>,
     ): Promise<JobQueue<Data>> {
-        const queue = new JobQueue(options, this.jobQueueStrategy);
+        const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBuffer);
         if (this.hasStarted && this.shouldStartQueue(queue.name)) {
             await queue.start();
         }

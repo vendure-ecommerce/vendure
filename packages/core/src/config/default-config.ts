@@ -6,6 +6,7 @@ import {
 } from '@vendure/common/lib/shared-constants';
 
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
+import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
@@ -145,6 +146,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
+        jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
         enableWorkerHealthCheck: false,
     },
