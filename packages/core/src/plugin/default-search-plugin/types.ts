@@ -4,6 +4,7 @@ import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';
 
 export interface DefaultSearchPluginInitOptions {
+    // TODO: docs
     bufferUpdates?: boolean;
 }
 

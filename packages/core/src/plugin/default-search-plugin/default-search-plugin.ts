@@ -17,7 +17,7 @@ import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
-import { PLUGIN_INIT_OPTIONS } from './constants';
+import { BUFFER_SEARCH_INDEX_UPDATES, PLUGIN_INIT_OPTIONS } from './constants';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
@@ -70,6 +70,10 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
         IndexerController,
         SearchJobBufferService,
         { provide: PLUGIN_INIT_OPTIONS, useFactory: () => DefaultSearchPlugin.options },
+        {
+            provide: BUFFER_SEARCH_INDEX_UPDATES,
+            useFactory: () => DefaultSearchPlugin.options.bufferUpdates === true,
+        },
     ],
     adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
     shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
@@ -145,6 +149,7 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
             }
         });
 
+        // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137
         const collectionModification$ = this.eventBus.ofType(CollectionModificationEvent);
         const closingNotifier$ = collectionModification$.pipe(debounceTime(50));
         collectionModification$
@@ -166,6 +171,7 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
             // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
             // transactions to complete before a new job is added to the queue (assuming the SQL-based
             // JobQueueStrategy).
+            // TODO: should be able to remove owing to f0fd6625
             .pipe(delay(1))
             .subscribe(event => {
                 const defaultTaxZone = event.ctx.channel.defaultTaxZone;

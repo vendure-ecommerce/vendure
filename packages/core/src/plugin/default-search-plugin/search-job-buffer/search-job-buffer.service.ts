@@ -5,8 +5,7 @@ import { ConfigService } from '../../../config/config.service';
 import { isInspectableJobQueueStrategy } from '../../../config/job-queue/inspectable-job-queue-strategy';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
 import { SubscribableJob } from '../../../job-queue/subscribable-job';
-import { PLUGIN_INIT_OPTIONS } from '../constants';
-import { DefaultSearchPluginInitOptions } from '../types';
+import { BUFFER_SEARCH_INDEX_UPDATES } from '../constants';
 
 import { CollectionJobBuffer } from './collection-job-buffer';
 import { SearchIndexJobBuffer } from './search-index-job-buffer';
@@ -19,18 +18,18 @@ export class SearchJobBufferService implements OnApplicationBootstrap {
     constructor(
         private jobQueueService: JobQueueService,
         private configService: ConfigService,
-        @Inject(PLUGIN_INIT_OPTIONS) private options: DefaultSearchPluginInitOptions,
+        @Inject(BUFFER_SEARCH_INDEX_UPDATES) private bufferUpdates: boolean,
     ) {}
 
     onApplicationBootstrap(): any {
-        if (this.options.bufferUpdates === true) {
+        if (this.bufferUpdates === true) {
             this.jobQueueService.addBuffer(this.searchIndexJobBuffer);
             this.jobQueueService.addBuffer(this.collectionJobBuffer);
         }
     }
 
     async getPendingSearchUpdates(): Promise<number> {
-        if (!this.options.bufferUpdates) {
+        if (!this.bufferUpdates) {
             return 0;
         }
         const bufferSizes = await this.jobQueueService.bufferSize(
@@ -43,7 +42,7 @@ export class SearchJobBufferService implements OnApplicationBootstrap {
     }
 
     async runPendingSearchUpdates(): Promise<void> {
-        if (!this.options.bufferUpdates) {
+        if (!this.bufferUpdates) {
             return;
         }
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
