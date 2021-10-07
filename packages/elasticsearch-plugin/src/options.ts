@@ -205,6 +205,8 @@ export interface ElasticsearchOptions {
     customProductVariantMappings?: {
         [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode]>;
     };
+    // TODO: docs
+    bufferUpdates?: boolean;
 }
 
 /**
@@ -418,6 +420,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     },
     customProductMappings: {},
     customProductVariantMappings: {},
+    bufferUpdates: false,
 };
 
 export function mergeWithDefaults(userOptions: ElasticsearchOptions): ElasticsearchRuntimeOptions {

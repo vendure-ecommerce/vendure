@@ -2,6 +2,7 @@ import { NodeOptions } from '@elastic/elasticsearch';
 import { OnApplicationBootstrap } from '@nestjs/common';
 import {
     AssetEvent,
+    BUFFER_SEARCH_INDEX_UPDATES,
     CollectionModificationEvent,
     EventBus,
     HealthCheckRegistryService,
@@ -13,6 +14,7 @@ import {
     ProductEvent,
     ProductVariantChannelEvent,
     ProductVariantEvent,
+    SearchJobBufferService,
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
@@ -201,7 +203,12 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
         ElasticsearchService,
         ElasticsearchHealthIndicator,
         ElasticsearchIndexerController,
+        SearchJobBufferService,
         { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
+        {
+            provide: BUFFER_SEARCH_INDEX_UPDATES,
+            useFactory: () => ElasticsearchPlugin.options.bufferUpdates === true,
+        },
     ],
     adminApiExtensions: { resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver] },
     shopApiExtensions: {
@@ -314,6 +321,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
             }
         });
 
+        // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137
         const collectionModification$ = this.eventBus.ofType(CollectionModificationEvent);
         const closingNotifier$ = collectionModification$.pipe(debounceTime(50));
         collectionModification$
@@ -335,6 +343,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
             // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
             // transactions to complete before a new job is added to the queue (assuming the SQL-based
             // JobQueueStrategy).
+            // TODO: should be able to remove owing to f0fd6625
             .pipe(delay(1))
             .subscribe(event => {
                 const defaultTaxZone = event.ctx.channel.defaultTaxZone;
