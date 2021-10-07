@@ -5,7 +5,9 @@ import { BackoffStrategy } from '../../job-queue/polling-job-queue-strategy';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
+import { JobRecordBuffer } from './job-record-buffer.entity';
 import { JobRecord } from './job-record.entity';
+import { SqlJobBufferStorageStrategy } from './sql-job-buffer-storage-strategy';
 import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
 
 /**
@@ -21,6 +23,17 @@ export interface DefaultJobQueueOptions {
     concurrency?: number;
     backoffStrategy?: BackoffStrategy;
     setRetries?: (queueName: string, job: Job) => number;
+    /**
+     * @description
+     * If set to `true`, the database will be used to store buffered jobs. This is
+     * recommended for production.
+     *
+     * When enabled, a new `JobRecordBuffer` database entity will be defined which will
+     * require a migration when first enabling this option.
+     *
+     * @since 1.3.0
+     */
+    useDatabaseForBuffer?: boolean;
 }
 
 /**
@@ -115,7 +128,10 @@ export interface DefaultJobQueueOptions {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [JobRecord],
+    entities: () =>
+        DefaultJobQueuePlugin.options.useDatabaseForBuffer === true
+            ? [JobRecord, JobRecordBuffer]
+            : [JobRecord],
     configuration: config => {
         const { pollInterval, concurrency, backoffStrategy, setRetries } =
             DefaultJobQueuePlugin.options ?? {};
@@ -125,12 +141,15 @@ export interface DefaultJobQueueOptions {
             backoffStrategy,
             setRetries,
         });
+        if (DefaultJobQueuePlugin.options.useDatabaseForBuffer === true) {
+            config.jobQueueOptions.jobBufferStorageStrategy = new SqlJobBufferStorageStrategy();
+        }
         return config;
     },
 })
 export class DefaultJobQueuePlugin {
     /** @internal */
-    static options: DefaultJobQueueOptions;
+    static options: DefaultJobQueueOptions = {};
 
     static init(options: DefaultJobQueueOptions): Type<DefaultJobQueuePlugin> {
         DefaultJobQueuePlugin.options = options;
