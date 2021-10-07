@@ -48,12 +48,13 @@ export class JobBufferService {
         return this.storageStrategy.bufferSize(buffer.map(p => (typeof p === 'string' ? p : p.id)));
     }
 
-    async flush(forBuffers?: Array<JobBuffer | string>): Promise<void> {
+    async flush(forBuffers?: Array<JobBuffer | string>): Promise<Job[]> {
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
         const buffers = forBuffers ?? Array.from(this.buffers);
         const flushResult = await this.storageStrategy.flush(
             buffers.map(p => (typeof p === 'string' ? p : p.id)),
         );
+        const result: Job[] = [];
         for (const buffer of this.buffers) {
             const jobsForBuffer = flushResult[buffer.id];
             if (jobsForBuffer?.length) {
@@ -68,9 +69,10 @@ export class JobBufferService {
                     );
                 }
                 for (const job of jobsToAdd) {
-                    await jobQueueStrategy.add(job);
+                    result.push(await jobQueueStrategy.add(job));
                 }
             }
         }
+        return result;
     }
 }

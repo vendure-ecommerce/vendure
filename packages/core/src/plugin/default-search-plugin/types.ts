@@ -3,6 +3,10 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';
 
+export interface DefaultSearchPluginInitOptions {
+    bufferUpdates?: boolean;
+}
+
 export type ReindexMessageResponse = {
     total: number;
     completed: number;

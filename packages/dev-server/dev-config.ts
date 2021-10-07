@@ -3,7 +3,6 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
@@ -14,8 +13,6 @@ import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-
-import { JobQueueTestPlugin } from './test-plugins/job-queue-test/job-queue-test-plugin';
 
 /**
  * Config settings used during development
@@ -46,6 +43,7 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
+        // passwordHashingStrategy: new PlaintextHashingStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -57,7 +55,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -66,7 +64,7 @@ export const devConfig: VendureConfig = {
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin,
+        DefaultSearchPlugin.init({ bufferUpdates: true }),
         BullMQJobQueuePlugin.init({}),
         // DefaultJobQueuePlugin,
         // JobQueueTestPlugin.init({ queueCount: 10 }),

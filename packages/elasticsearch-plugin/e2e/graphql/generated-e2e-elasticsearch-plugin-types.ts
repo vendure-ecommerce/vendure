@@ -2235,6 +2235,7 @@ export type Mutation = {
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
     reindex: Job;
+    runPendingSearchIndexUpdates: Success;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -3688,6 +3689,7 @@ export type Query = {
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     search: SearchResponse;
+    pendingSearchIndexUpdates: Scalars['Int'];
     /** List Products */
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
