@@ -1673,7 +1673,7 @@ export type Job = Node & {
 
 export type JobBufferSize = {
   __typename?: 'JobBufferSize';
-  processorId: Scalars['String'];
+  bufferId: Scalars['String'];
   size: Scalars['Int'];
 };
 
@@ -2304,7 +2304,7 @@ export type Mutation = {
   removeProductsFromChannel: Array<Product>;
   /** Removes Promotions from the specified Channel */
   removePromotionsFromChannel: Array<Promotion>;
-  /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
+  /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
   requestCompleted: Scalars['Int'];
   requestStarted: Scalars['Int'];
@@ -2683,7 +2683,7 @@ export type MutationDeleteZoneArgs = {
 
 
 export type MutationFlushBufferedJobsArgs = {
-  processorIds?: Maybe<Array<Scalars['String']>>;
+  bufferIds?: Maybe<Array<Scalars['String']>>;
 };
 
 
@@ -4051,7 +4051,7 @@ export type QueryJobArgs = {
 
 
 export type QueryJobBufferSizeArgs = {
-  processorIds?: Maybe<Array<Scalars['String']>>;
+  bufferIds?: Maybe<Array<Scalars['String']>>;
 };
 
 

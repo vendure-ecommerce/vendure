@@ -1,12 +1,12 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
-import { Job, JobBufferProcessor } from '../../job-queue';
+import { Job, JobBuffer } from '../../job-queue';
 import { ApplyCollectionFiltersJobData } from '../../service/services/collection.service';
 
 import { UpdateIndexQueueJobData, UpdateVariantsByIdJobData, UpdateVariantsJobData } from './types';
 
-export class CollectionJobBufferProcessor implements JobBufferProcessor<ApplyCollectionFiltersJobData> {
+export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobData> {
     readonly id = 'search-plugin-apply-collection-filters';
 
     collect(job: Job): boolean {

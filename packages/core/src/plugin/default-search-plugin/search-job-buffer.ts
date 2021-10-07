@@ -1,11 +1,11 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
-import { Job, JobBufferProcessor } from '../../job-queue';
+import { Job, JobBuffer } from '../../job-queue';
 
 import { UpdateIndexQueueJobData, UpdateVariantsByIdJobData, UpdateVariantsJobData } from './types';
 
-export class SearchJobBufferProcessor implements JobBufferProcessor<UpdateIndexQueueJobData> {
+export class SearchJobBuffer implements JobBuffer<UpdateIndexQueueJobData> {
     readonly id = 'search-plugin-update-search-index';
 
     collect(job: Job<UpdateIndexQueueJobData>): boolean | Promise<boolean> {
