@@ -20,33 +20,11 @@ nav.sidenav {
 .nav-link {
     position: relative;
 }
-
-.status-badge {
-    width: 10px;
-    height: 10px;
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid var(--color-component-border-100);
-
-    &.info {
-        background-color: var(--color-primary-600);
-    }
-    &.success {
-        background-color: var(--color-success-500);
-    }
-    &.warning {
-        background-color: var(--color-warning-500);
-    }
-    &.error {
-        background-color: var(--color-error-400);
-    }
-}
-
-.nav-group .status-badge {
+.nav-group vdr-status-badge {
     left: 10px;
     top: 6px;
 }
-.nav-link .status-badge {
+.nav-link vdr-status-badge {
     left: 25px;
     top: 3px;
 }
