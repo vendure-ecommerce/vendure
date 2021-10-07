@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
+import { Logger } from '../../config/logger/vendure-logger';
 import { Job } from '../job';
 
 import { JobBufferProcessor } from './job-buffer-processor';
@@ -16,7 +17,7 @@ export class JobBuffer {
         this.storageStrategy = configService.jobQueueOptions.jobBufferStorageStrategy;
     }
 
-    addProcessor(processor: JobBufferProcessor) {
+    addProcessor(processor: JobBufferProcessor<any>) {
         const idAlreadyExists = Array.from(this.processors).find(p => p.id === processor.id);
         if (idAlreadyExists) {
             throw new InternalServerError(
@@ -26,7 +27,7 @@ export class JobBuffer {
         this.processors.add(processor);
     }
 
-    removeProcessor(processor: JobBufferProcessor) {
+    removeProcessor(processor: JobBufferProcessor<any>) {
         this.processors.delete(processor);
     }
 
@@ -58,8 +59,17 @@ export class JobBuffer {
         for (const processor of this.processors) {
             const jobsForProcessor = flushResult[processor.id];
             if (jobsForProcessor?.length) {
-                const reducedJobs = await processor.reduce(jobsForProcessor);
-                for (const job of reducedJobs) {
+                let jobsToAdd = jobsForProcessor;
+                try {
+                    jobsToAdd = await processor.reduce(jobsForProcessor);
+                } catch (e) {
+                    Logger.error(
+                        `Error encountered processing jobs in "${processor.id}:\n${e.message}"`,
+                        undefined,
+                        e.stack,
+                    );
+                }
+                for (const job of jobsToAdd) {
                     await jobQueueStrategy.add(job);
                 }
             }

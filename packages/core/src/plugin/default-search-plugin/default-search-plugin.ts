@@ -12,14 +12,17 @@ import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
+import { JobBuffer } from '../../job-queue/job-buffer/job-buffer';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
+import { CollectionJobBufferProcessor } from './collection-job-buffer-processor';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
 import { SearchIndexItem } from './search-index-item.entity';
+import { SearchJobBufferProcessor } from './search-job-buffer-processor';
 
 export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     timeTaken: number;
@@ -64,10 +67,17 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap {
     /** @internal */
-    constructor(private eventBus: EventBus, private searchIndexService: SearchIndexService) {}
+    constructor(
+        private eventBus: EventBus,
+        private searchIndexService: SearchIndexService,
+        private jobBuffer: JobBuffer,
+    ) {}
 
     /** @internal */
     async onApplicationBootstrap() {
+        this.jobBuffer.addProcessor(new SearchJobBufferProcessor());
+        this.jobBuffer.addProcessor(new CollectionJobBufferProcessor());
+
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
                 return this.searchIndexService.deleteProduct(event.ctx, event.product);

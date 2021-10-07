@@ -44,7 +44,7 @@ import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
-type ApplyCollectionFiltersJobData = {
+export type ApplyCollectionFiltersJobData = {
     ctx: SerializedRequestContext;
     collectionIds: ID[];
     applyToChangedVariantsOnly?: boolean;

@@ -48,17 +48,29 @@ export type VariantChannelMessageData = {
 type NamedJobData<Type extends string, MessageData> = { type: Type } & MessageData;
 
 export type ReindexJobData = NamedJobData<'reindex', ReindexMessageData>;
-type UpdateProductJobData = NamedJobData<'update-product', UpdateProductMessageData>;
-type UpdateVariantsJobData = NamedJobData<'update-variants', UpdateVariantMessageData>;
-type DeleteProductJobData = NamedJobData<'delete-product', UpdateProductMessageData>;
-type DeleteVariantJobData = NamedJobData<'delete-variant', UpdateVariantMessageData>;
-type UpdateVariantsByIdJobData = NamedJobData<'update-variants-by-id', UpdateVariantsByIdMessageData>;
-type UpdateAssetJobData = NamedJobData<'update-asset', UpdateAssetMessageData>;
-type DeleteAssetJobData = NamedJobData<'delete-asset', UpdateAssetMessageData>;
-type AssignProductToChannelJobData = NamedJobData<'assign-product-to-channel', ProductChannelMessageData>;
-type RemoveProductFromChannelJobData = NamedJobData<'remove-product-from-channel', ProductChannelMessageData>;
-type AssignVariantToChannelJobData = NamedJobData<'assign-variant-to-channel', VariantChannelMessageData>;
-type RemoveVariantFromChannelJobData = NamedJobData<'remove-variant-from-channel', VariantChannelMessageData>;
+export type UpdateProductJobData = NamedJobData<'update-product', UpdateProductMessageData>;
+export type UpdateVariantsJobData = NamedJobData<'update-variants', UpdateVariantMessageData>;
+export type DeleteProductJobData = NamedJobData<'delete-product', UpdateProductMessageData>;
+export type DeleteVariantJobData = NamedJobData<'delete-variant', UpdateVariantMessageData>;
+export type UpdateVariantsByIdJobData = NamedJobData<'update-variants-by-id', UpdateVariantsByIdMessageData>;
+export type UpdateAssetJobData = NamedJobData<'update-asset', UpdateAssetMessageData>;
+export type DeleteAssetJobData = NamedJobData<'delete-asset', UpdateAssetMessageData>;
+export type AssignProductToChannelJobData = NamedJobData<
+    'assign-product-to-channel',
+    ProductChannelMessageData
+>;
+export type RemoveProductFromChannelJobData = NamedJobData<
+    'remove-product-from-channel',
+    ProductChannelMessageData
+>;
+export type AssignVariantToChannelJobData = NamedJobData<
+    'assign-variant-to-channel',
+    VariantChannelMessageData
+>;
+export type RemoveVariantFromChannelJobData = NamedJobData<
+    'remove-variant-from-channel',
+    VariantChannelMessageData
+>;
 export type UpdateIndexQueueJobData =
     | ReindexJobData
     | UpdateProductJobData
