@@ -107,7 +107,12 @@ export class JobQueue<Data extends JobData<Data> = {}> {
                 return new SubscribableJob(job, this.jobQueueStrategy);
             }
         } else {
-            return new SubscribableJob(job, this.jobQueueStrategy);
+            const bufferedJob = new Job({
+                ...job,
+                data: job.data,
+                id: 'buffered',
+            });
+            return new SubscribableJob(bufferedJob, this.jobQueueStrategy);
         }
     }
 }

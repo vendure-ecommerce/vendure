@@ -104,7 +104,8 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async runPendingSearchIndexUpdates(...args: any[]): Promise<any> {
-        await this.searchJobBufferService.runPendingSearchUpdates();
+        // Intentionally not awaiting this method call
+        this.searchJobBufferService.runPendingSearchUpdates();
         return { success: true };
     }
 }
