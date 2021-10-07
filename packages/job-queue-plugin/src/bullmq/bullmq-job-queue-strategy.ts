@@ -84,6 +84,10 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }).on('error', (e: any) => Logger.error(`BullMQ Scheduler error: ${e.message}`, loggerCtx, e.stack));
     }
 
+    async destroy() {
+        await Promise.all([this.queue.close(), this.worker.close(), this.scheduler.close()]);
+    }
+
     async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
         const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries;
         const backoff = this.options.setBackoff?.(job.queueName, job) ?? {
