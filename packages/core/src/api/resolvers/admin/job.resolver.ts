@@ -86,7 +86,7 @@ export class JobResolver {
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadSystem)
     async jobBufferSize(@Args() args: QueryJobBufferSizeArgs) {
-        const bufferSizes = this.jobBuffer.bufferSize(args.processorIds);
+        const bufferSizes = await this.jobBuffer.bufferSize(args.processorIds);
         return Object.entries(bufferSizes).map(([processorId, size]) => ({ processorId, size }));
     }
 

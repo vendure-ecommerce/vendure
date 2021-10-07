@@ -15,11 +15,11 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
         return Promise.resolve(job);
     }
 
-    bufferSize(processorIds?: string[]): Promise<number> {
-        return Promise.resolve(0);
+    bufferSize(processorIds?: string[]) {
+        return Promise.resolve({});
     }
 
-    flush(processorIds?: string[]): Promise<void> {
-        return Promise.resolve(undefined);
+    flush(processorIds?: string[]) {
+        return Promise.resolve({});
     }
 }
