@@ -2,30 +2,42 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { Job, JobBuffer } from '../../../job-queue/index';
-import { UpdateIndexQueueJobData, UpdateVariantsByIdJobData, UpdateVariantsJobData } from '../types';
+import {
+    UpdateIndexQueueJobData,
+    UpdateProductJobData,
+    UpdateVariantsByIdJobData,
+    UpdateVariantsJobData,
+} from '../types';
 
 export class SearchIndexJobBuffer implements JobBuffer<UpdateIndexQueueJobData> {
     readonly id = 'search-plugin-update-search-index';
 
     collect(job: Job<UpdateIndexQueueJobData>): boolean | Promise<boolean> {
-        return job.queueName === 'update-search-index';
+        return (
+            job.queueName === 'update-search-index' &&
+            ['update-product', 'update-variants', 'update-variants-by-id'].includes(job.data.type)
+        );
     }
 
     reduce(collectedJobs: Array<Job<UpdateIndexQueueJobData>>): Array<Job<any>> {
-        const variantsByIdJobs = this.removeBy<Job<UpdateVariantsByIdJobData | UpdateVariantsJobData>>(
+        const variantsJobs = this.removeBy<Job<UpdateVariantsByIdJobData | UpdateVariantsJobData>>(
             collectedJobs,
             item => item.data.type === 'update-variants-by-id' || item.data.type === 'update-variants',
+        );
+        const productsJobs = this.removeBy<Job<UpdateProductJobData>>(
+            collectedJobs,
+            item => item.data.type === 'update-product',
         );
 
         const jobsToAdd = [...collectedJobs];
 
-        if (variantsByIdJobs.length) {
-            const variantIdsToUpdate = variantsByIdJobs.reduce((result, job) => {
+        if (variantsJobs.length) {
+            const variantIdsToUpdate = variantsJobs.reduce((result, job) => {
                 const ids = job.data.type === 'update-variants-by-id' ? job.data.ids : job.data.variantIds;
                 return [...result, ...ids];
             }, [] as ID[]);
 
-            const referenceJob = variantsByIdJobs[0];
+            const referenceJob = variantsJobs[0];
             const batchedVariantJob = new Job<UpdateVariantsByIdJobData>({
                 ...referenceJob,
                 id: undefined,
@@ -36,7 +48,19 @@ export class SearchIndexJobBuffer implements JobBuffer<UpdateIndexQueueJobData> 
                 },
             });
 
-            jobsToAdd.push(batchedVariantJob as any);
+            jobsToAdd.push(batchedVariantJob as Job);
+        }
+        if (productsJobs.length) {
+            const seenIds = new Set<ID>();
+            const uniqueProductJobs: Array<Job<UpdateProductJobData>> = [];
+            for (const job of productsJobs) {
+                if (seenIds.has(job.data.productId)) {
+                    continue;
+                }
+                uniqueProductJobs.push(job);
+                seenIds.add(job.data.productId);
+            }
+            jobsToAdd.push(...(uniqueProductJobs as Job[]));
         }
 
         return jobsToAdd;
