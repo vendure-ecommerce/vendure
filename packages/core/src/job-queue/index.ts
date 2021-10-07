@@ -3,7 +3,6 @@ export * from './job-buffer/in-memory-job-buffer-storage-strategy';
 export * from './job-buffer/job-buffer';
 export * from './job-buffer/job-buffer';
 export * from './job-buffer/job-buffer-storage-strategy';
-export * from './job-buffer/sql-job-buffer-storage-strategy';
 export * from './job';
 export * from './job-queue';
 export * from './job-queue.service';
