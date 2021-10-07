@@ -1,5 +1,6 @@
 export { ApiType } from './common/get-api-type';
 export * from './common/request-context';
+export * from './common/extract-session-token';
 export * from './decorators/allow.decorator';
 export * from './decorators/transaction.decorator';
 export * from './decorators/api.decorator';
