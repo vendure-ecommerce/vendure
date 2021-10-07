@@ -1,6 +1,6 @@
-import { OnApplicationBootstrap } from '@nestjs/common';
+import { Inject, OnApplicationBootstrap } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
 import { idsAreEqual } from '../../common/utils';
@@ -17,13 +17,16 @@ import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
-import { CollectionJobBuffer } from './collection-job-buffer';
+import { PLUGIN_INIT_OPTIONS } from './constants';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
 import { SearchIndexItem } from './search-index-item.entity';
-import { SearchJobBuffer } from './search-job-buffer';
+import { CollectionJobBuffer } from './search-job-buffer/collection-job-buffer';
+import { SearchIndexJobBuffer } from './search-job-buffer/search-index-job-buffer';
+import { SearchJobBufferService } from './search-job-buffer/search-job-buffer.service';
+import { DefaultSearchPluginInitOptions } from './types';
 
 export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     timeTaken: number;
@@ -61,12 +64,20 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [FulltextSearchService, SearchIndexService, IndexerController],
+    providers: [
+        FulltextSearchService,
+        SearchIndexService,
+        IndexerController,
+        SearchJobBufferService,
+        { provide: PLUGIN_INIT_OPTIONS, useFactory: () => DefaultSearchPlugin.options },
+    ],
     adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
     shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
     entities: [SearchIndexItem],
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap {
+    static options: DefaultSearchPluginInitOptions = {};
+
     /** @internal */
     constructor(
         private eventBus: EventBus,
@@ -74,11 +85,13 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
         private jobQueueService: JobQueueService,
     ) {}
 
+    static init(options: DefaultSearchPluginInitOptions): Type<DefaultSearchPlugin> {
+        this.options = options;
+        return DefaultSearchPlugin;
+    }
+
     /** @internal */
     async onApplicationBootstrap() {
-        this.jobQueueService.addBuffer(new SearchJobBuffer());
-        this.jobQueueService.addBuffer(new CollectionJobBuffer());
-
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
                 return this.searchIndexService.deleteProduct(event.ctx, event.product);

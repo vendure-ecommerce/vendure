@@ -2308,6 +2308,7 @@ export type Mutation = {
   removeSettledJobs: Scalars['Int'];
   requestCompleted: Scalars['Int'];
   requestStarted: Scalars['Int'];
+  runPendingSearchIndexUpdates: Success;
   setActiveChannel: UserStatus;
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
@@ -3933,6 +3934,7 @@ export type Query = {
   paymentMethodEligibilityCheckers: Array<ConfigurableOperationDefinition>;
   paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
   paymentMethods: PaymentMethodList;
+  pendingSearchIndexUpdates: Scalars['Int'];
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
   productOptionGroup?: Maybe<ProductOptionGroup>;

@@ -4,6 +4,7 @@ import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types
 import { ConfigService, JobQueueStrategy, Logger } from '../config';
 
 import { loggerCtx } from './constants';
+import { Job } from './job';
 import { JobBuffer } from './job-buffer/job-buffer';
 import { JobBufferService } from './job-buffer/job-buffer.service';
 import { JobQueue } from './job-queue';
@@ -94,11 +95,11 @@ export class JobQueueService implements OnModuleDestroy {
         this.jobBufferService.removeBuffer(buffer);
     }
 
-    bufferSize(forBuffers?: Array<JobBuffer | string>): Promise<{ [bufferId: string]: number }> {
+    bufferSize(...forBuffers: Array<JobBuffer<any> | string>): Promise<{ [bufferId: string]: number }> {
         return this.jobBufferService.bufferSize(forBuffers);
     }
 
-    flush(forBuffers?: Array<JobBuffer | string>): Promise<void> {
+    flush(...forBuffers: Array<JobBuffer<any> | string>): Promise<Job[]> {
         return this.jobBufferService.flush(forBuffers);
     }
 
