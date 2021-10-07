@@ -3,6 +3,7 @@ import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '@
 import { BullMQJobQueueStrategy } from './bullmq-job-queue-strategy';
 import { BULLMQ_PLUGIN_OPTIONS } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
+import { RedisJobBufferStorageStrategy } from './redis-job-buffer-storage-strategy';
 import { BullMQPluginOptions } from './types';
 
 /**
@@ -103,6 +104,7 @@ import { BullMQPluginOptions } from './types';
     imports: [PluginCommonModule],
     configuration: config => {
         config.jobQueueOptions.jobQueueStrategy = new BullMQJobQueueStrategy();
+        config.jobQueueOptions.jobBufferStorageStrategy = new RedisJobBufferStorageStrategy();
         return config;
     },
     providers: [
