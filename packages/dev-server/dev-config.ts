@@ -9,6 +9,7 @@ import {
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
+import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
@@ -64,14 +65,15 @@ export const devConfig: VendureConfig = {
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin.init({ bufferUpdates: true }),
+        // DefaultSearchPlugin.init({ bufferUpdates: true }),
         BullMQJobQueuePlugin.init({}),
         // DefaultJobQueuePlugin,
         // JobQueueTestPlugin.init({ queueCount: 10 }),
-        // ElasticsearchPlugin.init({
-        //     host: 'http://localhost',
-        //     port: 9200,
-        // }),
+        ElasticsearchPlugin.init({
+            host: 'http://localhost',
+            port: 9200,
+            bufferUpdates: true,
+        }),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',

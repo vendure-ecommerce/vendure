@@ -6,14 +6,21 @@ import {
     SearchResponse,
 } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Allow, Collection, Ctx, FacetValue, RequestContext, SearchResolver } from '@vendure/core';
+import {
+    Allow,
+    Collection,
+    Ctx,
+    FacetValue,
+    RequestContext,
+    SearchJobBufferService,
+    SearchResolver,
+} from '@vendure/core';
 
 import { ElasticsearchService } from './elasticsearch.service';
 import { ElasticSearchInput, SearchPriceData } from './types';
 
 @Resolver('SearchResponse')
-export class ShopElasticSearchResolver
-    implements Omit<SearchResolver, 'facetValues' | 'collections' | 'reindex'> {
+export class ShopElasticSearchResolver implements Pick<SearchResolver, 'search'> {
     constructor(private elasticsearchService: ElasticsearchService) {}
 
     @Query()
@@ -38,8 +45,11 @@ export class ShopElasticSearchResolver
 }
 
 @Resolver('SearchResponse')
-export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetValues' | 'collections'> {
-    constructor(private elasticsearchService: ElasticsearchService) {}
+export class AdminElasticSearchResolver implements Pick<SearchResolver, 'search' | 'reindex'> {
+    constructor(
+        private elasticsearchService: ElasticsearchService,
+        private searchJobBufferService: SearchJobBufferService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadCatalog, Permission.ReadProduct)
@@ -56,7 +66,21 @@ export class AdminElasticSearchResolver implements Omit<SearchResolver, 'facetVa
     @Mutation()
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async reindex(@Ctx() ctx: RequestContext): Promise<GraphQLJob> {
-        return (this.elasticsearchService.reindex(ctx) as unknown) as GraphQLJob;
+        return this.elasticsearchService.reindex(ctx) as unknown as GraphQLJob;
+    }
+
+    @Query()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        return this.searchJobBufferService.getPendingSearchUpdates();
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async runPendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        // Intentionally not awaiting this method call
+        this.searchJobBufferService.runPendingSearchUpdates();
+        return { success: true };
     }
 }
 
