@@ -5,6 +5,7 @@ import { ConfigService, JobQueueStrategy, Logger } from '../config';
 
 import { loggerCtx } from './constants';
 import { JobBuffer } from './job-buffer/job-buffer';
+import { JobBufferService } from './job-buffer/job-buffer.service';
 import { JobQueue } from './job-queue';
 import { CreateQueueOptions, JobData } from './types';
 
@@ -52,7 +53,7 @@ export class JobQueueService implements OnModuleDestroy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private jobBuffer: JobBuffer) {}
+    constructor(private configService: ConfigService, private jobBufferService: JobBufferService) {}
 
     /** @internal */
     onModuleDestroy() {
@@ -67,7 +68,7 @@ export class JobQueueService implements OnModuleDestroy {
     async createQueue<Data extends JobData<Data>>(
         options: CreateQueueOptions<Data>,
     ): Promise<JobQueue<Data>> {
-        const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBuffer);
+        const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBufferService);
         if (this.hasStarted && this.shouldStartQueue(queue.name)) {
             await queue.start();
         }
@@ -83,6 +84,22 @@ export class JobQueueService implements OnModuleDestroy {
                 await queue.start();
             }
         }
+    }
+
+    addBuffer(buffer: JobBuffer<any>) {
+        this.jobBufferService.addBuffer(buffer);
+    }
+
+    removeBuffer(buffer: JobBuffer<any>) {
+        this.jobBufferService.removeBuffer(buffer);
+    }
+
+    bufferSize(forBuffers?: Array<JobBuffer | string>): Promise<{ [bufferId: string]: number }> {
+        return this.jobBufferService.bufferSize(forBuffers);
+    }
+
+    flush(forBuffers?: Array<JobBuffer | string>): Promise<void> {
+        return this.jobBufferService.flush(forBuffers);
     }
 
     /**

@@ -12,17 +12,18 @@ import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
-import { JobBuffer } from '../../job-queue/job-buffer/job-buffer';
+import { JobBufferService } from '../../job-queue/job-buffer/job-buffer.service';
+import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
-import { CollectionJobBufferProcessor } from './collection-job-buffer-processor';
+import { CollectionJobBuffer } from './collection-job-buffer';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
 import { SearchIndexItem } from './search-index-item.entity';
-import { SearchJobBufferProcessor } from './search-job-buffer-processor';
+import { SearchJobBuffer } from './search-job-buffer';
 
 export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     timeTaken: number;
@@ -70,13 +71,13 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
     constructor(
         private eventBus: EventBus,
         private searchIndexService: SearchIndexService,
-        private jobBuffer: JobBuffer,
+        private jobQueueService: JobQueueService,
     ) {}
 
     /** @internal */
     async onApplicationBootstrap() {
-        this.jobBuffer.addProcessor(new SearchJobBufferProcessor());
-        this.jobBuffer.addProcessor(new CollectionJobBufferProcessor());
+        this.jobQueueService.addBuffer(new SearchJobBuffer());
+        this.jobQueueService.addBuffer(new CollectionJobBuffer());
 
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {

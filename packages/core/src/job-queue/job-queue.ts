@@ -6,7 +6,7 @@ import { JobQueueStrategy } from '../config';
 import { Logger } from '../config/logger/vendure-logger';
 
 import { Job } from './job';
-import { JobBuffer } from './job-buffer/job-buffer';
+import { JobBufferService } from './job-buffer/job-buffer.service';
 import { SubscribableJob } from './subscribable-job';
 import { CreateQueueOptions, JobConfig, JobData } from './types';
 
@@ -36,7 +36,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
     constructor(
         private options: CreateQueueOptions<Data>,
         private jobQueueStrategy: JobQueueStrategy,
-        private jobBuffer: JobBuffer,
+        private jobBufferService: JobBufferService,
     ) {}
 
     /** @internal */
@@ -97,7 +97,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             retries: options?.retries ?? 0,
         });
 
-        const isBuffered = await this.jobBuffer.add(job);
+        const isBuffered = await this.jobBufferService.add(job);
         if (!isBuffered) {
             try {
                 const addedJob = await this.jobQueueStrategy.add(job);

@@ -13,7 +13,7 @@ import {
 
 import { ConfigService, InspectableJobQueueStrategy, isInspectableJobQueueStrategy } from '../../../config';
 import { JobQueueService } from '../../../job-queue';
-import { JobBuffer } from '../../../job-queue/job-buffer/job-buffer';
+import { JobBufferService } from '../../../job-queue/job-buffer/job-buffer.service';
 import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver()
@@ -21,7 +21,7 @@ export class JobResolver {
     constructor(
         private configService: ConfigService,
         private jobService: JobQueueService,
-        private jobBuffer: JobBuffer,
+        private jobBufferService: JobBufferService,
     ) {}
 
     @Query()
@@ -86,14 +86,14 @@ export class JobResolver {
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadSystem)
     async jobBufferSize(@Args() args: QueryJobBufferSizeArgs) {
-        const bufferSizes = await this.jobBuffer.bufferSize(args.processorIds);
+        const bufferSizes = await this.jobBufferService.bufferSize(args.bufferIds);
         return Object.entries(bufferSizes).map(([processorId, size]) => ({ processorId, size }));
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings, Permission.UpdateSystem)
     async flushBufferedJobs(@Args() args: MutationFlushBufferedJobsArgs) {
-        await this.jobBuffer.flush(args.processorIds);
+        await this.jobBufferService.flush(args.bufferIds);
         return { success: true };
     }
 

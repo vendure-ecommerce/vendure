@@ -1665,7 +1665,7 @@ export type Job = Node & {
 
 export type JobBufferSize = {
   __typename?: 'JobBufferSize';
-  processorId: Scalars['String'];
+  bufferId: Scalars['String'];
   size: Scalars['Int'];
 };
 
@@ -2238,7 +2238,7 @@ export type Mutation = {
   deleteFacetValues: Array<DeletionResponse>;
   updateGlobalSettings: UpdateGlobalSettingsResult;
   importProducts?: Maybe<ImportInfo>;
-  /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
+  /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
   cancelJob: Job;
   flushBufferedJobs: Success;
@@ -2597,7 +2597,7 @@ export type MutationCancelJobArgs = {
 
 
 export type MutationFlushBufferedJobsArgs = {
-  processorIds?: Maybe<Array<Scalars['String']>>;
+  bufferIds?: Maybe<Array<Scalars['String']>>;
 };
 
 
@@ -4005,7 +4005,7 @@ export type QueryJobsByIdArgs = {
 
 
 export type QueryJobBufferSizeArgs = {
-  processorIds?: Maybe<Array<Scalars['String']>>;
+  bufferIds?: Maybe<Array<Scalars['String']>>;
 };
 
 
