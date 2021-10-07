@@ -8,7 +8,7 @@
                 *ngIf="shouldDisplayLink(section)"
             >
                 <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
-                    <div *ngIf="sectionBadge !== 'none'" class="status-badge" [class]="sectionBadge"></div>
+                    <vdr-status-badge *ngIf="sectionBadge !== 'none'" [type]="sectionBadge"></vdr-status-badge>
                 </ng-container>
                 <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
                 <label [for]="section.id">{{ section.label | translate }}</label>
@@ -22,11 +22,7 @@
                                 routerLinkActive="active"
                             >
                                 <ng-container *ngIf="item.statusBadge | async as itemBadge">
-                                    <div
-                                        *ngIf="itemBadge.type !== 'none'"
-                                        class="status-badge"
-                                        [class]="itemBadge.type"
-                                    ></div>
+                                    <vdr-status-badge *ngIf="itemBadge.type !== 'none'" [type]="itemBadge.type"></vdr-status-badge>
                                 </ng-container>
                                 <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
                                 {{ item.label | translate }}
