@@ -8296,6 +8296,19 @@ export type ReindexMutation = { reindex: (
     & JobInfoFragment
   ) };
 
+export type GetPendingSearchIndexUpdatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPendingSearchIndexUpdatesQuery = Pick<Query, 'pendingSearchIndexUpdates'>;
+
+export type RunPendingSearchIndexUpdatesMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type RunPendingSearchIndexUpdatesMutation = { runPendingSearchIndexUpdates: (
+    { __typename?: 'Success' }
+    & Pick<Success, 'success'>
+  ) };
+
 export type ConfigurableOperationFragment = (
   { __typename?: 'ConfigurableOperation' }
   & Pick<ConfigurableOperation, 'code'>
@@ -9978,6 +9991,17 @@ export namespace Reindex {
   export type Variables = ReindexMutationVariables;
   export type Mutation = ReindexMutation;
   export type Reindex = (NonNullable<ReindexMutation['reindex']>);
+}
+
+export namespace GetPendingSearchIndexUpdates {
+  export type Variables = GetPendingSearchIndexUpdatesQueryVariables;
+  export type Query = GetPendingSearchIndexUpdatesQuery;
+}
+
+export namespace RunPendingSearchIndexUpdates {
+  export type Variables = RunPendingSearchIndexUpdatesMutationVariables;
+  export type Mutation = RunPendingSearchIndexUpdatesMutation;
+  export type RunPendingSearchIndexUpdates = (NonNullable<RunPendingSearchIndexUpdatesMutation['runPendingSearchIndexUpdates']>);
 }
 
 export namespace ConfigurableOperation {

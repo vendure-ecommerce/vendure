@@ -768,3 +768,17 @@ export const REINDEX = gql`
     }
     ${JOB_INFO_FRAGMENT}
 `;
+
+export const GET_PENDING_SEARCH_INDEX_UPDATES = gql`
+    query GetPendingSearchIndexUpdates {
+        pendingSearchIndexUpdates
+    }
+`;
+
+export const RUN_PENDING_SEARCH_INDEX_UPDATES = gql`
+    mutation RunPendingSearchIndexUpdates {
+        runPendingSearchIndexUpdates {
+            success
+        }
+    }
+`;

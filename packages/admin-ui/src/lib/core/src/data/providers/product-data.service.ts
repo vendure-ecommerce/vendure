@@ -23,6 +23,7 @@ import {
     DeleteTag,
     GetAsset,
     GetAssetList,
+    GetPendingSearchIndexUpdates,
     GetProductList,
     GetProductOptionGroup,
     GetProductOptionGroups,
@@ -43,6 +44,7 @@ import {
     RemoveProductsFromChannelInput,
     RemoveProductVariantsFromChannelInput,
     RemoveVariantsFromChannel,
+    RunPendingSearchIndexUpdates,
     SearchProducts,
     SortOrder,
     TagListOptions,
@@ -98,7 +100,11 @@ import {
     UPDATE_PRODUCT_VARIANTS,
     UPDATE_TAG,
 } from '../definitions/product-definitions';
-import { REINDEX } from '../definitions/settings-definitions';
+import {
+    GET_PENDING_SEARCH_INDEX_UPDATES,
+    REINDEX,
+    RUN_PENDING_SEARCH_INDEX_UPDATES,
+} from '../definitions/settings-definitions';
 
 import { BaseDataService } from './base-data.service';
 
@@ -128,6 +134,18 @@ export class ProductDataService {
 
     reindex() {
         return this.baseDataService.mutate<Reindex.Mutation>(REINDEX);
+    }
+
+    getPendingSearchIndexUpdates() {
+        return this.baseDataService.query<GetPendingSearchIndexUpdates.Query>(
+            GET_PENDING_SEARCH_INDEX_UPDATES,
+        );
+    }
+
+    runPendingSearchIndexUpdates() {
+        return this.baseDataService.mutate<RunPendingSearchIndexUpdates.Mutation>(
+            RUN_PENDING_SEARCH_INDEX_UPDATES,
+        );
     }
 
     getProducts(options: ProductListOptions) {
