@@ -2,8 +2,20 @@ import { Job } from '../job';
 
 import { JobBufferStorageStrategy } from './job-buffer-storage-strategy';
 
+/**
+ * @description
+ * A {@link JobBufferStorageStrategy} which keeps the buffered jobs in memory. Should
+ * _not_ be used in production, since it will lose data in the event of the server
+ * stopping.
+ *
+ * Instead, use the {@link DefaultJobQueuePlugin} with the `useDatabaseForBuffer: true` option set,
+ * or the {@link BullMQJobQueuePlugin} or another custom strategy with persistent storage.
+ *
+ * @since 1.3.0
+ * @docsCategory JobQueue
+ */
 export class InMemoryJobBufferStorageStrategy implements JobBufferStorageStrategy {
-    private bufferStorage = new Map<string, Set<Job>>();
+    protected bufferStorage = new Map<string, Set<Job>>();
 
     async add(bufferId: string, job: Job): Promise<Job> {
         const set = this.getSet(bufferId);

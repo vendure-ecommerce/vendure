@@ -8,6 +8,11 @@ import { Job } from '../job';
 import { JobBuffer } from './job-buffer';
 import { JobBufferStorageStrategy } from './job-buffer-storage-strategy';
 
+/**
+ * @description
+ * Used to manage {@link JobBuffer}s.Primarily intended to be used internally by the {@link JobQueueService}, which
+ * exposes its public-facing functionality.
+ */
 @Injectable()
 export class JobBufferService {
     private buffers = new Set<JobBuffer>();
