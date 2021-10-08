@@ -1,22 +1,22 @@
 ---
-title: "Payment Integrations"
+title: 'Payment Integrations'
 showtoc: true
 ---
 
 # Payment Integrations
 
-Vendure can support many kinds of payment workflows, such as authorizing and capturing payment in a single step upon checkout or authorizing on checkout and then capturing on fulfillment. 
+Vendure can support many kinds of payment workflows, such as authorizing and capturing payment in a single step upon checkout or authorizing on checkout and then capturing on fulfillment.
 
 {{< alert "primary" >}}
-  For a complete working example of a real payment integration, see the [real-world-vendure Braintree plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/braintree)
+For a complete working example of a real payment integration, see the [real-world-vendure Braintree plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/braintree)
 {{< /alert >}}
 
 ## Authorization & Settlement
 
 Typically, there are 2 parts to an online payment: **authorization** and **settlement**:
 
-* **Authorization** is the process by which the customer's bank is contacted to check whether the transaction is allowed. At this stage, no funds are removed from the customer's account.
-* **Settlement** (also known as "capture") is the process by which the funds are transferred from the customer's account to the merchant.
+-   **Authorization** is the process by which the customer's bank is contacted to check whether the transaction is allowed. At this stage, no funds are removed from the customer's account.
+-   **Settlement** (also known as "capture") is the process by which the funds are transferred from the customer's account to the merchant.
 
 Some merchants do both of these steps at once, when the customer checks out of the store. Others do the authorize step at checkout, and only do the settlement at some later point, e.g. upon shipping the goods to the customer.
 
@@ -32,7 +32,7 @@ import { sdk } from 'payment-provider-sdk';
 
 /**
  * This is a handler which integrates Vendure with an imaginary
- * payment provider, who provide a Node SDK which we use to 
+ * payment provider, who provide a Node SDK which we use to
  * interact with their APIs.
  */
 const myPaymentIntegration = new PaymentMethodHandler({
@@ -61,7 +61,7 @@ const myPaymentIntegration = new PaymentMethodHandler({
           cardInfo: result.cardInfo,
           // Any metadata in the `public` field
           // will be available in the Shop API,
-          // All other metadata is private and 
+          // All other metadata is private and
           // only available in the Admin API.
           public: {
             referenceCode: result.publicId,
@@ -82,11 +82,11 @@ const myPaymentIntegration = new PaymentMethodHandler({
   /** This is called when the `settlePayment` mutation is executed */
   settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult | SettlePaymentErrorResult> => {
     try {
-      const result = await sdk.charges.capture({ 
+      const result = await sdk.charges.capture({
         apiKey: args.apiKey,
         id: payment.transactionId,
       });
-      return { success: true };   
+      return { success: true };
     } catch (err) {
       return {
         success: false,
@@ -122,14 +122,14 @@ Once the PaymentMethodHandler is defined as above, you can use it to create a ne
 1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.
     ```GraphQL
     mutation {
-        addPaymentToOrder(input: { 
+        addPaymentToOrder(input: {
             method: "my-payment-method",
             metadata: { token: "<some token from the payment provider>" }) {
             ...Order
         }
     }
     ```
-   The `metadata` field is used to store the specific data required by the payment provider. E.g. some providers have a client-side part which begins the transaction and returns a token which must then be verified on the server side.
+    The `metadata` field is used to store the specific data required by the payment provider. E.g. some providers have a client-side part which begins the transaction and returns a token which must then be verified on the server side.
 2. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function]({{< relref "payment-method-config-options" >}}#createpayment). This function returns a [CreatePaymentResult object]({{< relref "payment-method-types" >}}#payment-method-types) which is used to create a new [Payment]({{< relref "/docs/typescript-api/entities/payment" >}}). If the Payment amount equals the order total, then the Order is transitioned to either the "PaymentAuthorized" or "PaymentSettled" state and the customer checkout flow is complete.
 
 ### Single-step
@@ -152,7 +152,7 @@ Here's an example which adds a new "Validating" state to the Payment state machi
 
 ```TypeScript
 /**
- * Define a new "Validating" Payment state, and set up the 
+ * Define a new "Validating" Payment state, and set up the
  * permitted transitions to/from it.
  */
 const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
@@ -168,7 +168,7 @@ const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
 };
 
 /**
- * Define a new "ValidatingPayment" Order state, and set up the 
+ * Define a new "ValidatingPayment" Order state, and set up the
  * permitted transitions to/from it.
  */
 const customOrderProcess: CustomOrderProcess<'ValidatingPayment'> = {
@@ -229,3 +229,18 @@ export const config: VendureConfig = {
   },
 };
 ```
+
+### Integration with hosted payment pages
+
+A hosted payment page is a system that works similar to (Stripe checkout)[https://stripe.com/payments/checkout]. The idea behind this flow is that the customer does not enter any credit card data anywhere on the merchant's site which waives the merchant from the responsibility to take care of sensitive data.
+
+The checkout flow works as follows:
+
+1. The user makes a POST to the card processor's URL via a Vendure served page
+2. The card processor accepts card information from the user and authorizes a payment
+3. The card processor redirects the user back to Vendure via a POST which contains details about the processed payment
+4. There is a pre-shared secret between the merchant and processor used to sign cross-site POST requests
+
+When integrating with a system like this, you would need to create a Controller to accept POST redirects from the payment processor (usually a success and a failure URL), as well as serve a POST form on your store frontend.
+
+With a hosted payment form the payment is already authorized by the time the card processor makes the POST request to Vendure, possibly settled even, so the payment handler won't do anything in particular - just return the data it has been passed. The validation of the POST request is done in the controller or service and the payment amount and payment refernce are just passed to the payment handler which passes them on.
