@@ -11,6 +11,7 @@ import { ConfigService } from '../config/config.service';
 import { ProcessContext, setProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
+import { JobBufferService } from './job-buffer/job-buffer.service';
 import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 
@@ -38,6 +39,7 @@ describe('JobQueueService', () => {
             providers: [
                 { provide: ConfigService, useClass: MockConfigService },
                 JobQueueService,
+                JobBufferService,
                 ProcessContext,
             ],
         }).compile();
