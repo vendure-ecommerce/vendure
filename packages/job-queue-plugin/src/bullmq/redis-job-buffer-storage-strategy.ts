@@ -26,6 +26,7 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async bufferSize(bufferIds?: string[]): Promise<{ [bufferId: string]: number }> {
+        const ids = bufferIds?.length ? bufferIds : await this.getAllBufferIds();
         const result: { [bufferId: string]: number } = {};
         for (const id of bufferIds || []) {
             const key = this.keyName(id);
@@ -36,6 +37,7 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async flush(bufferIds?: string[]): Promise<{ [bufferId: string]: Job[] }> {
+        const ids = bufferIds?.length ? bufferIds : await this.getAllBufferIds();
         const result: { [bufferId: string]: Job[] } = {};
         for (const id of bufferIds || []) {
             const key = this.keyName(id);
@@ -67,5 +69,19 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
             Logger.error(`Could not parse buffered job:\n${e.message}`, loggerCtx, e.stack);
             throw e;
         }
+    }
+
+    private async getAllBufferIds(): Promise<string[]> {
+        const stream = this.redis.scanStream({
+            match: `${BUFFER_LIST_PREFIX}:*`,
+        });
+        const keys = await new Promise<string[]>((resolve, reject) => {
+            const allKeys: string[] = [];
+            stream.on('data', _keys => allKeys.push(..._keys));
+            stream.on('end', () => resolve(allKeys));
+            stream.on('error', err => reject(err));
+        });
+
+        return keys.map(key => key.replace(`${BUFFER_LIST_PREFIX}:`, ''));
     }
 }

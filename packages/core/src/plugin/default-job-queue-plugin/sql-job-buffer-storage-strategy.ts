@@ -29,17 +29,21 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async bufferSize(bufferIds?: string[]): Promise<{ [bufferId: string]: number }> {
-        const rows = await this.connection
+        const qb = await this.connection
             .getRepository(JobRecordBuffer)
             .createQueryBuilder('record')
             .select(`COUNT(*)`, 'count')
-            .addSelect(`record.bufferId`, 'bufferId')
-            .groupBy('record.bufferId')
-            .getRawMany();
+            .addSelect(`record.bufferId`, 'bufferId');
+
+        if (bufferIds?.length) {
+            qb.andWhere(`record.bufferId IN (:...bufferIds)`, { bufferIds });
+        }
+
+        const rows = await qb.groupBy('record.bufferId').getRawMany();
 
         const result: { [bufferId: string]: number } = {};
         for (const row of rows) {
-            result[row.bufferId] = +row.count;
+            if (bufferIds) result[row.bufferId] = +row.count;
         }
         return result;
     }
