@@ -346,6 +346,97 @@ describe('Elasticsearch plugin', () => {
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
         });
+
+        it('inStock is false and not grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        // @ts-ignore
+                        inStock: false
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(2);
+        });
+
+        it('inStock is false and grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        // @ts-ignore
+                        inStock: false
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(1);
+        });
+
+        it('inStock is true and not grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        // @ts-ignore
+                        inStock: true
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(31);
+        });
+
+        it('inStock is true and grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        // @ts-ignore
+                        inStock: true
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(19);
+        });
+
+        it('inStock is undefined and not grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        // @ts-ignore
+                        inStock: undefined
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(33);
+        });
+
+        it('inStock is undefined and grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        // @ts-ignore
+                        inStock: undefined
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(20);
+        });
+
     });
 
     describe('admin api', () => {
@@ -1215,7 +1306,7 @@ describe('Elasticsearch plugin', () => {
             expect(search.items[0]).toEqual({
                 productVariantName: 'Bonsai Tree',
                 customMappings: {
-                    inStock: true,
+                    inStock: false,
                 },
             });
         });
