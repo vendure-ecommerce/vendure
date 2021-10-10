@@ -234,6 +234,112 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('inStock is True and groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: true, groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { productInStock: true }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is False and groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: false, groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { productInStock: false }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is undefined and groupByProduct', () => {
+        const result = buildElasticBody(
+            { groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                ],
+            },
+        });
+    });
+
+    it('inStock is True and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: true, groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { inStock: true }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is False and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: false, groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { inStock: false }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is undefined and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                ],
+            },
+        });
+    });
+
     describe('sorting', () => {
         it('name', () => {
             const result = buildElasticBody(
