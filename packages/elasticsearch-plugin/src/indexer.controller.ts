@@ -15,7 +15,9 @@ import {
     Product,
     ProductPriceApplicator,
     ProductVariant,
+    ProductVariantService,
     RequestContext,
+    RequestContextCacheService,
     TransactionalConnection,
     Translatable,
     Translation,
@@ -80,6 +82,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
         private productPriceApplicator: ProductPriceApplicator,
         private configService: ConfigService,
+        private productVariantService: ProductVariantService,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     onModuleInit(): any {
@@ -503,7 +507,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                                     {
                                         index: VARIANT_INDEX_NAME,
                                         operation: {
-                                            doc: this.createVariantIndexItem(
+                                            doc: await this.createVariantIndexItem(
                                                 variant,
                                                 variantsInChannel,
                                                 channelCtx,
@@ -682,12 +686,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         }
     }
 
-    private createVariantIndexItem(
+    private async createVariantIndexItem(
         v: ProductVariant,
         variants: ProductVariant[],
         ctx: RequestContext,
         languageCode: LanguageCode,
-    ): VariantIndexItem {
+    ): Promise<VariantIndexItem> {
         const productAsset = v.product.featuredAsset;
         const variantAsset = v.featuredAsset;
         const productTranslation = this.getTranslation(v.product, languageCode);
@@ -744,8 +748,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             ),
             productCollectionSlugs: unique(productCollectionTranslations.map(c => c.slug)),
             productChannelIds: v.product.channels.map(c => c.id),
-            inStock: v.stockOnHand > 0,
-            productInStock: variants.some(variant => variant.stockOnHand > 0),
+            inStock: 0 < (await this.productVariantService.getSaleableStockLevel(ctx, v)),
+            productInStock: await this.getProductInStockValue(ctx, variants),
         };
         const variantCustomMappings = Object.entries(this.options.customProductVariantMappings);
         for (const [name, def] of variantCustomMappings) {
@@ -757,6 +761,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             item[`product-${name}`] = def.valueFn(v.product, variants, languageCode);
         }
         return item;
+    }
+
+    private async getProductInStockValue(ctx: RequestContext, variants: ProductVariant[]): Promise<boolean> {
+        const stockLevels = await Promise.all(
+            variants.map(variant => this.productVariantService.getSaleableStockLevel(ctx, variant)),
+        );
+        return stockLevels.some(stockLevel => 0 < stockLevel);
     }
 
     /**
@@ -807,7 +818,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             productCollectionSlugs: [],
             productChannelIds: product.channels.map(c => c.id),
             inStock: false,
-            productInStock: false
+            productInStock: false,
         };
     }
 
