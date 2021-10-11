@@ -17,6 +17,7 @@ import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
+import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { PLUGIN_INIT_OPTIONS } from '../constants';
 import { SearchIndexItem } from '../entities/search-index-item.entity';
 import {
@@ -58,6 +59,7 @@ export class IndexerController {
         private productPriceApplicator: ProductPriceApplicator,
         private configService: ConfigService,
         private requestContextCache: RequestContextCacheService,
+        private productVariantService: ProductVariantService,
         @Inject(PLUGIN_INIT_OPTIONS) private options: DefaultSearchPluginInitOptions,
     ) {}
 
@@ -373,18 +375,28 @@ export class IndexerController {
                         collectionSlugs: collectionTranslations.map(c => c.slug),
                     });
                     if (this.options.indexStockStatus) {
-                        item.inStock = 0 < variant.stockOnHand;
+                        item.inStock =
+                            0 < (await this.productVariantService.getSaleableStockLevel(ctx, variant));
                         const productInStock = await this.requestContextCache.get(
                             ctx,
                             `productVariantsStock-${variant.productId}`,
                             () =>
                                 this.connection
                                     .getRepository(ctx, ProductVariant)
-                                    .createQueryBuilder('variant')
-                                    .select('variant.stockOnHand', 'stock')
-                                    .where('variant.productId = :productId', { productId: variant.productId })
-                                    .getRawMany()
-                                    .then(rows => rows.some(row => 0 < row.stock)),
+                                    .find({
+                                        loadEagerRelations: false,
+                                        where: {
+                                            productId: variant.productId,
+                                        },
+                                    })
+                                    .then(_variants =>
+                                        Promise.all(
+                                            _variants.map(v =>
+                                                this.productVariantService.getSaleableStockLevel(ctx, v),
+                                            ),
+                                        ),
+                                    )
+                                    .then(stockLevels => stockLevels.some(stockLevel => 0 < stockLevel)),
                         );
                         item.productInStock = productInStock;
                     }
