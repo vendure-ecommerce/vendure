@@ -1,11 +1,36 @@
+import { SearchInput as GeneratedSearchInput } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 
 import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';
 
+/**
+ * @description
+ * Options which configure the behaviour of the DefaultSearchPlugin
+ *
+ * @docsCategory DefaultSearchPlugin
+ */
 export interface DefaultSearchPluginInitOptions {
+    /**
+     * @description
+     * If set to `true`, the stock status of a ProductVariant (isStock: Boolean) will
+     * be exposed in the `search` query results. Enabling this option on an existing
+     * Vendure installation will require a DB migration/synchronization.
+     *
+     * @default false.
+     */
+    indexStockStatus?: boolean;
     // TODO: docs
     bufferUpdates?: boolean;
+}
+
+/**
+ * Because the `inStock` field is opt-in based on the `indexStockStatus` option,
+ * it is not included by default in the generated types. Thus we manually augment
+ * the generated type here.
+ */
+export interface SearchInput extends GeneratedSearchInput {
+    inStock?: boolean;
 }
 
 export type ReindexMessageResponse = {

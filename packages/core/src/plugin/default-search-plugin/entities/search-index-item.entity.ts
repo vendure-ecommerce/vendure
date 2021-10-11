@@ -85,4 +85,9 @@ export class SearchIndexItem {
 
     @EntityId({ nullable: true })
     productVariantAssetId: ID | null;
+
+    // Added dynamically based on the `indexStockStatus` init option.
+    inStock?: boolean;
+    // Added dynamically based on the `indexStockStatus` init option.
+    productInStock?: boolean;
 }

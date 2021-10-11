@@ -1,7 +1,8 @@
-import { Inject, OnApplicationBootstrap } from '@nestjs/common';
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
+import { Column } from 'typeorm';
 
 import { idsAreEqual } from '../../common/utils';
 import { EventBus } from '../../event-bus/event-bus';
@@ -12,19 +13,17 @@ import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
-import { JobBufferService } from '../../job-queue/job-buffer/job-buffer.service';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
+import { stockStatusExtension } from './api/api-extensions';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './api/fulltext-search.resolver';
 import { BUFFER_SEARCH_INDEX_UPDATES, PLUGIN_INIT_OPTIONS } from './constants';
 import { SearchIndexItem } from './entities/search-index-item.entity';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
-import { CollectionJobBuffer } from './search-job-buffer/collection-job-buffer';
-import { SearchIndexJobBuffer } from './search-job-buffer/search-index-job-buffer';
 import { SearchJobBufferService } from './search-job-buffer/search-job-buffer.service';
 import { DefaultSearchPluginInitOptions } from './types';
 
@@ -55,7 +54,10 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * export const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     DefaultSearchPlugin,
+ *     DefaultSearchPlugin.init({
+ *       indexStockStatus: true,
+ *       bufferUpdates: true,
+ *     }),
  *   ],
  * };
  * ```
@@ -75,8 +77,16 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
             useFactory: () => DefaultSearchPlugin.options.bufferUpdates === true,
         },
     ],
-    adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
-    shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
+    adminApiExtensions: {
+        schema: () =>
+            DefaultSearchPlugin.options.indexStockStatus === true ? stockStatusExtension : undefined,
+        resolvers: [AdminFulltextSearchResolver],
+    },
+    shopApiExtensions: {
+        schema: () =>
+            DefaultSearchPlugin.options.indexStockStatus === true ? stockStatusExtension : undefined,
+        resolvers: [ShopFulltextSearchResolver],
+    },
     entities: [SearchIndexItem],
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap {
@@ -91,6 +101,9 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
 
     static init(options: DefaultSearchPluginInitOptions): Type<DefaultSearchPlugin> {
         this.options = options;
+        if (options.indexStockStatus === true) {
+            this.addStockColumnsToEntity();
+        }
         return DefaultSearchPlugin;
     }
 
@@ -179,5 +192,17 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
                     return this.searchIndexService.reindex(event.ctx);
                 }
             });
+    }
+
+    /**
+     * If the `indexStockStatus` option is set to `true`, we dynamically add a couple of
+     * columns to the SearchIndexItem entity. This is done in this way to allow us to add
+     * support for indexing the stock status, while preventing a backwards-incompatible
+     * schema change.
+     */
+    private static addStockColumnsToEntity() {
+        const instance = new SearchIndexItem();
+        Column({ type: 'boolean', default: true })(instance, 'inStock');
+        Column({ type: 'boolean', default: true })(instance, 'productInStock');
     }
 }

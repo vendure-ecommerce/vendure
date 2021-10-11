@@ -1,4 +1,4 @@
-import { LogicalOperator, SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
@@ -6,6 +6,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { SearchIndexItem } from '../entities/search-index-item.entity';
+import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 
 import { SearchStrategy } from './search-strategy';
 import {
@@ -21,7 +22,10 @@ import {
 export class SqliteSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
 
-    constructor(private connection: TransactionalConnection) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private options: DefaultSearchPluginInitOptions,
+    ) {}
 
     async getFacetValueIds(
         ctx: RequestContext,
@@ -156,6 +160,13 @@ export class SqliteSearchStrategy implements SearchStrategy {
                     }),
                 )
                 .setParameters({ term, like_term: `%${term}%` });
+        }
+        if (input.inStock != null) {
+            if (input.groupByProduct) {
+                qb.andWhere('productInStock = :inStock', { inStock: input.inStock });
+            } else {
+                qb.andWhere('inStock = :inStock', { inStock: input.inStock });
+            }
         }
         if (facetValueIds?.length) {
             qb.andWhere(

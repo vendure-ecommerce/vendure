@@ -75,17 +75,22 @@ describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             logger: new DefaultLogger(),
-            plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin],
+            plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
         }),
     );
 
     beforeAll(async () => {
         await server.init({
             initialData,
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        if (testConfig.dbConnectionOptions.type === 'mysql') {
+            // Mysql seems to occasionally run into some kind of race condition
+            // relating to the populating of data, so we add a pause here.
+            await new Promise(resolve => setTimeout(resolve, 10000));
+        }
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -640,6 +645,96 @@ describe('Default search plugin', () => {
             );
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
+        });
+
+        it('inStock is false and not grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        // @ts-ignore
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(2);
+        });
+
+        it('inStock is false and grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        // @ts-ignore
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(1);
+        });
+
+        it('inStock is true and not grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        // @ts-ignore
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(31);
+        });
+
+        it('inStock is true and grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        // @ts-ignore
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(19);
+        });
+
+        it('inStock is undefined and not grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        // @ts-ignore
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(33);
+        });
+
+        it('inStock is undefined and grouped by product', async () => {
+            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        // @ts-ignore
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(20);
         });
     });
 

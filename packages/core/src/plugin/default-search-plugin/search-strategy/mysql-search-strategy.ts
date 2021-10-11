@@ -1,4 +1,4 @@
-import { LogicalOperator, SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
@@ -6,9 +6,10 @@ import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { SearchIndexItem } from '../entities/search-index-item.entity';
+import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 
 import { SearchStrategy } from './search-strategy';
-import { fieldsToSelect } from './search-strategy-common';
+import { getFieldsToSelect } from './search-strategy-common';
 import {
     createCollectionIdCountMap,
     createFacetIdCountMap,
@@ -21,7 +22,10 @@ import {
 export class MysqlSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
 
-    constructor(private connection: TransactionalConnection) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private options: DefaultSearchPluginInitOptions,
+    ) {}
 
     async getFacetValueIds(
         ctx: RequestContext,
@@ -170,6 +174,13 @@ export class MysqlSearchStrategy implements SearchStrategy {
         } else {
             qb.addSelect('1 as score');
         }
+        if (input.inStock != null) {
+            if (input.groupByProduct) {
+                qb.andWhere('productInStock = :inStock', { inStock: input.inStock });
+            } else {
+                qb.andWhere('inStock = :inStock', { inStock: input.inStock });
+            }
+        }
         if (facetValueIds?.length) {
             qb.andWhere(
                 new Brackets(qb1 => {
@@ -229,13 +240,14 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
         return qb;
     }
+
     /**
      * When a select statement includes a GROUP BY clause,
      * then all selected columns must be aggregated. So we just apply the
      * "MIN" function in this case to all other columns than the productId.
      */
     private createMysqlSelect(groupByProduct: boolean): string {
-        return fieldsToSelect
+        return getFieldsToSelect(this.options.indexStockStatus)
             .map(col => {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
@@ -247,7 +259,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
                         col === 'channelIds'
                     ) {
                         return `GROUP_CONCAT(${qualifiedName}) as "${alias}"`;
-                    } else if (col === 'enabled') {
+                    } else if (col === 'enabled' || col === 'inStock' || col === 'productInStock') {
                         return `MAX(${qualifiedName}) as "${alias}"`;
                     } else {
                         return `MIN(${qualifiedName}) as "${alias}"`;

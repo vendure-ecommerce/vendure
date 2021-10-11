@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { AsyncQueue } from '../../../common/async-queue';
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { asyncObservable, idsAreEqual } from '../../../common/utils';
@@ -16,8 +17,10 @@ import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
+import { PLUGIN_INIT_OPTIONS } from '../constants';
 import { SearchIndexItem } from '../entities/search-index-item.entity';
 import {
+    DefaultSearchPluginInitOptions,
     ProductChannelMessageData,
     ReindexMessageData,
     ReindexMessageResponse,
@@ -54,6 +57,8 @@ export class IndexerController {
         private connection: TransactionalConnection,
         private productPriceApplicator: ProductPriceApplicator,
         private configService: ConfigService,
+        private requestContextCache: RequestContextCacheService,
+        @Inject(PLUGIN_INIT_OPTIONS) private options: DefaultSearchPluginInitOptions,
     ) {}
 
     reindex({ ctx: rawContext }: ReindexMessageData): Observable<ReindexMessageResponse> {
@@ -334,41 +339,56 @@ export class IndexerController {
                         session: {} as any,
                     });
                     await this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx);
-                    items.push(
-                        new SearchIndexItem({
-                            channelId: channel.id,
-                            languageCode,
-                            productVariantId: variant.id,
-                            price: variant.price,
-                            priceWithTax: variant.priceWithTax,
-                            sku: variant.sku,
-                            enabled: variant.product.enabled === false ? false : variant.enabled,
-                            slug: productTranslation.slug,
-                            productId: variant.product.id,
-                            productName: productTranslation.name,
-                            description: this.constrainDescription(productTranslation.description),
-                            productVariantName: variantTranslation.name,
-                            productAssetId: variant.product.featuredAsset
-                                ? variant.product.featuredAsset.id
-                                : null,
-                            productPreviewFocalPoint: variant.product.featuredAsset
-                                ? variant.product.featuredAsset.focalPoint
-                                : null,
-                            productVariantPreviewFocalPoint: variant.featuredAsset
-                                ? variant.featuredAsset.focalPoint
-                                : null,
-                            productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
-                            productPreview: variant.product.featuredAsset
-                                ? variant.product.featuredAsset.preview
-                                : '',
-                            productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
-                            channelIds: variant.channels.map(c => c.id as string),
-                            facetIds: this.getFacetIds(variant),
-                            facetValueIds: this.getFacetValueIds(variant),
-                            collectionIds: variant.collections.map(c => c.id.toString()),
-                            collectionSlugs: collectionTranslations.map(c => c.slug),
-                        }),
-                    );
+                    const item = new SearchIndexItem({
+                        channelId: channel.id,
+                        languageCode,
+                        productVariantId: variant.id,
+                        price: variant.price,
+                        priceWithTax: variant.priceWithTax,
+                        sku: variant.sku,
+                        enabled: variant.product.enabled === false ? false : variant.enabled,
+                        slug: productTranslation.slug,
+                        productId: variant.product.id,
+                        productName: productTranslation.name,
+                        description: this.constrainDescription(productTranslation.description),
+                        productVariantName: variantTranslation.name,
+                        productAssetId: variant.product.featuredAsset
+                            ? variant.product.featuredAsset.id
+                            : null,
+                        productPreviewFocalPoint: variant.product.featuredAsset
+                            ? variant.product.featuredAsset.focalPoint
+                            : null,
+                        productVariantPreviewFocalPoint: variant.featuredAsset
+                            ? variant.featuredAsset.focalPoint
+                            : null,
+                        productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
+                        productPreview: variant.product.featuredAsset
+                            ? variant.product.featuredAsset.preview
+                            : '',
+                        productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
+                        channelIds: variant.channels.map(c => c.id as string),
+                        facetIds: this.getFacetIds(variant),
+                        facetValueIds: this.getFacetValueIds(variant),
+                        collectionIds: variant.collections.map(c => c.id.toString()),
+                        collectionSlugs: collectionTranslations.map(c => c.slug),
+                    });
+                    if (this.options.indexStockStatus) {
+                        item.inStock = 0 < variant.stockOnHand;
+                        const productInStock = await this.requestContextCache.get(
+                            ctx,
+                            `productVariantsStock-${variant.productId}`,
+                            () =>
+                                this.connection
+                                    .getRepository(ctx, ProductVariant)
+                                    .createQueryBuilder('variant')
+                                    .select('variant.stockOnHand', 'stock')
+                                    .where('variant.productId = :productId', { productId: variant.productId })
+                                    .getRawMany()
+                                    .then(rows => rows.some(row => 0 < row.stock)),
+                        );
+                        item.productInStock = productInStock;
+                    }
+                    items.push(item);
                 }
             }
         }

@@ -21,3 +21,7 @@ export const fieldsToSelect = [
     'productVariantPreview',
     'productVariantPreviewFocalPoint',
 ];
+
+export function getFieldsToSelect(includeStockStatus: boolean = false) {
+    return includeStockStatus ? [...fieldsToSelect, 'inStock', 'productInStock'] : fieldsToSelect;
+}

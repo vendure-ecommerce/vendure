@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
@@ -13,11 +13,13 @@ import { FacetValueService } from '../../service/services/facet-value.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
 
+import { PLUGIN_INIT_OPTIONS } from './constants';
 import { SearchIndexService } from './indexer/search-index.service';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
 import { PostgresSearchStrategy } from './search-strategy/postgres-search-strategy';
 import { SearchStrategy } from './search-strategy/search-strategy';
 import { SqliteSearchStrategy } from './search-strategy/sqlite-search-strategy';
+import { DefaultSearchPluginInitOptions } from './types';
 
 /**
  * Search indexing and full-text search for supported databases. See the various
@@ -36,6 +38,7 @@ export class FulltextSearchService {
         private productVariantService: ProductVariantService,
         private searchIndexService: SearchIndexService,
         private searchService: SearchService,
+        @Inject(PLUGIN_INIT_OPTIONS) private options: DefaultSearchPluginInitOptions,
     ) {
         this.searchService.adopt(this);
         this.setSearchStrategy();
@@ -108,15 +111,15 @@ export class FulltextSearchService {
         switch (this.connection.rawConnection.options.type) {
             case 'mysql':
             case 'mariadb':
-                this.searchStrategy = new MysqlSearchStrategy(this.connection);
+                this.searchStrategy = new MysqlSearchStrategy(this.connection, this.options);
                 break;
             case 'sqlite':
             case 'sqljs':
             case 'better-sqlite3':
-                this.searchStrategy = new SqliteSearchStrategy(this.connection);
+                this.searchStrategy = new SqliteSearchStrategy(this.connection, this.options);
                 break;
             case 'postgres':
-                this.searchStrategy = new PostgresSearchStrategy(this.connection);
+                this.searchStrategy = new PostgresSearchStrategy(this.connection, this.options);
                 break;
             default:
                 throw new InternalServerError(`error.database-not-supported-by-default-search-plugin`);
