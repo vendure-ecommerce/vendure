@@ -100,6 +100,15 @@ if (process.env.CI) {
     jest.setTimeout(10 * 3000);
 }
 
+interface SearchProductShopVariables extends SearchProductsShop.Variables {
+    input: SearchProductsShop.Variables['input'] & {
+        // This input field is dynamically added only when the `indexStockStatus` init option
+        // of DefaultSearchPlugin is set to `true`, and therefore not included in the generated type. Therefore
+        // we need to manually patch it here.
+        inStock?: boolean;
+    };
+}
+
 const INDEX_PREFIX = 'e2e-tests';
 
 describe('Elasticsearch plugin', () => {
@@ -296,7 +305,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -320,7 +329,7 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -333,7 +342,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -348,14 +357,12 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is false and not grouped by product', async () => {
-            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: false,
-                        // @ts-ignore
-                        inStock: false
+                        inStock: false,
                     },
                 },
             );
@@ -363,14 +370,12 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is false and grouped by product', async () => {
-            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: true,
-                        // @ts-ignore
-                        inStock: false
+                        inStock: false,
                     },
                 },
             );
@@ -378,14 +383,12 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is true and not grouped by product', async () => {
-            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: false,
-                        // @ts-ignore
-                        inStock: true
+                        inStock: true,
                     },
                 },
             );
@@ -393,14 +396,12 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is true and grouped by product', async () => {
-            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: true,
-                        // @ts-ignore
-                        inStock: true
+                        inStock: true,
                     },
                 },
             );
@@ -408,14 +409,12 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is undefined and not grouped by product', async () => {
-            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: false,
-                        // @ts-ignore
-                        inStock: undefined
+                        inStock: undefined,
                     },
                 },
             );
@@ -423,20 +422,17 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is undefined and grouped by product', async () => {
-            // ToDo Remove @ts-ignore after implementing inStock in default-search-plugin
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: true,
-                        // @ts-ignore
-                        inStock: undefined
+                        inStock: undefined,
                     },
                 },
             );
             expect(result.search.totalItems).toBe(20);
         });
-
     });
 
     describe('admin api', () => {
@@ -1170,7 +1166,7 @@ describe('Elasticsearch plugin', () => {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                     const { search } = await adminClient.query<
                         SearchProductsShop.Query,
-                        SearchProductsShop.Variables
+                        SearchProductsShopVariables
                     >(
                         SEARCH_PRODUCTS,
                         {

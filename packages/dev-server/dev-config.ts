@@ -3,6 +3,7 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
@@ -65,15 +66,15 @@ export const devConfig: VendureConfig = {
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        // DefaultSearchPlugin.init({ bufferUpdates: true }),
+        DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
         BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin,
+        // DefaultJobQueuePlugin.init(),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
-        ElasticsearchPlugin.init({
-            host: 'http://localhost',
-            port: 9200,
-            bufferUpdates: true,
-        }),
+        // ElasticsearchPlugin.init({
+        //     host: 'http://localhost',
+        //     port: 9200,
+        //     bufferUpdates: true,
+        // }),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',
