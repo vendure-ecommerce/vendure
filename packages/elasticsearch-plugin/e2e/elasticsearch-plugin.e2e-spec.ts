@@ -38,7 +38,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate
+    UpdateTaxRate,
 } from '../../core/e2e/graphql/generated-e2e-admin-types';
 import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
@@ -127,6 +127,17 @@ describe('Elasticsearch plugin', () => {
                             graphQlType: 'Int!',
                             valueFn: args => {
                                 return 42;
+                            },
+                        },
+                    },
+                    searchConfig: {
+                        scriptFields: {
+                            answerDouble: {
+                                graphQlType: 'Int!',
+                                environment: 'product',
+                                scriptFn: input => ({
+                                    script: `doc['answer'].value * 2`,
+                                }),
                             },
                         },
                     },
@@ -277,8 +288,8 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
-        ]);
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
         });
 
         it('returns correct collections when grouped by product', async () => {
@@ -291,7 +302,7 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
@@ -1238,6 +1249,29 @@ describe('Elasticsearch plugin', () => {
                 productName: 'Bonsai Tree',
                 customMappings: {
                     answer: 42,
+                },
+            });
+        });
+    });
+
+    describe('scriptFields', () => {
+        it('script mapping', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerDouble
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerDouble: 84,
                 },
             });
         });

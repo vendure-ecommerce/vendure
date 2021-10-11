@@ -116,7 +116,7 @@ describe('buildElasticBody()', () => {
 
     it('facetValueFilters OR', () => {
         const result = buildElasticBody(
-            { facetValueFilters: [ { or: ['1', '2'] }] },
+            { facetValueFilters: [{ or: ['1', '2'] }] },
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
@@ -382,6 +382,29 @@ describe('buildElasticBody()', () => {
                         },
                     },
                 ],
+            },
+        });
+    });
+
+    it('scriptFields option', () => {
+        const config: DeepRequired<SearchConfig> = {
+            ...searchConfig,
+            ...{
+                scriptFields: {
+                    test: {
+                        graphQlType: 'String',
+                        environment: 'both',
+                        scriptFn: input => ({
+                            script: `doc['property'].dummyScript(${input.term})`,
+                        }),
+                    },
+                },
+            },
+        };
+        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
+        expect(result.script_fields).toEqual({
+            test: {
+                script: `doc['property'].dummyScript(test)`,
             },
         });
     });

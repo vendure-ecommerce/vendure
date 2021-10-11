@@ -882,7 +882,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         languageCode: LanguageCode,
     ): ProductIndexItem {
         const productTranslation = this.getTranslation(product, ctx.languageCode);
-        return {
+        const item: ProductIndexItem = {
             channelId: ctx.channelId,
             languageCode,
             sku: '',
@@ -910,6 +910,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             channelIds: [ctx.channelId],
             enabled: false,
         };
+        const customMappings = Object.entries(this.options.customProductMappings);
+        for (const [name, def] of customMappings) {
+            item[name] = def.valueFn(product, [], languageCode);
+        }
+        return item;
     }
 
     private getTranslation<T extends Translatable>(

@@ -83,6 +83,7 @@ export type SearchHit<T> = {
     _score: number;
     _source: T;
     _type: string;
+    fields?: any;
 };
 
 export type SearchRequestBody = {
@@ -92,6 +93,8 @@ export type SearchRequestBody = {
     size?: number;
     track_total_hits?: number | boolean;
     aggs?: any;
+    _source?: boolean;
+    script_fields?: any;
 };
 
 export type SearchResponseBody<T = any> = {
@@ -191,7 +194,8 @@ export interface UpdateAssetMessageData {
 }
 
 type Maybe<T> = T | undefined;
-type CustomMappingDefinition<Args extends any[], T extends string, R> = {
+type CustomMappingTypes = 'String' | 'String!' | 'Int' | 'Int!' | 'Float' | 'Float!' | 'Boolean' | 'Boolean!';
+type CustomMappingDefinition<Args extends any[], T extends CustomMappingTypes, R> = {
     graphQlType: T;
     valueFn: (...args: Args) => R;
 };
@@ -246,3 +250,37 @@ export type CustomMapping<Args extends any[]> =
     | CustomFloatMappingNullable<Args>
     | CustomBooleanMapping<Args>
     | CustomBooleanMappingNullable<Args>;
+
+export type CustomScriptEnvironment = 'product' | 'variant' | 'both';
+type CustomScriptMappingDefinition<Args extends any[], T extends CustomMappingTypes, R> = {
+    graphQlType: T;
+    environment: CustomScriptEnvironment;
+    scriptFn: (...args: Args) => R;
+};
+
+type CustomScriptStringMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'String!', any>;
+type CustomScriptStringMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<
+    Args,
+    'String',
+    any
+>;
+type CustomScriptIntMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Int!', any>;
+type CustomScriptIntMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Int', any>;
+type CustomScriptFloatMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Float!', any>;
+type CustomScriptFloatMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Float', any>;
+type CustomScriptBooleanMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Boolean!', any>;
+type CustomScriptBooleanMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<
+    Args,
+    'Boolean',
+    any
+>;
+
+export type CustomScriptMapping<Args extends any[]> =
+    | CustomScriptStringMapping<Args>
+    | CustomScriptStringMappingNullable<Args>
+    | CustomScriptIntMapping<Args>
+    | CustomScriptIntMappingNullable<Args>
+    | CustomScriptFloatMapping<Args>
+    | CustomScriptFloatMappingNullable<Args>
+    | CustomScriptBooleanMapping<Args>
+    | CustomScriptBooleanMappingNullable<Args>;
