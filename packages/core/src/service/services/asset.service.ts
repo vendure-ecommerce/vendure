@@ -60,6 +60,12 @@ export interface EntityAssetInput {
     featuredAssetId?: ID | null;
 }
 
+/**
+ * @description
+ * Contains methods relating to {@link Asset} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class AssetService {
     private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];

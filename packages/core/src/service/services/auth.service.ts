@@ -27,7 +27,10 @@ import { LogoutEvent } from '../../event-bus/events/logout-event';
 import { SessionService } from './session.service';
 
 /**
- * The AuthService manages both authenticated and anonymous Sessions.
+ * @description
+ * Contains methods relating to {@link Session}, {@link AuthenticatedSession} & {@link AnonymousSession} entities.
+ *
+ * @docsCategory services
  */
 @Injectable()
 export class AuthService {
@@ -39,6 +42,7 @@ export class AuthService {
     ) {}
 
     /**
+     * @description
      * Authenticates a user's credentials and if okay, creates a new session.
      */
     async authenticate(

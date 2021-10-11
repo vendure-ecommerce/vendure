@@ -42,6 +42,12 @@ import { ProductVariantService } from './product-variant.service';
 import { RoleService } from './role.service';
 import { TaxRateService } from './tax-rate.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Product} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ProductService {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];

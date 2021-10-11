@@ -50,6 +50,12 @@ import { RoleService } from './role.service';
 import { StockMovementService } from './stock-movement.service';
 import { TaxCategoryService } from './tax-category.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link ProductVariant} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ProductVariantService {
     constructor(

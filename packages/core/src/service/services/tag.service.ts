@@ -15,6 +15,12 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { Tag } from '../../entity/tag/tag.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 
+/**
+ * @description
+ * Contains methods relating to {@link Tag} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class TagService {
     constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}

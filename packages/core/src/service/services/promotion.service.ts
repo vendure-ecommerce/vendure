@@ -40,6 +40,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Promotion} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PromotionService {
     availableConditions: PromotionCondition[] = [];

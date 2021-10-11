@@ -15,6 +15,12 @@ import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+/**
+ * @description
+ * Contains methods relating to {@link TaxCategory} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class TaxCategoryService {
     constructor(private connection: TransactionalConnection) {}

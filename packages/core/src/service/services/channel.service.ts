@@ -31,6 +31,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { GlobalSettingsService } from './global-settings.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Channel} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ChannelService {
     private allChannels: SelfRefreshingCache<Channel[], [RequestContext]>;

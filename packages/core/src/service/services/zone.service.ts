@@ -21,6 +21,12 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+/**
+ * @description
+ * Contains methods relating to {@link Zone} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ZoneService {
     /**

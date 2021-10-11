@@ -25,6 +25,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { HistoryService } from './history.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link CustomerGroup} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CustomerGroupService {
     constructor(

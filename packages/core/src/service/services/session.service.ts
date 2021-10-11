@@ -19,6 +19,12 @@ import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-p
 
 import { OrderService } from './order.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Session} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class SessionService implements EntitySubscriberInterface {
     private sessionCacheStrategy: SessionCacheStrategy;

@@ -24,6 +24,12 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 
 import { GlobalSettingsService } from './global-settings.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link StockMovement} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class StockMovementService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];

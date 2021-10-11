@@ -21,6 +21,12 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
 
+/**
+ * @description
+ * Contains methods relating to {@link Fulfillment} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class FulfillmentService {
     constructor(

@@ -24,6 +24,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 const activeTaxRatesKey = 'active-tax-rates';
 
+/**
+ * @description
+ * Contains methods relating to {@link TaxRate} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class TaxRateService {
     private readonly defaultTaxRate = new TaxRate({

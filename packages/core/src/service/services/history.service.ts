@@ -137,7 +137,10 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
 }
 
 /**
- * The HistoryService is reponsible for creating and retrieving HistoryEntry entities.
+ * @description
+ * Contains methods relating to {@link HistoryEntry} entities.
+ *
+ * @docsCategory services
  */
 @Injectable()
 export class HistoryService {

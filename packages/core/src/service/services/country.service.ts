@@ -22,6 +22,12 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ZoneService } from './zone.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Country} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CountryService {
     constructor(

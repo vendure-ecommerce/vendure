@@ -24,6 +24,12 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link FacetValue} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class FacetValueService {
     constructor(

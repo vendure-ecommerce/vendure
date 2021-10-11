@@ -25,6 +25,12 @@ import { VerificationTokenGenerator } from '../helpers/verification-token-genera
 
 import { RoleService } from './role.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link User} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class UserService {
     constructor(

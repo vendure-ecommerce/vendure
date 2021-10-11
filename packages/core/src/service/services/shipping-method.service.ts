@@ -27,6 +27,12 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link ShippingMethod} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ShippingMethodService {
     constructor(

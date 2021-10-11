@@ -62,6 +62,12 @@ import { CountryService } from './country.service';
 import { HistoryService } from './history.service';
 import { UserService } from './user.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Customer} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CustomerService {
     constructor(

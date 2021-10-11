@@ -123,6 +123,12 @@ import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Order} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class OrderService {
     constructor(

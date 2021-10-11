@@ -28,6 +28,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link PaymentMethod} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PaymentMethodService {
     constructor(

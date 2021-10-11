@@ -16,6 +16,12 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+/**
+ * @description
+ * Contains methods relating to {@link ProductOptionGroup} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ProductOptionGroupService {
     constructor(

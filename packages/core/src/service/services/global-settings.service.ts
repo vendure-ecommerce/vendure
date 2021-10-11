@@ -9,6 +9,12 @@ import { GlobalSettings } from '../../entity/global-settings/global-settings.ent
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+/**
+ * @description
+ * Contains methods relating to the {@link GlobalSettings} entity.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class GlobalSettingsService {
     constructor(

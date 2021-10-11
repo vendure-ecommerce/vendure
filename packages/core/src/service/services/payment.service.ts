@@ -32,6 +32,12 @@ import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state
 
 import { PaymentMethodService } from './payment-method.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Payment} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PaymentService {
     constructor(

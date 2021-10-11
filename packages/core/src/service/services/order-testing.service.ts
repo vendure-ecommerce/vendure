@@ -26,8 +26,11 @@ import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calc
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 /**
+ * @description
  * This service is responsible for creating temporary mock Orders against which tests can be run, such as
  * testing a ShippingMethod or Promotion.
+ *
+ * @docsCategory services
  */
 @Injectable()
 export class OrderTestingService {

@@ -22,6 +22,12 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Administrator} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class AdministratorService {
     constructor(
@@ -34,10 +40,15 @@ export class AdministratorService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /** @internal */
     async initAdministrators() {
         await this.ensureSuperAdminExists();
     }
 
+    /**
+     * @description
+     * Get a paginated list of Administrators.
+     */
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Administrator>,
@@ -55,6 +66,10 @@ export class AdministratorService {
             }));
     }
 
+    /**
+     * @description
+     * Get an Administrator by id.
+     */
     findOne(ctx: RequestContext, administratorId: ID): Promise<Administrator | undefined> {
         return this.connection.getRepository(ctx, Administrator).findOne(administratorId, {
             relations: ['user', 'user.roles'],
@@ -64,6 +79,10 @@ export class AdministratorService {
         });
     }
 
+    /**
+     * @description
+     * Get an Administrator based on the User id.
+     */
     findOneByUserId(ctx: RequestContext, userId: ID): Promise<Administrator | undefined> {
         return this.connection.getRepository(ctx, Administrator).findOne({
             where: {
@@ -73,6 +92,10 @@ export class AdministratorService {
         });
     }
 
+    /**
+     * @description
+     * Create a new Administrator.
+     */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
         const administrator = new Administrator(input);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
@@ -91,6 +114,10 @@ export class AdministratorService {
         return createdAdministrator;
     }
 
+    /**
+     * @description
+     * Update an existing Administrator.
+     */
     async update(ctx: RequestContext, input: UpdateAdministratorInput): Promise<Administrator> {
         const administrator = await this.findOne(ctx, input.id);
         if (!administrator) {
@@ -128,6 +155,7 @@ export class AdministratorService {
     }
 
     /**
+     * @description
      * Assigns a Role to the Administrator's User entity.
      */
     async assignRole(ctx: RequestContext, administratorId: ID, roleId: ID): Promise<Administrator> {
@@ -144,6 +172,10 @@ export class AdministratorService {
         return administrator;
     }
 
+    /**
+     * @description
+     * Soft deletes an Administrator (sets the `deletedAt` field).
+     */
     async softDelete(ctx: RequestContext, id: ID) {
         const administrator = await this.connection.getEntityOrThrow(ctx, Administrator, id, {
             relations: ['user'],
@@ -157,8 +189,11 @@ export class AdministratorService {
     }
 
     /**
+     * @description
      * There must always exist a SuperAdmin, otherwise full administration via API will
      * no longer be possible.
+     *
+     * @internal
      */
     private async ensureSuperAdminExists() {
         const { superadminCredentials } = this.configService.authOptions;

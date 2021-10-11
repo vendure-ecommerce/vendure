@@ -50,6 +50,12 @@ export type ApplyCollectionFiltersJobData = {
     applyToChangedVariantsOnly?: boolean;
 };
 
+/**
+ * @description
+ * Contains methods relating to {@link Collection} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
