@@ -5,7 +5,7 @@ import { Brackets, SelectQueryBuilder } from 'typeorm';
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
-import { SearchIndexItem } from '../search-index-item.entity';
+import { SearchIndexItem } from '../entities/search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
 import {

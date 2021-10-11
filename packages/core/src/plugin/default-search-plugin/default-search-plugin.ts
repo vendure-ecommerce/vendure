@@ -17,12 +17,12 @@ import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
+import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './api/fulltext-search.resolver';
 import { BUFFER_SEARCH_INDEX_UPDATES, PLUGIN_INIT_OPTIONS } from './constants';
-import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
+import { SearchIndexItem } from './entities/search-index-item.entity';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
-import { SearchIndexItem } from './search-index-item.entity';
 import { CollectionJobBuffer } from './search-job-buffer/collection-job-buffer';
 import { SearchIndexJobBuffer } from './search-job-buffer/search-index-job-buffer';
 import { SearchJobBufferService } from './search-job-buffer/search-job-buffer.service';

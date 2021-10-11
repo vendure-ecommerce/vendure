@@ -16,7 +16,7 @@ import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
-import { SearchIndexItem } from '../search-index-item.entity';
+import { SearchIndexItem } from '../entities/search-index-item.entity';
 import {
     ProductChannelMessageData,
     ReindexMessageData,
