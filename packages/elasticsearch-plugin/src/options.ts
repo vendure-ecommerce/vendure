@@ -2,7 +2,7 @@ import { ClientOptions } from '@elastic/elasticsearch';
 import { DeepRequired, EntityRelationPaths, ID, LanguageCode, Product, ProductVariant } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
-import { CustomMapping, ElasticSearchInput } from './types';
+import { CustomMapping, CustomScriptMapping, ElasticSearchInput } from './types';
 
 /**
  * @description
@@ -396,6 +396,42 @@ export interface SearchConfig {
         channelId: ID,
         enabledOnly: boolean,
     ) => any;
+    /**
+     * @description
+     * Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit
+     * @since 1.2.4
+     * @example
+     * ```TypeScript
+     * indexMappingProperties: {
+     *      location: {
+     *          type: 'geo_point', // contains function arcDistance
+     *      },
+     * },
+     * customProductMappings: {
+     *      location: {
+     *          graphQlType: 'String',
+     *          valueFn: (product: Product) => {
+     *              const custom = product.customFields.location;
+     *              return `${custom.latitude},${location.longitude}`;
+     *          },
+     *      }
+     * },
+     * scriptFields: {
+     *      distance: {
+     *          graphQlType: 'Number'
+     *          valFn: (input) => {
+     *              // assuming SearchInput was extended with latitude and longitude
+     *              const lat = input.latitude;
+     *              const lon = input.longitude;
+     *              return {
+     *                  script: `doc['location'].arcDistance(${lat}, ${lon})`,
+     *              }
+     *          }
+     *      }
+     * }
+     * ```
+     */
+    scriptFields?: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> };
 }
 
 /**
@@ -465,6 +501,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
         },
         priceRangeBucketInterval: 1000,
         mapQuery: query => query,
+        scriptFields: {},
     },
     customProductMappings: {},
     customProductVariantMappings: {},

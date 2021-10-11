@@ -837,7 +837,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const productTranslation = this.getTranslation(product, languageCode);
         const productAsset = product.featuredAsset;
 
-        return {
+        const item: VariantIndexItem = {
             channelId: ctx.channelId,
             languageCode,
             productVariantId: 0,
@@ -875,6 +875,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             inStock: false,
             productInStock: false,
         };
+        const customMappings = Object.entries(this.options.customProductMappings);
+        for (const [name, def] of customMappings) {
+            item[name] = def.valueFn(product, [], languageCode);
+        }
+        return item;
     }
 
     private getTranslation<T extends Translatable>(

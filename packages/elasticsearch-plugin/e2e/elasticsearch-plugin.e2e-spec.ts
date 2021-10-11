@@ -139,6 +139,17 @@ describe('Elasticsearch plugin', () => {
                             },
                         },
                     },
+                    searchConfig: {
+                        scriptFields: {
+                            answerDouble: {
+                                graphQlType: 'Int!',
+                                environment: 'product',
+                                scriptFn: input => ({
+                                    script: `doc['answer'].value * 2`,
+                                }),
+                            },
+                        },
+                    },
                 }),
                 DefaultJobQueuePlugin,
             ],
@@ -1326,6 +1337,29 @@ describe('Elasticsearch plugin', () => {
                 productName: 'Bonsai Tree',
                 customMappings: {
                     answer: 42,
+                },
+            });
+        });
+    });
+
+    describe('scriptFields', () => {
+        it('script mapping', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerDouble
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerDouble: 84,
                 },
             });
         });

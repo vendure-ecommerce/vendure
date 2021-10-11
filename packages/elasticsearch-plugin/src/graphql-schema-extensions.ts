@@ -44,8 +44,53 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
 function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode | undefined {
     const productMappings = Object.entries(options.customProductMappings || {});
     const variantMappings = Object.entries(options.customProductVariantMappings || {});
+    const scriptProductFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
+        ([, scriptField]) => scriptField.environment !== 'variant',
+    );
+    const scriptVariantFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
+        ([, scriptField]) => scriptField.environment !== 'product',
+    );
+    let sdl = ``;
+
+    if (scriptProductFields.length || scriptVariantFields.length) {
+        if (scriptProductFields.length) {
+            sdl += `
+            type CustomProductScriptFields {
+                ${scriptProductFields.map(([name, def]) => `${name}: ${def.graphQlType}`)}
+            }
+            `;
+        }
+        if (scriptVariantFields.length) {
+            sdl += `
+            type CustomProductVariantScriptFields {
+                ${scriptVariantFields.map(([name, def]) => `${name}: ${def.graphQlType}`)}
+            }
+            `;
+        }
+        if (scriptProductFields.length && scriptVariantFields.length) {
+            sdl += `
+                union CustomScriptFields = CustomProductScriptFields | CustomProductVariantScriptFields
+
+                extend type SearchResult {
+                    customScriptFields: CustomScriptFields!
+                }
+            `;
+        } else if (scriptProductFields.length) {
+            sdl += `
+                extend type SearchResult {
+                    customScriptFields: CustomProductScriptFields!
+                }
+            `;
+        } else if (scriptVariantFields.length) {
+            sdl += `
+                extend type SearchResult {
+                    customScriptFields: CustomProductVariantScriptFields!
+                }
+            `;
+        }
+    }
+
     if (productMappings.length || variantMappings.length) {
-        let sdl = ``;
         if (productMappings.length) {
             sdl += `
             type CustomProductMappings {

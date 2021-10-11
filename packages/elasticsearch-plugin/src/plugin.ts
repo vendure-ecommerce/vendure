@@ -23,6 +23,7 @@ import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { CustomMappingsResolver } from './custom-mappings.resolver';
+import { CustomScriptFieldsResolver } from './custom-script-fields.resolver';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import {
     AdminElasticSearchResolver,
@@ -220,9 +221,21 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
             const requiresUnionResolver =
                 0 < Object.keys(options.customProductMappings || {}).length &&
                 0 < Object.keys(options.customProductVariantMappings || {}).length;
-            return requiresUnionResolver
-                ? [ShopElasticSearchResolver, EntityElasticSearchResolver, CustomMappingsResolver]
-                : [ShopElasticSearchResolver, EntityElasticSearchResolver];
+            const requiresUnionScriptResolver =
+                0 <
+                    Object.values(options.searchConfig.scriptFields || {}).filter(
+                        field => field.environment !== 'product',
+                    ).length &&
+                0 <
+                    Object.values(options.searchConfig.scriptFields || {}).filter(
+                        field => field.environment !== 'variant',
+                    ).length;
+            return [
+                ShopElasticSearchResolver,
+                EntityElasticSearchResolver,
+                ...(requiresUnionResolver ? [CustomMappingsResolver] : []),
+                ...(requiresUnionScriptResolver ? [CustomScriptFieldsResolver] : []),
+            ];
         },
         // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
         // which looks like possibly a TS/definitions bug.

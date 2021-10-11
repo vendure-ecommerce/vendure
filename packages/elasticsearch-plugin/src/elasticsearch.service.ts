@@ -23,6 +23,8 @@ import { createIndices, getClient } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,
+    CustomScriptEnvironment,
+    CustomScriptMapping,
     ElasticSearchInput,
     ElasticSearchResponse,
     ElasticSearchResult,
@@ -194,7 +196,17 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     totalItems,
                 };
             } catch (e) {
-                Logger.error(e.message, loggerCtx, e.stack);
+                if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
+                    // Log runtime error of the script exception instead of stacktrace
+                    Logger.error(
+                        e.message,
+                        loggerCtx,
+                        JSON.stringify(e.meta.body.error.root_cause || [], null, 2),
+                    );
+                    Logger.verbose(JSON.stringify(e.meta.body.error.failed_shards || [], null, 2), loggerCtx);
+                } else {
+                    Logger.error(e.message, loggerCtx, e.stack);
+                }
                 throw e;
             }
         } else {
@@ -208,7 +220,17 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     totalItems: body.hits.total ? body.hits.total.value : 0,
                 };
             } catch (e) {
-                Logger.error(e.message, loggerCtx, e.stack);
+                if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
+                    // Log runtime error of the script exception instead of stacktrace
+                    Logger.error(
+                        e.message,
+                        loggerCtx,
+                        JSON.stringify(e.meta.body.error.root_cause || [], null, 2),
+                    );
+                    Logger.verbose(JSON.stringify(e.meta.body.error.failed_shards || [], null, 2), loggerCtx);
+                } else {
+                    Logger.error(e.message, loggerCtx, e.stack);
+                }
                 throw e;
             }
         }
@@ -460,6 +482,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
         const source = hit._source;
+        const fields = hit.fields;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
@@ -480,11 +503,18 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             this.options.customProductVariantMappings,
             false,
         );
+        ElasticsearchService.addScriptMappings(
+            result,
+            fields,
+            this.options.searchConfig?.scriptFields,
+            'variant',
+        );
         return result;
     }
 
     private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
         const source = hit._source;
+        const fields = hit.fields;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
@@ -513,6 +543,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             score: hit._score || 0,
         };
         ElasticsearchService.addCustomMappings(result, source, this.options.customProductMappings, true);
+        ElasticsearchService.addScriptMappings(
+            result,
+            fields,
+            this.options.searchConfig?.scriptFields,
+            'product',
+        );
         return result;
     }
 
@@ -552,6 +588,36 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 ];
             }
             (result as any).customMappings = customMappingsResult;
+        }
+        return result;
+    }
+
+    private static addScriptMappings(
+        result: any,
+        fields: any,
+        mappings: { [fieldName: string]: CustomScriptMapping<any> },
+        environment: CustomScriptEnvironment,
+    ): any {
+        const customMappings = Object.keys(mappings || {});
+        if (customMappings.length) {
+            const customScriptFieldsResult: any = {};
+            for (const name of customMappings) {
+                const env = mappings[name].environment;
+                if (env === environment || env === 'both') {
+                    const fieldVal = (fields as any)[name] || undefined;
+                    if (Array.isArray(fieldVal)) {
+                        if (fieldVal.length === 1) {
+                            customScriptFieldsResult[name] = fieldVal[0];
+                        }
+                        if (fieldVal.length > 1) {
+                            customScriptFieldsResult[name] = JSON.stringify(fieldVal);
+                        }
+                    } else {
+                        customScriptFieldsResult[name] = fieldVal;
+                    }
+                }
+            }
+            (result as any).customScriptFields = customScriptFieldsResult;
         }
         return result;
     }

@@ -2,7 +2,7 @@ import { LanguageCode, LogicalOperator, PriceRange, SortOrder } from '@vendure/c
 import { DeepRequired, ID, UserInputError } from '@vendure/core';
 
 import { SearchConfig } from './options';
-import { ElasticSearchInput, SearchRequestBody } from './types';
+import { CustomScriptMapping, ElasticSearchInput, SearchRequestBody } from './types';
 
 /**
  * Given a SearchInput object, returns the corresponding Elasticsearch body.
@@ -91,7 +91,6 @@ export function buildElasticBody(
         ensureBoolFilterExists(query);
         query.bool.filter.push({ term: { enabled: true } });
     }
-
     if (priceRange) {
         ensureBoolFilterExists(query);
         query.bool.filter = query.bool.filter.concat(createPriceFilters(priceRange, false));
@@ -122,6 +121,11 @@ export function buildElasticBody(
             sortArray.push({ [priceField]: { order: sort.price === SortOrder.ASC ? 'asc' : 'desc' } });
         }
     }
+    const scriptFields: any | undefined = createScriptFields(
+        searchConfig.scriptFields,
+        input,
+        groupByProduct,
+    );
 
     const body: SearchRequestBody = {
         query: searchConfig.mapQuery
@@ -131,6 +135,12 @@ export function buildElasticBody(
         from: skip || 0,
         size: take || 10,
         track_total_hits: searchConfig.totalItemsMaxSize,
+        ...(scriptFields !== undefined
+            ? {
+                  _source: true,
+                  script_fields: scriptFields,
+              }
+            : undefined),
     };
     if (groupByProduct) {
         body.collapse = { field: `productId` };
@@ -142,6 +152,33 @@ function ensureBoolFilterExists(query: { bool: { filter?: any } }) {
     if (!query.bool.filter) {
         query.bool.filter = [];
     }
+}
+
+function createScriptFields(
+    scriptFields: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> },
+    input: ElasticSearchInput,
+    groupByProduct?: boolean,
+): any | undefined {
+    if (scriptFields) {
+        const fields = Object.keys(scriptFields);
+        if (fields.length) {
+            const result: any = {};
+            for (const name of fields) {
+                const scriptField = scriptFields[name];
+                if (scriptField.environment === 'product' && groupByProduct === true) {
+                    (result as any)[name] = scriptField.scriptFn(input);
+                }
+                if (scriptField.environment === 'variant' && groupByProduct === false) {
+                    (result as any)[name] = scriptField.scriptFn(input);
+                }
+                if (scriptField.environment === 'both' || scriptField.environment === undefined) {
+                    (result as any)[name] = scriptField.scriptFn(input);
+                }
+            }
+            return result;
+        }
+    }
+    return undefined;
 }
 
 function createPriceFilters(range: PriceRange, withTax: boolean): any[] {
