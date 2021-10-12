@@ -805,9 +805,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             productCollectionSlugs: [],
             productChannelIds: product.channels.map(c => c.id),
         };
-        const customMappings = Object.entries(this.options.customProductMappings);
-        for (const [name, def] of customMappings) {
-            item[name] = def.valueFn(product, [], languageCode);
+        const productCustomMappings = Object.entries(this.options.customProductMappings);
+        for (const [name, def] of productCustomMappings) {
+            item[`product-${name}`] = def.valueFn(product, [], languageCode);
         }
         return item;
     }
