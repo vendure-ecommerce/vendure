@@ -145,7 +145,7 @@ describe('Elasticsearch plugin', () => {
                                 graphQlType: 'Int!',
                                 environment: 'product',
                                 scriptFn: input => ({
-                                    script: `doc['answer'].value * 2`,
+                                    script: `doc['product-answer'].value * 2`,
                                 }),
                             },
                         },
