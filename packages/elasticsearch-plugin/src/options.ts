@@ -1,5 +1,5 @@
 import { ClientOptions } from '@elastic/elasticsearch';
-import { DeepRequired, ID, LanguageCode, Product, ProductVariant } from '@vendure/core';
+import { DeepRequired, EntityRelationPaths, ID, LanguageCode, Product, ProductVariant } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
 import { CustomMapping, ElasticSearchInput } from './types';
@@ -137,7 +137,8 @@ export interface ElasticsearchOptions {
      * Elasticsearch index and expose that data via the SearchResult GraphQL type,
      * adding a new `customMappings` field.
      *
-     * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean` and
+     * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean`, or list
+     * versions thereof (`[String!]` etc) and
      * can be appended with a `!` to indicate non-nullable fields.
      *
      * This config option defines custom mappings which are accessible when the "groupByProduct"
@@ -209,14 +210,38 @@ export interface ElasticsearchOptions {
     bufferUpdates?: boolean;
     /**
      * @description
-     * Additional product relations that will be fetched from DB while reindexing.
+     * Additional product relations that will be fetched from DB while reindexing. This can be used
+     * in combination with `customProductMappings` to ensure that the required relations are joined
+     * before the `product` object is passed to the `valueFn`.
+     *
+     * @example
+     * ```TypeScript
+     * {
+     *   hydrateProductRelations: ['assets.asset'],
+     *   customProductMappings: {
+     *     assetPreviews: {
+     *       graphQlType: '[String!]',
+     *       // Here we can be sure that the `product.assets` array is populated
+     *       // with an Asset object
+     *       valueFn: (product) => product.assets.map(asset => asset.preview),
+     *     }
+     *   }
+     * }
+     * ```
+     *
+     * @default []
+     * @since 1.3.0
      */
-    additionalProductRelationsToFetchFromDB?: [string]|[];
+    hydrateProductRelations?: Array<EntityRelationPaths<Product>>;
     /**
      * @description
-     * Additional variant relations that will be fetched from DB while reindexing.
+     * Additional variant relations that will be fetched from DB while reindexing. See
+     * `hydrateProductRelations` for more explanation and a usage example.
+     *
+     * @default []
+     * @since 1.3.0
      */
-    additionalVariantRelationsToFetchFromDB?: [string]|[];
+    hydrateProductVariantRelations?: Array<EntityRelationPaths<ProductVariant>>;
 }
 
 /**
@@ -431,8 +456,8 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     customProductMappings: {},
     customProductVariantMappings: {},
     bufferUpdates: false,
-    additionalProductRelationsToFetchFromDB:[],
-    additionalVariantRelationsToFetchFromDB:[],
+    hydrateProductRelations: [],
+    hydrateProductVariantRelations: [],
 };
 
 export function mergeWithDefaults(userOptions: ElasticsearchOptions): ElasticsearchRuntimeOptions {

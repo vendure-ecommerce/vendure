@@ -8,6 +8,7 @@ import {
     Channel,
     Collection,
     ConfigService,
+    EntityRelationPaths,
     FacetValue,
     ID,
     LanguageCode,
@@ -42,7 +43,7 @@ import {
     VariantIndexItem,
 } from './types';
 
-export const productRelations = [
+export const defaultProductRelations: Array<EntityRelationPaths<Product>> = [
     'variants',
     'featuredAsset',
     'facetValues',
@@ -51,7 +52,7 @@ export const productRelations = [
     'channels.defaultTaxZone',
 ];
 
-export const variantRelations = [
+export const defaultVariantRelations: Array<EntityRelationPaths<ProductVariant>> = [
     'featuredAsset',
     'facetValues',
     'facetValues.facet',
@@ -76,6 +77,8 @@ type BulkVariantOperation = {
 export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDestroy {
     private client: Client;
     private asyncQueue = new AsyncQueue('elasticsearch-indexer', 5);
+    private productRelations: Array<EntityRelationPaths<Product>>;
+    private variantRelations: Array<EntityRelationPaths<ProductVariant>>;
 
     constructor(
         private connection: TransactionalConnection,
@@ -88,6 +91,14 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
     onModuleInit(): any {
         this.client = getClient(this.options);
+        this.productRelations = this.getReindexRelationsRelations(
+            defaultProductRelations,
+            this.options.hydrateProductRelations,
+        );
+        this.variantRelations = this.getReindexRelationsRelations(
+            defaultVariantRelations,
+            this.options.hydrateProductVariantRelations,
+        );
     }
 
     onModuleDestroy(): any {
@@ -442,22 +453,24 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
         for (const productId of productIds) {
             operations.push(...(await this.deleteProductOperations(productId)));
-            const optionsProductRelations = this.options.additionalProductRelationsToFetchFromDB ?
-                this.options.additionalProductRelationsToFetchFromDB: [];
-            const optionsVariantRelations = this.options.additionalVariantRelationsToFetchFromDB ?
-                this.options.additionalVariantRelationsToFetchFromDB: [];
 
-            const product = await this.connection.getRepository(Product).findOne(productId, {
-                relations: [...productRelations,...optionsProductRelations],
-                where: {
-                    deletedAt: null,
-                },
-            });
+            let product: Product | undefined;
+            try {
+                product = await this.connection.getRepository(Product).findOne(productId, {
+                    relations: this.productRelations,
+                    where: {
+                        deletedAt: null,
+                    },
+                });
+            } catch (e) {
+                Logger.error(e.message, loggerCtx, e.stack);
+                throw e;
+            }
             if (product) {
                 const updatedProductVariants = await this.connection.getRepository(ProductVariant).findByIds(
                     product.variants.map(v => v.id),
                     {
-                        relations: [...variantRelations,...optionsVariantRelations],
+                        relations: this.variantRelations,
                         where: {
                             deletedAt: null,
                         },
@@ -466,7 +479,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         },
                     },
                 );
-                updatedProductVariants.forEach(variant => (variant.product = product));
+                // tslint:disable-next-line:no-non-null-assertion
+                updatedProductVariants.forEach(variant => (variant.product = product!));
                 if (!product.enabled) {
                     updatedProductVariants.forEach(v => (v.enabled = false));
                 }
@@ -555,6 +569,35 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             }
         }
         return operations;
+    }
+
+    /**
+     * Takes the default relations, and combines them with any extra relations specified in the
+     * `hydrateProductRelations` and `hydrateProductVariantRelations`. This method also ensures
+     * that the relation values are unique and that paths are fully expanded.
+     *
+     * This means that if a `hydrateProductRelations` value of `['assets.asset']` is specified,
+     * this method will also add `['assets']` to the relations array, otherwise TypeORM would
+     * throw an error trying to join a 2nd-level deep relation without the first level also
+     * being joined.
+     */
+    private getReindexRelationsRelations<T extends Product | ProductVariant>(
+        defaultRelations: Array<EntityRelationPaths<T>>,
+        hydratedRelations: Array<EntityRelationPaths<T>>,
+    ): Array<EntityRelationPaths<T>> {
+        const uniqueRelations = unique([...defaultRelations, ...hydratedRelations]);
+        for (const relation of hydratedRelations) {
+            const path = relation.split('.');
+            const pathToPart: string[] = [];
+            for (const part of path) {
+                pathToPart.push(part);
+                const joinedPath = pathToPart.join('.') as EntityRelationPaths<T>;
+                if (!uniqueRelations.includes(joinedPath)) {
+                    uniqueRelations.push(joinedPath);
+                }
+            }
+        }
+        return uniqueRelations;
     }
 
     private async deleteProductOperations(productId: ID): Promise<BulkVariantOperation[]> {
@@ -728,7 +771,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 productVariantName: variantTranslation.name,
                 productVariantAssetId: variantAsset ? variantAsset.id : undefined,
                 productVariantPreview: variantAsset ? variantAsset.preview : '',
-                productVariantPreviewFocalPoint: variantAsset ? variantAsset.focalPoint || undefined : undefined,
+                productVariantPreviewFocalPoint: variantAsset
+                    ? variantAsset.focalPoint || undefined
+                    : undefined,
                 price: v.price,
                 priceWithTax: v.priceWithTax,
                 currencyCode: v.currencyCode,
@@ -767,8 +812,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 item[`product-${name}`] = def.valueFn(v.product, variants, languageCode);
             }
             return item;
-        }
-        catch (err) {
+        } catch (err) {
             Logger.error(err.toString());
             throw Error(`Error while reindexing!`);
         }
