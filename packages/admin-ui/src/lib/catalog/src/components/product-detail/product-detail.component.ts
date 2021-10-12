@@ -16,6 +16,7 @@ import {
     GetProductWithVariants,
     GlobalFlag,
     LanguageCode,
+    LogicalOperator,
     ModalService,
     NotificationService,
     ProductDetail,
@@ -183,7 +184,10 @@ export class ProductDetailComponent
                         {
                             skip: (currentPage - 1) * itemsPerPage,
                             take: itemsPerPage,
-                            ...(term ? { filter: { name: { contains: term } } } : {}),
+                            ...(term
+                                ? { filter: { name: { contains: term }, sku: { contains: term } } }
+                                : {}),
+                            filterOperator: LogicalOperator.OR,
                         },
                         this.id,
                     )

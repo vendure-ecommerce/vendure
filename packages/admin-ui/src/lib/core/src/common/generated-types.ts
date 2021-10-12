@@ -104,10 +104,16 @@ export type AdministratorList = PaginatedList & {
 };
 
 export type AdministratorListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<AdministratorSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<AdministratorFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type AdministratorPaymentInput = {
@@ -188,10 +194,16 @@ export type AssetList = PaginatedList & {
 export type AssetListOptions = {
   tags?: Maybe<Array<Scalars['String']>>;
   tagsOperator?: Maybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<AssetSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<AssetFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type AssetSortParameter = {
@@ -373,10 +385,16 @@ export type CollectionList = PaginatedList & {
 };
 
 export type CollectionListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<CollectionSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<CollectionFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 /**
@@ -491,10 +509,16 @@ export type CountryList = PaginatedList & {
 };
 
 export type CountryListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<CountrySortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<CountryFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type CountrySortParameter = {
@@ -1190,10 +1214,16 @@ export type CustomerGroupList = PaginatedList & {
 };
 
 export type CustomerGroupListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<CustomerGroupSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<CustomerGroupFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type CustomerGroupSortParameter = {
@@ -1210,10 +1240,16 @@ export type CustomerList = PaginatedList & {
 };
 
 export type CustomerListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<CustomerSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<CustomerFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type CustomerSortParameter = {
@@ -1379,10 +1415,16 @@ export type FacetList = PaginatedList & {
 };
 
 export type FacetListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<FacetSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<FacetFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type FacetSortParameter = {
@@ -1547,10 +1589,16 @@ export type HistoryEntryList = PaginatedList & {
 };
 
 export type HistoryEntryListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<HistoryEntrySortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<HistoryEntryFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type HistoryEntrySortParameter = {
@@ -1697,10 +1745,16 @@ export type JobList = PaginatedList & {
 };
 
 export type JobListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<JobSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<JobFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type JobQueue = {
@@ -3219,10 +3273,16 @@ export type OrderList = PaginatedList & {
 };
 
 export type OrderListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<OrderSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<OrderFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type OrderModification = Node & {
@@ -3344,10 +3404,16 @@ export type PaymentMethodList = PaginatedList & {
 };
 
 export type PaymentMethodListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<PaymentMethodSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<PaymentMethodFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 /**
@@ -3637,10 +3703,16 @@ export type ProductList = PaginatedList & {
 };
 
 export type ProductListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<ProductSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<ProductFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type ProductOption = Node & {
@@ -3801,10 +3873,16 @@ export type ProductVariantList = PaginatedList & {
 };
 
 export type ProductVariantListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<ProductVariantSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<ProductVariantFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type ProductVariantSortParameter = {
@@ -3871,10 +3949,16 @@ export type PromotionList = PaginatedList & {
 };
 
 export type PromotionListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<PromotionSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<PromotionFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type PromotionSortParameter = {
@@ -4327,10 +4411,16 @@ export type RoleList = PaginatedList & {
 };
 
 export type RoleListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<RoleSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<RoleFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type RoleSortParameter = {
@@ -4484,10 +4574,16 @@ export type ShippingMethodList = PaginatedList & {
 };
 
 export type ShippingMethodListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<ShippingMethodSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<ShippingMethodFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type ShippingMethodQuote = {
@@ -4663,10 +4759,16 @@ export type TagList = PaginatedList & {
 };
 
 export type TagListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<TagSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<TagFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type TagSortParameter = {
@@ -4719,10 +4821,16 @@ export type TaxRateList = PaginatedList & {
 };
 
 export type TaxRateListOptions = {
+  /** Skips the first n results, for use in pagination */
   skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
   take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
   sort?: Maybe<TaxRateSortParameter>;
+  /** Allows the results to be filtered */
   filter?: Maybe<TaxRateFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type TaxRateSortParameter = {
