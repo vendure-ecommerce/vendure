@@ -399,7 +399,7 @@ export interface SearchConfig {
     /**
      * @description
      * Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit
-     * @since 1.2.4
+     * @since 1.3.0
      * @example
      * ```TypeScript
      * indexMappingProperties: {
@@ -418,13 +418,14 @@ export interface SearchConfig {
      * },
      * scriptFields: {
      *      distance: {
-     *          graphQlType: 'Number'
-     *          valFn: (input) => {
+     *          graphQlType: 'Int',
+     *          environment: 'product',
+     *          scriptFn: (input) => {
      *              // assuming SearchInput was extended with latitude and longitude
      *              const lat = input.latitude;
      *              const lon = input.longitude;
      *              return {
-     *                  script: `doc['location'].arcDistance(${lat}, ${lon})`,
+     *                  script: `doc['product-location'].arcDistance(${lat}, ${lon})`,
      *              }
      *          }
      *      }
