@@ -364,6 +364,11 @@ export class OrderCalculator {
                     }
                 }
             }
+        } else {
+            // If there is no applicable promotion for shipping, we should remove already assigned adjustment from shipping lines.
+            for (const shippingLine of order.shippingLines) {
+                shippingLine.removeAdjustments();
+            }
         }
     }
 
