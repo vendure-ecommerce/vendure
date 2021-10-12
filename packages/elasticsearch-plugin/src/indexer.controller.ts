@@ -875,9 +875,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             inStock: false,
             productInStock: false,
         };
-        const customMappings = Object.entries(this.options.customProductMappings);
-        for (const [name, def] of customMappings) {
-            item[name] = def.valueFn(product, [], languageCode);
+        const productCustomMappings = Object.entries(this.options.customProductMappings);
+        for (const [name, def] of productCustomMappings) {
+            item[`product-${name}`] = def.valueFn(product, [], languageCode);
         }
         return item;
     }
