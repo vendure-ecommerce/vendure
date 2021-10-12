@@ -91,6 +91,7 @@ export class ShippingLine extends VendureEntity {
     removeAdjustments() {
         this.adjustments = [];
     }
+
     /**
      * @description
      * The total of all price adjustments. Will typically be a negative number due to discounts.
