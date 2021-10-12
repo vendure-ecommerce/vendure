@@ -9,6 +9,7 @@ export * from './permission-definition';
 export * from './ttl-cache';
 export * from './self-refreshing-cache';
 export * from './types/common-types';
+export * from './types/entity-relation-paths';
 export * from './types/injectable-strategy';
 export * from './types/locale-types';
 export * from './utils';
