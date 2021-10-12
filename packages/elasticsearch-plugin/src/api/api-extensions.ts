@@ -5,6 +5,7 @@ import { ElasticsearchOptions } from '../options';
 
 export function generateSchemaExtensions(options: ElasticsearchOptions): DocumentNode {
     const customMappingTypes = generateCustomMappingTypes(options);
+    const inputExtensions = Object.entries(options.extendSearchInputType || {});
     return gql`
         extend type SearchResponse {
             prices: SearchResponsePriceData!
@@ -30,6 +31,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             priceRange: PriceRangeInput
             priceRangeWithTax: PriceRangeInput
             inStock: Boolean
+            ${inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ')}
         }
 
         input PriceRangeInput {
@@ -44,6 +46,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
 function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode | undefined {
     const productMappings = Object.entries(options.customProductMappings || {});
     const variantMappings = Object.entries(options.customProductVariantMappings || {});
+    const searchInputTypeExtensions = Object.entries(options.extendSearchInputType || {});
     const scriptProductFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
         ([, scriptField]) => scriptField.context !== 'variant',
     );
@@ -126,10 +129,10 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
                 }
             `;
         }
-
-        return gql`
-            ${sdl}
-        `;
     }
-    return;
+    return sdl.length
+        ? gql`
+              ${sdl}
+          `
+        : undefined;
 }

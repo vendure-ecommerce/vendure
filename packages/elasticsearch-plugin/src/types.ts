@@ -18,6 +18,7 @@ export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
     priceRangeWithTax?: PriceRange;
     inStock?: boolean;
+    [extendedInputField: string]: any;
 };
 
 export type ElasticSearchResponse = SearchResponse & {
@@ -242,8 +243,8 @@ export type UpdateIndexQueueJobData =
     | AssignVariantToChannelJobData
     | RemoveVariantFromChannelJobData;
 
-type GraphQlPrimitive = 'ID' | 'String' | 'Int' | 'Float' | 'Boolean';
-type PrimitiveTypeVariations<T extends GraphQlPrimitive> = T | `${T}!` | `[${T}!]` | `[${T}!]!`;
+export type GraphQlPrimitive = 'ID' | 'String' | 'Int' | 'Float' | 'Boolean';
+export type PrimitiveTypeVariations<T extends GraphQlPrimitive> = T | `${T}!` | `[${T}!]` | `[${T}!]!`;
 type GraphQlPermittedReturnType = PrimitiveTypeVariations<GraphQlPrimitive>;
 
 type CustomMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType, R> = {

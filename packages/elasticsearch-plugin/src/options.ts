@@ -2,7 +2,13 @@ import { ClientOptions } from '@elastic/elasticsearch';
 import { DeepRequired, EntityRelationPaths, ID, LanguageCode, Product, ProductVariant } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
-import { CustomMapping, CustomScriptMapping, ElasticSearchInput } from './types';
+import {
+    CustomMapping,
+    CustomScriptMapping,
+    ElasticSearchInput,
+    GraphQlPrimitive,
+    PrimitiveTypeVariations,
+} from './types';
 
 /**
  * @description
@@ -275,6 +281,44 @@ export interface ElasticsearchOptions {
      * @since 1.3.0
      */
     hydrateProductVariantRelations?: Array<EntityRelationPaths<ProductVariant>>;
+    /**
+     * @description
+     * Allows the `SearchInput` type to be extended with new input fields. This allows arbitrary
+     * data to be passed in, which can then be used e.g. in the `mapQuery()` function or
+     * custom `scriptFields` functions.
+     *
+     * @example
+     * ```TypeScript
+     * extendSearchInputType: {
+     *   longitude: 'Float',
+     *   latitude: 'Float',
+     *   radius: 'Float',
+     * }
+     * ```
+     *
+     * This allows the search query to include these new fields:
+     *
+     * @example
+     * ```GraphQl
+     * query {
+     *   search(input: {
+     *     longitude: 101.7117,
+     *     latitude: 3.1584,
+     *     radius: 50.00
+     *   }) {
+     *     items {
+     *       productName
+     *     }
+     *   }
+     * }
+     * ```
+     *
+     * @default {}
+     * @since 1.3.0
+     */
+    extendSearchInputType?: {
+        [name: string]: PrimitiveTypeVariations<GraphQlPrimitive>;
+    };
 }
 
 /**
@@ -380,32 +424,32 @@ export interface SearchConfig {
      * @example
      * ```TypeScript
      * mapQuery: (query, input, searchConfig, channelId, enabledOnly){
-     *     if(query.bool.must){
-     *         delete query.bool.must;
-     *     }
-     *     query.bool.should = [
-     *         {
-     *             query_string: {
-     *                 query: "*" + term + "*",
-     *                 fields: [
-     *                     `productName^${searchConfig.boostFields.productName}`,
-     *                     `productVariantName^${searchConfig.boostFields.productVariantName}`,
-     *                 ]
-     *             }
-     *         },
-     *         {
-     *             multi_match: {
-     *                 query: term,
-     *                 type: searchConfig.multiMatchType,
-     *                 fields: [
-     *                     `description^${searchConfig.boostFields.description}`,
-     *                     `sku^${searchConfig.boostFields.sku}`,
-     *                 ],
-     *             },
-     *         },
-     *     ];
+     *   if(query.bool.must){
+     *     delete query.bool.must;
+     *   }
+     *   query.bool.should = [
+     *     {
+     *       query_string: {
+     *         query: "*" + term + "*",
+     *         fields: [
+     *           `productName^${searchConfig.boostFields.productName}`,
+     *           `productVariantName^${searchConfig.boostFields.productVariantName}`,
+     *         ]
+     *       }
+     *     },
+     *     {
+     *       multi_match: {
+     *         query: term,
+     *         type: searchConfig.multiMatchType,
+     *         fields: [
+     *           `description^${searchConfig.boostFields.description}`,
+     *           `sku^${searchConfig.boostFields.sku}`,
+     *         ],
+     *       },
+     *     },
+     *   ];
      *
-     *     return query;
+     *   return query;
      * }
      * ```
      */
@@ -422,6 +466,10 @@ export interface SearchConfig {
      *
      * @example
      * ```TypeScript
+     * extendSearchInputType: {
+     *   latitude: 'Float',
+     *   longitude: 'Float',
+     * },
      * indexMappingProperties: {
      *   // The `product-location` field corresponds to the `location` customProductMapping
      *   // defined below. Here we specify that it would be index as a `geo_point` type,
@@ -434,6 +482,7 @@ export interface SearchConfig {
      *   location: {
      *     graphQlType: 'String',
      *     valueFn: (product: Product) => {
+     *       // Assume that the Product entity has this customField defined
      *       const custom = product.customFields.location;
      *       return `${custom.latitude},${custom.longitude}`;
      *     },
@@ -446,7 +495,8 @@ export interface SearchConfig {
      *       // Run this script only when grouping results by product
      *       context: 'product',
      *       scriptFn: (input) => {
-     *         // assuming SearchInput was extended with latitude and longitude
+     *         // The SearchInput was extended with latitude and longitude
+     *         // via the `extendSearchInputType` option above.
      *         const lat = input.latitude;
      *         const lon = input.longitude;
      *         return {
@@ -537,6 +587,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     bufferUpdates: false,
     hydrateProductRelations: [],
     hydrateProductVariantRelations: [],
+    extendSearchInputType: {},
 };
 
 export function mergeWithDefaults(userOptions: ElasticsearchOptions): ElasticsearchRuntimeOptions {

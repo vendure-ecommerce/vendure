@@ -141,14 +141,18 @@ describe('Elasticsearch plugin', () => {
                     },
                     searchConfig: {
                         scriptFields: {
-                            answerDouble: {
+                            answerMultiplied: {
                                 graphQlType: 'Int!',
                                 context: 'product',
-                                scriptFn: input => ({
-                                    script: `doc['product-answer'].value * 2`,
-                                }),
+                                scriptFn: input => {
+                                    const factor = input.factor ?? 2;
+                                    return { script: `doc['product-answer'].value * ${factor}` };
+                                },
                             },
                         },
+                    },
+                    extendSearchInputType: {
+                        factor: 'Int',
                     },
                 }),
                 DefaultJobQueuePlugin,
@@ -316,7 +320,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -340,7 +344,7 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -353,7 +357,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -368,7 +372,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is false and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -381,7 +385,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is false and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -394,7 +398,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is true and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -407,7 +411,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is true and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -420,7 +424,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is undefined and not grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -433,7 +437,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('inStock is undefined and grouped by product', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopVariables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -1177,7 +1181,7 @@ describe('Elasticsearch plugin', () => {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                     const { search } = await adminClient.query<
                         SearchProductsShop.Query,
-                        SearchProductsShopVariables
+                        SearchProductShopVariables
                     >(
                         SEARCH_PRODUCTS,
                         {
@@ -1349,7 +1353,7 @@ describe('Elasticsearch plugin', () => {
                     items {
                       productVariantName
                       customScriptFields {
-                        answerDouble
+                        answerMultiplied
                       }
                     }
                   }
@@ -1359,7 +1363,28 @@ describe('Elasticsearch plugin', () => {
             expect(search.items[0]).toEqual({
                 productVariantName: 'Bonsai Tree',
                 customScriptFields: {
-                    answerDouble: 84,
+                    answerMultiplied: 84,
+                },
+            });
+        });
+
+        it('can use the custom search input field', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC }, factor: 10 }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerMultiplied
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerMultiplied: 420,
                 },
             });
         });

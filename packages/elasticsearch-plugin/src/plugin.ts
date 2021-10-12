@@ -39,7 +39,9 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
 /**
  * @description
  * This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
- * engine. This is a drop-in replacement for the DefaultSearchPlugin.
+ * engine. This is a drop-in replacement for the DefaultSearchPlugin which exposes many powerful configuration options enabling your storefront
+ * to support a wide range of use-cases such as indexing of custom properties, fine control over search index configuration, and to leverage
+ * advanced Elasticsearch features like spacial search.
  *
  * ## Installation
  *
