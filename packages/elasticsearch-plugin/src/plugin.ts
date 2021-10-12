@@ -21,19 +21,19 @@ import {
 } from '@vendure/core';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
-import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
-import { CustomMappingsResolver } from './custom-mappings.resolver';
-import { CustomScriptFieldsResolver } from './custom-script-fields.resolver';
-import { ElasticsearchIndexService } from './elasticsearch-index.service';
+import { generateSchemaExtensions } from './api/api-extensions';
+import { CustomMappingsResolver } from './api/custom-mappings.resolver';
+import { CustomScriptFieldsResolver } from './api/custom-script-fields.resolver';
 import {
     AdminElasticSearchResolver,
     EntityElasticSearchResolver,
     ShopElasticSearchResolver,
-} from './elasticsearch-resolver';
+} from './api/elasticsearch-resolver';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { ElasticsearchHealthIndicator } from './elasticsearch.health';
 import { ElasticsearchService } from './elasticsearch.service';
-import { generateSchemaExtensions } from './graphql-schema-extensions';
-import { ElasticsearchIndexerController } from './indexer.controller';
+import { ElasticsearchIndexService } from './indexing/elasticsearch-index.service';
+import { ElasticsearchIndexerController } from './indexing/indexer.controller';
 import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } from './options';
 
 /**

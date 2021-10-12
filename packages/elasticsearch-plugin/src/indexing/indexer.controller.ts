@@ -25,9 +25,8 @@ import {
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 
-import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from './constants';
-import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
-import { ElasticsearchOptions } from './options';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from '../constants';
+import { ElasticsearchOptions } from '../options';
 import {
     BulkOperation,
     BulkOperationDoc,
@@ -41,7 +40,9 @@ import {
     UpdateVariantsByIdMessageData,
     VariantChannelMessageData,
     VariantIndexItem,
-} from './types';
+} from '../types';
+
+import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
 
 export const defaultProductRelations: Array<EntityRelationPaths<Product>> = [
     'variants',

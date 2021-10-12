@@ -16,8 +16,8 @@ import {
     SearchResolver,
 } from '@vendure/core';
 
-import { ElasticsearchService } from './elasticsearch.service';
-import { ElasticSearchInput, SearchPriceData } from './types';
+import { ElasticsearchService } from '../elasticsearch.service';
+import { ElasticSearchInput, SearchPriceData } from '../types';
 
 @Resolver('SearchResponse')
 export class ShopElasticSearchResolver implements Pick<SearchResolver, 'search'> {

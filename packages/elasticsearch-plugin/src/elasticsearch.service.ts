@@ -18,8 +18,8 @@ import equal from 'fast-deep-equal/es6';
 
 import { buildElasticBody } from './build-elastic-body';
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from './constants';
-import { ElasticsearchIndexService } from './elasticsearch-index.service';
-import { createIndices, getClient } from './indexing-utils';
+import { ElasticsearchIndexService } from './indexing/elasticsearch-index.service';
+import { createIndices, getClient } from './indexing/indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,

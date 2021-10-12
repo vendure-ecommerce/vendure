@@ -1,9 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
 import { DeepRequired, ID, Logger } from '@vendure/core';
 
-import { loggerCtx, VARIANT_INDEX_NAME } from './constants';
-import { ElasticsearchOptions } from './options';
-import { VariantIndexItem } from './types';
+import { loggerCtx, VARIANT_INDEX_NAME } from '../constants';
+import { ElasticsearchOptions } from '../options';
+import { VariantIndexItem } from '../types';
 
 export async function createIndices(
     client: Client,

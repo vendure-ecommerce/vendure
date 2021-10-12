@@ -1,7 +1,7 @@
 import { gql } from 'apollo-server-core';
 import { DocumentNode } from 'graphql';
 
-import { ElasticsearchOptions } from './options';
+import { ElasticsearchOptions } from '../options';
 
 export function generateSchemaExtensions(options: ElasticsearchOptions): DocumentNode {
     const customMappingTypes = generateCustomMappingTypes(options);

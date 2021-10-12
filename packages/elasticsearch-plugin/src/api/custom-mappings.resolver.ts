@@ -2,8 +2,8 @@ import { Inject } from '@nestjs/common';
 import { ResolveField, Resolver } from '@nestjs/graphql';
 import { DeepRequired } from '@vendure/common/lib/shared-types';
 
-import { ELASTIC_SEARCH_OPTIONS } from './constants';
-import { ElasticsearchOptions } from './options';
+import { ELASTIC_SEARCH_OPTIONS } from '../constants';
+import { ElasticsearchOptions } from '../options';
 
 /**
  * This resolver is only required if both customProductMappings and customProductVariantMappings are
