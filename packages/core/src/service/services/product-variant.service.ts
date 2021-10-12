@@ -194,6 +194,10 @@ export class ProductVariantService {
         });
     }
 
+    /**
+     * @description
+     * Returns a {@link PaginatedList} of all ProductVariants associated with the given Collection.
+     */
     getVariantsByCollectionId(
         ctx: RequestContext,
         collectionId: ID,
@@ -228,6 +232,10 @@ export class ProductVariantService {
         });
     }
 
+    /**
+     * @description
+     * Returns all Channels to which the ProductVariant is assigned.
+     */
     async getProductVariantChannels(ctx: RequestContext, productVariantId: ID): Promise<Channel[]> {
         const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId, {
             relations: ['channels'],
@@ -236,6 +244,10 @@ export class ProductVariantService {
         return variant.channels;
     }
 
+    /**
+     * @description
+     * Returns the ProductVariant associated with the given {@link OrderLine}.
+     */
     async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
         const { productVariant } = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLineId, {
             relations: ['productVariant'],
@@ -243,6 +255,10 @@ export class ProductVariantService {
         return translateDeep(productVariant, ctx.languageCode);
     }
 
+    /**
+     * @description
+     * Returns the {@link ProductOption}s for the given ProductVariant.
+     */
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
@@ -262,9 +278,10 @@ export class ProductVariantService {
     }
 
     /**
+     * @description
      * Returns the Product associated with the ProductVariant. Whereas the `ProductService.findOne()`
      * method performs a large multi-table join with all the typical data needed for a "product detail"
-     * page, this method returns on the Product itself.
+     * page, this method returns only the Product itself.
      */
     async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
@@ -276,7 +293,8 @@ export class ProductVariantService {
     /**
      * @description
      * Returns the number of saleable units of the ProductVariant, i.e. how many are available
-     * for purchase by Customers.
+     * for purchase by Customers. This is determined by the ProductVariant's `stockOnHand` value,
+     * as well as the local and global `outOfStockThreshold` settings.
      */
     async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
         const { outOfStockThreshold, trackInventory } = await this.requestCache.get(
@@ -490,7 +508,8 @@ export class ProductVariantService {
     }
 
     /**
-     * Creates a ProductVariantPrice for the given ProductVariant/Channel combination.
+     * @description
+     * Creates a {@link ProductVariantPrice} for the given ProductVariant/Channel combination.
      */
     async createOrUpdateProductVariantPrice(
         ctx: RequestContext,
@@ -528,6 +547,7 @@ export class ProductVariantService {
     }
 
     /**
+     * @description
      * This method is intended to be used by the ProductVariant GraphQL entity resolver to resolve the
      * price-related fields which need to be populated at run-time using the `applyChannelPriceAndTax`
      * method.
@@ -575,6 +595,7 @@ export class ProductVariantService {
     }
 
     /**
+     * @description
      * Populates the `price` field with the price for the specified channel.
      */
     async applyChannelPriceAndTax(
@@ -585,6 +606,11 @@ export class ProductVariantService {
         return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx, order);
     }
 
+    /**
+     * @description
+     * Assigns the specified ProductVariants to the specified Channel. In doing so, it will create a new
+     * {@link ProductVariantPrice} and also assign the associated Product and any Assets to the Channel too.
+     */
     async assignProductVariantsToChannel(
         ctx: RequestContext,
         input: AssignProductVariantsToChannelInput,

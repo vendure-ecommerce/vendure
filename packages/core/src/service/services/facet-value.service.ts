@@ -67,6 +67,10 @@ export class FacetValueService {
         );
     }
 
+    /**
+     * @description
+     * Returns all FacetValues belonging to the Facet with the given id.
+     */
     findByFacetId(ctx: RequestContext, id: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .getRepository(ctx, FacetValue)
@@ -143,6 +147,7 @@ export class FacetValueService {
     }
 
     /**
+     * @description
      * Checks for usage of the given FacetValues in any Products or Variants, and returns the counts.
      */
     async checkFacetValueUsage(

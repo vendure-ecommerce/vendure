@@ -122,6 +122,10 @@ export class ProductService {
             );
     }
 
+    /**
+     * @description
+     * Returns all Channels to which the Product is assigned.
+     */
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             relations: ['channels'],
@@ -240,6 +244,14 @@ export class ProductService {
         };
     }
 
+    /**
+     * @description
+     * Assigns a Product to the specified Channel, and optionally uses a `priceFactor` to set the ProductVariantPrices
+     * on the new Channel.
+     *
+     * Internally, this method will also call {@link ProductVariantService} `assignassignProductVariantsToChannel()` for
+     * each of the Product's variants, and will assign the Product's Assets to the Channel too.
+     */
     async assignProductsToChannel(
         ctx: RequestContext,
         input: AssignProductsToChannelInput,

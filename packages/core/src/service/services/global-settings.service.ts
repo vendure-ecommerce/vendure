@@ -25,6 +25,7 @@ export class GlobalSettingsService {
 
     /**
      * Ensure there is a single global settings row in the database.
+     * @internal
      */
     async initGlobalSettings() {
         try {
@@ -45,6 +46,10 @@ export class GlobalSettingsService {
         }
     }
 
+    /**
+     * @description
+     * Returns the GlobalSettings entity.
+     */
     async getSettings(ctx: RequestContext): Promise<GlobalSettings> {
         const settings = await this.connection.getRepository(ctx, GlobalSettings).findOne({
             order: {

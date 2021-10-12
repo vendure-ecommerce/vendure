@@ -43,7 +43,7 @@ export class AuthService {
 
     /**
      * @description
-     * Authenticates a user's credentials and if okay, creates a new session.
+     * Authenticates a user's credentials and if okay, creates a new {@link AuthenticatedSession}.
      */
     async authenticate(
         ctx: RequestContext,
@@ -105,7 +105,9 @@ export class AuthService {
     }
 
     /**
-     * Verify the provided password against the one we have for the given user.
+     * @description
+     * Verify the provided password against the one we have for the given user. Requires
+     * the {@link NativeAuthenticationStrategy} to be configured.
      */
     async verifyUserPassword(
         ctx: RequestContext,
@@ -124,6 +126,7 @@ export class AuthService {
     }
 
     /**
+     * @description
      * Deletes all sessions for the user associated with the given session token.
      */
     async destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string): Promise<void> {

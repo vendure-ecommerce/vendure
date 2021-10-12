@@ -51,6 +51,8 @@ export class ChannelService {
     /**
      * When the app is bootstrapped, ensure a default Channel exists and populate the
      * channel lookup array.
+     *
+     * @internal
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
@@ -62,6 +64,7 @@ export class ChannelService {
     }
 
     /**
+     * @description
      * Assigns a ChannelAware entity to the default Channel as well as any channel
      * specified in the RequestContext.
      */
@@ -73,6 +76,7 @@ export class ChannelService {
     }
 
     /**
+     * @description
      * Assigns the entity to the given Channels and saves.
      */
     async assignToChannels<T extends ChannelAware & VendureEntity>(
@@ -93,6 +97,7 @@ export class ChannelService {
     }
 
     /**
+     * @description
      * Removes the entity from the given Channels and saves.
      */
     async removeFromChannels<T extends ChannelAware & VendureEntity>(
@@ -115,7 +120,9 @@ export class ChannelService {
     }
 
     /**
-     * Given a channel token, returns the corresponding Channel if it exists.
+     * @description
+     * Given a channel token, returns the corresponding Channel if it exists, else will throw
+     * a {@link ChannelNotFoundError}.
      */
     async getChannelFromToken(token: string): Promise<Channel> {
         const allChannels = await this.allChannels.value();
@@ -131,6 +138,7 @@ export class ChannelService {
     }
 
     /**
+     * @description
      * Returns the default Channel.
      */
     async getDefaultChannel(): Promise<Channel> {
@@ -229,6 +237,11 @@ export class ChannelService {
         };
     }
 
+    /**
+     * @description
+     * Type guard method which returns true if the given entity is an
+     * instance of a class which implements the {@link ChannelAware} interface.
+     */
     public isChannelAware(entity: VendureEntity): entity is VendureEntity & ChannelAware {
         const entityType = Object.getPrototypeOf(entity).constructor;
         return !!this.connection.rawConnection

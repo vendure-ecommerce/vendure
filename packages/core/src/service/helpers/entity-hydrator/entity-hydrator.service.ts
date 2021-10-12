@@ -21,8 +21,11 @@ import { HydrateOptions } from './entity-hydrator-types';
  *
  * @example
  * ```TypeScript
- * const product = this.productVariantService.getProductForVariant(ctx, variantId);
- * await this.entityHydrator.hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ * const product = this.productVariantService
+ *   .getProductForVariant(ctx, variantId);
+ *
+ * await this.entityHydrator
+ *   .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
  *```
  *
  * In this above example, the `product` instance will now have the `facetValues` relation
@@ -33,6 +36,7 @@ import { HydrateOptions } from './entity-hydrator-types';
  * options is used (see {@link HydrateOptions}), any related ProductVariant will have the correct
  * Channel-specific prices applied to them.
  *
+ * @docsCategory data-access
  * @since 1.3.0
  */
 @Injectable()

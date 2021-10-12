@@ -77,6 +77,10 @@ export class RoleService {
         return this.findOne(ctx, roleId).then(role => (role ? role.channels : []));
     }
 
+    /**
+     * @description
+     * Returns the special SuperAdmin Role, which always exists in Vendure.
+     */
     getSuperAdminRole(): Promise<Role> {
         return this.getRoleByCode(SUPER_ADMIN_ROLE_CODE).then(role => {
             if (!role) {
@@ -86,6 +90,10 @@ export class RoleService {
         });
     }
 
+    /**
+     * @description
+     * Returns the special Customer Role, which always exists in Vendure.
+     */
     getCustomerRole(): Promise<Role> {
         return this.getRoleByCode(CUSTOMER_ROLE_CODE).then(role => {
             if (!role) {
@@ -96,6 +104,7 @@ export class RoleService {
     }
 
     /**
+     * @description
      * Returns all the valid Permission values
      */
     getAllPermissions(): string[] {
@@ -103,6 +112,7 @@ export class RoleService {
     }
 
     /**
+     * @description
      * Returns true if the User has the specified permission on that Channel
      */
     async userHasPermissionOnChannel(

@@ -194,6 +194,12 @@ export class PromotionService {
         return promotions;
     }
 
+    /**
+     * @description
+     * Checks the validity of a coupon code, by checking that it is associated with an existing,
+     * enabled and non-expired Promotion. Additionally, if there is a usage limit on the coupon code,
+     * this method will enforce that limit against the specified Customer.
+     */
     async validateCouponCode(
         ctx: RequestContext,
         couponCode: string,
@@ -221,6 +227,10 @@ export class PromotionService {
         return promotion;
     }
 
+    /**
+     * @description
+     * Used internally to associate a Promotion with an Order, once an Order has been placed.
+     */
     async addPromotionsToOrder(ctx: RequestContext, order: Order): Promise<Order> {
         const allPromotionIds = order.discounts.map(
             a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id,

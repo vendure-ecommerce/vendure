@@ -43,6 +43,10 @@ export class StockMovementService {
         private eventBus: EventBus,
     ) {}
 
+    /**
+     * @description
+     * Returns a {@link PaginatedList} of all StockMovements associated with the specified ProductVariant.
+     */
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
         productVariantId: ID,
@@ -61,6 +65,11 @@ export class StockMovementService {
             });
     }
 
+    /**
+     * @description
+     * Adjusts the stock level of the ProductVariant, creating a new {@link StockAdjustment} entity
+     * in the process.
+     */
     async adjustProductVariantStock(
         ctx: RequestContext,
         productVariantId: ID,
@@ -82,6 +91,12 @@ export class StockMovementService {
         return adjustment;
     }
 
+    /**
+     * @description
+     * Creates a new {@link Allocation} for each OrderLine in the Order. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * increased, indicating that this quantity of stock is allocated and cannot be sold.
+     */
     async createAllocationsForOrder(ctx: RequestContext, order: Order): Promise<Allocation[]> {
         if (order.active !== false) {
             throw new InternalServerError('error.cannot-create-allocations-for-active-order');
@@ -115,6 +130,13 @@ export class StockMovementService {
         return savedAllocations;
     }
 
+    /**
+     * @description
+     * Creates {@link Sale}s for each OrderLine in the Order. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * reduced and the `stockOnHand` value is also reduced the the OrderLine quantity, indicating
+     * that the stock is no longer allocated, but is actually sold and no longer available.
+     */
     async createSalesForOrder(ctx: RequestContext, orderItems: OrderItem[]): Promise<Sale[]> {
         const sales: Sale[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
@@ -162,6 +184,12 @@ export class StockMovementService {
         return savedSales;
     }
 
+    /**
+     * @description
+     * Creates a {@link Cancellation} for each of the specified OrderItems. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockOnHand` value is
+     * increased for each Cancellation, allowing that stock to be sold again.
+     */
     async createCancellationsForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Cancellation[]> {
         const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
             items.map(i => i.id),
@@ -203,6 +231,12 @@ export class StockMovementService {
         return savedCancellations;
     }
 
+    /**
+     * @description
+     * Creates a {@link Release} for each of the specified OrderItems. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * reduced, indicating that this stock is once again available to buy.
+     */
     async createReleasesForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Release[]> {
         const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
             items.map(i => i.id),

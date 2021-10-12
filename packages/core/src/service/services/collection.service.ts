@@ -76,6 +76,9 @@ export class CollectionService implements OnModuleInit {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /**
+     * @internal
+     */
     async onModuleInit() {
         const productEvents$ = this.eventBus.ofType(ProductEvent);
         const variantEvents$ = this.eventBus.ofType(ProductVariantEvent);
@@ -194,6 +197,10 @@ export class CollectionService implements OnModuleInit {
         return this.findOne(ctx, bestMatch.base.id);
     }
 
+    /**
+     * @description
+     * Returns all configured CollectionFilters, as specified by the {@link CatalogOptions}.
+     */
     getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.configService.catalogOptions.collectionFilters.map(f => f.toGraphQlType(ctx));
     }
@@ -221,10 +228,19 @@ export class CollectionService implements OnModuleInit {
         return parent && translateDeep(parent, ctx.languageCode);
     }
 
+    /**
+     * @description
+     * Returns all child Collections of the Collection with the given id.
+     */
     async getChildren(ctx: RequestContext, collectionId: ID): Promise<Collection[]> {
         return this.getDescendants(ctx, collectionId, 1);
     }
 
+    /**
+     * @description
+     * Returns an array of name/id pairs representing all ancestor Collections up
+     * to the Root Collection.
+     */
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
@@ -238,6 +254,10 @@ export class CollectionService implements OnModuleInit {
         return [pickProps(rootCollection), ...ancestors.map(pickProps).reverse(), pickProps(collection)];
     }
 
+    /**
+     * @description
+     * Returns all Collections which are associated with the given Product ID.
+     */
     async getCollectionsByProductId(
         ctx: RequestContext,
         productId: ID,
@@ -261,6 +281,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     /**
+     * @description
      * Returns the descendants of a Collection as a flat array. The depth of the traversal can be limited
      * with the maxDepth argument. So to get only the immediate children, set maxDepth = 1.
      */
@@ -287,6 +308,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     /**
+     * @description
      * Gets the ancestors of a given collection. Note that since ProductCategories are implemented as an adjacency list, this method
      * will produce more queries the deeper the collection is in the tree.
      */
@@ -399,6 +421,11 @@ export class CollectionService implements OnModuleInit {
         };
     }
 
+    /**
+     * @description
+     * Moves a Collection by specifying the parent Collection ID, and an index representing the order amongst
+     * its siblings.
+     */
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
         const target = await this.connection.getEntityOrThrow(ctx, Collection, input.collectionId, {
             channelId: ctx.channelId,

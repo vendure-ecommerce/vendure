@@ -37,6 +37,11 @@ export class FulfillmentService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /**
+     * @description
+     * Creates a new Fulfillment for the given Orders and OrderItems, using the specified
+     * {@link FulfillmentHandler}.
+     */
     async create(
         ctx: RequestContext,
         orders: Order[],
@@ -84,7 +89,7 @@ export class FulfillmentService {
         return newFulfillment;
     }
 
-    async findOneOrThrow(
+    private async findOneOrThrow(
         ctx: RequestContext,
         id: ID,
         relations: string[] = ['orderItems'],
@@ -94,11 +99,20 @@ export class FulfillmentService {
         });
     }
 
+    /**
+     * @description
+     * Returns all OrderItems associated with the specified Fulfillment.
+     */
     async getOrderItemsByFulfillmentId(ctx: RequestContext, id: ID): Promise<OrderItem[]> {
         const fulfillment = await this.findOneOrThrow(ctx, id);
         return fulfillment.orderItems;
     }
 
+    /**
+     * @description
+     * Transitions the specified Fulfillment to a new state and upon successful transition
+     * publishes a {@link FulfillmentStateTransitionEvent}.
+     */
     async transitionToState(
         ctx: RequestContext,
         fulfillmentId: ID,
@@ -133,6 +147,10 @@ export class FulfillmentService {
         return { fulfillment, orders, fromState, toState: state };
     }
 
+    /**
+     * @description
+     * Returns an array of the next valid states for the Fulfillment.
+     */
     getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);
     }

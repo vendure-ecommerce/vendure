@@ -61,6 +61,7 @@ export class CountryService {
     }
 
     /**
+     * @description
      * Returns an array of enabled Countries, intended for use in a public-facing (ie. Shop) API.
      */
     findAllAvailable(ctx: RequestContext): Promise<Array<Translated<Country>>> {
@@ -70,6 +71,10 @@ export class CountryService {
             .then(items => items.map(country => translateDeep(country, ctx.languageCode)));
     }
 
+    /**
+     * @description
+     * Returns a Country based on its ISO country code.
+     */
     async findOneByCode(ctx: RequestContext, countryCode: string): Promise<Translated<Country>> {
         const country = await this.connection.getRepository(ctx, Country).findOne({
             where: {

@@ -42,14 +42,17 @@ export class SessionService implements EntitySubscriberInterface {
         this.connection.rawConnection.subscribers.push(this);
     }
 
+    /** @internal */
     afterInsert(event: InsertEvent<any>): Promise<any> | void {
         this.clearSessionCacheOnDataChange(event);
     }
 
+    /** @internal */
     afterRemove(event: RemoveEvent<any>): Promise<any> | void {
         this.clearSessionCacheOnDataChange(event);
     }
 
+    /** @internal */
     afterUpdate(event: UpdateEvent<any>): Promise<any> | void {
         this.clearSessionCacheOnDataChange(event);
     }
@@ -67,6 +70,10 @@ export class SessionService implements EntitySubscriberInterface {
         }
     }
 
+    /**
+     * @description
+     * Creates a new {@link AuthenticatedSession}. To be used after successful authentication.
+     */
     async createNewAuthenticatedSession(
         ctx: RequestContext,
         user: User,
@@ -94,7 +101,9 @@ export class SessionService implements EntitySubscriberInterface {
     }
 
     /**
-     * Create an anonymous session.
+     * @description
+     * Create an {@link AnonymousSession} and caches it using the configured {@link SessionCacheStrategy},
+     * and returns the cached session object.
      */
     async createAnonymousSession(): Promise<CachedSession> {
         const token = await this.generateSessionToken();
@@ -111,6 +120,10 @@ export class SessionService implements EntitySubscriberInterface {
         return serializedSession;
     }
 
+    /**
+     * @description
+     * Returns the cached session object matching the given session token.
+     */
     async getSessionFromToken(sessionToken: string): Promise<CachedSession | undefined> {
         let serializedSession = await this.sessionCacheStrategy.get(sessionToken);
         const stale = !!(serializedSession && serializedSession.cacheExpiry < new Date().getTime() / 1000);
@@ -128,6 +141,10 @@ export class SessionService implements EntitySubscriberInterface {
         return serializedSession;
     }
 
+    /**
+     * @description
+     * Serializes a {@link Session} instance into a simplified plain object suitable for caching.
+     */
     serializeSession(session: AuthenticatedSession | AnonymousSession): CachedSession {
         const expiry =
             Math.floor(new Date().getTime() / 1000) + this.configService.authOptions.sessionCacheTTL;
@@ -172,6 +189,10 @@ export class SessionService implements EntitySubscriberInterface {
         }
     }
 
+    /**
+     * @description
+     * Sets the `activeOrder` on the given cached session object and updates the cache.
+     */
     async setActiveOrder(
         ctx: RequestContext,
         serializedSession: CachedSession,
@@ -190,6 +211,10 @@ export class SessionService implements EntitySubscriberInterface {
         return serializedSession;
     }
 
+    /**
+     * @description
+     * Clears the `activeOrder` on the given cached session object and updates the cache.
+     */
     async unsetActiveOrder(ctx: RequestContext, serializedSession: CachedSession): Promise<CachedSession> {
         if (serializedSession.activeOrderId) {
             const session = await this.connection
@@ -206,6 +231,10 @@ export class SessionService implements EntitySubscriberInterface {
         return serializedSession;
     }
 
+    /**
+     * @description
+     * Sets the `activeChannel` on the given cached session object and updates the cache.
+     */
     async setActiveChannel(serializedSession: CachedSession, channel: Channel): Promise<CachedSession> {
         const session = await this.connection
             .getRepository(Session)
@@ -221,6 +250,7 @@ export class SessionService implements EntitySubscriberInterface {
     }
 
     /**
+     * @description
      * Deletes all existing sessions for the given user.
      */
     async deleteSessionsByUser(ctx: RequestContext, user: User): Promise<void> {
@@ -234,6 +264,7 @@ export class SessionService implements EntitySubscriberInterface {
     }
 
     /**
+     * @description
      * Deletes all existing sessions with the given activeOrder.
      */
     async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID): Promise<void> {

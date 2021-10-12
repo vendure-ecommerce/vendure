@@ -35,6 +35,7 @@ export class ZoneService {
     private zones: SelfRefreshingCache<Zone[], [RequestContext]>;
     constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
+    /** @internal */
     async initZones() {
         this.zones = await createSelfRefreshingCache({
             name: 'ZoneService.zones',

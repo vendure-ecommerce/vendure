@@ -84,6 +84,10 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 
+    /**
+     * @description
+     * Returns the Facet which contains the given FacetValue id.
+     */
     async findByFacetValueId(ctx: RequestContext, id: ID): Promise<Translated<Facet> | undefined> {
         const facet = await this.connection
             .getRepository(ctx, Facet)

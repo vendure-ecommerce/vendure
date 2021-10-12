@@ -45,6 +45,7 @@ export class ShippingMethodService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /** @internal */
     async initShippingMethods() {
         if (this.configService.shippingOptions.fulfillmentHandlers.length === 0) {
             throw new Error(

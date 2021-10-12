@@ -128,16 +128,21 @@ export class TaxRateService {
         }
     }
 
+    /**
+     * @description
+     * Returns the applicable TaxRate based on the specified Zone and TaxCategory. Used when calculating Order
+     * prices.
+     */
     async getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory): Promise<TaxRate> {
         const rate = (await this.getActiveTaxRates(ctx)).find(r => r.test(zone, taxCategory));
         return rate || this.defaultTaxRate;
     }
 
-    async getActiveTaxRates(ctx: RequestContext): Promise<TaxRate[]> {
+    private async getActiveTaxRates(ctx: RequestContext): Promise<TaxRate[]> {
         return this.cacheService.get(ctx, activeTaxRatesKey, () => this.findActiveTaxRates(ctx));
     }
 
-    async updateActiveTaxRates(ctx: RequestContext) {
+    private async updateActiveTaxRates(ctx: RequestContext) {
         this.cacheService.set(ctx, activeTaxRatesKey, await this.findActiveTaxRates(ctx));
     }
 

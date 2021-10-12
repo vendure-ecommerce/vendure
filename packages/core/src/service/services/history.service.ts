@@ -138,7 +138,9 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
 
 /**
  * @description
- * Contains methods relating to {@link HistoryEntry} entities.
+ * Contains methods relating to {@link HistoryEntry} entities. Histories are timelines of actions
+ * related to a particular Customer or Order, recording significant events such as creation, state changes,
+ * notes, etc.
  *
  * @docsCategory services
  */

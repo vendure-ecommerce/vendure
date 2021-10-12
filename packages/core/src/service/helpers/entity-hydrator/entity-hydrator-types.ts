@@ -6,6 +6,7 @@ import { VendureEntity } from '../../../entity/base/base.entity';
  * when using the {@link EntityHydrator} helper.
  *
  * @since 1.3.0
+ * @docsCategory data-access
  */
 export interface HydrateOptions<Entity extends VendureEntity> {
     /**

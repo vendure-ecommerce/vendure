@@ -51,6 +51,10 @@ export class CustomerGroupService {
         return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId);
     }
 
+    /**
+     * @description
+     * Returns a {@link PaginatedList} of all the Customers in the group.
+     */
     getGroupCustomers(
         ctx: RequestContext,
         customerGroupId: ID,

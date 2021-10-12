@@ -7,6 +7,12 @@ import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../services/order.service';
 import { SessionService } from '../../services/session.service';
 
+/**
+ * @description
+ * This helper class is used to get a reference to the active Order from the current RequestContext.
+ *
+ * @docsCategory orders
+ */
 @Injectable()
 export class ActiveOrderService {
     constructor(

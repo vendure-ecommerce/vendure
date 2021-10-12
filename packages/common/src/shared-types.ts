@@ -57,7 +57,10 @@ export type JsonCompatible<T> = {
 };
 
 /**
- * A type describing the shape of a paginated list response
+ * @description
+ * A type describing the shape of a paginated list response.
+ *
+ * @docsCategory common
  */
 export type PaginatedList<T> = {
     items: T[];

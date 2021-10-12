@@ -44,6 +44,7 @@ export class OrderTestingService {
     ) {}
 
     /**
+     * @description
      * Runs a given ShippingMethod configuration against a mock Order to test for eligibility and resulting
      * price.
      */
@@ -74,7 +75,8 @@ export class OrderTestingService {
     }
 
     /**
-     * Tests all available ShippingMethods against a mock Order and return those whic hare eligible. This
+     * @description
+     * Tests all available ShippingMethods against a mock Order and return those which are eligible. This
      * is intended to simulate a call to the `eligibleShippingMethods` query of the Shop API.
      */
     async testEligibleShippingMethods(
