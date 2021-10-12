@@ -442,8 +442,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
         for (const productId of productIds) {
             operations.push(...(await this.deleteProductOperations(productId)));
+            const optionsProductRelations = this.options.additionalProductRelationsToFetchFromDB ?
+                this.options.additionalProductRelationsToFetchFromDB: [];
+            const optionsVariantRelations = this.options.additionalVariantRelationsToFetchFromDB ?
+                this.options.additionalVariantRelationsToFetchFromDB: [];
+
             const product = await this.connection.getRepository(Product).findOne(productId, {
-                relations: productRelations,
+                relations: [...productRelations,...optionsProductRelations],
                 where: {
                     deletedAt: null,
                 },
@@ -452,7 +457,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 const updatedProductVariants = await this.connection.getRepository(ProductVariant).findByIds(
                     product.variants.map(v => v.id),
                     {
-                        relations: variantRelations,
+                        relations: [...variantRelations,...optionsVariantRelations],
                         where: {
                             deletedAt: null,
                         },
@@ -692,75 +697,81 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: RequestContext,
         languageCode: LanguageCode,
     ): Promise<VariantIndexItem> {
-        const productAsset = v.product.featuredAsset;
-        const variantAsset = v.featuredAsset;
-        const productTranslation = this.getTranslation(v.product, languageCode);
-        const variantTranslation = this.getTranslation(v, languageCode);
-        const collectionTranslations = v.collections.map(c => this.getTranslation(c, languageCode));
+        try {
+            const productAsset = v.product.featuredAsset;
+            const variantAsset = v.featuredAsset;
+            const productTranslation = this.getTranslation(v.product, languageCode);
+            const variantTranslation = this.getTranslation(v, languageCode);
+            const collectionTranslations = v.collections.map(c => this.getTranslation(c, languageCode));
 
-        const productCollectionTranslations = variants.reduce(
-            (translations, variant) => [
-                ...translations,
-                ...variant.collections.map(c => this.getTranslation(c, languageCode)),
-            ],
-            [] as Array<Translation<Collection>>,
-        );
-        const prices = variants.map(variant => variant.price);
-        const pricesWithTax = variants.map(variant => variant.priceWithTax);
+            const productCollectionTranslations = variants.reduce(
+                (translations, variant) => [
+                    ...translations,
+                    ...variant.collections.map(c => this.getTranslation(c, languageCode)),
+                ],
+                [] as Array<Translation<Collection>>,
+            );
+            const prices = variants.map(variant => variant.price);
+            const pricesWithTax = variants.map(variant => variant.priceWithTax);
 
-        const item: VariantIndexItem = {
-            channelId: ctx.channelId,
-            languageCode,
-            productVariantId: v.id,
-            sku: v.sku,
-            slug: productTranslation.slug,
-            productId: v.product.id,
-            productName: productTranslation.name,
-            productAssetId: productAsset ? productAsset.id : undefined,
-            productPreview: productAsset ? productAsset.preview : '',
-            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
-            productVariantName: variantTranslation.name,
-            productVariantAssetId: variantAsset ? variantAsset.id : undefined,
-            productVariantPreview: variantAsset ? variantAsset.preview : '',
-            productVariantPreviewFocalPoint: variantAsset ? variantAsset.focalPoint || undefined : undefined,
-            price: v.price,
-            priceWithTax: v.priceWithTax,
-            currencyCode: v.currencyCode,
-            description: productTranslation.description,
-            facetIds: this.getFacetIds([v]),
-            channelIds: v.channels.map(c => c.id),
-            facetValueIds: this.getFacetValueIds([v]),
-            collectionIds: v.collections.map(c => c.id.toString()),
-            collectionSlugs: collectionTranslations.map(c => c.slug),
-            enabled: v.enabled && v.product.enabled,
-            productEnabled: variants.some(variant => variant.enabled) && v.product.enabled,
-            productPriceMin: Math.min(...prices),
-            productPriceMax: Math.max(...prices),
-            productPriceWithTaxMin: Math.min(...pricesWithTax),
-            productPriceWithTaxMax: Math.max(...pricesWithTax),
-            productFacetIds: this.getFacetIds(variants),
-            productFacetValueIds: this.getFacetValueIds(variants),
-            productCollectionIds: unique(
-                variants.reduce(
-                    (ids, variant) => [...ids, ...variant.collections.map(c => c.id)],
-                    [] as ID[],
+            const item: VariantIndexItem = {
+                channelId: ctx.channelId,
+                languageCode,
+                productVariantId: v.id,
+                sku: v.sku,
+                slug: productTranslation.slug,
+                productId: v.product.id,
+                productName: productTranslation.name,
+                productAssetId: productAsset ? productAsset.id : undefined,
+                productPreview: productAsset ? productAsset.preview : '',
+                productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
+                productVariantName: variantTranslation.name,
+                productVariantAssetId: variantAsset ? variantAsset.id : undefined,
+                productVariantPreview: variantAsset ? variantAsset.preview : '',
+                productVariantPreviewFocalPoint: variantAsset ? variantAsset.focalPoint || undefined : undefined,
+                price: v.price,
+                priceWithTax: v.priceWithTax,
+                currencyCode: v.currencyCode,
+                description: productTranslation.description,
+                facetIds: this.getFacetIds([v]),
+                channelIds: v.channels.map(c => c.id),
+                facetValueIds: this.getFacetValueIds([v]),
+                collectionIds: v.collections.map(c => c.id.toString()),
+                collectionSlugs: collectionTranslations.map(c => c.slug),
+                enabled: v.enabled && v.product.enabled,
+                productEnabled: variants.some(variant => variant.enabled) && v.product.enabled,
+                productPriceMin: Math.min(...prices),
+                productPriceMax: Math.max(...prices),
+                productPriceWithTaxMin: Math.min(...pricesWithTax),
+                productPriceWithTaxMax: Math.max(...pricesWithTax),
+                productFacetIds: this.getFacetIds(variants),
+                productFacetValueIds: this.getFacetValueIds(variants),
+                productCollectionIds: unique(
+                    variants.reduce(
+                        (ids, variant) => [...ids, ...variant.collections.map(c => c.id)],
+                        [] as ID[],
+                    ),
                 ),
-            ),
-            productCollectionSlugs: unique(productCollectionTranslations.map(c => c.slug)),
-            productChannelIds: v.product.channels.map(c => c.id),
-            inStock: 0 < (await this.productVariantService.getSaleableStockLevel(ctx, v)),
-            productInStock: await this.getProductInStockValue(ctx, variants),
-        };
-        const variantCustomMappings = Object.entries(this.options.customProductVariantMappings);
-        for (const [name, def] of variantCustomMappings) {
-            item[`variant-${name}`] = def.valueFn(v, languageCode);
-        }
+                productCollectionSlugs: unique(productCollectionTranslations.map(c => c.slug)),
+                productChannelIds: v.product.channels.map(c => c.id),
+                inStock: 0 < (await this.productVariantService.getSaleableStockLevel(ctx, v)),
+                productInStock: await this.getProductInStockValue(ctx, variants),
+            };
+            const variantCustomMappings = Object.entries(this.options.customProductVariantMappings);
+            for (const [name, def] of variantCustomMappings) {
+                item[`variant-${name}`] = def.valueFn(v, languageCode);
+            }
 
-        const productCustomMappings = Object.entries(this.options.customProductMappings);
-        for (const [name, def] of productCustomMappings) {
-            item[`product-${name}`] = def.valueFn(v.product, variants, languageCode);
+            const productCustomMappings = Object.entries(this.options.customProductMappings);
+            for (const [name, def] of productCustomMappings) {
+                item[`product-${name}`] = def.valueFn(v.product, variants, languageCode);
+            }
+            return item;
         }
-        return item;
+        catch (err) {
+            Logger.error(err.toString());
+            throw Error(`Error while reindexing!`);
+        }
     }
 
     private async getProductInStockValue(ctx: RequestContext, variants: ProductVariant[]): Promise<boolean> {
