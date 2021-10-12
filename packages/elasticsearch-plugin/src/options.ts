@@ -207,6 +207,16 @@ export interface ElasticsearchOptions {
     };
     // TODO: docs
     bufferUpdates?: boolean;
+    /**
+     * @description
+     * Additional product relations that will be fetched from DB while reindexing.
+     */
+    additionalProductRelationsToFetchFromDB?: [string]|[];
+    /**
+     * @description
+     * Additional variant relations that will be fetched from DB while reindexing.
+     */
+    additionalVariantRelationsToFetchFromDB?: [string]|[];
 }
 
 /**
@@ -421,6 +431,8 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     customProductMappings: {},
     customProductVariantMappings: {},
     bufferUpdates: false,
+    additionalProductRelationsToFetchFromDB:[],
+    additionalVariantRelationsToFetchFromDB:[],
 };
 
 export function mergeWithDefaults(userOptions: ElasticsearchOptions): ElasticsearchRuntimeOptions {

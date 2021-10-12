@@ -46,30 +46,28 @@ export type IndexItemAssets = {
     productVariantPreviewFocalPoint: Coordinate | undefined;
 };
 
-export type VariantIndexItem = Omit<
-    SearchResult,
-    'score' | 'price' | 'priceWithTax' | 'productAsset' | 'productVariantAsset'
-> &
+export type VariantIndexItem = Omit<SearchResult,
+    'score' | 'price' | 'priceWithTax' | 'productAsset' | 'productVariantAsset'> &
     IndexItemAssets & {
-        channelId: ID;
-        languageCode: LanguageCode;
-        price: number;
-        priceWithTax: number;
-        collectionSlugs: string[];
-        productEnabled: boolean;
-        productPriceMin: number;
-        productPriceMax: number;
-        productPriceWithTaxMin: number;
-        productPriceWithTaxMax: number;
-        productFacetIds: ID[];
-        productFacetValueIds: ID[];
-        productCollectionIds: ID[];
-        productCollectionSlugs: string[];
-        productChannelIds: ID[];
-        [customMapping: string]: any;
-        inStock: boolean;
-        productInStock: boolean;
-    };
+    channelId: ID;
+    languageCode: LanguageCode;
+    price: number;
+    priceWithTax: number;
+    collectionSlugs: string[];
+    productEnabled: boolean;
+    productPriceMin: number;
+    productPriceMax: number;
+    productPriceWithTaxMin: number;
+    productPriceWithTaxMax: number;
+    productFacetIds: ID[];
+    productFacetValueIds: ID[];
+    productCollectionIds: ID[];
+    productCollectionSlugs: string[];
+    productChannelIds: ID[];
+    [customMapping: string]: any;
+    inStock: boolean;
+    productInStock: boolean;
+};
 
 export type ProductIndexItem = IndexItemAssets & {
     sku: string;
@@ -245,24 +243,36 @@ export type UpdateIndexQueueJobData =
     | RemoveVariantFromChannelJobData;
 
 type CustomStringMapping<Args extends any[]> = CustomMappingDefinition<Args, 'String!', string>;
+type CustomStringMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[String!]', string[]>;
 type CustomStringMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'String', Maybe<string>>;
+type CustomStringMappingNullableList<Args extends any[]> = CustomMappingDefinition<Args, '[String]', Array<Maybe<string>>>;
 type CustomIntMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Int!', number>;
+type CustomIntMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[Int!]', number[]>;
 type CustomIntMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Int', Maybe<number>>;
+type CustomIntMappingNullableList<Args extends any[]> = CustomMappingDefinition<Args, '[Int]', Array<Maybe<number>>>;
 type CustomFloatMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Float!', number>;
+type CustomFloatMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[Float!]', number[]>;
 type CustomFloatMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Float', Maybe<number>>;
+type CustomFloatMappingNullableList<Args extends any[]> = CustomMappingDefinition<Args, '[Float]', Array<Maybe<number>>>;
 type CustomBooleanMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Boolean!', boolean>;
-type CustomBooleanMappingNullable<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    'Boolean',
-    Maybe<boolean>
->;
+type CustomBooleanMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[Boolean!]', boolean[]>;
+type CustomBooleanMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Boolean', Maybe<boolean>>;
+type CustomBooleanMappingNullableList<Args extends any[]> = CustomMappingDefinition<Args, '[Boolean]', Array<Maybe<boolean>>>;
 
 export type CustomMapping<Args extends any[]> =
     | CustomStringMapping<Args>
+    | CustomStringMappingList<Args>
     | CustomStringMappingNullable<Args>
+    | CustomStringMappingNullableList<Args>
     | CustomIntMapping<Args>
+    | CustomIntMappingList<Args>
     | CustomIntMappingNullable<Args>
+    | CustomIntMappingNullableList<Args>
     | CustomFloatMapping<Args>
+    | CustomFloatMappingList<Args>
     | CustomFloatMappingNullable<Args>
+    | CustomFloatMappingNullableList<Args>
     | CustomBooleanMapping<Args>
-    | CustomBooleanMappingNullable<Args>;
+    | CustomBooleanMappingList<Args>
+    | CustomBooleanMappingNullable<Args>
+    | CustomBooleanMappingNullableList<Args>;
