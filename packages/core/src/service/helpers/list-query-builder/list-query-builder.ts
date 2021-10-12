@@ -1,4 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Brackets, FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
@@ -187,9 +188,22 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         );
         const filter = parseFilterParams(rawConnection, entity, options.filter, customPropertyMap);
 
-        filter.forEach(({ clause, parameters }) => {
-            qb.andWhere(clause, parameters);
-        });
+        if (filter.length) {
+            const filterOperator = options.filterOperator ?? LogicalOperator.AND;
+            if (filterOperator === LogicalOperator.AND) {
+                filter.forEach(({ clause, parameters }) => {
+                    qb.andWhere(clause, parameters);
+                });
+            } else {
+                qb.andWhere(
+                    new Brackets(qb1 => {
+                        filter.forEach(({ clause, parameters }) => {
+                            qb1.orWhere(clause, parameters);
+                        });
+                    }),
+                );
+            }
+        }
 
         if (extendedOptions.channelId) {
             const channelFilter = parseChannelParam(rawConnection, entity, extendedOptions.channelId);

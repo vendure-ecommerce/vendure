@@ -197,10 +197,16 @@ export type CollectionList = PaginatedList & {
 };
 
 export type CollectionListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<CollectionSortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<CollectionFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 /**
@@ -767,10 +773,16 @@ export type CustomerList = PaginatedList & {
 };
 
 export type CustomerListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<CustomerSortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<CustomerFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type CustomerSortParameter = {
@@ -908,10 +920,16 @@ export type FacetList = PaginatedList & {
 };
 
 export type FacetListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<FacetSortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<FacetFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type FacetSortParameter = {
@@ -1031,10 +1049,16 @@ export type HistoryEntryList = PaginatedList & {
 };
 
 export type HistoryEntryListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<HistoryEntrySortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<HistoryEntryFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type HistoryEntrySortParameter = {
@@ -1965,10 +1989,16 @@ export type OrderList = PaginatedList & {
 };
 
 export type OrderListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<OrderSortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<OrderFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 /** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
@@ -2340,10 +2370,16 @@ export type ProductList = PaginatedList & {
 };
 
 export type ProductListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<ProductSortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<ProductFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type ProductOption = Node & {
@@ -2454,10 +2490,16 @@ export type ProductVariantList = PaginatedList & {
 };
 
 export type ProductVariantListOptions = {
+    /** Skips the first n results, for use in pagination */
     skip?: Maybe<Scalars['Int']>;
+    /** Takes n results, for use in pagination */
     take?: Maybe<Scalars['Int']>;
+    /** Specifies which properties to sort the results by */
     sort?: Maybe<ProductVariantSortParameter>;
+    /** Allows the results to be filtered */
     filter?: Maybe<ProductVariantFilterParameter>;
+    /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: Maybe<LogicalOperator>;
 };
 
 export type ProductVariantSortParameter = {

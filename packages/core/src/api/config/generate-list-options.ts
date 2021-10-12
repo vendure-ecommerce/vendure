@@ -30,6 +30,7 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
     if (!queryType) {
         return schema;
     }
+    const logicalOperatorEnum = schema.getType('LogicalOperator');
     const objectTypes = Object.values(schema.getTypeMap()).filter(isObjectType);
     const allFields = objectTypes.reduce((fields, type) => {
         const typeFields = Object.values(type.getFields()).filter(f => isListQueryType(f.type));
@@ -49,10 +50,25 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
             const generatedListOptions = new GraphQLInputObjectType({
                 name: `${targetTypeName}ListOptions`,
                 fields: {
-                    skip: { type: GraphQLInt },
-                    take: { type: GraphQLInt },
-                    sort: { type: sortParameter },
-                    filter: { type: filterParameter },
+                    skip: {
+                        type: GraphQLInt,
+                        description: 'Skips the first n results, for use in pagination',
+                    },
+                    take: { type: GraphQLInt, description: 'Takes n results, for use in pagination' },
+                    sort: {
+                        type: sortParameter,
+                        description: 'Specifies which properties to sort the results by',
+                    },
+                    filter: { type: filterParameter, description: 'Allows the results to be filtered' },
+                    ...(logicalOperatorEnum
+                        ? {
+                              filterOperator: {
+                                  type: logicalOperatorEnum as GraphQLEnumType,
+                                  description:
+                                      'Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.',
+                              },
+                          }
+                        : {}),
                     ...(existingListOptions ? existingListOptions.getFields() : {}),
                 },
             });
