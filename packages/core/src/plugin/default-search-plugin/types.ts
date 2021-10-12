@@ -20,7 +20,20 @@ export interface DefaultSearchPluginInitOptions {
      * @default false.
      */
     indexStockStatus?: boolean;
-    // TODO: docs
+    /**
+     * @description
+     * If set to `true`, updates to Products, ProductVariants and Collections will not immediately
+     * trigger an update to the search index. Instead, all these changes will be buffered and will
+     * only be run via a call to the `runPendingSearchIndexUpdates` mutation in the Admin API.
+     *
+     * This is very useful for installations with a large number of ProductVariants and/or
+     * Collections, as the buffering allows better control over when these expensive jobs are run,
+     * and also performs optimizations to minimize the amount of work that needs to be performed by
+     * the worker.
+     *
+     * @since 1.3.0
+     * @default false
+     */
     bufferUpdates?: boolean;
 }
 
