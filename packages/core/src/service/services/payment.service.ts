@@ -18,6 +18,7 @@ import {
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
@@ -28,10 +29,15 @@ import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { PaymentMethodService } from './payment-method.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Payment} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PaymentService {
     constructor(
@@ -56,6 +62,14 @@ export class PaymentService {
         });
     }
 
+    /**
+     * @description
+     * Transitions a Payment to the given state.
+     *
+     * When updating a Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `transitionPaymentToState()` method, which will also handle
+     * updating the Order state too.
+     */
     async transitionToState(
         ctx: RequestContext,
         paymentId: ID,
@@ -83,6 +97,14 @@ export class PaymentService {
         return this.paymentStateMachine.getNextStates(payment);
     }
 
+    /**
+     * @description
+     * Creates a new Payment.
+     *
+     * When creating a Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `addPaymentToOrder()` method, which will also handle
+     * updating the Order state too.
+     */
     async createPayment(
         ctx: RequestContext,
         order: Order,
@@ -119,6 +141,14 @@ export class PaymentService {
         return payment;
     }
 
+    /**
+     * @description
+     * Settles a Payment.
+     *
+     * When settling a Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `settlePayment()` method, which will also handle
+     * updating the Order state too.
+     */
     async settlePayment(ctx: RequestContext, paymentId: ID): Promise<PaymentStateTransitionError | Payment> {
         const payment = await this.connection.getEntityOrThrow(ctx, Payment, paymentId, {
             relations: ['order'],
@@ -156,7 +186,12 @@ export class PaymentService {
     }
 
     /**
+     * @description
      * Creates a Payment from the manual payment mutation in the Admin API
+     *
+     * When creating a manual Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `addManualPaymentToOrder()` method, which will also handle
+     * updating the Order state too.
      */
     async createManualPayment(ctx: RequestContext, order: Order, amount: number, input: ManualPaymentInput) {
         const initialState = 'Created';
@@ -178,9 +213,14 @@ export class PaymentService {
     }
 
     /**
+     * @description
      * Creates a Refund against the specified Payment. If the amount to be refunded exceeds the value of the
      * specified Payment (in the case of multiple payments on a single Order), then the remaining outstanding
      * refund amount will be refunded against the next available Payment from the Order.
+     *
+     * When creating a Refund in the context of an Order, it is
+     * preferable to use the {@link OrderService} `refundOrder()` method, which performs additional
+     * validation.
      */
     async createRefund(
         ctx: RequestContext,

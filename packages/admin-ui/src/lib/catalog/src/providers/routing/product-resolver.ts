@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver } from '@vendure/admin-ui/core';
-import { ProductWithVariants } from '@vendure/admin-ui/core';
-import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import {
+    BaseEntityResolver,
+    DataService,
+    getDefaultUiLanguage,
+    GetProductWithVariants,
+} from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Fragment> {
+export class ProductResolver extends BaseEntityResolver<GetProductWithVariants.Product> {
     constructor(dataService: DataService, router: Router) {
         super(
             router,
@@ -27,14 +29,14 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Frag
                 translations: [],
                 optionGroups: [],
                 facetValues: [],
-                variants: [],
+                variantList: { items: [], totalItems: 0 },
                 channels: [],
             },
-            (id) =>
+            id =>
                 dataService.product
-                    .getProduct(id)
+                    .getProduct(id, { take: 10 })
                     .refetchOnChannelChange()
-                    .mapStream((data) => data.product),
+                    .mapStream(data => data.product),
         );
     }
 }

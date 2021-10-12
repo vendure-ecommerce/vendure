@@ -3,9 +3,9 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 
 /**
  * @description

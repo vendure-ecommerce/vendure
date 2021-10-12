@@ -45,11 +45,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form
-    class="form"
-    [formGroup]="detailForm"
-    *ngIf="product$ | async as product"
->
+<form class="form" [formGroup]="detailForm" *ngIf="product$ | async as product">
     <button type="submit" hidden x-data="prevents enter key from triggering other buttons"></button>
     <clr-tabs>
         <clr-tab>
@@ -111,7 +107,7 @@
                                     />
                                     <label>{{
                                         'catalog.auto-update-product-variant-name' | translate
-                                        }}</label>
+                                    }}</label>
                                 </clr-checkbox-wrapper>
                             </div>
                             <vdr-form-field
@@ -225,9 +221,24 @@
                         </a>
                     </div>
 
+                    <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
+                        <vdr-items-per-page-controls
+                            [itemsPerPage]="itemsPerPage$ | async"
+                            (itemsPerPageChange)="setItemsPerPage($event)"
+                        ></vdr-items-per-page-controls>
+
+                        <vdr-pagination-controls
+                            [id]="(paginationConfig$ | async)?.id"
+                            [currentPage]="currentPage$ | async"
+                            [itemsPerPage]="itemsPerPage$ | async"
+                            (pageChange)="setPage($event)"
+                        ></vdr-pagination-controls>
+                    </div>
+
                     <vdr-product-variants-table
                         *ngIf="variantDisplayMode === 'table'"
                         [variants]="variants$ | async"
+                        [paginationConfig]="paginationConfig$ | async"
                         [optionGroups]="product.optionGroups"
                         [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [productVariantsFormArray]="detailForm.get('variants')"
@@ -236,6 +247,7 @@
                     <vdr-product-variants-list
                         *ngIf="variantDisplayMode === 'card'"
                         [variants]="variants$ | async"
+                        [paginationConfig]="paginationConfig$ | async"
                         [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [facets]="facets$ | async"
                         [optionGroups]="product.optionGroups"
@@ -253,6 +265,19 @@
                         (selectFacetValueClick)="selectVariantFacetValue($event)"
                     ></vdr-product-variants-list>
                 </section>
+                <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
+                    <vdr-items-per-page-controls
+                        [itemsPerPage]="itemsPerPage$ | async"
+                        (itemsPerPageChange)="setItemsPerPage($event)"
+                    ></vdr-items-per-page-controls>
+
+                    <vdr-pagination-controls
+                        [id]="(paginationConfig$ | async)?.id"
+                        [currentPage]="currentPage$ | async"
+                        [itemsPerPage]="itemsPerPage$ | async"
+                        (pageChange)="setPage($event)"
+                    ></vdr-pagination-controls>
+                </div>
             </clr-tab-content>
         </clr-tab>
     </clr-tabs>

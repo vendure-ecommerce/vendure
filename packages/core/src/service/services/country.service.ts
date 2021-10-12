@@ -12,16 +12,22 @@ import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Address } from '../../entity';
 import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ZoneService } from './zone.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Country} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CountryService {
     constructor(
@@ -55,6 +61,7 @@ export class CountryService {
     }
 
     /**
+     * @description
      * Returns an array of enabled Countries, intended for use in a public-facing (ie. Shop) API.
      */
     findAllAvailable(ctx: RequestContext): Promise<Array<Translated<Country>>> {
@@ -64,6 +71,10 @@ export class CountryService {
             .then(items => items.map(country => translateDeep(country, ctx.languageCode)));
     }
 
+    /**
+     * @description
+     * Returns a Country based on its ISO country code.
+     */
     async findOneByCode(ctx: RequestContext, countryCode: string): Promise<Translated<Country>> {
         const country = await this.connection.getRepository(ctx, Country).findOne({
             where: {
@@ -83,7 +94,6 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
-        await this.zoneService.updateZonesCache(ctx);
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -94,7 +104,6 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
-        await this.zoneService.updateZonesCache(ctx);
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -112,7 +121,6 @@ export class CountryService {
                 message: ctx.translate('message.country-used-in-addresses', { count: addressesUsingCountry }),
             };
         } else {
-            await this.zoneService.updateZonesCache(ctx);
             await this.connection.getRepository(ctx, Country).remove(country);
             return {
                 result: DeletionResult.DELETED,

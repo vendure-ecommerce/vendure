@@ -1,14 +1,19 @@
-import { LogicalOperator, SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
-import { SearchIndexItem } from '../search-index-item.entity';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { SearchIndexItem } from '../entities/search-index-item.entity';
+import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 
 import { SearchStrategy } from './search-strategy';
-import { createCollectionIdCountMap, createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
+import {
+    createCollectionIdCountMap,
+    createFacetIdCountMap,
+    mapToSearchResult,
+} from './search-strategy-utils';
 
 /**
  * A rather naive search for SQLite / SQL.js. Rather than proper
@@ -17,7 +22,10 @@ import { createCollectionIdCountMap, createFacetIdCountMap, mapToSearchResult } 
 export class SqliteSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
 
-    constructor(private connection: TransactionalConnection) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private options: DefaultSearchPluginInitOptions,
+    ) {}
 
     async getFacetValueIds(
         ctx: RequestContext,
@@ -128,14 +136,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const {
-            term,
-            facetValueFilters,
-            facetValueIds,
-            facetValueOperator,
-            collectionId,
-            collectionSlug,
-        } = input;
+        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } =
+            input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -158,6 +160,13 @@ export class SqliteSearchStrategy implements SearchStrategy {
                     }),
                 )
                 .setParameters({ term, like_term: `%${term}%` });
+        }
+        if (input.inStock != null) {
+            if (input.groupByProduct) {
+                qb.andWhere('productInStock = :inStock', { inStock: input.inStock });
+            } else {
+                qb.andWhere('inStock = :inStock', { inStock: input.inStock });
+            }
         }
         if (facetValueIds?.length) {
             qb.andWhere(

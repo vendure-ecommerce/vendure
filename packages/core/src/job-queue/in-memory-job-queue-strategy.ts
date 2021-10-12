@@ -64,6 +64,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
                 .toString()
                 .padEnd(10, '0');
         }
+        (job as any).retries = this.setRetries(job.queueName, job);
         // tslint:disable-next-line:no-non-null-assertion
         this.jobs.set(job.id!, job);
         if (!this.unsettledJobs[job.queueName]) {

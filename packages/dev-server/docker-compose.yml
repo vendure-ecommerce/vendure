@@ -70,6 +70,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c pg_stat_statements.max=100000 -c max_connections=200
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4:4.18

@@ -1,6 +1,6 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 
-import { CustomFieldConfig, LanguageCode, ProductWithVariants } from '../generated-types';
+import { CustomFieldConfig, LanguageCode, ProductDetailFragment } from '../generated-types';
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
 
@@ -18,7 +18,7 @@ describe('createUpdatedTranslatable()', () => {
                 { languageCode: LanguageCode.en, name: 'Old Name EN' },
                 { languageCode: LanguageCode.de, name: 'Old Name DE' },
             ],
-        } as DeepPartial<ProductWithVariants.Fragment>;
+        } as DeepPartial<ProductDetailFragment>;
     });
 
     it('returns a clone', () => {

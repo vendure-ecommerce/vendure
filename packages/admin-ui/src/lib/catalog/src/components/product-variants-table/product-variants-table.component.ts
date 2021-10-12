@@ -7,11 +7,11 @@ import {
     OnInit,
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { Permission, ProductWithVariants } from '@vendure/admin-ui/core';
+import { Permission, ProductDetail, ProductVariant } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
-import { SelectedAssets } from '../product-detail/product-detail.component';
+import { PaginationConfig, SelectedAssets } from '../product-detail/product-detail.component';
 
 @Component({
     selector: 'vdr-product-variants-table',
@@ -21,9 +21,10 @@ import { SelectedAssets } from '../product-detail/product-detail.component';
 })
 export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
-    @Input() variants: ProductWithVariants.Variants[];
+    @Input() variants: ProductVariant.Fragment[];
+    @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
-    @Input() optionGroups: ProductWithVariants.OptionGroups[];
+    @Input() optionGroups: ProductDetail.OptionGroups[];
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     formGroupMap = new Map<string, FormGroup>();
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
@@ -51,7 +52,15 @@ export class ProductVariantsTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    getFeaturedAsset(variant: ProductWithVariants.Variants) {
+    trackByFn(index: number, item: any) {
+        if ((item as any).id != null) {
+            return (item as any).id;
+        } else {
+            return index;
+        }
+    }
+
+    getFeaturedAsset(variant: ProductVariant.Fragment) {
         return this.pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset;
     }
 

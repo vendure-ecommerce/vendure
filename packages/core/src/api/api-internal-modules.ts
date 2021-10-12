@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
+import { ConnectionModule } from '../connection/connection.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
@@ -153,7 +154,7 @@ export const adminEntityResolvers = [
  * one API module.
  */
 @Module({
-    imports: [ConfigModule, ServiceModule.forRoot(), CacheModule],
+    imports: [ConfigModule, ServiceModule, CacheModule, ConnectionModule.forRoot()],
     providers: [IdCodecService, ConfigurableOperationCodec, CustomFieldRelationResolverService],
     exports: [
         IdCodecService,
@@ -161,7 +162,8 @@ export const adminEntityResolvers = [
         ConfigModule,
         ConfigurableOperationCodec,
         CustomFieldRelationResolverService,
-        ServiceModule.forRoot(),
+        ServiceModule,
+        ConnectionModule.forRoot(),
     ],
 })
 export class ApiSharedModule {}

@@ -7,7 +7,7 @@ import {
     createResolveData,
     detailBreadcrumb,
     FacetWithValues,
-    ProductWithVariants,
+    GetProductWithVariants,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
@@ -112,7 +112,7 @@ export const catalogRoutes: Route[] = [
 ];
 
 export function productBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<ProductWithVariants.Fragment>({
+    return detailBreadcrumb<GetProductWithVariants.Product>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.products',

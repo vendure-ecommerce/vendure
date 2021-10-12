@@ -8,7 +8,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
+import { PRODUCT_VARIANT_FRAGMENT, PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
@@ -23,6 +23,7 @@ import {
     GetProductSimple,
     GetProductVariant,
     GetProductVariantList,
+    GetProductWithVariantList,
     GetProductWithVariants,
     LanguageCode,
     ProductVariantFragment,
@@ -542,6 +543,117 @@ describe('Product resolver', () => {
                 );
 
                 expect(product?.variants.length).toBe(4);
+            });
+        });
+
+        describe('product.variants', () => {
+            it('returns product variants', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: 'T_1',
+                });
+
+                expect(product?.variants.length).toBe(4);
+            });
+
+            it('returns product variants in existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.en },
+                );
+
+                expect(product?.variants.length).toBe(4);
+            });
+
+            it('returns product variants in non-existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariants.Query,
+                    GetProductWithVariants.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANTS,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.ru },
+                );
+
+                expect(product?.variants.length).toBe(4);
+            });
+        });
+
+        describe('product.variantList', () => {
+            it('returns product variants', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariantList.Query,
+                    GetProductWithVariantList.Variables
+                >(GET_PRODUCT_WITH_VARIANT_LIST, {
+                    id: 'T_1',
+                });
+
+                expect(product?.variantList.items.length).toBe(4);
+                expect(product?.variantList.totalItems).toBe(4);
+            });
+
+            it('returns product variants in existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariantList.Query,
+                    GetProductWithVariantList.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANT_LIST,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.en },
+                );
+
+                expect(product?.variantList.items.length).toBe(4);
+            });
+
+            it('returns product variants in non-existing language', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariantList.Query,
+                    GetProductWithVariantList.Variables
+                >(
+                    GET_PRODUCT_WITH_VARIANT_LIST,
+                    {
+                        id: 'T_1',
+                    },
+                    { languageCode: LanguageCode.ru },
+                );
+
+                expect(product?.variantList.items.length).toBe(4);
+            });
+
+            it('filter & sort', async () => {
+                const { product } = await adminClient.query<
+                    GetProductWithVariantList.Query,
+                    GetProductWithVariantList.Variables
+                >(GET_PRODUCT_WITH_VARIANT_LIST, {
+                    id: 'T_1',
+                    variantListOptions: {
+                        filter: {
+                            name: {
+                                contains: '15',
+                            },
+                        },
+                        sort: {
+                            price: SortOrder.DESC,
+                        },
+                    },
+                });
+
+                expect(product?.variantList.items.map(i => i.name)).toEqual([
+                    'Laptop 15 inch 16GB',
+                    'Laptop 15 inch 8GB',
+                ]);
             });
         });
     });
@@ -1812,4 +1924,19 @@ export const GET_PRODUCT_VARIANT_LIST = gql`
             totalItems
         }
     }
+`;
+
+export const GET_PRODUCT_WITH_VARIANT_LIST = gql`
+    query GetProductWithVariantList($id: ID, $variantListOptions: ProductVariantListOptions) {
+        product(id: $id) {
+            id
+            variantList(options: $variantListOptions) {
+                items {
+                    ...ProductVariant
+                }
+                totalItems
+            }
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
 `;

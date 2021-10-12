@@ -5,10 +5,9 @@ import { addStream } from './add-stream';
 // tslint:disable-next-line:no-var-requires
 const conventionalChangelogCore = require('conventional-changelog-core');
 
-if (process.env.SKIP_CHANGELOG || process.env.npm_config_argv?.includes('publish-prerelease')) {
-    // tslint:disable-next-line:no-console
-    console.log(`Skipping changelog generation for pre-release`);
-    process.exit(0);
+let changelogFileName = 'CHANGELOG.md';
+if (process.argv.includes('--next') || process.env.npm_config_argv?.includes('publish-prerelease')) {
+    changelogFileName = 'CHANGELOG_NEXT.md';
 }
 
 /**
@@ -44,7 +43,7 @@ generateChangelogForPackage();
  * Generates changelog entries based on the conventional commits data.
  */
 function generateChangelogForPackage() {
-    const changelogPath = path.join(__dirname, '../../CHANGELOG.md');
+    const changelogPath = path.join(__dirname, '../../', changelogFileName);
     const inStream = fs.createReadStream(changelogPath, { flags: 'a+' });
     const tempFile = path.join(__dirname, `__temp_changelog__`);
     conventionalChangelogCore(

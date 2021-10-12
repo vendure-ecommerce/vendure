@@ -50,7 +50,7 @@ export const testConfig: Required<VendureConfig> = mergeConfig(defaultConfig, {
     },
     promotionOptions: {},
     customFields: {},
-    entityIdStrategy: new TestingEntityIdStrategy(),
+    entityOptions: { entityIdStrategy: new TestingEntityIdStrategy() },
     paymentOptions: {
         paymentMethodHandlers: [],
     },

@@ -180,7 +180,7 @@ async function generateSources(
      * Instead, we disable escaping and use this custom helper to escape only the single quote character.
      */
     Handlebars.registerHelper('escapeSingle', (aString: unknown) => {
-        return typeof aString === 'string' ? aString.replace(`'`, `\\'`) : aString;
+        return typeof aString === 'string' ? aString.replace(/'/g, `\\'`) : aString;
     });
 
     const templateContext = {

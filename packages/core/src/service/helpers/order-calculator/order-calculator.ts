@@ -44,7 +44,7 @@ export class OrderCalculator {
         options?: { recalculateShipping?: boolean },
     ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
-        const zones = this.zoneService.findAll(ctx);
+        const zones = await this.zoneService.findAll(ctx);
         const activeTaxZone = await this.requestContextCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );

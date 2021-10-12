@@ -116,7 +116,7 @@ describe('buildElasticBody()', () => {
 
     it('facetValueFilters OR', () => {
         const result = buildElasticBody(
-            { facetValueFilters: [ { or: ['1', '2'] }] },
+            { facetValueFilters: [{ or: ['1', '2'] }] },
             searchConfig,
             CHANNEL_ID,
             LanguageCode.en,
@@ -234,6 +234,112 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('inStock is True and groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: true, groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { productInStock: true }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is False and groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: false, groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { productInStock: false }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is undefined and groupByProduct', () => {
+        const result = buildElasticBody(
+            { groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                ],
+            },
+        });
+    });
+
+    it('inStock is True and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: true, groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { inStock: true }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is False and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: false, groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { inStock: false }},
+                ],
+            },
+        });
+    });
+
+    it('inStock is undefined and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                ],
+            },
+        });
+    });
+
     describe('sorting', () => {
         it('name', () => {
             const result = buildElasticBody(
@@ -262,7 +368,7 @@ describe('buildElasticBody()', () => {
                 CHANNEL_ID,
                 LanguageCode.en,
             );
-            expect(result.sort).toEqual([{ priceMin: { order: 'asc' } }]);
+            expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
     });
 
@@ -302,6 +408,9 @@ describe('buildElasticBody()', () => {
         );
 
         expect(result).toEqual({
+            collapse: {
+                field: 'productId',
+            },
             from: 0,
             size: 25,
             query: {
@@ -386,6 +495,29 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('scriptFields option', () => {
+        const config: DeepRequired<SearchConfig> = {
+            ...searchConfig,
+            ...{
+                scriptFields: {
+                    test: {
+                        graphQlType: 'String',
+                        environment: 'both',
+                        scriptFn: input => ({
+                            script: `doc['property'].dummyScript(${input.term})`,
+                        }),
+                    },
+                },
+            },
+        };
+        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
+        expect(result.script_fields).toEqual({
+            test: {
+                script: `doc['property'].dummyScript(test)`,
+            },
+        });
+    });
+
     describe('price ranges', () => {
         it('not grouped by product', () => {
             const result = buildElasticBody(
@@ -451,14 +583,8 @@ describe('buildElasticBody()', () => {
                         LANGUAGE_CODE_TERM,
                         {
                             range: {
-                                priceMin: {
+                                price: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceMax: {
                                     lte: 1500,
                                 },
                             },
@@ -482,14 +608,8 @@ describe('buildElasticBody()', () => {
                         LANGUAGE_CODE_TERM,
                         {
                             range: {
-                                priceWithTaxMin: {
+                                priceWithTax: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceWithTaxMax: {
                                     lte: 1500,
                                 },
                             },
@@ -524,14 +644,8 @@ describe('buildElasticBody()', () => {
                         { term: { collectionIds: '3' } },
                         {
                             range: {
-                                priceWithTaxMin: {
+                                priceWithTax: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceWithTaxMax: {
                                     lte: 1500,
                                 },
                             },

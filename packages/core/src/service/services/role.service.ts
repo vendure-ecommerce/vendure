@@ -26,16 +26,22 @@ import {
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Role } from '../../entity/role/role.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Role} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class RoleService {
     constructor(
@@ -71,6 +77,10 @@ export class RoleService {
         return this.findOne(ctx, roleId).then(role => (role ? role.channels : []));
     }
 
+    /**
+     * @description
+     * Returns the special SuperAdmin Role, which always exists in Vendure.
+     */
     getSuperAdminRole(): Promise<Role> {
         return this.getRoleByCode(SUPER_ADMIN_ROLE_CODE).then(role => {
             if (!role) {
@@ -80,6 +90,10 @@ export class RoleService {
         });
     }
 
+    /**
+     * @description
+     * Returns the special Customer Role, which always exists in Vendure.
+     */
     getCustomerRole(): Promise<Role> {
         return this.getRoleByCode(CUSTOMER_ROLE_CODE).then(role => {
             if (!role) {
@@ -90,6 +104,7 @@ export class RoleService {
     }
 
     /**
+     * @description
      * Returns all the valid Permission values
      */
     getAllPermissions(): string[] {
@@ -97,6 +112,7 @@ export class RoleService {
     }
 
     /**
+     * @description
      * Returns true if the User has the specified permission on that Channel
      */
     async userHasPermissionOnChannel(
@@ -216,6 +232,7 @@ export class RoleService {
             superAdminRole.permissions = assignablePermissions;
             await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
         } catch (err) {
+            const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),
                 {
@@ -223,7 +240,7 @@ export class RoleService {
                     description: SUPER_ADMIN_ROLE_DESCRIPTION,
                     permissions: assignablePermissions,
                 },
-                [this.channelService.getDefaultChannel()],
+                [defaultChannel],
             );
         }
     }
@@ -235,6 +252,7 @@ export class RoleService {
         try {
             await this.getCustomerRole();
         } catch (err) {
+            const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),
                 {
@@ -242,7 +260,7 @@ export class RoleService {
                     description: CUSTOMER_ROLE_DESCRIPTION,
                     permissions: [Permission.Authenticated],
                 },
-                [this.channelService.getDefaultChannel()],
+                [defaultChannel],
             );
         }
     }

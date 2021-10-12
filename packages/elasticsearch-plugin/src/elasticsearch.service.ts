@@ -1,6 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
+import { SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     Collection,
     CollectionService,
@@ -17,14 +17,17 @@ import {
 import equal from 'fast-deep-equal/es6';
 
 import { buildElasticBody } from './build-elastic-body';
-import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
-import { ElasticsearchIndexService } from './elasticsearch-index.service';
-import { createIndices, getClient } from './indexing-utils';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from './constants';
+import { ElasticsearchIndexService } from './indexing/elasticsearch-index.service';
+import { createIndices, getClient } from './indexing/indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,
+    CustomScriptContext,
+    CustomScriptMapping,
     ElasticSearchInput,
     ElasticSearchResponse,
+    ElasticSearchResult,
     ProductIndexItem,
     SearchHit,
     SearchPriceData,
@@ -95,7 +98,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     indexPrefix,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
-                    this.configService.entityIdStrategy.primaryKeyType,
                 );
             } else {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
@@ -115,7 +117,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     tempPrefix,
                     this.options.indexSettings,
                     this.options.indexMappingProperties,
-                    this.configService.entityIdStrategy.primaryKeyType,
                     false,
                 );
                 const tempIndexSettingsResult = await this.client.indices.getSettings({ index: tempIndex });
@@ -158,13 +159,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 }
 
                 await this.client.indices.delete({
-                    index: [tempPrefix + `products`, tempPrefix + `variants`],
+                    index: [tempPrefix + `variants`],
                 });
             }
         };
 
         await createIndex(VARIANT_INDEX_NAME);
-        await createIndex(PRODUCT_INDEX_NAME);
     }
 
     /**
@@ -186,16 +186,27 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         );
         if (groupByProduct) {
             try {
-                const { body }: { body: SearchResponseBody<ProductIndexItem> } = await this.client.search({
-                    index: indexPrefix + PRODUCT_INDEX_NAME,
+                const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
+                    index: indexPrefix + VARIANT_INDEX_NAME,
                     body: elasticSearchBody,
                 });
+                const totalItems = await this.totalHits(ctx, input, groupByProduct);
                 return {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
-                    totalItems: body.hits.total ? body.hits.total.value : 0,
+                    totalItems,
                 };
             } catch (e) {
-                Logger.error(e.message, loggerCtx, e.stack);
+                if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
+                    // Log runtime error of the script exception instead of stacktrace
+                    Logger.error(
+                        e.message,
+                        loggerCtx,
+                        JSON.stringify(e.meta.body.error.root_cause || [], null, 2),
+                    );
+                    Logger.verbose(JSON.stringify(e.meta.body.error.failed_shards || [], null, 2), loggerCtx);
+                } else {
+                    Logger.error(e.message, loggerCtx, e.stack);
+                }
                 throw e;
             }
         } else {
@@ -209,10 +220,56 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     totalItems: body.hits.total ? body.hits.total.value : 0,
                 };
             } catch (e) {
-                Logger.error(e.message, loggerCtx, e.stack);
+                if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
+                    // Log runtime error of the script exception instead of stacktrace
+                    Logger.error(
+                        e.message,
+                        loggerCtx,
+                        JSON.stringify(e.meta.body.error.root_cause || [], null, 2),
+                    );
+                    Logger.verbose(JSON.stringify(e.meta.body.error.failed_shards || [], null, 2), loggerCtx);
+                } else {
+                    Logger.error(e.message, loggerCtx, e.stack);
+                }
                 throw e;
             }
         }
+    }
+
+    async totalHits(
+        ctx: RequestContext,
+        input: ElasticSearchInput,
+        enabledOnly: boolean = false,
+    ): Promise<number> {
+        const { indexPrefix, searchConfig } = this.options;
+        const elasticSearchBody = buildElasticBody(
+            input,
+            searchConfig,
+            ctx.channelId,
+            ctx.languageCode,
+            enabledOnly,
+        );
+        elasticSearchBody.from = 0;
+        elasticSearchBody.size = 0;
+        elasticSearchBody.aggs = {
+            total: {
+                cardinality: {
+                    field: `productId`,
+                },
+            },
+        };
+        const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
+            index: indexPrefix + VARIANT_INDEX_NAME,
+            body: elasticSearchBody,
+        });
+
+        const { aggregations } = body;
+        if (!aggregations) {
+            throw new InternalServerError(
+                'An error occurred when querying Elasticsearch for priceRange aggregations',
+            );
+        }
+        return aggregations.total ? aggregations.total.value : 0;
     }
 
     /**
@@ -223,47 +280,30 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         input: ElasticSearchInput,
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const { indexPrefix } = this.options;
-        const elasticSearchBody = buildElasticBody(
+        const { groupByProduct } = input;
+        const buckets = await this.getDistinctBucketsOfField(
+            ctx,
             input,
-            this.options.searchConfig,
-            ctx.channelId,
-            ctx.languageCode,
             enabledOnly,
+            `facetValueIds`,
+            this.options.searchConfig.facetValueMaxSize,
         );
-        elasticSearchBody.from = 0;
-        elasticSearchBody.size = 0;
-        elasticSearchBody.aggs = {
-            facetValue: {
-                terms: {
-                    field: 'facetValueIds',
-                    size: this.options.searchConfig.facetValueMaxSize,
-                },
-            },
-        };
-        let body: SearchResponseBody<VariantIndexItem>;
-        try {
-            const result = await this.client.search<SearchResponseBody<VariantIndexItem>>({
-                index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
-                body: elasticSearchBody,
-            });
-            body = result.body;
-        } catch (e) {
-            Logger.error(e.message, loggerCtx, e.stack);
-            throw e;
-        }
-
-        const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
         const facetValues = await this.facetValueService.findByIds(
             ctx,
             buckets.map(b => b.key),
         );
-        return facetValues.map((facetValue, index) => {
+        return facetValues.map(facetValue => {
             const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
+            let count;
+            if (groupByProduct) {
+                count = bucket ? bucket.total.value : 0;
+            } else {
+                count = bucket ? bucket.doc_count : 0;
+            }
             return {
                 facetValue,
-                count: bucket ? bucket.doc_count : 0,
+                count,
             };
         });
     }
@@ -276,7 +316,43 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         input: ElasticSearchInput,
         enabledOnly: boolean = false,
     ): Promise<Array<{ collection: Collection; count: number }>> {
+        const { groupByProduct } = input;
+        const buckets = await this.getDistinctBucketsOfField(
+            ctx,
+            input,
+            enabledOnly,
+            `collectionIds`,
+            this.options.searchConfig.collectionMaxSize,
+        );
+
+        const collections = await this.collectionService.findByIds(
+            ctx,
+            buckets.map(b => b.key),
+        );
+        return collections.map(collection => {
+            const bucket = buckets.find(b => b.key.toString() === collection.id.toString());
+            let count;
+            if (groupByProduct) {
+                count = bucket ? bucket.total.value : 0;
+            } else {
+                count = bucket ? bucket.doc_count : 0;
+            }
+            return {
+                collection,
+                count,
+            };
+        });
+    }
+
+    async getDistinctBucketsOfField(
+        ctx: RequestContext,
+        input: ElasticSearchInput,
+        enabledOnly: boolean = false,
+        field: string,
+        aggregation_max_size: number,
+    ): Promise<Array<{ key: string; doc_count: number; total: { value: number } }>> {
         const { indexPrefix } = this.options;
+        const { groupByProduct } = input;
         const elasticSearchBody = buildElasticBody(
             input,
             this.options.searchConfig,
@@ -287,17 +363,28 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {
-            collection: {
+            aggregation_field: {
                 terms: {
-                    field: 'collectionIds',
-                    size: this.options.searchConfig.collectionMaxSize,
+                    field,
+                    size: aggregation_max_size,
                 },
             },
         };
+
+        if (groupByProduct) {
+            elasticSearchBody.aggs.aggregation_field.aggs = {
+                total: {
+                    cardinality: {
+                        field: `productId`,
+                    },
+                },
+            };
+        }
+
         let body: SearchResponseBody<VariantIndexItem>;
         try {
             const result = await this.client.search<SearchResponseBody<VariantIndexItem>>({
-                index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
+                index: indexPrefix + VARIANT_INDEX_NAME,
                 body: elasticSearchBody,
             });
             body = result.body;
@@ -306,24 +393,11 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             throw e;
         }
 
-        const buckets = body.aggregations ? body.aggregations.collection.buckets : [];
-
-        const collections = await this.collectionService.findByIds(
-            ctx,
-            buckets.map(b => b.key),
-        );
-        return collections.map(collection => {
-            const bucket = buckets.find(b => b.key.toString() === collection.id.toString());
-            return {
-                collection,
-                count: bucket ? bucket.doc_count : 0,
-            };
-        });
+        return body.aggregations ? body.aggregations.aggregation_field.buckets : [];
     }
 
     async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {
         const { indexPrefix, searchConfig } = this.options;
-        const { groupByProduct } = input;
         const elasticSearchBody = buildElasticBody(
             input,
             searchConfig,
@@ -336,39 +410,39 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         elasticSearchBody.aggs = {
             minPrice: {
                 min: {
-                    field: groupByProduct ? 'priceMin' : 'price',
+                    field: 'price',
                 },
             },
             minPriceWithTax: {
                 min: {
-                    field: groupByProduct ? 'priceWithTaxMin' : 'priceWithTax',
+                    field: 'priceWithTax',
                 },
             },
             maxPrice: {
                 max: {
-                    field: groupByProduct ? 'priceMax' : 'price',
+                    field: 'price',
                 },
             },
             maxPriceWithTax: {
                 max: {
-                    field: groupByProduct ? 'priceWithTaxMax' : 'priceWithTax',
+                    field: 'priceWithTax',
                 },
             },
             prices: {
                 histogram: {
-                    field: groupByProduct ? 'priceMin' : 'price',
+                    field: 'price',
                     interval: searchConfig.priceRangeBucketInterval,
                 },
             },
             pricesWithTax: {
                 histogram: {
-                    field: groupByProduct ? 'priceWithTaxMin' : 'priceWithTax',
+                    field: 'priceWithTax',
                     interval: searchConfig.priceRangeBucketInterval,
                 },
             },
         };
         const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
-            index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
+            index: indexPrefix + VARIANT_INDEX_NAME,
             body: elasticSearchBody,
         });
 
@@ -401,14 +475,14 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
      * Rebuilds the full search index.
      */
     async reindex(ctx: RequestContext): Promise<Job> {
-        const { indexPrefix } = this.options;
         const job = await this.elasticsearchIndexService.reindex(ctx);
         // tslint:disable-next-line:no-non-null-assertion
         return job!;
     }
 
-    private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
+    private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
         const source = hit._source;
+        const fields = hit.fields;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
@@ -423,38 +497,58 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             score: hit._score || 0,
         };
 
-        this.addCustomMappings(result, source, this.options.customProductVariantMappings);
+        ElasticsearchService.addCustomMappings(
+            result,
+            source,
+            this.options.customProductVariantMappings,
+            false,
+        );
+        ElasticsearchService.addScriptMappings(
+            result,
+            fields,
+            this.options.searchConfig?.scriptFields,
+            'variant',
+        );
         return result;
     }
 
-    private mapProductToSearchResult(hit: SearchHit<ProductIndexItem>): SearchResult {
+    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
         const source = hit._source;
+        const fields = hit.fields;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
             productAsset,
             productVariantAsset,
+            enabled: source.productEnabled,
             productId: source.productId.toString(),
             productName: source.productName,
             productVariantId: source.productVariantId.toString(),
             productVariantName: source.productVariantName,
-            facetIds: source.facetIds as string[],
-            facetValueIds: source.facetValueIds as string[],
-            collectionIds: source.collectionIds as string[],
+            facetIds: source.productFacetIds as string[],
+            facetValueIds: source.productFacetValueIds as string[],
+            collectionIds: source.productCollectionIds as string[],
             sku: source.sku,
             slug: source.slug,
             price: {
-                min: source.priceMin,
-                max: source.priceMax,
+                min: source.productPriceMin,
+                max: source.productPriceMax,
             },
             priceWithTax: {
-                min: source.priceWithTaxMin,
-                max: source.priceWithTaxMax,
+                min: source.productPriceWithTaxMin,
+                max: source.productPriceWithTaxMax,
             },
             channelIds: [],
+            inStock: source.productInStock,
             score: hit._score || 0,
         };
-        this.addCustomMappings(result, source, this.options.customProductMappings);
+        ElasticsearchService.addCustomMappings(result, source, this.options.customProductMappings, true);
+        ElasticsearchService.addScriptMappings(
+            result,
+            fields,
+            this.options.searchConfig?.scriptFields,
+            'product',
+        );
         return result;
     }
 
@@ -479,18 +573,51 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return { productAsset, productVariantAsset };
     }
 
-    private addCustomMappings(
+    private static addCustomMappings(
         result: any,
         source: any,
         mappings: { [fieldName: string]: CustomMapping<any> },
+        groupByProduct: boolean,
     ): any {
         const customMappings = Object.keys(mappings);
         if (customMappings.length) {
             const customMappingsResult: any = {};
             for (const name of customMappings) {
-                customMappingsResult[name] = (source as any)[name];
+                customMappingsResult[name] = (source as any)[
+                    groupByProduct ? `product-${name}` : `variant-${name}`
+                ];
             }
             (result as any).customMappings = customMappingsResult;
+        }
+        return result;
+    }
+
+    private static addScriptMappings(
+        result: any,
+        fields: any,
+        mappings: { [fieldName: string]: CustomScriptMapping<any> },
+        environment: CustomScriptContext,
+    ): any {
+        const customMappings = Object.keys(mappings || {});
+        if (customMappings.length) {
+            const customScriptFieldsResult: any = {};
+            for (const name of customMappings) {
+                const env = mappings[name].context;
+                if (env === environment || env === 'both') {
+                    const fieldVal = (fields as any)[name] || undefined;
+                    if (Array.isArray(fieldVal)) {
+                        if (fieldVal.length === 1) {
+                            customScriptFieldsResult[name] = fieldVal[0];
+                        }
+                        if (fieldVal.length > 1) {
+                            customScriptFieldsResult[name] = JSON.stringify(fieldVal);
+                        }
+                    } else {
+                        customScriptFieldsResult[name] = fieldVal;
+                    }
+                }
+            }
+            (result as any).customScriptFields = customScriptFieldsResult;
         }
         return result;
     }

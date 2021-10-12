@@ -10,12 +10,11 @@ import {
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
+import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-
-import { JobQueueTestPlugin } from './test-plugins/job-queue-test/job-queue-test-plugin';
 
 /**
  * Config settings used during development
@@ -46,6 +45,7 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
+        // passwordHashingStrategy: new PlaintextHashingStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -57,7 +57,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -66,13 +66,14 @@ export const devConfig: VendureConfig = {
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin,
+        DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
         BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin,
+        // DefaultJobQueuePlugin.init(),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
         //     port: 9200,
+        //     bufferUpdates: true,
         // }),
         EmailPlugin.init({
             devMode: true,

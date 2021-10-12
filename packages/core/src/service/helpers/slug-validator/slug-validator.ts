@@ -4,9 +4,9 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 export type InputWithSlug = {
     id?: ID | null;

@@ -4,11 +4,17 @@ import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
+/**
+ * @description
+ * Contains methods relating to the {@link GlobalSettings} entity.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class GlobalSettingsService {
     constructor(
@@ -19,6 +25,7 @@ export class GlobalSettingsService {
 
     /**
      * Ensure there is a single global settings row in the database.
+     * @internal
      */
     async initGlobalSettings() {
         try {
@@ -39,6 +46,10 @@ export class GlobalSettingsService {
         }
     }
 
+    /**
+     * @description
+     * Returns the GlobalSettings entity.
+     */
     async getSettings(ctx: RequestContext): Promise<GlobalSettings> {
         const settings = await this.connection.getRepository(ctx, GlobalSettings).findOne({
             order: {

@@ -37,11 +37,3 @@ type CollectionList implements PaginatedList {
     items: [Collection!]!
     totalItems: Int!
 }
-
-
-type ProductVariantList implements PaginatedList {
-    items: [ProductVariant!]!
-    totalItems: Int!
-}
-
-input ProductVariantListOptions

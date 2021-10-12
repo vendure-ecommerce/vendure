@@ -30,4 +30,16 @@ export class SearchResolver {
     async reindex(...args: any[]): Promise<any> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
+
+    @Query()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        throw new InternalServerError(`error.no-search-plugin-configured`);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async runPendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        throw new InternalServerError(`error.no-search-plugin-configured`);
+    }
 }

@@ -45,6 +45,8 @@ export class ProductListComponent
     facetValues$: Observable<SearchProducts.FacetValues[]>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
+    pendingSearchIndexUpdates = 0;
+
     @ViewChild('productSearchInputComponent', { static: true })
     private productSearchInput: ProductSearchInputComponent;
     constructor(
@@ -109,6 +111,11 @@ export class ProductListComponent
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
+
+        this.dataService.product
+            .getPendingSearchIndexUpdates()
+            .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
+            .subscribe(value => (this.pendingSearchIndexUpdates = value));
     }
 
     ngAfterViewInit() {
@@ -144,6 +151,15 @@ export class ProductListComponent
                     this.notificationService.error(_('catalog.reindex-error'));
                 }
             });
+        });
+    }
+
+    runPendingSearchIndexUpdates() {
+        this.dataService.product.runPendingSearchIndexUpdates().subscribe(value => {
+            this.notificationService.info(_('catalog.running-search-index-updates'), {
+                count: this.pendingSearchIndexUpdates,
+            });
+            this.pendingSearchIndexUpdates = 0;
         });
     }
 

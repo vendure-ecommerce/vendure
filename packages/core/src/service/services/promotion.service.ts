@@ -31,25 +31,25 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Promotion} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PromotionService {
     availableConditions: PromotionCondition[] = [];
     availableActions: PromotionAction[] = [];
-    /**
-     * All active AdjustmentSources are cached in memory becuase they are needed
-     * every time an order is changed, which will happen often. Caching them means
-     * a DB call is not required newly each time.
-     */
-    private activePromotions: Promotion[] = [];
 
     constructor(
         private connection: TransactionalConnection,
@@ -91,16 +91,6 @@ export class PromotionService {
         return this.availableActions.map(x => x.toGraphQlType(ctx));
     }
 
-    /**
-     * Returns all active AdjustmentSources.
-     */
-    async getActivePromotions(): Promise<Promotion[]> {
-        if (!this.activePromotions.length) {
-            await this.updatePromotions();
-        }
-        return this.activePromotions;
-    }
-
     async createPromotion(
         ctx: RequestContext,
         input: CreatePromotionInput,
@@ -124,9 +114,8 @@ export class PromotionService {
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
             return new MissingConditionsError();
         }
-        this.channelService.assignToCurrentChannel(promotion, ctx);
+        await this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
-        await this.updatePromotions();
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
@@ -153,7 +142,6 @@ export class PromotionService {
         }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
-        await this.updatePromotions();
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
@@ -171,7 +159,8 @@ export class PromotionService {
         ctx: RequestContext,
         input: AssignPromotionsToChannelInput,
     ): Promise<Promotion[]> {
-        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
             throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
         }
         const promotions = await this.connection.findByIdsInChannel(
@@ -188,7 +177,8 @@ export class PromotionService {
     }
 
     async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) {
-        if (!idsAreEqual(ctx.channelId, this.channelService.getDefaultChannel().id)) {
+        const defaultChannel = await this.channelService.getDefaultChannel();
+        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
             throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
         }
         const promotions = await this.connection.findByIdsInChannel(
@@ -204,6 +194,12 @@ export class PromotionService {
         return promotions;
     }
 
+    /**
+     * @description
+     * Checks the validity of a coupon code, by checking that it is associated with an existing,
+     * enabled and non-expired Promotion. Additionally, if there is a usage limit on the coupon code,
+     * this method will enforce that limit against the specified Customer.
+     */
     async validateCouponCode(
         ctx: RequestContext,
         couponCode: string,
@@ -231,6 +227,10 @@ export class PromotionService {
         return promotion;
     }
 
+    /**
+     * @description
+     * Used internally to associate a Promotion with an Order, once an Order has been placed.
+     */
     async addPromotionsToOrder(ctx: RequestContext, order: Order): Promise<Order> {
         const allPromotionIds = order.discounts.map(
             a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id,
@@ -264,15 +264,6 @@ export class PromotionService {
             ? input.actions.map(c => this.configArgService.getByCode('PromotionAction', c.code))
             : [];
         return [...conditions, ...actions].reduce((score, op) => score + op.priorityValue, 0);
-    }
-
-    /**
-     * Update the activeSources cache.
-     */
-    private async updatePromotions() {
-        this.activePromotions = await this.connection.getRepository(Promotion).find({
-            where: { enabled: true },
-        });
     }
 
     private validateRequiredConditions(

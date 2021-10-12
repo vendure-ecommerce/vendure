@@ -10,13 +10,20 @@ import {
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { Asset, SerializedRequestContext } from '@vendure/core';
 
+export type ElasticSearchResult = SearchResult & {
+    inStock: boolean;
+};
+
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
     priceRangeWithTax?: PriceRange;
+    inStock?: boolean;
+    [extendedInputField: string]: any;
 };
 
 export type ElasticSearchResponse = SearchResponse & {
     priceRange: SearchPriceData;
+    items: ElasticSearchResult[];
 };
 
 export type SearchPriceData = {
@@ -50,7 +57,19 @@ export type VariantIndexItem = Omit<
         price: number;
         priceWithTax: number;
         collectionSlugs: string[];
+        productEnabled: boolean;
+        productPriceMin: number;
+        productPriceMax: number;
+        productPriceWithTaxMin: number;
+        productPriceWithTaxMax: number;
+        productFacetIds: ID[];
+        productFacetValueIds: ID[];
+        productCollectionIds: ID[];
+        productCollectionSlugs: string[];
+        productChannelIds: ID[];
         [customMapping: string]: any;
+        inStock: boolean;
+        productInStock: boolean;
     };
 
 export type ProductIndexItem = IndexItemAssets & {
@@ -70,6 +89,7 @@ export type ProductIndexItem = IndexItemAssets & {
     collectionSlugs: string[];
     channelIds: ID[];
     enabled: boolean;
+    productEnabled: boolean;
     priceMin: number;
     priceMax: number;
     priceWithTaxMin: number;
@@ -83,6 +103,7 @@ export type SearchHit<T> = {
     _score: number;
     _source: T;
     _type: string;
+    fields?: any;
 };
 
 export type SearchRequestBody = {
@@ -92,6 +113,9 @@ export type SearchRequestBody = {
     size?: number;
     track_total_hits?: number | boolean;
     aggs?: any;
+    collapse?: any;
+    _source?: boolean;
+    script_fields?: any;
 };
 
 export type SearchResponseBody<T = any> = {
@@ -115,7 +139,7 @@ export type SearchResponseBody<T = any> = {
         [key: string]: {
             doc_count_error_upper_bound: 0;
             sum_other_doc_count: 89;
-            buckets: Array<{ key: string; doc_count: number }>;
+            buckets: Array<{ key: string; doc_count: number; total: { value: number } }>;
             value: any;
         };
     };
@@ -191,11 +215,6 @@ export interface UpdateAssetMessageData {
 }
 
 type Maybe<T> = T | undefined;
-type CustomMappingDefinition<Args extends any[], T extends string, R> = {
-    graphQlType: T;
-    valueFn: (...args: Args) => R;
-};
-
 type NamedJobData<Type extends string, MessageData> = { type: Type } & MessageData;
 
 export type ReindexJobData = NamedJobData<'reindex', ReindexMessageData>;
@@ -224,25 +243,42 @@ export type UpdateIndexQueueJobData =
     | AssignVariantToChannelJobData
     | RemoveVariantFromChannelJobData;
 
-type CustomStringMapping<Args extends any[]> = CustomMappingDefinition<Args, 'String!', string>;
-type CustomStringMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'String', Maybe<string>>;
-type CustomIntMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Int!', number>;
-type CustomIntMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Int', Maybe<number>>;
-type CustomFloatMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Float!', number>;
-type CustomFloatMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Float', Maybe<number>>;
-type CustomBooleanMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Boolean!', boolean>;
-type CustomBooleanMappingNullable<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    'Boolean',
-    Maybe<boolean>
->;
+export type GraphQlPrimitive = 'ID' | 'String' | 'Int' | 'Float' | 'Boolean';
+export type PrimitiveTypeVariations<T extends GraphQlPrimitive> = T | `${T}!` | `[${T}!]` | `[${T}!]!`;
+type GraphQlPermittedReturnType = PrimitiveTypeVariations<GraphQlPrimitive>;
 
-export type CustomMapping<Args extends any[]> =
-    | CustomStringMapping<Args>
-    | CustomStringMappingNullable<Args>
-    | CustomIntMapping<Args>
-    | CustomIntMappingNullable<Args>
-    | CustomFloatMapping<Args>
-    | CustomFloatMappingNullable<Args>
-    | CustomBooleanMapping<Args>
-    | CustomBooleanMappingNullable<Args>;
+type CustomMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType, R> = {
+    graphQlType: T;
+    valueFn: (...args: Args) => R;
+};
+
+type TypeVariationMap<GqlType extends GraphQlPrimitive, TsType> = {
+    [Key in PrimitiveTypeVariations<GqlType>]: Key extends `[${string}!]!`
+        ? TsType[]
+        : Key extends `[${string}!]`
+        ? Maybe<TsType[]>
+        : Key extends `${string}!`
+        ? TsType
+        : Maybe<TsType>;
+};
+
+type GraphQlTypeMap = TypeVariationMap<'ID', ID> &
+    TypeVariationMap<'String', string> &
+    TypeVariationMap<'Int', number> &
+    TypeVariationMap<'Float', number> &
+    TypeVariationMap<'Boolean', boolean>;
+
+export type CustomMapping<Args extends any[]> = {
+    [Type in GraphQlPermittedReturnType]: CustomMappingDefinition<Args, Type, GraphQlTypeMap[Type]>;
+}[GraphQlPermittedReturnType];
+
+export type CustomScriptContext = 'product' | 'variant' | 'both';
+type CustomScriptMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType> = {
+    graphQlType: T;
+    context: CustomScriptContext;
+    scriptFn: (...args: Args) => { script: string };
+};
+
+export type CustomScriptMapping<Args extends any[]> = {
+    [Type in GraphQlPermittedReturnType]: CustomScriptMappingDefinition<Args, Type>;
+}[GraphQlPermittedReturnType];

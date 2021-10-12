@@ -157,6 +157,7 @@ export * from './shared/components/rich-text-editor/prosemirror/utils';
 export * from './shared/components/rich-text-editor/rich-text-editor.component';
 export * from './shared/components/select-toggle/select-toggle.component';
 export * from './shared/components/simple-dialog/simple-dialog.component';
+export * from './shared/components/status-badge/status-badge.component';
 export * from './shared/components/table-row-action/table-row-action.component';
 export * from './shared/components/tag-selector/tag-selector.component';
 export * from './shared/components/timeline-entry/timeline-entry.component';

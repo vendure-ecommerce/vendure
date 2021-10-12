@@ -8,11 +8,13 @@ import { ConnectionOptions } from 'typeorm';
 
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
+import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-storage-strategy';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
+import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
@@ -296,7 +298,7 @@ export interface AuthOptions {
      * `authTokenHeaderKey` in the server's CORS configuration (adding `Access-Control-Expose-Headers: vendure-auth-token`
      * by default).
      *
-     * From v1.2.0 is is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
+     * From v1.2.0 it is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
      *
      * @default 'cookie'
      */
@@ -390,6 +392,14 @@ export interface AuthOptions {
      * @default []
      */
     customPermissions?: PermissionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the way passwords are hashed when using the {@link NativeAuthenticationStrategy}.
+     *
+     * @default BcryptPasswordHashingStrategy
+     * @since 1.3.0
+     */
+    passwordHashingStrategy?: PasswordHashingStrategy;
 }
 
 /**
@@ -736,13 +746,73 @@ export interface JobQueueOptions {
      * @default InMemoryJobQueueStrategy
      */
     jobQueueStrategy?: JobQueueStrategy;
+    jobBufferStorageStrategy?: JobBufferStorageStrategy;
     /**
      * @description
      * Defines the queues that will run in this process.
      * This can be used to configure only certain queues to run in this process.
-     * If its empty all queues will be run
+     * If its empty all queues will be run. Note: this option is primarily intended
+     * to apply to the Worker process. Jobs will _always_ get published to the queue
+     * regardless of this setting, but this setting determines whether they get
+     * _processed_ or not.
      */
     activeQueues?: string[];
+    /**
+     * @description
+     * When set to `true`, a health check will be run on the worker. This is done by
+     * adding a `check-worker-health` job to the job queue, which, when successfully
+     * processed by the worker, indicates that it is healthy.
+     *
+     * **Important Note:** This health check is unreliable and can be affected by
+     * existing long running jobs, see [this issue](https://github.com/vendure-ecommerce/vendure/issues/1112)
+     * for further details. For this reason, the health check will be removed entirely in the next major version.
+     *
+     * @since 1.3.0
+     * @default false
+     */
+    enableWorkerHealthCheck?: boolean;
+}
+
+/**
+ * @description
+ * Options relating to the internal handling of entities.
+ *
+ * @since 1.3.0
+ */
+export interface EntityOptions {
+    /**
+     * @description
+     * Defines the strategy used for both storing the primary keys of entities
+     * in the database, and the encoding & decoding of those ids when exposing
+     * entities via the API. The default uses a simple auto-increment integer
+     * strategy.
+     *
+     * @since 1.3.0
+     * @default AutoIncrementIdStrategy
+     */
+    entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
+     * Channels get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.3.0
+     * @default 30000
+     */
+    channelCacheTtl?: number;
+    /**
+     * @description
+     * Zones get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.3.0
+     * @default 30000
+     */
+    zoneCacheTtl?: number;
 }
 
 /**
@@ -810,9 +880,11 @@ export interface VendureConfig {
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
      *
+     * @deprecated Use entityOptions.entityIdStrategy instead
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    entityOptions?: EntityOptions;
     /**
      * @description
      * Configuration settings for data import and export.
@@ -879,6 +951,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     authOptions: Required<AuthOptions>;
     catalogOptions: Required<CatalogOptions>;
     customFields: Required<CustomFields>;
+    entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
     orderOptions: Required<OrderOptions>;

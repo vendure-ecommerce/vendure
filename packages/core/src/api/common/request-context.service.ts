@@ -29,7 +29,7 @@ export class RequestContextService {
         session?: CachedSession,
     ): Promise<RequestContext> {
         const channelToken = this.getChannelToken(req);
-        const channel = this.channelService.getChannelFromToken(channelToken);
+        const channel = await this.channelService.getChannelFromToken(channelToken);
         const apiType = getApiType(info);
 
         const hasOwnerPermission = !!requiredPermissions && requiredPermissions.includes(Permission.Owner);

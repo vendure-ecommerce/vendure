@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
-import { Type } from '@vendure/common/lib/shared-types';
+import { ConfigurableOperation, ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 
-import { ConfigurableOperation } from '../../../../../common/lib/generated-types';
 import { ConfigurableOperationDef } from '../../../common/configurable-operation';
 import { UserInputError } from '../../../common/error/errors';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';

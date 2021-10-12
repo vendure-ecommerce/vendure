@@ -7,16 +7,19 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
-import { RequestContext } from '../../api/common/request-context';
-import { Allow } from '../../api/decorators/allow.decorator';
-import { Ctx } from '../../api/decorators/request-context.decorator';
-import { SearchResolver as BaseSearchResolver } from '../../api/resolvers/admin/search.resolver';
-import { Collection, FacetValue } from '../../entity';
-
-import { FulltextSearchService } from './fulltext-search.service';
+import { RequestContext } from '../../../api/common/request-context';
+import { Allow } from '../../../api/decorators/allow.decorator';
+import { Ctx } from '../../../api/decorators/request-context.decorator';
+import { SearchResolver as BaseSearchResolver } from '../../../api/resolvers/admin/search.resolver';
+import { InternalServerError } from '../../../common/error/errors';
+import { Collection, FacetValue } from '../../../entity/index';
+import { FulltextSearchService } from '../fulltext-search.service';
+import { SearchJobBufferService } from '../search-job-buffer/search-job-buffer.service';
 
 @Resolver('SearchResponse')
-export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'reindex'> {
+export class ShopFulltextSearchResolver
+    implements Pick<BaseSearchResolver, 'search' | 'facetValues' | 'collections'>
+{
     constructor(private fulltextSearchService: FulltextSearchService) {}
 
     @Query()
@@ -52,14 +55,17 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
 
 @Resolver('SearchResponse')
 export class AdminFulltextSearchResolver implements BaseSearchResolver {
-    constructor(private fulltextSearchService: FulltextSearchService) {}
+    constructor(
+        private fulltextSearchService: FulltextSearchService,
+        private searchJobBufferService: SearchJobBufferService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async search(
         @Ctx() ctx: RequestContext,
         @Args() args: QuerySearchArgs,
-    ): Promise<Omit<SearchResponse, 'facetValues'| 'collections'>> {
+    ): Promise<Omit<SearchResponse, 'facetValues' | 'collections'>> {
         const result = await this.fulltextSearchService.search(ctx, args.input, false);
         // ensure the facetValues property resolver has access to the input args
         (result as any).input = args.input;
@@ -86,5 +92,19 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async reindex(@Ctx() ctx: RequestContext) {
         return this.fulltextSearchService.reindex(ctx);
+    }
+
+    @Query()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        return this.searchJobBufferService.getPendingSearchUpdates();
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async runPendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        // Intentionally not awaiting this method call
+        this.searchJobBufferService.runPendingSearchUpdates();
+        return { success: true };
     }
 }

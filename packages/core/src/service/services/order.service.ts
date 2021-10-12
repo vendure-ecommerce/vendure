@@ -72,6 +72,7 @@ import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -110,7 +111,6 @@ import {
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
@@ -123,6 +123,12 @@ import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Order} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class OrderService {
     constructor(
@@ -150,6 +156,12 @@ export class OrderService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /**
+     * @description
+     * Returns an array of all the configured states and transitions of the order process. This is
+     * based on the default order process plus all configured {@link CustomOrderProcess} objects
+     * defined in the {@link OrderOptions} `process` array.
+     */
     getOrderProcessStates(): OrderProcessState[] {
         return Object.entries(this.orderStateMachine.config.transitions).map(([name, { to }]) => ({
             name,
@@ -267,6 +279,10 @@ export class OrderService {
             });
     }
 
+    /**
+     * @description
+     * Returns all {@link Payment} entities associated with the Order.
+     */
     getOrderPayments(ctx: RequestContext, orderId: ID): Promise<Payment[]> {
         return this.connection.getRepository(ctx, Payment).find({
             relations: ['refunds'],
@@ -276,6 +292,10 @@ export class OrderService {
         });
     }
 
+    /**
+     * @description
+     * Returns all OrderItems associated with the given {@link Refund}.
+     */
     async getRefundOrderItems(ctx: RequestContext, refundId: ID): Promise<OrderItem[]> {
         const refund = await this.connection.getEntityOrThrow(ctx, Refund, refundId, {
             relations: ['orderItems'],
@@ -283,6 +303,10 @@ export class OrderService {
         return refund.orderItems;
     }
 
+    /**
+     * @description
+     * Returns an array of any {@link OrderModification} entities associated with the Order.
+     */
     getOrderModifications(ctx: RequestContext, orderId: ID): Promise<OrderModification[]> {
         return this.connection.getRepository(ctx, OrderModification).find({
             where: {
@@ -292,6 +316,10 @@ export class OrderService {
         });
     }
 
+    /**
+     * @description
+     * Returns any {@link Refund}s associated with a {@link Payment}.
+     */
     getPaymentRefunds(ctx: RequestContext, paymentId: ID): Promise<Refund[]> {
         return this.connection.getRepository(ctx, Refund).find({
             where: {
@@ -300,6 +328,11 @@ export class OrderService {
         });
     }
 
+    /**
+     * @description
+     * Returns any Order associated with the specified User's Customer account
+     * that is still in the `active` state.
+     */
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
         const customer = await this.customerService.findOneByUserId(ctx, userId);
         if (customer) {
@@ -321,6 +354,11 @@ export class OrderService {
         }
     }
 
+    /**
+     * @description
+     * Creates a new, empty Order. If a `userId` is passed, the Order will get associated with that
+     * User's Customer account.
+     */
     async create(ctx: RequestContext, userId?: ID): Promise<Order> {
         const newOrder = new Order({
             code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
@@ -341,7 +379,7 @@ export class OrderService {
                 newOrder.customer = customer;
             }
         }
-        this.channelService.assignToCurrentChannel(newOrder, ctx);
+        await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
         const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
         if (isGraphQlErrorResult(transitionResult)) {
@@ -351,6 +389,10 @@ export class OrderService {
         return transitionResult;
     }
 
+    /**
+     * @description
+     * Updates the custom fields of an Order.
+     */
     async updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) {
         let order = await this.getOrderOrThrow(ctx, orderId);
         order = patchEntity(order, { customFields });
@@ -359,6 +401,7 @@ export class OrderService {
     }
 
     /**
+     * @description
      * Adds an OrderItem to the Order, either creating a new OrderLine or
      * incrementing an existing one.
      */
@@ -425,7 +468,8 @@ export class OrderService {
     }
 
     /**
-     * Adjusts the quantity of an existing OrderLine
+     * @description
+     * Adjusts the quantity and/or custom field values of an existing OrderLine.
      */
     async adjustOrderLine(
         ctx: RequestContext,
@@ -473,6 +517,10 @@ export class OrderService {
         }
     }
 
+    /**
+     * @description
+     * Removes the specified OrderLine from the Order.
+     */
     async removeItemFromOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -490,6 +538,10 @@ export class OrderService {
         return updatedOrder;
     }
 
+    /**
+     * @description
+     * Removes all OrderLines from the Order.
+     */
     async removeAllItemsFromOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -505,6 +557,10 @@ export class OrderService {
         return updatedOrder;
     }
 
+    /**
+     * @description
+     * Adds a {@link Surcharge} to the Order.
+     */
     async addSurchargeToOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -525,6 +581,10 @@ export class OrderService {
         return updatedOrder;
     }
 
+    /**
+     * @description
+     * Removes a {@link Surcharge} from the Order.
+     */
     async removeSurchargeFromOrder(ctx: RequestContext, orderId: ID, surchargeId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const surcharge = await this.connection.getEntityOrThrow(ctx, Surcharge, surchargeId);
@@ -538,6 +598,11 @@ export class OrderService {
         }
     }
 
+    /**
+     * @description
+     * Applies a coupon code to the Order, which should be a valid coupon code as specified in the configuration
+     * of an active {@link Promotion}.
+     */
     async applyCouponCode(
         ctx: RequestContext,
         orderId: ID,
@@ -565,6 +630,10 @@ export class OrderService {
         return this.applyPriceAdjustments(ctx, order);
     }
 
+    /**
+     * @description
+     * Removes a coupon code from the Order.
+     */
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
@@ -593,6 +662,11 @@ export class OrderService {
         }
     }
 
+    /**
+     * @description
+     * Returns all {@link Promotion}s associated with an Order. A Promotion only gets associated with
+     * and Order once the order has been placed (see {@link OrderPlacedStrategy}).
+     */
     async getOrderPromotions(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
             channelId: ctx.channelId,
@@ -601,10 +675,18 @@ export class OrderService {
         return order.promotions || [];
     }
 
+    /**
+     * @description
+     * Returns the next possible states that the Order may transition to.
+     */
     getNextOrderStates(order: Order): ReadonlyArray<OrderState> {
         return this.orderStateMachine.getNextStates(order);
     }
 
+    /**
+     * @description
+     * Sets the shipping address for the Order.
+     */
     async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
@@ -612,6 +694,10 @@ export class OrderService {
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
+    /**
+     * @description
+     * Sets the billing address for the Order.
+     */
     async setBillingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
@@ -619,6 +705,14 @@ export class OrderService {
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
+    /**
+     * @description
+     * Returns an array of quotes stating which {@link ShippingMethod}s may be applied to this Order.
+     * This is determined by the configured {@link ShippingEligibilityChecker} of each ShippingMethod.
+     *
+     * The quote also includes a price for each method, as determined by the configured
+     * {@link ShippingCalculator} of each eligible ShippingMethod.
+     */
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
@@ -636,11 +730,19 @@ export class OrderService {
         });
     }
 
+    /**
+     * @description
+     * Returns an array of quotes stating which {@link PaymentMethod}s may be used on this Order.
+     */
     async getEligiblePaymentMethods(ctx: RequestContext, orderId: ID): Promise<PaymentMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         return this.paymentMethodService.getEligiblePaymentMethods(ctx, order);
     }
 
+    /**
+     * @description
+     * Sets the ShippingMethod to be used on this Order.
+     */
     async setShippingMethod(
         ctx: RequestContext,
         orderId: ID,
@@ -681,6 +783,10 @@ export class OrderService {
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
+    /**
+     * @description
+     * Transitions the Order to the given state.
+     */
     async transitionToState(
         ctx: RequestContext,
         orderId: ID,
@@ -700,6 +806,11 @@ export class OrderService {
         return order;
     }
 
+    /**
+     * @description
+     * Transitions a Fulfillment to the given state and then transitions the Order state based on
+     * whether all Fulfillments of the Order are shipped or delivered.
+     */
     async transitionFulfillmentToState(
         ctx: RequestContext,
         fulfillmentId: ID,
@@ -716,6 +827,18 @@ export class OrderService {
         return fulfillment;
     }
 
+    /**
+     * @description
+     * Allows the Order to be modified, which allows several aspects of the Order to be changed:
+     *
+     * * Changes to OrderLine quantities
+     * * New OrderLines being added
+     * * Arbitrary {@link Surcharge}s being added
+     * * Shipping or billing address changes
+     *
+     * Setting the `dryRun` input property to `true` will apply all changes, including updating the price of the
+     * Order, but will not actually persist any of those changes to the database.
+     */
     async modifyOrder(
         ctx: RequestContext,
         input: ModifyOrderInput,
@@ -772,6 +895,12 @@ export class OrderService {
         }
     }
 
+    /**
+     * @description
+     * Transitions the given {@link Payment} to a new state. If the order totalWithTax price is then
+     * covered by Payments, the Order state will be automatically transitioned to `PaymentSettled`
+     * or `PaymentAuthorized`.
+     */
     async transitionPaymentToState(
         ctx: RequestContext,
         paymentId: ID,
@@ -789,6 +918,11 @@ export class OrderService {
         return result;
     }
 
+    /**
+     * @description
+     * Adds a new Payment to the Order. If the Order totalWithTax is covered by Payments, then the Order
+     * state will get automatically transitioned to the `PaymentSettled` or `PaymentAuthorized` state.
+     */
     async addPaymentToOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -840,6 +974,15 @@ export class OrderService {
         return order;
     }
 
+    /**
+     * @description
+     * This method is used after modifying an existing completed order using the `modifyOrder()` method. If the modifications
+     * cause the order total to increase (such as when adding a new OrderLine), then there will be an outstanding charge to
+     * pay.
+     *
+     * This method allows you to add a new Payment and assumes the actual processing has been done manually, e.g. in the
+     * dashboard of your payment provider.
+     */
     async addManualPaymentToOrder(
         ctx: RequestContext,
         input: ManualPaymentInput,
@@ -872,6 +1015,11 @@ export class OrderService {
         return order;
     }
 
+    /**
+     * @description
+     * Settles a payment by invoking the {@link PaymentMethodHandler}'s `settlePayment()` method. Automatically
+     * transitions the Order state if all Payments are settled.
+     */
     async settlePayment(
         ctx: RequestContext,
         paymentId: ID,
@@ -893,6 +1041,10 @@ export class OrderService {
         return payment;
     }
 
+    /**
+     * @description
+     * Creates a new Fulfillment associated with the given Order and OrderItems.
+     */
     async createFulfillment(
         ctx: RequestContext,
         input: FulfillOrderInput,
@@ -969,6 +1121,10 @@ export class OrderService {
         }
     }
 
+    /**
+     * @description
+     * Returns an array of all Fulfillments associated with the Order.
+     */
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
         if (order.lines?.[0]?.items?.[0]?.fulfillments !== undefined) {
@@ -989,6 +1145,10 @@ export class OrderService {
         return unique(fulfillments, 'id');
     }
 
+    /**
+     * @description
+     * Returns an array of all Surcharges associated with the Order.
+     */
     async getOrderSurcharges(ctx: RequestContext, orderId: ID): Promise<Surcharge[]> {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
             channelId: ctx.channelId,
@@ -997,6 +1157,11 @@ export class OrderService {
         return order.surcharges || [];
     }
 
+    /**
+     * @description
+     * Cancels an Order by transitioning it to the `Cancelled` state. If stock is being tracked for the ProductVariants
+     * in the Order, then new {@link StockMovement}s will be created to correct the stock levels.
+     */
     async cancelOrder(
         ctx: RequestContext,
         input: CancelOrderInput,
@@ -1024,7 +1189,7 @@ export class OrderService {
 
     private async cancelOrderById(ctx: RequestContext, input: CancelOrderInput) {
         const order = await this.getOrderOrThrow(ctx, input.orderId);
-        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+        if (order.active) {
             return true;
         } else {
             const lines: OrderLineInput[] = order.lines.map(l => ({
@@ -1055,7 +1220,7 @@ export class OrderService {
         if (!idsAreEqual(order.id, input.orderId)) {
             return new MultipleOrderError();
         }
-        if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
+        if (order.active) {
             return new CancelActiveOrderError(order.state);
         }
         const fullOrder = await this.findOne(ctx, order.id);
@@ -1082,6 +1247,11 @@ export class OrderService {
         return orderItemsAreAllCancelled(orderWithItems);
     }
 
+    /**
+     * @description
+     * Creates a {@link Refund} against the order and in doing so invokes the `createRefund()` method of the
+     * {@link PaymentMethodHandler}.
+     */
     async refundOrder(
         ctx: RequestContext,
         input: RefundOrderInput,
@@ -1128,6 +1298,10 @@ export class OrderService {
         return await this.paymentService.createRefund(ctx, input, order, items, payment);
     }
 
+    /**
+     * @description
+     * Settles a Refund by transitioning it to the `Settled` state.
+     */
     async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
         const refund = await this.connection.getEntityOrThrow(ctx, Refund, input.id, {
             relations: ['payment', 'payment.order'],
@@ -1143,6 +1317,10 @@ export class OrderService {
         return refund;
     }
 
+    /**
+     * @description
+     * Associates a Customer with the Order.
+     */
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.customer = customer;
@@ -1169,6 +1347,10 @@ export class OrderService {
         return order;
     }
 
+    /**
+     * @description
+     * Creates a new "ORDER_NOTE" type {@link OrderHistoryEntry} in the Order's history timeline.
+     */
     async addNoteToOrder(ctx: RequestContext, input: AddNoteToOrderInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, input.id);
         await this.historyService.createHistoryEntryForOrder(
@@ -1210,8 +1392,11 @@ export class OrderService {
     }
 
     /**
+     * @description
      * When a guest user with an anonymous Order signs in and has an existing Order associated with that Customer,
      * we need to reconcile the contents of the two orders.
+     *
+     * The logic used to do the merging is specified in the {@link OrderOptions} `mergeStrategy` config setting.
      */
     async mergeOrders(
         ctx: RequestContext,

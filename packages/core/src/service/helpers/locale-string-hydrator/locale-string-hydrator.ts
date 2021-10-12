@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translatable, TranslatableKeys, Translated } from '../../../common/types/locale-types';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { translateDeep } from '../utils/translate-entity';
 
 /**

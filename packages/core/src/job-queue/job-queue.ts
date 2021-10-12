@@ -6,6 +6,7 @@ import { JobQueueStrategy } from '../config';
 import { Logger } from '../config/logger/vendure-logger';
 
 import { Job } from './job';
+import { JobBufferService } from './job-buffer/job-buffer.service';
 import { SubscribableJob } from './subscribable-job';
 import { CreateQueueOptions, JobConfig, JobData } from './types';
 
@@ -32,7 +33,11 @@ export class JobQueue<Data extends JobData<Data> = {}> {
         return this.running;
     }
 
-    constructor(private options: CreateQueueOptions<Data>, private jobQueueStrategy: JobQueueStrategy) {}
+    constructor(
+        private options: CreateQueueOptions<Data>,
+        private jobQueueStrategy: JobQueueStrategy,
+        private jobBufferService: JobBufferService,
+    ) {}
 
     /** @internal */
     async start() {
@@ -91,12 +96,23 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             queueName: this.options.name,
             retries: options?.retries ?? 0,
         });
-        try {
-            const addedJob = await this.jobQueueStrategy.add(job);
-            return new SubscribableJob(addedJob, this.jobQueueStrategy);
-        } catch (err) {
-            Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
-            return new SubscribableJob(job, this.jobQueueStrategy);
+
+        const isBuffered = await this.jobBufferService.add(job);
+        if (!isBuffered) {
+            try {
+                const addedJob = await this.jobQueueStrategy.add(job);
+                return new SubscribableJob(addedJob, this.jobQueueStrategy);
+            } catch (err) {
+                Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
+                return new SubscribableJob(job, this.jobQueueStrategy);
+            }
+        } else {
+            const bufferedJob = new Job({
+                ...job,
+                data: job.data,
+                id: 'buffered',
+            });
+            return new SubscribableJob(bufferedJob, this.jobQueueStrategy);
         }
     }
 }

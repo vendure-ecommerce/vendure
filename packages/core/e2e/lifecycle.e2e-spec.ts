@@ -9,8 +9,8 @@ import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { TransactionalConnection } from '../src/service/transaction/transactional-connection';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TransactionalConnection } from '../src/connection/transactional-connection';
 
 const strategyInitSpy = jest.fn();
 const strategyDestroySpy = jest.fn();
@@ -53,7 +53,7 @@ const testShippingEligChecker = new ShippingEligibilityChecker({
 describe('lifecycle hooks for configurable objects', () => {
     const { server, adminClient } = createTestEnvironment({
         ...testConfig,
-        entityIdStrategy: new TestIdStrategy(),
+        entityOptions: { entityIdStrategy: new TestIdStrategy() },
         shippingOptions: {
             shippingEligibilityCheckers: [defaultShippingEligibilityChecker, testShippingEligChecker],
         },

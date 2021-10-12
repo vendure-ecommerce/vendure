@@ -19,6 +19,7 @@ import { ProductOptionInUseError } from '../../common/error/generated-graphql-ad
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
@@ -32,7 +33,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -42,6 +42,12 @@ import { ProductVariantService } from './product-variant.service';
 import { RoleService } from './role.service';
 import { TaxRateService } from './tax-rate.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Product} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ProductService {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
@@ -116,6 +122,10 @@ export class ProductService {
             );
     }
 
+    /**
+     * @description
+     * Returns all Channels to which the Product is assigned.
+     */
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             relations: ['channels'],
@@ -174,7 +184,7 @@ export class ProductService {
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
-                this.channelService.assignToCurrentChannel(p, ctx);
+                await this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
@@ -234,6 +244,14 @@ export class ProductService {
         };
     }
 
+    /**
+     * @description
+     * Assigns a Product to the specified Channel, and optionally uses a `priceFactor` to set the ProductVariantPrices
+     * on the new Channel.
+     *
+     * Internally, this method will also call {@link ProductVariantService} `assignassignProductVariantsToChannel()` for
+     * each of the Product's variants, and will assign the Product's Assets to the Channel too.
+     */
     async assignProductsToChannel(
         ctx: RequestContext,
         input: AssignProductsToChannelInput,

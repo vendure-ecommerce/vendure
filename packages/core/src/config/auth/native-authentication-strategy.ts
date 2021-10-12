@@ -3,12 +3,10 @@ import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 
 import { RequestContext } from '../../api/common/request-context';
-import { UnauthorizedError } from '../../common/error/errors';
 import { Injector } from '../../common/injector';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
-import { PasswordCipher } from '../../service/helpers/password-cipher/password-cipher';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 
 import { AuthenticationStrategy } from './authentication-strategy';
 
@@ -31,10 +29,12 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     readonly name = NATIVE_AUTH_STRATEGY_NAME;
 
     private connection: TransactionalConnection;
-    private passwordCipher: PasswordCipher;
+    private passwordCipher: import('../../service/helpers/password-cipher/password-cipher').PasswordCipher;
 
-    init(injector: Injector) {
+    async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
+        // This is lazily-loaded to avoid a circular dependency
+        const { PasswordCipher } = await import('../../service/helpers/password-cipher/password-cipher');
         this.passwordCipher = injector.get(PasswordCipher);
     }
 

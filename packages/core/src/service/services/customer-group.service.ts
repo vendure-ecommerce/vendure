@@ -15,16 +15,22 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { HistoryService } from './history.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link CustomerGroup} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CustomerGroupService {
     constructor(
@@ -45,6 +51,10 @@ export class CustomerGroupService {
         return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId);
     }
 
+    /**
+     * @description
+     * Returns a {@link PaginatedList} of all the Customers in the group.
+     */
     getGroupCustomers(
         ctx: RequestContext,
         customerGroupId: ID,

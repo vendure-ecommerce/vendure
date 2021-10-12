@@ -38,7 +38,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate
+    UpdateTaxRate,
 } from '../../core/e2e/graphql/generated-e2e-admin-types';
 import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
@@ -100,6 +100,15 @@ if (process.env.CI) {
     jest.setTimeout(10 * 3000);
 }
 
+interface SearchProductShopVariables extends SearchProductsShop.Variables {
+    input: SearchProductsShop.Variables['input'] & {
+        // This input field is dynamically added only when the `indexStockStatus` init option
+        // of DefaultSearchPlugin is set to `true`, and therefore not included in the generated type. Therefore
+        // we need to manually patch it here.
+        inStock?: boolean;
+    };
+}
+
 const INDEX_PREFIX = 'e2e-tests';
 
 describe('Elasticsearch plugin', () => {
@@ -129,6 +138,21 @@ describe('Elasticsearch plugin', () => {
                                 return 42;
                             },
                         },
+                    },
+                    searchConfig: {
+                        scriptFields: {
+                            answerMultiplied: {
+                                graphQlType: 'Int!',
+                                context: 'product',
+                                scriptFn: input => {
+                                    const factor = input.factor ?? 2;
+                                    return { script: `doc['product-answer'].value * ${factor}` };
+                                },
+                            },
+                        },
+                    },
+                    extendSearchInputType: {
+                        factor: 'Int',
                     },
                 }),
                 DefaultJobQueuePlugin,
@@ -277,8 +301,8 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
-        ]);
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
         });
 
         it('returns correct collections when grouped by product', async () => {
@@ -291,12 +315,12 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -320,7 +344,7 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -333,7 +357,7 @@ describe('Elasticsearch plugin', () => {
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -345,6 +369,84 @@ describe('Elasticsearch plugin', () => {
             );
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
+        });
+
+        it('inStock is false and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(2);
+        });
+
+        it('inStock is false and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(1);
+        });
+
+        it('inStock is true and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(31);
+        });
+
+        it('inStock is true and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(19);
+        });
+
+        it('inStock is undefined and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(33);
+        });
+
+        it('inStock is undefined and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(20);
         });
     });
 
@@ -1079,7 +1181,7 @@ describe('Elasticsearch plugin', () => {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                     const { search } = await adminClient.query<
                         SearchProductsShop.Query,
-                        SearchProductsShop.Variables
+                        SearchProductShopVariables
                     >(
                         SEARCH_PRODUCTS,
                         {
@@ -1188,9 +1290,10 @@ describe('Elasticsearch plugin', () => {
 
             it('indexes product variant-level languages', async () => {
                 const { search: search1 } = await searchInLanguage(LanguageCode.fr, false);
-
-                expect(search1.items[0].productName).toBe('Laptop');
-                expect(search1.items[0].productVariantName).toBe('laptop variant fr');
+                expect(search1.items.length ? search1.items[0].productName : undefined).toBe('Laptop');
+                expect(search1.items.length ? search1.items[0].productVariantName : undefined).toBe(
+                    'laptop variant fr',
+                );
             });
         });
     });
@@ -1214,7 +1317,7 @@ describe('Elasticsearch plugin', () => {
             expect(search.items[0]).toEqual({
                 productVariantName: 'Bonsai Tree',
                 customMappings: {
-                    inStock: true,
+                    inStock: false,
                 },
             });
         });
@@ -1238,6 +1341,50 @@ describe('Elasticsearch plugin', () => {
                 productName: 'Bonsai Tree',
                 customMappings: {
                     answer: 42,
+                },
+            });
+        });
+    });
+
+    describe('scriptFields', () => {
+        it('script mapping', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerMultiplied
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerMultiplied: 84,
+                },
+            });
+        });
+
+        it('can use the custom search input field', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC }, factor: 10 }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerMultiplied
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerMultiplied: 420,
                 },
             });
         });

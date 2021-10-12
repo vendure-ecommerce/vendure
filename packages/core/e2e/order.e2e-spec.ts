@@ -35,6 +35,7 @@ import {
     CreateFulfillment,
     CreateShippingMethod,
     DeleteOrderNote,
+    DeleteProduct,
     DeleteShippingMethod,
     ErrorCode,
     FulfillmentFragment,
@@ -69,6 +70,7 @@ import {
     AddPaymentToOrder,
     ApplyCouponCode,
     DeletionResult,
+    GetActiveCustomerWithOrdersProductSlug,
     GetActiveOrder,
     GetOrderByCodeWithPayments,
     SetShippingAddress,
@@ -81,6 +83,7 @@ import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
     CREATE_SHIPPING_METHOD,
+    DELETE_PRODUCT,
     DELETE_SHIPPING_METHOD,
     GET_CUSTOMER_LIST,
     GET_ORDER,
@@ -97,6 +100,7 @@ import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
     APPLY_COUPON_CODE,
+    GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
     SET_SHIPPING_ADDRESS,
@@ -2212,6 +2216,41 @@ describe('Orders resolver', () => {
                 },
             });
             refundGuard.assertSuccess(refund2);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1125
+        it('resolves deleted Product of OrderLine ProductVariants', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_7',
+                quantity: 1,
+            });
+
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                id: 'T_3',
+            });
+
+            const { activeCustomer } = await shopClient.query<
+                GetActiveCustomerWithOrdersProductSlug.Query,
+                GetActiveCustomerWithOrdersProductSlug.Variables
+            >(GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG, {
+                options: {
+                    sort: {
+                        createdAt: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(
+                activeCustomer!.orders.items[activeCustomer!.orders.items.length - 1].lines[0].productVariant
+                    .product.slug,
+            ).toBe('gaming-pc');
         });
     });
 });

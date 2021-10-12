@@ -1,10 +1,12 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, mergeMap, takeUntil } from 'rxjs/operators';
+import { EntityManager } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
+import { TransactionSubscriber } from '../connection/transaction-subscriber';
 
 import { VendureEvent } from './vendure-event';
 
@@ -56,22 +58,30 @@ export class EventBus implements OnModuleDestroy {
     private eventStream = new Subject<VendureEvent>();
     private destroy$ = new Subject();
 
+    constructor(private transactionSubscriber: TransactionSubscriber) {}
+
     /**
      * @description
      * Publish an event which any subscribers can react to.
      */
     publish<T extends VendureEvent>(event: T): void {
-        this.eventStream.next(this.prepareRequestContext(event));
+        this.eventStream.next(event);
     }
 
     /**
      * @description
      * Returns an RxJS Observable stream of events of the given type.
+     * If the event contains a {@link RequestContext} object, the subscriber
+     * will only get called after any active database transactions are complete.
+     *
+     * This means that the subscriber function can safely access all updated
+     * data related to the event.
      */
     ofType<T extends VendureEvent>(type: Type<T>): Observable<T> {
         return this.eventStream.asObservable().pipe(
             takeUntil(this.destroy$),
             filter(e => (e as any).constructor === type),
+            mergeMap(event => this.awaitActiveTransactions(event)),
         ) as Observable<T>;
     }
 
@@ -81,26 +91,33 @@ export class EventBus implements OnModuleDestroy {
     }
 
     /**
-     * If the Event includes a RequestContext property, we need to:
+     * If the Event includes a RequestContext property, we need to check for any active transaction
+     * associated with it, and if there is one, we await that transaction to either commit or rollback
+     * before publishing the event.
      *
-     * 1) Set it as a copy of the original
-     * 2) Remove the TRANSACTION_MANAGER_KEY from that copy
+     * The reason for this is that if the transaction is still active when event subscribers execute,
+     * this can cause a couple of issues:
      *
-     * The TRANSACTION_MANAGER_KEY is used to track transactions across calls
-     * (this is why we always pass the `ctx` object to get TransactionalConnection.getRepository() method).
-     * However, allowing a transaction to continue in an async event subscriber function _will_ cause
-     * very confusing issues (see https://github.com/vendure-ecommerce/vendure/issues/520), which is why
-     * we simply remove the reference to the transaction manager from the context object altogether.
+     * 1. If the transaction hasn't completed by the time the subscriber runs, the new data inside
+     *  the transaction will not be available to the subscriber.
+     * 2. If the subscriber gets a reference to the EntityManager which has an active transaction,
+     *   and then the transaction completes, and then the subscriber attempts a DB operation using that
+     *   EntityManager, a fatal QueryRunnerAlreadyReleasedError will be thrown.
+     *
+     * For more context on these two issues, see:
+     *
+     * * https://github.com/vendure-ecommerce/vendure/issues/520
+     * * https://github.com/vendure-ecommerce/vendure/issues/1107
      */
-    private prepareRequestContext<T extends VendureEvent>(event: T): T {
-        for (const propertyName of Object.getOwnPropertyNames(event)) {
-            const property = event[propertyName as keyof T];
-            if (property instanceof RequestContext) {
-                const ctxCopy = property.copy();
-                delete (ctxCopy as any)[TRANSACTION_MANAGER_KEY];
-                (event[propertyName as keyof T] as any) = ctxCopy;
-            }
+    private async awaitActiveTransactions<T extends VendureEvent>(event: T): Promise<T> {
+        const ctx = Object.values(event).find(value => value instanceof RequestContext);
+        if (!ctx) {
+            return event;
         }
-        return event;
+        const transactionManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
+        if (!transactionManager?.queryRunner) {
+            return event;
+        }
+        return this.transactionSubscriber.awaitRelease(transactionManager.queryRunner).then(() => event);
     }
 }

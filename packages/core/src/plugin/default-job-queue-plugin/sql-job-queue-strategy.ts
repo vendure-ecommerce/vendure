@@ -5,9 +5,9 @@ import { Brackets, Connection, EntityManager, FindConditions, In, LessThan } fro
 import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
 import { Logger } from '../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Job, JobData } from '../../job-queue';
 import { PollingJobQueueStrategy } from '../../job-queue/polling-job-queue-strategy';
-import { TransactionalConnection } from '../../service';
 import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
 
 import { JobRecord } from './job-record.entity';
@@ -39,7 +39,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             throw new Error('Connection not available');
         }
         const constrainedData = this.constrainDataSize(job);
-        const newRecord = this.toRecord(job, constrainedData);
+        const newRecord = this.toRecord(job, constrainedData, this.setRetries(job.queueName, job));
         const record = await this.connection.getRepository(JobRecord).save(newRecord);
         return this.fromRecord(record);
     }
@@ -222,7 +222,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         return !!this.connection && this.connection.isConnected;
     }
 
-    private toRecord(job: Job<any>, data?: any): JobRecord {
+    private toRecord(job: Job<any>, data?: any, retries?: number): JobRecord {
         return new JobRecord({
             id: job.id || undefined,
             queueName: job.queueName,
@@ -234,7 +234,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             startedAt: job.startedAt,
             settledAt: job.settledAt,
             isSettled: job.isSettled,
-            retries: job.retries,
+            retries: retries ?? job.retries,
             attempts: job.attempts,
         });
     }

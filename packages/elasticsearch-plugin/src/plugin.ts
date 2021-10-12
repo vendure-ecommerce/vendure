@@ -2,6 +2,7 @@ import { NodeOptions } from '@elastic/elasticsearch';
 import { OnApplicationBootstrap } from '@nestjs/common';
 import {
     AssetEvent,
+    BUFFER_SEARCH_INDEX_UPDATES,
     CollectionModificationEvent,
     EventBus,
     HealthCheckRegistryService,
@@ -13,30 +14,34 @@ import {
     ProductEvent,
     ProductVariantChannelEvent,
     ProductVariantEvent,
+    SearchJobBufferService,
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
 } from '@vendure/core';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
-import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
-import { CustomMappingsResolver } from './custom-mappings.resolver';
-import { ElasticsearchIndexService } from './elasticsearch-index.service';
+import { generateSchemaExtensions } from './api/api-extensions';
+import { CustomMappingsResolver } from './api/custom-mappings.resolver';
+import { CustomScriptFieldsResolver } from './api/custom-script-fields.resolver';
 import {
     AdminElasticSearchResolver,
     EntityElasticSearchResolver,
     ShopElasticSearchResolver,
-} from './elasticsearch-resolver';
+} from './api/elasticsearch-resolver';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { ElasticsearchHealthIndicator } from './elasticsearch.health';
 import { ElasticsearchService } from './elasticsearch.service';
-import { generateSchemaExtensions } from './graphql-schema-extensions';
-import { ElasticsearchIndexerController } from './indexer.controller';
+import { ElasticsearchIndexService } from './indexing/elasticsearch-index.service';
+import { ElasticsearchIndexerController } from './indexing/indexer.controller';
 import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } from './options';
 
 /**
  * @description
  * This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
- * engine. This is a drop-in replacement for the DefaultSearchPlugin.
+ * engine. This is a drop-in replacement for the DefaultSearchPlugin which exposes many powerful configuration options enabling your storefront
+ * to support a wide range of use-cases such as indexing of custom properties, fine control over search index configuration, and to leverage
+ * advanced Elasticsearch features like spacial search.
  *
  * ## Installation
  *
@@ -201,18 +206,38 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
         ElasticsearchService,
         ElasticsearchHealthIndicator,
         ElasticsearchIndexerController,
+        SearchJobBufferService,
         { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
+        {
+            provide: BUFFER_SEARCH_INDEX_UPDATES,
+            useFactory: () => ElasticsearchPlugin.options.bufferUpdates === true,
+        },
     ],
-    adminApiExtensions: { resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver] },
+    adminApiExtensions: {
+        resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver],
+        schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
+    },
     shopApiExtensions: {
         resolvers: () => {
             const { options } = ElasticsearchPlugin;
             const requiresUnionResolver =
                 0 < Object.keys(options.customProductMappings || {}).length &&
                 0 < Object.keys(options.customProductVariantMappings || {}).length;
-            return requiresUnionResolver
-                ? [ShopElasticSearchResolver, EntityElasticSearchResolver, CustomMappingsResolver]
-                : [ShopElasticSearchResolver, EntityElasticSearchResolver];
+            const requiresUnionScriptResolver =
+                0 <
+                    Object.values(options.searchConfig.scriptFields || {}).filter(
+                        field => field.context !== 'product',
+                    ).length &&
+                0 <
+                    Object.values(options.searchConfig.scriptFields || {}).filter(
+                        field => field.context !== 'variant',
+                    ).length;
+            return [
+                ShopElasticSearchResolver,
+                EntityElasticSearchResolver,
+                ...(requiresUnionResolver ? [CustomMappingsResolver] : []),
+                ...(requiresUnionScriptResolver ? [CustomScriptFieldsResolver] : []),
+            ];
         },
         // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
         // which looks like possibly a TS/definitions bug.
@@ -314,6 +339,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
             }
         });
 
+        // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137
         const collectionModification$ = this.eventBus.ofType(CollectionModificationEvent);
         const closingNotifier$ = collectionModification$.pipe(debounceTime(50));
         collectionModification$
@@ -335,6 +361,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
             // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
             // transactions to complete before a new job is added to the queue (assuming the SQL-based
             // JobQueueStrategy).
+            // TODO: should be able to remove owing to f0fd6625
             .pipe(delay(1))
             .subscribe(event => {
                 const defaultTaxZone = event.ctx.channel.defaultTaxZone;

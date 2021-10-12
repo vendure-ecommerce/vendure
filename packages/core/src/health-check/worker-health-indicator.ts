@@ -17,8 +17,8 @@ export class WorkerHealthIndicator extends HealthIndicator implements OnModuleIn
     }
 
     async onModuleInit() {
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        if (isInspectableJobQueueStrategy(jobQueueStrategy)) {
+        const { jobQueueStrategy, enableWorkerHealthCheck } = this.configService.jobQueueOptions;
+        if (enableWorkerHealthCheck && isInspectableJobQueueStrategy(jobQueueStrategy)) {
             this.queue = await this.jobQueueService.createQueue({
                 name: WORKER_HEALTH_QUEUE_NAME,
                 process: async job => {

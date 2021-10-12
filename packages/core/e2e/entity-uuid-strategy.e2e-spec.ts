@@ -11,7 +11,7 @@ import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { GetProductList } from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
@@ -19,7 +19,7 @@ import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
 describe('UuidIdStrategy', () => {
     const { server, adminClient } = createTestEnvironment({
         ...testConfig,
-        entityIdStrategy: new UuidIdStrategy(),
+        entityOptions: { entityIdStrategy: new UuidIdStrategy() },
     });
 
     beforeAll(async () => {

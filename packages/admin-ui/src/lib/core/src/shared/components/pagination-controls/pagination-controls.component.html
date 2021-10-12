@@ -1,4 +1,4 @@
-<pagination-template #p="paginationApi" (pageChange)="pageChange.emit($event)">
+<pagination-template #p="paginationApi" (pageChange)="pageChange.emit($event)" [id]="id">
     <ul>
         <li class="pagination-previous">
             <a *ngIf="!p.isFirstPage()" (click)="p.previous()" (keyup.enter)="p.previous()" tabindex="0">«</a>

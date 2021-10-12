@@ -15,6 +15,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
@@ -23,14 +24,17 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link ShippingMethod} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ShippingMethodService {
-    private activeShippingMethods: ShippingMethod[];
-
     constructor(
         private connection: TransactionalConnection,
         private configService: ConfigService,
@@ -41,6 +45,7 @@ export class ShippingMethodService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /** @internal */
     async initShippingMethods() {
         if (this.configService.shippingOptions.fulfillmentHandlers.length === 0) {
             throw new Error(
@@ -104,12 +109,11 @@ export class ShippingMethodService {
                 method.calculator = this.configArgService.parseInput('ShippingCalculator', input.calculator);
             },
         });
-        this.channelService.assignToCurrentChannel(shippingMethod, ctx);
+        await this.channelService.assignToCurrentChannel(shippingMethod, ctx);
         const newShippingMethod = await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(shippingMethod);
         await this.customFieldRelationService.updateRelations(ctx, ShippingMethod, input, newShippingMethod);
-        await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
 
@@ -151,7 +155,6 @@ export class ShippingMethodService {
             input,
             updatedShippingMethod,
         );
-        await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
 
@@ -162,7 +165,6 @@ export class ShippingMethodService {
         });
         shippingMethod.deletedAt = new Date();
         await this.connection.getRepository(ctx, ShippingMethod).save(shippingMethod, { reload: false });
-        await this.updateActiveShippingMethods(ctx);
         return {
             result: DeletionResult.DELETED,
         };
@@ -182,16 +184,24 @@ export class ShippingMethodService {
         return this.configArgService.getDefinitions('FulfillmentHandler').map(x => x.toGraphQlType(ctx));
     }
 
-    getActiveShippingMethods(channel: Channel): ShippingMethod[] {
-        return this.activeShippingMethods.filter(sm => sm.channels.find(c => idsAreEqual(c.id, channel.id)));
+    async getActiveShippingMethods(ctx: RequestContext): Promise<ShippingMethod[]> {
+        const shippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
+            relations: ['channels'],
+            where: { deletedAt: null },
+        });
+        return shippingMethods
+            .filter(sm => sm.channels.find(c => idsAreEqual(c.id, ctx.channelId)))
+            .map(m => translateDeep(m, ctx.languageCode));
     }
 
     /**
      * Ensures that all ShippingMethods have a valid fulfillmentHandlerCode
      */
     private async verifyShippingMethods() {
-        await this.updateActiveShippingMethods(RequestContext.empty());
-        for (const method of this.activeShippingMethods) {
+        const activeShippingMethods = await this.connection.getRepository(ShippingMethod).find({
+            where: { deletedAt: null },
+        });
+        for (const method of activeShippingMethods) {
             const handlerCode = method.fulfillmentHandlerCode;
             const verifiedHandlerCode = this.ensureValidFulfillmentHandlerCode(method.code, handlerCode);
             if (handlerCode !== verifiedHandlerCode) {
@@ -199,14 +209,6 @@ export class ShippingMethodService {
                 await this.connection.getRepository(ShippingMethod).save(method);
             }
         }
-    }
-
-    private async updateActiveShippingMethods(ctx: RequestContext) {
-        const activeShippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
-            relations: ['channels'],
-            where: { deletedAt: null },
-        });
-        this.activeShippingMethods = activeShippingMethods.map(m => translateDeep(m, ctx.languageCode));
     }
 
     private ensureValidFulfillmentHandlerCode(

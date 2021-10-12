@@ -5,7 +5,7 @@ import { SimpleGraphQLClient } from '@vendure/testing';
 import { SearchGetPrices, SearchInput } from '../../core/e2e/graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import { SEARCH_PRODUCTS_SHOP } from '../../core/e2e/graphql/shop-definitions';
-import { deleteIndices } from '../src/indexing-utils';
+import { deleteIndices } from '../src/indexing/indexing-utils';
 
 import { SEARCH_GET_PRICES, SEARCH_PRODUCTS } from './elasticsearch-plugin.e2e-spec';
 import { SearchProductsAdmin } from './graphql/generated-e2e-elasticsearch-plugin-types';

@@ -46,6 +46,25 @@ An individual test script may be by specifying the script name as an argument:
 yarn load-test:1k deep-query.js
 ```
 
+## pg_stat_statements
+
+The following queries can be used when running load tests against postgres to analyze the queries:
+
+```sql
+SELECT 
+  dbid,
+  (total_time / 1000 / 60) as total, 
+  (total_time/calls) as avg, 
+  calls,
+  query 
+FROM pg_stat_statements 
+WHERE dbid = <db_id>
+ORDER BY total DESC 
+LIMIT 100;
+
+-- SELECT pg_stat_statements_reset();
+```
+
 ### Results
 
 The results of the test are saved to the [`./load-testing/results`](./load-testing/results) directory. Each test run creates two files:

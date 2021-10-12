@@ -506,6 +506,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
             value
         }
         readonly
+        nullable
     }
 `;
 
@@ -706,6 +707,8 @@ export const JOB_INFO_FRAGMENT = gql`
         data
         result
         error
+        retries
+        attempts
     }
 `;
 
@@ -764,4 +767,18 @@ export const REINDEX = gql`
         }
     }
     ${JOB_INFO_FRAGMENT}
+`;
+
+export const GET_PENDING_SEARCH_INDEX_UPDATES = gql`
+    query GetPendingSearchIndexUpdates {
+        pendingSearchIndexUpdates
+    }
+`;
+
+export const RUN_PENDING_SEARCH_INDEX_UPDATES = gql`
+    mutation RunPendingSearchIndexUpdates {
+        runPendingSearchIndexUpdates {
+            success
+        }
+    }
 `;

@@ -13,8 +13,9 @@ import {
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 
+import { UpdateIndexQueueJobData } from '../types';
+
 import { ElasticsearchIndexerController, ReindexMessageResponse } from './indexer.controller';
-import { UpdateIndexQueueJobData } from './types';
 
 @Injectable()
 export class ElasticsearchIndexService implements OnApplicationBootstrap {

@@ -13,11 +13,14 @@ import {
     FacetWithValues,
     findTranslation,
     flattenFacetValues,
+    GetProductWithVariants,
     GlobalFlag,
     LanguageCode,
+    LogicalOperator,
     ModalService,
     NotificationService,
-    ProductWithVariants,
+    ProductDetail,
+    ProductVariant,
     ServerConfigService,
     TaxCategory,
     unicodePatternValidator,
@@ -31,17 +34,20 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
     map,
     mergeMap,
     shareReplay,
+    skip,
+    skipUntil,
     startWith,
     switchMap,
     take,
     takeUntil,
+    tap,
     withLatestFrom,
 } from 'rxjs/operators';
 
@@ -52,6 +58,7 @@ import { CreateProductVariantsConfig } from '../generate-product-variants/genera
 import { VariantAssetChange } from '../product-variants-list/product-variants-list.component';
 
 export type TabName = 'details' | 'variants';
+
 export interface VariantFormValue {
     id: string;
     enabled: boolean;
@@ -73,6 +80,12 @@ export interface SelectedAssets {
     featuredAsset?: Asset;
 }
 
+export interface PaginationConfig {
+    totalItems: number;
+    currentPage: number;
+    itemsPerPage: number;
+}
+
 @Component({
     selector: 'vdr-product-detail',
     templateUrl: './product-detail.component.html',
@@ -80,12 +93,12 @@ export interface SelectedAssets {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailComponent
-    extends BaseDetailComponent<ProductWithVariants.Fragment>
+    extends BaseDetailComponent<GetProductWithVariants.Product>
     implements OnInit, OnDestroy
 {
     activeTab$: Observable<TabName>;
-    product$: Observable<ProductWithVariants.Fragment>;
-    variants$: Observable<ProductWithVariants.Variants[]>;
+    product$: Observable<GetProductWithVariants.Product>;
+    variants$: Observable<ProductVariant.Fragment[]>;
     taxCategories$: Observable<TaxCategory.Fragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
@@ -95,13 +108,21 @@ export class ProductDetailComponent
     filterInput = new FormControl('');
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
-    productChannels$: Observable<ProductWithVariants.Channels[]>;
-    facetValues$: Observable<ProductWithVariants.FacetValues[]>;
+    variantFacetValueChanges: { [variantId: string]: string[] } = {};
+    productChannels$: Observable<ProductDetail.Channels[]>;
+    facetValues$: Observable<ProductDetail.FacetValues[]>;
     facets$: Observable<FacetWithValues.Fragment[]>;
+    totalItems$: Observable<number>;
+    currentPage$ = new BehaviorSubject(1);
+    itemsPerPage$ = new BehaviorSubject(10);
+    paginationConfig$: Observable<PaginationConfig>;
     selectedVariantIds: string[] = [];
     variantDisplayMode: 'card' | 'table' = 'card';
     createVariantsConfig: CreateProductVariantsConfig = { groups: [], variants: [] };
     channelPriceIncludesTax$: Observable<boolean>;
+    // Used to store all ProductVariants which have been loaded.
+    // It is needed when saving changes to variants.
+    private productVariantMap = new Map<string, ProductVariant.Fragment>();
 
     constructor(
         route: ActivatedRoute,
@@ -139,27 +160,56 @@ export class ProductDetailComponent
     ngOnInit() {
         this.init();
         this.product$ = this.entity$;
-        const variants$ = this.product$.pipe(map(product => product.variants));
+        this.totalItems$ = this.product$.pipe(map(product => product.variantList.totalItems));
+        this.paginationConfig$ = combineLatest(this.totalItems$, this.itemsPerPage$, this.currentPage$).pipe(
+            map(([totalItems, itemsPerPage, currentPage]) => ({
+                totalItems,
+                itemsPerPage,
+                currentPage,
+            })),
+        );
+        const variants$ = this.product$.pipe(map(product => product.variantList.items));
         const filterTerm$ = this.filterInput.valueChanges.pipe(
             startWith(''),
-            debounceTime(50),
+            debounceTime(200),
             shareReplay(),
         );
-        this.variants$ = combineLatest(variants$, filterTerm$).pipe(
-            map(([variants, term]) => {
-                return term
-                    ? variants.filter(v => {
-                          const lcTerm = term.toLocaleLowerCase();
-                          return (
-                              v.name.toLocaleLowerCase().includes(lcTerm) ||
-                              v.sku.toLocaleLowerCase().includes(lcTerm)
-                          );
-                      })
-                    : variants;
+        const initialVariants$ = this.product$.pipe(map(p => p.variantList.items));
+        const updatedVariants$ = combineLatest(filterTerm$, this.currentPage$, this.itemsPerPage$).pipe(
+            skipUntil(initialVariants$),
+            skip(1),
+            switchMap(([term, currentPage, itemsPerPage]) => {
+                return this.dataService.product
+                    .getProductVariants(
+                        {
+                            skip: (currentPage - 1) * itemsPerPage,
+                            take: itemsPerPage,
+                            ...(term
+                                ? { filter: { name: { contains: term }, sku: { contains: term } } }
+                                : {}),
+                            filterOperator: LogicalOperator.OR,
+                        },
+                        this.id,
+                    )
+                    .mapStream(({ productVariants }) => productVariants.items);
+            }),
+            shareReplay({ bufferSize: 1, refCount: true }),
+        );
+        this.variants$ = merge(initialVariants$, updatedVariants$).pipe(
+            tap(variants => {
+                for (const variant of variants) {
+                    this.productVariantMap.set(variant.id, variant);
+                }
             }),
         );
         this.taxCategories$ = this.productDetailService.getTaxCategories().pipe(takeUntil(this.destroy$));
         this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
+
+        combineLatest(updatedVariants$, this.languageCode$)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(([variants, languageCode]) => {
+                this.buildVariantFormArray(variants, languageCode);
+            });
 
         // FacetValues are provided initially by the nested array of the
         // Product entity, but once a fetch to get all Facets is made (as when
@@ -213,6 +263,15 @@ export class ProductDetailComponent
         return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
+    setPage(page: number) {
+        this.currentPage$.next(page);
+    }
+
+    setItemsPerPage(value: string) {
+        this.itemsPerPage$.next(+value);
+        this.currentPage$.next(1);
+    }
+
     assignToChannel() {
         this.productChannels$
             .pipe(
@@ -259,7 +318,7 @@ export class ProductDetailComponent
             );
     }
 
-    assignVariantToChannel(variant: ProductWithVariants.Variants) {
+    assignVariantToChannel(variant: ProductVariant.Fragment) {
         return this.modalService
             .fromComponent(AssignProductsToChannelDialogComponent, {
                 size: 'lg',
@@ -277,7 +336,7 @@ export class ProductDetailComponent
         variant,
     }: {
         channelId: string;
-        variant: ProductWithVariants.Variants;
+        variant: ProductVariant.Fragment;
     }) {
         this.modalService
             .dialog({
@@ -395,12 +454,16 @@ export class ProductDetailComponent
                         const index = variants.findIndex(v => v.id === variantId);
                         const variant = variants[index];
                         const existingFacetValueIds = variant ? variant.facetValues.map(fv => fv.id) : [];
-                        const variantFormGroup = this.detailForm.get(['variants', index]);
+                        const variantFormGroup = (this.detailForm.get('variants') as FormArray).controls.find(
+                            c => c.value.id === variantId,
+                        );
                         if (variantFormGroup) {
+                            const uniqueFacetValueIds = unique([...existingFacetValueIds, ...facetValueIds]);
                             variantFormGroup.patchValue({
-                                facetValueIds: unique([...existingFacetValueIds, ...facetValueIds]),
+                                facetValueIds: uniqueFacetValueIds,
                             });
                             variantFormGroup.markAsDirty();
+                            this.variantFacetValueChanges[variantId] = uniqueFacetValueIds;
                         }
                     }
                     this.changeDetector.markForCheck();
@@ -533,7 +596,7 @@ export class ProductDetailComponent
     /**
      * Sets the values of the form on changes to the product or current language.
      */
-    protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(product: GetProductWithVariants.Product, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(product, languageCode);
         this.detailForm.patchValue({
             product: {
@@ -560,11 +623,17 @@ export class ProductDetailComponent
                 }
             }
         }
+        this.buildVariantFormArray(product.variantList.items, languageCode);
+    }
 
+    private buildVariantFormArray(variants: ProductVariant.Fragment[], languageCode: LanguageCode) {
         const variantsFormArray = this.detailForm.get('variants') as FormArray;
-        product.variants.forEach((variant, i) => {
+        variants.forEach((variant, i) => {
             const variantTranslation = findTranslation(variant, languageCode);
-            const facetValueIds = variant.facetValues.map(fv => fv.id);
+            const pendingFacetValueChanges = this.variantFacetValueChanges[variant.id];
+            const facetValueIds = pendingFacetValueChanges
+                ? pendingFacetValueChanges
+                : variant.facetValues.map(fv => fv.id);
             const group: VariantFormValue = {
                 id: variant.id,
                 enabled: variant.enabled,
@@ -580,9 +649,13 @@ export class ProductDetailComponent
                 facetValueIds,
             };
 
-            let variantFormGroup = variantsFormArray.at(i) as FormGroup | undefined;
+            let variantFormGroup = variantsFormArray.controls.find(c => c.value.id === variant.id) as
+                | FormGroup
+                | undefined;
             if (variantFormGroup) {
-                variantFormGroup.patchValue(group);
+                if (variantFormGroup.pristine) {
+                    variantFormGroup.patchValue(group);
+                }
             } else {
                 variantFormGroup = this.formBuilder.group({
                     ...group,
@@ -620,7 +693,7 @@ export class ProductDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedProduct(
-        product: ProductWithVariants.Fragment,
+        product: GetProductWithVariants.Product,
         productFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductInput | CreateProductInput {
@@ -649,23 +722,23 @@ export class ProductDetailComponent
      * which can be persisted to the API.
      */
     private getUpdatedProductVariants(
-        product: ProductWithVariants.Fragment,
+        product: GetProductWithVariants.Product,
         variantsFormArray: FormArray,
         languageCode: LanguageCode,
         priceIncludesTax: boolean,
     ): UpdateProductVariantInput[] {
-        const dirtyVariants = product.variants.filter((v, i) => {
-            const formRow = variantsFormArray.get(i.toString());
-            return formRow && formRow.dirty;
-        });
-        const dirtyVariantValues = variantsFormArray.controls.filter(c => c.dirty).map(c => c.value);
+        const dirtyFormControls = variantsFormArray.controls.filter(c => c.dirty);
+        const dirtyVariants = dirtyFormControls
+            .map(c => this.productVariantMap.get(c.value.id))
+            .filter(notNullOrUndefined);
+        const dirtyVariantValues = dirtyFormControls.map(c => c.value);
 
         if (dirtyVariants.length !== dirtyVariantValues.length) {
             throw new Error(_(`error.product-variant-form-values-do-not-match`));
         }
         return dirtyVariants
             .map((variant, i) => {
-                const formValue: VariantFormValue = dirtyVariantValues[i];
+                const formValue: VariantFormValue = dirtyVariantValues.find(value => value.id === variant.id);
                 const result: UpdateProductVariantInput = createUpdatedTranslatable({
                     translatable: variant,
                     updatedFields: formValue,

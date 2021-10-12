@@ -1,66 +1,71 @@
 {
-  "generatedOn": "2021-09-10T15:42:48.058Z",
-  "lastCommit": "e6eb674ae85e596bd9644911d20bc6c50ca10bc1",
+  "generatedOn": "2021-10-07T12:23:24.068Z",
+  "lastCommit": "0eadedef0bfaacd2838befc67f75c14a5e7a6606",
   "translationStatus": {
     "cs": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 591,
-      "percentage": 95
+      "percentage": 94
     },
     "de": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 570,
       "percentage": 91
     },
     "en": {
-      "tokenCount": 623,
-      "translatedCount": 623,
+      "tokenCount": 627,
+      "translatedCount": 626,
       "percentage": 100
     },
     "es": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 623,
-      "percentage": 100
+      "percentage": 99
     },
     "fr": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 613,
       "percentage": 98
     },
     "it": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 621,
-      "percentage": 100
+      "percentage": 99
     },
     "pl": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 405,
       "percentage": 65
     },
     "pt_BR": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 588,
       "percentage": 94
     },
+    "pt_PT": {
+      "tokenCount": 627,
+      "translatedCount": 622,
+      "percentage": 99
+    },
     "ru": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 621,
-      "percentage": 100
+      "percentage": 99
     },
     "uk": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 621,
-      "percentage": 100
+      "percentage": 99
     },
     "zh_Hans": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 558,
-      "percentage": 90
+      "percentage": 89
     },
     "zh_Hant": {
-      "tokenCount": 623,
+      "tokenCount": 627,
       "translatedCount": 385,
-      "percentage": 62
+      "percentage": 61
     }
   }
 }

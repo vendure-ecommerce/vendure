@@ -18,16 +18,22 @@ import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodEligibilityChecker } from '../../config/payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link PaymentMethod} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PaymentMethodService {
     constructor(
@@ -65,7 +71,7 @@ export class PaymentMethodService {
                 input.checker,
             );
         }
-        this.channelService.assignToCurrentChannel(paymentMethod, ctx);
+        await this.channelService.assignToCurrentChannel(paymentMethod, ctx);
         return this.connection.getRepository(ctx, PaymentMethod).save(paymentMethod);
     }
 

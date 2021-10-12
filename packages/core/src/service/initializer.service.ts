@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { Logger } from '../config/logger/vendure-logger';
+import { TransactionalConnection } from '../connection/transactional-connection';
 import { Administrator } from '../entity/administrator/administrator.entity';
 
 import { AdministratorService } from './services/administrator.service';
@@ -9,7 +10,6 @@ import { GlobalSettingsService } from './services/global-settings.service';
 import { RoleService } from './services/role.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { ZoneService } from './services/zone.service';
-import { TransactionalConnection } from './transaction/transactional-connection';
 
 /**
  * Only used internally to run the various service init methods in the correct

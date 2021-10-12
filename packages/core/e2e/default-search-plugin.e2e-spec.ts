@@ -42,7 +42,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate
+    UpdateTaxRate,
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
@@ -71,21 +71,35 @@ import { awaitRunningJobs } from './utils/await-running-jobs';
 // on the default of 5s.
 jest.setTimeout(10000);
 
+interface SearchProductShopVariables extends SearchProductsShop.Variables {
+    input: SearchProductsShop.Variables['input'] & {
+        // This input field is dynamically added only when the `indexStockStatus` init option
+        // is set to `true`, and therefore not included in the generated type. Therefore
+        // we need to manually patch it here.
+        inStock?: boolean;
+    };
+}
+
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             logger: new DefaultLogger(),
-            plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin],
+            plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
         }),
     );
 
     beforeAll(async () => {
         await server.init({
             initialData,
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-default-search.csv'),
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        if (testConfig.dbConnectionOptions.type === 'mysql') {
+            // Mysql seems to occasionally run into some kind of race condition
+            // relating to the populating of data, so we add a pause here.
+            await new Promise(resolve => setTimeout(resolve, 10000));
+        }
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -94,13 +108,13 @@ describe('Default search plugin', () => {
     });
 
     function doAdminSearchQuery(input: SearchInput) {
-        return adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
+        return adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(SEARCH_PRODUCTS, {
             input,
         });
     }
 
     async function testGroupByProduct(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -112,7 +126,7 @@ describe('Default search plugin', () => {
     }
 
     async function testNoGrouping(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -127,7 +141,7 @@ describe('Default search plugin', () => {
         client: SimpleGraphQLClient,
         sortBy: keyof SearchResultSortParameter,
     ) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -150,7 +164,7 @@ describe('Default search plugin', () => {
         client: SimpleGraphQLClient,
         sortBy: keyof SearchResultSortParameter,
     ) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -170,7 +184,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -190,7 +204,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -211,7 +225,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -239,7 +253,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -259,7 +273,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -286,7 +300,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -310,7 +324,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -336,7 +350,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -356,7 +370,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchCollectionId(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -373,7 +387,7 @@ describe('Default search plugin', () => {
     }
 
     async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
-        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -565,7 +579,7 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
             ]);
         });
 
@@ -579,12 +593,12 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
-                ]);
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
         });
 
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -615,7 +629,7 @@ describe('Default search plugin', () => {
                 },
             );
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -628,7 +642,7 @@ describe('Default search plugin', () => {
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -640,6 +654,84 @@ describe('Default search plugin', () => {
             );
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
+        });
+
+        it('inStock is false and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(2);
+        });
+
+        it('inStock is false and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(1);
+        });
+
+        it('inStock is true and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(31);
+        });
+
+        it('inStock is true and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(19);
+        });
+
+        it('inStock is undefined and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(33);
+        });
+
+        it('inStock is undefined and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(20);
         });
     });
 
@@ -1350,7 +1442,7 @@ describe('Default search plugin', () => {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                     const { search } = await adminClient.query<
                         SearchProductsShop.Query,
-                        SearchProductsShop.Variables
+                        SearchProductShopVariables
                     >(
                         SEARCH_PRODUCTS,
                         {
@@ -1383,7 +1475,7 @@ describe('Default search plugin', () => {
 
         describe('multiple language handling', () => {
             function searchInLanguage(languageCode: LanguageCode) {
-                return adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                return adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                     SEARCH_PRODUCTS,
                     {
                         input: {

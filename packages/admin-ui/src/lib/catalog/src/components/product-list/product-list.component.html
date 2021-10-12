@@ -8,10 +8,28 @@
                 (facetValueChange)="setFacetValueIds($event)"
             ></vdr-product-search-input>
             <vdr-dropdown class="search-settings-menu mr3">
-                <button type="button" class="icon-button" vdrDropdownTrigger>
+                <button type="button"
+                        class="icon-button search-index-button"
+                        [title]="(pendingSearchIndexUpdates ? 'catalog.pending-search-index-updates' : 'catalog.search-index-controls') | translate "
+                        vdrDropdownTrigger>
                     <clr-icon shape="cog"></clr-icon>
+                    <vdr-status-badge *ngIf="pendingSearchIndexUpdates" type="warning"> </vdr-status-badge>
                 </button>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <h4 class="dropdown-header">{{ 'catalog.search-index-controls' | translate }}</h4>
+                    <ng-container *ngIf="pendingSearchIndexUpdates">
+                        <button
+                            type="button"
+                            class="run-updates-button"
+                            vdrDropdownItem
+                            (click)="runPendingSearchIndexUpdates()"
+                            [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                        >
+                            <vdr-status-badge type="warning"> </vdr-status-badge>
+                            {{ 'catalog.run-pending-search-index-updates' | translate: { count: pendingSearchIndexUpdates } }}
+                        </button>
+                        <div class="dropdown-divider"></div>
+                    </ng-container>
                     <button
                         type="button"
                         vdrDropdownItem
@@ -25,7 +43,7 @@
         </div>
         <div class="flex wrap">
             <clr-checkbox-wrapper class="mt2">
-                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct"/>
+                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" />
                 <label>{{ 'catalog.group-by-product' | translate }}</label>
             </clr-checkbox-wrapper>
             <vdr-language-selector
@@ -37,7 +55,11 @@
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateCatalog', 'CreateProduct']">
+        <a
+            class="btn btn-primary"
+            [routerLink]="['./create']"
+            *vdrIfPermissions="['CreateCatalog', 'CreateProduct']"
+        >
             <clr-icon shape="plus"></clr-icon>
             <span class="full-label">{{ 'catalog.create-new-product' | translate }}</span>
         </a>
@@ -62,7 +84,7 @@
                             : result.productVariantAsset || result.productAsset as asset;
                         else imagePlaceholder
                     "
-                    [src]="asset | assetPreview:'tiny'"
+                    [src]="asset | assetPreview: 'tiny'"
                 />
                 <ng-template #imagePlaceholder>
                     <div class="placeholder">

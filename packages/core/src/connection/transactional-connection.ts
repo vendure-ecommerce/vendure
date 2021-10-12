@@ -12,45 +12,14 @@ import {
     Repository,
 } from 'typeorm';
 
-import { RequestContext } from '../../api/common/request-context';
-import { TRANSACTION_MANAGER_KEY } from '../../common/constants';
-import { EntityNotFoundError } from '../../common/error/errors';
-import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
-import { VendureEntity } from '../../entity/base/base.entity';
+import { RequestContext } from '../api/common/request-context';
+import { TRANSACTION_MANAGER_KEY } from '../common/constants';
+import { EntityNotFoundError } from '../common/error/errors';
+import { ChannelAware, SoftDeletable } from '../common/types/common-types';
+import { VendureEntity } from '../entity/base/base.entity';
 
-/**
- * @description
- * Options used by the {@link TransactionalConnection} `getEntityOrThrow` method.
- *
- * @docsCategory data-access
- */
-export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
-    /**
-     * @description
-     * An optional channelId to limit results to entities assigned to the given Channel. Should
-     * only be used when getting entities that implement the {@link ChannelAware} interface.
-     */
-    channelId?: ID;
-    /**
-     * @description
-     * If set to a positive integer, it will retry getting the entity in case it is initially not
-     * found. This can be useful when working with the {@link EventBus} and subscribing to the
-     * creation of new Entities which may on first attempt be inaccessible due to an ongoing
-     * transaction.
-     *
-     * @since 1.1.0
-     * @default 0
-     */
-    retries?: number;
-    /**
-     * @description
-     * Specifies the delay in ms to wait between retries.
-     *
-     * @since 1.1.0
-     * @default 25
-     */
-    retryDelay?: number;
-}
+import { TransactionWrapper } from './transaction-wrapper';
+import { GetEntityOrThrowOptions } from './types';
 
 /**
  * @description
@@ -66,7 +35,10 @@ export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
  */
 @Injectable()
 export class TransactionalConnection {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(
+        @InjectConnection() private connection: Connection,
+        private transactionWrapper: TransactionWrapper,
+    ) {}
 
     /**
      * @description
@@ -115,6 +87,62 @@ export class TransactionalConnection {
 
     /**
      * @description
+     * Allows database operations to be wrapped in a transaction, ensuring that in the event of an error being
+     * thrown at any point, the entire transaction will be rolled back and no changes will be saved.
+     *
+     * In the context of API requests, you should instead use the {@link Transaction} decorator on your resolver or
+     * controller method.
+     *
+     * On the other hand, for code that does not run in the context of a GraphQL/REST request, this method
+     * should be used to protect against non-atomic changes to the data which could leave your data in an
+     * inconsistent state.
+     *
+     * Such situations include function processed by the JobQueue or stand-alone scripts which make use
+     * of Vendure internal services.
+     *
+     * If there is already a {@link RequestContext} object available, you should pass it in as the first
+     * argument in order to add a new transaction to it. If not, omit the first argument and an empty
+     * RequestContext object will be created, which is then used to propagate the transaction to
+     * all inner method calls.
+     *
+     * @example
+     * ```TypeScript
+     * private async transferCredit(fromId: ID, toId: ID, amount: number) {
+     *   await this.connection.withTransaction(ctx => {
+     *     await this.giftCardService.updateCustomerCredit(fromId, -amount);
+     *
+     *     // If some intermediate logic here throws an Error,
+     *     // then all DB transactions will be rolled back and neither Customer's
+     *     // credit balance will have changed.
+     *
+     *     await this.giftCardService.updateCustomerCredit(toId, amount);
+     *   })
+     * }
+     * ```
+     *
+     * @since 1.3.0
+     */
+    async withTransaction<T>(work: (ctx: RequestContext) => Promise<T>): Promise<T>;
+    async withTransaction<T>(ctx: RequestContext, work: (ctx: RequestContext) => Promise<T>): Promise<T>;
+    async withTransaction<T>(
+        ctxOrWork: RequestContext | ((ctx: RequestContext) => Promise<T>),
+        maybeWork?: (ctx: RequestContext) => Promise<T>,
+    ): Promise<T> {
+        let ctx: RequestContext;
+        let work: (ctx: RequestContext) => Promise<T>;
+        if (ctxOrWork instanceof RequestContext) {
+            ctx = ctxOrWork;
+            // tslint:disable-next-line:no-non-null-assertion
+            work = maybeWork!;
+        } else {
+            ctx = RequestContext.empty();
+            work = ctxOrWork;
+        }
+        return this.transactionWrapper.executeInTransaction(ctx, () => work(ctx), 'auto', this.rawConnection);
+    }
+
+    /**
+     * @description
      * Manually start a transaction if one is not already in progress. This method should be used in
      * conjunction with the `'manual'` mode of the {@link Transaction} decorator.
      */
@@ -155,9 +183,7 @@ export class TransactionalConnection {
     /**
      * @description
      * Finds an entity of the given type by ID, or throws an `EntityNotFoundError` if none
-     * is found. Can be configured to retry (using the `retries` option) in the event of the
-     * entity not being found on the first attempt. This can be useful when attempting to access
-     * an entity which was just created and may be inaccessible due to an ongoing transaction.
+     * is found.
      */
     async getEntityOrThrow<T extends VendureEntity>(
         ctx: RequestContext,
@@ -208,7 +234,9 @@ export class TransactionalConnection {
         }
         if (
             !entity ||
-            (entity.hasOwnProperty('deletedAt') && (entity as T & SoftDeletable).deletedAt !== null)
+            (entity.hasOwnProperty('deletedAt') &&
+                (entity as T & SoftDeletable).deletedAt !== null &&
+                options.includeSoftDeleted !== true)
         ) {
             throw new EntityNotFoundError(entityType.name as any, id);
         }

@@ -23,7 +23,8 @@ export class TestEvent extends VendureEvent {
     }
 }
 
-export const TRIGGER_EMAIL = 'trigger-email';
+export const TRIGGER_ATTEMPTED_UPDATE_EMAIL = 'trigger-attempted-update-email';
+export const TRIGGER_ATTEMPTED_READ_EMAIL = 'trigger-attempted-read-email';
 
 @Injectable()
 class TestUserService {
@@ -99,6 +100,38 @@ class TestResolver {
         return this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
     }
 
+    @Mutation()
+    @Transaction()
+    async createTestAdministrator4(@Ctx() ctx: RequestContext, @Args() args: any) {
+        const admin = await this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
+        this.eventBus.publish(new TestEvent(ctx, admin));
+        await new Promise(resolve => setTimeout(resolve, 50));
+        return admin;
+    }
+
+    @Mutation()
+    async createTestAdministrator5(@Ctx() ctx: RequestContext, @Args() args: any) {
+        if (args.noContext === true) {
+            return this.connection.withTransaction(ctx, async _ctx => {
+                const admin = await this.testAdminService.createAdministrator(
+                    _ctx,
+                    args.emailAddress,
+                    args.fail,
+                );
+                return admin;
+            });
+        } else {
+            return this.connection.withTransaction(async _ctx => {
+                const admin = await this.testAdminService.createAdministrator(
+                    _ctx,
+                    args.emailAddress,
+                    args.fail,
+                );
+                return admin;
+            });
+        }
+    }
+
     @Query()
     async verify() {
         const admins = await this.connection.getRepository(Administrator).find();
@@ -119,6 +152,12 @@ class TestResolver {
                 createTestAdministrator(emailAddress: String!, fail: Boolean!): Administrator
                 createTestAdministrator2(emailAddress: String!, fail: Boolean!): Administrator
                 createTestAdministrator3(emailAddress: String!, fail: Boolean!): Administrator
+                createTestAdministrator4(emailAddress: String!, fail: Boolean!): Administrator
+                createTestAdministrator5(
+                    emailAddress: String!
+                    fail: Boolean!
+                    noContext: Boolean!
+                ): Administrator
             }
             type VerifyResult {
                 admins: [Administrator!]!
@@ -138,16 +177,33 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
 
     constructor(private eventBus: EventBus, private connection: TransactionalConnection) {}
 
+    static reset() {
+        this.eventHandlerComplete$ = new ReplaySubject(1);
+        this.errorHandler.mockClear();
+    }
+
     onApplicationBootstrap(): any {
         // This part is used to test how RequestContext with transactions behave
         // when used in an Event subscription
         this.subscription = this.eventBus.ofType(TestEvent).subscribe(async event => {
             const { ctx, administrator } = event;
-            if (administrator.emailAddress === TRIGGER_EMAIL) {
+            if (administrator.emailAddress === TRIGGER_ATTEMPTED_UPDATE_EMAIL) {
+                const adminRepository = this.connection.getRepository(ctx, Administrator);
+                await new Promise(resolve => setTimeout(resolve, 50));
                 administrator.lastName = 'modified';
                 try {
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                    await this.connection.getRepository(ctx, Administrator).save(administrator);
+                    await adminRepository.save(administrator);
+                } catch (e) {
+                    TransactionTestPlugin.errorHandler(e);
+                } finally {
+                    TransactionTestPlugin.eventHandlerComplete$.complete();
+                }
+            }
+            if (administrator.emailAddress === TRIGGER_ATTEMPTED_READ_EMAIL) {
+                // note the ctx is not passed here, so we are not inside the ongoing transaction
+                const adminRepository = this.connection.getRepository(Administrator);
+                try {
+                    await adminRepository.findOneOrFail(administrator.id);
                 } catch (e) {
                     TransactionTestPlugin.errorHandler(e);
                 } finally {

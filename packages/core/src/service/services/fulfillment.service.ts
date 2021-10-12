@@ -11,6 +11,7 @@ import {
 } from '../../common/error/generated-graphql-admin-errors';
 import { OrderStateTransitionError } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -19,8 +20,13 @@ import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillm
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
+/**
+ * @description
+ * Contains methods relating to {@link Fulfillment} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class FulfillmentService {
     constructor(
@@ -31,6 +37,11 @@ export class FulfillmentService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
+    /**
+     * @description
+     * Creates a new Fulfillment for the given Orders and OrderItems, using the specified
+     * {@link FulfillmentHandler}.
+     */
     async create(
         ctx: RequestContext,
         orders: Order[],
@@ -78,7 +89,7 @@ export class FulfillmentService {
         return newFulfillment;
     }
 
-    async findOneOrThrow(
+    private async findOneOrThrow(
         ctx: RequestContext,
         id: ID,
         relations: string[] = ['orderItems'],
@@ -88,11 +99,20 @@ export class FulfillmentService {
         });
     }
 
+    /**
+     * @description
+     * Returns all OrderItems associated with the specified Fulfillment.
+     */
     async getOrderItemsByFulfillmentId(ctx: RequestContext, id: ID): Promise<OrderItem[]> {
         const fulfillment = await this.findOneOrThrow(ctx, id);
         return fulfillment.orderItems;
     }
 
+    /**
+     * @description
+     * Transitions the specified Fulfillment to a new state and upon successful transition
+     * publishes a {@link FulfillmentStateTransitionEvent}.
+     */
     async transitionToState(
         ctx: RequestContext,
         fulfillmentId: ID,
@@ -127,6 +147,10 @@ export class FulfillmentService {
         return { fulfillment, orders, fromState, toState: state };
     }
 
+    /**
+     * @description
+     * Returns an array of the next valid states for the Fulfillment.
+     */
     getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);
     }

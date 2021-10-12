@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
@@ -12,7 +13,6 @@ import { ChannelService } from '../../services/channel.service';
 import { CustomerService } from '../../services/customer.service';
 import { HistoryService } from '../../services/history.service';
 import { RoleService } from '../../services/role.service';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 /**
  * @description
@@ -128,7 +128,7 @@ export class ExternalAuthenticationService {
                 user: savedUser,
             });
         }
-        this.channelService.assignToCurrentChannel(customer, ctx);
+        await this.channelService.assignToCurrentChannel(customer, ctx);
         await this.connection.getRepository(ctx, Customer).save(customer);
 
         await this.historyService.createHistoryEntryForCustomer({

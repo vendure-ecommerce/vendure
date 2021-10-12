@@ -16,9 +16,11 @@ import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
+import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
@@ -26,13 +28,18 @@ import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { GlobalSettingsService } from './global-settings.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Channel} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class ChannelService {
-    private allChannels: Channel[] = [];
+    private allChannels: SelfRefreshingCache<Channel[], [RequestContext]>;
 
     constructor(
         private connection: TransactionalConnection,
@@ -44,23 +51,32 @@ export class ChannelService {
     /**
      * When the app is bootstrapped, ensure a default Channel exists and populate the
      * channel lookup array.
+     *
+     * @internal
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
-        await this.updateAllChannels();
+        this.allChannels = await createSelfRefreshingCache({
+            name: 'ChannelService.allChannels',
+            ttl: this.configService.entityOptions.channelCacheTtl,
+            refresh: { fn: ctx => this.findAll(ctx), defaultArgs: [RequestContext.empty()] },
+        });
     }
 
     /**
+     * @description
      * Assigns a ChannelAware entity to the default Channel as well as any channel
      * specified in the RequestContext.
      */
-    assignToCurrentChannel<T extends ChannelAware>(entity: T, ctx: RequestContext): T {
-        const channelIds = unique([ctx.channelId, this.getDefaultChannel().id]);
+    async assignToCurrentChannel<T extends ChannelAware>(entity: T, ctx: RequestContext): Promise<T> {
+        const defaultChannel = await this.getDefaultChannel();
+        const channelIds = unique([ctx.channelId, defaultChannel.id]);
         entity.channels = channelIds.map(id => ({ id })) as any;
         return entity;
     }
 
     /**
+     * @description
      * Assigns the entity to the given Channels and saves.
      */
     async assignToChannels<T extends ChannelAware & VendureEntity>(
@@ -81,6 +97,7 @@ export class ChannelService {
     }
 
     /**
+     * @description
      * Removes the entity from the given Channels and saves.
      */
     async removeFromChannels<T extends ChannelAware & VendureEntity>(
@@ -103,14 +120,17 @@ export class ChannelService {
     }
 
     /**
-     * Given a channel token, returns the corresponding Channel if it exists.
+     * @description
+     * Given a channel token, returns the corresponding Channel if it exists, else will throw
+     * a {@link ChannelNotFoundError}.
      */
-    getChannelFromToken(token: string): Channel {
-        if (this.allChannels.length === 1 || token === '') {
+    async getChannelFromToken(token: string): Promise<Channel> {
+        const allChannels = await this.allChannels.value();
+        if (allChannels.length === 1 || token === '') {
             // there is only the default channel, so return it
             return this.getDefaultChannel();
         }
-        const channel = this.allChannels.find(c => c.token === token);
+        const channel = allChannels.find(c => c.token === token);
         if (!channel) {
             throw new ChannelNotFoundError(token);
         }
@@ -118,10 +138,12 @@ export class ChannelService {
     }
 
     /**
+     * @description
      * Returns the default Channel.
      */
-    getDefaultChannel(): Channel {
-        const defaultChannel = this.allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
+    async getDefaultChannel(): Promise<Channel> {
+        const allChannels = await this.allChannels.value();
+        const defaultChannel = allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
 
         if (!defaultChannel) {
             throw new InternalServerError(`error.default-channel-not-found`);
@@ -166,7 +188,7 @@ export class ChannelService {
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
-        await this.updateAllChannels(ctx);
+        await this.allChannels.refresh(ctx);
         return channel;
     }
 
@@ -199,7 +221,7 @@ export class ChannelService {
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
-        await this.updateAllChannels(ctx);
+        await this.allChannels.refresh(ctx);
         return assertFound(this.findOne(ctx, channel.id));
     }
 
@@ -215,6 +237,11 @@ export class ChannelService {
         };
     }
 
+    /**
+     * @description
+     * Type guard method which returns true if the given entity is an
+     * instance of a class which implements the {@link ChannelAware} interface.
+     */
     public isChannelAware(entity: VendureEntity): entity is VendureEntity & ChannelAware {
         const entityType = Object.getPrototypeOf(entity).constructor;
         return !!this.connection.rawConnection
@@ -261,9 +288,5 @@ export class ChannelService {
                 return new LanguageNotAvailableError(input.defaultLanguageCode);
             }
         }
-    }
-
-    private async updateAllChannels(ctx?: RequestContext) {
-        this.allChannels = await this.findAll(ctx || RequestContext.empty());
     }
 }

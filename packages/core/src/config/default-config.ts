@@ -6,10 +6,12 @@ import {
 } from '@vendure/common/lib/shared-constants';
 
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
+import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
@@ -84,6 +86,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
+        passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -101,6 +104,10 @@ export const defaultConfig: RuntimeVendureConfig = {
     dbConnectionOptions: {
         timezone: 'Z',
         type: 'mysql',
+    },
+    entityOptions: {
+        channelCacheTtl: 30000,
+        zoneCacheTtl: 30000,
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
@@ -139,7 +146,9 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
+        jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
+        enableWorkerHealthCheck: false,
     },
     customFields: {
         Address: [],

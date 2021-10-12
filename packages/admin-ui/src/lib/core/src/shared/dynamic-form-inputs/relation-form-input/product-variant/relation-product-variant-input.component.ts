@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'r
 import {
     GetProductVariant,
     GetProductVariantList,
+    GetProductVariantListSimple,
     RelationCustomFieldConfig,
 } from '../../../../common/generated-types';
 import { DataService } from '../../../../data/providers/data.service';
@@ -28,7 +29,7 @@ export class RelationProductVariantInputComponent implements OnInit {
 
     searchControl = new FormControl('');
     searchTerm$ = new Subject<string>();
-    results$: Observable<GetProductVariantList.Items[]>;
+    results$: Observable<GetProductVariantListSimple.Items[]>;
     productVariant$: Observable<GetProductVariant.ProductVariant | undefined>;
 
     constructor(private modalService: ModalService, private dataService: DataService) {}
@@ -53,7 +54,7 @@ export class RelationProductVariantInputComponent implements OnInit {
             debounceTime(200),
             switchMap(term => {
                 return this.dataService.product
-                    .getProductVariants({
+                    .getProductVariantsSimple({
                         ...(term
                             ? {
                                   filter: {
