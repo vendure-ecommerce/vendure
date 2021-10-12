@@ -17,7 +17,7 @@ export class CustomScriptFieldsResolver {
     @ResolveField()
     __resolveType(value: any): string {
         const productScriptFields = Object.entries(this.options.searchConfig?.scriptFields || {})
-            .filter(([, scriptField]) => scriptField.environment !== 'variant')
+            .filter(([, scriptField]) => scriptField.context !== 'variant')
             .map(([k]) => k);
         return Object.keys(value).every(k => productScriptFields.includes(k))
             ? 'CustomProductScriptFields'

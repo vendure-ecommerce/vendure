@@ -214,11 +214,6 @@ export interface UpdateAssetMessageData {
 }
 
 type Maybe<T> = T | undefined;
-type CustomMappingDefinition<Args extends any[], T extends string, R> = {
-    graphQlType: T;
-    valueFn: (...args: Args) => R;
-};
-
 type NamedJobData<Type extends string, MessageData> = { type: Type } & MessageData;
 
 export type ReindexJobData = NamedJobData<'reindex', ReindexMessageData>;
@@ -247,103 +242,42 @@ export type UpdateIndexQueueJobData =
     | AssignVariantToChannelJobData
     | RemoveVariantFromChannelJobData;
 
-type CustomIdMapping<Args extends any[]> = CustomMappingDefinition<Args, 'ID!', ID>;
-type CustomIdMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[ID!]!', ID[]>;
-type CustomIdMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'ID', Maybe<ID>>;
-type CustomIdMappingNullableList<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    '[ID!]',
-    Array<Maybe<ID>>
->;
-type CustomStringMapping<Args extends any[]> = CustomMappingDefinition<Args, 'String!', string>;
-type CustomStringMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[String!]!', string[]>;
-type CustomStringMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'String', Maybe<string>>;
-type CustomStringMappingNullableList<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    '[String!]',
-    Array<Maybe<string>>
->;
-type CustomIntMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Int!', number>;
-type CustomIntMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[Int!]!', number[]>;
-type CustomIntMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Int', Maybe<number>>;
-type CustomIntMappingNullableList<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    '[Int!]',
-    Array<Maybe<number>>
->;
-type CustomFloatMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Float!', number>;
-type CustomFloatMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[Float!]!', number[]>;
-type CustomFloatMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'Float', Maybe<number>>;
-type CustomFloatMappingNullableList<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    '[Float!]',
-    Array<Maybe<number>>
->;
-type CustomBooleanMapping<Args extends any[]> = CustomMappingDefinition<Args, 'Boolean!', boolean>;
-type CustomBooleanMappingList<Args extends any[]> = CustomMappingDefinition<Args, '[Boolean!]!', boolean[]>;
-type CustomBooleanMappingNullable<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    'Boolean',
-    Maybe<boolean>
->;
-type CustomBooleanMappingNullableList<Args extends any[]> = CustomMappingDefinition<
-    Args,
-    '[Boolean!]',
-    Array<Maybe<boolean>>
->;
+type GraphQlPrimitive = 'ID' | 'String' | 'Int' | 'Float' | 'Boolean';
+type PrimitiveTypeVariations<T extends GraphQlPrimitive> = T | `${T}!` | `[${T}!]` | `[${T}!]!`;
+type GraphQlPermittedReturnType = PrimitiveTypeVariations<GraphQlPrimitive>;
 
-export type CustomMapping<Args extends any[]> =
-    | CustomIdMapping<Args>
-    | CustomIdMappingList<Args>
-    | CustomIdMappingNullable<Args>
-    | CustomIdMappingNullableList<Args>
-    | CustomStringMapping<Args>
-    | CustomStringMappingList<Args>
-    | CustomStringMappingNullable<Args>
-    | CustomStringMappingNullableList<Args>
-    | CustomIntMapping<Args>
-    | CustomIntMappingList<Args>
-    | CustomIntMappingNullable<Args>
-    | CustomIntMappingNullableList<Args>
-    | CustomFloatMapping<Args>
-    | CustomFloatMappingList<Args>
-    | CustomFloatMappingNullable<Args>
-    | CustomFloatMappingNullableList<Args>
-    | CustomBooleanMapping<Args>
-    | CustomBooleanMappingList<Args>
-    | CustomBooleanMappingNullable<Args>
-    | CustomBooleanMappingNullableList<Args>;
-
-export type CustomScriptEnvironment = 'product' | 'variant' | 'both';
-type CustomScriptMappingDefinition<Args extends any[], T extends CustomMappingTypes, R> = {
+type CustomMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType, R> = {
     graphQlType: T;
-    environment: CustomScriptEnvironment;
-    scriptFn: (...args: Args) => R;
+    valueFn: (...args: Args) => R;
 };
 
-type CustomScriptStringMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'String!', any>;
-type CustomScriptStringMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<
-    Args,
-    'String',
-    any
->;
-type CustomScriptIntMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Int!', any>;
-type CustomScriptIntMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Int', any>;
-type CustomScriptFloatMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Float!', any>;
-type CustomScriptFloatMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Float', any>;
-type CustomScriptBooleanMapping<Args extends any[]> = CustomScriptMappingDefinition<Args, 'Boolean!', any>;
-type CustomScriptBooleanMappingNullable<Args extends any[]> = CustomScriptMappingDefinition<
-    Args,
-    'Boolean',
-    any
->;
+type TypeVariationMap<GqlType extends GraphQlPrimitive, TsType> = {
+    [Key in PrimitiveTypeVariations<GqlType>]: Key extends `[${string}!]!`
+        ? TsType[]
+        : Key extends `[${string}!]`
+        ? Maybe<TsType[]>
+        : Key extends `${string}!`
+        ? TsType
+        : Maybe<TsType>;
+};
 
-export type CustomScriptMapping<Args extends any[]> =
-    | CustomScriptStringMapping<Args>
-    | CustomScriptStringMappingNullable<Args>
-    | CustomScriptIntMapping<Args>
-    | CustomScriptIntMappingNullable<Args>
-    | CustomScriptFloatMapping<Args>
-    | CustomScriptFloatMappingNullable<Args>
-    | CustomScriptBooleanMapping<Args>
-    | CustomScriptBooleanMappingNullable<Args>;
+type GraphQlTypeMap = TypeVariationMap<'ID', ID> &
+    TypeVariationMap<'String', string> &
+    TypeVariationMap<'Int', number> &
+    TypeVariationMap<'Float', number> &
+    TypeVariationMap<'Boolean', boolean>;
+
+export type CustomMapping<Args extends any[]> = {
+    [Type in GraphQlPermittedReturnType]: CustomMappingDefinition<Args, Type, GraphQlTypeMap[Type]>;
+}[GraphQlPermittedReturnType];
+
+export type CustomScriptContext = 'product' | 'variant' | 'both';
+type CustomScriptMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType> = {
+    graphQlType: T;
+    context: CustomScriptContext;
+    scriptFn: (...args: Args) => { script: string };
+};
+
+export type CustomScriptMapping<Args extends any[]> = {
+    [Type in GraphQlPermittedReturnType]: CustomScriptMappingDefinition<Args, Type>;
+}[GraphQlPermittedReturnType];

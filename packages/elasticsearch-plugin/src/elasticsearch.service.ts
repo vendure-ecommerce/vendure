@@ -23,7 +23,7 @@ import { createIndices, getClient } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,
-    CustomScriptEnvironment,
+    CustomScriptContext,
     CustomScriptMapping,
     ElasticSearchInput,
     ElasticSearchResponse,
@@ -596,13 +596,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         result: any,
         fields: any,
         mappings: { [fieldName: string]: CustomScriptMapping<any> },
-        environment: CustomScriptEnvironment,
+        environment: CustomScriptContext,
     ): any {
         const customMappings = Object.keys(mappings || {});
         if (customMappings.length) {
             const customScriptFieldsResult: any = {};
             for (const name of customMappings) {
-                const env = mappings[name].environment;
+                const env = mappings[name].context;
                 if (env === environment || env === 'both') {
                     const fieldVal = (fields as any)[name] || undefined;
                     if (Array.isArray(fieldVal)) {

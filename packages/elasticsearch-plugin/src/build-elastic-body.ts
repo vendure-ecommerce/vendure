@@ -165,13 +165,13 @@ function createScriptFields(
             const result: any = {};
             for (const name of fields) {
                 const scriptField = scriptFields[name];
-                if (scriptField.environment === 'product' && groupByProduct === true) {
+                if (scriptField.context === 'product' && groupByProduct === true) {
                     (result as any)[name] = scriptField.scriptFn(input);
                 }
-                if (scriptField.environment === 'variant' && groupByProduct === false) {
+                if (scriptField.context === 'variant' && groupByProduct === false) {
                     (result as any)[name] = scriptField.scriptFn(input);
                 }
-                if (scriptField.environment === 'both' || scriptField.environment === undefined) {
+                if (scriptField.context === 'both' || scriptField.context === undefined) {
                     (result as any)[name] = scriptField.scriptFn(input);
                 }
             }

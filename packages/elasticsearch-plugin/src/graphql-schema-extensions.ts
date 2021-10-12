@@ -45,10 +45,10 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
     const productMappings = Object.entries(options.customProductMappings || {});
     const variantMappings = Object.entries(options.customProductVariantMappings || {});
     const scriptProductFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
-        ([, scriptField]) => scriptField.environment !== 'variant',
+        ([, scriptField]) => scriptField.context !== 'variant',
     );
     const scriptVariantFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
-        ([, scriptField]) => scriptField.environment !== 'product',
+        ([, scriptField]) => scriptField.context !== 'product',
     );
     let sdl = ``;
 

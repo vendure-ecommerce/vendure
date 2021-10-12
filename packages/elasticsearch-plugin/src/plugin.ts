@@ -224,11 +224,11 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
             const requiresUnionScriptResolver =
                 0 <
                     Object.values(options.searchConfig.scriptFields || {}).filter(
-                        field => field.environment !== 'product',
+                        field => field.context !== 'product',
                     ).length &&
                 0 <
                     Object.values(options.searchConfig.scriptFields || {}).filter(
-                        field => field.environment !== 'variant',
+                        field => field.context !== 'variant',
                     ).length;
             return [
                 ShopElasticSearchResolver,

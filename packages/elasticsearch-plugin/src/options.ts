@@ -113,11 +113,31 @@ export interface ElasticsearchOptions {
      * }
      * ```
      *
+     * To reference a field defined by `customProductMappings` or `customProductVariantMappings`, you will
+     * need to prefix the name with `'product-<name>'` or `'variant-<name>'` respectively, e.g.:
+     *
+     * @example
+     * ```TypeScript
+     * customProductMappings: {
+     *    variantCount: {
+     *        graphQlType: 'Int!',
+     *        valueFn: (product, variants) => variants.length,
+     *    },
+     * },
+     * indexMappingProperties: {
+     *   'product-variantCount': {
+     *     type: 'integer',
+     *   }
+     * }
+     * ```
+     *
      * @since 1.2.0
      * @default
      * {}
      */
-    indexMappingProperties?: object;
+    indexMappingProperties?: {
+        [indexName: string]: object;
+    };
     /**
      * @description
      * Batch size for bulk operations (e.g. when rebuilding the indices).
@@ -128,7 +148,7 @@ export interface ElasticsearchOptions {
     batchSize?: number;
     /**
      * @description
-     * Configuration of the internal Elasticseach query.
+     * Configuration of the internal Elasticsearch query.
      */
     searchConfig?: SearchConfig;
     /**
@@ -398,39 +418,47 @@ export interface SearchConfig {
     ) => any;
     /**
      * @description
-     * Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit
-     * @since 1.3.0
+     * Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit.
+     *
      * @example
      * ```TypeScript
      * indexMappingProperties: {
-     *      location: {
-     *          type: 'geo_point', // contains function arcDistance
-     *      },
+     *   // The `product-location` field corresponds to the `location` customProductMapping
+     *   // defined below. Here we specify that it would be index as a `geo_point` type,
+     *   // which will allow us to perform geo-spacial calculations on it in our script field.
+     *   'product-location': {
+     *     type: 'geo_point', // contains function arcDistance
+     *   },
      * },
      * customProductMappings: {
-     *      location: {
-     *          graphQlType: 'String',
-     *          valueFn: (product: Product) => {
-     *              const custom = product.customFields.location;
-     *              return `${custom.latitude},${location.longitude}`;
-     *          },
-     *      }
+     *   location: {
+     *     graphQlType: 'String',
+     *     valueFn: (product: Product) => {
+     *       const custom = product.customFields.location;
+     *       return `${custom.latitude},${custom.longitude}`;
+     *     },
+     *   }
      * },
-     * scriptFields: {
-     *      distance: {
-     *          graphQlType: 'Int',
-     *          environment: 'product',
-     *          scriptFn: (input) => {
-     *              // assuming SearchInput was extended with latitude and longitude
-     *              const lat = input.latitude;
-     *              const lon = input.longitude;
-     *              return {
-     *                  script: `doc['product-location'].arcDistance(${lat}, ${lon})`,
-     *              }
-     *          }
-     *      }
+     * searchConfig: {
+     *   scriptFields: {
+     *     distance: {
+     *       graphQlType: 'Float!',
+     *       // Run this script only when grouping results by product
+     *       context: 'product',
+     *       scriptFn: (input) => {
+     *         // assuming SearchInput was extended with latitude and longitude
+     *         const lat = input.latitude;
+     *         const lon = input.longitude;
+     *         return {
+     *           script: `doc['product-location'].arcDistance(${lat}, ${lon})`,
+     *         }
+     *       }
+     *     }
+     *   }
      * }
      * ```
+     *
+     * @since 1.3.0
      */
     scriptFields?: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> };
 }
