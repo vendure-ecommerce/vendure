@@ -48,6 +48,9 @@ const path = require('path');
             identifier: '{{{ escapeSingle superadminIdentifier }}}',
             password: '{{{ escapeSingle superadminPassword }}}',
         },
+        cookieOptions: {
+          secret: process.env.COOKIE_SECRET || 'cookie-secret',
+        },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
@@ -75,8 +78,8 @@ const path = require('path');
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),
         }),
-        DefaultJobQueuePlugin,
-        DefaultSearchPlugin,
+        DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),
+        DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: true }),
         EmailPlugin.init({
             devMode: true,
             outputPath: path.join(__dirname, '../static/email/test-emails'),
