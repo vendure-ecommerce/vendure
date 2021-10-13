@@ -778,6 +778,7 @@ export interface JobQueueOptions {
  * Options relating to the internal handling of entities.
  *
  * @since 1.3.0
+ * @docsCategory configuration
  */
 export interface EntityOptions {
     /**

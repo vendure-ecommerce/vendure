@@ -163,9 +163,8 @@ export interface ElasticsearchOptions {
      * Elasticsearch index and expose that data via the SearchResult GraphQL type,
      * adding a new `customMappings` field.
      *
-     * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean`, or list
-     * versions thereof (`[String!]` etc) and
-     * can be appended with a `!` to indicate non-nullable fields.
+     * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean`, `ID` or list
+     * versions thereof (`[String!]` etc) and can be appended with a `!` to indicate non-nullable fields.
      *
      * This config option defines custom mappings which are accessible when the "groupByProduct"
      * input options is set to `true`.
@@ -463,6 +462,17 @@ export interface SearchConfig {
     /**
      * @description
      * Sets `script_fields` inside the elasticsearch body which allows returning a script evaluation for each hit.
+     *
+     * The script field definition consists of three properties:
+     *
+     * * `graphQlType`: This is the type that will be returned when this script field is queried
+     * via the GraphQL API. It may be one of `String`, `Int`, `Float`, `Boolean`, `ID` or list
+     * versions thereof (`[String!]` etc) and can be appended with a `!` to indicate non-nullable fields.
+     * * `context`: determines whether this script field is available when grouping by product. Can be
+     * `product`, `variant` or `both`.
+     * * `scriptFn`: This is the function to run on each hit. Should return an object with a `script` property,
+     * as covered in the
+     * [Elasticsearch script fields docs](https://www.elastic.co/guide/en/elasticsearch/reference/7.15/search-fields.html#script-fields)
      *
      * @example
      * ```TypeScript

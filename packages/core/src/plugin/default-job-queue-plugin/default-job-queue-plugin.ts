@@ -19,9 +19,51 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
  * @docsPage DefaultJobQueuePlugin
  */
 export interface DefaultJobQueueOptions {
+    /**
+     * @description
+     * The interval in ms between polling the database for new jobs. If many job queues
+     * are active, the polling may cause undue load on the database, in which case this value
+     * should be increased to e.g. 1000.
+     *
+     * @description 200
+     */
     pollInterval?: number | ((queueName: string) => number);
+    /**
+     * @description
+     * How many jobs from a given queue to process concurrently.
+     *
+     * @default 1
+     */
     concurrency?: number;
+    /**
+     * @description
+     * The strategy used to decide how long to wait before retrying a failed job.
+     *
+     * @default () => 1000
+     */
     backoffStrategy?: BackoffStrategy;
+    /**
+     * @description
+     * When a job is added to the JobQueue using `JobQueue.add()`, the calling
+     * code may specify the number of retries in case of failure. This option allows
+     * you to override that number and specify your own number of retries based on
+     * the job being added.
+     *
+     * @example
+     * ```TypeScript
+     * setRetries: (queueName, job) => {
+     *   if (queueName === 'send-email') {
+     *     // Override the default number of retries
+     *     // for the 'send-email' job because we have
+     *     // a very unreliable email service.
+     *     return 10;
+     *   }
+     *   return job.retries;
+     * }
+     *  ```
+     * @param queueName
+     * @param job
+     */
     setRetries?: (queueName: string, job: Job) => number;
     /**
      * @description
@@ -109,7 +151,7 @@ export interface DefaultJobQueueOptions {
  *         // A default delay for all other queues
  *         return 1000;
  *       },
- *       retries: (queueName, job) => {
+ *       setRetries: (queueName, job) => {
  *         if (queueName === 'send-email') {
  *           // Override the default number of retries
  *           // for the 'send-email' job because we have

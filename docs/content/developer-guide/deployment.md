@@ -34,6 +34,24 @@ For a production Vendure server, there are a few security-related points to cons
   ```
 * Consider using [helmet](https://github.com/helmetjs/helmet) as middleware (add to the `apiOptions.middleware` array) to handle security-related headers. 
 
+## Serverless / multi-instance deployments
+
+Vendure supports running in a serverless or multi-instance (horizontally scaled) environment. The key consideration in configuring Vendure for this scenario is to ensure that any persistent state is managed externally from the Node process, and is shared by all instances. Namely:
+
+* The JobQueue should be stored externally using the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}) (which stores jobs in the database) or the [BullMQJobQueuePlugin]({{< relref "bull-mqjob-queue-plugin" >}}) (which stores jobs in Redis), or some other custom JobQueueStrategy.
+* A custom [SessionCacheStrategy]({{< relref "session-cache-strategy" >}}) must be used which stores the session cache externally (such as in the database or Redis), since the default strategy stores the cache in-memory and will cause inconsistencies in multi-instance setups.
+* When using cookies to manage sessions, make sure all instances are using the _same_ cookie secret:
+    ```TypeScript
+    const config: VendureConfig = {
+      authOptions: {
+        cookieOptions: {
+          secret: 'some-secret'
+        }
+      }
+    }
+    ```
+* Channel and Zone data gets cached in-memory as this data is used in virtually every request. The cache time-to-live defaults to 30 seconds, which is probably fine for most cases, but it can be configured in the [EntityOptions]({{< relref "entity-options" >}}#channelcachettl).
+
 ## Health/Readiness Checks
 
 If you wish to deploy with Kubernetes or some similar system, you can make use of the health check endpoints. 

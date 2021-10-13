@@ -7,6 +7,7 @@ import { Job } from '../job';
  * {@link JobBuffer}.
  *
  * @since 1.3.0
+ * @docsCategory job-queue
  */
 export interface JobBufferStorageStrategy extends InjectableStrategy {
     /**

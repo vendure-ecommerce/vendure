@@ -58,7 +58,8 @@ export type JsonCompatible<T> = {
 
 /**
  * @description
- * A type describing the shape of a paginated list response.
+ * A type describing the shape of a paginated list response. In Vendure, almost all list queries
+ * (`products`, `collections`, `orders`, `customers` etc) return an object of this type.
  *
  * @docsCategory common
  */

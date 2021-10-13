@@ -56,6 +56,27 @@ import { JobData } from '../types';
  * }
  * ```
  *
+ * A JobBuffer is used by adding it to the {@link JobQueueService}, at which point it will become active
+ * and start collecting jobs.
+ *
+ * At some later point, the buffer can be flushed, causing the buffered jobs to be passed through the
+ * `reduce()` method and sent to the job queue.
+ *
+ * @example
+ * ```TypeScript
+ * const collectionBuffer = new CollectionJobBuffer();
+ *
+ * await this.jobQueueService.addBuffer(collectionBuffer);
+ *
+ * // Here you can perform some work which would ordinarily
+ * // trigger the 'apply-collection-filters' job, such as updating
+ * // collection filters or changing ProductVariant prices.
+ *
+ * await this.jobQueueService.flush(collectionBuffer);
+ *
+ * await this.jobQueueService.removeBuffer(collectionBuffer);
+ * ```
+ *
  * @docsCategory JobQueue
  * @since 1.3.0
  */

@@ -48,6 +48,19 @@ export interface BullMQPluginOptions {
      * you to override that number and specify your own number of retries based on
      * the job being added.
      *
+     * @example
+     * ```TypeScript
+     * setRetries: (queueName, job) => {
+     *   if (queueName === 'send-email') {
+     *     // Override the default number of retries
+     *     // for the 'send-email' job because we have
+     *     // a very unreliable email service.
+     *     return 10;
+     *   }
+     *   return job.retries;
+     * }
+     *  ```
+     *
      * @since 1.3.0
      */
     setRetries?: (queueName: string, job: Job) => number;

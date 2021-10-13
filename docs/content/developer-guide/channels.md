@@ -21,6 +21,10 @@ Use-cases of Channels include:
 * Creating distinct rules and inventory for different sales channels such as Amazon.
 * Specialized stores offering a subset of the main inventory.
 
+## How to set the channel when using the GraphQL API
+
+To specify which channel to use when making an API call, set the `'vendure-token'` header to match the token of the desired Channel.
+
 ## Multi-Tenant (Marketplace) Support
 
 Channels can also be used to implement a multi-tenant or marketplace application. In such a setup, each merchant would have their own dedicated Channel and would be granted permissions on that Channel only.
