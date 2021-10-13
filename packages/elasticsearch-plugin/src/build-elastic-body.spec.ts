@@ -243,11 +243,7 @@ describe('buildElasticBody()', () => {
         );
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    CHANNEL_ID_TERM,
-                    LANGUAGE_CODE_TERM,
-                    { term: { productInStock: true }},
-                ],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { productInStock: true } }],
             },
         });
     });
@@ -261,28 +257,16 @@ describe('buildElasticBody()', () => {
         );
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    CHANNEL_ID_TERM,
-                    LANGUAGE_CODE_TERM,
-                    { term: { productInStock: false }},
-                ],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { productInStock: false } }],
             },
         });
     });
 
     it('inStock is undefined and groupByProduct', () => {
-        const result = buildElasticBody(
-            { groupByProduct: true },
-            searchConfig,
-            CHANNEL_ID,
-            LanguageCode.en,
-        );
+        const result = buildElasticBody({ groupByProduct: true }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    CHANNEL_ID_TERM,
-                    LANGUAGE_CODE_TERM,
-                ],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
             },
         });
     });
@@ -296,11 +280,7 @@ describe('buildElasticBody()', () => {
         );
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    CHANNEL_ID_TERM,
-                    LANGUAGE_CODE_TERM,
-                    { term: { inStock: true }},
-                ],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { inStock: true } }],
             },
         });
     });
@@ -314,28 +294,16 @@ describe('buildElasticBody()', () => {
         );
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    CHANNEL_ID_TERM,
-                    LANGUAGE_CODE_TERM,
-                    { term: { inStock: false }},
-                ],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { inStock: false } }],
             },
         });
     });
 
     it('inStock is undefined and not groupByProduct', () => {
-        const result = buildElasticBody(
-            { groupByProduct: false },
-            searchConfig,
-            CHANNEL_ID,
-            LanguageCode.en,
-        );
+        const result = buildElasticBody({ groupByProduct: false }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
             bool: {
-                filter: [
-                    CHANNEL_ID_TERM,
-                    LANGUAGE_CODE_TERM,
-                ],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
             },
         });
     });
@@ -502,7 +470,7 @@ describe('buildElasticBody()', () => {
                 scriptFields: {
                     test: {
                         graphQlType: 'String',
-                        environment: 'both',
+                        context: 'both',
                         scriptFn: input => ({
                             script: `doc['property'].dummyScript(${input.term})`,
                         }),
