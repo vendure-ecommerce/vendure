@@ -1,3 +1,27 @@
+## 1.3.0 (2021-10-13)
+
+
+#### Features
+
+* **core** Add support for stock status in DefaultSearchPlugin ([65add05](https://github.com/vendure-ecommerce/vendure/commit/65add05)), closes [#870](https://github.com/vendure-ecommerce/vendure/issues/870)
+* **core** Allow PaginatedList filters to use logical OR operator ([e371aa5](https://github.com/vendure-ecommerce/vendure/commit/e371aa5)), closes [#1149](https://github.com/vendure-ecommerce/vendure/issues/1149)
+* **core** Correctly index stock status based on saleable stock level ([4db9a37](https://github.com/vendure-ecommerce/vendure/commit/4db9a37)), closes [#870](https://github.com/vendure-ecommerce/vendure/issues/870)
+* **core** Export RequestContextCacheService from core ([92aa83f](https://github.com/vendure-ecommerce/vendure/commit/92aa83f))
+* **core** Make extractSessionToken function available in core package ([f364e68](https://github.com/vendure-ecommerce/vendure/commit/f364e68))
+* **core** Make extractSessionToken function available in core package (#1138) ([90e520f](https://github.com/vendure-ecommerce/vendure/commit/90e520f)), closes [#1138](https://github.com/vendure-ecommerce/vendure/issues/1138)
+* **create** Improve config defaults ([e2f799c](https://github.com/vendure-ecommerce/vendure/commit/e2f799c)), closes [#1147](https://github.com/vendure-ecommerce/vendure/issues/1147)
+* **elasticsearch-plugin** Add inStock attribute and filter (#1130) ([53cfb8e](https://github.com/vendure-ecommerce/vendure/commit/53cfb8e)), closes [#1130](https://github.com/vendure-ecommerce/vendure/issues/1130) [#870](https://github.com/vendure-ecommerce/vendure/issues/870)
+* **elasticsearch-plugin** Allow custom mappings with type `ID` ([45c5b2d](https://github.com/vendure-ecommerce/vendure/commit/45c5b2d))
+* **elasticsearch-plugin** Allow the SearchInput to be extended ([5981619](https://github.com/vendure-ecommerce/vendure/commit/5981619))
+* **elasticsearch-plugin** Custom mappings can return lists & allow additional Product/variant relation hydration ([ee47095](https://github.com/vendure-ecommerce/vendure/commit/ee47095)), closes [#1054](https://github.com/vendure-ecommerce/vendure/issues/1054) [#1141](https://github.com/vendure-ecommerce/vendure/issues/1141)
+* **elasticsearch-plugin** Extend config with customScriptFields ([d300f8b](https://github.com/vendure-ecommerce/vendure/commit/d300f8b)), closes [#1143](https://github.com/vendure-ecommerce/vendure/issues/1143)
+* **elasticsearch-plugin** Index custom product mappings for products without variants ([a0b4534](https://github.com/vendure-ecommerce/vendure/commit/a0b4534))
+* **elasticsearch-plugin** Index stock status based on saleable stock ([4efe258](https://github.com/vendure-ecommerce/vendure/commit/4efe258)), closes [#870](https://github.com/vendure-ecommerce/vendure/issues/870)
+
+#### Fixes
+
+* **admin-ui** Improved Spanish translation of "facets" (#1122) ([b20d497](https://github.com/vendure-ecommerce/vendure/commit/b20d497)), closes [#1122](https://github.com/vendure-ecommerce/vendure/issues/1122)
+
 ## <small>1.2.3 (2021-09-29)</small>
 
 This release fixes an error in the publishing of the TypeScript definitions from v1.2.2.
