@@ -84,6 +84,7 @@ export class ProductService {
                 const items = products.map(product =>
                     translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
                 );
+                console.log("hello from production!");
                 return {
                     items,
                     totalItems,
