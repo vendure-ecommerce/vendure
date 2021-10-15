@@ -34,6 +34,17 @@ export class TestAdminPluginResolver {
         });
         return product;
     }
+
+    // Test case for https://github.com/vendure-ecommerce/vendure/issues/1153
+    @Query()
+    async hydrateProductAsset(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const product = await this.connection.getRepository(ctx, Product).findOne(args.id);
+        // tslint:disable-next-line:no-non-null-assertion
+        await this.entityHydrator.hydrate(ctx, product!, {
+            relations: ['assets'],
+        });
+        return product;
+    }
 }
 
 @VendurePlugin({
@@ -43,6 +54,7 @@ export class TestAdminPluginResolver {
         schema: gql`
             extend type Query {
                 hydrateProduct(id: ID!): JSON
+                hydrateProductAsset(id: ID!): JSON
             }
         `,
     },

@@ -118,6 +118,19 @@ describe('Entity hydration', () => {
         expect(getVariantWithName(hydrateProduct, 'Laptop 15 inch 16GB').price).toBe(229900);
         expect(getVariantWithName(hydrateProduct, 'Laptop 15 inch 16GB').priceWithTax).toBe(275880);
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1153
+    it('correctly handles empty array relations', async () => {
+        // Product T_5 has no asset defined
+        const { hydrateProductAsset } = await adminClient.query<HydrateProductAssetQuery>(
+            GET_HYDRATED_PRODUCT_ASSET,
+            {
+                id: 'T_5',
+            },
+        );
+
+        expect(hydrateProductAsset.assets).toEqual([]);
+    });
 });
 
 function getVariantWithName(product: Product, name: string) {
@@ -125,9 +138,15 @@ function getVariantWithName(product: Product, name: string) {
 }
 
 type HydrateProductQuery = { hydrateProduct: Product };
+type HydrateProductAssetQuery = { hydrateProductAsset: Product };
 
 const GET_HYDRATED_PRODUCT = gql`
     query GetHydratedProduct($id: ID!) {
         hydrateProduct(id: $id)
+    }
+`;
+const GET_HYDRATED_PRODUCT_ASSET = gql`
+    query GetHydratedProductAsset($id: ID!) {
+        hydrateProductAsset(id: $id)
     }
 `;

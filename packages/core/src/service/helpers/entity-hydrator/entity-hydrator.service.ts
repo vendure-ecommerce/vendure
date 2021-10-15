@@ -222,9 +222,9 @@ export class EntityHydrator {
         return currentMetadata.target as Type<VendureEntity>;
     }
 
-    private isTranslatable(input: any | any[]): input is Translatable {
+    private isTranslatable<T extends VendureEntity>(input: T | T[] | undefined): boolean {
         return Array.isArray(input)
-            ? input[0].hasOwnProperty('translations')
-            : input.hasOwnProperty('translations');
+            ? input[0]?.hasOwnProperty('translations') ?? false
+            : input?.hasOwnProperty('translations') ?? false;
     }
 }
