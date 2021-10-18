@@ -108,6 +108,7 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
         testEligibleShippingMethods(input: $input) {
             id
             name
+            code
             description
             price
             priceWithTax

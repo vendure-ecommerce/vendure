@@ -4,6 +4,7 @@ import { graphqlUploadExpress } from 'graphql-upload';
 import path from 'path';
 
 import { ConfigService } from '../config/config.service';
+import { ConnectionModule } from '../connection/connection.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
@@ -24,7 +25,8 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
  */
 @Module({
     imports: [
-        ServiceModule.forRoot(),
+        ServiceModule,
+        ConnectionModule.forRoot(),
         DataImportModule,
         I18nModule,
         ApiSharedModule,

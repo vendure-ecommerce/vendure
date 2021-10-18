@@ -6,6 +6,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -17,11 +18,18 @@ import { Release } from '../../entity/stock-movement/release.entity';
 import { Sale } from '../../entity/stock-movement/sale.entity';
 import { StockAdjustment } from '../../entity/stock-movement/stock-adjustment.entity';
 import { StockMovement } from '../../entity/stock-movement/stock-movement.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { StockMovementEvent } from '../../event-bus/events/stock-movement-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { GlobalSettingsService } from './global-settings.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link StockMovement} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class StockMovementService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];
@@ -32,8 +40,13 @@ export class StockMovementService {
         private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
         private globalSettingsService: GlobalSettingsService,
+        private eventBus: EventBus,
     ) {}
 
+    /**
+     * @description
+     * Returns a {@link PaginatedList} of all StockMovements associated with the specified ProductVariant.
+     */
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
         productVariantId: ID,
@@ -52,6 +65,11 @@ export class StockMovementService {
             });
     }
 
+    /**
+     * @description
+     * Adjusts the stock level of the ProductVariant, creating a new {@link StockAdjustment} entity
+     * in the process.
+     */
     async adjustProductVariantStock(
         ctx: RequestContext,
         productVariantId: ID,
@@ -63,13 +81,22 @@ export class StockMovementService {
         }
         const delta = newStockLevel - oldStockLevel;
 
-        const adjustment = new StockAdjustment({
-            quantity: delta,
-            productVariant: { id: productVariantId },
-        });
-        return this.connection.getRepository(ctx, StockAdjustment).save(adjustment);
+        const adjustment = await this.connection.getRepository(ctx, StockAdjustment).save(
+            new StockAdjustment({
+                quantity: delta,
+                productVariant: { id: productVariantId },
+            }),
+        );
+        this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
+        return adjustment;
     }
 
+    /**
+     * @description
+     * Creates a new {@link Allocation} for each OrderLine in the Order. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * increased, indicating that this quantity of stock is allocated and cannot be sold.
+     */
     async createAllocationsForOrder(ctx: RequestContext, order: Order): Promise<Allocation[]> {
         if (order.active !== false) {
             throw new InternalServerError('error.cannot-create-allocations-for-active-order');
@@ -77,7 +104,11 @@ export class StockMovementService {
         const allocations: Allocation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         for (const line of order.lines) {
-            const { productVariant } = line;
+            const productVariant = await this.connection.getEntityOrThrow(
+                ctx,
+                ProductVariant,
+                line.productVariant.id,
+            );
             const allocation = new Allocation({
                 productVariant,
                 quantity: line.quantity,
@@ -92,9 +123,20 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Allocation).save(allocations);
+        const savedAllocations = await this.connection.getRepository(ctx, Allocation).save(allocations);
+        if (savedAllocations.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedAllocations));
+        }
+        return savedAllocations;
     }
 
+    /**
+     * @description
+     * Creates {@link Sale}s for each OrderLine in the Order. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * reduced and the `stockOnHand` value is also reduced the the OrderLine quantity, indicating
+     * that the stock is no longer allocated, but is actually sold and no longer available.
+     */
     async createSalesForOrder(ctx: RequestContext, orderItems: OrderItem[]): Promise<Sale[]> {
         const sales: Sale[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
@@ -115,7 +157,11 @@ export class StockMovementService {
             value.items.push(orderItem);
         }
         for (const lineRow of orderLinesMap.values()) {
-            const { productVariant } = lineRow.line;
+            const productVariant = await this.connection.getEntityOrThrow(
+                ctx,
+                ProductVariant,
+                lineRow.line.productVariant.id,
+            );
             const sale = new Sale({
                 productVariant,
                 quantity: lineRow.items.length * -1,
@@ -131,9 +177,19 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Sale).save(sales);
+        const savedSales = await this.connection.getRepository(ctx, Sale).save(sales);
+        if (savedSales.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedSales));
+        }
+        return savedSales;
     }
 
+    /**
+     * @description
+     * Creates a {@link Cancellation} for each of the specified OrderItems. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockOnHand` value is
+     * increased for each Cancellation, allowing that stock to be sold again.
+     */
     async createCancellationsForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Cancellation[]> {
         const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
             items.map(i => i.id),
@@ -168,9 +224,19 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Cancellation).save(cancellations);
+        const savedCancellations = await this.connection.getRepository(ctx, Cancellation).save(cancellations);
+        if (savedCancellations.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedCancellations));
+        }
+        return savedCancellations;
     }
 
+    /**
+     * @description
+     * Creates a {@link Release} for each of the specified OrderItems. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * reduced, indicating that this stock is once again available to buy.
+     */
     async createReleasesForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Release[]> {
         const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
             items.map(i => i.id),
@@ -205,7 +271,11 @@ export class StockMovementService {
                     .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(ctx, Release).save(releases);
+        const savedReleases = await this.connection.getRepository(ctx, Release).save(releases);
+        if (savedReleases.length) {
+            this.eventBus.publish(new StockMovementEvent(ctx, savedReleases));
+        }
+        return savedReleases;
     }
 
     private trackInventoryForVariant(variant: ProductVariant, globalTrackInventory: boolean): boolean {

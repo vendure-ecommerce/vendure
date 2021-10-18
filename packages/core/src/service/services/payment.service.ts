@@ -18,6 +18,7 @@ import {
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
@@ -28,10 +29,15 @@ import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { PaymentMethodService } from './payment-method.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Payment} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class PaymentService {
     constructor(
@@ -56,6 +62,14 @@ export class PaymentService {
         });
     }
 
+    /**
+     * @description
+     * Transitions a Payment to the given state.
+     *
+     * When updating a Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `transitionPaymentToState()` method, which will also handle
+     * updating the Order state too.
+     */
     async transitionToState(
         ctx: RequestContext,
         paymentId: ID,
@@ -83,6 +97,14 @@ export class PaymentService {
         return this.paymentStateMachine.getNextStates(payment);
     }
 
+    /**
+     * @description
+     * Creates a new Payment.
+     *
+     * When creating a Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `addPaymentToOrder()` method, which will also handle
+     * updating the Order state too.
+     */
     async createPayment(
         ctx: RequestContext,
         order: Order,
@@ -119,6 +141,14 @@ export class PaymentService {
         return payment;
     }
 
+    /**
+     * @description
+     * Settles a Payment.
+     *
+     * When settling a Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `settlePayment()` method, which will also handle
+     * updating the Order state too.
+     */
     async settlePayment(ctx: RequestContext, paymentId: ID): Promise<PaymentStateTransitionError | Payment> {
         const payment = await this.connection.getEntityOrThrow(ctx, Payment, paymentId, {
             relations: ['order'],
@@ -133,29 +163,35 @@ export class PaymentService {
             payment,
             paymentMethod.handler.args,
         );
+        const fromState = payment.state;
+        let toState: PaymentState;
+        payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
         if (settlePaymentResult.success) {
-            const fromState = payment.state;
-            const toState = 'Settled';
-            try {
-                await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
-            } catch (e) {
-                const transitionError = ctx.translate(e.message, { fromState, toState });
-                return new PaymentStateTransitionError(transitionError, fromState, toState);
-            }
-            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
-            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
-            this.eventBus.publish(
-                new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
-            );
+            toState = 'Settled';
         } else {
+            toState = settlePaymentResult.state || 'Error';
             payment.errorMessage = settlePaymentResult.errorMessage;
-            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
-            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         }
+        try {
+            await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
+        } catch (e) {
+            const transitionError = ctx.translate(e.message, { fromState, toState });
+            return new PaymentStateTransitionError(transitionError, fromState, toState);
+        }
+        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        this.eventBus.publish(
+            new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
+        );
         return payment;
     }
+
     /**
+     * @description
      * Creates a Payment from the manual payment mutation in the Admin API
+     *
+     * When creating a manual Payment in the context of an Order, it is
+     * preferable to use the {@link OrderService} `addManualPaymentToOrder()` method, which will also handle
+     * updating the Order state too.
      */
     async createManualPayment(ctx: RequestContext, order: Order, amount: number, input: ManualPaymentInput) {
         const initialState = 'Created';
@@ -177,37 +213,58 @@ export class PaymentService {
     }
 
     /**
+     * @description
      * Creates a Refund against the specified Payment. If the amount to be refunded exceeds the value of the
      * specified Payment (in the case of multiple payments on a single Order), then the remaining outstanding
      * refund amount will be refunded against the next available Payment from the Order.
+     *
+     * When creating a Refund in the context of an Order, it is
+     * preferable to use the {@link OrderService} `refundOrder()` method, which performs additional
+     * validation.
      */
     async createRefund(
         ctx: RequestContext,
         input: RefundOrderInput,
         order: Order,
         items: OrderItem[],
-        payment: Payment,
+        selectedPayment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
             relations: ['payments', 'payments.refunds'],
         });
-        const existingRefunds =
-            orderWithRefunds.payments?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[]) ??
-            [];
+
+        function paymentRefundTotal(payment: Payment): number {
+            const nonFailedRefunds = payment.refunds?.filter(refund => refund.state !== 'Failed') ?? [];
+            return summate(nonFailedRefunds, 'total');
+        }
+
+        const existingNonFailedRefunds =
+            orderWithRefunds.payments
+                ?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[])
+                .filter(refund => refund.state !== 'Failed') ?? [];
+        const refundablePayments = orderWithRefunds.payments.filter(p => {
+            return paymentRefundTotal(p) < p.amount;
+        });
         const itemAmount = summate(items, 'proratedUnitPriceWithTax');
-        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        let primaryRefund: Refund | undefined;
         const refundedPaymentIds: ID[] = [];
-        let primaryRefund: Refund;
-        let refundOutstanding = refundTotal - summate(existingRefunds, 'total');
+        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        const refundMax =
+            orderWithRefunds.payments
+                ?.map(p => p.amount - paymentRefundTotal(p))
+                .reduce((sum, amount) => sum + amount, 0) ?? 0;
+        let refundOutstanding = Math.min(refundTotal, refundMax);
         do {
             const paymentToRefund =
-                refundedPaymentIds.length === 0
-                    ? payment
-                    : orderWithRefunds.payments.find(p => !refundedPaymentIds.includes(p.id));
+                (refundedPaymentIds.length === 0 &&
+                    refundablePayments.find(p => idsAreEqual(p.id, selectedPayment.id))) ||
+                refundablePayments.find(p => !refundedPaymentIds.includes(p.id)) ||
+                refundablePayments[0];
             if (!paymentToRefund) {
                 throw new InternalServerError(`Could not find a Payment to refund`);
             }
-            const total = Math.min(paymentToRefund.amount, refundOutstanding);
+            const amountNotRefunded = paymentToRefund.amount - paymentRefundTotal(paymentToRefund);
+            const total = Math.min(amountNotRefunded, refundOutstanding);
             let refund = new Refund({
                 payment: paymentToRefund,
                 total,
@@ -216,7 +273,7 @@ export class PaymentService {
                 reason: input.reason,
                 adjustment: input.adjustment,
                 shipping: input.shipping,
-                method: payment.method,
+                method: selectedPayment.method,
                 state: 'Pending',
                 metadata: {},
             });
@@ -249,12 +306,12 @@ export class PaymentService {
                     new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
                 );
             }
-            if (idsAreEqual(paymentToRefund.id, payment.id)) {
+            if (primaryRefund == null) {
                 primaryRefund = refund;
             }
-            existingRefunds.push(refund);
+            existingNonFailedRefunds.push(refund);
             refundedPaymentIds.push(paymentToRefund.id);
-            refundOutstanding = refundTotal - summate(existingRefunds, 'total');
+            refundOutstanding = refundTotal - summate(existingNonFailedRefunds, 'total');
         } while (0 < refundOutstanding);
         // tslint:disable-next-line:no-non-null-assertion
         return primaryRefund!;

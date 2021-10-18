@@ -7,6 +7,7 @@ import {
     JobQueueService,
     Logger,
     PluginCommonModule,
+    ProcessContext,
     registerPluginStartupMessage,
     Type,
     VendurePlugin,
@@ -118,6 +119,7 @@ import {
  * ```ts
  * EmailPlugin.init({
  *   devMode: true,
+ *   route: 'mailbox',
  *   handlers: defaultEmailHandlers,
  *   templatePath: path.join(__dirname, 'vendure/email/templates'),
  *   outputPath: path.join(__dirname, 'test-emails'),
@@ -176,6 +178,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
         private moduleRef: ModuleRef,
         private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
+        private processContext: ProcessContext,
     ) {}
 
     /**
@@ -210,7 +213,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
     configure(consumer: MiddlewareConsumer) {
         const options = EmailPlugin.options;
 
-        if (isDevModeOptions(options)) {
+        if (isDevModeOptions(options) && this.processContext.isServer) {
             Logger.info('Creating dev mailbox middleware', loggerCtx);
             this.devMailbox = new DevMailbox();
             consumer.apply(this.devMailbox.serve(options)).forRoutes(options.route);
@@ -244,7 +247,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
                 return;
             }
             if (this.jobQueue) {
-                await this.jobQueue.add(result);
+                await this.jobQueue.add(result, { retries: 5 });
             } else if (this.testingProcessor) {
                 await this.testingProcessor.process(result);
             }

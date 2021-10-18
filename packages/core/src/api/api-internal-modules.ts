@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 
+import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
+import { ConnectionModule } from '../connection/connection.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
@@ -69,6 +71,7 @@ import {
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { RoleEntityResolver } from './resolvers/entity/role-entity.resolver';
 import { ShippingLineEntityResolver } from './resolvers/entity/shipping-line-entity.resolver';
+import { TaxRateEntityResolver } from './resolvers/entity/tax-rate-entity.resolver';
 import { UserEntityResolver } from './resolvers/entity/user-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
@@ -130,6 +133,7 @@ export const entityResolvers = [
     RoleEntityResolver,
     ShippingLineEntityResolver,
     UserEntityResolver,
+    TaxRateEntityResolver,
 ];
 
 export const adminEntityResolvers = [
@@ -150,14 +154,16 @@ export const adminEntityResolvers = [
  * one API module.
  */
 @Module({
-    imports: [ConfigModule, ServiceModule.forRoot()],
+    imports: [ConfigModule, ServiceModule, CacheModule, ConnectionModule.forRoot()],
     providers: [IdCodecService, ConfigurableOperationCodec, CustomFieldRelationResolverService],
     exports: [
         IdCodecService,
+        CacheModule,
         ConfigModule,
         ConfigurableOperationCodec,
         CustomFieldRelationResolverService,
-        ServiceModule.forRoot(),
+        ServiceModule,
+        ConnectionModule.forRoot(),
     ],
 })
 export class ApiSharedModule {}

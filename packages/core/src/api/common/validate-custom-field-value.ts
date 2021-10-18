@@ -47,6 +47,7 @@ export async function validateCustomFieldValue(
             break;
         case 'boolean':
         case 'relation':
+        case 'text':
             break;
         default:
             assertNever(config);
@@ -90,6 +91,9 @@ function validateStringField(
     const options = (config as StringCustomFieldConfig).options;
     if (options) {
         const validOptions = options.map(o => o.value);
+        if (value === null && config.nullable === true) {
+            return;
+        }
         if (!validOptions.includes(value)) {
             throw new UserInputError('error.field-invalid-string-option', {
                 name: config.name,

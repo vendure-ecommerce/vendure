@@ -43,7 +43,22 @@ export class TestEntity extends VendureEntity implements Translatable {
     @Column()
     date: Date;
 
-    @Calculated({ expression: 'LENGTH(description)' })
+    @Calculated({
+        query: qb =>
+            qb
+                .leftJoin(
+                    qb1 => {
+                        return qb1
+                            .from(TestEntity, 'entity')
+                            .select('LENGTH(entity.description)', 'deslen')
+                            .addSelect('entity.id', 'eid');
+                    },
+                    't1',
+                    't1.eid = testentity.id',
+                )
+                .addSelect('t1.deslen', 'deslen'),
+        expression: 'deslen',
+    })
     get descriptionLength() {
         return this.description.length || 0;
     }
@@ -118,7 +133,7 @@ export class ListQueryResolver {
     }
 }
 
-const adminApiExtensions = gql`
+const apiExtensions = gql`
     type TestEntity implements Node {
         id: ID!
         createdAt: DateTime!
@@ -149,7 +164,11 @@ const adminApiExtensions = gql`
     imports: [PluginCommonModule],
     entities: [TestEntity, TestEntityPrice, TestEntityTranslation],
     adminApiExtensions: {
-        schema: adminApiExtensions,
+        schema: apiExtensions,
+        resolvers: [ListQueryResolver],
+    },
+    shopApiExtensions: {
+        schema: apiExtensions,
         resolvers: [ListQueryResolver],
     },
 })
@@ -195,6 +214,13 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     active: false,
                     order: 4,
                 }),
+                new TestEntity({
+                    label: 'F',
+                    description: 'quis nostrud exercitation ullamco', // 33
+                    date: new Date('2020-02-07T10:00:00.000Z'),
+                    active: false,
+                    order: 5,
+                }),
             ]);
 
             const translations: any = {
@@ -203,6 +229,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                 C: { [LanguageCode.en]: 'cake', [LanguageCode.de]: 'kuchen' },
                 D: { [LanguageCode.en]: 'dog', [LanguageCode.de]: 'hund' },
                 E: { [LanguageCode.en]: 'egg' },
+                F: { [LanguageCode.de]: 'baum' },
             };
 
             for (const testEntity of testEntities) {

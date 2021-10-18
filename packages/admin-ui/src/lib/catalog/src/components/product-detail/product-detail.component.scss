@@ -56,3 +56,9 @@ vdr-action-bar clr-toggle-wrapper {
         margin-bottom: 12px;
     }
 }
+
+.pagination-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}

@@ -1,6 +1,6 @@
 <h4>{{ 'customer.customer-history' | translate }}</h4>
 <div class="entry-list">
-    <vdr-timeline-entry iconShape="note" displayType="muted">
+    <vdr-timeline-entry iconShape="note" displayType="muted" *vdrIfPermissions="'UpdateCustomer'">
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToCustomer()">
@@ -134,7 +134,7 @@
                                 class="button"
                                 vdrDropdownItem
                                 (click)="updateNote.emit(entry)"
-                                [disabled]="!('UpdateOrder' | hasPermission)"
+                                [disabled]="!('UpdateCustomer' | hasPermission)"
                             >
                                 <clr-icon shape="edit"></clr-icon>
                                 {{ 'common.edit' | translate }}
@@ -144,7 +144,7 @@
                                 class="button"
                                 vdrDropdownItem
                                 (click)="deleteNote.emit(entry)"
-                                [disabled]="!('UpdateOrder' | hasPermission)"
+                                [disabled]="!('UpdateCustomer' | hasPermission)"
                             >
                                 <clr-icon shape="trash" class="is-danger"></clr-icon>
                                 {{ 'common.delete' | translate }}

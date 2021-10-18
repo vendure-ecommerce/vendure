@@ -23,12 +23,14 @@ import {
     DeleteTag,
     GetAsset,
     GetAssetList,
+    GetPendingSearchIndexUpdates,
     GetProductList,
     GetProductOptionGroup,
     GetProductOptionGroups,
     GetProductSimple,
     GetProductVariant,
     GetProductVariantList,
+    GetProductVariantListSimple,
     GetProductVariantOptions,
     GetProductWithVariants,
     GetTag,
@@ -42,6 +44,7 @@ import {
     RemoveProductsFromChannelInput,
     RemoveProductVariantsFromChannelInput,
     RemoveVariantsFromChannel,
+    RunPendingSearchIndexUpdates,
     SearchProducts,
     SortOrder,
     TagListOptions,
@@ -50,6 +53,8 @@ import {
     UpdateProduct,
     UpdateProductInput,
     UpdateProductOption,
+    UpdateProductOptionGroup,
+    UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
@@ -78,6 +83,7 @@ import {
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT,
     GET_PRODUCT_VARIANT_LIST,
+    GET_PRODUCT_VARIANT_LIST_SIMPLE,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     GET_TAG,
@@ -90,10 +96,15 @@ import {
     UPDATE_ASSET,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
+    UPDATE_PRODUCT_OPTION_GROUP,
     UPDATE_PRODUCT_VARIANTS,
     UPDATE_TAG,
 } from '../definitions/product-definitions';
-import { REINDEX } from '../definitions/settings-definitions';
+import {
+    GET_PENDING_SEARCH_INDEX_UPDATES,
+    REINDEX,
+    RUN_PENDING_SEARCH_INDEX_UPDATES,
+} from '../definitions/settings-definitions';
 
 import { BaseDataService } from './base-data.service';
 
@@ -125,17 +136,30 @@ export class ProductDataService {
         return this.baseDataService.mutate<Reindex.Mutation>(REINDEX);
     }
 
+    getPendingSearchIndexUpdates() {
+        return this.baseDataService.query<GetPendingSearchIndexUpdates.Query>(
+            GET_PENDING_SEARCH_INDEX_UPDATES,
+        );
+    }
+
+    runPendingSearchIndexUpdates() {
+        return this.baseDataService.mutate<RunPendingSearchIndexUpdates.Mutation>(
+            RUN_PENDING_SEARCH_INDEX_UPDATES,
+        );
+    }
+
     getProducts(options: ProductListOptions) {
         return this.baseDataService.query<GetProductList.Query, GetProductList.Variables>(GET_PRODUCT_LIST, {
             options,
         });
     }
 
-    getProduct(id: string) {
+    getProduct(id: string, variantListOptions?: ProductVariantListOptions) {
         return this.baseDataService.query<GetProductWithVariants.Query, GetProductWithVariants.Variables>(
             GET_PRODUCT_WITH_VARIANTS,
             {
                 id,
+                variantListOptions,
             },
         );
     }
@@ -149,10 +173,17 @@ export class ProductDataService {
         );
     }
 
-    getProductVariants(options: ProductVariantListOptions) {
+    getProductVariantsSimple(options: ProductVariantListOptions, productId?: string) {
+        return this.baseDataService.query<
+            GetProductVariantListSimple.Query,
+            GetProductVariantListSimple.Variables
+        >(GET_PRODUCT_VARIANT_LIST_SIMPLE, { options, productId });
+    }
+
+    getProductVariants(options: ProductVariantListOptions, productId?: string) {
         return this.baseDataService.query<GetProductVariantList.Query, GetProductVariantList.Variables>(
             GET_PRODUCT_VARIANT_LIST,
-            { options },
+            { options, productId },
         );
     }
 
@@ -305,6 +336,15 @@ export class ProductDataService {
                 input: pick(input, ['id', 'code', 'translations', 'customFields']),
             },
         );
+    }
+
+    updateProductOptionGroup(input: UpdateProductOptionGroupInput) {
+        return this.baseDataService.mutate<
+            UpdateProductOptionGroup.Mutation,
+            UpdateProductOptionGroup.Variables
+        >(UPDATE_PRODUCT_OPTION_GROUP, {
+            input: pick(input, ['id', 'code', 'translations', 'customFields']),
+        });
     }
 
     getProductOptionGroups(filterTerm?: string) {

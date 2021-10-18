@@ -135,6 +135,7 @@ export class MockConnection {
     private columnsMap = new Map<Type<any>, Array<Partial<ColumnMetadata>>>();
     private relationsMap = new Map<Type<any>, Array<Partial<RelationMetadata>>>();
     setColumns(entity: Type<any>, value: Array<Partial<ColumnMetadata>>) {
+        value.forEach(v => (v.propertyPath = v.propertyName));
         this.columnsMap.set(entity, value);
     }
     setRelations(entity: Type<any>, value: Array<Partial<RelationMetadata>>) {

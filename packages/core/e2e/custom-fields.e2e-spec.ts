@@ -1,5 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { CustomFields, mergeConfig, TransactionalConnection } from '@vendure/core';
+import { Asset, CustomFields, mergeConfig, TransactionalConnection } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -84,8 +84,23 @@ const customConfig = mergeConfig(testConfig, {
                 },
             },
             {
+                name: 'validateRelation',
+                type: 'relation',
+                entity: Asset,
+                validate: async value => {
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                    return `relation error`;
+                },
+            },
+            {
                 name: 'stringWithOptions',
                 type: 'string',
+                options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
+            },
+            {
+                name: 'nullableStringWithOptions',
+                type: 'string',
+                nullable: true,
                 options: [{ value: 'small' }, { value: 'medium' }, { value: 'large' }],
             },
             {
@@ -217,7 +232,9 @@ describe('Custom fields', () => {
                 { name: 'validateFn2', type: 'string', list: false },
                 { name: 'validateFn3', type: 'string', list: false },
                 { name: 'validateFn4', type: 'string', list: false },
+                { name: 'validateRelation', type: 'relation', list: false },
                 { name: 'stringWithOptions', type: 'string', list: false },
+                { name: 'nullableStringWithOptions', type: 'string', list: false },
                 { name: 'nonPublic', type: 'string', list: false },
                 { name: 'public', type: 'string', list: false },
                 { name: 'longString', type: 'string', list: false },
@@ -378,7 +395,7 @@ describe('Custom fields', () => {
         const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
             gql`
-                mutation($stringValue: String!) {
+                mutation ($stringValue: String!) {
                     updateProduct(input: { id: "T_1", customFields: { longString: $stringValue } }) {
                         id
                         customFields {
@@ -397,7 +414,7 @@ describe('Custom fields', () => {
         const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
             gql`
-                mutation($stringValue: String!) {
+                mutation ($stringValue: String!) {
                     updateProduct(
                         input: {
                             id: "T_1"
@@ -458,6 +475,20 @@ describe('Custom fields', () => {
                 }
             `);
             expect(updateProduct.customFields.stringWithOptions).toBe('medium');
+        });
+
+        it('nullable string option with null', async () => {
+            const { updateProduct } = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { nullableStringWithOptions: null } }) {
+                        id
+                        customFields {
+                            nullableStringWithOptions
+                        }
+                    }
+                }
+            `);
+            expect(updateProduct.customFields.nullableStringWithOptions).toBeNull();
         });
 
         it(
@@ -613,6 +644,23 @@ describe('Custom fields', () => {
                     }
                 `);
             }, `async error`),
+        );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1000
+        it(
+            'supports validation of relation types',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { validateRelationId: "T_1" } }) {
+                            id
+                            customFields {
+                                validateFn4
+                            }
+                        }
+                    }
+                `);
+            }, `relation error`),
         );
     });
 

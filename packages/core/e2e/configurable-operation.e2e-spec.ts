@@ -77,8 +77,8 @@ describe('Configurable operations', () => {
                     checker: {
                         code: testShippingEligibilityChecker.code,
                         arguments: [
-                            { name: 'optional', value: 'null' },
-                            { name: 'required', value: '"foo"' },
+                            { name: 'optional', value: '' },
+                            { name: 'required', value: 'foo' },
                         ],
                     },
                     translations: [],
@@ -88,11 +88,11 @@ describe('Configurable operations', () => {
             expect(updateShippingMethod.checker.args).toEqual([
                 {
                     name: 'optional',
-                    value: 'null',
+                    value: '',
                 },
                 {
                     name: 'required',
-                    value: '"foo"',
+                    value: 'foo',
                 },
             ]);
         });
@@ -109,14 +109,14 @@ describe('Configurable operations', () => {
                                 code: testShippingEligibilityChecker.code,
                                 arguments: [
                                     { name: 'optional', value: 'null' },
-                                    { name: 'required', value: 'null' },
+                                    { name: 'required', value: '' },
                                 ],
                             },
                             translations: [],
                         },
                     },
                 );
-            }, "The argument 'required' is required, but the value is [null]"),
+            }, "The argument 'required' is required"),
         );
     });
 

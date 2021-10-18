@@ -1,8 +1,7 @@
 import { DynamicModule } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { Type } from '@vendure/common/lib/shared-types';
-
-import { notNullOrUndefined } from '../../../common/lib/shared-utils';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { APIExtensionDefinition, PluginConfigurationFn } from './vendure-plugin';
 
@@ -19,7 +18,10 @@ export function getEntitiesFromPlugins(plugins?: Array<Type<any> | DynamicModule
     }
     return plugins
         .map(p => reflectMetadata(p, PLUGIN_METADATA.ENTITIES))
-        .reduce((all, entities) => [...all, ...(entities || [])], []);
+        .reduce((all, entities) => {
+            const resolvedEntities = typeof entities === 'function' ? entities() : entities ?? [];
+            return [...all, ...resolvedEntities];
+        }, []);
 }
 
 export function getModuleMetadata(module: Type<any>) {

@@ -34,12 +34,39 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
         assignable: false,
         internal: true,
     }),
-    new CrudPermissionDefinition('Catalog'),
-    new CrudPermissionDefinition('Customer'),
+    new PermissionDefinition({
+        name: 'UpdateGlobalSettings',
+        description: `Grants permission to update GlobalSettings`,
+        assignable: true,
+        internal: false,
+    }),
+    new CrudPermissionDefinition(
+        'Catalog',
+        operation => `Grants permission to ${operation} Products, Facets, Assets, Collections`,
+    ),
+    new CrudPermissionDefinition(
+        'Settings',
+        operation =>
+            `Grants permission to ${operation} PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings`,
+    ),
     new CrudPermissionDefinition('Administrator'),
+    new CrudPermissionDefinition('Asset'),
+    new CrudPermissionDefinition('Channel'),
+    new CrudPermissionDefinition('Collection'),
+    new CrudPermissionDefinition('Country'),
+    new CrudPermissionDefinition('Customer'),
+    new CrudPermissionDefinition('CustomerGroup'),
+    new CrudPermissionDefinition('Facet'),
     new CrudPermissionDefinition('Order'),
+    new CrudPermissionDefinition('PaymentMethod'),
+    new CrudPermissionDefinition('Product'),
     new CrudPermissionDefinition('Promotion'),
-    new CrudPermissionDefinition('Settings'),
+    new CrudPermissionDefinition('ShippingMethod'),
+    new CrudPermissionDefinition('Tag'),
+    new CrudPermissionDefinition('TaxCategory'),
+    new CrudPermissionDefinition('TaxRate'),
+    new CrudPermissionDefinition('System'),
+    new CrudPermissionDefinition('Zone'),
 ];
 
 export function getAllPermissionsMetadata(customPermissions: PermissionDefinition[]): PermissionMetadata[] {

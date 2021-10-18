@@ -2,7 +2,7 @@
     <vdr-ab-left>
         <div class="flex clr-flex-row">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
-            <clr-toggle-wrapper *vdrIfPermissions="'UpdateCatalog'">
+            <clr-toggle-wrapper *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']">
                 <input
                     type="checkbox"
                     clrToggle
@@ -32,7 +32,7 @@
         </button>
         <ng-template #updateButton>
             <button
-                *vdrIfPermissions="'UpdateCatalog'"
+                *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                 class="btn btn-primary"
                 (click)="save()"
                 [disabled]="
@@ -45,12 +45,8 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form
-    class="form"
-    [formGroup]="detailForm"
-    *ngIf="product$ | async as product"
-    (keydown.enter)="$event.preventDefault()"
->
+<form class="form" [formGroup]="detailForm" *ngIf="product$ | async as product">
+    <button type="submit" hidden x-data="prevents enter key from triggering other buttons"></button>
     <clr-tabs>
         <clr-tab>
             <button clrTabLink (click)="navigateToTab('details')">
@@ -60,37 +56,39 @@
                 <div class="clr-row">
                     <div class="clr-col">
                         <section class="form-block" formGroupName="product">
-                            <ng-container *vdrIfMultichannel>
-                                <vdr-form-item
-                                    [label]="'common.channels' | translate"
-                                    *vdrIfDefaultChannelActive
-                                >
-                                    <div class="flex channel-assignment">
-                                        <ng-container *ngFor="let channel of productChannels$ | async">
-                                            <vdr-chip
-                                                *ngIf="!isDefaultChannel(channel.code)"
-                                                icon="times-circle"
-                                                (iconClick)="removeFromChannel(channel.id)"
-                                            >
-                                                <vdr-channel-badge
-                                                    [channelCode]="channel.code"
-                                                ></vdr-channel-badge>
-                                                {{ channel.code | channelCodeToLabel }}
-                                            </vdr-chip>
-                                        </ng-container>
-                                        <button class="btn btn-sm" (click)="assignToChannel()">
-                                            <clr-icon shape="layers"></clr-icon>
-                                            {{ 'catalog.assign-to-channel' | translate }}
-                                        </button>
-                                    </div>
-                                </vdr-form-item>
+                            <ng-container *ngIf="!(isNew$ | async)">
+                                <ng-container *vdrIfMultichannel>
+                                    <vdr-form-item
+                                        [label]="'common.channels' | translate"
+                                        *vdrIfDefaultChannelActive
+                                    >
+                                        <div class="flex channel-assignment">
+                                            <ng-container *ngFor="let channel of productChannels$ | async">
+                                                <vdr-chip
+                                                    *ngIf="!isDefaultChannel(channel.code)"
+                                                    icon="times-circle"
+                                                    (iconClick)="removeFromChannel(channel.id)"
+                                                >
+                                                    <vdr-channel-badge
+                                                        [channelCode]="channel.code"
+                                                    ></vdr-channel-badge>
+                                                    {{ channel.code | channelCodeToLabel }}
+                                                </vdr-chip>
+                                            </ng-container>
+                                            <button class="btn btn-sm" (click)="assignToChannel()">
+                                                <clr-icon shape="layers"></clr-icon>
+                                                {{ 'catalog.assign-to-channel' | translate }}
+                                            </button>
+                                        </div>
+                                    </vdr-form-item>
+                                </ng-container>
                             </ng-container>
                             <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
                                 <input
                                     id="name"
                                     type="text"
                                     formControlName="name"
-                                    [readonly]="!('UpdateCatalog' | hasPermission)"
+                                    [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                     (input)="updateSlug($event.target.value)"
                                 />
                             </vdr-form-field>
@@ -121,13 +119,12 @@
                                     id="slug"
                                     type="text"
                                     formControlName="slug"
-                                    [readonly]="!('UpdateCatalog' | hasPermission)"
-                                    pattern="[a-z0-9_-]+"
+                                    [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                 />
                             </vdr-form-field>
                             <vdr-rich-text-editor
                                 formControlName="description"
-                                [readonly]="!('UpdateCatalog' | hasPermission)"
+                                [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                 [label]="'common.description' | translate"
                             ></vdr-rich-text-editor>
 
@@ -139,7 +136,7 @@
                                         entityName="Product"
                                         [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
                                         [customField]="customField"
-                                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                     ></vdr-custom-field-control>
                                 </ng-container>
                             </section>
@@ -148,12 +145,12 @@
                                 <vdr-facet-value-chip
                                     *ngFor="let facetValue of facetValues$ | async"
                                     [facetValue]="facetValue"
-                                    [removable]="'UpdateCatalog' | hasPermission"
+                                    [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
                                     (remove)="removeProductFacetValue(facetValue.id)"
                                 ></vdr-facet-value-chip>
                                 <button
                                     class="btn btn-sm btn-secondary"
-                                    *vdrIfPermissions="'UpdateCatalog'"
+                                    *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                                     (click)="selectProductFacetValue()"
                                 >
                                     <clr-icon shape="plus"></clr-icon>
@@ -215,7 +212,7 @@
                         </div>
                         <div class="flex-spacer"></div>
                         <a
-                            *vdrIfPermissions="'UpdateCatalog'"
+                            *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                             [routerLink]="['./', 'manage-variants']"
                             class="btn btn-secondary edit-variants-btn"
                         >
@@ -224,9 +221,24 @@
                         </a>
                     </div>
 
+                    <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
+                        <vdr-items-per-page-controls
+                            [itemsPerPage]="itemsPerPage$ | async"
+                            (itemsPerPageChange)="setItemsPerPage($event)"
+                        ></vdr-items-per-page-controls>
+
+                        <vdr-pagination-controls
+                            [id]="(paginationConfig$ | async)?.id"
+                            [currentPage]="currentPage$ | async"
+                            [itemsPerPage]="itemsPerPage$ | async"
+                            (pageChange)="setPage($event)"
+                        ></vdr-pagination-controls>
+                    </div>
+
                     <vdr-product-variants-table
                         *ngIf="variantDisplayMode === 'table'"
                         [variants]="variants$ | async"
+                        [paginationConfig]="paginationConfig$ | async"
                         [optionGroups]="product.optionGroups"
                         [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [productVariantsFormArray]="detailForm.get('variants')"
@@ -235,6 +247,7 @@
                     <vdr-product-variants-list
                         *ngIf="variantDisplayMode === 'card'"
                         [variants]="variants$ | async"
+                        [paginationConfig]="paginationConfig$ | async"
                         [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [facets]="facets$ | async"
                         [optionGroups]="product.optionGroups"
@@ -252,6 +265,19 @@
                         (selectFacetValueClick)="selectVariantFacetValue($event)"
                     ></vdr-product-variants-list>
                 </section>
+                <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">
+                    <vdr-items-per-page-controls
+                        [itemsPerPage]="itemsPerPage$ | async"
+                        (itemsPerPageChange)="setItemsPerPage($event)"
+                    ></vdr-items-per-page-controls>
+
+                    <vdr-pagination-controls
+                        [id]="(paginationConfig$ | async)?.id"
+                        [currentPage]="currentPage$ | async"
+                        [itemsPerPage]="itemsPerPage$ | async"
+                        (pageChange)="setPage($event)"
+                    ></vdr-pagination-controls>
+                </div>
             </clr-tab-content>
         </clr-tab>
     </clr-tabs>

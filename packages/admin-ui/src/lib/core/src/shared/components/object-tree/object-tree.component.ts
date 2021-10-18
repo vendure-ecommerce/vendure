@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf }
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ObjectTreeComponent implements OnInit {
-    @Input() value: { [key: string]: any };
+    @Input() value: { [key: string]: any } | string;
     @Input() isArrayItem = false;
     depth: number;
     expanded: boolean;
@@ -25,12 +25,19 @@ export class ObjectTreeComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.entries = Object.entries(this.value).map(([key, value]) => ({ key, value }));
+        this.entries = this.getEntries(this.value);
         this.expanded = this.depth === 0 || this.isArrayItem;
         this.valueIsArray = Object.keys(this.value).every(v => Number.isInteger(+v));
     }
 
     isObject(value: any): boolean {
         return typeof value === 'object' && value !== null;
+    }
+
+    private getEntries(inputValue: { [key: string]: any } | string): Array<{ key: string; value: any }> {
+        if (typeof inputValue === 'string') {
+            return [{ key: '', value: inputValue }];
+        }
+        return Object.entries(inputValue).map(([key, value]) => ({ key, value }));
     }
 }

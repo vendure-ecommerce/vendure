@@ -18,6 +18,7 @@ import {
     OrderDetail,
     OrderDetailFragment,
     OrderLineFragment,
+    Refund,
     RefundOrder,
     ServerConfigService,
     SortOrder,
@@ -63,6 +64,7 @@ export class OrderDetailComponent
         'Modifying',
         'ArrangingAdditionalPayment',
     ];
+
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -253,8 +255,13 @@ export class OrderDetailComponent
     outstandingPaymentAmount(order: OrderDetailFragment): number {
         const paymentIsValid = (p: OrderDetail.Payments): boolean =>
             p.state !== 'Cancelled' && p.state !== 'Declined' && p.state !== 'Error';
-        const validPayments = order.payments?.filter(paymentIsValid).map(p => pick(p, ['amount'])) ?? [];
-        const amountCovered = summate(validPayments, 'amount');
+
+        let amountCovered = 0;
+        for (const payment of order.payments?.filter(paymentIsValid) ?? []) {
+            const refunds = payment.refunds.filter(r => r.state !== 'Failed') ?? [];
+            const refundsTotal = summate(refunds as Array<Required<Refund>>, 'total');
+            amountCovered += payment.amount - refundsTotal;
+        }
         return order.totalWithTax - amountCovered;
     }
 
@@ -326,15 +333,28 @@ export class OrderDetailComponent
             )
             .subscribe(result => {
                 if (result) {
-                    switch (result.addFulfillmentToOrder.__typename) {
+                    const { addFulfillmentToOrder } = result;
+                    switch (addFulfillmentToOrder.__typename) {
                         case 'Fulfillment':
                             this.notificationService.success(_('order.create-fulfillment-success'));
                             break;
                         case 'EmptyOrderLineSelectionError':
                         case 'InsufficientStockOnHandError':
                         case 'ItemsAlreadyFulfilledError':
-                            this.notificationService.error(result.addFulfillmentToOrder.message);
+                        case 'InvalidFulfillmentHandlerError':
+                            this.notificationService.error(addFulfillmentToOrder.message);
                             break;
+                        case 'FulfillmentStateTransitionError':
+                            this.notificationService.error(addFulfillmentToOrder.transitionError);
+                            break;
+                        case 'CreateFulfillmentError':
+                            this.notificationService.error(addFulfillmentToOrder.fulfillmentHandlerError);
+                            break;
+                        case undefined:
+                            this.notificationService.error(JSON.stringify(addFulfillmentToOrder));
+                            break;
+                        default:
+                            assertNever(addFulfillmentToOrder);
                     }
                 }
             });
@@ -498,9 +518,9 @@ export class OrderDetailComponent
                         return of(undefined);
                     }
 
-                    const operations: Array<Observable<
-                        RefundOrder.RefundOrder | CancelOrder.CancelOrder
-                    >> = [];
+                    const operations: Array<
+                        Observable<RefundOrder.RefundOrder | CancelOrder.CancelOrder>
+                    > = [];
                     if (input.refund.lines.length) {
                         operations.push(
                             this.dataService.order
@@ -527,7 +547,11 @@ export class OrderDetailComponent
                             break;
                         case 'Refund':
                             this.refetchOrder(result).subscribe();
-                            this.notificationService.success(_('order.refund-order-success'));
+                            if (result.state === 'Failed') {
+                                this.notificationService.error(_('order.refund-order-failed'));
+                            } else {
+                                this.notificationService.success(_('order.refund-order-success'));
+                            }
                             break;
                         case 'QuantityTooGreatError':
                         case 'MultipleOrderError':

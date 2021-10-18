@@ -57,7 +57,11 @@ export type JsonCompatible<T> = {
 };
 
 /**
- * A type describing the shape of a paginated list response
+ * @description
+ * A type describing the shape of a paginated list response. In Vendure, almost all list queries
+ * (`products`, `collections`, `orders`, `customers` etc) return an object of this type.
+ *
+ * @docsCategory common
  */
 export type PaginatedList<T> = {
     items: T[];
@@ -82,10 +86,12 @@ export type ID = string | number;
  * -----        |---------                              |---------------
  * string       | varchar                               | String
  * localeString | varchar                               | String
+ * text         | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ * relation     | many-to-one / many-to-many relation   | As specified in config
  *
  * Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
  * are available for that custom field.
@@ -99,7 +105,8 @@ export type CustomFieldType =
     | 'float'
     | 'boolean'
     | 'datetime'
-    | 'relation';
+    | 'relation'
+    | 'text';
 
 /**
  * @description
@@ -132,6 +139,7 @@ export type DefaultFormComponentId =
     | 'product-selector-form-input'
     | 'customer-group-form-input'
     | 'text-form-input'
+    | 'textarea-form-input'
     | 'password-form-input'
     | 'relation-form-input';
 
@@ -153,6 +161,9 @@ type DefaultFormConfigHash = {
     'product-selector-form-input': {};
     'customer-group-form-input': {};
     'text-form-input': {};
+    'textarea-form-input': {
+        spellcheck?: boolean;
+    };
     'password-form-input': {};
     'relation-form-input': {};
 };

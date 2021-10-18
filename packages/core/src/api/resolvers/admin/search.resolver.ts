@@ -4,14 +4,14 @@ import { Omit } from '@vendure/common/lib/omit';
 
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { FacetValue } from '../../../entity';
+import { Collection, FacetValue } from '../../../entity';
 import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver()
 export class SearchResolver {
     @Query()
-    @Allow(Permission.ReadCatalog)
-    async search(...args: any): Promise<Omit<SearchResponse, 'facetValues'>> {
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    async search(...args: any): Promise<Omit<SearchResponse, 'facetValues' | 'collections'>> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 
@@ -20,9 +20,26 @@ export class SearchResolver {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 
+    @ResolveField()
+    async collections(...args: any[]): Promise<Array<{ collection: Collection; count: number }>> {
+        throw new InternalServerError(`error.no-search-plugin-configured`);
+    }
+
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async reindex(...args: any[]): Promise<any> {
+        throw new InternalServerError(`error.no-search-plugin-configured`);
+    }
+
+    @Query()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
+        throw new InternalServerError(`error.no-search-plugin-configured`);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async runPendingSearchIndexUpdates(...args: any[]): Promise<any> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 }

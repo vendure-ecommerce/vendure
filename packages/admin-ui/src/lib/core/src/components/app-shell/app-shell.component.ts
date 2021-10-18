@@ -46,7 +46,7 @@ export class AppShellComponent implements OnInit {
                 switchMap(currentLanguage =>
                     this.modalService.fromComponent(UiLanguageSwitcherDialogComponent, {
                         closable: true,
-                        size: 'sm',
+                        size: 'md',
                         locals: {
                             availableLanguages: this.availableLanguages,
                             currentLanguage,

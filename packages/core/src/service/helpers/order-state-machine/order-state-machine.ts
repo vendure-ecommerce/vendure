@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -10,13 +11,14 @@ import { StateMachineConfig, Transitions } from '../../../common/finite-state-ma
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 import {
     orderItemsAreAllCancelled,
     orderItemsAreDelivered,
@@ -98,6 +100,20 @@ export class OrderStateMachine {
             const deficit = data.order.totalWithTax - totalCoveredByPayments(data.order);
             if (0 < deficit) {
                 return `message.cannot-transition-from-arranging-additional-payment`;
+            }
+        }
+        if (fromState === 'AddingItems') {
+            const variantIds = unique(data.order.lines.map(l => l.productVariant.id));
+            const qb = this.connection
+                .getRepository(data.ctx, ProductVariant)
+                .createQueryBuilder('variant')
+                .leftJoin('variant.product', 'product')
+                .where('variant.deletedAt IS NULL')
+                .andWhere('product.deletedAt IS NULL')
+                .andWhere('variant.id IN (:...variantIds)', { variantIds });
+            const availableVariants = await qb.getMany();
+            if (availableVariants.length !== variantIds.length) {
+                return `message.cannot-transition-order-contains-products-which-are-unavailable`;
             }
         }
         if (toState === 'ArrangingPayment') {

@@ -6,12 +6,15 @@ import { RequestHandler } from 'express';
 import { ValidationContext } from 'graphql';
 import { ConnectionOptions } from 'typeorm';
 
+import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
+import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-storage-strategy';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
+import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
@@ -23,6 +26,7 @@ import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
 import { CustomOrderProcess } from './order/custom-order-process';
+import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
@@ -70,7 +74,7 @@ export interface ApiOptions {
     adminApiPath?: string;
     /**
      * @description
-     * The path to the admin GraphQL API.
+     * The path to the shop GraphQL API.
      *
      * @default 'shop-api'
      */
@@ -101,12 +105,28 @@ export interface ApiOptions {
     adminApiDebug?: boolean;
     /**
      * @description
-     * The debug config to the admin GraphQL API
+     * The debug config to the shop GraphQL API
      * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
      * @default false
      */
     shopApiDebug?: boolean;
+    /**
+     * @description
+     * The maximum number of items that may be returned by a query which returns a `PaginatedList` response. In other words,
+     * this is the upper limit of the `take` input option.
+     *
+     * @default 100
+     */
+    shopListQueryLimit?: number;
+    /**
+     * @description
+     * The maximum number of items that may be returned by a query which returns a `PaginatedList` response. In other words,
+     * this is the upper limit of the `take` input option.
+     *
+     * @default 1000
+     */
+    adminListQueryLimit?: number;
     /**
      * @description
      * Custom functions to use as additional validation rules when validating the schema for the admin GraphQL API
@@ -145,8 +165,7 @@ export interface ApiOptions {
      *
      * @default []
      */
-    // tslint:disable-next-line:ban-types
-    middleware?: Array<{ handler: Type<any> | Function; route: string }>;
+    middleware?: Middleware[];
     /**
      * @description
      * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
@@ -179,7 +198,12 @@ export interface CookieOptions {
 
     /**
      * @description
-     * A string which will be used as single key if keys is not provided.
+     * The secret used for signing the session cookies for authenticated users. Only applies
+     * tokenMethod is set to 'cookie'.
+     *
+     * In production applications, this should not be stored as a string in
+     * source control for security reasons, but may be loaded from an external
+     * file not under source control, or from an environment variable, for example.
      *
      * @default (random character string)
      */
@@ -274,24 +298,11 @@ export interface AuthOptions {
      * `authTokenHeaderKey` in the server's CORS configuration (adding `Access-Control-Expose-Headers: vendure-auth-token`
      * by default).
      *
+     * From v1.2.0 it is possible to specify both methods as a tuple: `['cookie', 'bearer']`.
+     *
      * @default 'cookie'
      */
-    tokenMethod?: 'cookie' | 'bearer';
-    /**
-     * @description
-     * **Deprecated** use `cookieConfig.secret` instead.
-     *
-     * The secret used for signing the session cookies for authenticated users. Only applies when
-     * tokenMethod is set to 'cookie'.
-     *
-     * In production applications, this should not be stored as a string in
-     * source control for security reasons, but may be loaded from an external
-     * file not under source control, or from an environment variable, for example.
-     *
-     * @default 'session-secret'
-     * @deprecated use `cookieConfig.secret` instead
-     */
-    sessionSecret?: string;
+    tokenMethod?: 'cookie' | 'bearer' | ReadonlyArray<'cookie' | 'bearer'>;
     /**
      * @description
      * Options related to the handling of cookies when using the 'cookie' tokenMethod.
@@ -341,7 +352,7 @@ export interface AuthOptions {
      * `password` property - doing so will result in an error. Instead, the password is set at a later stage
      * (once the email with the verification token has been opened) via the `verifyCustomerAccount` mutation.
      *
-     * @defaut true
+     * @default true
      */
     requireVerification?: boolean;
     /**
@@ -381,6 +392,14 @@ export interface AuthOptions {
      * @default []
      */
     customPermissions?: PermissionDefinition[];
+    /**
+     * @description
+     * Allows you to customize the way passwords are hashed when using the {@link NativeAuthenticationStrategy}.
+     *
+     * @default BcryptPasswordHashingStrategy
+     * @since 1.3.0
+     */
+    passwordHashingStrategy?: PasswordHashingStrategy;
 }
 
 /**
@@ -467,6 +486,17 @@ export interface OrderOptions {
     orderCodeStrategy?: OrderCodeStrategy;
     /**
      * @description
+     * Defines the strategy used to check if and how an Order may be retrieved via the orderByCode query.
+     *
+     * The default strategy permits permanent access to the Customer owning the Order and anyone
+     * within 2 hours after placing the Order.
+     *
+     * @since 1.1.0
+     * @default DefaultOrderByCodeAccessStrategy
+     */
+    orderByCodeAccessStrategy?: OrderByCodeAccessStrategy;
+    /**
+     * @description
      * Defines how we handle the situation where an OrderItem exists in an Order, and
      * then later on another is added but in the mean time the price of the ProductVariant has changed.
      *
@@ -547,7 +577,7 @@ export interface CatalogOptions {
      *
      * @default defaultCollectionFilters
      */
-    collectionFilters: Array<CollectionFilter<any>>;
+    collectionFilters?: Array<CollectionFilter<any>>;
     /**
      * @description
      * Defines the strategy used for calculating the price of ProductVariants based
@@ -555,7 +585,7 @@ export interface CatalogOptions {
      *
      * @default DefaultTaxCalculationStrategy
      */
-    productVariantPriceCalculationStrategy: ProductVariantPriceCalculationStrategy;
+    productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
     /**
      * @description
      * Defines how the `ProductVariant.stockLevel` value is obtained. It is usually not desirable
@@ -567,7 +597,7 @@ export interface CatalogOptions {
      *
      * @default DefaultStockDisplayStrategy
      */
-    stockDisplayStrategy: StockDisplayStrategy;
+    stockDisplayStrategy?: StockDisplayStrategy;
 }
 
 /**
@@ -716,13 +746,74 @@ export interface JobQueueOptions {
      * @default InMemoryJobQueueStrategy
      */
     jobQueueStrategy?: JobQueueStrategy;
+    jobBufferStorageStrategy?: JobBufferStorageStrategy;
     /**
      * @description
      * Defines the queues that will run in this process.
      * This can be used to configure only certain queues to run in this process.
-     * If its empty all queues will be run
+     * If its empty all queues will be run. Note: this option is primarily intended
+     * to apply to the Worker process. Jobs will _always_ get published to the queue
+     * regardless of this setting, but this setting determines whether they get
+     * _processed_ or not.
      */
     activeQueues?: string[];
+    /**
+     * @description
+     * When set to `true`, a health check will be run on the worker. This is done by
+     * adding a `check-worker-health` job to the job queue, which, when successfully
+     * processed by the worker, indicates that it is healthy.
+     *
+     * **Important Note:** This health check is unreliable and can be affected by
+     * existing long running jobs, see [this issue](https://github.com/vendure-ecommerce/vendure/issues/1112)
+     * for further details. For this reason, the health check will be removed entirely in the next major version.
+     *
+     * @since 1.3.0
+     * @default false
+     */
+    enableWorkerHealthCheck?: boolean;
+}
+
+/**
+ * @description
+ * Options relating to the internal handling of entities.
+ *
+ * @since 1.3.0
+ * @docsCategory configuration
+ */
+export interface EntityOptions {
+    /**
+     * @description
+     * Defines the strategy used for both storing the primary keys of entities
+     * in the database, and the encoding & decoding of those ids when exposing
+     * entities via the API. The default uses a simple auto-increment integer
+     * strategy.
+     *
+     * @since 1.3.0
+     * @default AutoIncrementIdStrategy
+     */
+    entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
+     * Channels get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.3.0
+     * @default 30000
+     */
+    channelCacheTtl?: number;
+    /**
+     * @description
+     * Zones get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.3.0
+     * @default 30000
+     */
+    zoneCacheTtl?: number;
 }
 
 /**
@@ -790,9 +881,11 @@ export interface VendureConfig {
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
      *
+     * @deprecated Use entityOptions.entityIdStrategy instead
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    entityOptions?: EntityOptions;
     /**
      * @description
      * Configuration settings for data import and export.
@@ -857,7 +950,9 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     apiOptions: Required<ApiOptions>;
     assetOptions: Required<AssetOptions>;
     authOptions: Required<AuthOptions>;
+    catalogOptions: Required<CatalogOptions>;
     customFields: Required<CustomFields>;
+    entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
     orderOptions: Required<OrderOptions>;

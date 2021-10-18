@@ -27,3 +27,17 @@
 td.disabled {
     background-color: var(--color-component-bg-200);
 }
+.search-index-button {
+    position: relative;
+    vdr-status-badge {
+        right: 0;
+        top: 0;
+    }
+}
+.run-updates-button {
+    position: relative;
+    vdr-status-badge {
+        left: 10px;
+        top: 10px;
+    }
+}

@@ -1,4 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Brackets, FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
@@ -6,11 +7,14 @@ import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
+import { ApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
+import { UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
+import { Logger } from '../../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
@@ -18,27 +22,131 @@ import { parseChannelParam } from './parse-channel-param';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 
+/**
+ * @description
+ * Options which can be passed to the ListQueryBuilder's `build()` method.
+ *
+ * @docsCategory data-access
+ * @docsPage ListQueryBuilder
+ */
 export type ExtendedListQueryOptions<T extends VendureEntity> = {
     relations?: string[];
     channelId?: ID;
     where?: FindConditions<T>;
     orderBy?: FindOneOptions<T>['order'];
     /**
+     * @description
      * When a RequestContext is passed, then the query will be
      * executed as part of any outer transaction.
      */
     ctx?: RequestContext;
+    /**
+     * @description
+     * One of the main tasks of the ListQueryBuilder is to auto-generate filter and sort queries based on the
+     * available columns of a given entity. However, it may also be sometimes desirable to allow filter/sort
+     * on a property of a relation. In this case, the `customPropertyMap` can be used to define a property
+     * of the `options.sort` or `options.filter` which does not correspond to a direct column of the current
+     * entity, and then provide a mapping to the related property to be sorted/filtered.
+     *
+     * Example: we want to allow sort/filter by and Order's `customerLastName`. The actual lastName property is
+     * not a column in the Order table, it exists on the Customer entity, and Order has a relation to Customer via
+     * `Order.customer`. Therefore we can define a customPropertyMap like this:
+     *
+     * ```ts
+     * const qb = this.listQueryBuilder.build(Order, options, {
+     *   relations: ['customer'],
+     *   customPropertyMap: {
+     *       customerLastName: 'customer.lastName',
+     *   },
+     * };
+     * ```
+     */
+    customPropertyMap?: { [name: string]: string };
 };
 
+/**
+ * @description
+ * This helper class is used when fetching entities the database from queries which return a {@link PaginatedList} type.
+ * These queries all follow the same format:
+ *
+ * In the GraphQL definition, they return a type which implements the `Node` interface, and the query returns a
+ * type which implements the `PaginatedList` interface:
+ *
+ * ```GraphQL
+ * type BlogPost implements Node {
+ *   id: ID!
+ *   published: DataTime!
+ *   title: String!
+ *   body: String!
+ * }
+ *
+ * type BlogPostList implements PaginatedList {
+ *   items: [BlogPost!]!
+ *   totalItems: Int!
+ * }
+ *
+ * # Generated at run-time by Vendure
+ * input ProductListOptions
+ *
+ * extend type Query {
+ *    blogPosts(options: BlogPostListOptions): BlogPostList!
+ * }
+ * ```
+ * When Vendure bootstraps, it will find the `ProductListOptions` input and, because it is used in a query
+ * returning a `PaginatedList` type, it knows that it should dynamically generate this input. This means
+ * all primitive field of the `BlogPost` type (namely, "published", "title" and "body") will have `filter` and
+ * `sort` inputs created for them, as well a `skip` and `take` fields for pagination.
+ *
+ * Your resolver function will then look like this:
+ *
+ * ```TypeScript
+ * \@Resolver()
+ * export class BlogPostResolver
+ *   constructor(private blogPostService: BlogPostService) {}
+ *
+ *   \@Query()
+ *   async blogPosts(
+ *     \@Ctx() ctx: RequestContext,
+ *     \@Args() args: any,
+ *   ): Promise<PaginatedList<BlogPost>> {
+ *     return this.blogPostService.findAll(ctx, args.options || undefined);
+ *   }
+ * }
+ * ```
+ *
+ * and the corresponding service will use the ListQueryBuilder:
+ *
+ * ```TypeScript
+ * \@Injectable()
+ * export class BlogPostService {
+ *   constructor(private listQueryBuilder: ListQueryBuilder) {}
+ *
+ *   findAll(ctx: RequestContext, options?: ListQueryOptions<BlogPost>) {
+ *     return this.listQueryBuilder
+ *       .build(BlogPost, options)
+ *       .getManyAndCount()
+ *       .then(async ([items, totalItems]) => {
+ *         return { items, totalItems };
+ *       });
+ *   }
+ * }
+ * ```
+ *
+ * @docsCategory data-access
+ * @docsPage ListQueryBuilder
+ * @docsWeight 0
+ */
 @Injectable()
 export class ListQueryBuilder implements OnApplicationBootstrap {
     constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
+    /** @internal */
     onApplicationBootstrap(): any {
         this.registerSQLiteRegexpFunction();
     }
 
     /**
+     * @description
      * Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
      */
     build<T extends VendureEntity>(
@@ -46,18 +154,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         options: ListQueryOptions<T> = {},
         extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
+        const apiType = extendedOptions.ctx?.apiType ?? 'shop';
         const rawConnection = this.connection.rawConnection;
-        const skip = Math.max(options.skip ?? 0, 0);
-        let take = Math.max(options.take ?? 0, 0);
-        if (options.skip !== undefined && options.take === undefined) {
-            take = Number.MAX_SAFE_INTEGER;
-        }
-        const sort = parseSortParams(
-            rawConnection,
-            entity,
-            Object.assign({}, options.sort, extendedOptions.orderBy),
-        );
-        const filter = parseFilterParams(rawConnection, entity, options.filter);
+        const { take, skip } = this.parseTakeSkipParams(apiType, options);
 
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
@@ -77,9 +176,34 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
 
-        filter.forEach(({ clause, parameters }) => {
-            qb.andWhere(clause, parameters);
-        });
+        const { customPropertyMap } = extendedOptions;
+        if (customPropertyMap) {
+            this.normalizeCustomPropertyMap(customPropertyMap, qb);
+        }
+        const sort = parseSortParams(
+            rawConnection,
+            entity,
+            Object.assign({}, options.sort, extendedOptions.orderBy),
+            customPropertyMap,
+        );
+        const filter = parseFilterParams(rawConnection, entity, options.filter, customPropertyMap);
+
+        if (filter.length) {
+            const filterOperator = options.filterOperator ?? LogicalOperator.AND;
+            if (filterOperator === LogicalOperator.AND) {
+                filter.forEach(({ clause, parameters }) => {
+                    qb.andWhere(clause, parameters);
+                });
+            } else {
+                qb.andWhere(
+                    new Brackets(qb1 => {
+                        filter.forEach(({ clause, parameters }) => {
+                            qb1.orWhere(clause, parameters);
+                        });
+                    }),
+                );
+            }
+        }
 
         if (extendedOptions.channelId) {
             const channelFilter = parseChannelParam(rawConnection, entity, extendedOptions.channelId);
@@ -90,6 +214,53 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         qb.orderBy(sort);
         return qb;
+    }
+
+    private parseTakeSkipParams(
+        apiType: ApiType,
+        options: ListQueryOptions<any>,
+    ): { take: number; skip: number } {
+        const { shopListQueryLimit, adminListQueryLimit } = this.configService.apiOptions;
+        const takeLimit = apiType === 'admin' ? adminListQueryLimit : shopListQueryLimit;
+        if (options.take && options.take > takeLimit) {
+            throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
+        }
+        const rawConnection = this.connection.rawConnection;
+        const skip = Math.max(options.skip ?? 0, 0);
+        // `take` must not be negative, and must not be greater than takeLimit
+        let take = Math.min(Math.max(options.take ?? 0, 0), takeLimit) || takeLimit;
+        if (options.skip !== undefined && options.take === undefined) {
+            take = takeLimit;
+        }
+        return { take, skip };
+    }
+
+    /**
+     * If a customPropertyMap is provided, we need to take the path provided and convert it to the actual
+     * relation aliases being used by the SelectQueryBuilder.
+     *
+     * This method mutates the customPropertyMap object.
+     */
+    private normalizeCustomPropertyMap(
+        customPropertyMap: { [name: string]: string },
+        qb: SelectQueryBuilder<any>,
+    ) {
+        for (const [key, value] of Object.entries(customPropertyMap)) {
+            const parts = customPropertyMap[key].split('.');
+            const entityPart = 2 <= parts.length ? parts[parts.length - 2] : qb.alias;
+            const columnPart = parts[parts.length - 1];
+            const relationAlias = qb.expressionMap.aliases.find(
+                a => a.metadata.tableNameWithoutPrefix === entityPart,
+            );
+            if (relationAlias) {
+                customPropertyMap[key] = `${relationAlias.name}.${columnPart}`;
+            } else {
+                Logger.error(
+                    `The customPropertyMap entry "${key}:${value}" could not be resolved to a related table`,
+                );
+                delete customPropertyMap[key];
+            }
+        }
     }
 
     /**
@@ -179,11 +350,29 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                                 );
                             }),
                         );
-                        qb.setParameters({
-                            nonDefaultLanguageCode: languageCode,
-                            defaultLanguageCode: this.configService.defaultLanguageCode,
-                        });
+                    } else {
+                        qb1.orWhere(
+                            new Brackets(qb2 => {
+                                const translationEntity = translationColumns[0].entityMetadata.target;
+                                const subQb1 = this.connection.rawConnection
+                                    .createQueryBuilder(translationEntity, 'translation')
+                                    .where(`translation.base = ${alias}.id`)
+                                    .andWhere('translation.languageCode = :defaultLanguageCode');
+                                const subQb2 = this.connection.rawConnection
+                                    .createQueryBuilder(translationEntity, 'translation')
+                                    .where(`translation.base = ${alias}.id`)
+                                    .andWhere('translation.languageCode != :defaultLanguageCode');
+
+                                qb2.where(`NOT EXISTS (${subQb1.getQuery()})`).andWhere(
+                                    `EXISTS (${subQb2.getQuery()})`,
+                                );
+                            }),
+                        );
                     }
+                    qb.setParameters({
+                        nonDefaultLanguageCode: languageCode,
+                        defaultLanguageCode: this.configService.defaultLanguageCode,
+                    });
                 }),
             );
         }

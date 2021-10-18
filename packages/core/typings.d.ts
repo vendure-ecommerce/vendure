@@ -9,6 +9,6 @@ declare module 'i18next-icu' {
     // default
 }
 
-declare module 'i18next-node-fs-backend' {
+declare module 'i18next-fs-backend' {
     // default
 }

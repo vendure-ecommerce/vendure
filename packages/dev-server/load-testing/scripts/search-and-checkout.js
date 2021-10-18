@@ -11,7 +11,7 @@ const getShippingMethodsQuery = new ShopApiRequest('shop/get-shipping-methods.gr
 const completeOrderMutation = new ShopApiRequest('shop/complete-order.graphql');
 
 export let options = {
-    stages: [{ duration: '4m', target: 500 }],
+    stages: [{ duration: '4m', target: 50 }],
 };
 
 /**

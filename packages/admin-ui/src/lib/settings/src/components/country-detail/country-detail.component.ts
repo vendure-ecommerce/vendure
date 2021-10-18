@@ -11,6 +11,7 @@ import {
     findTranslation,
     LanguageCode,
     NotificationService,
+    Permission,
     ServerConfigService,
     UpdateCountryInput,
 } from '@vendure/admin-ui/core';
@@ -27,6 +28,7 @@ export class CountryDetailComponent
     implements OnInit, OnDestroy {
     country$: Observable<Country.Fragment>;
     detailForm: FormGroup;
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateCountry];
 
     constructor(
         router: Router,

@@ -5,6 +5,7 @@ import { LocalStorageService } from '../../providers/local-storage/local-storage
 
 export function getClientDefaults(localStorageService: LocalStorageService) {
     const currentLanguage = localStorageService.get('uiLanguageCode') || getDefaultUiLanguage();
+    const currentContentLanguage = localStorageService.get('contentLanguageCode') || getDefaultUiLanguage();
     const activeTheme = localStorageService.get('activeTheme') || 'default';
     return {
         networkStatus: {
@@ -22,6 +23,7 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
         } as GetUserStatus.UserStatus,
         uiState: {
             language: currentLanguage,
+            contentLanguage: currentContentLanguage,
             theme: activeTheme,
             __typename: 'UiState',
         } as GetUiState.UiState,

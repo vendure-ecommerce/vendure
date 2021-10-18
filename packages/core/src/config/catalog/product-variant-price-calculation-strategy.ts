@@ -2,7 +2,6 @@ import { RequestContext } from '../../api/common/request-context';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { TaxCategory, Zone } from '../../entity/index';
-import { TaxRateService } from '../../service/services/tax-rate.service';
 
 /**
  * @description
@@ -28,12 +27,3 @@ export interface ProductVariantPriceCalculationArgs {
     activeTaxZone: Zone;
     ctx: RequestContext;
 }
-
-/**
- * @description
- * This is an alias of {@link ProductVariantPriceCalculationStrategy} to preserve compatibility when upgrading.
- *
- * @deprecated Use ProductVariantPriceCalculationStrategy
- * @docsCategory tax
- */
-export interface TaxCalculationStrategy extends ProductVariantPriceCalculationStrategy {}

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
-import { Type } from '@vendure/common/lib/shared-types';
+import { ConfigurableOperation, ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 
-import { ConfigurableOperation } from '../../../../../common/lib/generated-types';
 import { ConfigurableOperationDef } from '../../../common/configurable-operation';
 import { UserInputError } from '../../../common/error/errors';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
@@ -92,18 +90,21 @@ export class ConfigArgService {
         for (const [name, argDef] of Object.entries(def.args)) {
             if (argDef.required) {
                 const inputArg = input.arguments.find(a => a.name === name);
-                let val: unknown;
-                if (inputArg) {
-                    try {
-                        val = JSON.parse(inputArg?.value);
-                    } catch (e) {
-                        // ignore
+
+                let valid = false;
+                try {
+                    if (['string', 'ID', 'datetime'].includes(argDef.type)) {
+                        valid = !!inputArg && inputArg.value !== '' && inputArg.value != null;
+                    } else {
+                        valid = !!inputArg && JSON.parse(inputArg.value) != null;
                     }
+                } catch (e) {
+                    // ignore
                 }
-                if (val == null) {
+
+                if (!valid) {
                     throw new UserInputError('error.configurable-argument-is-required', {
                         name,
-                        value: String(val),
                     });
                 }
             }

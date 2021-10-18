@@ -1,4 +1,4 @@
-import { stitchSchemas } from '@graphql-tools/stitch';
+import { stitchSchemas, ValidationLevel } from '@graphql-tools/stitch';
 import {
     buildASTSchema,
     GraphQLInputFieldConfigMap,
@@ -46,5 +46,9 @@ export function generateAuthenticationTypes(
         fields,
     });
 
-    return stitchSchemas({ schemas: [schema, ...strategySchemas, [authenticationInput]] });
+    return stitchSchemas({
+        subschemas: [schema, ...strategySchemas],
+        types: [authenticationInput],
+        typeMergingOptions: { validationSettings: { validationLevel: ValidationLevel.Off } },
+    });
 }

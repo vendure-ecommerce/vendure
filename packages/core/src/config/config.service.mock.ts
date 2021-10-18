@@ -23,6 +23,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     defaultLanguageCode: jest.Mock<any>;
     roundingStrategy: {};
     entityIdStrategy = new MockIdStrategy();
+    entityOptions = {};
     assetOptions = {
         assetNamingStrategy: {} as any,
         assetStorageStrategy: {} as any,

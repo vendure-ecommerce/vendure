@@ -3,12 +3,19 @@ type Query {
     jobs(options: JobListOptions): JobList!
     jobsById(jobIds: [ID!]!): [Job!]!
     jobQueues: [JobQueue!]!
+    jobBufferSize(bufferIds: [String!]): [JobBufferSize!]!
 }
 
 type Mutation {
-    "Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted."
+    "Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted."
     removeSettledJobs(queueNames: [String!], olderThan: DateTime): Int!
     cancelJob(jobId: ID!): Job!
+    flushBufferedJobs(bufferIds: [String!]): Success!
+}
+
+type JobBufferSize {
+    bufferId: String!
+    size: Int!
 }
 
 """
@@ -46,6 +53,8 @@ type Job implements Node {
     error: JSON
     isSettled: Boolean!
     duration: Int!
+    retries: Int!
+    attempts: Int!
 }
 
 type JobQueue {

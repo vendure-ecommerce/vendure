@@ -248,6 +248,18 @@ export const GET_FACET_LIST = gql`
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
 
+export const GET_FACET_LIST_SIMPLE = gql`
+    query GetFacetListSimple($options: FacetListOptions) {
+        facets(options: $options) {
+            items {
+                id
+                name
+            }
+            totalItems
+        }
+    }
+`;
+
 export const DELETE_PRODUCT = gql`
     mutation DeleteProduct($id: ID!) {
         deleteProduct(id: $id) {
@@ -897,4 +909,16 @@ export const REMOVE_PROMOTIONS_FROM_CHANNEL = gql`
             name
         }
     }
+`;
+
+export const GET_TAX_RATES_LIST = gql`
+    query GetTaxRates($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                ...TaxRate
+            }
+            totalItems
+        }
+    }
+    ${TAX_RATE_FRAGMENT}
 `;

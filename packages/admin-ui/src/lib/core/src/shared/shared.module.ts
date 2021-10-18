@@ -73,6 +73,7 @@ import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/l
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
+import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { TagSelectorComponent } from './components/tag-selector/tag-selector.component';
 import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
@@ -103,6 +104,7 @@ import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-
 import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
+import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
@@ -112,6 +114,7 @@ import { HasPermissionPipe } from './pipes/has-permission.pipe';
 import { LocaleCurrencyNamePipe } from './pipes/locale-currency-name.pipe';
 import { LocaleCurrencyPipe } from './pipes/locale-currency.pipe';
 import { LocaleDatePipe } from './pipes/locale-date.pipe';
+import { LocaleLanguageNamePipe } from './pipes/locale-language-name.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
@@ -212,7 +215,12 @@ const DECLARATIONS = [
     AddressFormComponent,
     LocaleDatePipe,
     LocaleCurrencyPipe,
+    LocaleLanguageNamePipe,
     TagSelectorComponent,
+    ManageTagsDialogComponent,
+    RelationSelectorDialogComponent,
+    RelationCardComponent,
+    StatusBadgeComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -233,18 +241,13 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardPreviewDirective,
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
+    TextareaFormInputComponent,
 ];
 
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [
-        ...DECLARATIONS,
-        ...DYNAMIC_FORM_INPUTS,
-        ManageTagsDialogComponent,
-        RelationSelectorDialogComponent,
-        RelationCardComponent,
-    ],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which

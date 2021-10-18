@@ -36,6 +36,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Address } from '../../entity/address/address.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -45,6 +46,8 @@ import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { CustomerAddressEvent } from '../../event-bus/events/customer-address-event';
+import { CustomerEvent } from '../../event-bus/events/customer-event';
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
@@ -53,13 +56,18 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { addressToLine } from '../helpers/utils/address-to-line';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { HistoryService } from './history.service';
 import { UserService } from './user.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Customer} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class CustomerService {
     constructor(
@@ -95,6 +103,12 @@ export class CustomerService {
         });
     }
 
+    /**
+     * @description
+     * Returns the Customer entity associated with the given userId, if one exists.
+     * Setting `filterOnChannel` to `true` will limit the results to Customers which are assigned
+     * to the current active Channel only.
+     */
     findOneByUserId(ctx: RequestContext, userId: ID, filterOnChannel = true): Promise<Customer | undefined> {
         let query = this.connection
             .getRepository(ctx, Customer)
@@ -109,6 +123,10 @@ export class CustomerService {
         return query.getOne();
     }
 
+    /**
+     * @description
+     * Returns all {@link Address} entities associated with the specified Customer.
+     */
     findAddressesByCustomerId(ctx: RequestContext, customerId: ID): Promise<Address[]> {
         return this.connection
             .getRepository(ctx, Address)
@@ -125,6 +143,10 @@ export class CustomerService {
             });
     }
 
+    /**
+     * @description
+     * Returns a list of all {@link CustomerGroup} entities.
+     */
     async getCustomerGroups(ctx: RequestContext, customerId: ID): Promise<CustomerGroup[]> {
         const customerWithGroups = await this.connection.findOneInChannel(
             ctx,
@@ -145,6 +167,17 @@ export class CustomerService {
         }
     }
 
+    /**
+     * @description
+     * Creates a new Customer, including creation of a new User with the special `customer` Role.
+     *
+     * If the `password` argument is specified, the Customer will be immediately verified. If not,
+     * then an {@link AccountRegistrationEvent} is published, so that the customer can have their
+     * email address verified and set their password in a later step using the `verifyCustomerEmailAddress()`
+     * method.
+     *
+     * This method is intended to be used in admin-created Customer flows.
+     */
     async create(
         ctx: RequestContext,
         input: CreateCustomerInput,
@@ -206,7 +239,7 @@ export class CustomerService {
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
-        this.channelService.assignToCurrentChannel(customer, ctx);
+        await this.channelService.assignToCurrentChannel(customer, ctx);
         const createdCustomer = await this.connection.getRepository(ctx, Customer).save(customer);
         await this.customFieldRelationService.updateRelations(ctx, Customer, input, createdCustomer);
         await this.historyService.createHistoryEntryForCustomer({
@@ -228,6 +261,7 @@ export class CustomerService {
                 },
             });
         }
+        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created'));
         return createdCustomer;
     }
 
@@ -243,25 +277,44 @@ export class CustomerService {
         const hasEmailAddress = (i: any): i is UpdateCustomerInput & { emailAddress: string } =>
             Object.hasOwnProperty.call(i, 'emailAddress');
 
-        if (hasEmailAddress(input)) {
-            const existingCustomerInChannel = await this.connection
-                .getRepository(ctx, Customer)
-                .createQueryBuilder('customer')
-                .leftJoin('customer.channels', 'channel')
-                .where('channel.id = :channelId', { channelId: ctx.channelId })
-                .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
-                .andWhere('customer.id != :customerId', { customerId: input.id })
-                .andWhere('customer.deletedAt is null')
-                .getOne();
-
-            if (existingCustomerInChannel) {
-                return new EmailAddressConflictAdminError();
-            }
-        }
-
         const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id, {
             channelId: ctx.channelId,
         });
+
+        if (hasEmailAddress(input)) {
+            if (input.emailAddress !== customer.emailAddress) {
+                const existingCustomerInChannel = await this.connection
+                    .getRepository(ctx, Customer)
+                    .createQueryBuilder('customer')
+                    .leftJoin('customer.channels', 'channel')
+                    .where('channel.id = :channelId', { channelId: ctx.channelId })
+                    .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                    .andWhere('customer.id != :customerId', { customerId: input.id })
+                    .andWhere('customer.deletedAt is null')
+                    .getOne();
+
+                if (existingCustomerInChannel) {
+                    return new EmailAddressConflictAdminError();
+                }
+
+                if (customer.user) {
+                    const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
+                        ctx,
+                        input.emailAddress,
+                    );
+
+                    if (
+                        existingUserWithEmailAddress &&
+                        !idsAreEqual(customer.user.id, existingUserWithEmailAddress.id)
+                    ) {
+                        return new EmailAddressConflictAdminError();
+                    }
+
+                    await this.userService.changeNativeIdentifier(ctx, customer.user.id, input.emailAddress);
+                }
+            }
+        }
+
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Customer, input, updatedCustomer);
@@ -273,9 +326,18 @@ export class CustomerService {
                 input,
             },
         });
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated'));
         return assertFound(this.findOne(ctx, customer.id));
     }
 
+    /**
+     * @description
+     * Registers a new Customer account with the {@link NativeAuthenticationStrategy} and starts
+     * the email verification flow (unless {@link AuthOptions} `requireVerification` is set to `false`)
+     * by publishing an {@link AccountRegistrationEvent}.
+     *
+     * This method is intended to be used in storefront Customer-creation flows.
+     */
     async registerCustomerAccount(
         ctx: RequestContext,
         input: RegisterCustomerInput,
@@ -334,7 +396,9 @@ export class CustomerService {
         if (!user.verified) {
             user = await this.userService.setVerificationToken(ctx, user);
         }
+
         customer.user = user;
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
@@ -351,6 +415,11 @@ export class CustomerService {
         return { success: true };
     }
 
+    /**
+     * @description
+     * Refreshes a stale email address verification token by generating a new one and
+     * publishing a {@link AccountRegistrationEvent}.
+     */
     async refreshVerificationToken(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.getUserByEmailAddress(ctx, emailAddress);
         if (user) {
@@ -361,6 +430,11 @@ export class CustomerService {
         }
     }
 
+    /**
+     * @description
+     * Given a valid verification token which has been published in an {@link AccountRegistrationEvent}, this
+     * method is used to set the Customer as `verified` as part of the account registration flow.
+     */
     async verifyCustomerEmailAddress(
         ctx: RequestContext,
         verificationToken: string,
@@ -370,9 +444,12 @@ export class CustomerService {
         if (isGraphQlErrorResult(result)) {
             return result;
         }
-        const customer = await this.findOneByUserId(ctx, result.id);
+        const customer = await this.findOneByUserId(ctx, result.id, false);
         if (!customer) {
             throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        if (ctx.channelId) {
+            await this.channelService.assignToChannels(ctx, Customer, customer.id, [ctx.channelId]);
         }
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
@@ -385,6 +462,11 @@ export class CustomerService {
         return assertFound(this.findOneByUserId(ctx, result.id));
     }
 
+    /**
+     * @description
+     * Publishes a new {@link PasswordResetEvent} for the given email address. This event creates
+     * a token which can be used in the `resetPassword()` method.
+     */
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.setPasswordResetToken(ctx, emailAddress);
         if (user) {
@@ -402,6 +484,11 @@ export class CustomerService {
         }
     }
 
+    /**
+     * @description
+     * Given a valid password reset token created by a call to the `requestPasswordReset()` method,
+     * this method will change the Customer's password to that given as the `password` argument.
+     */
     async resetPassword(
         ctx: RequestContext,
         passwordResetToken: string,
@@ -424,6 +511,12 @@ export class CustomerService {
         return result;
     }
 
+    /**
+     * @description
+     * Publishes a {@link IdentifierChangeRequestEvent} for the given User. This event contains a token
+     * which is then used in the `updateEmailAddress()` method to change the email address of the User &
+     * Customer.
+     */
     async requestUpdateEmailAddress(
         ctx: RequestContext,
         userId: ID,
@@ -479,6 +572,11 @@ export class CustomerService {
         }
     }
 
+    /**
+     * @description
+     * Given a valid email update token published in a {@link IdentifierChangeRequestEvent}, this method
+     * will update the Customer & User email address.
+     */
     async updateEmailAddress(
         ctx: RequestContext,
         token: string,
@@ -511,6 +609,7 @@ export class CustomerService {
     }
 
     /**
+     * @description
      * For guest checkouts, we assume that a matching email address is the same customer.
      */
     async createOrUpdate(
@@ -535,12 +634,17 @@ export class CustomerService {
             customer = patchEntity(existing, input);
             customer.channels.push(await this.connection.getEntityOrThrow(ctx, Channel, ctx.channelId));
         } else {
-            customer = new Customer(input);
-            this.channelService.assignToCurrentChannel(customer, ctx);
+            customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
+            await this.channelService.assignToCurrentChannel(customer, ctx);
+            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);
     }
 
+    /**
+     * @description
+     * Creates a new {@link Address} for the given Customer.
+     */
     async createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput): Promise<Address> {
         const customer = await this.connection.getEntityOrThrow(ctx, Customer, customerId, {
             where: { deletedAt: null },
@@ -564,6 +668,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
+        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created'));
         return createdAddress;
     }
 
@@ -599,6 +704,7 @@ export class CustomerService {
                 input,
             },
         });
+        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated'));
         return updatedAddress;
     }
 
@@ -626,6 +732,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
+        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted'));
         return true;
     }
 
@@ -638,6 +745,7 @@ export class CustomerService {
             .update({ id: customerId }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, customer.user!.id);
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };

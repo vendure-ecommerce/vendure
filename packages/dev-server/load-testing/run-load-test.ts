@@ -1,6 +1,6 @@
 /* tslint:disable:no-console */
 import { INestApplication } from '@nestjs/common';
-import { bootstrap } from '@vendure/core';
+import { bootstrap, JobQueueService } from '@vendure/core';
 import { spawn } from 'child_process';
 import stringify from 'csv-stringify';
 import fs from 'fs';
@@ -30,6 +30,7 @@ if (require.main === module) {
         if (code === 0) {
             return bootstrap(getLoadTestConfig('cookie'))
                 .then(async app => {
+                    // await app.get(JobQueueService).start();
                     const summaries: LoadTestSummary[] = [];
                     for (const script of scriptsToRun) {
                         const summary = await runLoadTestScript(script);
@@ -157,8 +158,5 @@ async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
 }
 
 function getDateString(): string {
-    return new Date()
-        .toISOString()
-        .split('.')[0]
-        .replace(/[:\.]/g, '_');
+    return new Date().toISOString().split('.')[0].replace(/[:\.]/g, '_');
 }

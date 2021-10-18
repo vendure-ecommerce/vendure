@@ -15,11 +15,13 @@
     [tags]="allTags$ | async"
     (searchTermChange)="searchTerm$.next($event)"
     (tagsChange)="filterByTags$.next($event)"
+    #assetSearchInputComponent
 ></vdr-asset-search-input>
 <vdr-asset-gallery
     [assets]="(assets$ | async)! | paginate: paginationConfig"
     [multiSelect]="multiSelect"
     (selectionChange)="selection = $event"
+    #assetGalleryComponent
 ></vdr-asset-gallery>
 
 <div class="paging-controls">

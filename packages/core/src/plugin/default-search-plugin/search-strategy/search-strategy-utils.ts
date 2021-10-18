@@ -55,10 +55,10 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         collectionIds: raw.si_collectionIds.split(',').map((x: string) => x.trim()),
         channelIds: raw.si_channelIds.split(',').map((x: string) => x.trim()),
         productAsset,
-        productPreview: raw.si_productPreview,
         productVariantAsset,
-        productVariantPreview: raw.si_productVariantPreview,
         score: raw.score || 0,
+        // @ts-ignore
+        inStock: raw.si_inStock,
     };
 }
 
@@ -71,6 +71,23 @@ export function createFacetIdCountMap(facetValuesResult: Array<{ facetValues: st
     for (const res of facetValuesResult) {
         const facetValueIds: ID[] = unique(res.facetValues.split(',').filter(x => x !== ''));
         for (const id of facetValueIds) {
+            const count = result.get(id);
+            const newCount = count ? count + 1 : 1;
+            result.set(id, newCount);
+        }
+    }
+    return result;
+}
+
+/**
+ * Given the raw query results containing rows with a `collections` property line "1,2,1,2",
+ * this function returns a map of Collection ids => count of how many times they occur.
+ */
+export function createCollectionIdCountMap(collectionsResult: Array<{ collections: string }>) {
+    const result = new Map<ID, number>();
+    for (const res of collectionsResult) {
+        const collectionIds: ID[] = unique(res.collections.split(',').filter(x => x !== ''));
+        for (const id of collectionIds) {
             const count = result.get(id);
             const newCount = count ? count + 1 : 1;
             result.set(id, newCount);

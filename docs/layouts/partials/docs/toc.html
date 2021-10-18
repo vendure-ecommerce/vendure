@@ -1,6 +1,0 @@
-{{ $showToC := default (default true .Site.Params.BookShowToC) .Params.showtoc }}
-  {{ if and ($showToC) (.Page.TableOfContents) }}
-  <aside class="book-toc fixed">
-    {{ .Page.TableOfContents }}
-  </aside>
-{{ end }}

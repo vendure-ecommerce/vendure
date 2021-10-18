@@ -12,6 +12,7 @@ import { RequestContextCacheService } from '../../cache';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
@@ -20,10 +21,15 @@ import { EventBus } from '../../event-bus/event-bus';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 const activeTaxRatesKey = 'active-tax-rates';
 
+/**
+ * @description
+ * Contains methods relating to {@link TaxRate} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class TaxRateService {
     private readonly defaultTaxRate = new TaxRate({
@@ -122,16 +128,21 @@ export class TaxRateService {
         }
     }
 
+    /**
+     * @description
+     * Returns the applicable TaxRate based on the specified Zone and TaxCategory. Used when calculating Order
+     * prices.
+     */
     async getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory): Promise<TaxRate> {
         const rate = (await this.getActiveTaxRates(ctx)).find(r => r.test(zone, taxCategory));
         return rate || this.defaultTaxRate;
     }
 
-    async getActiveTaxRates(ctx: RequestContext): Promise<TaxRate[]> {
+    private async getActiveTaxRates(ctx: RequestContext): Promise<TaxRate[]> {
         return this.cacheService.get(ctx, activeTaxRatesKey, () => this.findActiveTaxRates(ctx));
     }
 
-    async updateActiveTaxRates(ctx: RequestContext) {
+    private async updateActiveTaxRates(ctx: RequestContext) {
         this.cacheService.set(ctx, activeTaxRatesKey, await this.findActiveTaxRates(ctx));
     }
 

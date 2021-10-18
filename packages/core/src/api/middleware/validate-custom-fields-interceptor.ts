@@ -2,6 +2,7 @@ import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nes
 import { ModuleRef } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import {
     GraphQLInputType,
     GraphQLList,
@@ -50,12 +51,15 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
                 for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
                     if (this.inputsWithCustomFields.has(typeName)) {
                         if (variables[inputName]) {
-                            await this.validateInput(
-                                typeName,
-                                ctx.languageCode,
-                                injector,
+                            const inputVariables: Array<Record<string, any>> = Array.isArray(
                                 variables[inputName],
-                            );
+                            )
+                                ? variables[inputName]
+                                : [variables[inputName]];
+
+                            for (const inputVariable of inputVariables) {
+                                await this.validateInput(typeName, ctx.languageCode, injector, inputVariable);
+                            }
                         }
                     }
                 }
@@ -105,7 +109,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         injector: Injector,
     ) {
         for (const [key, value] of Object.entries(customFieldsObject)) {
-            const config = customFieldConfig.find(c => c.name === key);
+            const config = customFieldConfig.find(c => getGraphQlInputName(c) === key);
             if (config) {
                 await validateCustomFieldValue(config, value, injector, languageCode);
             }

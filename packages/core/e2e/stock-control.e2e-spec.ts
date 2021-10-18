@@ -63,6 +63,9 @@ describe('Stock control', () => {
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod, twoStagePaymentMethod],
             },
+            customFields: {
+                OrderLine: [{ name: 'customization', type: 'string', nullable: true }],
+            },
         }),
     );
 
@@ -922,6 +925,130 @@ describe('Stock control', () => {
                 expect((add2 as any).order.lines[0].productVariant.id).toBe(variant6Id);
                 expect((add2 as any).order.lines[0].quantity).toBe(3);
             });
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1028
+    describe('OrderLines with same variant but different custom fields', () => {
+        let orderId: string;
+
+        const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = `
+            mutation AddItemToOrderWithCustomFields(
+                $productVariantId: ID!
+                $quantity: Int!
+                $customFields: OrderLineCustomFieldsInput
+            ) {
+                addItemToOrder(
+                    productVariantId: $productVariantId
+                    quantity: $quantity
+                    customFields: $customFields
+                ) {
+                    ... on Order {
+                        id
+                        lines { id }
+                    }
+                    ... on ErrorResult {
+                        errorCode
+                        message
+                    }
+                }
+            }
+        `;
+
+        it('correctly allocates stock', async () => {
+            await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+
+            const product = await getProductWithStockMovement('T_2');
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant2.stockAllocated).toBe(0);
+
+            await shopClient.query<AddItemToOrder.Mutation, any>(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: variant2.id,
+                quantity: 1,
+                customFields: {
+                    customization: 'foo',
+                },
+            });
+            const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, any>(
+                gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS),
+                {
+                    productVariantId: variant2.id,
+                    quantity: 1,
+                    customFields: {
+                        customization: 'bar',
+                    },
+                },
+            );
+
+            orderGuard.assertSuccess(addItemToOrder);
+            orderId = addItemToOrder.id;
+            // Assert that separate order lines have been created
+            expect(addItemToOrder.lines.length).toBe(2);
+
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        streetLine1: '1 Test Street',
+                        countryCode: 'GB',
+                    } as CreateAddressInput,
+                },
+            );
+            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
+                TRANSITION_TO_STATE,
+                {
+                    state: 'ArrangingPayment',
+                },
+            );
+            const { addPaymentToOrder: order } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: testSuccessfulPaymentMethod.code,
+                    metadata: {},
+                } as PaymentInput,
+            });
+            orderGuard.assertSuccess(order);
+
+            const product2 = await getProductWithStockMovement('T_2');
+            const [variant1_2, variant2_2, variant3_2] = product2!.variants;
+
+            expect(variant2_2.stockAllocated).toBe(2);
+        });
+
+        it('correctly creates Sales', async () => {
+            const product = await getProductWithStockMovement('T_2');
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant2.stockOnHand).toBe(3);
+
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                CREATE_FULFILLMENT,
+                {
+                    input: {
+                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                        handler: {
+                            code: manualFulfillmentHandler.code,
+                            arguments: [
+                                { name: 'method', value: 'test method' },
+                                { name: 'trackingCode', value: 'ABC123' },
+                            ],
+                        },
+                    },
+                },
+            );
+
+            const product2 = await getProductWithStockMovement('T_2');
+            const [variant1_2, variant2_2, variant3_2] = product2!.variants;
+
+            expect(variant2_2.stockAllocated).toBe(0);
+            expect(variant2_2.stockOnHand).toBe(1);
         });
     });
 });

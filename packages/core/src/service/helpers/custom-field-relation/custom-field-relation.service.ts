@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { pick } from '@vendure/common/lib/pick';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 
@@ -10,8 +11,8 @@ import {
     HasCustomFields,
     RelationCustomFieldConfig,
 } from '../../../config/custom-field/custom-field-types';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 @Injectable()
 export class CustomFieldRelationService {
@@ -51,7 +52,7 @@ export class CustomFieldRelationService {
                         entity.customFields = { ...entity.customFields, [field.name]: relations };
                         await this.connection
                             .getRepository(ctx, entityType)
-                            .save(entity as any, { reload: false });
+                            .save(pick(entity, ['id', 'customFields']) as any, { reload: false });
                     }
                 }
             }

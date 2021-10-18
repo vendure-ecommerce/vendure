@@ -198,6 +198,13 @@ export function addGraphQLCustomFields(
                 }
             `;
         }
+        if (schema.getType('UpdateOrderAddressInput')) {
+            customFieldTypeDefs += `
+                extend input UpdateOrderAddressInput {
+                    customFields: UpdateAddressCustomFieldsInput
+                }
+            `;
+        }
     } else {
         if (schema.getType('OrderAddress')) {
             customFieldTypeDefs += `
@@ -312,7 +319,8 @@ export function addOrderLineCustomFieldsInput(
     orderLineCustomFields: CustomFieldConfig[],
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    if (!orderLineCustomFields || orderLineCustomFields.length === 0) {
+    const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
+    if (!publicCustomFields || publicCustomFields.length === 0) {
         return schema;
     }
     const schemaConfig = schema.toConfig();
@@ -320,7 +328,6 @@ export function addOrderLineCustomFieldsInput(
     if (!mutationType) {
         return schema;
     }
-    const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
         fields: publicCustomFields.reduce((fields, field) => {
@@ -409,6 +416,7 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
             return 'DateOperators';
         case 'string':
         case 'localeString':
+        case 'text':
             return 'StringOperators';
         case 'boolean':
             return 'BooleanOperators';
@@ -431,6 +439,7 @@ function getGraphQlType(config: CustomFieldConfig): string {
     switch (config.type) {
         case 'string':
         case 'localeString':
+        case 'text':
             return 'String';
         case 'datetime':
             return 'DateTime';

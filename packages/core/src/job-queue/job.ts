@@ -1,6 +1,8 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { isClassInstance, isObject } from '@vendure/common/lib/shared-utils';
 
+import { Logger } from '../config/logger/vendure-logger';
+
 import { JobConfig, JobData } from './types';
 
 /**
@@ -91,6 +93,9 @@ export class Job<T extends JobData<T> = any> {
     }
 
     get duration(): number {
+        if (this.state === JobState.PENDING || this.state === JobState.RETRYING) {
+            return 0;
+        }
         const end = this._settledAt || new Date();
         return +end - +(this._startedAt || end);
     }
@@ -124,6 +129,11 @@ export class Job<T extends JobData<T> = any> {
             this._state = JobState.RUNNING;
             this._startedAt = new Date();
             this._attempts++;
+            Logger.debug(
+                `Job ${this.id} [${this.queueName}] starting (attempt ${this._attempts} of ${
+                    this.retries + 1
+                })`,
+            );
         }
     }
 
@@ -146,6 +156,7 @@ export class Job<T extends JobData<T> = any> {
         this._progress = 100;
         this._state = JobState.COMPLETED;
         this._settledAt = new Date();
+        Logger.debug(`Job ${this.id} [${this.queueName}] completed`);
     }
 
     /**
@@ -157,14 +168,21 @@ export class Job<T extends JobData<T> = any> {
         this._progress = 0;
         if (this.retries >= this._attempts) {
             this._state = JobState.RETRYING;
+            Logger.warn(
+                `Job ${this.id} [${this.queueName}] failed (attempt ${this._attempts} of ${
+                    this.retries + 1
+                })`,
+            );
         } else {
-            this._state = JobState.FAILED;
+            if (this._state !== JobState.CANCELLED) {
+                this._state = JobState.FAILED;
+                Logger.warn(`Job ${this.id} [${this.queueName}] failed and will not retry.`);
+            }
             this._settledAt = new Date();
         }
     }
 
     cancel() {
-        this._progress = 0;
         this._settledAt = new Date();
         this._state = JobState.CANCELLED;
     }
@@ -178,6 +196,7 @@ export class Job<T extends JobData<T> = any> {
         if (this._state === JobState.RUNNING) {
             this._state = JobState.PENDING;
             this._attempts = 0;
+            Logger.debug(`Job ${this.id} [${this.queueName}] deferred back to PENDING state`);
         }
     }
 

@@ -6,6 +6,7 @@ type SearchResponse {
     items: [SearchResult!]!
     totalItems: Int!
     facetValues: [FacetValueResult!]!
+    collections: [CollectionResult!]!
 }
 
 """
@@ -14,6 +15,15 @@ by the search, and in what quantity.
 """
 type FacetValueResult {
     facetValue: FacetValue!
+    count: Int!
+}
+
+"""
+Which Collections are present in the products returned
+by the search, and in what quantity.
+"""
+type CollectionResult {
+    collection: Collection!
     count: Int!
 }
 
@@ -28,11 +38,9 @@ type SearchResult {
     slug: String!
     productId: ID!
     productName: String!
-    productPreview: String! @deprecated(reason: "Use `productAsset.preview` instead")
     productAsset: SearchResultAsset
     productVariantId: ID!
     productVariantName: String!
-    productVariantPreview: String! @deprecated(reason: "Use `productVariantAsset.preview` instead")
     productVariantAsset: SearchResultAsset
     price: SearchResultPrice!
     priceWithTax: SearchResultPrice!

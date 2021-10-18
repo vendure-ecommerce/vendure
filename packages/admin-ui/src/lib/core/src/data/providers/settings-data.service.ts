@@ -18,6 +18,7 @@ import {
     CreateZoneInput,
     DeleteChannel,
     DeleteCountry,
+    DeletePaymentMethod,
     DeleteTaxCategory,
     DeleteTaxRate,
     DeleteZone,
@@ -70,6 +71,7 @@ import {
     CREATE_ZONE,
     DELETE_CHANNEL,
     DELETE_COUNTRY,
+    DELETE_PAYMENT_METHOD,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
     DELETE_ZONE,
@@ -340,6 +342,16 @@ export class SettingsDataService {
         );
     }
 
+    deletePaymentMethod(id: string, force: boolean) {
+        return this.baseDataService.mutate<DeletePaymentMethod.Mutation, DeletePaymentMethod.Variables>(
+            DELETE_PAYMENT_METHOD,
+            {
+                id,
+                force,
+            },
+        );
+    }
+
     getPaymentMethodOperations() {
         return this.baseDataService.query<GetPaymentMethodOperations.Query>(GET_PAYMENT_METHOD_OPERATIONS);
     }
@@ -372,9 +384,13 @@ export class SettingsDataService {
     }
 
     getAllJobs(options?: JobListOptions) {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_JOBS_LIST, {
-            options,
-        });
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(
+            GET_JOBS_LIST,
+            {
+                options,
+            },
+            'cache-first',
+        );
     }
 
     getJobQueues() {

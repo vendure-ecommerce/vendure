@@ -2,7 +2,7 @@
     <div
         class="card"
         *ngFor="let asset of assets"
-        (click)="toggleSelection($event, asset)"
+        (click)="toggleSelection(asset, $event)"
         [class.selected]="isSelected(asset)"
     >
         <div class="card-img">

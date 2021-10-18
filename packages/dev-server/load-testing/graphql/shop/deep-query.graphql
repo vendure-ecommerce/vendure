@@ -95,19 +95,15 @@
                 code
             }
             price
-            priceIncludesTax
             priceWithTax
             sku
             taxCategory {
                 id
                 name
             }
+            stockLevel
             taxRateApplied {
                 category {
-                    id
-                    name
-                }
-                customerGroup {
                     id
                     name
                 }

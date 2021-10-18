@@ -9,12 +9,17 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { TestAuthenticationStrategy, VALID_AUTH_TOKEN } from './fixtures/test-authentication-strategies';
+import {
+    TestAuthenticationStrategy,
+    TestAuthenticationStrategy2,
+    TestSSOStrategyAdmin,
+    TestSSOStrategyShop,
+    VALID_AUTH_TOKEN,
+} from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     Authenticate,
     CreateCustomer,
-    CurrentUser,
     CurrentUserFragment,
     CustomerFragment,
     DeleteCustomer,
@@ -27,7 +32,6 @@ import {
 import { Register } from './graphql/generated-e2e-shop-types';
 import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
 import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
-import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('AuthenticationStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -36,7 +40,10 @@ describe('AuthenticationStrategy', () => {
                 shopAuthenticationStrategy: [
                     new NativeAuthenticationStrategy(),
                     new TestAuthenticationStrategy(),
+                    new TestAuthenticationStrategy2(),
+                    new TestSSOStrategyShop(),
                 ],
+                adminAuthenticationStrategy: [new NativeAuthenticationStrategy(), new TestSSOStrategyAdmin()],
             },
         }),
     );
@@ -83,7 +90,7 @@ describe('AuthenticationStrategy', () => {
             expect(authenticate.authenticationError).toBe('');
         });
 
-        it('fails with an expried token', async () => {
+        it('fails with an expired token', async () => {
             const { authenticate } = await shopClient.query(AUTHENTICATE, {
                 input: {
                     test_strategy: {
@@ -180,7 +187,6 @@ describe('AuthenticationStrategy', () => {
                 },
             });
             currentUserGuard.assertSuccess(authenticate);
-
             expect(authenticate.identifier).toEqual(userData.email);
 
             const { customers: after } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
@@ -189,6 +195,54 @@ describe('AuthenticationStrategy', () => {
                 'hayden.zieme12@hotmail.com',
                 userData.email,
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/695
+        it('multiple external auth strategies to not interfere with one another', async () => {
+            const EXPECTED_CUSTOMERS = [
+                {
+                    emailAddress: 'hayden.zieme12@hotmail.com',
+                    id: 'T_1',
+                },
+                {
+                    emailAddress: 'test@email.com',
+                    id: 'T_2',
+                },
+            ];
+
+            const { customers: customers1 } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            expect(customers1.items).toEqual(EXPECTED_CUSTOMERS);
+            const { authenticate: auth1 } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+                input: {
+                    test_strategy2: {
+                        token: VALID_AUTH_TOKEN,
+                        email: userData.email,
+                    },
+                },
+            });
+
+            currentUserGuard.assertSuccess(auth1);
+            expect(auth1.identifier).toBe(userData.email);
+
+            const { customers: customers2 } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            expect(customers2.items).toEqual(EXPECTED_CUSTOMERS);
+
+            await shopClient.asAnonymousUser();
+
+            const { authenticate: auth2 } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+                input: {
+                    test_strategy: {
+                        token: VALID_AUTH_TOKEN,
+                        userData,
+                    },
+                },
+            });
+
+            currentUserGuard.assertSuccess(auth2);
+            expect(auth2.identifier).toBe(userData.email);
+
+            const { customers: customers3 } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            expect(customers3.items).toEqual(EXPECTED_CUSTOMERS);
         });
 
         it('registerCustomerAccount with external email', async () => {
@@ -214,8 +268,12 @@ describe('AuthenticationStrategy', () => {
                 id: newCustomerId,
             });
 
-            expect(customer?.user?.authenticationMethods.length).toBe(2);
-            expect(customer?.user?.authenticationMethods[1].strategy).toBe('native');
+            expect(customer?.user?.authenticationMethods.length).toBe(3);
+            expect(customer?.user?.authenticationMethods.map(m => m.strategy)).toEqual([
+                'test_strategy',
+                'test_strategy2',
+                'native',
+            ]);
 
             const { customer: customer2 } = await adminClient.query<
                 GetCustomerHistory.Query,
@@ -223,7 +281,7 @@ describe('AuthenticationStrategy', () => {
             >(GET_CUSTOMER_HISTORY, {
                 id: newCustomerId,
                 options: {
-                    skip: 2,
+                    skip: 4,
                 },
             });
 
@@ -235,6 +293,31 @@ describe('AuthenticationStrategy', () => {
                     },
                 },
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/926
+        it('Customer and Admin external auth does not reuse same User for different strategies', async () => {
+            const emailAddress = 'hello@test-domain.com';
+            await adminClient.asAnonymousUser();
+            const { authenticate: adminAuth } = await adminClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+                input: {
+                    test_sso_strategy_admin: {
+                        email: emailAddress,
+                    },
+                },
+            });
+            currentUserGuard.assertSuccess(adminAuth);
+
+            const { authenticate: shopAuth } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+                input: {
+                    test_sso_strategy_shop: {
+                        email: emailAddress,
+                    },
+                },
+            });
+            currentUserGuard.assertSuccess(shopAuth);
+
+            expect(adminAuth.id).not.toBe(shopAuth.id);
         });
     });
 

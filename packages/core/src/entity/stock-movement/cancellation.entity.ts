@@ -6,6 +6,13 @@ import { OrderItem } from '../order-item/order-item.entity';
 
 import { StockMovement } from './stock-movement.entity';
 
+/**
+ * @description
+ * A Cancellation is created when OrderItems from a fulfilled Order are cancelled.
+ *
+ * @docsCategory entities
+ * @docsPage StockMovement
+ */
 @ChildEntity()
 export class Cancellation extends StockMovement {
     readonly type = StockMovementType.CANCELLATION;

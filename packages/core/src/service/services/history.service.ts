@@ -9,6 +9,7 @@ import {
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { CustomerHistoryEntry } from '../../entity/history-entry/customer-history-entry.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -18,7 +19,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { RefundState } from '../helpers/refund-state-machine/refund-state';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AdministratorService } from './administrator.service';
 
@@ -137,7 +137,12 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
 }
 
 /**
- * The HistoryService is reponsible for creating and retrieving HistoryEntry entities.
+ * @description
+ * Contains methods relating to {@link HistoryEntry} entities. Histories are timelines of actions
+ * related to a particular Customer or Order, recording significant events such as creation, state changes,
+ * notes, etc.
+ *
+ * @docsCategory services
  */
 @Injectable()
 export class HistoryService {
@@ -154,7 +159,7 @@ export class HistoryService {
         options?: HistoryEntryListOptions,
     ): Promise<PaginatedList<OrderHistoryEntry>> {
         return this.listQueryBuilder
-            .build((HistoryEntry as any) as Type<OrderHistoryEntry>, options, {
+            .build(HistoryEntry as any as Type<OrderHistoryEntry>, options, {
                 where: {
                     order: { id: orderId } as any,
                     ...(publicOnly ? { isPublic: true } : {}),
@@ -192,7 +197,7 @@ export class HistoryService {
         options?: HistoryEntryListOptions,
     ): Promise<PaginatedList<CustomerHistoryEntry>> {
         return this.listQueryBuilder
-            .build((HistoryEntry as any) as Type<CustomerHistoryEntry>, options, {
+            .build(HistoryEntry as any as Type<CustomerHistoryEntry>, options, {
                 where: {
                     customer: { id: customerId } as any,
                     ...(publicOnly ? { isPublic: true } : {}),

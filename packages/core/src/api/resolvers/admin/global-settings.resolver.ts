@@ -71,7 +71,7 @@ export class GlobalSettingsResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateGlobalSettings)
     async updateGlobalSettings(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateGlobalSettingsArgs,

@@ -1,6 +1,9 @@
+import { JobState } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Subject, Subscription } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import { isObject } from '@vendure/common/lib/shared-utils';
+import { interval, race, Subject, Subscription } from 'rxjs';
+import { fromPromise } from 'rxjs/internal-compatibility';
+import { filter, switchMap, take, throttleTime } from 'rxjs/operators';
 
 import { Logger } from '../config/logger/vendure-logger';
 
@@ -9,13 +12,59 @@ import { Job } from './job';
 import { QueueNameProcessStorage } from './queue-name-process-storage';
 import { JobData } from './types';
 
+/**
+ * @description
+ * Defines the backoff strategy used when retrying failed jobs. Returns the delay in
+ * ms that should pass before the failed job is retried.
+ *
+ * @docsCategory JobQueue
+ * @docsPage types
+ */
+export type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => number;
+
+export interface PollingJobQueueStrategyConfig {
+    /**
+     * @description
+     * How many jobs from a given queue to process concurrently.
+     *
+     * @default 1
+     */
+    concurrency?: number;
+    /**
+     * @description
+     * The interval in ms between polling the database for new jobs.
+     *
+     * @description 200
+     */
+    pollInterval?: number | ((queueName: string) => number);
+    /**
+     * @description
+     * When a job is added to the JobQueue using `JobQueue.add()`, the calling
+     * code may specify the number of retries in case of failure. This option allows
+     * you to override that number and specify your own number of retries based on
+     * the job being added.
+     */
+    setRetries?: (queueName: string, job: Job) => number;
+    /**
+     * @description
+     * The strategy used to decide how long to wait before retrying a failed job.
+     *
+     * @default () => 1000
+     */
+    backoffStrategy?: BackoffStrategy;
+}
+
+const STOP_SIGNAL = Symbol('STOP_SIGNAL');
+
 class ActiveQueue<Data extends JobData<Data> = {}> {
     private timer: any;
     private running = false;
     private activeJobs: Array<Job<Data>> = [];
 
     private errorNotifier$ = new Subject<[string, string]>();
+    private queueStopped$ = new Subject<typeof STOP_SIGNAL>();
     private subscription: Subscription;
+    private readonly pollInterval: number;
 
     constructor(
         private readonly queueName: string,
@@ -26,6 +75,10 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
             Logger.error(message);
             Logger.debug(stack);
         });
+        this.pollInterval =
+            typeof this.jobQueueStrategy.pollInterval === 'function'
+                ? this.jobQueueStrategy.pollInterval(queueName)
+                : this.jobQueueStrategy.pollInterval;
     }
 
     start() {
@@ -41,17 +94,32 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                         await this.jobQueueStrategy.update(nextJob);
                         const onProgress = (job: Job) => this.jobQueueStrategy.update(job);
                         nextJob.on('progress', onProgress);
-                        this.process(nextJob)
+                        const cancellationSignal$ = interval(this.pollInterval * 5).pipe(
+                            // tslint:disable-next-line:no-non-null-assertion
+                            switchMap(() => this.jobQueueStrategy.findOne(nextJob.id!)),
+                            filter(job => job?.state === JobState.CANCELLED),
+                            take(1),
+                        );
+                        const stopSignal$ = this.queueStopped$.pipe(take(1));
+
+                        race(fromPromise(this.process(nextJob)), cancellationSignal$, stopSignal$)
+                            .toPromise()
                             .then(
                                 result => {
-                                    nextJob.complete(result);
+                                    if (result === STOP_SIGNAL) {
+                                        nextJob.defer();
+                                    } else if (result instanceof Job && result.state === JobState.CANCELLED) {
+                                        nextJob.cancel();
+                                    } else {
+                                        nextJob.complete(result);
+                                    }
                                 },
                                 err => {
                                     nextJob.fail(err);
                                 },
                             )
                             .finally(() => {
-                                if (!this.running) {
+                                if (!this.running && nextJob.state !== JobState.PENDING) {
                                     return;
                                 }
                                 nextJob.off('progress', onProgress);
@@ -69,7 +137,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                 ]);
             }
             if (this.running) {
-                this.timer = setTimeout(runNextJobs, this.jobQueueStrategy.pollInterval);
+                this.timer = setTimeout(runNextJobs, this.pollInterval);
             }
         };
 
@@ -78,29 +146,21 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
 
     stop(): Promise<void> {
         this.running = false;
+        this.queueStopped$.next(STOP_SIGNAL);
         clearTimeout(this.timer);
 
         const start = +new Date();
         // Wait for 2 seconds to allow running jobs to complete
         const maxTimeout = 2000;
+        let pollTimer: any;
         return new Promise(resolve => {
             const pollActiveJobs = async () => {
                 const timedOut = +new Date() - start > maxTimeout;
                 if (this.activeJobs.length === 0 || timedOut) {
-                    // if there are any incomplete jobs after the 2 second
-                    // wait period, set them back to "pending" so they can
-                    // be re-run on next bootstrap.
-                    for (const job of this.activeJobs) {
-                        job.defer();
-                        try {
-                            await this.jobQueueStrategy.update(job);
-                        } catch (err) {
-                            Logger.info(`Error stopping job queue: ${err}`);
-                        }
-                    }
+                    clearTimeout(pollTimer);
                     resolve();
                 } else {
-                    setTimeout(pollActiveJobs, 50);
+                    pollTimer = setTimeout(pollActiveJobs, 50);
                 }
             };
             pollActiveJobs();
@@ -122,12 +182,35 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
  * @description
  * This class allows easier implementation of {@link JobQueueStrategy} in a polling style.
  * Instead of providing {@link JobQueueStrategy} `start()` you should provide a `next` method.
+ *
+ * This class should be extended by any strategy which does not support a push-based system
+ * to notify on new jobs. It is used by the {@link SqlJobQueueStrategy} and {@link InMemoryJobQueueStrategy}.
+ *
+ * @docsCategory JobQueue
  */
 export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
+    public concurrency: number;
+    public pollInterval: number | ((queueName: string) => number);
+    public setRetries: (queueName: string, job: Job) => number;
+    public backOffStrategy?: BackoffStrategy;
+
     private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
 
-    constructor(public concurrency: number = 1, public pollInterval: number = 200) {
+    constructor(config?: PollingJobQueueStrategyConfig);
+    constructor(concurrency?: number, pollInterval?: number);
+    constructor(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number) {
         super();
+
+        if (concurrencyOrConfig && isObject(concurrencyOrConfig)) {
+            this.concurrency = concurrencyOrConfig.concurrency ?? 1;
+            this.pollInterval = concurrencyOrConfig.pollInterval ?? 200;
+            this.backOffStrategy = concurrencyOrConfig.backoffStrategy ?? (() => 1000);
+            this.setRetries = concurrencyOrConfig.setRetries ?? ((_, job) => job.retries);
+        } else {
+            this.concurrency = concurrencyOrConfig ?? 1;
+            this.pollInterval = maybePollInterval ?? 200;
+            this.setRetries = (_, job) => job.retries;
+        }
     }
 
     async start<Data extends JobData<Data> = {}>(

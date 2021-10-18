@@ -1,0 +1,28 @@
+@startuml
+!include theme.puml
+
+map Product {
+  name => Laptop
+  description => This powerful laptop has...
+}
+
+map "ProductVariant" as variant1 {
+  name => Laptop 13" 8GB
+  option:size => 13"
+  option:ram => 8GB
+  sku => 1001308
+  price => $1299
+}
+
+map "ProductVariant" as variant2 {
+  name => Laptop 15" 8GB
+  option:size => 15"
+  option:ram => 8GB
+  sku => 1001508
+  price => $1349
+}
+
+Product --> variant1
+Product --> variant2
+
+@enduml

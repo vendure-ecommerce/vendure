@@ -4,7 +4,10 @@
 <vdr-labeled-data [label]="'order.amount' | translate">
     {{ payment.amount | localeCurrency: currencyCode }}
 </vdr-labeled-data>
-<vdr-labeled-data [label]="'order.transaction-id' | translate">
+<vdr-labeled-data *ngIf="payment.errorMessage" [label]="'order.error-message' | translate">
+    {{ payment.errorMessage }}
+</vdr-labeled-data>
+<vdr-labeled-data *ngIf="payment.transactionId" [label]="'order.transaction-id' | translate">
     {{ payment.transactionId }}
 </vdr-labeled-data>
 <vdr-labeled-data [label]="'order.payment-metadata' | translate">

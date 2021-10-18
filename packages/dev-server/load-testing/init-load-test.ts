@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../core/typings.d.ts" />
-import { bootstrap } from '@vendure/core';
+import { bootstrap, JobQueueService } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
 import { BaseProductRecord } from '@vendure/core/dist/data-import/providers/import-parser/import-parser';
 import { clearAllTables, populateCustomers } from '@vendure/testing';
@@ -13,6 +13,7 @@ import { initialData } from '../../core/mock-data/data-sources/initial-data';
 import {
     getLoadTestConfig,
     getMysqlConnectionOptions,
+    getPostgresConnectionOptions,
     getProductCount,
     getProductCsvFilePath,
 } from './load-test-config';
@@ -26,6 +27,7 @@ if (require.main === module) {
     // Running from command line
     isDatabasePopulated()
         .then(isPopulated => {
+            console.log(`isPopulated:`, isPopulated);
             if (!isPopulated) {
                 const count = getProductCount();
                 const config = getLoadTestConfig('bearer');
@@ -38,7 +40,11 @@ if (require.main === module) {
                     })
                     .then(() =>
                         populate(
-                            () => bootstrap(config),
+                            () =>
+                                bootstrap(config).then(async app => {
+                                    await app.get(JobQueueService).start();
+                                    return app;
+                                }),
                             path.join(__dirname, '../../create/assets/initial-data.json'),
                             csvFile,
                         ),
@@ -64,37 +70,62 @@ if (require.main === module) {
 /**
  * Tests to see whether the load test database is already populated.
  */
-function isDatabasePopulated(): Promise<boolean> {
-    const mysql = require('mysql');
+async function isDatabasePopulated(): Promise<boolean> {
+    const isPostgres = process.env.DB === 'postgres';
     const count = getProductCount();
-    const mysqlConnectionOptions = getMysqlConnectionOptions(count);
-    const connection = mysql.createConnection({
-        host: mysqlConnectionOptions.host,
-        user: mysqlConnectionOptions.username,
-        password: mysqlConnectionOptions.password,
-        database: mysqlConnectionOptions.database,
-    });
-
-    return new Promise<boolean>((resolve, reject) => {
-        connection.connect((error: any) => {
-            if (error) {
-                reject(error);
-                return;
+    if (isPostgres) {
+        console.log(`Checking whether data is populated (postgres)`);
+        const pg = require('pg');
+        const postgresConnectionOptions = getPostgresConnectionOptions(count);
+        const client = new pg.Client({
+            host: postgresConnectionOptions.host,
+            user: postgresConnectionOptions.username,
+            database: postgresConnectionOptions.database,
+            password: postgresConnectionOptions.password,
+            port: postgresConnectionOptions.port,
+        });
+        await client.connect();
+        try {
+            const res = await client.query('SELECT COUNT(id) as prodCount FROM product');
+            return true;
+        } catch (e) {
+            if (e.message === `relation "product" does not exist`) {
+                return false;
             }
+            throw e;
+        }
+    } else {
+        const mysql = require('mysql');
 
-            connection.query('SELECT COUNT(id) as prodCount FROM product', (err: any, results: any) => {
-                if (err) {
-                    if (err.code === 'ER_NO_SUCH_TABLE') {
-                        resolve(false);
-                        return;
-                    }
-                    reject(err);
+        const mysqlConnectionOptions = getMysqlConnectionOptions(count);
+        const connection = mysql.createConnection({
+            host: mysqlConnectionOptions.host,
+            user: mysqlConnectionOptions.username,
+            password: mysqlConnectionOptions.password,
+            database: mysqlConnectionOptions.database,
+        });
+
+        return new Promise<boolean>((resolve, reject) => {
+            connection.connect((error: any) => {
+                if (error) {
+                    reject(error);
                     return;
                 }
-                resolve(results[0].prodCount === count);
+
+                connection.query('SELECT COUNT(id) as prodCount FROM product', (err: any, results: any) => {
+                    if (err) {
+                        if (err.code === 'ER_NO_SUCH_TABLE') {
+                            resolve(false);
+                            return;
+                        }
+                        reject(err);
+                        return;
+                    }
+                    resolve(results[0].prodCount === count);
+                });
             });
         });
-    });
+    }
 }
 
 /**

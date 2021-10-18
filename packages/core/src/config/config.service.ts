@@ -11,6 +11,7 @@ import {
     AssetOptions,
     AuthOptions,
     CatalogOptions,
+    EntityOptions,
     ImportExportOptions,
     JobQueueOptions,
     OrderOptions,
@@ -52,6 +53,10 @@ export class ConfigService implements VendureConfig {
 
     get defaultLanguageCode(): LanguageCode {
         return this.activeConfig.defaultLanguageCode;
+    }
+
+    get entityOptions(): Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions {
+        return this.activeConfig.entityOptions;
     }
 
     get entityIdStrategy(): EntityIdStrategy<any> {

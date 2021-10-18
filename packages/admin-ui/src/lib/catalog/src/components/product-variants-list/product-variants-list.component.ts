@@ -20,9 +20,10 @@ import {
     GlobalFlag,
     LanguageCode,
     ModalService,
+    Permission,
+    ProductDetail,
     ProductOptionFragment,
     ProductVariant,
-    ProductWithVariants,
     TaxCategory,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
@@ -33,7 +34,11 @@ import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { AssetChange } from '../product-assets/product-assets.component';
-import { SelectedAssets, VariantFormValue } from '../product-detail/product-detail.component';
+import {
+    PaginationConfig,
+    SelectedAssets,
+    VariantFormValue,
+} from '../product-detail/product-detail.component';
 import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
 
 export interface VariantAssetChange extends AssetChange {
@@ -48,34 +53,31 @@ export interface VariantAssetChange extends AssetChange {
 })
 export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
-    @Input() variants: ProductWithVariants.Variants[];
+    @Input() variants: ProductVariant.Fragment[];
+    @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
     @Input() taxCategories: TaxCategory[];
     @Input() facets: FacetWithValues.Fragment[];
-    @Input() optionGroups: ProductWithVariants.OptionGroups[];
+    @Input() optionGroups: ProductDetail.OptionGroups[];
     @Input() customFields: CustomFieldConfig[];
     @Input() customOptionFields: CustomFieldConfig[];
     @Input() activeLanguage: LanguageCode;
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
-    @Output() assignToChannel = new EventEmitter<ProductWithVariants.Variants>();
+    @Output() assignToChannel = new EventEmitter<ProductVariant.Fragment>();
     @Output() removeFromChannel = new EventEmitter<{
         channelId: string;
-        variant: ProductWithVariants.Variants;
+        variant: ProductVariant.Fragment;
     }>();
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
     @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput & { autoUpdate: boolean }>();
     selectedVariantIds: string[] = [];
-    pagination: PaginationInstance = {
-        currentPage: 1,
-        itemsPerPage: 10,
-    };
     formGroupMap = new Map<string, FormGroup>();
     GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
-    variantListPrice: { [variantId: string]: number } = {};
+    readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
     private facetValues: FacetValue.Fragment[];
     private subscription: Subscription;
 
@@ -112,17 +114,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         if ('facets' in changes && !!changes['facets'].currentValue) {
             this.facetValues = flattenFacetValues(this.facets);
         }
-        if ('variants' in changes) {
-            if (changes['variants'].currentValue?.length !== changes['variants'].previousValue?.length) {
-                this.pagination.currentPage = 1;
-            }
-            if (this.channelPriceIncludesTax != null && Object.keys(this.variantListPrice).length === 0) {
-                this.buildVariantListPrices(this.formArray.value);
-            }
-        }
-        if ('channelPriceIncludesTax' in changes) {
-            this.buildVariantListPrices(this.formArray.value);
-        }
     }
 
     ngOnDestroy() {
@@ -135,7 +126,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
-    trackById(index: number, item: ProductWithVariants.Variants) {
+    trackById(index: number, item: ProductVariant.Fragment) {
         return item.id;
     }
 
@@ -147,21 +138,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         );
     }
 
-    updateVariantListPrice(price, variantId: string, group: FormGroup) {
-        // Why do this and not just use a conditional `formControlName` or `formControl`
-        // binding in the template? It breaks down when switching between Channels and
-        // the values no longer get updated. There seem to some lifecycle/memory-clean-up
-        // issues with Angular forms at the moment, which will hopefully be fixed soon.
-        // See https://github.com/angular/angular/issues/20007
-        this.variantListPrice[variantId] = price;
-        const controlName = this.channelPriceIncludesTax ? 'priceWithTax' : 'price';
-        const control = group.get(controlName);
-        if (control) {
-            control.setValue(price);
-            control.markAsDirty();
-        }
-    }
-
     getTaxCategoryName(group: FormGroup): string {
         const control = group.get(['taxCategoryId']);
         if (control && this.taxCategories) {
@@ -171,7 +147,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return '';
     }
 
-    getSaleableStockLevel(variant: ProductWithVariants.Variants) {
+    getSaleableStockLevel(variant: ProductVariant.Fragment) {
         const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
             ? this.globalOutOfStockThreshold
             : variant.outOfStockThreshold;
@@ -226,7 +202,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return translation.name;
     }
 
-    pendingFacetValues(variant: ProductWithVariants.Variants) {
+    pendingFacetValues(variant: ProductVariant.Fragment) {
         if (this.facets) {
             const formFacetValueIds = this.getFacetValueIds(variant.id);
             const variantFacetValueIds = variant.facetValues.map(fv => fv.id);
@@ -239,7 +215,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         }
     }
 
-    existingFacetValues(variant: ProductWithVariants.Variants) {
+    existingFacetValues(variant: ProductVariant.Fragment) {
         const formFacetValueIds = this.getFacetValueIds(variant.id);
         const intersection = [...formFacetValueIds].filter(x =>
             variant.facetValues.map(fv => fv.id).includes(x),
@@ -249,7 +225,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
             .filter(notNullOrUndefined);
     }
 
-    removeFacetValue(variant: ProductWithVariants.Variants, facetValueId: string) {
+    removeFacetValue(variant: ProductVariant.Fragment, facetValueId: string) {
         const formGroup = this.formGroupMap.get(variant.id);
         if (formGroup) {
             const newValue = (formGroup.value as VariantFormValue).facetValueIds.filter(
@@ -281,14 +257,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                     this.updateProductOption.emit(result);
                 }
             });
-    }
-
-    private buildVariantListPrices(variants?: ProductWithVariants.Variants[]) {
-        if (variants) {
-            this.variantListPrice = variants.reduce((prices, v) => {
-                return { ...prices, [v.id]: this.channelPriceIncludesTax ? v.priceWithTax : v.price };
-            }, {});
-        }
     }
 
     private buildFormGroupMap() {

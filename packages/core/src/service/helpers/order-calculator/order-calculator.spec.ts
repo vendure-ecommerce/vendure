@@ -3,6 +3,7 @@ import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/gener
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
@@ -1537,6 +1538,7 @@ function createTestModule() {
     return Test.createTestingModule({
         providers: [
             OrderCalculator,
+            RequestContextCacheService,
             { provide: TaxRateService, useClass: MockTaxRateService },
             { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
             {
@@ -1572,6 +1574,16 @@ function assertOrderTotalsAddUp(order: Order) {
         expect(line.linePrice).toBe(itemUnitPriceSum);
         const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
         expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
+
+        const pricesIncludeTax = line.firstItem?.listPriceIncludesTax;
+
+        if (pricesIncludeTax) {
+            const lineDiscountsAmountWithTaxSum = summate(line.discounts, 'amountWithTax');
+            expect(line.linePriceWithTax + lineDiscountsAmountWithTaxSum).toBe(line.proratedLinePriceWithTax);
+        } else {
+            const lineDiscountsAmountSum = summate(line.discounts, 'amount');
+            expect(line.linePrice + lineDiscountsAmountSum).toBe(line.proratedLinePrice);
+        }
     }
     const taxableLinePriceSum = summate(order.lines, 'proratedLinePrice');
     const surchargeSum = summate(order.surcharges, 'price');
@@ -1583,12 +1595,15 @@ function assertOrderTotalsAddUp(order: Order) {
     const orderDiscountsSum = order.discounts
         .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
         .reduce((sum, d) => sum + d.amount, 0);
+    const orderDiscountsWithTaxSum = order.discounts
+        .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+        .reduce((sum, d) => sum + d.amountWithTax, 0);
 
     // The sum of the display prices + order discounts should in theory exactly
     // equal the subTotalWithTax. In practice, there are occasionally 1cent differences
     // cause by rounding errors. This should be tolerable.
     const differenceBetweenSumAndActual = Math.abs(
-        displayPriceWithTaxSum + orderDiscountsSum + surchargeWithTaxSum - order.subTotalWithTax,
+        displayPriceWithTaxSum + orderDiscountsWithTaxSum + surchargeWithTaxSum - order.subTotalWithTax,
     );
     expect(differenceBetweenSumAndActual).toBeLessThanOrEqual(1);
 }

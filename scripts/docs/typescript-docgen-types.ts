@@ -13,6 +13,7 @@ export interface MemberInfo {
     type: string;
     fullText: string;
     modifiers: string[];
+    since: string | undefined;
 }
 
 export interface PropertyInfo extends MemberInfo {
@@ -42,6 +43,7 @@ export interface DeclarationInfo {
     category: string;
     description: string;
     page: string | undefined;
+    since: string | undefined;
 }
 
 export interface InterfaceInfo extends DeclarationInfo {

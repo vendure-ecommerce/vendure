@@ -5,6 +5,12 @@ import { Order } from '../order/order.entity';
 
 import { HistoryEntry } from './history-entry.entity';
 
+/**
+ * @description
+ * Represents an event in the history of a particular {@link Order}.
+ *
+ * @docsCategory entities
+ */
 @ChildEntity()
 export class OrderHistoryEntry extends HistoryEntry {
     constructor(input: DeepPartial<OrderHistoryEntry>) {

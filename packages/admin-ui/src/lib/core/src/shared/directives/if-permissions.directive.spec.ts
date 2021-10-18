@@ -42,9 +42,9 @@ describe('vdrIfPermissions directive', () => {
         fixture.detectChanges();
 
         const thenEl = fixture.nativeElement.querySelector('.then');
-        expect(thenEl).toBeNull();
+        expect(thenEl).not.toBeNull();
         const elseEl = fixture.nativeElement.querySelector('.else');
-        expect(elseEl).not.toBeNull();
+        expect(elseEl).toBeNull();
     });
 
     it('does not have permission', () => {

@@ -106,14 +106,6 @@ async function createApp(
             'migration:run': usingTs ? 'ts-node migration run' : 'node migration run',
             'migration:revert': usingTs ? 'ts-node migration revert' : 'node migration revert',
         },
-        /**
-         * A work-around for the breaking update of tslib as described here:
-         * https://github.com/typeorm/typeorm/issues/6054
-         * TODO: Remove this once the TypeScript team come up with a solution
-         */
-        resolutions: {
-            tslib: '1.11.2',
-        },
     };
 
     console.log();

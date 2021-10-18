@@ -113,10 +113,24 @@ input DateOperators {
     between: DateRange
 }
 
+"""
+Used to construct boolean expressions for filtering search results
+by FacetValue ID. Examples:
+
+* ID=1 OR ID=2: `{ facetValueFilters: [{ or: [1,2] }] }`
+* ID=1 AND ID=2: `{ facetValueFilters: [{ and: 1 }, { and: 2 }] }`
+* ID=1 AND (ID=2 OR ID=3): `{ facetValueFilters: [{ and: 1 }, { or: [2,3] }] }`
+"""
+input FacetValueFilterInput {
+    and: ID
+    or: [ID!]
+}
+
 input SearchInput {
     term: String
-    facetValueIds: [ID!]
-    facetValueOperator: LogicalOperator
+    facetValueIds: [ID!] @deprecated(reason: "Use `facetValueFilters` instead")
+    facetValueOperator: LogicalOperator @deprecated(reason: "Use `facetValueFilters` instead")
+    facetValueFilters: [FacetValueFilterInput!]
     collectionId: ID
     collectionSlug: String
     groupByProduct: Boolean
@@ -178,6 +192,7 @@ type ShippingMethodQuote {
     id: ID!
     price: Int!
     priceWithTax: Int!
+    code: String!
     name: String!
     description: String!
     "Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult"
@@ -187,6 +202,8 @@ type ShippingMethodQuote {
 type PaymentMethodQuote {
     id: ID!
     code: String!
+    name: String!
+    description: String!
     isEligible: Boolean!
     eligibilityMessage: String
 }

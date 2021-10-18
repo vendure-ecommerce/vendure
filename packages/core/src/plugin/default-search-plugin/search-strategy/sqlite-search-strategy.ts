@@ -1,13 +1,19 @@
-import { LogicalOperator, SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
-import { SearchIndexItem } from '../search-index-item.entity';
+import { UserInputError } from '../../../common/error/errors';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { SearchIndexItem } from '../entities/search-index-item.entity';
+import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 
 import { SearchStrategy } from './search-strategy';
-import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
+import {
+    createCollectionIdCountMap,
+    createFacetIdCountMap,
+    mapToSearchResult,
+} from './search-strategy-utils';
 
 /**
  * A rather naive search for SQLite / SQL.js. Rather than proper
@@ -16,7 +22,10 @@ import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-util
 export class SqliteSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
 
-    constructor(private connection: TransactionalConnection) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private options: DefaultSearchPluginInitOptions,
+    ) {}
 
     async getFacetValueIds(
         ctx: RequestContext,
@@ -38,6 +47,28 @@ export class SqliteSearchStrategy implements SearchStrategy {
         }
         const facetValuesResult = await facetValuesQb.getRawMany();
         return createFacetIdCountMap(facetValuesResult);
+    }
+
+    async getCollectionIds(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<Map<ID, number>> {
+        const collectionsQb = this.connection
+            .getRepository(SearchIndexItem)
+            .createQueryBuilder('si')
+            .select(['productId', 'productVariantId'])
+            .addSelect('GROUP_CONCAT(si.collectionIds)', 'collections');
+
+        this.applyTermAndFilters(ctx, collectionsQb, input);
+        if (!input.groupByProduct) {
+            collectionsQb.groupBy('productVariantId');
+        }
+        if (enabledOnly) {
+            collectionsQb.andWhere('si.enabled = :enabled', { enabled: true });
+        }
+        const collectionsResult = await collectionsQb.getRawMany();
+        return createCollectionIdCountMap(collectionsResult);
     }
 
     async getSearchResults(
@@ -105,7 +136,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
+        const { term, facetValueFilters, facetValueIds, facetValueOperator, collectionId, collectionSlug } =
+            input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -129,6 +161,13 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 )
                 .setParameters({ term, like_term: `%${term}%` });
         }
+        if (input.inStock != null) {
+            if (input.groupByProduct) {
+                qb.andWhere('productInStock = :inStock', { inStock: input.inStock });
+            } else {
+                qb.andWhere('inStock = :inStock', { inStock: input.inStock });
+            }
+        }
         if (facetValueIds?.length) {
             qb.andWhere(
                 new Brackets(qb1 => {
@@ -141,6 +180,35 @@ export class SqliteSearchStrategy implements SearchStrategy {
                         } else {
                             qb1.orWhere(clause, params);
                         }
+                    }
+                }),
+            );
+        }
+        if (facetValueFilters?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const facetValueFilter of facetValueFilters) {
+                        qb1.andWhere(
+                            new Brackets(qb2 => {
+                                if (facetValueFilter.and && facetValueFilter.or?.length) {
+                                    throw new UserInputError('error.facetfilterinput-invalid-input');
+                                }
+                                if (facetValueFilter.and) {
+                                    const placeholder = '_' + facetValueFilter.and;
+                                    const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                                    const params = { [placeholder]: `%,${facetValueFilter.and},%` };
+                                    qb2.where(clause, params);
+                                }
+                                if (facetValueFilter.or?.length) {
+                                    for (const id of facetValueFilter.or) {
+                                        const placeholder = '_' + id;
+                                        const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                                        const params = { [placeholder]: `%,${id},%` };
+                                        qb2.orWhere(clause, params);
+                                    }
+                                }
+                            }),
+                        );
                     }
                 }),
             );

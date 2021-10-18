@@ -1,3 +1,4 @@
+import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -8,13 +9,18 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
 import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
 
 describe('ListQueryBuilder', () => {
-    const { server, adminClient } = createTestEnvironment(
+    const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
+            apiOptions: {
+                shopListQueryLimit: 10,
+                adminListQueryLimit: 30,
+            },
             plugins: [ListQueryPlugin],
         }),
     );
@@ -46,14 +52,15 @@ describe('ListQueryBuilder', () => {
                 { languageCode: LanguageCode.en },
             );
 
-            expect(testEntities.totalItems).toBe(5);
-            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E']);
+            expect(testEntities.totalItems).toBe(6);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
             expect(testEntities.items.map((i: any) => i.name)).toEqual([
                 'apple',
                 'bike',
                 'cake',
                 'dog',
                 'egg',
+                'baum', // if default en lang does not exist, use next available lang
             ]);
         });
 
@@ -66,14 +73,15 @@ describe('ListQueryBuilder', () => {
                 { languageCode: LanguageCode.de },
             );
 
-            expect(testEntities.totalItems).toBe(5);
-            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E']);
+            expect(testEntities.totalItems).toBe(6);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
             expect(testEntities.items.map((i: any) => i.name)).toEqual([
                 'apfel',
                 'fahrrad',
                 'kuchen',
                 'hund',
                 'egg', // falls back to en translation when de doesn't exist
+                'baum',
             ]);
         });
 
@@ -84,7 +92,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(testEntities.totalItems).toBe(5);
+            expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
         });
 
@@ -95,8 +103,8 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(testEntities.totalItems).toBe(5);
-            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+            expect(testEntities.totalItems).toBe(6);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E', 'F']);
         });
 
         it('skip negative is ignored', async () => {
@@ -106,8 +114,8 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(testEntities.totalItems).toBe(5);
-            expect(testEntities.items.length).toBe(5);
+            expect(testEntities.totalItems).toBe(6);
+            expect(testEntities.items.length).toBe(6);
         });
 
         it('take zero is ignored', async () => {
@@ -117,8 +125,8 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(testEntities.totalItems).toBe(5);
-            expect(testEntities.items.length).toBe(5);
+            expect(testEntities.totalItems).toBe(6);
+            expect(testEntities.items.length).toBe(6);
         });
 
         it('take negative is ignored', async () => {
@@ -128,9 +136,31 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(testEntities.totalItems).toBe(5);
-            expect(testEntities.items.length).toBe(5);
+            expect(testEntities.totalItems).toBe(6);
+            expect(testEntities.items.length).toBe(6);
         });
+
+        it(
+            'take beyond adminListQueryLimit',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(GET_LIST, {
+                    options: {
+                        take: 50,
+                    },
+                });
+            }, 'Cannot take more than 30 results from a list query'),
+        );
+
+        it(
+            'take beyond shopListQueryLimit',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(GET_LIST, {
+                    options: {
+                        take: 50,
+                    },
+                });
+            }, 'Cannot take more than 10 results from a list query'),
+        );
     });
 
     describe('string filtering', () => {
@@ -159,7 +189,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'D', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'D', 'E', 'F']);
         });
 
         it('contains', async () => {
@@ -187,7 +217,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E', 'F']);
         });
 
         it('in', async () => {
@@ -215,7 +245,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E', 'F']);
         });
 
         describe('regex', () => {
@@ -303,7 +333,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['C', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'E', 'F']);
         });
     });
 
@@ -361,7 +391,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E', 'F']);
         });
 
         it('gte', async () => {
@@ -375,7 +405,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['B', 'C', 'D', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'C', 'D', 'E', 'F']);
         });
 
         it('between', async () => {
@@ -436,7 +466,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E', 'F']);
         });
 
         it('after on same date', async () => {
@@ -450,7 +480,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E', 'F']);
         });
 
         it('between', async () => {
@@ -471,6 +501,93 @@ describe('ListQueryBuilder', () => {
         });
     });
 
+    describe('multiple filters with filterOperator', () => {
+        it('default AND', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            contains: 'Lorem',
+                        },
+                        active: {
+                            eq: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual([]);
+        });
+
+        it('explicit AND', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            contains: 'Lorem',
+                        },
+                        active: {
+                            eq: false,
+                        },
+                    },
+                    filterOperator: LogicalOperator.AND,
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual([]);
+        });
+
+        it('explicit OR', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            contains: 'Lorem',
+                        },
+                        active: {
+                            eq: false,
+                        },
+                    },
+                    filterOperator: LogicalOperator.OR,
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E', 'F']);
+        });
+
+        it('explicit OR with 3 filters', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            contains: 'eiusmod',
+                        },
+                        active: {
+                            eq: false,
+                        },
+                        order: {
+                            lt: 3,
+                        },
+                    },
+                    filterOperator: LogicalOperator.OR,
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
+        });
+
+        it('explicit OR with empty filters object', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {},
+                    filterOperator: LogicalOperator.OR,
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
+        });
+    });
+
     describe('sorting', () => {
         it('sort by string', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
@@ -481,7 +598,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
         it('sort by number', async () => {
@@ -492,7 +609,7 @@ describe('ListQueryBuilder', () => {
                     },
                 },
             });
-            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
         it('sort by date', async () => {
@@ -503,7 +620,7 @@ describe('ListQueryBuilder', () => {
                     },
                 },
             });
-            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
         it('sort by ID', async () => {
@@ -514,7 +631,7 @@ describe('ListQueryBuilder', () => {
                     },
                 },
             });
-            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['F', 'E', 'D', 'C', 'B', 'A']);
         });
 
         it('sort by translated field en', async () => {
@@ -527,6 +644,7 @@ describe('ListQueryBuilder', () => {
             });
             expect(testEntities.items.map((x: any) => x.name)).toEqual([
                 'apple',
+                'baum', // falling back to de here
                 'bike',
                 'cake',
                 'dog',
@@ -548,6 +666,7 @@ describe('ListQueryBuilder', () => {
             );
             expect(testEntities.items.map((x: any) => x.name)).toEqual([
                 'apfel',
+                'baum',
                 'egg',
                 'fahrrad',
                 'hund',
@@ -561,10 +680,10 @@ describe('ListQueryBuilder', () => {
                     sort: {
                         name: SortOrder.ASC,
                     },
-                    take: 3,
+                    take: 4,
                 },
             });
-            expect(testEntities.items.map((x: any) => x.name)).toEqual(['apple', 'bike', 'cake']);
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['apple', 'baum', 'bike', 'cake']);
         });
 
         it('sort by translated field de with take', async () => {
@@ -575,12 +694,12 @@ describe('ListQueryBuilder', () => {
                         sort: {
                             name: SortOrder.ASC,
                         },
-                        take: 3,
+                        take: 4,
                     },
                 },
                 { languageCode: LanguageCode.de },
             );
-            expect(testEntities.items.map((x: any) => x.name)).toEqual(['apfel', 'egg', 'fahrrad']);
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['apfel', 'baum', 'egg', 'fahrrad']);
         });
     });
 
@@ -619,7 +738,7 @@ describe('ListQueryBuilder', () => {
                     },
                 },
             });
-            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C', 'F']);
         });
 
         it('sort by calculated property with join', async () => {
@@ -630,7 +749,7 @@ describe('ListQueryBuilder', () => {
                     },
                 },
             });
-            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C', 'F']);
         });
     });
 
@@ -648,7 +767,13 @@ describe('ListQueryBuilder', () => {
                     },
                 },
             });
-            expect(testEntities.items.map((x: any) => x.name)).toEqual(['bike', 'cake', 'dog', 'egg']);
+            expect(testEntities.items.map((x: any) => x.name)).toEqual([
+                'baum',
+                'bike',
+                'cake',
+                'dog',
+                'egg',
+            ]);
         });
 
         it('sort by translated field de & filter', async () => {
@@ -668,7 +793,13 @@ describe('ListQueryBuilder', () => {
                 },
                 { languageCode: LanguageCode.de },
             );
-            expect(testEntities.items.map((x: any) => x.name)).toEqual(['egg', 'fahrrad', 'hund', 'kuchen']);
+            expect(testEntities.items.map((x: any) => x.name)).toEqual([
+                'baum',
+                'egg',
+                'fahrrad',
+                'hund',
+                'kuchen',
+            ]);
         });
 
         it('sort by translated field de & filter & pagination', async () => {
@@ -690,7 +821,7 @@ describe('ListQueryBuilder', () => {
                 },
                 { languageCode: LanguageCode.de },
             );
-            expect(testEntities.items.map((x: any) => x.name)).toEqual(['fahrrad', 'hund']);
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['egg', 'fahrrad']);
         });
     });
 });

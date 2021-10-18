@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
+import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
@@ -144,26 +144,29 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     @Calculated()
-    get discounts(): Adjustment[] {
+    get discounts(): Discount[] {
         const priceIncludesTax = this.items?.[0]?.listPriceIncludesTax ?? false;
         // Group discounts together, so that it does not list a new
         // discount row for each OrderItem in the line
-        const groupedAdjustments = new Map<string, Adjustment>();
-        for (const discount of this.adjustments) {
-            const adjustment = groupedAdjustments.get(discount.adjustmentSource);
+        const groupedDiscounts = new Map<string, Discount>();
+        for (const adjustment of this.adjustments) {
+            const discountGroup = groupedDiscounts.get(adjustment.adjustmentSource);
+            const amount = priceIncludesTax ? netPriceOf(adjustment.amount, this.taxRate) : adjustment.amount;
             const amountWithTax = priceIncludesTax
-                ? discount.amount
-                : grossPriceOf(discount.amount, this.taxRate);
-            if (adjustment) {
-                adjustment.amount += amountWithTax;
+                ? adjustment.amount
+                : grossPriceOf(adjustment.amount, this.taxRate);
+            if (discountGroup) {
+                discountGroup.amount += amount;
+                discountGroup.amountWithTax += amountWithTax;
             } else {
-                groupedAdjustments.set(discount.adjustmentSource, {
-                    ...discount,
-                    amount: amountWithTax,
+                groupedDiscounts.set(adjustment.adjustmentSource, {
+                    ...(adjustment as Omit<Adjustment, '__typename'>),
+                    amount,
+                    amountWithTax,
                 });
             }
         }
-        return [...groupedAdjustments.values()];
+        return [...groupedDiscounts.values()];
     }
 
     @Calculated()
@@ -194,11 +197,19 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     /**
+     * Returns the first OrderItems of the line (i.e. the one with the earliest
+     * `createdAt` property).
+     */
+    get firstItem(): OrderItem | undefined {
+        return (this.items ?? []).sort((a, b) => +a.createdAt - +b.createdAt)[0];
+    }
+
+    /**
      * Clears Adjustments from all OrderItems of the given type. If no type
      * is specified, then all adjustments are removed.
      */
     clearAdjustments(type?: AdjustmentType) {
-        this.activeItems.forEach(item => item.clearAdjustments(type));
+        this.items.forEach(item => item.clearAdjustments(type));
     }
 
     private firstActiveItemPropOr<K extends keyof OrderItem>(

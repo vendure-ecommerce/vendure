@@ -22,34 +22,34 @@ export class TagResolver {
     constructor(private tagService: TagService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadTag, Permission.ReadAsset)
     async tags(@Ctx() ctx: RequestContext, @Args() args: QueryTagsArgs): Promise<TagList> {
         return this.tagService.findAll(ctx, args.options);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadTag, Permission.ReadAsset)
     async tag(@Ctx() ctx: RequestContext, @Args() args: QueryTagArgs): Promise<Tag | undefined> {
         return this.tagService.findOne(ctx, args.id);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateSettings)
+    @Allow(Permission.CreateSettings, Permission.CreateTag)
     async createTag(@Ctx() ctx: RequestContext, @Args() args: MutationCreateTagArgs): Promise<Tag> {
         return this.tagService.create(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateSettings)
+    @Allow(Permission.UpdateSettings, Permission.UpdateTag)
     async updateTag(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateTagArgs): Promise<Tag> {
         return this.tagService.update(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteSettings)
+    @Allow(Permission.DeleteSettings, Permission.DeleteTag)
     async deleteTag(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteTagArgs,

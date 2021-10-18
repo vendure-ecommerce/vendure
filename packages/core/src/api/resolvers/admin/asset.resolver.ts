@@ -24,20 +24,20 @@ export class AssetResolver {
     constructor(private assetService: AssetService) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadAsset)
     async asset(@Ctx() ctx: RequestContext, @Args() args: QueryAssetArgs): Promise<Asset | undefined> {
         return this.assetService.findOne(ctx, args.id);
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadAsset)
     async assets(@Ctx() ctx: RequestContext, @Args() args: QueryAssetsArgs): Promise<PaginatedList<Asset>> {
         return this.assetService.findAll(ctx, args.options || undefined);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog)
+    @Allow(Permission.CreateCatalog, Permission.CreateAsset)
     async createAssets(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateAssetsArgs,
@@ -54,14 +54,14 @@ export class AssetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateAsset)
     async updateAsset(@Ctx() ctx: RequestContext, @Args() { input }: MutationUpdateAssetArgs) {
         return this.assetService.update(ctx, input);
     }
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteAsset)
     async deleteAsset(
         @Ctx() ctx: RequestContext,
         @Args() { input: { assetId, force, deleteFromAllChannels } }: MutationDeleteAssetArgs,
@@ -76,7 +76,7 @@ export class AssetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteAsset)
     async deleteAssets(
         @Ctx() ctx: RequestContext,
         @Args() { input: { assetIds, force, deleteFromAllChannels } }: MutationDeleteAssetsArgs,
@@ -91,7 +91,7 @@ export class AssetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateAsset)
     async assignAssetsToChannel(
         @Ctx() ctx: RequestContext,
         @Args() { input }: MutationAssignAssetsToChannelArgs,

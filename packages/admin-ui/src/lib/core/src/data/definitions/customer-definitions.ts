@@ -82,7 +82,7 @@ export const GET_CUSTOMER = gql`
                     id
                     code
                     state
-                    total
+                    totalWithTax
                     currencyCode
                     updatedAt
                 }

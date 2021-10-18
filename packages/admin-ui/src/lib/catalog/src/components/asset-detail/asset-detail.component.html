@@ -6,7 +6,7 @@
     <vdr-ab-right>
         <vdr-action-bar-items locationId="asset-detail"></vdr-action-bar-items>
         <button
-            *vdrIfPermissions="'UpdateCatalog'"
+            *vdrIfPermissions="['UpdateCatalog', 'UpdateAsset']"
             class="btn btn-primary"
             (click)="save()"
             [disabled]="detailForm.invalid || detailForm.pristine"

@@ -6,14 +6,18 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { Job } from '../../job-queue/job';
 
 /**
+ * @description
  * This service allows a concrete search service to override its behaviour
  * by passing itself to the `adopt()` method.
+ *
+ * @docsCategory services
  */
 @Injectable()
 export class SearchService {
     private override: Pick<SearchService, 'reindex'> | undefined;
 
     /**
+     * @description
      * Adopt a concrete search service implementation to pass through the
      * calls to.
      */

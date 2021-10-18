@@ -14,6 +14,7 @@ import {
     getConfigArgValue,
     NotificationService,
     PaymentMethod,
+    Permission,
     ServerConfigService,
     toConfigurableOperationInput,
     UpdatePaymentMethodInput,
@@ -38,6 +39,7 @@ export class PaymentMethodDetailComponent
     selectedCheckerDefinition?: ConfigurableOperationDefinition;
     selectedHandler?: ConfigurableOperation | null;
     selectedHandlerDefinition?: ConfigurableOperationDefinition;
+    readonly updatePermission = [Permission.UpdateSettings, Permission.UpdatePaymentMethod];
 
     constructor(
         router: Router,
@@ -88,11 +90,6 @@ export class PaymentMethodDetailComponent
                 codeControl.setValue(normalizeString(nameValue, '-'));
             }
         }
-    }
-
-    getArgDef(paymentMethod: PaymentMethod.Fragment, argName: string): ConfigArgDefinition | undefined {
-        // return paymentMethod.handler.args.find(a => a.name === argName);
-        return;
     }
 
     configArgsIsPopulated(): boolean {
@@ -228,13 +225,17 @@ export class PaymentMethodDetailComponent
             checker: paymentMethod.checker || {},
             handler: paymentMethod.handler || {},
         });
-        this.selectedChecker = paymentMethod.checker && {
-            code: paymentMethod.checker.code,
-            args: paymentMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
-        };
-        this.selectedHandler = paymentMethod.handler && {
-            code: paymentMethod.handler.code,
-            args: paymentMethod.handler.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
-        };
+        if (!this.selectedChecker) {
+            this.selectedChecker = paymentMethod.checker && {
+                code: paymentMethod.checker.code,
+                args: paymentMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+            };
+        }
+        if (!this.selectedHandler) {
+            this.selectedHandler = paymentMethod.handler && {
+                code: paymentMethod.handler.code,
+                args: paymentMethod.handler.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+            };
+        }
     }
 }

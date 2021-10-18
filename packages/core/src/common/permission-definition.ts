@@ -144,7 +144,10 @@ export class PermissionDefinition {
  * @docsWeight 1
  */
 export class CrudPermissionDefinition extends PermissionDefinition {
-    constructor(name: string) {
+    constructor(
+        name: string,
+        private descriptionFn?: (operation: 'create' | 'read' | 'update' | 'delete') => string,
+    ) {
         super({ name });
     }
 
@@ -152,7 +155,10 @@ export class CrudPermissionDefinition extends PermissionDefinition {
     getMetadata(): PermissionMetadata[] {
         return ['Create', 'Read', 'Update', 'Delete'].map(operation => ({
             name: `${operation}${this.config.name}`,
-            description: `Grants permission to ${operation.toLocaleLowerCase()} ${this.config.name}`,
+            description:
+                typeof this.descriptionFn === 'function'
+                    ? this.descriptionFn(operation.toLocaleLowerCase() as any)
+                    : `Grants permission to ${operation.toLocaleLowerCase()} ${this.config.name}`,
             assignable: true,
             internal: false,
         }));

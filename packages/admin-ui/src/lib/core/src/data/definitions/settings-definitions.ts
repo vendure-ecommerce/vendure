@@ -444,6 +444,15 @@ export const UPDATE_PAYMENT_METHOD = gql`
     ${PAYMENT_METHOD_FRAGMENT}
 `;
 
+export const DELETE_PAYMENT_METHOD = gql`
+    mutation DeletePaymentMethod($id: ID!, $force: Boolean) {
+        deletePaymentMethod(id: $id, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
 export const GLOBAL_SETTINGS_FRAGMENT = gql`
     fragment GlobalSettings on GlobalSettings {
         id
@@ -497,6 +506,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
             value
         }
         readonly
+        nullable
     }
 `;
 
@@ -518,6 +528,12 @@ export const LOCALE_STRING_CUSTOM_FIELD_FRAGMENT = gql`
     fragment LocaleStringCustomField on LocaleStringCustomFieldConfig {
         ...CustomFieldConfig
         pattern
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+export const TEXT_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment TextCustomField on TextCustomFieldConfig {
+        ...CustomFieldConfig
     }
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
@@ -571,6 +587,9 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         ... on LocaleStringCustomFieldConfig {
             ...LocaleStringCustomField
         }
+        ... on TextCustomFieldConfig {
+            ...TextCustomField
+        }
         ... on BooleanCustomFieldConfig {
             ...BooleanCustomField
         }
@@ -589,6 +608,7 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     }
     ${STRING_CUSTOM_FIELD_FRAGMENT}
     ${LOCALE_STRING_CUSTOM_FIELD_FRAGMENT}
+    ${TEXT_CUSTOM_FIELD_FRAGMENT}
     ${BOOLEAN_CUSTOM_FIELD_FRAGMENT}
     ${INT_CUSTOM_FIELD_FRAGMENT}
     ${FLOAT_CUSTOM_FIELD_FRAGMENT}
@@ -687,6 +707,8 @@ export const JOB_INFO_FRAGMENT = gql`
         data
         result
         error
+        retries
+        attempts
     }
 `;
 
@@ -745,4 +767,18 @@ export const REINDEX = gql`
         }
     }
     ${JOB_INFO_FRAGMENT}
+`;
+
+export const GET_PENDING_SEARCH_INDEX_UPDATES = gql`
+    query GetPendingSearchIndexUpdates {
+        pendingSearchIndexUpdates
+    }
+`;
+
+export const RUN_PENDING_SEARCH_INDEX_UPDATES = gql`
+    mutation RunPendingSearchIndexUpdates {
+        runPendingSearchIndexUpdates {
+            success
+        }
+    }
 `;

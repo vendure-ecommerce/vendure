@@ -39,13 +39,6 @@ export interface S3Config {
     bucket: string;
     /**
      * @description
-     * The AWS region in which to host the assets.
-     * @deprecated
-     * Use nativeS3Configuration instead.
-     */
-    region?: string;
-    /**
-     * @description
      * Configuration object passed directly to the AWS SDK.
      * S3.Types.ClientConfiguration can be used after importing aws-sdk.
      * Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
@@ -146,7 +139,6 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
 
         const config = {
             credentials: this.getS3Credentials(),
-            region: this.s3Config.region,
             ...this.s3Config.nativeS3Configuration,
         };
         this.s3 = new this.AWS.S3(config);

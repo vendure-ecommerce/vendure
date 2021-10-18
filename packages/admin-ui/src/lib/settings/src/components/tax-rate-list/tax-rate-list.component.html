@@ -1,7 +1,7 @@
 <vdr-action-bar>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="tax-rate-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateSettings'">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateTaxRate']">
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-tax-rate' | translate }}
         </a>
@@ -45,7 +45,7 @@
                         type="button"
                         class="delete-button"
                         (click)="deleteTaxRate(taxRate)"
-                        [disabled]="!('DeleteSettings' | hasPermission)"
+                        [disabled]="!(['DeleteSettings', 'DeleteTaxRate'] | hasPermission)"
                         vdrDropdownItem
                     >
                         <clr-icon shape="trash" class="is-danger"></clr-icon>

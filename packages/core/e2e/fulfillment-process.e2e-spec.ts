@@ -1,5 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
-import { CustomFulfillmentProcess, manualFulfillmentHandler, mergeConfig } from '@vendure/core';
+import {
+    CustomFulfillmentProcess,
+    manualFulfillmentHandler,
+    mergeConfig,
+    TransactionalConnection,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 
@@ -38,7 +43,7 @@ describe('Fulfillment process', () => {
     const VALIDATION_ERROR_MESSAGE = 'Fulfillment must have a tracking code';
     const customOrderProcess: CustomFulfillmentProcess<'AwaitingPickup'> = {
         init(injector) {
-            initSpy(injector.getConnection().name);
+            initSpy(injector.get(TransactionalConnection).rawConnection.name);
         },
         transitions: {
             Pending: {

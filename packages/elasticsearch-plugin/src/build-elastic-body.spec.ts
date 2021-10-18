@@ -72,6 +72,134 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('facetValueFilters AND with OR', () => {
+        const result = buildElasticBody(
+            { facetValueFilters: [{ and: '1' }, { or: ['2', '3'] }] },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { facetValueIds: '1' } },
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '2' } }, { term: { facetValueIds: '3' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('facetValueFilters AND', () => {
+        const result = buildElasticBody(
+            { facetValueFilters: [{ and: '1' }, { and: '2' }] },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    { term: { facetValueIds: '1' } },
+                    { term: { facetValueIds: '2' } },
+                ],
+            },
+        });
+    });
+
+    it('facetValueFilters OR', () => {
+        const result = buildElasticBody(
+            { facetValueFilters: [{ or: ['1', '2'] }] },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('facetValueFilters with facetValueIds AND', () => {
+        const result = buildElasticBody(
+            {
+                facetValueFilters: [{ and: '1' }, { or: ['2', '3'] }],
+                facetValueIds: ['1', '2'],
+                facetValueOperator: LogicalOperator.AND,
+            },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    {
+                        bool: {
+                            must: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                    { term: { facetValueIds: '1' } },
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '2' } }, { term: { facetValueIds: '3' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('facetValueFilters with facetValueIds OR', () => {
+        const result = buildElasticBody(
+            {
+                facetValueFilters: [{ and: '1' }, { or: ['2', '3'] }],
+                facetValueIds: ['1', '2'],
+                facetValueOperator: LogicalOperator.OR,
+            },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                    { term: { facetValueIds: '1' } },
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '2' } }, { term: { facetValueIds: '3' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
     it('collectionId', () => {
         const result = buildElasticBody({ collectionId: '1' }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
@@ -102,6 +230,81 @@ describe('buildElasticBody()', () => {
             size: 10,
             query: { bool: { filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM] } },
             sort: [],
+            track_total_hits: 10000,
+        });
+    });
+
+    it('inStock is True and groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: true, groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { productInStock: true } }],
+            },
+        });
+    });
+
+    it('inStock is False and groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: false, groupByProduct: true },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { productInStock: false } }],
+            },
+        });
+    });
+
+    it('inStock is undefined and groupByProduct', () => {
+        const result = buildElasticBody({ groupByProduct: true }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
+            },
+        });
+    });
+
+    it('inStock is True and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: true, groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { inStock: true } }],
+            },
+        });
+    });
+
+    it('inStock is False and not groupByProduct', () => {
+        const result = buildElasticBody(
+            { inStock: false, groupByProduct: false },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { inStock: false } }],
+            },
+        });
+    });
+
+    it('inStock is undefined and not groupByProduct', () => {
+        const result = buildElasticBody({ groupByProduct: false }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
+            },
         });
     });
 
@@ -133,7 +336,7 @@ describe('buildElasticBody()', () => {
                 CHANNEL_ID,
                 LanguageCode.en,
             );
-            expect(result.sort).toEqual([{ priceMin: { order: 'asc' } }]);
+            expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
     });
 
@@ -173,6 +376,9 @@ describe('buildElasticBody()', () => {
         );
 
         expect(result).toEqual({
+            collapse: {
+                field: 'productId',
+            },
             from: 0,
             size: 25,
             query: {
@@ -201,6 +407,7 @@ describe('buildElasticBody()', () => {
                 },
             },
             sort: [{ 'productName.keyword': { order: 'desc' } }],
+            track_total_hits: 10000,
         });
     });
 
@@ -252,6 +459,29 @@ describe('buildElasticBody()', () => {
                         },
                     },
                 ],
+            },
+        });
+    });
+
+    it('scriptFields option', () => {
+        const config: DeepRequired<SearchConfig> = {
+            ...searchConfig,
+            ...{
+                scriptFields: {
+                    test: {
+                        graphQlType: 'String',
+                        context: 'both',
+                        scriptFn: input => ({
+                            script: `doc['property'].dummyScript(${input.term})`,
+                        }),
+                    },
+                },
+            },
+        };
+        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
+        expect(result.script_fields).toEqual({
+            test: {
+                script: `doc['property'].dummyScript(test)`,
             },
         });
     });
@@ -321,14 +551,8 @@ describe('buildElasticBody()', () => {
                         LANGUAGE_CODE_TERM,
                         {
                             range: {
-                                priceMin: {
+                                price: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceMax: {
                                     lte: 1500,
                                 },
                             },
@@ -352,14 +576,8 @@ describe('buildElasticBody()', () => {
                         LANGUAGE_CODE_TERM,
                         {
                             range: {
-                                priceWithTaxMin: {
+                                priceWithTax: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceWithTaxMax: {
                                     lte: 1500,
                                 },
                             },
@@ -394,14 +612,8 @@ describe('buildElasticBody()', () => {
                         { term: { collectionIds: '3' } },
                         {
                             range: {
-                                priceWithTaxMin: {
+                                priceWithTax: {
                                     gte: 500,
-                                },
-                            },
-                        },
-                        {
-                            range: {
-                                priceWithTaxMax: {
                                     lte: 1500,
                                 },
                             },

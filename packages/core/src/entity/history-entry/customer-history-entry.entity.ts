@@ -5,6 +5,12 @@ import { Customer } from '../customer/customer.entity';
 
 import { HistoryEntry } from './history-entry.entity';
 
+/**
+ * @description
+ * Represents an event in the history of a particular {@link Customer}.
+ *
+ * @docsCategory entities
+ */
 @ChildEntity()
 export class CustomerHistoryEntry extends HistoryEntry {
     constructor(input: DeepPartial<CustomerHistoryEntry>) {

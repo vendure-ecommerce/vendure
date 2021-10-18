@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
+import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, ManyToOne } from 'typeorm';
@@ -66,8 +66,22 @@ export class ShippingLine extends VendureEntity {
     }
 
     @Calculated()
-    get discounts(): Adjustment[] {
-        return this.adjustments || [];
+    get discounts(): Discount[] {
+        return (
+            this.adjustments?.map(adjustment => {
+                const amount = this.listPriceIncludesTax
+                    ? netPriceOf(adjustment.amount, this.taxRate)
+                    : adjustment.amount;
+                const amountWithTax = this.listPriceIncludesTax
+                    ? adjustment.amount
+                    : grossPriceOf(adjustment.amount, this.taxRate);
+                return {
+                    ...(adjustment as Omit<Adjustment, '__typename'>),
+                    amount,
+                    amountWithTax,
+                };
+            }) ?? []
+        );
     }
 
     addAdjustment(adjustment: Adjustment) {

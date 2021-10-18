@@ -34,7 +34,7 @@ export class FacetResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct, Permission.ReadFacet)
     facets(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryFacetsArgs,
@@ -43,7 +43,7 @@ export class FacetResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct, Permission.ReadFacet)
     async facet(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryFacetArgs,
@@ -53,7 +53,7 @@ export class FacetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog)
+    @Allow(Permission.CreateCatalog, Permission.CreateFacet)
     async createFacet(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateFacetArgs,
@@ -72,7 +72,7 @@ export class FacetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateFacet)
     async updateFacet(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateFacetArgs,
@@ -83,7 +83,7 @@ export class FacetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteFacet)
     async deleteFacet(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteFacetArgs,
@@ -93,7 +93,7 @@ export class FacetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog)
+    @Allow(Permission.CreateCatalog, Permission.CreateFacet)
     async createFacetValues(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateFacetValuesArgs,
@@ -114,7 +114,7 @@ export class FacetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateFacet)
     async updateFacetValues(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateFacetValuesArgs,
@@ -125,7 +125,7 @@ export class FacetResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteFacet)
     async deleteFacetValues(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteFacetValuesArgs,

@@ -1,7 +1,5 @@
 import gql from 'graphql-tag';
 
-import { ERROR_RESULT_FRAGMENT } from '../../../admin-ui/src/lib/core/src/data/definitions/shared-definitions';
-
 export const TEST_ORDER_FRAGMENT = gql`
     fragment TestOrderFragment on Order {
         id
@@ -18,6 +16,7 @@ export const TEST_ORDER_FRAGMENT = gql`
         discounts {
             adjustmentSource
             amount
+            amountWithTax
             description
             type
         }
@@ -30,12 +29,14 @@ export const TEST_ORDER_FRAGMENT = gql`
             unitPriceWithTax
             unitPriceChangeSinceAdded
             unitPriceWithTaxChangeSinceAdded
+            proratedUnitPriceWithTax
             productVariant {
                 id
             }
             discounts {
                 adjustmentSource
                 amount
+                amountWithTax
                 description
                 type
             }
@@ -86,6 +87,7 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             discounts {
                 adjustmentSource
                 amount
+                amountWithTax
                 description
                 type
             }
@@ -93,6 +95,7 @@ export const UPDATED_ORDER_FRAGMENT = gql`
         discounts {
             adjustmentSource
             amount
+            amountWithTax
             description
             type
         }
@@ -124,10 +127,8 @@ export const SEARCH_PRODUCTS_SHOP = gql`
             items {
                 productId
                 productName
-                productPreview
                 productVariantId
                 productVariantName
-                productVariantPreview
                 sku
                 collectionIds
                 price {
@@ -339,10 +340,6 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                     unitPriceWithTax
                     taxRate
                 }
-                adjustments {
-                    amount
-                    type
-                }
                 taxLines {
                     taxRate
                     description
@@ -388,6 +385,7 @@ export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
     query GetShippingMethods {
         eligibleShippingMethods {
             id
+            code
             price
             name
             description
@@ -701,6 +699,24 @@ export const GET_PRODUCT_WITH_STOCK_LEVEL = gql`
             variants {
                 id
                 stockLevel
+            }
+        }
+    }
+`;
+
+export const GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG = gql`
+    query GetActiveCustomerWithOrdersProductSlug($options: OrderListOptions) {
+        activeCustomer {
+            orders(options: $options) {
+                items {
+                    lines {
+                        productVariant {
+                            product {
+                                slug
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ mutation SetShippingMethod($id: ID!) {
         }
     }
     addPaymentToOrder(input: {
-        method: "example-payment-provider",
+        method: "standard-payment",
         metadata: {}
     }) {
         ...on Order {

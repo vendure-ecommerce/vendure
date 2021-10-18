@@ -1,9 +1,9 @@
-import { ErrorResult as GraphQLErrorResultShop } from '@vendure/common/lib/generated-shop-types';
-import { ErrorResult, ErrorResult as GraphQLErrorResultAdmin } from '@vendure/common/lib/generated-types';
-
 import { VendureEntity } from '../../entity/base/base.entity';
 
-export type GraphQLErrorResult = GraphQLErrorResultShop | GraphQLErrorResultAdmin;
+export type GraphQLErrorResult = {
+    errorCode: string;
+    message: string;
+};
 
 /**
  * @description

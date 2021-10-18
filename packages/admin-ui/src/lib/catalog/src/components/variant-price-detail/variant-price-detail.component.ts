@@ -25,7 +25,7 @@ export class VariantPriceDetailComponent implements OnInit, OnChanges {
 
     ngOnInit() {
         const taxRates$ = this.dataService.settings
-            .getTaxRates(99999, 0, 'cache-first')
+            .getTaxRates(999, 0, 'cache-first')
             .mapStream(data => data.taxRates.items);
         const activeChannel$ = this.dataService.settings
             .getActiveChannel('cache-first')

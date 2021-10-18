@@ -30,6 +30,7 @@ import {
     LanguageCode,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    SearchCollections,
     SearchFacetValues,
     SearchGetPrices,
     SearchInput,
@@ -71,6 +72,11 @@ import {
     testMatchCollectionSlug,
     testMatchFacetIdsAnd,
     testMatchFacetIdsOr,
+    testMatchFacetValueFiltersAnd,
+    testMatchFacetValueFiltersOr,
+    testMatchFacetValueFiltersOrWithAnd,
+    testMatchFacetValueFiltersWithFacetIdsAnd,
+    testMatchFacetValueFiltersWithFacetIdsOr,
     testMatchSearchTerm,
     testNoGrouping,
     testPriceRanges,
@@ -92,6 +98,15 @@ const { elasticsearchHost, elasticsearchPort } = require('./constants');
  */
 if (process.env.CI) {
     jest.setTimeout(10 * 3000);
+}
+
+interface SearchProductShopVariables extends SearchProductsShop.Variables {
+    input: SearchProductsShop.Variables['input'] & {
+        // This input field is dynamically added only when the `indexStockStatus` init option
+        // of DefaultSearchPlugin is set to `true`, and therefore not included in the generated type. Therefore
+        // we need to manually patch it here.
+        inStock?: boolean;
+    };
 }
 
 const INDEX_PREFIX = 'e2e-tests';
@@ -123,6 +138,21 @@ describe('Elasticsearch plugin', () => {
                                 return 42;
                             },
                         },
+                    },
+                    searchConfig: {
+                        scriptFields: {
+                            answerMultiplied: {
+                                graphQlType: 'Int!',
+                                context: 'product',
+                                scriptFn: input => {
+                                    const factor = input.factor ?? 2;
+                                    return { script: `doc['product-answer'].value * ${factor}` };
+                                },
+                            },
+                        },
+                    },
+                    extendSearchInputType: {
+                        factor: 'Int',
                     },
                 }),
                 DefaultJobQueuePlugin,
@@ -157,6 +187,18 @@ describe('Elasticsearch plugin', () => {
         it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(shopClient));
 
         it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+
+        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+
+        it('matches by FacetValueFilters with facetId OR operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters with facetId AND operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
@@ -249,11 +291,40 @@ describe('Elasticsearch plugin', () => {
             ]);
         });
 
+        it('returns correct collections when not grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
+        });
+
+        it('returns correct collections when grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+            ]);
+        });
+
         it('encodes the productId and productVariantId', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
+                        term: 'Laptop 13 inch 8GB',
                         groupByProduct: false,
                         take: 1,
                     },
@@ -273,20 +344,20 @@ describe('Elasticsearch plugin', () => {
                 },
             );
             await awaitRunningJobs(adminClient);
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
                         groupByProduct: false,
-                        take: 3,
+                        take: 100,
                     },
                 },
             );
-            expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
+            expect(result.search.items.map(i => i.productVariantId).includes('T_3')).toBe(false);
         });
 
         it('encodes collectionIds', async () => {
-            const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                 SEARCH_PRODUCTS_SHOP,
                 {
                     input: {
@@ -298,6 +369,84 @@ describe('Elasticsearch plugin', () => {
             );
 
             expect(result.search.items[0].collectionIds).toEqual(['T_2']);
+        });
+
+        it('inStock is false and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(2);
+        });
+
+        it('inStock is false and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: false,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(1);
+        });
+
+        it('inStock is true and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(31);
+        });
+
+        it('inStock is true and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: true,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(19);
+        });
+
+        it('inStock is undefined and not grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: false,
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(33);
+        });
+
+        it('inStock is undefined and grouped by product', async () => {
+            const result = await shopClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                SEARCH_PRODUCTS_SHOP,
+                {
+                    input: {
+                        groupByProduct: true,
+                        inStock: undefined,
+                    },
+                },
+            );
+            expect(result.search.totalItems).toBe(20);
         });
     });
 
@@ -311,6 +460,18 @@ describe('Elasticsearch plugin', () => {
         it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(adminClient));
 
         it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(adminClient));
+
+        it('matches by FacetValueFilters AND', () => testMatchFacetValueFiltersAnd(shopClient));
+
+        it('matches by FacetValueFilters OR', () => testMatchFacetValueFiltersOr(shopClient));
+
+        it('matches by FacetValueFilters OR and AND', () => testMatchFacetValueFiltersOrWithAnd(shopClient));
+
+        it('matches by FacetValueFilters with facetId OR operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsOr(shopClient));
+
+        it('matches by FacetValueFilters with facetId AND operator', () =>
+            testMatchFacetValueFiltersWithFacetIdsAnd(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
@@ -344,7 +505,6 @@ describe('Elasticsearch plugin', () => {
                         })),
                     },
                 );
-
                 await awaitRunningJobs(adminClient);
                 const { search: search2 } = await doAdminSearchQuery(adminClient, {
                     term: 'drive',
@@ -374,6 +534,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 );
 
+                await awaitRunningJobs(adminClient);
                 await awaitRunningJobs(adminClient);
                 const { search: search2 } = await doAdminSearchQuery(adminClient, {
                     term: 'drive',
@@ -464,14 +625,14 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: true,
                 });
 
-                expect(result1.search.items.map(i => i.productName)).toEqual([
-                    'Road Bike',
-                    'Skipping Rope',
+                expect(result1.search.items.map(i => i.productName).sort()).toEqual([
                     'Boxing Gloves',
-                    'Tent',
                     'Cruiser Skateboard',
                     'Football',
+                    'Road Bike',
                     'Running Shoe',
+                    'Skipping Rope',
+                    'Tent',
                 ]);
 
                 const result2 = await doAdminSearchQuery(adminClient, {
@@ -479,14 +640,14 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: true,
                 });
 
-                expect(result2.search.items.map(i => i.productName)).toEqual([
-                    'Road Bike',
-                    'Skipping Rope',
+                expect(result2.search.items.map(i => i.productName).sort()).toEqual([
                     'Boxing Gloves',
-                    'Tent',
                     'Cruiser Skateboard',
                     'Football',
+                    'Road Bike',
                     'Running Shoe',
+                    'Skipping Rope',
+                    'Tent',
                 ]);
             });
 
@@ -528,11 +689,11 @@ describe('Elasticsearch plugin', () => {
                     collectionId: createCollection.id,
                     groupByProduct: true,
                 });
-                expect(result.search.items.map(i => i.productName)).toEqual([
-                    'Instant Camera',
+                expect(result.search.items.map(i => i.productName).sort()).toEqual([
                     'Camera Lens',
-                    'Tripod',
+                    'Instant Camera',
                     'SLR Camera',
+                    'Tripod',
                 ]);
             });
 
@@ -718,11 +879,13 @@ describe('Elasticsearch plugin', () => {
                 await adminClient.query<Reindex.Mutation>(REINDEX);
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery(adminClient, { groupByProduct: true, take: 3 });
+                const result = await doAdminSearchQuery(adminClient, {
+                    term: 'laptop',
+                    groupByProduct: true,
+                    take: 3,
+                });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
                     { productId: 'T_1', enabled: false },
-                    { productId: 'T_2', enabled: true },
-                    { productId: 'T_3', enabled: false },
                 ]);
             });
         });
@@ -981,6 +1144,72 @@ describe('Elasticsearch plugin', () => {
                 });
                 expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/896
+            it('removing from channel with multiple languages', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_4',
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'product en',
+                                slug: 'product-en',
+                                description: 'en',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'product de',
+                                slug: 'product-de',
+                                description: 'de',
+                            },
+                        ],
+                    },
+                });
+
+                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
+                    ASSIGN_PRODUCT_TO_CHANNEL,
+                    {
+                        input: { channelId: secondChannel.id, productIds: ['T_4'] },
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                async function searchSecondChannelForDEProduct() {
+                    adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                    const { search } = await adminClient.query<
+                        SearchProductsShop.Query,
+                        SearchProductShopVariables
+                    >(
+                        SEARCH_PRODUCTS,
+                        {
+                            input: { term: 'product', groupByProduct: true },
+                        },
+                        { languageCode: LanguageCode.de },
+                    );
+                    return search;
+                }
+
+                const search1 = await searchSecondChannelForDEProduct();
+                expect(search1.items.map(i => i.productName)).toEqual(['product de']);
+
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { removeProductsFromChannel } = await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                    input: {
+                        productIds: ['T_4'],
+                        channelId: secondChannel.id,
+                    },
+                });
+                await awaitRunningJobs(adminClient);
+
+                const search2 = await searchSecondChannelForDEProduct();
+                expect(search2.items.map(i => i.productName)).toEqual([]);
+            });
         });
 
         describe('multiple language handling', () => {
@@ -1061,9 +1290,10 @@ describe('Elasticsearch plugin', () => {
 
             it('indexes product variant-level languages', async () => {
                 const { search: search1 } = await searchInLanguage(LanguageCode.fr, false);
-
-                expect(search1.items[0].productName).toBe('Laptop');
-                expect(search1.items[0].productVariantName).toBe('laptop variant fr');
+                expect(search1.items.length ? search1.items[0].productName : undefined).toBe('Laptop');
+                expect(search1.items.length ? search1.items[0].productVariantName : undefined).toBe(
+                    'laptop variant fr',
+                );
             });
         });
     });
@@ -1087,7 +1317,7 @@ describe('Elasticsearch plugin', () => {
             expect(search.items[0]).toEqual({
                 productVariantName: 'Bonsai Tree',
                 customMappings: {
-                    inStock: true,
+                    inStock: false,
                 },
             });
         });
@@ -1115,6 +1345,50 @@ describe('Elasticsearch plugin', () => {
             });
         });
     });
+
+    describe('scriptFields', () => {
+        it('script mapping', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerMultiplied
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerMultiplied: 84,
+                },
+            });
+        });
+
+        it('can use the custom search input field', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { name: ASC }, factor: 10 }) {
+                    items {
+                      productVariantName
+                      customScriptFields {
+                        answerMultiplied
+                      }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                productVariantName: 'Bonsai Tree',
+                customScriptFields: {
+                    answerMultiplied: 420,
+                },
+            });
+        });
+    });
 });
 
 export const SEARCH_PRODUCTS = gql`
@@ -1135,7 +1409,6 @@ export const SEARCH_PRODUCTS = gql`
                         y
                     }
                 }
-                productPreview
                 productVariantId
                 productVariantName
                 productVariantAsset {
@@ -1146,7 +1419,6 @@ export const SEARCH_PRODUCTS = gql`
                         y
                     }
                 }
-                productVariantPreview
                 sku
             }
         }
@@ -1160,6 +1432,21 @@ export const SEARCH_GET_FACET_VALUES = gql`
             facetValues {
                 count
                 facetValue {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+export const SEARCH_GET_COLLECTIONS = gql`
+    query SearchCollections($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            collections {
+                count
+                collection {
                     id
                     name
                 }

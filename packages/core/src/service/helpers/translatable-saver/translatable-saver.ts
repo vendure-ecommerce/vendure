@@ -4,9 +4,9 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { patchEntity } from '../utils/patch-entity';
 
 import { TranslationDiffer } from './translation-differ';

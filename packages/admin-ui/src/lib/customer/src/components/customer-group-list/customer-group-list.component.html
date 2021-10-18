@@ -2,7 +2,7 @@
     <vdr-ab-left> </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="customer-group-list"></vdr-action-bar-items>
-        <button class="btn btn-primary" *vdrIfPermissions="'CreateCustomer'" (click)="create()">
+        <button class="btn btn-primary" *vdrIfPermissions="'CreateCustomerGroup'" (click)="create()">
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.create-new-customer-group' | translate }}
         </button>
@@ -41,7 +41,7 @@
                                 class="button"
                                 vdrDropdownItem
                                 (click)="delete(group.id)"
-                                [disabled]="!('DeleteSettings' | hasPermission)"
+                                [disabled]="!('DeleteCustomerGroup' | hasPermission)"
                             >
                                 <clr-icon shape="trash" class="is-danger"></clr-icon>
                                 {{ 'common.delete' | translate }}
@@ -83,7 +83,7 @@
                             class="delete-button"
                             (click)="removeFromGroup(activeGroup, selectedCustomerIds)"
                             vdrDropdownItem
-                            [disabled]="!('DeleteSettings' | hasPermission)"
+                            [disabled]="!('UpdateCustomerGroup' | hasPermission)"
                         >
                             <clr-icon shape="trash" class="is-danger"></clr-icon>
                             {{ 'customer.remove-from-group' | translate }}

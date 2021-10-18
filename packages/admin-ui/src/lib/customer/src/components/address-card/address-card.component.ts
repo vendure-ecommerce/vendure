@@ -28,6 +28,7 @@ export class AddressCardComponent implements OnInit, OnChanges {
     @Input() availableCountries: GetAvailableCountries.Items[] = [];
     @Input() isDefaultBilling: string;
     @Input() isDefaultShipping: string;
+    @Input() editable = true;
     @Output() setAsDefaultShipping = new EventEmitter<string>();
     @Output() setAsDefaultBilling = new EventEmitter<string>();
     private dataDependenciesPopulated = new BehaviorSubject<boolean>(false);

@@ -7,6 +7,7 @@ import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
 import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
@@ -14,7 +15,6 @@ import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationService } from '../../service/helpers/custom-field-relation/custom-field-relation.service';
 import { ServiceModule } from '../../service/service.module';
 import { ProductVariantService } from '../../service/services/product-variant.service';
-import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 import { ApiSharedModule } from '../api-internal-modules';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { IdCodecService } from '../common/id-codec.service';
@@ -77,7 +77,7 @@ export function configureGraphQLModule(
             GraphQLTypesLoader,
             CustomFieldRelationResolverService,
         ],
-        imports: [ConfigModule, I18nModule, ApiSharedModule, ServiceModule.forRoot()],
+        imports: [ConfigModule, I18nModule, ApiSharedModule, ServiceModule],
     });
 }
 
@@ -100,6 +100,7 @@ async function createGraphQLOptions(
         path: '/' + options.apiPath,
         typeDefs: printSchema(builtSchema),
         include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
+        fieldResolverEnhancers: ['guards'],
         resolvers,
         // We no longer rely on the upload facility bundled with Apollo Server, and instead
         // manually configure the graphql-upload package. See https://github.com/vendure-ecommerce/vendure/issues/396
@@ -140,7 +141,6 @@ async function createGraphQLOptions(
             .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
             .filter(notNullOrUndefined)
             .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
-        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
@@ -154,6 +154,7 @@ async function createGraphQLOptions(
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
         }
+        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
 
         return schema;
     }

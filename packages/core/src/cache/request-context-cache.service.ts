@@ -15,18 +15,17 @@ export class RequestContextCacheService {
     }
 
     get<T = any>(ctx: RequestContext, key: any): T | undefined;
-    get<T = any>(ctx: RequestContext, key: any, getDefault?: () => Promise<T>): Promise<T>;
-    get<T = any>(ctx: RequestContext, key: any, getDefault?: () => Promise<T>): Promise<T> | T | undefined {
+    get<T>(ctx: RequestContext, key: any, getDefault?: () => T): T;
+    get<T>(ctx: RequestContext, key: any, getDefault?: () => T): T | Promise<T> | undefined {
         const ctxCache = this.getContextCache(ctx);
         const result = ctxCache.get(key);
         if (result) {
             return result;
         }
         if (getDefault) {
-            return getDefault().then(defaultResult => {
-                ctxCache.set(key, defaultResult);
-                return defaultResult;
-            });
+            const defaultResultOrPromise = getDefault();
+            ctxCache.set(key, defaultResultOrPromise);
+            return defaultResultOrPromise;
         } else {
             return;
         }
@@ -39,5 +38,9 @@ export class RequestContextCacheService {
             this.caches.set(ctx, ctxCache);
         }
         return ctxCache;
+    }
+
+    private isPromise<T>(input: T | Promise<T>): input is Promise<T> {
+        return typeof (input as any).then === 'function';
     }
 }

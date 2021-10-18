@@ -4,6 +4,7 @@ import { PermissionDefinition } from '@vendure/admin-ui/core';
 
 export interface PermissionGridRow {
     label: string;
+    description: string;
     permissions: PermissionDefinition[];
 }
 
@@ -63,14 +64,20 @@ export class PermissionGridComponent implements OnInit {
         this.gridData = [
             ...nonCrud.map(d => ({
                 label: d.name,
+                description: d.description,
                 permissions: [d],
             })),
             ...Array.from(crudGroups.entries()).map(([label, defs]) => {
                 return {
                     label,
+                    description: this.extractCrudDescription(defs[0]),
                     permissions: defs,
                 };
             }),
         ];
+    }
+
+    private extractCrudDescription(def: PermissionDefinition): string {
+        return def.description.replace(/Grants permission to [\w]+/, 'Grants permissions on');
     }
 }

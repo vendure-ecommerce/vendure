@@ -6,10 +6,12 @@ import {
 } from '@vendure/common/lib/shared-constants';
 
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
+import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
@@ -22,6 +24,7 @@ import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
+import { DefaultOrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
@@ -48,10 +51,12 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminApiPath: 'admin-api',
         adminApiPlayground: false,
         adminApiDebug: false,
+        adminListQueryLimit: 1000,
         adminApiValidationRules: [],
         shopApiPath: 'shop-api',
         shopApiPlayground: false,
         shopApiDebug: false,
+        shopListQueryLimit: 100,
         shopApiValidationRules: [],
         channelTokenKey: 'vendure-token',
         cors: {
@@ -64,7 +69,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
-        sessionSecret: '',
         cookieOptions: {
             secret: Math.random().toString(36).substr(3),
             httpOnly: true,
@@ -82,6 +86,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
+        passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -99,6 +104,10 @@ export const defaultConfig: RuntimeVendureConfig = {
     dbConnectionOptions: {
         timezone: 'Z',
         type: 'mysql',
+    },
+    entityOptions: {
+        channelCacheTtl: 30000,
+        zoneCacheTtl: 30000,
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,
@@ -119,6 +128,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         process: [],
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
+        orderByCodeAccessStrategy: new DefaultOrderByCodeAccessStrategy('2h'),
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
     },
@@ -136,7 +146,9 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
+        jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
+        enableWorkerHealthCheck: false,
     },
     customFields: {
         Address: [],

@@ -17,6 +17,15 @@ Object {
     },
   ],
   "customFields": Object {
+    "keywords": Array [
+      "paper",
+      "stretching",
+      "watercolor",
+    ],
+    "localName": "localPPS",
+    "owner": Object {
+      "id": "T_1",
+    },
     "pageType": "default",
   },
   "description": "A great device for stretching paper.",
@@ -111,6 +120,11 @@ exports[`Import resolver imports products 2`] = `
 Object {
   "assets": Array [],
   "customFields": Object {
+    "keywords": Array [],
+    "localName": "localMabef",
+    "owner": Object {
+      "id": "T_1",
+    },
     "pageType": "expanded",
   },
   "description": "Mabef description",
@@ -154,6 +168,11 @@ exports[`Import resolver imports products 3`] = `
 Object {
   "assets": Array [],
   "customFields": Object {
+    "keywords": Array [],
+    "localName": "localGiotto",
+    "owner": Object {
+      "id": "T_1",
+    },
     "pageType": "default",
   },
   "description": "Really mega pencils",
@@ -241,6 +260,14 @@ exports[`Import resolver imports products 4`] = `
 Object {
   "assets": Array [],
   "customFields": Object {
+    "keywords": Array [
+      "apron",
+      "clothing",
+    ],
+    "localName": "localSmock",
+    "owner": Object {
+      "id": "T_1",
+    },
     "pageType": "default",
   },
   "description": "Keeps the paint off the clothes",

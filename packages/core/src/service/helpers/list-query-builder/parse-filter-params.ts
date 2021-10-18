@@ -29,6 +29,7 @@ export function parseFilterParams<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
     filterParams?: NullOptionals<FilterParameter<T>> | null,
+    customPropertyMap?: { [name: string]: string },
 ): WhereCondition[] {
     if (!filterParams) {
         return [];
@@ -55,6 +56,8 @@ export function parseFilterParams<T extends VendureEntity>(
                     fieldName = `${translationsAlias}.${key}`;
                 } else if (calculatedColumnExpression) {
                     fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);
+                } else if (customPropertyMap?.[key]) {
+                    fieldName = customPropertyMap[key];
                 } else {
                     throw new UserInputError('error.invalid-filter-field');
                 }

@@ -17,21 +17,27 @@ import {
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
-import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { RoleService } from './role.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link User} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class UserService {
     constructor(
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private roleService: RoleService,
-        private passwordCipher: PasswordCiper,
+        private passwordCipher: PasswordCipher,
         private verificationTokenGenerator: VerificationTokenGenerator,
     ) {}
 
@@ -51,6 +57,10 @@ export class UserService {
         });
     }
 
+    /**
+     * @description
+     * Creates a new User with the special `customer` Role and using the {@link NativeAuthenticationStrategy}.
+     */
     async createCustomerUser(ctx: RequestContext, identifier: string, password?: string): Promise<User> {
         const user = new User();
         user.identifier = identifier;
@@ -61,15 +71,33 @@ export class UserService {
             .save(await this.addNativeAuthenticationMethod(ctx, user, identifier, password));
     }
 
+    /**
+     * @description
+     * Adds a new {@link NativeAuthenticationMethod} to the User. If the {@link AuthOptions} `requireVerification`
+     * is set to `true` (as is the default), the User will be marked as unverified until the email verification
+     * flow is completed.
+     */
     async addNativeAuthenticationMethod(
         ctx: RequestContext,
         user: User,
         identifier: string,
         password?: string,
     ): Promise<User> {
+        const checkUser = user.id != null && (await this.getUserById(ctx, user.id));
+        if (checkUser) {
+            if (
+                !!checkUser.authenticationMethods.find(
+                    (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+                )
+            ) {
+                // User already has a NativeAuthenticationMethod registered, so just return.
+                return user;
+            }
+        }
         const authenticationMethod = new NativeAuthenticationMethod();
         if (this.configService.authOptions.requireVerification) {
-            authenticationMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
+            authenticationMethod.verificationToken =
+                this.verificationTokenGenerator.generateVerificationToken();
             user.verified = false;
         } else {
             user.verified = true;
@@ -85,6 +113,10 @@ export class UserService {
         return user;
     }
 
+    /**
+     * @description
+     * Creates a new verified User using the {@link NativeAuthenticationStrategy}.
+     */
     async createAdminUser(ctx: RequestContext, identifier: string, password: string): Promise<User> {
         const user = new User({
             identifier,
@@ -107,6 +139,11 @@ export class UserService {
         await this.connection.getRepository(ctx, User).update({ id: userId }, { deletedAt: new Date() });
     }
 
+    /**
+     * @description
+     * Sets the {@link NativeAuthenticationMethod} `verificationToken` as part of the User email verification
+     * flow.
+     */
     async setVerificationToken(ctx: RequestContext, user: User): Promise<User> {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         nativeAuthMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
@@ -115,6 +152,13 @@ export class UserService {
         return this.connection.getRepository(ctx, User).save(user);
     }
 
+    /**
+     * @description
+     * Verifies a verificationToken by looking for a User which has previously had it set using the
+     * `setVerificationToken()` method, and checks that the token is valid and has not expired.
+     *
+     * If valid, the User will be set to `verified: true`.
+     */
     async verifyUserByToken(
         ctx: RequestContext,
         verificationToken: string,
@@ -152,17 +196,29 @@ export class UserService {
         }
     }
 
+    /**
+     * @description
+     * Sets the {@link NativeAuthenticationMethod} `passwordResetToken` as part of the User password reset
+     * flow.
+     */
     async setPasswordResetToken(ctx: RequestContext, emailAddress: string): Promise<User | undefined> {
         const user = await this.getUserByEmailAddress(ctx, emailAddress);
         if (!user) {
             return;
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
-        nativeAuthMethod.passwordResetToken = await this.verificationTokenGenerator.generateVerificationToken();
+        nativeAuthMethod.passwordResetToken = this.verificationTokenGenerator.generateVerificationToken();
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
 
+    /**
+     * @description
+     * Verifies a passwordResetToken by looking for a User which has previously had it set using the
+     * `setPasswordResetToken()` method, and checks that the token is valid and has not expired.
+     *
+     * If valid, the User's credentials will be updated with the new password.
+     */
     async resetPasswordByToken(
         ctx: RequestContext,
         passwordResetToken: string,
@@ -188,6 +244,51 @@ export class UserService {
         }
     }
 
+    /**
+     * @description
+     * Changes the User identifier without an email verification step, so this should be only used when
+     * an Administrator is setting a new email address.
+     */
+    async changeNativeIdentifier(ctx: RequestContext, userId: ID, newIdentifier: string) {
+        const user = await this.getUserById(ctx, userId);
+        if (!user) {
+            return;
+        }
+        const nativeAuthMethod = user.authenticationMethods.find(
+            (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+        );
+        if (!nativeAuthMethod) {
+            // If the NativeAuthenticationMethod is not configured, then
+            // there is nothing to do.
+            return;
+        }
+        user.identifier = newIdentifier;
+        nativeAuthMethod.identifier = newIdentifier;
+        nativeAuthMethod.identifierChangeToken = null;
+        nativeAuthMethod.pendingIdentifier = null;
+        await this.connection
+            .getRepository(ctx, NativeAuthenticationMethod)
+            .save(nativeAuthMethod, { reload: false });
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
+    }
+
+    /**
+     * @description
+     * Sets the {@link NativeAuthenticationMethod} `identifierChangeToken` as part of the User email address change
+     * flow.
+     */
+    async setIdentifierChangeToken(ctx: RequestContext, user: User): Promise<User> {
+        const nativeAuthMethod = user.getNativeAuthenticationMethod();
+        nativeAuthMethod.identifierChangeToken = this.verificationTokenGenerator.generateVerificationToken();
+        await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
+        return user;
+    }
+
+    /**
+     * @description
+     * Changes the User identifier as part of the storefront flow used by Customers to set a
+     * new email address, with the token previously set using the `setIdentifierChangeToken()` method.
+     */
     async changeIdentifierByToken(
         ctx: RequestContext,
         token: string,
@@ -227,6 +328,10 @@ export class UserService {
         return { user, oldIdentifier };
     }
 
+    /**
+     * @description
+     * Updates the password for a User with the {@link NativeAuthenticationMethod}.
+     */
     async updatePassword(
         ctx: RequestContext,
         userId: ID,
@@ -253,12 +358,5 @@ export class UserService {
             .getRepository(ctx, NativeAuthenticationMethod)
             .save(nativeAuthMethod, { reload: false });
         return true;
-    }
-
-    async setIdentifierChangeToken(ctx: RequestContext, user: User): Promise<User> {
-        const nativeAuthMethod = user.getNativeAuthenticationMethod();
-        nativeAuthMethod.identifierChangeToken = this.verificationTokenGenerator.generateVerificationToken();
-        await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
-        return user;
     }
 }

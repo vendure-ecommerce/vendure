@@ -1,6 +1,8 @@
 /**
  * An in-memory cache with a configurable TTL (time to live) which means cache items
  * expire after they have been in the cache longer than that time.
+ *
+ * The `ttl` config option is in milliseconds. Defaults to 30 seconds TTL and a cache size of 1000.
  */
 export class TtlCache<K, V> {
     private cache = new Map<K, { value: V; expires: number }>();

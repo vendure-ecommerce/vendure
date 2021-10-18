@@ -35,7 +35,7 @@
                 clrInput
                 type="text"
                 formControlName="name"
-                [readonly]="!('UpdateCatalog' | hasPermission) || settingFocalPoint"
+                [readonly]="!(['UpdateCatalog', 'UpdateAsset'] | hasPermission) || settingFocalPoint"
             />
         </clr-input-container>
 

@@ -40,6 +40,10 @@ clr-checkbox-wrapper {
     .refund-total-error {
         color: var(--color-error-500);
     }
+    .refund-total-warning {
+        color: var(--color-warning-600);
+        max-width: 250px;
+    }
     &.disabled {
         color: var(--color-grey-300);
     }

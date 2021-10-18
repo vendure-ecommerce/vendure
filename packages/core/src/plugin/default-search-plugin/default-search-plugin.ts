@@ -1,7 +1,8 @@
 import { OnApplicationBootstrap } from '@nestjs/common';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
+import { Column } from 'typeorm';
 
 import { idsAreEqual } from '../../common/utils';
 import { EventBus } from '../../event-bus/event-bus';
@@ -12,14 +13,19 @@ import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
+import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
-import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './fulltext-search.resolver';
+import { stockStatusExtension } from './api/api-extensions';
+import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './api/fulltext-search.resolver';
+import { BUFFER_SEARCH_INDEX_UPDATES, PLUGIN_INIT_OPTIONS } from './constants';
+import { SearchIndexItem } from './entities/search-index-item.entity';
 import { FulltextSearchService } from './fulltext-search.service';
 import { IndexerController } from './indexer/indexer.controller';
 import { SearchIndexService } from './indexer/search-index.service';
-import { SearchIndexItem } from './search-index-item.entity';
+import { SearchJobBufferService } from './search-job-buffer/search-job-buffer.service';
+import { DefaultSearchPluginInitOptions } from './types';
 
 export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     timeTaken: number;
@@ -48,7 +54,10 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * export const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     DefaultSearchPlugin,
+ *     DefaultSearchPlugin.init({
+ *       indexStockStatus: true,
+ *       bufferUpdates: true,
+ *     }),
  *   ],
  * };
  * ```
@@ -57,14 +66,46 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [FulltextSearchService, SearchIndexService, IndexerController],
-    adminApiExtensions: { resolvers: [AdminFulltextSearchResolver] },
-    shopApiExtensions: { resolvers: [ShopFulltextSearchResolver] },
+    providers: [
+        FulltextSearchService,
+        SearchIndexService,
+        IndexerController,
+        SearchJobBufferService,
+        { provide: PLUGIN_INIT_OPTIONS, useFactory: () => DefaultSearchPlugin.options },
+        {
+            provide: BUFFER_SEARCH_INDEX_UPDATES,
+            useFactory: () => DefaultSearchPlugin.options.bufferUpdates === true,
+        },
+    ],
+    adminApiExtensions: {
+        schema: () =>
+            DefaultSearchPlugin.options.indexStockStatus === true ? stockStatusExtension : undefined,
+        resolvers: [AdminFulltextSearchResolver],
+    },
+    shopApiExtensions: {
+        schema: () =>
+            DefaultSearchPlugin.options.indexStockStatus === true ? stockStatusExtension : undefined,
+        resolvers: [ShopFulltextSearchResolver],
+    },
     entities: [SearchIndexItem],
 })
 export class DefaultSearchPlugin implements OnApplicationBootstrap {
+    static options: DefaultSearchPluginInitOptions = {};
+
     /** @internal */
-    constructor(private eventBus: EventBus, private searchIndexService: SearchIndexService) {}
+    constructor(
+        private eventBus: EventBus,
+        private searchIndexService: SearchIndexService,
+        private jobQueueService: JobQueueService,
+    ) {}
+
+    static init(options: DefaultSearchPluginInitOptions): Type<DefaultSearchPlugin> {
+        this.options = options;
+        if (options.indexStockStatus === true) {
+            this.addStockColumnsToEntity();
+        }
+        return DefaultSearchPlugin;
+    }
 
     /** @internal */
     async onApplicationBootstrap() {
@@ -121,6 +162,7 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
             }
         });
 
+        // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137
         const collectionModification$ = this.eventBus.ofType(CollectionModificationEvent);
         const closingNotifier$ = collectionModification$.pipe(debounceTime(50));
         collectionModification$
@@ -142,6 +184,7 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
             // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
             // transactions to complete before a new job is added to the queue (assuming the SQL-based
             // JobQueueStrategy).
+            // TODO: should be able to remove owing to f0fd6625
             .pipe(delay(1))
             .subscribe(event => {
                 const defaultTaxZone = event.ctx.channel.defaultTaxZone;
@@ -149,5 +192,17 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
                     return this.searchIndexService.reindex(event.ctx);
                 }
             });
+    }
+
+    /**
+     * If the `indexStockStatus` option is set to `true`, we dynamically add a couple of
+     * columns to the SearchIndexItem entity. This is done in this way to allow us to add
+     * support for indexing the stock status, while preventing a backwards-incompatible
+     * schema change.
+     */
+    private static addStockColumnsToEntity() {
+        const instance = new SearchIndexItem();
+        Column({ type: 'boolean', default: true })(instance, 'inStock');
+        Column({ type: 'boolean', default: true })(instance, 'productInStock');
     }
 }

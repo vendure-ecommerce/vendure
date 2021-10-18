@@ -14,17 +14,23 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
+/**
+ * @description
+ * Contains methods relating to {@link Facet} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class FacetService {
     constructor(
@@ -78,6 +84,10 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 
+    /**
+     * @description
+     * Returns the Facet which contains the given FacetValue id.
+     */
     async findByFacetValueId(ctx: RequestContext, id: ID): Promise<Translated<Facet> | undefined> {
         const facet = await this.connection
             .getRepository(ctx, Facet)
@@ -99,7 +109,7 @@ export class FacetService {
             translationType: FacetTranslation,
             beforeSave: async f => {
                 f.code = await this.ensureUniqueCode(ctx, f.code);
-                this.channelService.assignToCurrentChannel(f, ctx);
+                await this.channelService.assignToCurrentChannel(f, ctx);
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
@@ -167,12 +177,14 @@ export class FacetService {
     private async ensureUniqueCode(ctx: RequestContext, code: string, id?: ID) {
         let candidate = code;
         let suffix = 1;
-        let match: Facet | undefined;
+        let conflict = false;
         const alreadySuffixed = /-\d+$/;
         do {
-            match = await this.connection.getRepository(ctx, Facet).findOne({ where: { code: candidate } });
+            const match = await this.connection
+                .getRepository(ctx, Facet)
+                .findOne({ where: { code: candidate } });
 
-            const conflict = !!match && ((id != null && !idsAreEqual(match.id, id)) || id == null);
+            conflict = !!match && ((id != null && !idsAreEqual(match.id, id)) || id == null);
             if (conflict) {
                 suffix++;
                 if (alreadySuffixed.test(candidate)) {
@@ -181,7 +193,7 @@ export class FacetService {
                     candidate = `${candidate}-${suffix}`;
                 }
             }
-        } while (match);
+        } while (conflict);
 
         return candidate;
     }

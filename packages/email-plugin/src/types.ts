@@ -258,6 +258,9 @@ export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unse
     subject: string;
     body: string;
     attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 }
 
 /**
@@ -345,7 +348,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
         subject: string,
         body: string,
         templateVars: { [key: string]: any },
-    ): Omit<EmailDetails, 'recipient' | 'attachments'>;
+    ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
 }
 
 /**
@@ -360,7 +363,7 @@ export type LoadDataFn<Event extends EventWithContext, R> = (context: {
     injector: Injector;
 }) => Promise<R>;
 
-export type OptionalTuNullable<O> = {
+export type OptionalToNullable<O> = {
     [K in keyof O]-?: undefined extends O[K] ? NonNullable<O[K]> | null : O[K];
 };
 
@@ -374,9 +377,11 @@ export type OptionalTuNullable<O> = {
  * @docsCategory EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type EmailAttachment = Omit<Attachment, 'content' | 'raw'> & { path: string };
+export type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string };
 
-export type SerializedAttachment = OptionalTuNullable<EmailAttachment>;
+export type SerializedAttachment = OptionalToNullable<
+    Omit<EmailAttachment, 'content'> & { content: string | null }
+>;
 
 export type IntermediateEmailDetails = {
     type: string;
@@ -386,6 +391,9 @@ export type IntermediateEmailDetails = {
     subject: string;
     templateFile: string;
     attachments: SerializedAttachment[];
+    cc?: string;
+    bcc?: string;
+    replyTo?: string;
 };
 
 /**
@@ -445,3 +453,41 @@ export type SetTemplateVarsFn<Event> = (
  * @docsPage Email Plugin Types
  */
 export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+
+/**
+ * @description
+ * Optional address-related fields for sending the email.
+ *
+ * @since 1.1.0
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export interface OptionalAddressFields {
+    /**
+     * @description
+     * Comma separated list of recipients email addresses that will appear on the _Cc:_ field
+     */
+    cc?: string;
+    /**
+     * @description
+     * Comma separated list of recipients email addresses that will appear on the _Bcc:_ field
+     */
+    bcc?: string;
+    /**
+     * @description
+     * An email address that will appear on the _Reply-To:_ field
+     */
+    replyTo?: string;
+}
+
+/**
+ * @description
+ * A function used to set the {@link OptionalAddressFields}.
+ *
+ * @since 1.1.0
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetOptionalAddressFieldsFn<Event> = (
+    event: Event,
+) => OptionalAddressFields | Promise<OptionalAddressFields>;

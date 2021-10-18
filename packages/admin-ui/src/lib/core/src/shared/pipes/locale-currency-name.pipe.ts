@@ -26,23 +26,22 @@ export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransf
         let symbol = '';
         const activeLocale = typeof locale === 'string' ? locale : this.locale ?? 'en';
 
+        // Awaiting TS types for this API: https://github.com/microsoft/TypeScript/pull/44022/files
+        const DisplayNames = (Intl as any).DisplayNames;
+
         if (display === 'full' || display === 'name') {
-            name = new Intl.NumberFormat(activeLocale, {
-                style: 'currency',
-                currency: value,
-                currencyDisplay: 'name',
-            })
-                .format(undefined as any)
-                .replace(/\s*NaN\s*/, '');
+            name = new DisplayNames([activeLocale], {
+                type: 'currency',
+            }).of(value);
         }
         if (display === 'full' || display === 'symbol') {
-            symbol = new Intl.NumberFormat(activeLocale, {
+            const parts = (new Intl.NumberFormat(activeLocale, {
                 style: 'currency',
                 currency: value,
                 currencyDisplay: 'symbol',
-            })
-                .format(undefined as any)
-                .replace(/\s*NaN\s*/, '');
+            }) as any).formatToParts();
+
+            symbol = parts.find(p => p.type === 'currency')?.value || value;
         }
         return display === 'full' ? `${name} (${symbol})` : display === 'name' ? name : symbol;
     }

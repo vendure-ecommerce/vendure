@@ -1,11 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import {
-    ConfigModule,
-    ConfigService,
-    OnVendureBootstrap,
-    OnVendureClose,
-    VendurePlugin,
-} from '@vendure/core';
+import { ConfigModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
     imports: [ConfigModule],

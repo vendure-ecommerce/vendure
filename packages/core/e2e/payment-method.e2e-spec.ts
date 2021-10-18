@@ -20,6 +20,8 @@ import {
     CreateChannel,
     CreatePaymentMethod,
     CurrencyCode,
+    DeletePaymentMethod,
+    DeletionResult,
     GetPaymentMethod,
     GetPaymentMethodCheckers,
     GetPaymentMethodHandlers,
@@ -374,6 +376,87 @@ describe('PaymentMethod resolver', () => {
                 'price-check',
             ]);
         });
+
+        it('delete from channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { paymentMethods } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+
+            expect(paymentMethods.totalItems).toBe(1);
+
+            const { deletePaymentMethod } = await adminClient.query<
+                DeletePaymentMethod.Mutation,
+                DeletePaymentMethod.Variables
+            >(DELETE_PAYMENT_METHOD, {
+                id: paymentMethods.items[0].id,
+            });
+
+            expect(deletePaymentMethod.result).toBe(DeletionResult.DELETED);
+
+            const { paymentMethods: checkChannel } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+            expect(checkChannel.totalItems).toBe(0);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { paymentMethods: checkDefault } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+            expect(checkDefault.totalItems).toBe(4);
+        });
+
+        it('delete from default channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { createPaymentMethod } = await adminClient.query<
+                CreatePaymentMethod.Mutation,
+                CreatePaymentMethod.Variables
+            >(CREATE_PAYMENT_METHOD, {
+                input: {
+                    code: 'channel-2-method2',
+                    name: 'Channel 2 method 2',
+                    description: 'This is a test payment method',
+                    enabled: true,
+                    handler: {
+                        code: dummyPaymentHandler.code,
+                        arguments: [{ name: 'automaticSettle', value: 'true' }],
+                    },
+                },
+            });
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { deletePaymentMethod: delete1 } = await adminClient.query<
+                DeletePaymentMethod.Mutation,
+                DeletePaymentMethod.Variables
+            >(DELETE_PAYMENT_METHOD, {
+                id: createPaymentMethod.id,
+            });
+
+            expect(delete1.result).toBe(DeletionResult.NOT_DELETED);
+            expect(delete1.message).toBe(
+                'The selected PaymentMethod is assigned to the following Channels: second-channel. Set "force: true" to delete from all Channels.',
+            );
+
+            const { paymentMethods: check1 } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+            expect(check1.totalItems).toBe(5);
+
+            const { deletePaymentMethod: delete2 } = await adminClient.query<
+                DeletePaymentMethod.Mutation,
+                DeletePaymentMethod.Variables
+            >(DELETE_PAYMENT_METHOD, {
+                id: createPaymentMethod.id,
+                force: true,
+            });
+
+            expect(delete2.result).toBe(DeletionResult.DELETED);
+
+            const { paymentMethods: check2 } = await adminClient.query<GetPaymentMethodList.Query>(
+                GET_PAYMENT_METHOD_LIST,
+            );
+            expect(check2.totalItems).toBe(4);
+        });
     });
 });
 
@@ -462,4 +545,13 @@ export const GET_PAYMENT_METHOD_LIST = gql`
         }
     }
     ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const DELETE_PAYMENT_METHOD = gql`
+    mutation DeletePaymentMethod($id: ID!, $force: Boolean) {
+        deletePaymentMethod(id: $id, force: $force) {
+            message
+            result
+        }
+    }
 `;

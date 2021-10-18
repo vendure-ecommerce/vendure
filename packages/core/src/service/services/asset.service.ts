@@ -18,7 +18,8 @@ import { unique } from '@vendure/common/lib/unique';
 import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
+import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
@@ -28,6 +29,7 @@ import { ChannelAware } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
@@ -37,13 +39,14 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { TagService } from './tag.service';
+
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -57,6 +60,12 @@ export interface EntityAssetInput {
     featuredAssetId?: ID | null;
 }
 
+/**
+ * @description
+ * Contains methods relating to {@link Asset} entities.
+ *
+ * @docsCategory services
+ */
 @Injectable()
 export class AssetService {
     private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];
@@ -69,6 +78,7 @@ export class AssetService {
         private tagService: TagService,
         private channelService: ChannelService,
         private roleService: RoleService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {
         this.permittedMimeTypes = this.configService.assetOptions.permittedFileTypes
             .map(val => (/\.[\w]+/.test(val) ? mime.lookup(val) || undefined : val))
@@ -233,19 +243,32 @@ export class AssetService {
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
-        const { createReadStream, filename, mimetype } = await input.file;
-        const stream = createReadStream();
-        const result = await this.createAssetInternal(ctx, stream, filename, mimetype);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        if (input.tags) {
-            const tags = await this.tagService.valuesToTags(ctx, input.tags);
-            result.tags = tags;
-            await this.connection.getRepository(ctx, Asset).save(result);
-        }
-        this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
-        return result;
+        return new Promise(async (resolve, reject) => {
+            const { createReadStream, filename, mimetype } = await input.file;
+            const stream = createReadStream();
+            stream.on('error', (err: any) => {
+                reject(err);
+            });
+            const result = await this.createAssetInternal(
+                ctx,
+                stream,
+                filename,
+                mimetype,
+                input.customFields,
+            );
+            if (isGraphQlErrorResult(result)) {
+                resolve(result);
+                return;
+            }
+            await this.customFieldRelationService.updateRelations(ctx, Asset, input, result);
+            if (input.tags) {
+                const tags = await this.tagService.valuesToTags(ctx, input.tags);
+                result.tags = tags;
+                await this.connection.getRepository(ctx, Asset).save(result);
+            }
+            this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
+            resolve(result);
+        });
     }
 
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
@@ -256,6 +279,7 @@ export class AssetService {
             input.focalPoint.y = to3dp(input.focalPoint.y);
         }
         patchEntity(asset, omit(input, ['tags']));
+        await this.customFieldRelationService.updateRelations(ctx, Asset, input, asset);
         if (input.tags) {
             asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
         }
@@ -363,8 +387,13 @@ export class AssetService {
     /**
      * Create an Asset from a file stream created during data import.
      */
-    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult> {
-        const filePath = stream.path;
+    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult>;
+    async createFromFileStream(stream: Readable, filePath: string): Promise<CreateAssetResult>;
+    async createFromFileStream(
+        stream: ReadStream | Readable,
+        maybeFilePath?: string,
+    ): Promise<CreateAssetResult> {
+        const filePath = stream instanceof ReadStream ? stream.path : maybeFilePath;
         if (typeof filePath === 'string') {
             const filename = path.basename(filePath);
             const mimetype = mime.lookup(filename) || 'application/octet-stream';
@@ -414,6 +443,7 @@ export class AssetService {
         stream: Stream,
         filename: string,
         mimetype: string,
+        customFields?: { [key: string]: any },
     ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
@@ -449,8 +479,9 @@ export class AssetService {
             source: sourceFileIdentifier,
             preview: previewFileIdentifier,
             focalPoint: null,
+            customFields,
         });
-        this.channelService.assignToCurrentChannel(asset, ctx);
+        await this.channelService.assignToCurrentChannel(asset, ctx);
         return this.connection.getRepository(ctx, Asset).save(asset);
     }
 
@@ -542,7 +573,7 @@ export class AssetService {
             case 'Collection':
                 return 'collectionId';
             default:
-                throw new InternalServerError('error.could-not-find-matching-orderable-asset');
+                return `${camelCase(entityName)}Id`;
         }
     }
 

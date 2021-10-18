@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { PromotionItemAction } from '../promotion-action';
 import { FacetValueChecker } from '../utils/facet-value-checker';
 

@@ -7,6 +7,7 @@ import {
     LanguageCode,
     SetActiveChannel,
     SetAsLoggedIn,
+    SetContentLanguage,
     SetUiLanguage,
     SetUiTheme,
     UpdateUserChannels,
@@ -76,6 +77,21 @@ export const clientResolvers: ResolverDefinition = {
                 uiState: {
                     __typename: 'UiState',
                     language: args.languageCode,
+                    contentLanguage: previous.uiState.contentLanguage,
+                    theme: previous.uiState.theme,
+                },
+            };
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.languageCode;
+        },
+        setContentLanguage: (_, args: SetContentLanguage.Variables, { cache }): LanguageCode => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+            const data: GetUiState.Query = {
+                uiState: {
+                    __typename: 'UiState',
+                    language: previous.uiState.language,
+                    contentLanguage: args.languageCode,
                     theme: previous.uiState.theme,
                 },
             };
@@ -89,6 +105,7 @@ export const clientResolvers: ResolverDefinition = {
                 uiState: {
                     __typename: 'UiState',
                     language: previous.uiState.language,
+                    contentLanguage: previous.uiState.contentLanguage,
                     theme: args.theme,
                 },
             };

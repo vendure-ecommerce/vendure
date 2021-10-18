@@ -3,29 +3,18 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    examplePaymentHandler,
-    LanguageCode,
     LogLevel,
-    manualFulfillmentHandler,
-    PaymentMethodEligibilityChecker,
     VendureConfig,
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-
-const testPaymentChecker = new PaymentMethodEligibilityChecker({
-    code: 'test-checker',
-    description: [{ languageCode: LanguageCode.en, value: 'test checker' }],
-    args: {},
-    check: (ctx, order) => true,
-});
 
 /**
  * Config settings used during development
@@ -50,10 +39,13 @@ export const devConfig: VendureConfig = {
     },
     authOptions: {
         disableAuth: false,
-        tokenMethod: 'cookie',
-        sessionSecret: 'some-secret',
+        tokenMethod: ['bearer', 'cookie'] as const,
         requireVerification: true,
         customPermissions: [],
+        cookieOptions: {
+            secret: 'abc',
+        },
+        // passwordHashingStrategy: new PlaintextHashingStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -62,29 +54,26 @@ export const devConfig: VendureConfig = {
         ...getDbConfig(),
     },
     paymentOptions: {
-        paymentMethodEligibilityCheckers: [testPaymentChecker],
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-    customFields: {
-        /*Asset: [{ name: 'description', type: 'string' }],*/
-    },
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    customFields: {},
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
-    },
-    shippingOptions: {
-        fulfillmentHandlers: [manualFulfillmentHandler],
     },
     plugins: [
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin,
-        DefaultJobQueuePlugin,
+        DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
+        BullMQJobQueuePlugin.init({}),
+        // DefaultJobQueuePlugin.init(),
+        // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
         //     port: 9200,
+        //     bufferUpdates: true,
         // }),
         EmailPlugin.init({
             devMode: true,

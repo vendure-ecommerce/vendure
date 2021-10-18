@@ -9,6 +9,7 @@ import {
     RequestStarted,
     SetActiveChannel,
     SetAsLoggedIn,
+    SetContentLanguage,
     SetUiLanguage,
     SetUiTheme,
     UpdateUserChannels,
@@ -22,6 +23,7 @@ import {
     SET_ACTIVE_CHANNEL,
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
+    SET_CONTENT_LANGUAGE,
     SET_UI_LANGUAGE,
     SET_UI_THEME,
     UPDATE_USER_CHANNELS,
@@ -78,6 +80,15 @@ export class ClientDataService {
         return this.baseDataService.mutate<SetUiLanguage.Mutation, SetUiLanguage.Variables>(SET_UI_LANGUAGE, {
             languageCode,
         });
+    }
+
+    setContentLanguage(languageCode: LanguageCode) {
+        return this.baseDataService.mutate<SetContentLanguage.Mutation, SetContentLanguage.Variables>(
+            SET_CONTENT_LANGUAGE,
+            {
+                languageCode,
+            },
+        );
     }
 
     setUiTheme(theme: string) {

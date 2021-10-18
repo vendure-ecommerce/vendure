@@ -35,13 +35,13 @@ fragment Cart on Order {
         unitPrice
         unitPriceWithTax
         quantity
-        totalPrice
+        linePriceWithTax
         productVariant {
             id
             name
         }
-        adjustments {
-            amount
+        discounts {
+            amountWithTax
             description
             adjustmentSource
             type
@@ -60,8 +60,8 @@ fragment Cart on Order {
         }
     }
     total
-    adjustments {
-        amount
+    discounts {
+        amountWithTax
         description
         adjustmentSource
         type

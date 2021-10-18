@@ -50,12 +50,3 @@ export interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
         orderLineCustomFields: { [key: string]: any },
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }
-
-/**
- * @description
- * This is an alias of {@link OrderItemPriceCalculationStrategy} to preserve compatibility when upgrading.
- *
- * @deprecated Use OrderItemPriceCalculationStrategy
- * @docsCategory Orders
- */
-export interface PriceCalculationStrategy extends OrderItemPriceCalculationStrategy {}

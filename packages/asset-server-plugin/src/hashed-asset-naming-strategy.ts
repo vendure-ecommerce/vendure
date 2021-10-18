@@ -12,7 +12,7 @@ import path from 'path';
  * and the purpose is to reduce the number of files in a single directory, since a very large
  * number of files can lead to performance issues when reading and writing to that directory.
  *
- * With this strategory, even with 200,000 total assets stored, each directory would
+ * With this strategy, even with 200,000 total assets stored, each directory would
  * only contain less than 800 files.
  *
  * @docsCategory AssetServerPlugin

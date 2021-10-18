@@ -15,14 +15,22 @@ export function setSessionToken(options: {
     res: Response;
 }) {
     const { sessionToken, rememberMe, authOptions, req, res } = options;
-    if (authOptions.tokenMethod === 'cookie') {
+    const usingCookie =
+        authOptions.tokenMethod === 'cookie' ||
+        (Array.isArray(authOptions.tokenMethod) && authOptions.tokenMethod.includes('cookie'));
+    const usingBearer =
+        authOptions.tokenMethod === 'bearer' ||
+        (Array.isArray(authOptions.tokenMethod) && authOptions.tokenMethod.includes('bearer'));
+
+    if (usingCookie) {
         if (req.session) {
             if (rememberMe) {
                 req.sessionOptions.maxAge = ms('1y');
             }
             req.session.token = sessionToken;
         }
-    } else {
+    }
+    if (usingBearer) {
         res.set(authOptions.authTokenHeaderKey, sessionToken);
     }
 }
