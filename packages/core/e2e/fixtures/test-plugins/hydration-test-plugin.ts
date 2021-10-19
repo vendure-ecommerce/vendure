@@ -1,8 +1,10 @@
+/* tslint:disable:no-non-null-assertion */
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     Ctx,
     EntityHydrator,
     ID,
+    OrderService,
     PluginCommonModule,
     Product,
     ProductVariantService,
@@ -16,6 +18,7 @@ import gql from 'graphql-tag';
 export class TestAdminPluginResolver {
     constructor(
         private connection: TransactionalConnection,
+        private orderService: OrderService,
         private productVariantService: ProductVariantService,
         private entityHydrator: EntityHydrator,
     ) {}
@@ -60,6 +63,16 @@ export class TestAdminPluginResolver {
         });
         return variant;
     }
+
+    // Test case for https://github.com/vendure-ecommerce/vendure/issues/1172
+    @Query()
+    async hydrateOrder(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const order = await this.orderService.findOne(ctx, args.id);
+        await this.entityHydrator.hydrate(ctx, order!, {
+            relations: ['payments'],
+        });
+        return order;
+    }
 }
 
 @VendurePlugin({
@@ -71,6 +84,7 @@ export class TestAdminPluginResolver {
                 hydrateProduct(id: ID!): JSON
                 hydrateProductAsset(id: ID!): JSON
                 hydrateProductVariant(id: ID!): JSON
+                hydrateOrder(id: ID!): JSON
             }
         `,
     },

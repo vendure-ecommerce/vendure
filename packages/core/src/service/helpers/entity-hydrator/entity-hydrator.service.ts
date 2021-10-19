@@ -122,11 +122,24 @@ export class EntityHydrator {
                     .filter(item => this.isTranslatable(item.entity))
                     .map(item => item.relation.split('.'));
 
-                Object.assign(
+                this.assignSettableProperties(
                     target,
                     translateDeep(target as any, ctx.languageCode, translateDeepRelations as any),
                 );
             }
+        }
+        return target;
+    }
+
+    private assignSettableProperties<Entity extends VendureEntity>(target: Entity, source: Entity) {
+        for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(target))) {
+            if (typeof descriptor.get === 'function' && typeof descriptor.set !== 'function') {
+                // If the entity property has a getter only, we will skip it otherwise
+                // we will get an error of the form:
+                // `Cannot set property <name> of #<Entity> which has only a getter`
+                continue;
+            }
+            target[key as keyof Entity] = source[key as keyof Entity];
         }
         return target;
     }
