@@ -143,11 +143,11 @@ export class EntityHydrator {
         for (const relation of options.relations.slice().sort()) {
             if (typeof relation === 'string') {
                 const parts = relation.split('.');
-                let entity: any = target;
+                let entity: Record<string, any> | undefined = target;
                 const path = [];
                 for (const part of parts) {
                     path.push(part);
-                    if (entity[part]) {
+                    if (entity && entity[part]) {
                         entity = Array.isArray(entity[part]) ? entity[part][0] : entity[part];
                     } else {
                         const allParts = path.reduce((result, p, i) => {
@@ -158,6 +158,7 @@ export class EntityHydrator {
                             }
                         }, [] as string[]);
                         missingRelations.push(...allParts);
+                        entity = undefined;
                     }
                 }
             }

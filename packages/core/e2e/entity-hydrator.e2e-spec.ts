@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig, Product } from '@vendure/core';
+import { mergeConfig, Product, ProductVariant } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -122,7 +122,7 @@ describe('Entity hydration', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1153
     it('correctly handles empty array relations', async () => {
         // Product T_5 has no asset defined
-        const { hydrateProductAsset } = await adminClient.query<HydrateProductAssetQuery>(
+        const { hydrateProductAsset } = await adminClient.query<{ hydrateProductAsset: Product }>(
             GET_HYDRATED_PRODUCT_ASSET,
             {
                 id: 'T_5',
@@ -131,6 +131,18 @@ describe('Entity hydration', () => {
 
         expect(hydrateProductAsset.assets).toEqual([]);
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1161
+    it('correctly expands missing relations', async () => {
+        // Product T_5 has no asset defined
+        const { hydrateProductVariant } = await adminClient.query<{ hydrateProductVariant: ProductVariant }>(
+            GET_HYDRATED_VARIANT,
+            { id: 'T_1' },
+        );
+
+        expect(hydrateProductVariant.product.id).toBe('T_1');
+        expect(hydrateProductVariant.product.facetValues.map(fv => fv.id).sort()).toEqual(['T_1', 'T_2']);
+    });
 });
 
 function getVariantWithName(product: Product, name: string) {
@@ -138,7 +150,6 @@ function getVariantWithName(product: Product, name: string) {
 }
 
 type HydrateProductQuery = { hydrateProduct: Product };
-type HydrateProductAssetQuery = { hydrateProductAsset: Product };
 
 const GET_HYDRATED_PRODUCT = gql`
     query GetHydratedProduct($id: ID!) {
@@ -148,5 +159,10 @@ const GET_HYDRATED_PRODUCT = gql`
 const GET_HYDRATED_PRODUCT_ASSET = gql`
     query GetHydratedProductAsset($id: ID!) {
         hydrateProductAsset(id: $id)
+    }
+`;
+const GET_HYDRATED_VARIANT = gql`
+    query GetHydratedVariant($id: ID!) {
+        hydrateProductVariant(id: $id)
     }
 `;
