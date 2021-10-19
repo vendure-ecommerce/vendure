@@ -11,6 +11,7 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { InternalServerError } from '../../common/error/errors';
 import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
@@ -164,6 +165,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
 
     @Calculated()
     get discounts(): Discount[] {
+        this.throwIfLinesNotJoined('discounts');
         const groupedAdjustments = new Map<string, Discount>();
         for (const line of this.lines) {
             for (const discount of line.discounts) {
@@ -257,6 +259,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         expression: 'qty',
     })
     get totalQuantity(): number {
+        this.throwIfLinesNotJoined('totalQuantity');
         return summate(this.lines, 'quantity');
     }
 
@@ -266,6 +269,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      */
     @Calculated()
     get taxSummary(): OrderTaxSummary[] {
+        this.throwIfLinesNotJoined('taxSummary');
         const taxRateMap = new Map<
             string,
             { rate: number; base: number; tax: number; description: string }
@@ -305,8 +309,20 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     }
 
     getOrderItems(): OrderItem[] {
+        this.throwIfLinesNotJoined('getOrderItems');
         return this.lines.reduce((items, line) => {
             return [...items, ...line.items];
         }, [] as OrderItem[]);
+    }
+
+    private throwIfLinesNotJoined(propertyName: keyof Order) {
+        if (this.lines == null) {
+            const errorMessage = [
+                `The property "${propertyName}" on the Order entity requires the Order.lines relation to be joined.`,
+                `This can be done with the EntityHydratorService: \`await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })\``,
+            ];
+
+            throw new InternalServerError(errorMessage.join('\n'));
+        }
     }
 }
