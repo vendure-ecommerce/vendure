@@ -81,11 +81,19 @@ export class OrderItem extends VendureEntity {
         return this.fulfillments?.find(f => f.state !== 'Cancelled');
     }
 
+    /**
+     * @description
+     * The price of a single unit, excluding tax and discounts.
+     */
     @Calculated()
     get unitPrice(): number {
         return this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice;
     }
 
+    /**
+     * @description
+     * The price of a single unit, including tax but excluding discounts.
+     */
     @Calculated()
     get unitPriceWithTax(): number {
         return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
@@ -106,24 +114,47 @@ export class OrderItem extends VendureEntity {
         return this.unitPriceWithTax - this.unitPrice;
     }
 
+    /**
+     * @description
+     * The price of a single unit including discounts, excluding tax.
+     *
+     * If Order-level discounts have been applied, this will not be the
+     * actual taxable unit price (see `proratedUnitPrice`), but is generally the
+     * correct price to display to customers to avoid confusion
+     * about the internal handling of distributed Order-level discounts.
+     */
     @Calculated()
     get discountedUnitPrice(): number {
         const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
         return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
+    /**
+     * @description
+     * The price of a single unit including discounts and tax.
+     */
     @Calculated()
     get discountedUnitPriceWithTax(): number {
         const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
         return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
 
+    /**
+     * @description
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
+     * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+     * and refund calculations.
+     */
     @Calculated()
     get proratedUnitPrice(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
         return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
+    /**
+     * @description
+     * The `proratedUnitPrice` including tax.
+     */
     @Calculated()
     get proratedUnitPriceWithTax(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
