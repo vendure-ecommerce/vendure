@@ -1,3 +1,20 @@
+## <small>1.3.1 (2021-10-19)</small>
+
+
+#### Fixes
+
+* **core** Allow middleware to inject TransactionalConnection ([28f713c](https://github.com/vendure-ecommerce/vendure/commit/28f713c)), closes [#1160](https://github.com/vendure-ecommerce/vendure/issues/1160)
+* **core** Fix EntityHydrator missing nested relations ([fbda3dd](https://github.com/vendure-ecommerce/vendure/commit/fbda3dd)), closes [#1161](https://github.com/vendure-ecommerce/vendure/issues/1161)
+* **core** Fix EntityHydrator when hydrating empty array relation ([70e0314](https://github.com/vendure-ecommerce/vendure/commit/70e0314)), closes [#1153](https://github.com/vendure-ecommerce/vendure/issues/1153)
+* **core** Fix EntityHydrator with entity getters ([7d0e894](https://github.com/vendure-ecommerce/vendure/commit/7d0e894)), closes [#1172](https://github.com/vendure-ecommerce/vendure/issues/1172)
+* **core** Fix shipping price when the promotion is not applicable anymore (#1150) ([eb1dcc4](https://github.com/vendure-ecommerce/vendure/commit/eb1dcc4)), closes [#1150](https://github.com/vendure-ecommerce/vendure/issues/1150)
+* **core** Improved error message when Order.lines not joined ([0a33e5c](https://github.com/vendure-ecommerce/vendure/commit/0a33e5c))
+
+#### Perf
+
+* **core** Improve perf of DefaultSearchPlugin reindex job ([bfc72f2](https://github.com/vendure-ecommerce/vendure/commit/bfc72f2))
+* **elasticsearch-plugin** Optimize indexing using RequestContextCache ([75da3b3](https://github.com/vendure-ecommerce/vendure/commit/75da3b3))
+
 ## 1.3.0 (2021-10-13)
 
 
