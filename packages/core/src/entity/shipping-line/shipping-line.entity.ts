@@ -88,7 +88,7 @@ export class ShippingLine extends VendureEntity {
         this.adjustments = this.adjustments.concat(adjustment);
     }
 
-    removeAdjustments() {
+    clearAdjustments() {
         this.adjustments = [];
     }
 
