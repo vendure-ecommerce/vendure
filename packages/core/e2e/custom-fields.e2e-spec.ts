@@ -662,6 +662,24 @@ describe('Custom fields', () => {
                 `);
             }, `relation error`),
         );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1091
+        it('handles well graphql internal fields', async () => {
+            // throws "Cannot read property 'args' of undefined" if broken
+            await adminClient.query(gql`
+                mutation {
+                    __typename
+                    updateProduct(input: { id: "T_1", customFields: { nullable: "some value" } }) {
+                        __typename
+                        id
+                        customFields {
+                            __typename
+                            nullable
+                        }
+                    }
+                }
+            `);
+        });
     });
 
     describe('public access', () => {
