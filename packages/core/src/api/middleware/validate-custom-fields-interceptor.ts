@@ -127,7 +127,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         const map: { [inputName: string]: string } = {};
 
         for (const selection of operation.selectionSet.selections) {
-            if (selection.kind === 'Field') {
+            if (selection.kind === 'Field' && !selection.name.value.startsWith('__')) {
                 const name = selection.name.value;
                 const inputType = mutationType.getFields()[name];
                 for (const arg of inputType.args) {
