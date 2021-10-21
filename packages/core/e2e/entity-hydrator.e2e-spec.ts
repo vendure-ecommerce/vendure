@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig, Product } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { mergeConfig, Order, Product, ProductVariant } from '@vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -8,9 +8,15 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
+import { AddItemToOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+
+const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard(
+    input => !!input.lines,
+);
 
 describe('Entity hydration', () => {
-    const { server, adminClient } = createTestEnvironment(
+    const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             plugins: [HydrationTestPlugin],
         }),
@@ -118,6 +124,49 @@ describe('Entity hydration', () => {
         expect(getVariantWithName(hydrateProduct, 'Laptop 15 inch 16GB').price).toBe(229900);
         expect(getVariantWithName(hydrateProduct, 'Laptop 15 inch 16GB').priceWithTax).toBe(275880);
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1153
+    it('correctly handles empty array relations', async () => {
+        // Product T_5 has no asset defined
+        const { hydrateProductAsset } = await adminClient.query<{ hydrateProductAsset: Product }>(
+            GET_HYDRATED_PRODUCT_ASSET,
+            {
+                id: 'T_5',
+            },
+        );
+
+        expect(hydrateProductAsset.assets).toEqual([]);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1161
+    it('correctly expands missing relations', async () => {
+        const { hydrateProductVariant } = await adminClient.query<{ hydrateProductVariant: ProductVariant }>(
+            GET_HYDRATED_VARIANT,
+            { id: 'T_1' },
+        );
+
+        expect(hydrateProductVariant.product.id).toBe('T_1');
+        expect(hydrateProductVariant.product.facetValues.map(fv => fv.id).sort()).toEqual(['T_1', 'T_2']);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1172
+    it('can hydrate entity with getters (Order)', async () => {
+        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
+            ADD_ITEM_TO_ORDER,
+            {
+                productVariantId: 'T_1',
+                quantity: 1,
+            },
+        );
+        orderResultGuard.assertSuccess(addItemToOrder);
+
+        const { hydrateOrder } = await adminClient.query<{ hydrateOrder: Order }>(GET_HYDRATED_ORDER, {
+            id: addItemToOrder.id,
+        });
+
+        expect(hydrateOrder.id).toBe('T_1');
+        expect(hydrateOrder.payments).toEqual([]);
+    });
 });
 
 function getVariantWithName(product: Product, name: string) {
@@ -129,5 +178,20 @@ type HydrateProductQuery = { hydrateProduct: Product };
 const GET_HYDRATED_PRODUCT = gql`
     query GetHydratedProduct($id: ID!) {
         hydrateProduct(id: $id)
+    }
+`;
+const GET_HYDRATED_PRODUCT_ASSET = gql`
+    query GetHydratedProductAsset($id: ID!) {
+        hydrateProductAsset(id: $id)
+    }
+`;
+const GET_HYDRATED_VARIANT = gql`
+    query GetHydratedVariant($id: ID!) {
+        hydrateProductVariant(id: $id)
+    }
+`;
+const GET_HYDRATED_ORDER = gql`
+    query GetHydratedOrder($id: ID!) {
+        hydrateOrder(id: $id)
     }
 `;

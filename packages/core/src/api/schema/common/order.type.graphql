@@ -130,7 +130,7 @@ type OrderItem implements Node {
     "The price of a single unit including discounts and tax"
     discountedUnitPriceWithTax: Int!
     """
-    The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+    The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
     Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
     and refund calculations.
     """
@@ -175,7 +175,7 @@ type OrderLine implements Node {
     "The price of a single unit including discounts and tax"
     discountedUnitPriceWithTax: Int!
     """
-    The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+    The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
     Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
     and refund calculations.
     """
@@ -190,7 +190,7 @@ type OrderLine implements Node {
     """
     linePrice: Int!
     """
-    The total price of the line including tax bit excluding discounts.
+    The total price of the line including tax but excluding discounts.
     """
     linePriceWithTax: Int!
     "The price of the line including discounts, excluding tax"
@@ -198,7 +198,7 @@ type OrderLine implements Node {
     "The price of the line including discounts and tax"
     discountedLinePriceWithTax: Int!
     """
-    The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+    The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
     Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
     and refund calculations.
     """

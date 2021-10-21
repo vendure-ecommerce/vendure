@@ -55,6 +55,7 @@ The [`revertLastMigration` function]({{< relref "revert-last-migration" >}}) wil
 Here is an example script (which ships with projects generated with `@vendure/create`) which provides a command-line program for managing migrations:
 
 ```TypeScript
+// migrations.ts
 import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
 import program from 'commander';
 
@@ -82,4 +83,25 @@ program
     });
 
 program.parse(process.argv);
+```
+
+This script can then be run e.g. using `ts-node`:
+
+```shell
+ts-node migration.ts generate my-migration
+```
+
+This will generate a new migration in the directory specified by the `dbConnectionOptions.migrations` option:
+
+```TypeScript
+dbConnectionOptions: {
+  migrations: [path.join(__dirname, '../migrations/*.ts')],
+}
+```
+
+The migration file will be named `migrations/<timestamp>-my-migration.ts`. You should inspect this file to verify the migration commands to be run.
+
+You can then run all migrations which have not yet been run with:
+```shell
+ts-node migration.ts run
 ```
