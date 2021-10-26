@@ -4,8 +4,8 @@
 >
     <input
         type="number"
-        step="0.01"
-        [value]="_decimalValue"
+        [step]="hasFractionPart ? 0.01 : 1"
+        [value]="_inputValue"
         [disabled]="disabled"
         [readonly]="readonly"
         (input)="onInput($event.target.value)"
