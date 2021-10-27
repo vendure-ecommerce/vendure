@@ -224,6 +224,7 @@ export class OrderModifier {
             surcharges: [],
         });
         const initialTotalWithTax = order.totalWithTax;
+        const initialShippingWithTax = order.shippingWithTax;
         if (order.state !== 'Modifying') {
             return new OrderModificationStateError();
         }
@@ -407,6 +408,10 @@ export class OrderModifier {
         if (delta < 0) {
             if (!input.refund) {
                 return new RefundPaymentIdMissingError();
+            }
+            const shippingDelta = order.shippingWithTax - initialShippingWithTax;
+            if (shippingDelta < 0) {
+                refundInput.shipping = shippingDelta * -1;
             }
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
