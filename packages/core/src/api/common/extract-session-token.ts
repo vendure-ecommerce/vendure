@@ -35,7 +35,7 @@ function getFromCookie(req: Request): string | undefined {
 function getFromHeader(req: Request): string | undefined {
     const authHeader = req.get('Authorization');
     if (authHeader) {
-        const matches = authHeader.match(/bearer\s+(.+)$/i);
+        const matches = authHeader.match(/bearer\s(.+)$/i);
         if (matches) {
             return matches[1];
         }
