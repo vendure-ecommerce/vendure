@@ -30,7 +30,7 @@ export class MollieController {
         Logger.info(`Received payment for ${channelToken}`, MolliePlugin.context);
         const { paymentMethod } = await this.paymentMethodService.getMethodAndOperations(
             ctx,
-            `mollie-payment-${channelToken}`,
+            `mollie-payment-${channelToken}`, // FIXME, find by id, not code
         );
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -53,7 +53,7 @@ export class MollieController {
                 MolliePlugin.context,
             );
         } else {
-            // TODO check status if decline is needed
+            // FIXME check status if decline is needed
             const order = await this.orderService.findOneByCode(ctx, molliePayment.metadata.orderCode);
             if (!order) {
                 throw Error(`No order found for ${molliePayment.metadata.orderCode}`);

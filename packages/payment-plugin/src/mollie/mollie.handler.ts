@@ -38,10 +38,10 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                     currency: 'EUR',
                 },
                 metadata: {
-                    orderCode: order.code,
+                    orderCode: order.code, // FIXME pass paymentHandler id
                 },
-                description: `Bestelling ${order.code}`,
-                redirectUrl: `${redirectUrl}order/${order.code}`,
+                description: `Bestelling ${order.code}`, // FIXME
+                redirectUrl: `${redirectUrl}order/${order.code}`, // FIXME
                 webhookUrl: `${MolliePlugin.host}/payments/mollie/${ctx.channel.token}`,
             });
             return {
