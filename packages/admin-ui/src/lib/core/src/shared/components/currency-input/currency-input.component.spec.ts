@@ -72,6 +72,24 @@ describe('CurrencyInputComponent', () => {
         expect(fixture.componentInstance.price).toBe(157);
     }));
 
+    describe('currencies without minor units', () => {
+        it('displays JPY without decimal places', fakeAsync(() => {
+            MockDataService.language = LanguageCode.en;
+            const fixture = createAndRunChangeDetection(TestSimpleComponent, 429900, 'JPY');
+            const nativeInput = getNativeInput(fixture);
+            expect(nativeInput.value).toBe('4299');
+        }));
+
+        it('increments JPY with a step of 1', fakeAsync(() => {
+            MockDataService.language = LanguageCode.en;
+            const fixture = createAndRunChangeDetection(TestSimpleComponent, 429900, 'JPY');
+            const nativeInputDebugEl = fixture.debugElement.query(By.css('input[type="number"]'));
+
+            const nativeInput = getNativeInput(fixture);
+            expect(nativeInput.step).toBe('1');
+        }));
+    });
+
     describe('currencyCode display', () => {
         it('displays currency code in correct position (prefix)', fakeAsync(() => {
             MockDataService.language = LanguageCode.en;

@@ -42,6 +42,7 @@ export * from './session/session.entity';
 export * from './session/anonymous-session.entity';
 export * from './session/authenticated-session.entity';
 export * from './surcharge/surcharge.entity';
+export * from './shipping-line/shipping-line.entity';
 export * from './shipping-method/shipping-method.entity';
 export * from './tag/tag.entity';
 export * from './tax-category/tax-category.entity';

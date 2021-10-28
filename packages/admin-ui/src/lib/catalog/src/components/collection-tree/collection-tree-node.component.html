@@ -51,7 +51,7 @@
                 <clr-icon shape="drag-handle" size="24"></clr-icon>
             </div>
             <vdr-dropdown>
-                <button class="icon-button" vdrDropdownTrigger>
+                <button class="icon-button" vdrDropdownTrigger (click)="getMoveListItems(collection)">
                     <clr-icon shape="ellipsis-vertical"></clr-icon>
                 </button>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
@@ -88,7 +88,7 @@
                     <button
                         type="button"
                         vdrDropdownItem
-                        *ngFor="let item of getMoveListItems(collection)"
+                        *ngFor="let item of moveListItems"
                         (click)="move(collection, item.id)"
                         [disabled]="!(hasUpdatePermission$ | async)"
                     >

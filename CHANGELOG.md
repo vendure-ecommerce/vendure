@@ -1,3 +1,39 @@
+## <small>1.3.2 (2021-10-28)</small>
+
+
+#### Perf
+
+* **admin-ui** Improve performance of Collection list view ([4bf6dff](https://github.com/vendure-ecommerce/vendure/commit/4bf6dff)), closes [#1123](https://github.com/vendure-ecommerce/vendure/issues/1123)
+
+#### Fixes
+
+* **admin-ui-plugin** Correctly handle base href for custom routes ([752cc13](https://github.com/vendure-ecommerce/vendure/commit/752cc13)), closes [#1152](https://github.com/vendure-ecommerce/vendure/issues/1152)
+* **admin-ui** Add pt_PT translation to ui config ([c7a7bbd](https://github.com/vendure-ecommerce/vendure/commit/c7a7bbd))
+* **admin-ui** Currency input handles currencies without minor units ([fd643b3](https://github.com/vendure-ecommerce/vendure/commit/fd643b3)), closes [#1146](https://github.com/vendure-ecommerce/vendure/issues/1146)
+* **core** Allow an Order in ArrangingAdditionalPayment to be cancelled ([3e1a3cf](https://github.com/vendure-ecommerce/vendure/commit/3e1a3cf)), closes [#1177](https://github.com/vendure-ecommerce/vendure/issues/1177)
+* **core** Export ShippingLine entity ([98927dd](https://github.com/vendure-ecommerce/vendure/commit/98927dd))
+* **core** Fix error in validating custom fields with introspection fields in query ([f856491](https://github.com/vendure-ecommerce/vendure/commit/f856491)), closes [#1091](https://github.com/vendure-ecommerce/vendure/issues/1091)
+* **core** Fix order modification with refund on shipping ([95bff8f](https://github.com/vendure-ecommerce/vendure/commit/95bff8f)), closes [#1197](https://github.com/vendure-ecommerce/vendure/issues/1197)
+* **core** Fix polynomial regex vulnerability ([6675757](https://github.com/vendure-ecommerce/vendure/commit/6675757))
+* **create** Update TypeScript to match current supported version ([3be6b88](https://github.com/vendure-ecommerce/vendure/commit/3be6b88)), closes [#1188](https://github.com/vendure-ecommerce/vendure/issues/1188)
+
+## <small>1.3.1 (2021-10-19)</small>
+
+
+#### Fixes
+
+* **core** Allow middleware to inject TransactionalConnection ([28f713c](https://github.com/vendure-ecommerce/vendure/commit/28f713c)), closes [#1160](https://github.com/vendure-ecommerce/vendure/issues/1160)
+* **core** Fix EntityHydrator missing nested relations ([fbda3dd](https://github.com/vendure-ecommerce/vendure/commit/fbda3dd)), closes [#1161](https://github.com/vendure-ecommerce/vendure/issues/1161)
+* **core** Fix EntityHydrator when hydrating empty array relation ([70e0314](https://github.com/vendure-ecommerce/vendure/commit/70e0314)), closes [#1153](https://github.com/vendure-ecommerce/vendure/issues/1153)
+* **core** Fix EntityHydrator with entity getters ([7d0e894](https://github.com/vendure-ecommerce/vendure/commit/7d0e894)), closes [#1172](https://github.com/vendure-ecommerce/vendure/issues/1172)
+* **core** Fix shipping price when the promotion is not applicable anymore (#1150) ([eb1dcc4](https://github.com/vendure-ecommerce/vendure/commit/eb1dcc4)), closes [#1150](https://github.com/vendure-ecommerce/vendure/issues/1150)
+* **core** Improved error message when Order.lines not joined ([0a33e5c](https://github.com/vendure-ecommerce/vendure/commit/0a33e5c))
+
+#### Perf
+
+* **core** Improve perf of DefaultSearchPlugin reindex job ([bfc72f2](https://github.com/vendure-ecommerce/vendure/commit/bfc72f2))
+* **elasticsearch-plugin** Optimize indexing using RequestContextCache ([75da3b3](https://github.com/vendure-ecommerce/vendure/commit/75da3b3))
+
 ## 1.3.0 (2021-10-13)
 
 

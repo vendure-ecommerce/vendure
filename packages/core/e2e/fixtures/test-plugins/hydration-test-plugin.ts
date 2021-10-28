@@ -1,10 +1,13 @@
+/* tslint:disable:no-non-null-assertion */
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     Ctx,
     EntityHydrator,
     ID,
+    OrderService,
     PluginCommonModule,
     Product,
+    ProductVariantService,
     RequestContext,
     TransactionalConnection,
     VendurePlugin,
@@ -13,7 +16,12 @@ import gql from 'graphql-tag';
 
 @Resolver()
 export class TestAdminPluginResolver {
-    constructor(private connection: TransactionalConnection, private entityHydrator: EntityHydrator) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private orderService: OrderService,
+        private productVariantService: ProductVariantService,
+        private entityHydrator: EntityHydrator,
+    ) {}
 
     @Query()
     async hydrateProduct(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
@@ -45,6 +53,26 @@ export class TestAdminPluginResolver {
         });
         return product;
     }
+
+    // Test case for https://github.com/vendure-ecommerce/vendure/issues/1161
+    @Query()
+    async hydrateProductVariant(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const [variant] = await this.productVariantService.findByIds(ctx, [args.id]);
+        await this.entityHydrator.hydrate(ctx, variant, {
+            relations: ['product.facetValues.facet'],
+        });
+        return variant;
+    }
+
+    // Test case for https://github.com/vendure-ecommerce/vendure/issues/1172
+    @Query()
+    async hydrateOrder(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const order = await this.orderService.findOne(ctx, args.id);
+        await this.entityHydrator.hydrate(ctx, order!, {
+            relations: ['payments'],
+        });
+        return order;
+    }
 }
 
 @VendurePlugin({
@@ -55,6 +83,8 @@ export class TestAdminPluginResolver {
             extend type Query {
                 hydrateProduct(id: ID!): JSON
                 hydrateProductAsset(id: ID!): JSON
+                hydrateProductVariant(id: ID!): JSON
+                hydrateOrder(id: ID!): JSON
             }
         `,
     },

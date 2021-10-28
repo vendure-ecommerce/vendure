@@ -44,16 +44,28 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @Column(type => CustomOrderLineFields)
     customFields: CustomOrderLineFields;
 
+    /**
+     * @description
+     * The price of a single unit, excluding tax and discounts.
+     */
     @Calculated()
     get unitPrice(): number {
         return this.firstActiveItemPropOr('unitPrice', 0);
     }
 
+    /**
+     * @description
+     * The price of a single unit, including tax but excluding discounts.
+     */
     @Calculated()
     get unitPriceWithTax(): number {
         return this.firstActiveItemPropOr('unitPriceWithTax', 0);
     }
 
+    /**
+     * @description
+     * Non-zero if the `unitPrice` has changed since it was initially added to Order.
+     */
     @Calculated()
     get unitPriceChangeSinceAdded(): number {
         const firstItem = this.activeItems[0];
@@ -67,6 +79,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return this.unitPrice - initialPrice;
     }
 
+    /**
+     * @description
+     * Non-zero if the `unitPriceWithTax` has changed since it was initially added to Order.
+     */
     @Calculated()
     get unitPriceWithTaxChangeSinceAdded(): number {
         const firstItem = this.activeItems[0];
@@ -80,21 +96,44 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return this.unitPriceWithTax - initialPriceWithTax;
     }
 
+    /**
+     * @description
+     * The price of a single unit including discounts, excluding tax.
+     *
+     * If Order-level discounts have been applied, this will not be the
+     * actual taxable unit price (see `proratedUnitPrice`), but is generally the
+     * correct price to display to customers to avoid confusion
+     * about the internal handling of distributed Order-level discounts.
+     */
     @Calculated()
     get discountedUnitPrice(): number {
         return this.firstActiveItemPropOr('discountedUnitPrice', 0);
     }
 
+    /**
+     * @description
+     * The price of a single unit including discounts and tax
+     */
     @Calculated()
     get discountedUnitPriceWithTax(): number {
         return this.firstActiveItemPropOr('discountedUnitPriceWithTax', 0);
     }
 
+    /**
+     * @description
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
+     * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+     * and refund calculations.
+     */
     @Calculated()
     get proratedUnitPrice(): number {
         return this.firstActiveItemPropOr('proratedUnitPrice', 0);
     }
 
+    /**
+     * @description
+     * The `proratedUnitPrice` including tax.
+     */
     @Calculated()
     get proratedUnitPriceWithTax(): number {
         return this.firstActiveItemPropOr('proratedUnitPriceWithTax', 0);
@@ -123,21 +162,37 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return this.firstActiveItemPropOr('taxRate', 0);
     }
 
+    /**
+     * @description
+     * The total price of the line excluding tax and discounts.
+     */
     @Calculated()
     get linePrice(): number {
         return summate(this.activeItems, 'unitPrice');
     }
 
+    /**
+     * @description
+     * The total price of the line including tax but excluding discounts.
+     */
     @Calculated()
     get linePriceWithTax(): number {
         return summate(this.activeItems, 'unitPriceWithTax');
     }
 
+    /**
+     * @description
+     * The price of the line including discounts, excluding tax.
+     */
     @Calculated()
     get discountedLinePrice(): number {
         return summate(this.activeItems, 'discountedUnitPrice');
     }
 
+    /**
+     * @description
+     * The price of the line including discounts and tax.
+     */
     @Calculated()
     get discountedLinePriceWithTax(): number {
         return summate(this.activeItems, 'discountedUnitPriceWithTax');
@@ -169,16 +224,30 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return [...groupedDiscounts.values()];
     }
 
+    /**
+     * @description
+     * The total tax on this line.
+     */
     @Calculated()
     get lineTax(): number {
         return summate(this.activeItems, 'unitTax');
     }
 
+    /**
+     * @description
+     * The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
+     * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
+     * and refund calculations.
+     */
     @Calculated()
     get proratedLinePrice(): number {
         return summate(this.activeItems, 'proratedUnitPrice');
     }
 
+    /**
+     * @description
+     * The `proratedLinePrice` including tax.
+     */
     @Calculated()
     get proratedLinePriceWithTax(): number {
         return summate(this.activeItems, 'proratedUnitPriceWithTax');

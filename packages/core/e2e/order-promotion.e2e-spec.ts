@@ -724,7 +724,7 @@ describe('Promotions applied to Orders', () => {
             function getItemSale1Line<
                 T extends Array<
                     UpdatedOrderFragment['lines'][number] | TestOrderFragmentFragment['lines'][number]
-                >
+                >,
             >(lines: T): T[number] {
                 return lines.find(l => l.productVariant.id === getVariantBySlug('item-sale-100').id)!;
             }
@@ -1085,6 +1085,51 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.shippingWithTax).toBe(0);
                 expect(applyCouponCode.total).toBe(4167);
                 expect(applyCouponCode.totalWithTax).toBe(5000);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/pull/1150
+            it('shipping discounts get correctly removed', async () => {
+                shopClient.setChannelToken(TAX_INCLUDED_CHANNEL_TOKEN);
+                const { addItemToOrder } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: getVariantBySlug('item-5000').id,
+                    quantity: 1,
+                });
+                const method = await createTestShippingMethod(TAX_INCLUDED_CHANNEL_TOKEN);
+                const { setOrderShippingMethod } = await shopClient.query<
+                    SetShippingMethod.Mutation,
+                    SetShippingMethod.Variables
+                >(SET_SHIPPING_METHOD, {
+                    id: method.id,
+                });
+                orderResultGuard.assertSuccess(setOrderShippingMethod);
+                expect(setOrderShippingMethod.discounts).toEqual([]);
+                expect(setOrderShippingMethod.shippingWithTax).toBe(345);
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, {
+                    couponCode,
+                });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.discounts.length).toBe(1);
+                expect(applyCouponCode.discounts[0].description).toBe('Free shipping');
+                expect(applyCouponCode.shippingWithTax).toBe(0);
+
+                const { removeCouponCode } = await shopClient.query<
+                    RemoveCouponCode.Mutation,
+                    RemoveCouponCode.Variables
+                >(REMOVE_COUPON_CODE, {
+                    couponCode,
+                });
+
+                orderResultGuard.assertSuccess(removeCouponCode);
+                expect(removeCouponCode.discounts).toEqual([]);
+                expect(removeCouponCode.shippingWithTax).toBe(345);
             });
         });
 

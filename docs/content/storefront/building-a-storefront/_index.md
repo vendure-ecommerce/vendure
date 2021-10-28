@@ -19,7 +19,7 @@ Luckily there are some projects that can help you get your storefront up-and-run
 
 [Vue Storefront](https://www.vuestorefront.io/) is a popular backend-agnostic storefront PWA solution and they offer an official [Vue Storefront Vendure integration](https://docs.vuestorefront.io/vendure/).
 
-For step-by-step instructions see our [Vue Storefront integration blog post]({{< relref "/blog/2021-10-13-announcing-vendure-1-3/index.md" >}}).
+For step-by-step instructions see our [Vue Storefront integration blog post]({{< relref "/blog/2021-10-11-vendure-vue-storefront/index.md" >}}).
 
 ## Next.js Commerce
  

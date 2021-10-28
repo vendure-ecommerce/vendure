@@ -30,6 +30,7 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
     @Input() expandAll = false;
     hasUpdatePermission$: Observable<boolean>;
     hasDeletePermission$: Observable<boolean>;
+    moveListItems: Array<{ path: string; id: string }> = [];
 
     constructor(
         @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
@@ -74,23 +75,8 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
         return item.id;
     }
 
-    getMoveListItems(collection: CollectionPartial): Array<{ path: string; id: string }> {
-        const visit = (
-            node: TreeNode<any>,
-            parentPath: string[],
-            output: Array<{ path: string; id: string }>,
-        ) => {
-            if (node.id !== collection.id) {
-                const path = parentPath.concat(node.name);
-                const parentId = collection.parent && collection.parent.id;
-                if (node.id !== parentId) {
-                    output.push({ path: path.slice(1).join(' / ') || 'root', id: node.id });
-                }
-                node.children.forEach(child => visit(child, path, output));
-            }
-            return output;
-        };
-        return visit(this.root.collectionTree, [], []);
+    getMoveListItems(collection: CollectionPartial) {
+        this.moveListItems = this.root.getMoveListItems(collection);
     }
 
     move(collection: CollectionPartial, parentId: string) {
