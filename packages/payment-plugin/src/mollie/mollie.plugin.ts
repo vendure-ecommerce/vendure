@@ -20,7 +20,7 @@ export class MolliePlugin {
      * @param vendureHost is needed to pass to mollie for callback
      */
     static init(vendureHost: string): typeof MolliePlugin {
-        this.host = vendureHost;
+            this.host =  vendureHost.endsWith('/') ? vendureHost.slice(0, -1) : vendureHost; // remove appending slash
         return MolliePlugin;
     }
 }

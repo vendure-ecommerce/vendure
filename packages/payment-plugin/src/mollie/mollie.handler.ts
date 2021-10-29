@@ -1,9 +1,16 @@
 import createMollieClient from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { CreatePaymentResult, Logger, PaymentMethodHandler, SettlePaymentResult } from '@vendure/core';
+import {
+    CreatePaymentResult,
+    Logger,
+    PaymentMethodHandler,
+    PaymentMethodService,
+    SettlePaymentResult,
+} from '@vendure/core';
 
 import { MolliePlugin } from './mollie.plugin';
 
+let paymentMethodService: PaymentMethodService;
 export const molliePaymentHandler = new PaymentMethodHandler({
     code: 'mollie-payment-handler',
     description: [
@@ -20,29 +27,31 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             type: 'string',
         },
     },
-
-    /** This is called when the `addPaymentToOrder` mutation is executed */
+    init(injector) {
+        paymentMethodService = injector.get(PaymentMethodService);
+    },
     createPayment: async (ctx, order, amount, args, _metadata): Promise<CreatePaymentResult> => {
         try {
             const { apiKey } = args;
             let { redirectUrl } = args;
-            if (redirectUrl && !redirectUrl.endsWith('/')) {
-                redirectUrl = `${redirectUrl}/`; // append slash if not set
+            redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
+            const paymentMethods = await paymentMethodService.findAll(ctx);
+            const paymentMethod = paymentMethods.items.find(pm => pm.handler.args.find(arg => arg.value === apiKey));
+            if (!paymentMethod) {
+                throw Error(`No paymentMethod found for given apiKey`); // This should never happen
             }
             const mollieClient = createMollieClient({ apiKey });
             const payment = await mollieClient.payments.create({
-                customerId: '',
-                mandateId: '',
                 amount: {
                     value: `${(order.totalWithTax / 100).toFixed(2)}`,
-                    currency: 'EUR',
+                    currency: order.currencyCode,
                 },
                 metadata: {
-                    orderCode: order.code, // FIXME pass paymentHandler id
+                    orderCode: order.code,
                 },
-                description: `Bestelling ${order.code}`, // FIXME
-                redirectUrl: `${redirectUrl}order/${order.code}`, // FIXME
-                webhookUrl: `${MolliePlugin.host}/payments/mollie/${ctx.channel.token}`,
+                description: `Order ${order.code}`,
+                redirectUrl: `${redirectUrl}/${order.code}`,
+                webhookUrl: `${MolliePlugin.host}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             });
             return {
                 amount: order.totalWithTax,
@@ -65,9 +74,8 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             };
         }
     },
-
-    /** This is called when the `settlePayment` mutation is executed */
     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
         return { success: true };
     },
+    // TODO refund
 });

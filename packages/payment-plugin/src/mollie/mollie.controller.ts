@@ -22,30 +22,29 @@ export class MollieController {
         private paymentMethodService: PaymentMethodService,
         private channelService: ChannelService,
         private paymentStateMachine: PaymentStateMachine,
-    ) {}
+    ) {
+    }
 
-    @Post('mollie/:channelToken')
-    async webhook(@Param('channelToken') channelToken: string, @Body() body: any): Promise<void> {
+    @Post('mollie/:channelToken/:paymentMethodId')
+    async webhook(@Param('channelToken') channelToken: string, @Param('paymentMethodId') paymentMethodId: string, @Body() body: any): Promise<void> {
         const ctx = await this.createContext(channelToken);
         Logger.info(`Received payment for ${channelToken}`, MolliePlugin.context);
-        const { paymentMethod } = await this.paymentMethodService.getMethodAndOperations(
-            ctx,
-            `mollie-payment-${channelToken}`, // FIXME, find by id, not code
-        );
+        const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
+        if (!paymentMethod) {
+            // Fail silently, as we don't want to expose if a paymentMethodId exists or not
+            return Logger.error(`No paymentMethod found with id ${paymentMethod}`, MolliePlugin.context);
+        }
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
         if (!apiKey) {
-            throw Error(`No apiKey found for mollie-payment for channel ${channelToken}`);
+            throw Error(`No apiKey found for payment ${paymentMethod.id} for channel ${channelToken}`);
         }
         const client = createMollieClient({ apiKey });
         const molliePayment = await client.payments.get(body.id);
         Logger.info(
-            `Payment for channel ${channelToken}, orderCode ${molliePayment.metadata.orderCode} has status ${molliePayment.status}`,
+            `Received payment ${molliePayment.id} for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
             MolliePlugin.context,
         );
-        // find payment in DB by id
-        const dbPayment = await this.connection
-            .getRepository(Payment)
-            .findOneOrFail({ where: { transactionId: molliePayment.id } });
+        const dbPayment = await this.connection.getRepository(Payment).findOneOrFail({ where: { transactionId: molliePayment.id } });
         if (molliePayment.status === PaymentStatus.paid) {
             await this.orderService.settlePayment(ctx, dbPayment.id);
             Logger.info(
@@ -53,14 +52,8 @@ export class MollieController {
                 MolliePlugin.context,
             );
         } else {
-            // FIXME check status if decline is needed
-            const order = await this.orderService.findOneByCode(ctx, molliePayment.metadata.orderCode);
-            if (!order) {
-                throw Error(`No order found for ${molliePayment.metadata.orderCode}`);
-            }
-            await this.paymentStateMachine.transition(ctx, order, dbPayment, 'Declined');
-            Logger.info(
-                `Payment for order ${molliePayment.metadata.orderCode} declined!`,
+            Logger.warn(
+                `Received payment for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
                 MolliePlugin.context,
             );
         }

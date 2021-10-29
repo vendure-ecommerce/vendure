@@ -2,6 +2,8 @@
 
 Plugin to integrate the Mollie
 
+:warning: This plugin does not yet implement refund. It will soon..
+
 ### 1. Add in plugin list in `vendure-config.ts`:
 
 ```js
