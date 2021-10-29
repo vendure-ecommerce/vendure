@@ -108,7 +108,15 @@ export class Populator {
             const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
             const parentId = parent ? parent.id.toString() : undefined;
             const { assets } = await this.assetImporter.getAssets(collectionDef.assetPaths || []);
-
+            let filters: ConfigurableOperationInput[] = [];
+            try {
+                filters = (collectionDef.filters || []).map(filter =>
+                    this.processFilterDefinition(filter, allFacetValues),
+                );
+            } catch (e) {
+                // tslint:disable-next-line:no-console
+                console.log(e);
+            }
             const collection = await this.collectionService.create(ctx, {
                 translations: [
                     {
@@ -122,9 +130,7 @@ export class Populator {
                 parentId,
                 assetIds: assets.map(a => a.id.toString()),
                 featuredAssetId: assets.length ? assets[0].id.toString() : undefined,
-                filters: (collectionDef.filters || []).map(filter =>
-                    this.processFilterDefinition(filter, allFacetValues),
-                ),
+                filters,
             });
             collectionMap.set(collectionDef.name, collection);
         }
