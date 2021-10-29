@@ -19,11 +19,14 @@ export class MollieController {
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
         private channelService: ChannelService,
-    ) {
-    }
+    ) {}
 
     @Post('mollie/:channelToken/:paymentMethodId')
-    async webhook(@Param('channelToken') channelToken: string, @Param('paymentMethodId') paymentMethodId: string, @Body() body: any): Promise<void> {
+    async webhook(
+        @Param('channelToken') channelToken: string,
+        @Param('paymentMethodId') paymentMethodId: string,
+        @Body() body: any,
+    ): Promise<void> {
         const ctx = await this.createContext(channelToken);
         Logger.info(`Received payment for ${channelToken}`, MolliePlugin.context);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
@@ -41,7 +44,9 @@ export class MollieController {
             `Received payment ${molliePayment.id} for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
             MolliePlugin.context,
         );
-        const dbPayment = await this.connection.getRepository(Payment).findOneOrFail({ where: { transactionId: molliePayment.id } });
+        const dbPayment = await this.connection
+            .getRepository(Payment)
+            .findOneOrFail({ where: { transactionId: molliePayment.id } });
         if (molliePayment.status === PaymentStatus.paid) {
             await this.orderService.settlePayment(ctx, dbPayment.id);
             Logger.info(

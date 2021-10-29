@@ -36,7 +36,9 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             let { redirectUrl } = args;
             redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
             const paymentMethods = await paymentMethodService.findAll(ctx);
-            const paymentMethod = paymentMethods.items.find(pm => pm.handler.args.find(arg => arg.value === apiKey));
+            const paymentMethod = paymentMethods.items.find(pm =>
+                pm.handler.args.find(arg => arg.value === apiKey),
+            );
             if (!paymentMethod) {
                 throw Error(`No paymentMethod found for given apiKey`); // This should never happen
             }

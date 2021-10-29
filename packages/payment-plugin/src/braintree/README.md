@@ -8,6 +8,7 @@ This plugin enables payments to be processed by [Braintree](https://www.braintre
 2. Then install `braintree` and `@types/braintree` from npm. This plugin was written with `v3.0.0` of the Braintree lib.
 
 ## Setup
+
 1. Add the plugin to your VendureConfig `plugins` array.
 2. In the admin UI, fill in the `merchantId`, `publicKey` & `privateKey` from your Braintree sandbox account.
 
