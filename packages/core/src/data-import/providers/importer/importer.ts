@@ -6,6 +6,7 @@ import ProgressBar from 'progress';
 import { Observable } from 'rxjs';
 import { Stream } from 'stream';
 
+import { InternalServerError } from '../../..';
 import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
@@ -84,7 +85,7 @@ export class Importer {
         onProgress: OnProgressFn,
     ): Promise<ImportInfo> {
         const ctx = await this.getRequestContext(ctxOrLanguageCode);
-        const parsed = await this.importParser.parseProducts(input);
+        const parsed = await this.importParser.parseProducts(input, ctx.languageCode);
         if (parsed && parsed.results.length) {
             try {
                 const importErrors = await this.importProducts(ctx, parsed.results, progess => {
@@ -158,15 +159,29 @@ export class Importer {
                 featuredAssetId: productAssets.length ? productAssets[0].id : undefined,
                 assetIds: productAssets.map(a => a.id),
                 facetValueIds: await this.getFacetValueIds(product.facets, languageCode),
-                translations: [
-                    {
-                        languageCode,
-                        name: product.name,
-                        description: product.description,
-                        slug: product.slug,
-                        customFields,
-                    },
-                ],
+                translations:
+                    !product.translations || product.translations.length === 0
+                        ? [
+                              {
+                                  languageCode,
+                                  name: product.name,
+                                  description: product.description,
+                                  slug: product.slug,
+                                  customFields,
+                              },
+                          ]
+                        : product.translations.map(translation => {
+                              return {
+                                  languageCode: translation.languageCode,
+                                  name: translation.name,
+                                  description: translation.description,
+                                  slug: translation.slug,
+                                  customFields: this.processCustomFieldValues(
+                                      translation.customFields,
+                                      this.configService.customFields.Product,
+                                  ),
+                              };
+                          }),
                 customFields,
             });
 
@@ -176,25 +191,41 @@ export class Importer {
                 const groupId = await this.fastImporter.createProductOptionGroup({
                     code,
                     options: optionGroup.values.map(name => ({} as any)),
-                    translations: [
-                        {
-                            languageCode,
-                            name: optionGroup.name,
-                        },
-                    ],
+                    translations:
+                        !optionGroup.translations || optionGroup.translations.length === 0
+                            ? [
+                                  {
+                                      languageCode,
+                                      name: optionGroup.name,
+                                  },
+                              ]
+                            : optionGroup.translations.map(translation => {
+                                  return {
+                                      languageCode: translation.languageCode,
+                                      name: translation.name,
+                                  };
+                              }),
                 });
-                for (const option of optionGroup.values) {
+                for (const optionIndex of optionGroup.values.map((value, index) => index)) {
                     const createdOptionId = await this.fastImporter.createProductOption({
                         productOptionGroupId: groupId,
-                        code: normalizeString(option, '-'),
-                        translations: [
-                            {
-                                languageCode,
-                                name: option,
-                            },
-                        ],
+                        code: normalizeString(optionGroup.values[optionIndex], '-'),
+                        translations:
+                            !optionGroup.translations || optionGroup.translations.length === 0
+                                ? [
+                                      {
+                                          languageCode,
+                                          name: optionGroup.values[optionIndex],
+                                      },
+                                  ]
+                                : optionGroup.translations.map(translation => {
+                                      return {
+                                          languageCode: translation.languageCode,
+                                          name: translation.values[optionIndex],
+                                      };
+                                  }),
                     });
-                    optionsMap[option] = createdOptionId;
+                    optionsMap[optionGroup.values[optionIndex]] = createdOptionId;
                 }
                 await this.fastImporter.addOptionGroupToProduct(createdProductId, groupId);
             }
@@ -209,6 +240,10 @@ export class Importer {
                 if (0 < variant.facets.length) {
                     facetValueIds = await this.getFacetValueIds(variant.facets, languageCode);
                 }
+                const variantCustomFields = this.processCustomFieldValues(
+                    variant.customFields,
+                    this.configService.customFields.ProductVariant,
+                );
                 const createdVariant = await this.fastImporter.createProductVariant({
                     productId: createdProductId,
                     facetValueIds,
@@ -219,17 +254,35 @@ export class Importer {
                     stockOnHand: variant.stockOnHand,
                     trackInventory: variant.trackInventory,
                     optionIds: variant.optionValues.map(v => optionsMap[v]),
-                    translations: [
-                        {
-                            languageCode,
-                            name: [product.name, ...variant.optionValues].join(' '),
-                        },
-                    ],
+                    translations:
+                        !variant.translations || variant.translations.length === 0
+                            ? [
+                                  {
+                                      languageCode,
+                                      name: [product.name, ...variant.optionValues].join(' '),
+                                      customFields: variantCustomFields,
+                                  },
+                              ]
+                            : variant.translations.map(translation => {
+                                  const productTranslation = product.translations.find(
+                                      t => t.languageCode === translation.languageCode,
+                                  );
+                                  if (!productTranslation) {
+                                      throw new InternalServerError(
+                                          `No translation '${translation.languageCode}' for product with slug '${product.slug}'`,
+                                      );
+                                  }
+                                  return {
+                                      languageCode: translation.languageCode,
+                                      name: [productTranslation.name, ...translation.optionValues].join(' '),
+                                      customFields: this.processCustomFieldValues(
+                                          translation.customFields,
+                                          this.configService.customFields.ProductVariant,
+                                      ),
+                                  };
+                              }),
                     price: Math.round(variant.price * 100),
-                    customFields: this.processCustomFieldValues(
-                        variant.customFields,
-                        this.configService.customFields.ProductVariant,
-                    ),
+                    customFields: variantCustomFields,
                 });
             }
             imported++;
@@ -272,7 +325,20 @@ export class Importer {
                     facetEntity = await this.facetService.create(ctx, {
                         isPrivate: false,
                         code: normalizeString(facetName, '-'),
-                        translations: [{ languageCode, name: facetName }],
+                        translations:
+                            !item.translations || item.translations.length === 0
+                                ? [
+                                      {
+                                          languageCode,
+                                          name: facetName,
+                                      },
+                                  ]
+                                : item.translations.map(translation => {
+                                      return {
+                                          languageCode: translation.languageCode,
+                                          name: translation.facet,
+                                      };
+                                  }),
                     });
                 }
                 this.facetMap.set(facetName, facetEntity);
@@ -293,7 +359,20 @@ export class Importer {
                         facetEntity,
                         {
                             code: normalizeString(valueName, '-'),
-                            translations: [{ languageCode, name: valueName }],
+                            translations:
+                                !item.translations || item.translations.length === 0
+                                    ? [
+                                          {
+                                              languageCode,
+                                              name: valueName,
+                                          },
+                                      ]
+                                    : item.translations.map(translation => {
+                                          return {
+                                              languageCode: translation.languageCode,
+                                              name: translation.value,
+                                          };
+                                      }),
                         },
                     );
                 }
