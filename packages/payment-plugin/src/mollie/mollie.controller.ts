@@ -10,8 +10,6 @@ import {
     RequestContext,
     TransactionalConnection,
 } from '@vendure/core';
-import { PaymentStateMachine } from '@vendure/core/dist/service/helpers/payment-state-machine/payment-state-machine';
-
 import { MolliePlugin } from './mollie.plugin';
 
 @Controller('payments')
@@ -21,7 +19,6 @@ export class MollieController {
         private connection: TransactionalConnection,
         private paymentMethodService: PaymentMethodService,
         private channelService: ChannelService,
-        private paymentStateMachine: PaymentStateMachine,
     ) {
     }
 
