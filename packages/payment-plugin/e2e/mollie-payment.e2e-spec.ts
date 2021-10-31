@@ -1,26 +1,6 @@
 import { PaymentStatus } from '@mollie/api-client';
 import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
 import {
-    CreatePaymentMethod,
-    GetCustomerList,
-    GetCustomerListQuery,
-} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
-import {
-    AddItemToOrder,
-    AddPaymentToOrder,
-    GetOrderByCode,
-    GetOrderByCodeWithPayments,
-    TestOrderWithPaymentsFragment,
-} from '@vendure/core/e2e/graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_LIST } from '@vendure/core/e2e/graphql/shared-definitions';
-import {
-    ADD_ITEM_TO_ORDER,
-    ADD_PAYMENT,
-    GET_ORDER_BY_CODE,
-    GET_ORDER_BY_CODE_WITH_PAYMENTS,
-} from '@vendure/core/e2e/graphql/shop-definitions';
-import { proceedToArrangingPayment } from '@vendure/core/e2e/utils/test-order-utils';
-import {
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
     registerInitializer,
@@ -36,8 +16,16 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
-
-import { CREATE_PAYMENT_METHOD } from './payment-helpers';
+import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './graphql/admin-queries';
+import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './graphql/generated-admin-types';
+import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ORDER_BY_CODE } from './graphql/shop-queries';
+import {
+    AddItemToOrder,
+    AddPaymentToOrder,
+    GetOrderByCode,
+    TestOrderFragmentFragment,
+} from './graphql/generated-shop-types';
+import { proceedToArrangingPayment } from './payment-helpers';
 
 describe('Mollie payments', () => {
     const mockData = {
@@ -59,7 +47,7 @@ describe('Mollie payments', () => {
     let server: TestServer;
     let started = false;
     let customers: GetCustomerListQuery['customers']['items'];
-    let order: TestOrderWithPaymentsFragment;
+    let order: TestOrderFragmentFragment;
     beforeAll(async () => {
         registerInitializer('sqljs', new SqljsInitializer('__data__'));
         const devConfig = mergeConfig(testConfig, {
@@ -141,7 +129,7 @@ describe('Mollie payments', () => {
                 metadata: {},
             },
         });
-        order = addPaymentToOrder as TestOrderWithPaymentsFragment;
+        order = addPaymentToOrder as TestOrderFragmentFragment;
         expect(order.state).toEqual('PaymentAuthorized');
         expect(mollieRequest?.metadata.orderCode).toEqual(order.code);
         expect(mollieRequest?.redirectUrl).toEqual(`${mockData.redirectUrl}/${order.code}`);
