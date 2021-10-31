@@ -4885,6 +4885,30 @@ export type GetCustomerListQuery = {
     };
 };
 
+export type RefundFragment = Pick<
+    Refund,
+    'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
+>;
+
+export type RefundOrderMutationVariables = Exact<{
+    input: RefundOrderInput;
+}>;
+
+export type RefundOrderMutation = {
+    refundOrder:
+        | RefundFragment
+        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
+        | Pick<NothingToRefundError, 'errorCode' | 'message'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>
+        | Pick<MultipleOrderError, 'errorCode' | 'message'>
+        | Pick<PaymentOrderMismatchError, 'errorCode' | 'message'>
+        | Pick<RefundOrderStateError, 'errorCode' | 'message'>
+        | Pick<AlreadyRefundedError, 'errorCode' | 'message'>
+        | Pick<RefundStateTransitionError, 'errorCode' | 'message'>;
+};
+
+type DiscriminateUnion<T, U> = T extends U ? T : never;
+
 export namespace PaymentMethod {
     export type Fragment = PaymentMethodFragment;
     export type Checker = NonNullable<PaymentMethodFragment['checker']>;
@@ -4912,5 +4936,19 @@ export namespace GetCustomerList {
     >;
     export type User = NonNullable<
         NonNullable<NonNullable<NonNullable<GetCustomerListQuery['customers']>['items']>[number]>['user']
+    >;
+}
+
+export namespace Refund {
+    export type Fragment = RefundFragment;
+}
+
+export namespace RefundOrder {
+    export type Variables = RefundOrderMutationVariables;
+    export type Mutation = RefundOrderMutation;
+    export type RefundOrder = NonNullable<RefundOrderMutation['refundOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<RefundOrderMutation['refundOrder']>,
+        { __typename?: 'ErrorResult' }
     >;
 }

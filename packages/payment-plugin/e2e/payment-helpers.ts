@@ -12,6 +12,8 @@ import {
     TestOrderFragmentFragment,
     TransitionToState,
 } from './graphql/generated-shop-types';
+import { REFUND_ORDER } from './graphql/admin-queries';
+import { RefundFragment, RefundOrder } from './graphql/generated-admin-types';
 
 export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
     await shopClient.query(SET_SHIPPING_ADDRESS, {
@@ -36,6 +38,25 @@ export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient)
         TransitionToState.Mutation,
         TransitionToState.Variables
     >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-
+    // tslint:disable-next-line:no-non-null-assertion
     return (transitionOrderToState as TestOrderFragmentFragment)!.id;
+}
+
+export async function refundOne(
+    adminClient: SimpleGraphQLClient,
+    orderLineId: string,
+    paymentId: string,
+): Promise<RefundFragment> {
+    const { refundOrder } = await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(
+        REFUND_ORDER,
+        {
+            input: {
+                lines: [{ orderLineId, quantity: 1 }],
+                shipping: 0,
+                adjustment: 0,
+                paymentId,
+            },
+        },
+    );
+    return refundOrder as RefundFragment;
 }

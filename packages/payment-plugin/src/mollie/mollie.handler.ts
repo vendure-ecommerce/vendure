@@ -1,7 +1,8 @@
-import createMollieClient from '@mollie/api-client';
+import createMollieClient, { RefundStatus } from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentResult,
+    CreateRefundResult,
     Logger,
     PaymentMethodHandler,
     PaymentMethodService,
@@ -79,5 +80,36 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
         return { success: true };
     },
-    // TODO refund
+    createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
+        const { apiKey } = args;
+        const mollieClient = createMollieClient({ apiKey });
+        const refund = await mollieClient.payments_refunds.create({
+            paymentId: payment.transactionId,
+            description: input.reason,
+            amount: {
+                value: (amount / 100).toFixed(2),
+                currency: order.currencyCode,
+            },
+        });
+        if (refund.status === RefundStatus.failed) {
+            Logger.error(
+                `Failed to create refund of ${amount.toFixed()} for order ${order.code} for transaction ${
+                    payment.transactionId
+                }`,
+            );
+            return {
+                state: 'Failed',
+                transactionId: payment.transactionId,
+            };
+        }
+        Logger.info(
+            `Created refund of ${amount.toFixed()} for order ${order.code} for transaction ${
+                payment.transactionId
+            }`,
+        );
+        return {
+            state: 'Settled',
+            transactionId: payment.transactionId,
+        };
+    },
 });

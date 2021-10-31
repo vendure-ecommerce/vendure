@@ -1,8 +1,8 @@
 # Mollie payment plugin
 
-Plugin to integrate the Mollie
-
-:warning: This plugin does not yet implement refund. It will soon..
+Plugin to integrate the Mollie.
+This plugin uses the Payments API from Mollie, not the Orders API,
+because order management is done by Vendure.
 
 ### 1. Add in plugin list in `vendure-config.ts`:
 

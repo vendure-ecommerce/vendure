@@ -52,3 +52,28 @@ export const GET_CUSTOMER_LIST = gql`
         }
     }
 `;
+
+const REFUND_FRAGMENT = gql`
+    fragment Refund on Refund {
+        id
+        state
+        items
+        transactionId
+        shipping
+        total
+        metadata
+    }
+`;
+
+export const REFUND_ORDER = gql`
+    mutation RefundOrder($input: RefundOrderInput!) {
+        refundOrder(input: $input) {
+            ...Refund
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${REFUND_FRAGMENT}
+`;

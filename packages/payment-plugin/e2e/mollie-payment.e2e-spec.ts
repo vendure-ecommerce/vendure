@@ -25,7 +25,7 @@ import {
     GetOrderByCode,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
-import { proceedToArrangingPayment } from './payment-helpers';
+import { proceedToArrangingPayment, refundOne } from './payment-helpers';
 
 describe('Mollie payments', () => {
     const mockData = {
@@ -107,7 +107,6 @@ describe('Mollie payments', () => {
 
     it('Should add payment to order', async () => {
         let mollieRequest;
-        // Mock Mollie response
         nock('https://api.mollie.com/')
             .post(/.*/, body => {
                 mollieRequest = body;
@@ -136,7 +135,7 @@ describe('Mollie payments', () => {
         expect(mollieRequest?.webhookUrl).toEqual(
             `${mockData.host}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`,
         );
-        expect(mollieRequest?.amount?.value).toBeDefined();
+        expect(mollieRequest?.amount?.value).toBe('3127.60');
         expect(mollieRequest?.amount?.currency).toBeDefined();
         // tslint:disable-next-line:no-non-null-assertion
         const payment = order.payments![0];
@@ -163,6 +162,34 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        expect(orderByCode?.state).toBe('PaymentSettled');
+        // tslint:disable-next-line:no-non-null-assertion
+        order = orderByCode!;
+        expect(order.state).toBe('PaymentSettled');
+    });
+
+    it('Should fail to refund', async () => {
+        let mollieRequest;
+        nock('https://api.mollie.com/')
+            .post(/.*/, body => {
+                mollieRequest = body;
+                return true;
+            })
+            .reply(200, { status: 'failed' });
+        const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
+        expect(refund.state).toBe('Failed');
+    });
+
+    it('Should successfully refund', async () => {
+        let mollieRequest;
+        nock('https://api.mollie.com/')
+            .post(/.*/, body => {
+                mollieRequest = body;
+                return true;
+            })
+            .reply(200, { status: 'pending' });
+        const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
+        expect(mollieRequest?.amount.value).toBe('1558.80');
+        expect(refund.total).toBe(155880);
+        expect(refund.state).toBe('Settled');
     });
 });
