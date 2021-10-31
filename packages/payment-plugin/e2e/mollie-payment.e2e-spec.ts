@@ -117,7 +117,7 @@ describe('Mollie payments', () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
             productVariantId: 'T_1',
-            quantity: 1,
+            quantity: 2,
         });
         await proceedToArrangingPayment(shopClient);
         const { addPaymentToOrder } = await shopClient.query<
