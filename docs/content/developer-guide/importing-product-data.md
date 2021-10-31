@@ -84,6 +84,47 @@ As well as product data, other initialization data can be populated using the [`
 import { InitialData, LanguageCode } from '@vendure/core';
 
 export const initialData: InitialData = {
+    paymentMethods: [
+        {
+            name: 'Standard Payment',
+            handler: {
+                code: 'dummy-payment-handler',
+                arguments: [{ name: 'automaticSettle', value: 'false' }],
+            },
+        },
+    ],
+    roles: [
+        {
+            code: 'administrator',
+            description: 'Administrator',
+            permissions: [
+                Permission.CreateCatalog,
+                Permission.ReadCatalog,
+                Permission.UpdateCatalog,
+                Permission.DeleteCatalog,
+                Permission.CreateSettings,
+                Permission.ReadSettings,
+                Permission.UpdateSettings,
+                Permission.DeleteSettings,
+                Permission.CreateCustomer,
+                Permission.ReadCustomer,
+                Permission.UpdateCustomer,
+                Permission.DeleteCustomer,
+                Permission.CreateCustomerGroup,
+                Permission.ReadCustomerGroup,
+                Permission.UpdateCustomerGroup,
+                Permission.DeleteCustomerGroup,
+                Permission.CreateOrder,
+                Permission.ReadOrder,
+                Permission.UpdateOrder,
+                Permission.DeleteOrder,
+                Permission.CreateSystem,
+                Permission.ReadSystem,
+                Permission.UpdateSystem,
+                Permission.DeleteSystem,
+            ],
+        },
+    ],
     defaultLanguage: LanguageCode.en,
     countries: [
         { name: 'Austria', code: 'AT', zone: 'Europe' },
@@ -112,6 +153,13 @@ export const initialData: InitialData = {
 };
 ```
 
+* `paymentMethods`: Defines which payment methods are available.
+  * `name`: Name of the payment method.
+  * `handler`: Payment plugin handler information.
+* `roles`: Defines which user roles are available.
+  * `code`: Role code name.
+  * `description`: Role description.
+  * `permissions`: List of permissions to applied to the role.
 * `defaultLanguage`: Sets the language which will be used for all translatable entities created by the initial data e.g. Products, ProductVariants, Collections etc. Should correspond to the language used in your product csv file.
 * `countries`: Defines which countries are available.
   * `name`: The name of the country in the language specified by `defaultLanguage`
