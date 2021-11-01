@@ -8,10 +8,11 @@ import {
     PaymentMethodService,
     SettlePaymentResult,
 } from '@vendure/core';
-
-import { MolliePlugin } from './mollie.plugin';
+import { MolliePluginOptions } from './mollie.plugin';
+import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 
 let paymentMethodService: PaymentMethodService;
+let options: MolliePluginOptions;
 export const molliePaymentHandler = new PaymentMethodHandler({
     code: 'mollie-payment-handler',
     description: [
@@ -30,12 +31,16 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     },
     init(injector) {
         paymentMethodService = injector.get(PaymentMethodService);
+        options = injector.get(PLUGIN_INIT_OPTIONS);
     },
     createPayment: async (ctx, order, amount, args, _metadata): Promise<CreatePaymentResult> => {
         try {
             const { apiKey } = args;
             let { redirectUrl } = args;
             redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
+            const vendureHost = options.vendureHost.endsWith('/')
+                ? options.vendureHost.slice(0, -1)
+                : options.vendureHost; // remove appending slash
             const paymentMethods = await paymentMethodService.findAll(ctx);
             const paymentMethod = paymentMethods.items.find(pm =>
                 pm.handler.args.find(arg => arg.value === apiKey),
@@ -54,7 +59,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 },
                 description: `Order ${order.code}`,
                 redirectUrl: `${redirectUrl}/${order.code}`,
-                webhookUrl: `${MolliePlugin.host}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
+                webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             });
             return {
                 amount: order.totalWithTax,
@@ -67,7 +72,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 },
             };
         } catch (err) {
-            Logger.error(err, MolliePlugin.context);
+            Logger.error(err, loggerCtx);
             return {
                 amount: order.totalWithTax,
                 state: 'Declined' as const,
@@ -96,6 +101,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 `Failed to create refund of ${amount.toFixed()} for order ${order.code} for transaction ${
                     payment.transactionId
                 }`,
+                loggerCtx,
             );
             return {
                 state: 'Failed',
@@ -106,6 +112,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             `Created refund of ${amount.toFixed()} for order ${order.code} for transaction ${
                 payment.transactionId
             }`,
+            loggerCtx,
         );
         return {
             state: 'Settled',

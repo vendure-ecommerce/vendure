@@ -10,7 +10,7 @@ import {
     RequestContext,
     TransactionalConnection,
 } from '@vendure/core';
-import { MolliePlugin } from './mollie.plugin';
+import { loggerCtx } from './constants';
 
 @Controller('payments')
 export class MollieController {
@@ -28,11 +28,11 @@ export class MollieController {
         @Body() body: any,
     ): Promise<void> {
         const ctx = await this.createContext(channelToken);
-        Logger.info(`Received payment for ${channelToken}`, MolliePlugin.context);
+        Logger.info(`Received payment for ${channelToken}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
-            return Logger.error(`No paymentMethod found with id ${paymentMethod}`, MolliePlugin.context);
+            return Logger.error(`No paymentMethod found with id ${paymentMethod}`, loggerCtx);
         }
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -42,21 +42,18 @@ export class MollieController {
         const molliePayment = await client.payments.get(body.id);
         Logger.info(
             `Received payment ${molliePayment.id} for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
-            MolliePlugin.context,
+            loggerCtx,
         );
         const dbPayment = await this.connection
             .getRepository(Payment)
             .findOneOrFail({ where: { transactionId: molliePayment.id } });
         if (molliePayment.status === PaymentStatus.paid) {
             await this.orderService.settlePayment(ctx, dbPayment.id);
-            Logger.info(
-                `Payment for order ${molliePayment.metadata.orderCode} settled`,
-                MolliePlugin.context,
-            );
+            Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
         } else {
             Logger.warn(
                 `Received payment for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
-                MolliePlugin.context,
+                loggerCtx,
             );
         }
     }

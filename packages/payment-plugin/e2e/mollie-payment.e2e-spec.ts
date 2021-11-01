@@ -53,7 +53,7 @@ describe('Mollie payments', () => {
         registerInitializer('sqljs', new SqljsInitializer('__data__'));
         const devConfig = mergeConfig(testConfig, {
             logger: new DefaultLogger({ level: LogLevel.Debug }),
-            plugins: [MolliePlugin.init(mockData.host)],
+            plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
         });
         const env = createTestEnvironment(devConfig);
         shopClient = env.shopClient;

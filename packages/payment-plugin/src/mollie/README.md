@@ -11,13 +11,15 @@ This plugin uses the Payments API from Mollie, not the Orders API.
 ## Setup
 
 1. Add the plugin to your VendureConfig `plugins` array:
+
 ```js
-   MolliePlugin.init('https://yourhost.io/');
+MolliePlugin.init({ vendureHost: 'https://yourhost.io/' });
 ```
+
 2. In the admin UI set the `redirectUrl`, this is the url that is used to redirect the end-user. I.E. `https://storefront/order`
 3. Set the your Mollie apiKey in the `apiKey` field.
 
-**Use something like `localtunnel` to test on localhost!**
+**Use something like [localtunnel](https://github.com/localtunnel/localtunnel) to test on localhost!**
 
 **The redirect url is used like this: `${redirectUrl}/${order.code}`, so your user will be directed to the page
 on `https://storefront/order/CH234X5`**
