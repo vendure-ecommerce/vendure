@@ -6,15 +6,14 @@ import {
     registerInitializer,
     SimpleGraphQLClient,
     SqljsInitializer,
-    testConfig,
     TestServer,
 } from '@vendure/testing';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
@@ -51,7 +50,6 @@ describe('Mollie payments', () => {
     let customers: GetCustomerListQuery['customers']['items'];
     let order: TestOrderFragmentFragment;
     beforeAll(async () => {
-        registerInitializer('sqljs', new SqljsInitializer('__data__'));
         const devConfig = mergeConfig(testConfig, {
             logger: new DefaultLogger({ level: LogLevel.Debug }),
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
@@ -86,10 +84,8 @@ describe('Mollie payments', () => {
     });
 
     it('Should add a Mollie paymentMethod', async () => {
-        const { createPaymentMethod } = await adminClient.query<
-            CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables
-        >(CREATE_PAYMENT_METHOD, {
+        const { createPaymentMethod } = await adminClient.query<CreatePaymentMethod.Mutation,
+            CreatePaymentMethod.Variables>(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
                 name: 'Mollie payment test',
@@ -121,10 +117,8 @@ describe('Mollie payments', () => {
             quantity: 2,
         });
         await proceedToArrangingPayment(shopClient);
-        const { addPaymentToOrder } = await shopClient.query<
-            AddPaymentToOrder.Mutation,
-            AddPaymentToOrder.Variables
-        >(ADD_PAYMENT, {
+        const { addPaymentToOrder } = await shopClient.query<AddPaymentToOrder.Mutation,
+            AddPaymentToOrder.Variables>(ADD_PAYMENT, {
             input: {
                 method: mockData.methodCode,
                 metadata: {},
