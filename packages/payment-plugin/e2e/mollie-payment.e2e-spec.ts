@@ -26,6 +26,7 @@ import {
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
 import { proceedToArrangingPayment, refundOne } from './payment-helpers';
+import { TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 describe('Mollie payments', () => {
     const mockData = {
@@ -72,7 +73,7 @@ describe('Mollie payments', () => {
                 take: 2,
             },
         }));
-    }, 10000);
+    }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
         await server.destroy();
