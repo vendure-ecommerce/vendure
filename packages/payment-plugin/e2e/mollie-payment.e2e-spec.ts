@@ -14,19 +14,20 @@ import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
+import { TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
+
 import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './graphql/admin-queries';
 import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './graphql/generated-admin-types';
-import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ORDER_BY_CODE } from './graphql/shop-queries';
 import {
     AddItemToOrder,
     AddPaymentToOrder,
     GetOrderByCode,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
+import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ORDER_BY_CODE } from './graphql/shop-queries';
 import { proceedToArrangingPayment, refundOne } from './payment-helpers';
-import { TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 describe('Mollie payments', () => {
     const mockData = {

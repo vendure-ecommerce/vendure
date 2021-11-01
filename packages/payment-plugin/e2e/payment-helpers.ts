@@ -1,19 +1,20 @@
-import { SimpleGraphQLClient } from '@vendure/testing';
 import { ID } from '@vendure/common/lib/shared-types';
-import {
-    GET_ELIGIBLE_SHIPPING_METHODS,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
-} from './graphql/shop-queries';
+import { SimpleGraphQLClient } from '@vendure/testing';
+
+import { REFUND_ORDER } from './graphql/admin-queries';
+import { RefundFragment, RefundOrder } from './graphql/generated-admin-types';
 import {
     GetShippingMethods,
     SetShippingMethod,
     TestOrderFragmentFragment,
     TransitionToState,
 } from './graphql/generated-shop-types';
-import { REFUND_ORDER } from './graphql/admin-queries';
-import { RefundFragment, RefundOrder } from './graphql/generated-admin-types';
+import {
+    GET_ELIGIBLE_SHIPPING_METHODS,
+    SET_SHIPPING_ADDRESS,
+    SET_SHIPPING_METHOD,
+    TRANSITION_TO_STATE,
+} from './graphql/shop-queries';
 
 export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
     await shopClient.query(SET_SHIPPING_ADDRESS, {

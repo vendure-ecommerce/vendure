@@ -8,8 +8,9 @@ import {
     PaymentMethodService,
     SettlePaymentResult,
 } from '@vendure/core';
-import { MolliePluginOptions } from './mollie.plugin';
+
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
+import { MolliePluginOptions } from './mollie.plugin';
 
 let paymentMethodService: PaymentMethodService;
 let options: MolliePluginOptions;
@@ -37,18 +38,18 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         try {
             const { apiKey } = args;
             let { redirectUrl } = args;
-            redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
-            const vendureHost = options.vendureHost.endsWith('/')
-                ? options.vendureHost.slice(0, -1)
-                : options.vendureHost; // remove appending slash
             const paymentMethods = await paymentMethodService.findAll(ctx);
             const paymentMethod = paymentMethods.items.find(pm =>
-                pm.handler.args.find(arg => arg.value === apiKey),
+                pm.handler.args.find(arg => arg.value === apiKey) && pm.handler.args.find(arg => arg.value === redirectUrl),
             );
             if (!paymentMethod) {
                 throw Error(`No paymentMethod found for given apiKey`); // This should never happen
             }
             const mollieClient = createMollieClient({ apiKey });
+            redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
+            const vendureHost = options.vendureHost.endsWith('/')
+                ? options.vendureHost.slice(0, -1)
+                : options.vendureHost; // remove appending slash
             const payment = await mollieClient.payments.create({
                 amount: {
                     value: `${(order.totalWithTax / 100).toFixed(2)}`,
