@@ -1,32 +1,28 @@
 # Mollie payment plugin
 
-Plugin to integrate the Mollie.
-This plugin uses the Payments API from Mollie, not the Orders API,
-because order management is done by Vendure.
+Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
+This plugin uses the Payments API from Mollie, not the Orders API.
 
-### 1. Add in plugin list in `vendure-config.ts`:
+## Requirements
 
+1. You will need to create a Mollie account and get your apiKey in the dashboard.
+2. Install the Mollie client with `yarn add @mollie/api-client`
+
+## Setup
+
+1. Add the plugin to your VendureConfig `plugins` array:
 ```js
-MolliePlugin.init('https://yourhost.io/');
+   MolliePlugin.init('https://yourhost.io/');
 ```
-
-Pass your publicly available Vendure host to the plugin. This is used by Mollie to let the plugin know when the status
-of a payment changed.
+2. In the admin UI set the `redirectUrl`, this is the url that is used to redirect the end-user. I.E. `https://storefront/order`
+3. Set the your Mollie apiKey in the `apiKey` field.
 
 **Use something like `localtunnel` to test on localhost!**
-
-### 2. Admin ui
-
-1. Go to the Vendure admin
-2. Go to `settings > paymentMethods` and create a payment method with the name `mollie-payment-YOUR_CHANNEL_TOKEN`. This
-   specific name is used in the webhook from Mollie.
-3. Set the `redirectUrl`, this is the url that is used to redirect the end-user. I.E. `https://storefront/order`
-4. Set the your Mollie key in the `apiKey` field.
 
 **The redirect url is used like this: `${redirectUrl}/${order.code}`, so your user will be directed to the page
 on `https://storefront/order/CH234X5`**
 
-### Storefront
+## Storefront usage
 
 In your storefront you add a payment to an order as described in the Vendure docs. The response will have
 a `order.payments.metadata.public.redirectLink` in it, which can be used to redirect your customer to the Mollie
