@@ -1,6 +1,6 @@
 # Mollie payment plugin
 
-Plugin to enable payments through the [Mollie platform](https:// docs.mollie.com/).
+Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
 This plugin uses the Payments API from Mollie, not the Orders API.
 
 ## Requirements
@@ -17,12 +17,16 @@ MolliePlugin.init({ vendureHost: 'https://yourhost.io/' });
 ```
 
 2. In the admin UI set the `redirectUrl`, this is the url that is used to redirect the end-user. I.E. `https://storefront/order`
-3. Set the your Mollie apiKey in the `apiKey` field.
+3. Set your Mollie apiKey in the `apiKey` field.
 
-**Use something like [localtunnel](https:// github.com/localtunnel/localtunnel) to test on localhost!**
+After completing payment on the Mollie platform, 
+the user is redirect to the configured url + orderCode: `https://storefront/order/CH234X5`
 
-**The redirect url is used like this: `${redirectUrl}/${order.code}`, so your user will be directed to the page
-on `https://storefront/order/CH234X5`**
+**Use something like [localtunnel](https://github.com/localtunnel/localtunnel) to test on localhost!**
+```bash 
+npx localtunnel --port 3000 --subdomain my-shop-local-dev
+> your url is: https://my-shop-local-dev.loca.lt     <- use this as the vendureHost for local dev.
+```
 
 ## Storefront usage
 

@@ -1,6 +1,7 @@
 import createMollieClient, { RefundStatus } from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
+    CreatePaymentErrorResult,
     CreatePaymentResult,
     CreateRefundResult,
     Logger,
@@ -34,7 +35,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         paymentMethodService = injector.get(PaymentMethodService);
         options = injector.get(PLUGIN_INIT_OPTIONS);
     },
-    createPayment: async (ctx, order, amount, args, _metadata): Promise<CreatePaymentResult> => {
+    createPayment: async (ctx, order, amount, args, _metadata): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
         try {
             const { apiKey } = args;
             let { redirectUrl } = args;
@@ -76,14 +77,13 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             Logger.error(err, loggerCtx);
             return {
                 amount: order.totalWithTax,
-                state: 'Declined' as const,
-                metadata: {
-                    errorMessage: err.message,
-                },
+                state: 'Error',
+                errorMessage: err.message
             };
         }
     },
     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
+        // Settlement is handled by incoming webhook in mollie.controller.ts
         return { success: true };
     },
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {

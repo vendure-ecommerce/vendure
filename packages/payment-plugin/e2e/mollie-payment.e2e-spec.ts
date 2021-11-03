@@ -51,7 +51,6 @@ describe('Mollie payments', () => {
     let order: TestOrderFragmentFragment;
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig, {
-            logger: new DefaultLogger({ level: LogLevel.Debug }),
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
         });
         const env = createTestEnvironment(devConfig);
