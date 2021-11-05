@@ -78,9 +78,9 @@ To import custom fields with `list` set to `true`, the data should be separated 
 
 #### Importing data in multiple languages
 
-If a field is translatable (i.e. of `localeString` type), you can use column names with an append language codes (e.g. `name:en`, `name:de`, `product:keywords:en`, `product:keywords:de`) to specify its value in multiple languages.
+If a field is translatable (i.e. of `localeString` type), you can use column names with an appended language code (e.g. `name:en`, `name:de`, `product:keywords:en`, `product:keywords:de`) to specify its value in multiple languages.
 
-Use of language codes has to be consistent throughout the file, i.e. each translated field has to use the same set of translated columns, or none, in which case the generic column's value will be used for all translations.
+Use of language codes has to be consistent throughout the file. You don't have to translate every translatable field. If there are no translated columns for a field, the generic column's value will be used for all languages. But when you do translate columns, the set of languages for each of them needs to be the same. As an example, you cannot use `name:en` and `name:de`, but only provide `slug:en` (it's okay to use only a `slug` column though, in which case this slug will be used for both the English and the German version).
 
 ## Initial Data
 

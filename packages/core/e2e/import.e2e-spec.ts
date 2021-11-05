@@ -387,7 +387,6 @@ describe('Import resolver', () => {
         expect(omit(paperStretcher, ['facetValues', 'options'], true)).toMatchSnapshot();
 
         const byName = (e: { name: string }) => e.name;
-        const byCode = (e: { code: string }) => e.code;
 
         expect(paperStretcher.facetValues.map(byName).sort()).toEqual(['KB', '饰品']);
 

@@ -35,8 +35,6 @@ const requiredColumns: string[] = [
 ];
 
 export interface ParsedOptionGroup {
-    name: string;
-    values: string[];
     translations: Array<{
         languageCode: LanguageCode;
         name: string;
@@ -45,8 +43,6 @@ export interface ParsedOptionGroup {
 }
 
 export interface ParsedFacet {
-    facet: string;
-    value: string;
     translations: Array<{
         languageCode: LanguageCode;
         facet: string;
@@ -55,7 +51,6 @@ export interface ParsedFacet {
 }
 
 export interface ParsedProductVariant {
-    optionValues: string[];
     sku: string;
     price: number;
     taxCategory: string;
@@ -70,15 +65,9 @@ export interface ParsedProductVariant {
             [name: string]: string;
         };
     }>;
-    customFields: {
-        [name: string]: string;
-    };
 }
 
 export interface ParsedProduct {
-    name: string;
-    slug: string;
-    description: string;
     assetPaths: string[];
     optionGroups: ParsedOptionGroup[];
     facets: ParsedFacet[];
@@ -91,9 +80,6 @@ export interface ParsedProduct {
             [name: string]: string;
         };
     }>;
-    customFields: {
-        [name: string]: string;
-    };
 }
 
 export interface ParsedProductWithVariants {
@@ -306,25 +292,18 @@ export class ImportParser {
         mainLanguage: LanguageCode,
     ): ParsedProduct {
         const translationCodes = usedLanguages.length === 0 ? [mainLanguage] : usedLanguages;
-        const name = parseString(getRawMainTranslation(r, 'name', mainLanguage));
-        let slug = parseString(getRawMainTranslation(r, 'slug', mainLanguage));
-        if (slug.length === 0) {
-            slug = normalizeString(name, '-');
-        }
-        const description = parseString(getRawMainTranslation(r, 'description', mainLanguage));
 
-        const optionGroups: ParsedOptionGroup[] = parseStringArray(
-            getRawMainTranslation(r, 'optionGroups', mainLanguage),
-        ).map(ogName => ({
-            name: ogName,
-            values: [],
-            translations: [],
-        }));
+        const optionGroups: ParsedOptionGroup[] = [];
         for (const languageCode of translationCodes) {
             const rawTranslOptionGroups = r.hasOwnProperty(`optionGroups:${languageCode}`)
                 ? r[`optionGroups:${languageCode}`]
                 : r.optionGroups;
             const translatedOptionGroups = parseStringArray(rawTranslOptionGroups);
+            if (optionGroups.length === 0) {
+                for (const translatedOptionGroup of translatedOptionGroups) {
+                    optionGroups.push({ translations: [] });
+                }
+            }
             for (const i of optionGroups.map((optionGroup, index) => index)) {
                 optionGroups[i].translations.push({
                     languageCode,
@@ -334,21 +313,17 @@ export class ImportParser {
             }
         }
 
-        const facets: ParsedFacet[] = parseStringArray(getRawMainTranslation(r, 'facets', mainLanguage)).map(
-            pair => {
-                const [facet, value] = pair.split(':');
-                return {
-                    facet,
-                    value,
-                    translations: [],
-                };
-            },
-        );
+        const facets: ParsedFacet[] = [];
         for (const languageCode of translationCodes) {
             const rawTranslatedFacets = r.hasOwnProperty(`facets:${languageCode}`)
                 ? r[`facets:${languageCode}`]
                 : r.facets;
             const translatedFacets = parseStringArray(rawTranslatedFacets);
+            if (facets.length === 0) {
+                for (const translatedFacet of translatedFacets) {
+                    facets.push({ translations: [] });
+                }
+            }
             for (const i of facets.map((facet, index) => index)) {
                 const [facet, value] = translatedFacets[i].split(':');
                 facets[i].translations.push({
@@ -359,63 +334,41 @@ export class ImportParser {
             }
         }
 
-        const parsedCustomFields = parseCustomFields('product', r);
-        const customFields = this.configService.customFields.Product.filter(
-            field => field.type !== 'localeString',
-        ).reduce((output, field) => {
-            if (parsedCustomFields.hasOwnProperty(field.name)) {
-                return {
-                    ...output,
-                    [field.name]: parsedCustomFields[field.name],
-                };
-            } else {
-                return {
-                    ...output,
-                };
-            }
-        }, {});
-
         const translations = translationCodes.map(languageCode => {
             const translatedFields = getRawTranslatedFields(r, languageCode);
             const parsedTranslatedCustomFields = parseCustomFields('product', translatedFields);
-            const translatedCustomFields = this.configService.customFields.Product.filter(
-                field => field.type === 'localeString',
-            ).reduce((output, field) => {
-                if (parsedTranslatedCustomFields.hasOwnProperty(field.name)) {
-                    return {
-                        ...output,
-                        [field.name]: parsedTranslatedCustomFields[field.name],
-                    };
-                } else if (parsedCustomFields.hasOwnProperty(field.name)) {
-                    return {
-                        ...output,
-                        [field.name]: parsedCustomFields[field.name],
-                    };
-                } else {
-                    return {
-                        ...output,
-                    };
-                }
-            }, {});
+            const parsedUntranslatedCustomFields = parseCustomFields('product', getRawUntranslatedFields(r));
+            const parsedCustomFields = {
+                ...parsedUntranslatedCustomFields,
+                ...parsedTranslatedCustomFields,
+            };
+            const name = translatedFields.hasOwnProperty('name')
+                ? parseString(translatedFields.name)
+                : r.name;
+            let slug: string;
+            if (translatedFields.hasOwnProperty('slug')) {
+                slug = parseString(translatedFields.slug);
+            } else {
+                slug = parseString(r.slug);
+            }
+            if (slug.length === 0) {
+                slug = normalizeString(name, '-');
+            }
             return {
                 languageCode,
-                name: translatedFields.hasOwnProperty('name') ? parseString(translatedFields.name) : name,
-                slug: translatedFields.hasOwnProperty('slug') ? parseString(translatedFields.slug) : slug,
+                name,
+                slug,
                 description: translatedFields.hasOwnProperty('description')
                     ? parseString(translatedFields.description)
-                    : description,
-                customFields: translatedCustomFields,
+                    : r.description,
+                customFields: parsedCustomFields,
             };
         });
         const parsedProduct: ParsedProduct = {
-            name,
-            slug,
-            description,
             assetPaths: parseStringArray(r.assets),
             optionGroups,
             facets,
             translations,
-            customFields,
         };
         return parsedProduct;
     }
@@ -427,21 +380,17 @@ export class ImportParser {
     ): ParsedProductVariant {
         const translationCodes = usedLanguages.length === 0 ? [mainLanguage] : usedLanguages;
 
-        const facets: ParsedFacet[] = parseStringArray(
-            getRawMainTranslation(r, 'variantFacets', mainLanguage),
-        ).map(pair => {
-            const [facet, value] = pair.split(':');
-            return {
-                facet,
-                value,
-                translations: [],
-            };
-        });
+        const facets: ParsedFacet[] = [];
         for (const languageCode of translationCodes) {
             const rawTranslatedFacets = r.hasOwnProperty(`variantFacets:${languageCode}`)
                 ? r[`variantFacets:${languageCode}`]
                 : r.variantFacets;
             const translatedFacets = parseStringArray(rawTranslatedFacets);
+            if (facets.length === 0) {
+                for (const translatedFacet of translatedFacets) {
+                    facets.push({ translations: [] });
+                }
+            }
             for (const i of facets.map((facet, index) => index)) {
                 const [facet, value] = translatedFacets[i].split(':');
                 facets[i].translations.push({
@@ -452,22 +401,6 @@ export class ImportParser {
             }
         }
 
-        const parsedCustomFields = parseCustomFields('variant', r);
-        const customFields = this.configService.customFields.ProductVariant.filter(
-            field => field.type !== 'localeString',
-        ).reduce((output, field) => {
-            if (parsedCustomFields.hasOwnProperty(field.name)) {
-                return {
-                    ...output,
-                    [field.name]: parsedCustomFields[field.name],
-                };
-            } else {
-                return {
-                    ...output,
-                };
-            }
-        }, {});
-
         const translations = translationCodes.map(languageCode => {
             const rawTranslOptionValues = r.hasOwnProperty(`optionValues:${languageCode}`)
                 ? r[`optionValues:${languageCode}`]
@@ -475,34 +408,19 @@ export class ImportParser {
             const translatedOptionValues = parseStringArray(rawTranslOptionValues);
             const translatedFields = getRawTranslatedFields(r, languageCode);
             const parsedTranslatedCustomFields = parseCustomFields('variant', translatedFields);
-            const translatedCustomFields = this.configService.customFields.ProductVariant.filter(
-                field => field.type === 'localeString',
-            ).reduce((output, field) => {
-                if (parsedTranslatedCustomFields.hasOwnProperty(field.name)) {
-                    return {
-                        ...output,
-                        [field.name]: parsedTranslatedCustomFields[field.name],
-                    };
-                } else if (parsedCustomFields.hasOwnProperty(field.name)) {
-                    return {
-                        ...output,
-                        [field.name]: parsedCustomFields[field.name],
-                    };
-                } else {
-                    return {
-                        ...output,
-                    };
-                }
-            }, {});
+            const parsedUntranslatedCustomFields = parseCustomFields('variant', getRawUntranslatedFields(r));
+            const parsedCustomFields = {
+                ...parsedUntranslatedCustomFields,
+                ...parsedTranslatedCustomFields,
+            };
             return {
                 languageCode,
                 optionValues: translatedOptionValues,
-                customFields: translatedCustomFields,
+                customFields: parsedCustomFields,
             };
         });
 
-        return {
-            optionValues: parseStringArray(getRawMainTranslation(r, 'optionValues', mainLanguage)),
+        const parsedVariant: ParsedProductVariant = {
             sku: parseString(r.sku),
             price: parseNumber(r.price),
             taxCategory: parseString(r.taxCategory),
@@ -516,39 +434,32 @@ export class ImportParser {
             assetPaths: parseStringArray(r.variantAssets),
             facets,
             translations,
-            customFields,
         };
+        return parsedVariant;
     }
 }
 
 function populateOptionGroupValues(currentRow: ParsedProductWithVariants) {
-    const values = currentRow.variants.map(v => v.optionValues);
-    const languageCodes = currentRow.product.translations.map(t => t.languageCode);
-    const translations = languageCodes.map(languageCode => {
-        const optionValues = currentRow.variants.map(v => {
-            const variantTranslation = v.translations.find(t => t.languageCode === languageCode);
+    for (const translation of currentRow.product.translations) {
+        const values = currentRow.variants.map(variant => {
+            const variantTranslation = variant.translations.find(
+                t => t.languageCode === translation.languageCode,
+            );
             if (!variantTranslation) {
-                throw new InternalServerError(`No translation '${languageCode}' for variant SKU '${v.sku}'`);
+                throw new InternalServerError(
+                    `No translation '${translation.languageCode}' for variant SKU '${variant.sku}'`,
+                );
             }
             return variantTranslation.optionValues;
         });
-        return {
-            languageCode,
-            optionValues,
-        };
-    });
-    currentRow.product.optionGroups.forEach((og, i) => {
-        og.values = unique(values.map(v => v[i]));
-        og.translations.forEach(translation => {
-            const ovTranslation = translations.find(t => t.languageCode === translation.languageCode);
-            if (!ovTranslation) {
-                throw new InternalServerError(
-                    `No value translation '${translation.languageCode}' for OptionGroup '${og.name}'`,
-                );
+        currentRow.product.optionGroups.forEach((og, i) => {
+            const ogTranslation = og.translations.find(t => t.languageCode === translation.languageCode);
+            if (!ogTranslation) {
+                throw new InternalServerError(`No translation '${LanguageCode}' for option groups'`);
             }
-            translation.values = unique(ovTranslation.optionValues.map(v => v[i]));
+            ogTranslation.values = unique(values.map(v => v[i]));
         });
-    });
+    }
 }
 
 function getLanguageCode(rowKey: string): LanguageCode | undefined {
@@ -666,6 +577,19 @@ function getRawTranslatedFields(
             return {
                 ...output,
                 [fieldName]: value,
+            };
+        }, {});
+}
+
+function getRawUntranslatedFields(r: { [key: string]: string }): { [key: string]: string } {
+    return Object.entries(r)
+        .filter(([key, value]) => {
+            return !getLanguageCode(key);
+        })
+        .reduce((output, [key, value]) => {
+            return {
+                ...output,
+                [key]: value,
             };
         }, {});
 }
