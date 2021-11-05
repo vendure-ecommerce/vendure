@@ -247,4 +247,157 @@ describe('Import resolver', () => {
         expect(pencils.customFields.localName).toEqual('localGiotto');
         expect(smock.customFields.localName).toEqual('localSmock');
     }, 20000);
+
+    it('imports products with multiple languages', async () => {
+        // TODO: see test above
+        const timeout = process.env.CI ? 2000 : 1000;
+        await new Promise(resolve => {
+            setTimeout(resolve, timeout);
+        });
+
+        const csvFile = path.join(__dirname, 'fixtures', 'e2e-product-import-multi-languages.csv');
+        const result = await adminClient.fileUploadMutation({
+            mutation: gql`
+                mutation ImportProducts($csvFile: Upload!) {
+                    importProducts(csvFile: $csvFile) {
+                        imported
+                        processed
+                        errors
+                    }
+                }
+            `,
+            filePaths: [csvFile],
+            mapVariables: () => ({ csvFile: null }),
+        });
+
+        expect(result.importProducts.errors).toEqual([]);
+        expect(result.importProducts.imported).toBe(1);
+        expect(result.importProducts.processed).toBe(1);
+
+        const productResult = await adminClient.query(
+            gql`
+                query GetProducts($options: ProductListOptions) {
+                    products(options: $options) {
+                        totalItems
+                        items {
+                            id
+                            name
+                            slug
+                            description
+                            featuredAsset {
+                                id
+                                name
+                                preview
+                                source
+                            }
+                            assets {
+                                id
+                                name
+                                preview
+                                source
+                            }
+                            optionGroups {
+                                id
+                                code
+                                name
+                            }
+                            facetValues {
+                                id
+                                name
+                                facet {
+                                    id
+                                    name
+                                }
+                            }
+                            customFields {
+                                pageType
+                                owner {
+                                    id
+                                }
+                                keywords
+                                localName
+                            }
+                            variants {
+                                id
+                                name
+                                sku
+                                price
+                                taxCategory {
+                                    id
+                                    name
+                                }
+                                options {
+                                    id
+                                    code
+                                    name
+                                }
+                                assets {
+                                    id
+                                    name
+                                    preview
+                                    source
+                                }
+                                featuredAsset {
+                                    id
+                                    name
+                                    preview
+                                    source
+                                }
+                                facetValues {
+                                    id
+                                    code
+                                    name
+                                    facet {
+                                        id
+                                        name
+                                    }
+                                }
+                                stockOnHand
+                                trackInventory
+                                stockMovements {
+                                    items {
+                                        ... on StockMovement {
+                                            id
+                                            type
+                                            quantity
+                                        }
+                                    }
+                                }
+                                customFields {
+                                    weight
+                                }
+                            }
+                        }
+                    }
+                }
+            `,
+            {
+                options: {},
+            },
+            {
+                languageCode: 'zh_Hans',
+            },
+        );
+
+        expect(productResult.products.totalItems).toBe(5);
+
+        const paperStretcher = productResult.products.items.find((p: any) => p.name === '奇妙的纸张拉伸器');
+
+        // Omit FacetValues & options due to variations in the ordering between different DB engines
+        expect(omit(paperStretcher, ['facetValues', 'options'], true)).toMatchSnapshot();
+
+        const byName = (e: { name: string }) => e.name;
+
+        expect(paperStretcher.facetValues.map(byName).sort()).toEqual(['KB', '饰品']);
+
+        expect(paperStretcher.variants[0].options.map(byName).sort()).toEqual(['半英制']);
+        expect(paperStretcher.variants[1].options.map(byName).sort()).toEqual(['四分之一英制']);
+        expect(paperStretcher.variants[2].options.map(byName).sort()).toEqual(['全英制']);
+
+        // Import list custom fields
+        expect(paperStretcher.customFields.keywords).toEqual(['paper, stretch']);
+
+        // Import localeString custom fields
+        expect(paperStretcher.customFields.localName).toEqual('纸张拉伸器');
+    }, 20000);
 });

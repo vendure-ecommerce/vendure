@@ -371,3 +371,109 @@ Object {
   ],
 }
 `;
+
+exports[`Import resolver imports products with multiple languages 1`] = `
+Object {
+  "assets": Array [],
+  "customFields": Object {
+    "keywords": Array [
+      "paper, stretch",
+    ],
+    "localName": "纸张拉伸器",
+    "owner": null,
+    "pageType": null,
+  },
+  "description": "一个用于拉伸纸张的伟大装置",
+  "featuredAsset": null,
+  "id": "T_5",
+  "name": "奇妙的纸张拉伸器",
+  "optionGroups": Array [
+    Object {
+      "code": "fantastic-paper-stretcher-size",
+      "id": "T_5",
+      "name": "size",
+    },
+  ],
+  "slug": "奇妙的纸张拉伸器",
+  "variants": Array [
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 243,
+      },
+      "featuredAsset": null,
+      "id": "T_11",
+      "name": "奇妙的纸张拉伸器 半英制",
+      "price": 4530,
+      "sku": "PPS12",
+      "stockMovements": Object {
+        "items": Array [
+          Object {
+            "id": "T_3",
+            "quantity": 10,
+            "type": "ADJUSTMENT",
+          },
+        ],
+      },
+      "stockOnHand": 10,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": "FALSE",
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 344,
+      },
+      "featuredAsset": null,
+      "id": "T_12",
+      "name": "奇妙的纸张拉伸器 四分之一英制",
+      "price": 3250,
+      "sku": "PPS14",
+      "stockMovements": Object {
+        "items": Array [
+          Object {
+            "id": "T_4",
+            "quantity": 10,
+            "type": "ADJUSTMENT",
+          },
+        ],
+      },
+      "stockOnHand": 10,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": "FALSE",
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 656,
+      },
+      "featuredAsset": null,
+      "id": "T_13",
+      "name": "奇妙的纸张拉伸器 全英制",
+      "price": 5950,
+      "sku": "PPSF",
+      "stockMovements": Object {
+        "items": Array [
+          Object {
+            "id": "T_5",
+            "quantity": 10,
+            "type": "ADJUSTMENT",
+          },
+        ],
+      },
+      "stockOnHand": 10,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": "FALSE",
+    },
+  ],
+}
+`;

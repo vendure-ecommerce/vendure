@@ -1,12 +1,38 @@
 import fs from 'fs-extra';
 import path from 'path';
 
+import { LanguageCode } from '../../..';
+import { ConfigService } from '../../../config/config.service';
+
 import { ImportParser } from './import-parser';
+
+const mockConfigService = {
+    defaultLanguageCode: LanguageCode.en,
+    customFields: {
+        Product: [
+            {
+                name: 'keywords',
+                type: 'localeString',
+                list: true,
+            },
+            {
+                name: 'customPage',
+                type: 'string',
+            },
+        ],
+        ProductVariant: [
+            {
+                name: 'volumetric',
+                type: 'int',
+            },
+        ],
+    },
+} as ConfigService;
 
 describe('ImportParser', () => {
     describe('parseProducts', () => {
         it('single product with a single variant', async () => {
-            const importParser = new ImportParser();
+            const importParser = new ImportParser(mockConfigService);
 
             const input = await loadTestFixture('single-product-single-variant.csv');
             const result = await importParser.parseProducts(input);
@@ -15,7 +41,7 @@ describe('ImportParser', () => {
         });
 
         it('single product with a multiple variants', async () => {
-            const importParser = new ImportParser();
+            const importParser = new ImportParser(mockConfigService);
 
             const input = await loadTestFixture('single-product-multiple-variants.csv');
             const result = await importParser.parseProducts(input);
@@ -24,7 +50,7 @@ describe('ImportParser', () => {
         });
 
         it('multiple products with multiple variants', async () => {
-            const importParser = new ImportParser();
+            const importParser = new ImportParser(mockConfigService);
 
             const input = await loadTestFixture('multiple-products-multiple-variants.csv');
             const result = await importParser.parseProducts(input);
@@ -33,7 +59,7 @@ describe('ImportParser', () => {
         });
 
         it('custom fields', async () => {
-            const importParser = new ImportParser();
+            const importParser = new ImportParser(mockConfigService);
 
             const input = await loadTestFixture('custom-fields.csv');
             const result = await importParser.parseProducts(input);
@@ -42,7 +68,7 @@ describe('ImportParser', () => {
         });
 
         it('works with streamed input', async () => {
-            const importParser = new ImportParser();
+            const importParser = new ImportParser(mockConfigService);
 
             const filename = path.join(__dirname, 'test-fixtures', 'multiple-products-multiple-variants.csv');
             const input = fs.createReadStream(filename);
@@ -51,23 +77,33 @@ describe('ImportParser', () => {
             expect(result.results).toMatchSnapshot();
         });
 
+        it('works with multilingual input', async () => {
+            const importParser = new ImportParser(mockConfigService);
+
+            const filename = path.join(__dirname, 'test-fixtures', 'multiple-languages.csv');
+            const input = fs.createReadStream(filename);
+            const result = await importParser.parseProducts(input);
+
+            expect(result.results).toMatchSnapshot();
+        });
+
         describe('error conditions', () => {
             it('reports errors on invalid option values', async () => {
-                const importParser = new ImportParser();
+                const importParser = new ImportParser(mockConfigService);
 
                 const input = await loadTestFixture('invalid-option-values.csv');
                 const result = await importParser.parseProducts(input);
 
                 expect(result.errors).toEqual([
-                    'The number of optionValues must match the number of optionGroups on line 2',
-                    'The number of optionValues must match the number of optionGroups on line 3',
-                    'The number of optionValues must match the number of optionGroups on line 4',
-                    'The number of optionValues must match the number of optionGroups on line 5',
+                    "The number of optionValues in column 'optionValues' must match the number of optionGroups on line 2",
+                    "The number of optionValues in column 'optionValues' must match the number of optionGroups on line 3",
+                    "The number of optionValues in column 'optionValues' must match the number of optionGroups on line 4",
+                    "The number of optionValues in column 'optionValues' must match the number of optionGroups on line 5",
                 ]);
             });
 
             it('reports error on ivalid columns', async () => {
-                const importParser = new ImportParser();
+                const importParser = new ImportParser(mockConfigService);
 
                 const input = await loadTestFixture('invalid-columns.csv');
                 const result = await importParser.parseProducts(input);
@@ -79,7 +115,7 @@ describe('ImportParser', () => {
             });
 
             it('reports error on ivalid row length', async () => {
-                const importParser = new ImportParser();
+                const importParser = new ImportParser(mockConfigService);
 
                 const input = await loadTestFixture('invalid-row-length.csv');
                 const result = await importParser.parseProducts(input);
