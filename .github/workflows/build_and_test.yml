@@ -37,7 +37,7 @@ jobs:
           ${{ runner.os }}-yarn-
     - name: Install & build
       run: |
-        yarn install
+        yarn install --prefer-offline
         yarn bootstrap
         yarn build
   unit-tests:
@@ -61,7 +61,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install & build
         run: |
-          yarn install
+          yarn install --prefer-offline
           yarn bootstrap
           yarn lerna run ci
       - name: Unit tests
@@ -130,7 +130,7 @@ jobs:
             ${{ runner.os }}-yarn-
       - name: Install & build
         run: |
-          yarn install
+          yarn install --prefer-offline
           yarn bootstrap
           yarn lerna run ci
       - name: df
