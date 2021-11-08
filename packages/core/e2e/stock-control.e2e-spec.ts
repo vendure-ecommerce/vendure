@@ -20,6 +20,8 @@ import {
     GlobalFlag,
     SettlePayment,
     StockMovementType,
+    TransitFulfillment,
+    TransitionFulfillmentToState,
     UpdateGlobalSettings,
     UpdateProductVariantInput,
     UpdateProductVariants,
@@ -69,9 +71,8 @@ describe('Stock control', () => {
         }),
     );
 
-    const orderGuard: ErrorResultGuard<
-        TestOrderFragmentFragment | UpdatedOrderFragment
-    > = createErrorResultGuard(input => !!input.lines);
+    const orderGuard: ErrorResultGuard<TestOrderFragmentFragment | UpdatedOrderFragment> =
+        createErrorResultGuard(input => !!input.lines);
 
     const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
         input => !!input.state,
@@ -411,6 +412,101 @@ describe('Stock control', () => {
             expect(variant3.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
             expect(variant3.stockMovements.items[5].type).toBe(StockMovementType.CANCELLATION);
             expect(variant3.stockMovements.items[6].type).toBe(StockMovementType.CANCELLATION);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1198
+        it('creates Cancellations & adjusts stock when cancelling a Fulfillment', async () => {
+            async function getTrackedVariant() {
+                const result = await getProductWithStockMovement('T_2');
+                return result?.variants[1]!;
+            }
+
+            const trackedVariant1 = await getTrackedVariant();
+
+            expect(trackedVariant1.stockOnHand).toBe(5);
+
+            // Add items to order and check out
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: trackedVariant1.id,
+                quantity: 1,
+            });
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        streetLine1: '1 Test Street',
+                        countryCode: 'GB',
+                    } as CreateAddressInput,
+                },
+            );
+            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
+                TRANSITION_TO_STATE,
+                { state: 'ArrangingPayment' as OrderState },
+            );
+            const { addPaymentToOrder: order } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: testSuccessfulPaymentMethod.code,
+                    metadata: {},
+                } as PaymentInput,
+            });
+            orderGuard.assertSuccess(order);
+            expect(order).not.toBeNull();
+
+            const trackedVariant2 = await getTrackedVariant();
+            expect(trackedVariant2.stockOnHand).toBe(5);
+
+            const linesInput =
+                order?.lines
+                    .filter(l => l.productVariant.id === trackedVariant2.id)
+                    .map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [];
+
+            const { addFulfillmentToOrder } = await adminClient.query<
+                CreateFulfillment.Mutation,
+                CreateFulfillment.Variables
+            >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: linesInput,
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
+                },
+            });
+
+            const trackedVariant3 = await getTrackedVariant();
+
+            expect(trackedVariant3.stockOnHand).toBe(4);
+
+            const { transitionFulfillmentToState } = await adminClient.query<
+                TransitionFulfillmentToState.Mutation,
+                TransitionFulfillmentToState.Variables
+            >(TRANSITION_FULFILLMENT_TO_STATE, {
+                state: 'Cancelled',
+                id: (addFulfillmentToOrder as any).id,
+            });
+
+            const trackedVariant4 = await getTrackedVariant();
+
+            expect(trackedVariant4.stockOnHand).toBe(5);
+            expect(trackedVariant4.stockMovements.items).toEqual([
+                { id: 'T_4', quantity: 5, type: 'ADJUSTMENT' },
+                { id: 'T_7', quantity: 3, type: 'ALLOCATION' },
+                { id: 'T_9', quantity: 1, type: 'RELEASE' },
+                { id: 'T_11', quantity: -2, type: 'SALE' },
+                { id: 'T_15', quantity: 1, type: 'CANCELLATION' },
+                { id: 'T_16', quantity: 1, type: 'CANCELLATION' },
+                { id: 'T_21', quantity: 1, type: 'ALLOCATION' },
+                { id: 'T_22', quantity: -1, type: 'SALE' },
+                // This is the cancellation we are testing for
+                { id: 'T_23', quantity: 1, type: 'CANCELLATION' },
+            ]);
         });
     });
 
@@ -1060,4 +1156,24 @@ const UPDATE_STOCK_ON_HAND = gql`
         }
     }
     ${VARIANT_WITH_STOCK_FRAGMENT}
+`;
+
+export const TRANSITION_FULFILLMENT_TO_STATE = gql`
+    mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+        transitionFulfillmentToState(id: $id, state: $state) {
+            ... on Fulfillment {
+                id
+                state
+                nextStates
+                createdAt
+            }
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on FulfillmentStateTransitionError {
+                transitionError
+            }
+        }
+    }
 `;
