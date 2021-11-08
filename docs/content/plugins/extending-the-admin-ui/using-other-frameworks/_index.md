@@ -66,6 +66,11 @@ import { hostExternalFrame } from '@vendure/admin-ui/core';
 export class ReactUiExtensionModule {}
 ```
 
+{{< alert "primary" >}}
+Note: If you are using **Create React App**, you should additionally update your package.json file to include the [homepage property](https://create-react-app.dev/docs/deployment/#building-for-relative-paths) so that it works when run from the admin ui assets directory:
+`"homepage": "/admin/assets/react-app/"`
+{{< /alert >}}
+
 ## 4. Define the AdminUiExtension config
 
 Next we will define an [AdminUiExtension]({{< relref "admin-ui-extension" >}}) object which is passed to the `compileUiExtensions()` function in your Vendure config:
