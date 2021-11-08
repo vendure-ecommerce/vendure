@@ -31,7 +31,10 @@ import { sortById } from './utils/test-order-utils';
 type ValueOf<T> = T[keyof T];
 type NonEmptyArray<T> = [T, ...T[]];
 type MustInclude<T, U extends T[]> = [T] extends [ValueOf<U>] ? U : never;
-const enumerate = <T>() => <U extends NonEmptyArray<T>>(...elements: MustInclude<T, U>) => elements;
+const enumerate =
+    <T>() =>
+    <U extends NonEmptyArray<T>>(...elements: MustInclude<T, U>) =>
+        elements;
 
 const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'Address',
@@ -73,7 +76,7 @@ customFieldConfig.Product?.push(
     { name: 'cfShippingMethod', type: 'relation', entity: ShippingMethod, list: false },
 );
 
-const customConfig = mergeConfig(testConfig, {
+const customConfig = mergeConfig(testConfig(), {
     dbConnectionOptions: {
         timezone: 'Z',
     },

@@ -15,7 +15,7 @@ import {
 
 describe('Translation', () => {
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TranslationTestPlugin],
         }),
     );

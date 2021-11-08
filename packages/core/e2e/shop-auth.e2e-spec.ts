@@ -96,7 +96,7 @@ const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createE
 
 describe('Shop auth & accounts', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TestEmailPlugin as any],
         }),
     );
@@ -774,7 +774,7 @@ describe('Shop auth & accounts', () => {
 
 describe('Expiring tokens', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TestEmailPlugin as any],
             authOptions: {
                 verificationTokenDuration: '1ms',
@@ -876,7 +876,7 @@ describe('Expiring tokens', () => {
 
 describe('Registration without email verification', () => {
     const { server, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TestEmailPlugin as any],
             authOptions: {
                 requireVerification: false,
@@ -956,7 +956,7 @@ describe('Registration without email verification', () => {
 
 describe('Updating email address without email verification', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TestEmailPlugin as any],
             authOptions: {
                 requireVerification: false,

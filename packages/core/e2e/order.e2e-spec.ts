@@ -111,7 +111,7 @@ import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/
 
 describe('Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [
                     twoStagePaymentMethod,

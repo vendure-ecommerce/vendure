@@ -56,7 +56,7 @@ import { sortById } from './utils/test-order-utils';
 
 describe('Collection resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         plugins: [DefaultJobQueuePlugin],
     });
 
@@ -678,23 +678,8 @@ describe('Collection resolver', () => {
                 },
             );
             expect(collection!.productVariants.items.map(i => i.price)).toEqual([
-                3799,
-                5374,
-                6900,
-                7489,
-                7896,
-                9299,
-                13435,
-                14374,
-                16994,
-                93120,
-                94920,
-                108720,
-                109995,
-                129900,
-                139900,
-                219900,
-                229900,
+                3799, 5374, 6900, 7489, 7896, 9299, 13435, 14374, 16994, 93120, 94920, 108720, 109995, 129900,
+                139900, 219900, 229900,
             ]);
         });
     });

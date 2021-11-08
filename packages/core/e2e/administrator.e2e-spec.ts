@@ -22,7 +22,7 @@ import { CREATE_ADMINISTRATOR } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
     let createdAdmin: Administrator.Fragment;
 
     beforeAll(async () => {

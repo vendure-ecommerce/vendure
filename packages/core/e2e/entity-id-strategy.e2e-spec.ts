@@ -20,7 +20,7 @@ import {
 import { sortById } from './utils/test-order-utils';
 
 describe('EntityIdStrategy', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     beforeAll(async () => {
         await server.init({

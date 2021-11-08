@@ -47,7 +47,7 @@ describe('Promotion resolver', () => {
     const promoAction = generateTestAction('promo_action');
 
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         promotionOptions: {
             promotionConditions: [promoCondition, promoCondition2],
             promotionActions: [promoAction],

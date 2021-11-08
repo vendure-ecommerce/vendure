@@ -35,7 +35,7 @@ import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
 
 describe('AuthenticationStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             authOptions: {
                 shopAuthenticationStrategy: [
                     new NativeAuthenticationStrategy(),

@@ -82,9 +82,9 @@ describe('Fulfillment process', () => {
     };
 
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             shippingOptions: {
-                ...testConfig.shippingOptions,
+                ...testConfig().shippingOptions,
                 customFulfillmentProcess: [customOrderProcess as any, customOrderProcess2 as any],
             },
             paymentOptions: {

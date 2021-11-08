@@ -40,7 +40,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Authorization & permissions', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         plugins: [ProtectedFieldsPlugin],
     });
 

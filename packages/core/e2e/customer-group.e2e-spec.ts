@@ -3,7 +3,7 @@ import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AddCustomersToGroup,
@@ -35,7 +35,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
 describe('CustomerGroup resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     let customers: GetCustomerList.Items[];
 

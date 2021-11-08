@@ -43,7 +43,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Shop catalog', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     beforeAll(async () => {
         await server.init({

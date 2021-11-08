@@ -18,7 +18,7 @@ import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
 
 describe('UuidIdStrategy', () => {
     const { server, adminClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         entityOptions: { entityIdStrategy: new UuidIdStrategy() },
     });
 

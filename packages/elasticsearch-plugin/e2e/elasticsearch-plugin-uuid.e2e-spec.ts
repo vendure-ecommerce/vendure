@@ -25,10 +25,7 @@ if (process.env.CI) {
 // https://github.com/vendure-ecommerce/vendure/issues/494
 describe('Elasticsearch plugin with UuidIdStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
-            apiOptions: {
-                port: 4050,
-            },
+        mergeConfig(testConfig(), {
             entityOptions: { entityIdStrategy: new UuidIdStrategy() },
             logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [

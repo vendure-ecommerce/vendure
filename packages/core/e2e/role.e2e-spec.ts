@@ -31,7 +31,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
 describe('Role resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
     let createdRole: Role.Fragment;
     let defaultRoles: Role.Fragment[];
 

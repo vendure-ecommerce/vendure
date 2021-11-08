@@ -20,7 +20,7 @@ import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
 // tslint:disable:no-non-null-assertion
 
 describe('Country resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
     let countries: GetCountryList.Items[];
     let GB: GetCountryList.Items;
     let AT: GetCountryList.Items;

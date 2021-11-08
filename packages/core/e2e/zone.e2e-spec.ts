@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ZONE_FRAGMENT } from './graphql/fragments';
 import {
@@ -23,7 +23,7 @@ import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
 // tslint:disable:no-non-null-assertion
 
 describe('Zone resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
     let countries: GetCountryList.Items[];
     let zones: Array<{ id: string; name: string }>;
     let oceania: { id: string; name: string };

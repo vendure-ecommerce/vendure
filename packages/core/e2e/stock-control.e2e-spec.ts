@@ -61,7 +61,7 @@ import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order
 
 describe('Stock control', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod, twoStagePaymentMethod],
             },
