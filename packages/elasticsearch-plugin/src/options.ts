@@ -166,6 +166,10 @@ export interface ElasticsearchOptions {
      * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean`, `ID` or list
      * versions thereof (`[String!]` etc) and can be appended with a `!` to indicate non-nullable fields.
      *
+     * The `public` (default = `true`) property is used to reveal or hide the property in the GraphQL API schema.
+     * If this property is set to `false` it's not accessible in the `customMappings` field but it's still getting
+     * parsed to the elasticsearch index.
+     *
      * This config option defines custom mappings which are accessible when the "groupByProduct"
      * input options is set to `true`.
      *
@@ -178,7 +182,13 @@ export interface ElasticsearchOptions {
      *    },
      *    reviewRating: {
      *        graphQlType: 'Float',
+     *        public: true,
      *        valueFn: product => (product.customFields as any).reviewRating,
+     *    },
+     *    priority: {
+     *        graphQlType: 'Int!',
+     *        public: false,
+     *        valueFn: product => (product.customFields as any).priority,
      *    },
      * }
      * ```
