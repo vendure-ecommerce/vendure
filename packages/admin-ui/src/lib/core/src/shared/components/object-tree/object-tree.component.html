@@ -10,11 +10,11 @@
 >
     <li *ngFor="let entry of entries">
         <span class="key" *ngIf="entry.key">{{ entry.key }}:</span>
-        <ng-container *ngIf="isObject(entry.value)">
+        <ng-container *ngIf="isObject(entry.value); else primitive">
             <vdr-object-tree [value]="entry.value" [isArrayItem]="valueIsArray"></vdr-object-tree>
         </ng-container>
-        <ng-container *ngIf="!isObject(entry.value)">
+        <ng-template #primitive>
             {{ entry.value }}
-        </ng-container>
+        </ng-template>
     </li>
 </ul>
