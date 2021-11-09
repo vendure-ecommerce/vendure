@@ -45,7 +45,7 @@ import { GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Channels', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
     let secondChannelAdminRole: CreateRole.CreateRole;
     let customerUser: GetCustomerList.Items;

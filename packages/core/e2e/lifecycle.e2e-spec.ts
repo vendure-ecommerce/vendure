@@ -52,7 +52,7 @@ const testShippingEligChecker = new ShippingEligibilityChecker({
 
 describe('lifecycle hooks for configurable objects', () => {
     const { server, adminClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         entityOptions: { entityIdStrategy: new TestIdStrategy() },
         shippingOptions: {
             shippingEligibilityCheckers: [defaultShippingEligibilityChecker, testShippingEligChecker],

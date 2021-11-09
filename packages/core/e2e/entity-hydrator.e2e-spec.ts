@@ -17,7 +17,7 @@ const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResu
 
 describe('Entity hydration', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [HydrationTestPlugin],
         }),
     );

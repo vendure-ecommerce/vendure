@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { TAX_RATE_FRAGMENT } from './graphql/fragments';
 import {
@@ -19,7 +19,7 @@ import {
 import { GET_TAX_RATES_LIST, UPDATE_TAX_RATE } from './graphql/shared-definitions';
 
 describe('TaxRate resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     beforeAll(async () => {
         await server.init({

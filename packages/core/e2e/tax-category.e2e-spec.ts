@@ -16,7 +16,7 @@ import {
 import { sortById } from './utils/test-order-utils';
 
 describe('TaxCategory resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     beforeAll(async () => {
         await server.init({

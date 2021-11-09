@@ -83,12 +83,11 @@ describe('Order process', () => {
         },
     };
 
-    const orderErrorGuard: ErrorResultGuard<
-        TestOrderFragmentFragment | OrderFragment
-    > = createErrorResultGuard(input => !!input.total);
+    const orderErrorGuard: ErrorResultGuard<TestOrderFragmentFragment | OrderFragment> =
+        createErrorResultGuard(input => !!input.total);
 
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             orderOptions: { process: [customOrderProcess as any, customOrderProcess2 as any] },
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],

@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../common/src/shared-constants';
 
 import { AttemptLogin, Me } from './graphql/generated-e2e-admin-types';
@@ -41,7 +41,7 @@ class TestingSessionCacheStrategy implements SessionCacheStrategy {
 
 describe('Session caching', () => {
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             authOptions: {
                 sessionCacheStrategy: new TestingSessionCacheStrategy(),
                 sessionCacheTTL: 2,
@@ -118,7 +118,7 @@ describe('Session caching', () => {
 
 describe('Session expiry', () => {
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             authOptions: {
                 sessionDuration: '3s',
                 sessionCacheTTL: 1,

@@ -34,7 +34,7 @@ import {
 
 describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             assetOptions: {
                 permittedFileTypes: ['image/*', '.pdf', '.zip'],
             },

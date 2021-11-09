@@ -1,3 +1,15 @@
+## <small>1.3.3 (2021-11-09)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly display primitive value job queue results ([d8c2195](https://github.com/vendure-ecommerce/vendure/commit/d8c2195)), closes [#881](https://github.com/vendure-ecommerce/vendure/issues/881)
+* **admin-ui** Fix display of channels in Role detail ([dee331a](https://github.com/vendure-ecommerce/vendure/commit/dee331a)), closes [#1211](https://github.com/vendure-ecommerce/vendure/issues/1211)
+* **core** Correctly cancel sales when cancelling Fulfillment ([00ac70d](https://github.com/vendure-ecommerce/vendure/commit/00ac70d)), closes [#1198](https://github.com/vendure-ecommerce/vendure/issues/1198)
+* **core** Export missing tax config types ([08951b3](https://github.com/vendure-ecommerce/vendure/commit/08951b3))
+* **core** Fix error thrown when shipping address company is null ([303a216](https://github.com/vendure-ecommerce/vendure/commit/303a216)), closes [#744](https://github.com/vendure-ecommerce/vendure/issues/744)
+* **core** Make populator.populateCollections more robust to bad input ([15762e0](https://github.com/vendure-ecommerce/vendure/commit/15762e0))
+
 ## <small>1.3.2 (2021-10-28)</small>
 
 

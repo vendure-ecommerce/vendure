@@ -26,6 +26,7 @@ docs/content/graphql-api/*
 !docs/content/graphql-api/admin/_index.md
 .vscode/
 yarn-error.log
+e2e-common/ports.json
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/

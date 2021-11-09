@@ -20,7 +20,7 @@ import { sortById } from './utils/test-order-utils';
 
 describe('Order taxes', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         paymentOptions: {
             paymentMethodHandlers: [testSuccessfulPaymentMethod],
         },

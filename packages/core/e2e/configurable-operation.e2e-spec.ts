@@ -43,7 +43,7 @@ const testShippingEligibilityChecker = new ShippingEligibilityChecker({
 
 describe('Configurable operations', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             shippingOptions: {
                 shippingEligibilityCheckers: [
                     defaultShippingEligibilityChecker,

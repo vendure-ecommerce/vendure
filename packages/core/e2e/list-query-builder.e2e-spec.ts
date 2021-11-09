@@ -16,7 +16,7 @@ fixPostgresTimezone();
 
 describe('ListQueryBuilder', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             apiOptions: {
                 shopListQueryLimit: 10,
                 adminListQueryLimit: 30,

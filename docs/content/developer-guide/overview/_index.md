@@ -28,7 +28,7 @@ There are 2 separate GraphQL APIs: shop and admin.
 
 ## Database
 
-Vendure supports multiple databases. Currently it is tested with MySQL/MariaDB, PostgreSQL, SQLite and SQL.js. Since Vendure uses [TypeORM](https://typeorm.io/#/) to manage data access, it can theoretically also work with CockroachDB, Microsoft SQL Server and MongoDB, though these are as yet untested.
+Vendure officially supports multiple databases: MySQL/MariaDB, PostgreSQL, SQLite and SQL.js, plus API-compatible cloud versions of these such as Amazon Aurora. Since Vendure uses [TypeORM](https://typeorm.io/#/) to manage data access, it can theoretically also work with other relational databases supported by TypeORM such as CockroachDB, Microsoft SQL Server, though these are as yet untested.
 
 ## Custom Business Logic (Plugins)
 

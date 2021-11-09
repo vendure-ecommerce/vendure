@@ -40,7 +40,7 @@ class MyApolloServerPlugin implements ApolloServerPlugin {
 
 describe('custom apolloServerPlugins', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             apiOptions: {
                 apolloServerPlugins: [new MyApolloServerPlugin()],
             },

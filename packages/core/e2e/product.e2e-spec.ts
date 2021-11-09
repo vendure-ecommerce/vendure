@@ -52,7 +52,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 // tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
     const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
         input => !!input.optionGroups,

@@ -8,7 +8,7 @@ import { createTestEnvironment } from '../../testing/lib/create-test-environment
 import { CreateTag, GetTag, GetTagList, UpdateTag } from './graphql/generated-e2e-admin-types';
 
 describe('Tag resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
 
     beforeAll(async () => {
         await server.init({

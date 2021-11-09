@@ -22,7 +22,7 @@ import {
 
 describe('Parallel transactions', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         plugins: [SlowMutationPlugin],
     });
 

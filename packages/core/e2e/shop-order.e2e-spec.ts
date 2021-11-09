@@ -64,7 +64,6 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
-    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
     ADD_PAYMENT,
     ADJUST_ITEM_QUANTITY,
     GET_ACTIVE_ORDER,
@@ -89,7 +88,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [
                     testSuccessfulPaymentMethod,
@@ -422,7 +421,7 @@ describe('Shop orders', () => {
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
                 const ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS = gql`
-                    mutation($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
+                    mutation ($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
                         adjustOrderLine(
                             orderLineId: $orderLineId
                             quantity: $quantity

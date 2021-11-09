@@ -97,7 +97,7 @@ const testCalculator = new ShippingCalculator({
 
 describe('Order modification', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [
                     testSuccessfulPaymentMethod,

@@ -11,7 +11,8 @@ import { CancelJob, GetRunningJobs, JobState } from './graphql/generated-e2e-adm
 import { GET_RUNNING_JOBS } from './graphql/shared-definitions';
 
 describe('JobQueue', () => {
-    if (testConfig.dbConnectionOptions.type === 'sqljs') {
+    const activeConfig = testConfig();
+    if (activeConfig.dbConnectionOptions.type === 'sqljs') {
         it.only('skip JobQueue tests for sqljs', () => {
             // The tests in this suite will fail when running on sqljs because
             // the DB state is not persisted after shutdown. In this case it is
@@ -22,7 +23,7 @@ describe('JobQueue', () => {
     }
 
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(activeConfig, {
             plugins: [DefaultJobQueuePlugin, PluginWithJobQueue],
         }),
     );
@@ -64,7 +65,7 @@ describe('JobQueue', () => {
     let testJobId: string;
 
     it('creates and starts running a job', async () => {
-        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/run-job`;
+        const restControllerUrl = `http://localhost:${activeConfig.apiOptions.port}/run-job`;
         await adminClient.fetch(restControllerUrl);
 
         await sleep(300);
@@ -108,7 +109,7 @@ describe('JobQueue', () => {
 
     it('cancels a running job', async () => {
         PluginWithJobQueue.jobHasDoneWork = false;
-        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/run-job`;
+        const restControllerUrl = `http://localhost:${activeConfig.apiOptions.port}/run-job`;
         await adminClient.fetch(restControllerUrl);
 
         await sleep(300);
@@ -133,7 +134,7 @@ describe('JobQueue', () => {
     });
 
     it('subscribe to result of job', async () => {
-        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/run-job/subscribe`;
+        const restControllerUrl = `http://localhost:${activeConfig.apiOptions.port}/run-job/subscribe`;
         const result = await adminClient.fetch(restControllerUrl);
 
         expect(await result.text()).toBe('42!');

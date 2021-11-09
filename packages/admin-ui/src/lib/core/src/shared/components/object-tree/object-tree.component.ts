@@ -35,7 +35,7 @@ export class ObjectTreeComponent implements OnInit {
     }
 
     private getEntries(inputValue: { [key: string]: any } | string): Array<{ key: string; value: any }> {
-        if (typeof inputValue === 'string') {
+        if (!this.isObject(inputValue)) {
             return [{ key: '', value: inputValue }];
         }
         return Object.entries(inputValue).map(([key, value]) => ({ key, value }));

@@ -35,7 +35,7 @@ import {
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER, GET_ORDER_SHOP } from './graphql/shop-definitions';
 
 describe('Channelaware orders', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
     const THIRD_CHANNEL_TOKEN = 'third_channel_token';
     let customerUser: GetCustomerList.Items;

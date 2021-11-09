@@ -23,7 +23,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Custom permissions', () => {
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TestPluginWithCustomPermissions],
         }),
     );

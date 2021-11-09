@@ -128,7 +128,7 @@ describe('Payment process', () => {
     const paymentGuard: ErrorResultGuard<PaymentFragment> = createErrorResultGuard(input => !!input.id);
 
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             logger: new DefaultLogger(),
             orderOptions: {
                 process: [customOrderProcess as any],

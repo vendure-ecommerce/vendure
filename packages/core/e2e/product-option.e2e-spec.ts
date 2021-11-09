@@ -21,7 +21,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 // tslint:disable:no-non-null-assertion
 
 describe('ProductOption resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
     let sizeGroup: ProductOptionGroupFragment;
     let mediumOption: CreateProductOption.CreateProductOption;
 
