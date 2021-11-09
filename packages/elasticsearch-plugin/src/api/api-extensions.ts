@@ -44,8 +44,12 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
 }
 
 function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode | undefined {
-    const productMappings = Object.entries(options.customProductMappings || {});
-    const variantMappings = Object.entries(options.customProductVariantMappings || {});
+    const productMappings = Object.entries(options.customProductMappings || {}).filter(
+        ([, value]) => value.public ?? true,
+    );
+    const variantMappings = Object.entries(options.customProductVariantMappings || {}).filter(
+        ([, value]) => value.public ?? true,
+    );
     const searchInputTypeExtensions = Object.entries(options.extendSearchInputType || {});
     const scriptProductFields = Object.entries(options.searchConfig?.scriptFields || {}).filter(
         ([, scriptField]) => scriptField.context !== 'variant',

@@ -9,6 +9,7 @@ import {
     mergeConfig,
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -136,6 +137,13 @@ describe('Elasticsearch plugin', () => {
                             graphQlType: 'Int!',
                             valueFn: args => {
                                 return 42;
+                            },
+                        },
+                        hello: {
+                            graphQlType: 'String!',
+                            public: false,
+                            valueFn: args => {
+                                return 'World';
                             },
                         },
                     },
@@ -1343,6 +1351,29 @@ describe('Elasticsearch plugin', () => {
                     answer: 42,
                 },
             });
+        });
+
+        it('private mappings', async () => {
+            const query = `{
+            search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                items {
+                  customMappings {
+                    ...on CustomProductMappings {
+                      answer
+                      hello
+                    }
+                  }
+                }
+              }
+            }`;
+            try {
+                await shopClient.query(gql(query));
+            } catch (error) {
+                expect(error).toBeDefined();
+                expect(error.message).toContain('Cannot query field "hello"');
+                return;
+            }
+            fail('should not be able to query field "hello"');
         });
     });
 

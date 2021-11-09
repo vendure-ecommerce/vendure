@@ -249,6 +249,7 @@ type GraphQlPermittedReturnType = PrimitiveTypeVariations<GraphQlPrimitive>;
 
 type CustomMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType, R> = {
     graphQlType: T;
+    public?: boolean;
     valueFn: (...args: Args) => R;
 };
 
