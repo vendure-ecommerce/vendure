@@ -31,7 +31,8 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
     disabled = false;
     private onChange: (value: any) => void;
     private onTouched: () => void;
-    private channels: CurrentUserChannel[];
+    private channels: CurrentUserChannel[] | undefined;
+    private lastIncomingValue: any;
 
     constructor(private dataService: DataService) {}
 
@@ -42,7 +43,14 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
                     this.includeDefaultChannel ? true : c.code !== DEFAULT_CHANNEL_CODE,
                 ),
             ),
-            tap(channels => (this.channels = channels)),
+            tap(channels => {
+                if (!this.channels) {
+                    this.channels = channels;
+                    this.mapIncomingValueToChannels(this.lastIncomingValue);
+                } else {
+                    this.channels = channels;
+                }
+            }),
         );
     }
 
@@ -59,22 +67,8 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
     }
 
     writeValue(obj: unknown): void {
-        if (Array.isArray(obj)) {
-            if (typeof obj[0] === 'string') {
-                this.value = obj.map(id => this.channels?.find(c => c.id === id)).filter(notNullOrUndefined);
-            } else {
-                this.value = obj;
-            }
-        } else {
-            if (typeof obj === 'string') {
-                const channel = this.channels?.find(c => c.id === obj);
-                if (channel) {
-                    this.value = [channel];
-                }
-            } else if (obj && (obj as any).id) {
-                this.value = [obj as any];
-            }
-        }
+        this.lastIncomingValue = obj;
+        this.mapIncomingValueToChannels(obj);
     }
 
     focussed() {
@@ -99,5 +93,26 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
         const c1id = typeof c1 === 'string' ? c1 : c1.id;
         const c2id = typeof c2 === 'string' ? c2 : c2.id;
         return c1id === c2id;
+    }
+
+    private mapIncomingValueToChannels(value: unknown) {
+        if (Array.isArray(value)) {
+            if (typeof value[0] === 'string') {
+                this.value = value
+                    .map(id => this.channels?.find(c => c.id === id))
+                    .filter(notNullOrUndefined);
+            } else {
+                this.value = value;
+            }
+        } else {
+            if (typeof value === 'string') {
+                const channel = this.channels?.find(c => c.id === value);
+                if (channel) {
+                    this.value = [channel];
+                }
+            } else if (value && (value as any).id) {
+                this.value = [value as any];
+            }
+        }
     }
 }
