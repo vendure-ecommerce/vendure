@@ -8,12 +8,12 @@ import {
     SqljsInitializer,
     TestServer,
 } from '@vendure/testing';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
@@ -49,11 +49,13 @@ describe('Mollie payments', () => {
     let started = false;
     let customers: GetCustomerListQuery['customers']['items'];
     let order: TestOrderFragmentFragment;
+    let serverPort: number;
     beforeAll(async () => {
-        const devConfig = mergeConfig(testConfig, {
+        const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
         });
         const env = createTestEnvironment(devConfig);
+        serverPort = devConfig.apiOptions.port;
         shopClient = env.shopClient;
         adminClient = env.adminClient;
         server = env.server;
@@ -83,8 +85,10 @@ describe('Mollie payments', () => {
     });
 
     it('Should add a Mollie paymentMethod', async () => {
-        const { createPaymentMethod } = await adminClient.query<CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables>(CREATE_PAYMENT_METHOD, {
+        const { createPaymentMethod } = await adminClient.query<
+            CreatePaymentMethod.Mutation,
+            CreatePaymentMethod.Variables
+        >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
                 name: 'Mollie payment test',
@@ -116,8 +120,10 @@ describe('Mollie payments', () => {
             quantity: 2,
         });
         await proceedToArrangingPayment(shopClient);
-        const { addPaymentToOrder } = await shopClient.query<AddPaymentToOrder.Mutation,
-            AddPaymentToOrder.Variables>(ADD_PAYMENT, {
+        const { addPaymentToOrder } = await shopClient.query<
+            AddPaymentToOrder.Mutation,
+            AddPaymentToOrder.Variables
+        >(ADD_PAYMENT, {
             input: {
                 method: mockData.methodCode,
                 metadata: {},
@@ -146,7 +152,7 @@ describe('Mollie payments', () => {
                 status: PaymentStatus.paid,
                 metadata: { orderCode: order.code },
             });
-        await fetch(`http://localhost:3050/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`, {
+        await fetch(`http://localhost:${serverPort}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`, {
             method: 'post',
             body: JSON.stringify({ id: mockData.mollieResponse.id }),
             headers: { 'Content-Type': 'application/json' },
