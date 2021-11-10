@@ -42,6 +42,8 @@ if (process.env.E2E_DEBUG) {
     // tslint:disable-next-line:no-console
     console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
     jest.setTimeout(1800 * 1000);
+} else {
+    jest.setTimeout(15 * 1000);
 }
 /**
  * Increase default timeout in CI because occasionally valid tests fail due to
@@ -49,8 +51,6 @@ if (process.env.E2E_DEBUG) {
  */
 if (process.env.CI) {
     jest.setTimeout(30 * 1000);
-} else {
-    jest.setTimeout(15 * 1000);
 }
 
 export const testConfig = () => {

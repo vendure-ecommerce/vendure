@@ -6405,6 +6405,21 @@ export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: neve
 
 export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
+export type GetTaxRateListQueryVariables = Exact<{
+    options?: Maybe<TaxRateListOptions>;
+}>;
+
+export type GetTaxRateListQuery = {
+    taxRates: Pick<TaxRateList, 'totalItems'> & {
+        items: Array<
+            Pick<TaxRate, 'id' | 'name' | 'enabled' | 'value'> & {
+                category: Pick<TaxCategory, 'id' | 'name'>;
+                zone: Pick<Zone, 'id' | 'name'>;
+            }
+        >;
+    };
+};
+
 export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetOrderListFulfillmentsQuery = {
@@ -8736,6 +8751,21 @@ export namespace DeletePromotionAdHoc1 {
     export type Variables = DeletePromotionAdHoc1MutationVariables;
     export type Mutation = DeletePromotionAdHoc1Mutation;
     export type DeletePromotion = NonNullable<DeletePromotionAdHoc1Mutation['deletePromotion']>;
+}
+
+export namespace GetTaxRateList {
+    export type Variables = GetTaxRateListQueryVariables;
+    export type Query = GetTaxRateListQuery;
+    export type TaxRates = NonNullable<GetTaxRateListQuery['taxRates']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetTaxRateListQuery['taxRates']>['items']>[number]
+    >;
+    export type Category = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetTaxRateListQuery['taxRates']>['items']>[number]>['category']
+    >;
+    export type Zone = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetTaxRateListQuery['taxRates']>['items']>[number]>['zone']
+    >;
 }
 
 export namespace GetOrderListFulfillments {
