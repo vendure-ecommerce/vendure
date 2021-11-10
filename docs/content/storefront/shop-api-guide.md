@@ -97,7 +97,7 @@ Use the `product` query for the Product detail view.
 * {{< shop-api-operation operation="removeAllOrderLines" type="mutation" >}} removes all OrderLine from the Order.
 * {{< shop-api-operation operation="setCustomerForOrder" type="mutation" >}} specifies the Customer details (required if the customer is not logged in as an authenticated user).
 * {{< shop-api-operation operation="setOrderShippingAddress" type="mutation" >}} sets the shipping address for the Order.
-* {{< shop-api-operation operation="eligibleShippingMethods" type="mutation" >}} returns all available shipping methods based on the customer's shipping address and the contents of the Order.
+* {{< shop-api-operation operation="eligibleShippingMethods" type="query" >}} returns all available shipping methods based on the customer's shipping address and the contents of the Order.
 * {{< shop-api-operation operation="setOrderShippingMethod" type="mutation" >}} sets the shipping method to use.
 * {{< shop-api-operation operation="nextOrderStates" type="query" >}} returns the possible next states that the active Order can transition to
 * {{< shop-api-operation operation="transitionOrderToState" type="mutation" >}} transitions the active Order to the given state according to the [Order state machine]({{< relref "order-workflow" >}}).
