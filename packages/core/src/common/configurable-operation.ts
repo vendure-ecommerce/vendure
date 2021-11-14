@@ -402,7 +402,7 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
     protected argsArrayToHash(args: ConfigArg[]): ConfigArgValues<T> {
         const output: ConfigArgValues<T> = {} as any;
         for (const arg of args) {
-            if (arg && arg.value != null) {
+            if (arg && arg.value != null && this.args[arg.name] != null) {
                 output[arg.name as keyof ConfigArgValues<T>] = coerceValueToType<T>(
                     arg.value,
                     this.args[arg.name].type,
