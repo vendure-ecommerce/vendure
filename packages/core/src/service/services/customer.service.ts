@@ -668,15 +668,15 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
-        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created'));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created', input));
         return createdAddress;
     }
 
     async updateAddress(ctx: RequestContext, input: UpdateAddressInput): Promise<Address> {
-        const address = await this.connection.getEntityOrThrow(ctx, Address, input.id, {
+        const address = await this.connection.getEntityOrThrow<Address>(ctx, Address, input.id, {
             relations: ['customer', 'country'],
         });
-        const customer = await this.connection.findOneInChannel(
+        const customer = await this.connection.findOneInChannel<Customer>(
             ctx,
             Customer,
             address.customer.id,
@@ -704,15 +704,15 @@ export class CustomerService {
                 input,
             },
         });
-        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated'));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated', input));
         return updatedAddress;
     }
 
     async deleteAddress(ctx: RequestContext, id: ID): Promise<boolean> {
-        const address = await this.connection.getEntityOrThrow(ctx, Address, id, {
+        const address = await this.connection.getEntityOrThrow<Address>(ctx, Address, id, {
             relations: ['customer', 'country'],
         });
-        const customer = await this.connection.findOneInChannel(
+        const customer = await this.connection.findOneInChannel<Customer>(
             ctx,
             Customer,
             address.customer.id,
@@ -732,7 +732,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
-        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted'));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted', id));
         return true;
     }
 
