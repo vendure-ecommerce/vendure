@@ -46,6 +46,7 @@ import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { AccountVerifiedEvent } from '../../event-bus/events/account-verified-event';
 import { CustomerAddressEvent } from '../../event-bus/events/customer-address-event';
 import { CustomerEvent } from '../../event-bus/events/customer-event';
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
@@ -459,7 +460,9 @@ export class CustomerService {
                 strategy: NATIVE_AUTH_STRATEGY_NAME,
             },
         });
-        return assertFound(this.findOneByUserId(ctx, result.id));
+        const user = assertFound(this.findOneByUserId(ctx, result.id));
+        this.eventBus.publish(new AccountVerifiedEvent(ctx, customer));
+        return user;
     }
 
     /**
