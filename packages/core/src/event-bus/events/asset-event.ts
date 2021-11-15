@@ -1,14 +1,15 @@
 import { CreateAssetInput, DeleteAssetInput, UpdateAssetInput } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { Asset } from '../../entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
-type AssetInputTypes = CreateAssetInput | UpdateAssetInput | DeleteAssetInput;
+type AssetInputTypes = CreateAssetInput | UpdateAssetInput | DeleteAssetInput | ID;
 
 /**
  * @description
- * This event is fired whenever aa {@link Asset} is added, updated
+ * This event is fired whenever a {@link Asset} is added, updated
  * or deleted. The `input` property is only defined for `'created'` & `'updated'` event types.
  *
  * @docsCategory events
@@ -17,10 +18,10 @@ type AssetInputTypes = CreateAssetInput | UpdateAssetInput | DeleteAssetInput;
  */
 export class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
     constructor(
-        public ctx: RequestContext,
-        public entity: Asset,
-        public type: 'created' | 'updated' | 'deleted',
-        public input?: AssetInputTypes,
+        ctx: RequestContext,
+        entity: Asset,
+        type: 'created' | 'updated' | 'deleted',
+        input: AssetInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

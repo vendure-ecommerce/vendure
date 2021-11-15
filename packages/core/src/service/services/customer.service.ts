@@ -52,6 +52,7 @@ import { CustomerEvent } from '../../event-bus/events/customer-event';
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
+import { PasswordResetVerifiedEvent } from '../../event-bus/events/password-reset-verified-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { addressToLine } from '../helpers/utils/address-to-line';
@@ -262,7 +263,7 @@ export class CustomerService {
                 },
             });
         }
-        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created'));
+        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created', input));
         return createdCustomer;
     }
 
@@ -327,7 +328,7 @@ export class CustomerService {
                 input,
             },
         });
-        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated'));
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated', input));
         return assertFound(this.findOne(ctx, customer.id));
     }
 
@@ -511,6 +512,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
             data: {},
         });
+        this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
         return result;
     }
 
@@ -639,7 +641,7 @@ export class CustomerService {
         } else {
             customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
             await this.channelService.assignToCurrentChannel(customer, ctx);
-            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
+            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created', input));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);
     }
@@ -748,7 +750,7 @@ export class CustomerService {
             .update({ id: customerId }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, customer.user!.id);
-        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted'));
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted', customerId));
         return {
             result: DeletionResult.DELETED,
         };

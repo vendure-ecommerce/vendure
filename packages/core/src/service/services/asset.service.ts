@@ -419,7 +419,7 @@ export class AssetService {
             } catch (e) {
                 Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
             }
-            this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted'));
+            this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
         }
         return {
             result: DeletionResult.DELETED,

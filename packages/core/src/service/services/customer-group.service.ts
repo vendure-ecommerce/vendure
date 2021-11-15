@@ -19,7 +19,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
+import { CustomerGroupEntityEvent } from '../../event-bus/events/customer-group-entity-event';
+import { CustomerGroupChangeEvent, CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -89,13 +90,16 @@ export class CustomerGroupService {
             }
             await this.connection.getRepository(ctx, Customer).save(customers);
         }
-        return assertFound(this.findOne(ctx, newCustomerGroup.id));
+        const savedCustomerGroup = await assertFound(this.findOne(ctx, newCustomerGroup.id));
+        this.eventBus.publish(new CustomerGroupEntityEvent(ctx, savedCustomerGroup, 'created', input));
+        return savedCustomerGroup;
     }
 
     async update(ctx: RequestContext, input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = await this.connection.getEntityOrThrow(ctx, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
         await this.connection.getRepository(ctx, CustomerGroup).save(updatedCustomerGroup, { reload: false });
+        this.eventBus.publish(new CustomerGroupEntityEvent(ctx, customerGroup, 'updated', input));
         return assertFound(this.findOne(ctx, customerGroup.id));
     }
 
@@ -103,6 +107,7 @@ export class CustomerGroupService {
         const group = await this.connection.getEntityOrThrow(ctx, CustomerGroup, id);
         try {
             await this.connection.getRepository(ctx, CustomerGroup).remove(group);
+            this.eventBus.publish(new CustomerGroupEntityEvent(ctx, group, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };
@@ -136,6 +141,8 @@ export class CustomerGroupService {
 
         await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
         this.eventBus.publish(new CustomerGroupEvent(ctx, customers, group, 'assigned'));
+        this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'assigned'));
+
         return assertFound(this.findOne(ctx, group.id));
     }
 
@@ -161,6 +168,7 @@ export class CustomerGroupService {
         }
         await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
         this.eventBus.publish(new CustomerGroupEvent(ctx, customers, group, 'removed'));
+        this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'removed'));
         return assertFound(this.findOne(ctx, group.id));
     }
 

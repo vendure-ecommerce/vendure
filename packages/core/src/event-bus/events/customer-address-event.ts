@@ -1,13 +1,14 @@
 import { CreateAddressInput, UpdateAddressInput } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
-import { Address } from '../../entity';
+import { Address } from '../../entity/address/address.entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
 /**
  * Possible input types for Address mutations
  */
-type CustomerAddressInputTypes = CreateAddressInput | UpdateAddressInput | string | number;
+type CustomerAddressInputTypes = CreateAddressInput | UpdateAddressInput | ID;
 
 /**
  * @description
@@ -23,9 +24,9 @@ export class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAd
         public ctx: RequestContext,
         public entity: Address,
         public type: 'created' | 'updated' | 'deleted',
-        public input?: CustomerAddressInputTypes,
+        public input: CustomerAddressInputTypes,
     ) {
-        super(entity, type, ctx);
+        super(entity, type, ctx, input);
     }
 
     /**

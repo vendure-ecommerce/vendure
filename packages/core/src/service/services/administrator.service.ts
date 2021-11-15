@@ -14,6 +14,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
+import { EventBus } from '../../event-bus';
+import { AdministratorEvent } from '../../event-bus/events/administrator-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
@@ -38,6 +40,7 @@ export class AdministratorService {
         private userService: UserService,
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
+        private eventBus: EventBus,
     ) {}
 
     /** @internal */
@@ -111,6 +114,7 @@ export class AdministratorService {
             input,
             createdAdministrator,
         );
+        this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
         return createdAdministrator;
     }
 
@@ -151,6 +155,7 @@ export class AdministratorService {
             input,
             updatedAdministrator,
         );
+        this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
         return updatedAdministrator;
     }
 
@@ -183,6 +188,7 @@ export class AdministratorService {
         await this.connection.getRepository(ctx, Administrator).update({ id }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, administrator.user!.id);
+        this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };
