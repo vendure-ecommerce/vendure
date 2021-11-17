@@ -16,6 +16,7 @@ import { NativeAuthenticationMethod } from '../../entity/authentication-method/n
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { AdministratorEvent } from '../../event-bus/events/administrator-event';
+import { RoleChangeEvent } from '../../event-bus/events/role-change-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
@@ -143,11 +144,21 @@ export class AdministratorService {
             }
         }
         if (input.roleIds) {
+            const removeIds = administrator.user.roles
+                .map(role => role.id)
+                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
+
+            const addIds = (input.roleIds as ID[]).filter(
+                roleId => !administrator.user.roles.some(role => role.id === roleId),
+            );
+
             administrator.user.roles = [];
             await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
             for (const roleId of input.roleIds) {
                 updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
             }
+            this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
+            this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
         }
         await this.customFieldRelationService.updateRelations(
             ctx,
