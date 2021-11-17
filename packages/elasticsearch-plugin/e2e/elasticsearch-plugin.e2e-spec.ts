@@ -143,6 +143,12 @@ describe('Elasticsearch plugin', () => {
                                 return 'World';
                             },
                         },
+                        priority: {
+                            graphQlType: 'Int!',
+                            valueFn: args => {
+                                return ((args.id as number) % 2) + 1; // only 1 or 2
+                            },
+                        },
                     },
                     searchConfig: {
                         scriptFields: {
@@ -155,10 +161,25 @@ describe('Elasticsearch plugin', () => {
                                 },
                             },
                         },
+                        mapSort: (sort, input) => {
+                            const priority = (input.sort as any)?.priority;
+                            if (priority) {
+                                return [
+                                    ...sort,
+                                    {
+                                        ['product-priority']: {
+                                            order: priority === SortOrder.ASC ? 'asc' : 'desc',
+                                        },
+                                    },
+                                ];
+                            }
+                            return sort;
+                        },
                     },
                     extendSearchInputType: {
                         factor: 'Int',
                     },
+                    extendSearchSortType: ['priority'],
                 }),
                 DefaultJobQueuePlugin,
             ],
@@ -1413,6 +1434,50 @@ describe('Elasticsearch plugin', () => {
                 productVariantName: 'Bonsai Tree',
                 customScriptFields: {
                     answerMultiplied: 420,
+                },
+            });
+        });
+    });
+
+    describe('sort', () => {
+        it('sort ASC', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { priority: ASC } }) {
+                    items {
+                        customMappings {
+                            ...on CustomProductMappings {
+                              priority
+                            }
+                        }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                customMappings: {
+                    priority: 1,
+                },
+            });
+        });
+
+        it('sort DESC', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { priority: DESC } }) {
+                    items {
+                        customMappings {
+                            ...on CustomProductMappings {
+                              priority
+                            }
+                        }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                customMappings: {
+                    priority: 2,
                 },
             });
         });

@@ -6,6 +6,13 @@ import { ElasticsearchOptions } from '../options';
 export function generateSchemaExtensions(options: ElasticsearchOptions): DocumentNode {
     const customMappingTypes = generateCustomMappingTypes(options);
     const inputExtensions = Object.entries(options.extendSearchInputType || {});
+    const sortExtensions = options.extendSearchSortType || [];
+
+    const sortExtensionGql = `
+    extend input SearchResultSortParameter {
+        ${sortExtensions.map(key => `${key}: SortOrder`).join('\n            ')}
+    }`;
+
     return gql`
         extend type SearchResponse {
             prices: SearchResponsePriceData!
@@ -33,6 +40,8 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             inStock: Boolean
             ${inputExtensions.map(([name, type]) => `${name}: ${type}`).join('\n            ')}
         }
+
+        ${sortExtensions.length > 0 ? sortExtensionGql : ''}
 
         input PriceRangeInput {
             min: Int!
