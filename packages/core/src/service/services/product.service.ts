@@ -249,7 +249,7 @@ export class ProductService {
      * Assigns a Product to the specified Channel, and optionally uses a `priceFactor` to set the ProductVariantPrices
      * on the new Channel.
      *
-     * Internally, this method will also call {@link ProductVariantService} `assignassignProductVariantsToChannel()` for
+     * Internally, this method will also call {@link ProductVariantService} `assignProductVariantsToChannel()` for
      * each of the Product's variants, and will assign the Product's Assets to the Channel too.
      */
     async assignProductsToChannel(
@@ -269,7 +269,7 @@ export class ProductService {
             priceFactor: input.priceFactor,
         });
         const assetIds: ID[] = unique(
-            ([] as ID[]).concat(...productsWithVariants.map(p => p.assets.map(a => a.id))),
+            ([] as ID[]).concat(...productsWithVariants.map(p => p.assets.map(a => a.assetId))),
         );
         await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
         const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
