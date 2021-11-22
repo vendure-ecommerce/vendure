@@ -5,10 +5,8 @@ import { VendureEvent } from './vendure-event';
 /**
  * @description
  * The base class for all entity events used by the EventBus system.
- * <ul>
- *     <li>For event type `'updated'` the entity should be the one before applying the patch.</li>
- *     <li>For event type `'deleted'` the input will most likely be an `id: ID`</li>
- * </ul>
+ * * For event type `'updated'` the entity is the one before applying the patch (if not documented otherwise).
+ * * For event type `'deleted'` the input will most likely be an `id: ID`
  *
  * @docsCategory events
  * */

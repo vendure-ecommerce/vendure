@@ -10,13 +10,14 @@ type CustomerGroupInputTypes = CreateCustomerGroupInput | UpdateCustomerGroupInp
 /**
  * @description
  * This event is fired whenever a {@link CustomerGroup} is added, updated or deleted.
- * This Entity shall replace the {@link CustomerGroupEvent} later!
+ * Use this event instead of {@link CustomerGroupEvent} until the next major version!
  *
  * @docsCategory events
  * @docsPage Event Types
  * @since 1.4
  */
 export class CustomerGroupEntityEvent extends VendureEntityEvent<CustomerGroup, CustomerGroupInputTypes> {
+    // TODO: Rename to CustomerGroupEvent in v2
     constructor(
         ctx: RequestContext,
         entity: CustomerGroup,

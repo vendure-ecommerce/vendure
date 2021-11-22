@@ -5,8 +5,8 @@ import { VendureEvent } from '../vendure-event';
 
 /**
  * @description
- * This event is fired whenever an {@link Asset} is assigned or removed
- * From a channel.
+ * This event is fired whenever an coupon code of an active {@link Promotion}
+ * is assigned or removed to an {@link Order}.
  *
  * @docsCategory events
  * @docsPage Event Types

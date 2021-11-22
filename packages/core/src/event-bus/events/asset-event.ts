@@ -9,8 +9,7 @@ type AssetInputTypes = CreateAssetInput | UpdateAssetInput | DeleteAssetInput | 
 
 /**
  * @description
- * This event is fired whenever a {@link Asset} is added, updated
- * or deleted. The `input` property is only defined for `'created'` & `'updated'` event types.
+ * This event is fired whenever a {@link Asset} is added, updated or deleted.
  *
  * @docsCategory events
  * @docsPage Event Types

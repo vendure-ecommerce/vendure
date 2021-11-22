@@ -678,7 +678,7 @@ export class CustomerService {
     }
 
     async updateAddress(ctx: RequestContext, input: UpdateAddressInput): Promise<Address> {
-        const address = await this.connection.getEntityOrThrow<Address>(ctx, Address, input.id, {
+        const address = await this.connection.getEntityOrThrow(ctx, Address, input.id, {
             relations: ['customer', 'country'],
         });
         const customer = await this.connection.findOneInChannel<Customer>(
@@ -714,10 +714,10 @@ export class CustomerService {
     }
 
     async deleteAddress(ctx: RequestContext, id: ID): Promise<boolean> {
-        const address = await this.connection.getEntityOrThrow<Address>(ctx, Address, id, {
+        const address = await this.connection.getEntityOrThrow(ctx, Address, id, {
             relations: ['customer', 'country'],
         });
-        const customer = await this.connection.findOneInChannel<Customer>(
+        const customer = await this.connection.findOneInChannel(
             ctx,
             Customer,
             address.customer.id,

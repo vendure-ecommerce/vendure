@@ -14,7 +14,7 @@ type HistoryInput =
 
 /**
  * @description
- * This event is fired whenever one {@link HistoryEntry} is  is added, updated or deleted.
+ * This event is fired whenever one {@link HistoryEntry} is added, updated or deleted.
  *
  * @docsCategory events
  * @docsPage Event Types
