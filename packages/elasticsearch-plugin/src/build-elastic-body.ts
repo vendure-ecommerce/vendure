@@ -115,7 +115,8 @@ export function buildElasticBody(
             sortArray.push({
                 'productName.keyword': { order: sort.name === SortOrder.ASC ? 'asc' : 'desc' },
             });
-        } else if (sort.price) {
+        }
+        if (sort.price) {
             const priceField = 'price';
             sortArray.push({ [priceField]: { order: sort.price === SortOrder.ASC ? 'asc' : 'desc' } });
         }
