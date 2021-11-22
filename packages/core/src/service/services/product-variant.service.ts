@@ -211,7 +211,8 @@ export class ProductVariantService {
             })
             .leftJoin('productvariant.collections', 'collection')
             .leftJoin('productvariant.product', 'product')
-            .andWhere('product.deletedAt IS NULL', { deletedAt: null })
+            .andWhere('product.deletedAt IS NULL')
+            .andWhere('productvariant.deletedAt IS NULL')
             .andWhere('collection.id = :collectionId', { collectionId });
 
         if (options && options.filter && options.filter.enabled && options.filter.enabled.eq === true) {
