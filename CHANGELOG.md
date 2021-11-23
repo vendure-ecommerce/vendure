@@ -1,3 +1,17 @@
+## <small>1.3.4 (2021-11-23)</small>
+
+
+#### Fixes
+
+* **core** Correctly deep-merge hydrated entities ([32d19e3](https://github.com/vendure-ecommerce/vendure/commit/32d19e3)), closes [#1229](https://github.com/vendure-ecommerce/vendure/issues/1229)
+* **core** Correctly set OrderItem prices on tax zone change ([731f8d9](https://github.com/vendure-ecommerce/vendure/commit/731f8d9)), closes [#1216](https://github.com/vendure-ecommerce/vendure/issues/1216)
+* **core** Do not list deleted ProductVariants in Collections ([5cd8e1a](https://github.com/vendure-ecommerce/vendure/commit/5cd8e1a)), closes [#1213](https://github.com/vendure-ecommerce/vendure/issues/1213)
+* **core** Fix argsArrayToHash, case where arg not present in this.args (#1224) ([454fdf5](https://github.com/vendure-ecommerce/vendure/commit/454fdf5)), closes [#1224](https://github.com/vendure-ecommerce/vendure/issues/1224)
+* **core** Fix edge case FK error when creating new Collections ([160f457](https://github.com/vendure-ecommerce/vendure/commit/160f457)), closes [#1215](https://github.com/vendure-ecommerce/vendure/issues/1215)
+* **core** Fix ONLY_FULL_GROUP_BY error when searching with MySQL ([94fa4db](https://github.com/vendure-ecommerce/vendure/commit/94fa4db)), closes [#1236](https://github.com/vendure-ecommerce/vendure/issues/1236)
+* **core** Fix ProductService.assignProductsToChannel to properly assign assets to channel (#1235) ([a3066b0](https://github.com/vendure-ecommerce/vendure/commit/a3066b0)), closes [#1235](https://github.com/vendure-ecommerce/vendure/issues/1235)
+* **testing** Fix "fail is not defined" error ([c474d93](https://github.com/vendure-ecommerce/vendure/commit/c474d93))
+
 ## <small>1.3.3 (2021-11-09)</small>
 
 
