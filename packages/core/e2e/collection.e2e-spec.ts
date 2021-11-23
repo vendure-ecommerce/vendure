@@ -21,6 +21,7 @@ import {
     CreateCollectionSelectVariants,
     DeleteCollection,
     DeleteProduct,
+    DeleteProductVariant,
     DeletionResult,
     FacetValueFragment,
     GetAssetList,
@@ -45,6 +46,7 @@ import {
 import {
     CREATE_COLLECTION,
     DELETE_PRODUCT,
+    DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -1548,7 +1550,6 @@ describe('Collection resolver', () => {
         });
 
         it('filter inheritance of nested collections (issue #158)', async () => {
-            const a = 1;
             const { createCollection: pearElectronics } = await adminClient.query<
                 CreateCollectionSelectVariants.Mutation,
                 CreateCollectionSelectVariants.Variables
@@ -1649,6 +1650,7 @@ describe('Collection resolver', () => {
             await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
                 id: 'T_2', // curvy monitor
             });
+            await awaitRunningJobs(adminClient, 5000);
             const { collection } = await adminClient.query<
                 GetCollectionProducts.Query,
                 GetCollectionProducts.Variables
@@ -1662,6 +1664,31 @@ describe('Collection resolver', () => {
                 'Laptop 15 inch 16GB',
                 'Gaming PC i7-8700 240GB SSD',
                 'Instant Camera',
+            ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1213
+        it('does not list deleted variants', async () => {
+            await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
+                DELETE_PRODUCT_VARIANT,
+                {
+                    id: 'T_18', // Instant Camera
+                },
+            );
+            await awaitRunningJobs(adminClient, 5000);
+            const { collection } = await adminClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                id: pearCollection.id,
+            });
+            expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                'Laptop 13 inch 8GB',
+                'Laptop 15 inch 8GB',
+                'Laptop 13 inch 16GB',
+                'Laptop 15 inch 16GB',
+                'Gaming PC i7-8700 240GB SSD',
+                // 'Instant Camera',
             ]);
         });
 
@@ -1683,7 +1710,28 @@ describe('Collection resolver', () => {
             expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
         });
 
+        it('does not list variants of disabled products in Shop API', async () => {
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                input: { id: 'T_1', enabled: false },
+            });
+            await awaitRunningJobs(adminClient, 5000);
+
+            const { collection } = await shopClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                id: pearCollection.id,
+            });
+            expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
+            expect(collection!.productVariants.items.map(i => i.id).includes('T_2')).toBe(false);
+            expect(collection!.productVariants.items.map(i => i.id).includes('T_3')).toBe(false);
+            expect(collection!.productVariants.items.map(i => i.id).includes('T_4')).toBe(false);
+        });
+
         it('handles other languages', async () => {
+            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                input: { id: 'T_1', enabled: true },
+            });
             await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                 UPDATE_PRODUCT_VARIANTS,
                 {
@@ -1710,7 +1758,6 @@ describe('Collection resolver', () => {
                 'Laptop 13 inch 16GB',
                 'Laptop 15 inch 16GB',
                 'Gaming PC i7-8700 240GB SSD',
-                'Instant Camera',
             ]);
         });
     });

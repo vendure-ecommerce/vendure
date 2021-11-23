@@ -524,6 +524,23 @@ describe('Default search plugin', () => {
             ]);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/1236
+        it('returns correct facetValues when not grouped by product, with search term', async () => {
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: false,
+                        term: 'laptop',
+                    },
+                },
+            );
+            expect(result.search.facetValues).toEqual([
+                { count: 4, facetValue: { id: 'T_1', name: 'electronics' } },
+                { count: 4, facetValue: { id: 'T_2', name: 'computers' } },
+            ]);
+        });
+
         it('omits facetValues of private facets', async () => {
             const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
                 CREATE_FACET,

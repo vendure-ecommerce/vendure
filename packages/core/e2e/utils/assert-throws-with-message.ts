@@ -1,3 +1,5 @@
+import { fail } from 'assert';
+
 /**
  * Helper method for creating tests which assert a given error message when the operation is attempted.
  */

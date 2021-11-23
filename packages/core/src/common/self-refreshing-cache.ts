@@ -46,9 +46,9 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
  * of cache, the function used to populate the value (`refreshFn`) is defined during the creation of the cache, and
  * it is immediately used to populate the initial value.
  *
- * From there, when the `.value` property is accessed, it will _always_ return a value synchronously. If the
- * value has expired, it will still be returned and the `refreshFn` will be triggered to update the value in the
- * background.
+ * From there, when the `.value` property is accessed, it will return a value from the cache, and if the
+ * value has expired, it will automatically run the `refreshFn` to update the value and then return the
+ * fresh value.
  */
 export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
     config: SelfRefreshingCacheConfig<V, RefreshArgs>,

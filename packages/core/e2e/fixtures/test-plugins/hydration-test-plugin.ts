@@ -73,6 +73,21 @@ export class TestAdminPluginResolver {
         });
         return order;
     }
+
+    // Test case for https://github.com/vendure-ecommerce/vendure/issues/1229
+    @Query()
+    async hydrateOrderReturnQuantities(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const order = await this.orderService.findOne(ctx, args.id);
+        await this.entityHydrator.hydrate(ctx, order!, {
+            relations: [
+                'lines',
+                'lines.productVariant',
+                'lines.productVariant.product',
+                'lines.productVariant.product.assets',
+            ],
+        });
+        return order?.lines.map(line => line.quantity);
+    }
 }
 
 @VendurePlugin({
@@ -85,6 +100,7 @@ export class TestAdminPluginResolver {
                 hydrateProductAsset(id: ID!): JSON
                 hydrateProductVariant(id: ID!): JSON
                 hydrateOrder(id: ID!): JSON
+                hydrateOrderReturnQuantities(id: ID!): JSON
             }
         `,
     },

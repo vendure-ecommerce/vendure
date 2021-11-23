@@ -1,26 +1,96 @@
 /* tslint:disable:no-non-null-assertion */
 import { summate } from '@vendure/common/lib/shared-utils';
+import {
+    Channel,
+    Injector,
+    Order,
+    RequestContext,
+    TaxZoneStrategy,
+    TransactionalConnection,
+    Zone,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
-import { GetProductsWithVariantPrices, UpdateChannel } from './graphql/generated-e2e-admin-types';
+import {
+    GetProductsWithVariantPrices,
+    GetTaxRateList,
+    UpdateChannel,
+    UpdateTaxRate,
+} from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
     GetActiveOrderWithPriceData,
+    SetBillingAddress,
+    SetShippingAddress,
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
-import { GET_PRODUCTS_WITH_VARIANT_PRICES, UPDATE_CHANNEL } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER_WITH_PRICE_DATA } from './graphql/shop-definitions';
+import {
+    GET_PRODUCTS_WITH_VARIANT_PRICES,
+    UPDATE_CHANNEL,
+    UPDATE_TAX_RATE,
+} from './graphql/shared-definitions';
+import {
+    ADD_ITEM_TO_ORDER,
+    GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+    SET_BILLING_ADDRESS,
+    SET_SHIPPING_ADDRESS,
+} from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
+
+/**
+ * Determines active tax zone based on:
+ *
+ * 1. billingAddress country, if set
+ * 2. else shippingAddress country, is set
+ * 3. else channel default tax zone.
+ */
+class TestTaxZoneStrategy implements TaxZoneStrategy {
+    private connection: TransactionalConnection;
+
+    init(injector: Injector): void | Promise<void> {
+        this.connection = injector.get(TransactionalConnection);
+    }
+
+    async determineTaxZone(
+        ctx: RequestContext,
+        zones: Zone[],
+        channel: Channel,
+        order?: Order,
+    ): Promise<Zone> {
+        if (!order?.billingAddress?.countryCode && !order?.shippingAddress?.countryCode) {
+            return channel.defaultTaxZone;
+        }
+
+        const countryCode = order?.billingAddress?.countryCode || order?.shippingAddress?.countryCode;
+        const zoneForCountryCode = await this.getZoneForCountryCode(ctx, countryCode);
+        return zoneForCountryCode ?? channel.defaultTaxZone;
+    }
+
+    private getZoneForCountryCode(ctx: RequestContext, countryCode: string): Promise<Zone | undefined> {
+        return this.connection
+            .getRepository(ctx, Zone)
+            .createQueryBuilder('zone')
+            .leftJoin('zone.members', 'country')
+            .where('country.code = :countryCode', {
+                countryCode,
+            })
+            .getOne();
+    }
+}
 
 describe('Order taxes', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
+        taxOptions: {
+            taxZoneStrategy: new TestTaxZoneStrategy(),
+        },
         paymentOptions: {
             paymentMethodHandlers: [testSuccessfulPaymentMethod],
         },
@@ -137,6 +207,92 @@ describe('Order taxes', () => {
                 },
             ]);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1216
+        it('re-calculates OrderItem prices when shippingAddress causes activeTaxZone change', async () => {
+            const { taxRates } = await adminClient.query<GetTaxRateList.Query>(GET_TAX_RATE_LIST);
+            // Set the TaxRates to Asia to 0%
+            const taxRatesAsia = taxRates.items.filter(tr => tr.name.includes('Asia'));
+            for (const taxRate of taxRatesAsia) {
+                await adminClient.query<UpdateTaxRate.Mutation, UpdateTaxRate.Variables>(UPDATE_TAX_RATE, {
+                    input: {
+                        id: taxRate.id,
+                        value: 0,
+                    },
+                });
+            }
+
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        countryCode: 'CN',
+                        streetLine1: '123 Lugu St',
+                        city: 'Beijing',
+                        province: 'Beijing',
+                        postalCode: '12340',
+                    },
+                },
+            );
+
+            const { activeOrder } = await shopClient.query<GetActiveOrderWithPriceData.Query>(
+                GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+            );
+            expect(activeOrder?.totalWithTax).toBe(166);
+            expect(activeOrder?.total).toBe(166);
+            expect(activeOrder?.lines[0].taxRate).toBe(0);
+            expect(activeOrder?.lines[0].linePrice).toBe(166);
+            expect(activeOrder?.lines[0].lineTax).toBe(0);
+            expect(activeOrder?.lines[0].linePriceWithTax).toBe(166);
+            expect(activeOrder?.lines[0].unitPrice).toBe(83);
+            expect(activeOrder?.lines[0].unitPriceWithTax).toBe(83);
+            expect(activeOrder?.lines[0].items[0].unitPrice).toBe(83);
+            expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(83);
+            expect(activeOrder?.lines[0].items[0].taxRate).toBe(0);
+            expect(activeOrder?.lines[0].taxLines).toEqual([
+                {
+                    description: 'Standard Tax Asia',
+                    taxRate: 0,
+                },
+            ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1216
+        it('re-calculates OrderItem prices when billingAddress causes activeTaxZone change', async () => {
+            await shopClient.query<SetBillingAddress.Mutation, SetBillingAddress.Variables>(
+                SET_BILLING_ADDRESS,
+                {
+                    input: {
+                        countryCode: 'US',
+                        streetLine1: '123 Chad Street',
+                        city: 'Houston',
+                        province: 'Texas',
+                        postalCode: '12345',
+                    },
+                },
+            );
+
+            const { activeOrder } = await shopClient.query<GetActiveOrderWithPriceData.Query>(
+                GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+            );
+            expect(activeOrder?.totalWithTax).toBe(200);
+            expect(activeOrder?.total).toBe(166);
+            expect(activeOrder?.lines[0].taxRate).toBe(20);
+            expect(activeOrder?.lines[0].linePrice).toBe(166);
+            expect(activeOrder?.lines[0].lineTax).toBe(34);
+            expect(activeOrder?.lines[0].linePriceWithTax).toBe(200);
+            expect(activeOrder?.lines[0].unitPrice).toBe(83);
+            expect(activeOrder?.lines[0].unitPriceWithTax).toBe(100);
+            expect(activeOrder?.lines[0].items[0].unitPrice).toBe(83);
+            expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(100);
+            expect(activeOrder?.lines[0].items[0].taxRate).toBe(20);
+            expect(activeOrder?.lines[0].taxLines).toEqual([
+                {
+                    description: 'Standard Tax Americas',
+                    taxRate: 20,
+                },
+            ]);
+        });
     });
 
     it('taxSummary works', async () => {
@@ -193,3 +349,25 @@ describe('Order taxes', () => {
         expect(taxSummaryBaseTotal + taxSummaryTaxTotal).toBe(activeOrder?.totalWithTax);
     });
 });
+
+export const GET_TAX_RATE_LIST = gql`
+    query GetTaxRateList($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                id
+                name
+                enabled
+                value
+                category {
+                    id
+                    name
+                }
+                zone {
+                    id
+                    name
+                }
+            }
+            totalItems
+        }
+    }
+`;

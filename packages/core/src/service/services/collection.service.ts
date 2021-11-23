@@ -622,7 +622,10 @@ export class CollectionService implements OnModuleInit {
             return this.rootCollection;
         }
 
-        const rootTranslation = await this.connection.getRepository(ctx, CollectionTranslation).save(
+        // We purposefully do not use the ctx in saving the new root Collection
+        // so that even if the outer transaction fails, the root collection will still
+        // get persisted.
+        const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
             new CollectionTranslation({
                 languageCode: this.configService.defaultLanguageCode,
                 name: ROOT_COLLECTION_NAME,
@@ -631,7 +634,7 @@ export class CollectionService implements OnModuleInit {
             }),
         );
 
-        const newRoot = await this.connection.getRepository(ctx, Collection).save(
+        const newRoot = await this.connection.getRepository(Collection).save(
             new Collection({
                 isRoot: true,
                 position: 0,

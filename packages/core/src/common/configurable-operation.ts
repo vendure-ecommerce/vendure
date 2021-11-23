@@ -45,9 +45,9 @@ export type UiComponentConfig =
     | ({ component: 'boolean-form-input' } & DefaultFormComponentConfig<'boolean-form-input'>)
     | ({ component: 'currency-form-input' } & DefaultFormComponentConfig<'currency-form-input'>)
     | ({ component: 'facet-value-form-input' } & DefaultFormComponentConfig<'facet-value-form-input'>)
-    | ({ component: 'product-selector-form-input' } & DefaultFormComponentConfig<
-          'product-selector-form-input'
-      >)
+    | ({
+          component: 'product-selector-form-input';
+      } & DefaultFormComponentConfig<'product-selector-form-input'>)
     | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
     | { component: string; [prop: string]: any };
 
@@ -63,7 +63,7 @@ export interface ConfigArgCommonDef<T extends ConfigArgType> {
 
 export type ConfigArgListDef<
     T extends ConfigArgType,
-    C extends ConfigArgCommonDef<T> = ConfigArgCommonDef<T>
+    C extends ConfigArgCommonDef<T> = ConfigArgCommonDef<T>,
 > = C & { list: true };
 
 export type WithArgConfig<T> = {
@@ -402,7 +402,7 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
     protected argsArrayToHash(args: ConfigArg[]): ConfigArgValues<T> {
         const output: ConfigArgValues<T> = {} as any;
         for (const arg of args) {
-            if (arg && arg.value != null) {
+            if (arg && arg.value != null && this.args[arg.name] != null) {
                 output[arg.name as keyof ConfigArgValues<T>] = coerceValueToType<T>(
                     arg.value,
                     this.args[arg.name].type,

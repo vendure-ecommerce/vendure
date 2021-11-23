@@ -40,6 +40,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
@@ -155,6 +156,7 @@ export class OrderService {
         private channelService: ChannelService,
         private orderModifier: OrderModifier,
         private customFieldRelationService: CustomFieldRelationService,
+        private requestCache: RequestContextCacheService,
     ) {}
 
     /**
@@ -460,7 +462,7 @@ export class OrderService {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError(correctedQuantity, updatedOrder);
         } else {
@@ -510,7 +512,7 @@ export class OrderService {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError(correctedQuantity, updatedOrder);
         } else {
@@ -694,7 +696,12 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         order.shippingAddress = { ...input, countryCode: input.countryCode, country: country.name };
-        return this.connection.getRepository(ctx, Order).save(order);
+        await this.connection.getRepository(ctx, Order).save(order);
+        // Since a changed ShippingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone so it can be re-calculated
+        // as needed.
+        this.requestCache.set(ctx, 'activeTaxZone', undefined);
+        return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
     /**
@@ -705,7 +712,12 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         order.billingAddress = { ...input, countryCode: input.countryCode, country: country.name };
-        return this.connection.getRepository(ctx, Order).save(order);
+        await this.connection.getRepository(ctx, Order).save(order);
+        // Since a changed ShippingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone so it can be re-calculated
+        // as needed.
+        this.requestCache.set(ctx, 'activeTaxZone', undefined);
+        return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
     /**
@@ -1533,32 +1545,39 @@ export class OrderService {
     private async applyPriceAdjustments(
         ctx: RequestContext,
         order: Order,
-        updatedOrderLine?: OrderLine,
+        updatedOrderLines?: OrderLine[],
     ): Promise<Order> {
-        if (updatedOrderLine) {
+        if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =
                 this.configService.orderOptions;
-            let priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
-                ctx,
-                updatedOrderLine.productVariant,
-                updatedOrderLine.customFields || {},
-            );
-            const initialListPrice =
-                updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
-                priceResult.price;
-            if (initialListPrice !== priceResult.price) {
-                priceResult = await changedPriceHandlingStrategy.handlePriceChange(
+            for (const updatedOrderLine of updatedOrderLines) {
+                const variant = await this.productVariantService.applyChannelPriceAndTax(
+                    updatedOrderLine.productVariant,
                     ctx,
-                    priceResult,
-                    updatedOrderLine.items,
+                    order,
                 );
-            }
-            for (const item of updatedOrderLine.items) {
-                if (item.initialListPrice == null) {
-                    item.initialListPrice = initialListPrice;
+                let priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+                    ctx,
+                    variant,
+                    updatedOrderLine.customFields || {},
+                );
+                const initialListPrice =
+                    updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
+                    priceResult.price;
+                if (initialListPrice !== priceResult.price) {
+                    priceResult = await changedPriceHandlingStrategy.handlePriceChange(
+                        ctx,
+                        priceResult,
+                        updatedOrderLine.items,
+                    );
                 }
-                item.listPrice = priceResult.price;
-                item.listPriceIncludesTax = priceResult.priceIncludesTax;
+                for (const item of updatedOrderLine.items) {
+                    if (item.initialListPrice == null) {
+                        item.initialListPrice = initialListPrice;
+                    }
+                    item.listPrice = priceResult.price;
+                    item.listPriceIncludesTax = priceResult.priceIncludesTax;
+                }
             }
         }
         const { items: promotions } = await this.promotionService.findAll(ctx, {
@@ -1569,7 +1588,7 @@ export class OrderService {
             ctx,
             order,
             promotions,
-            updatedOrderLine ? [updatedOrderLine] : [],
+            updatedOrderLines ?? [],
         );
         const updateFields: Array<keyof OrderItem> = [
             'initialListPrice',
