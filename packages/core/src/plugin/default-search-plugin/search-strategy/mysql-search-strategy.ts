@@ -38,7 +38,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .select(['MIN(productId)', 'MIN(productVariantId)'])
             .addSelect('GROUP_CONCAT(facetValueIds)', 'facetValues');
 
-        this.applyTermAndFilters(ctx, facetValuesQb, input);
+        this.applyTermAndFilters(ctx, facetValuesQb, { ...input, groupByProduct: true });
         if (!input.groupByProduct) {
             facetValuesQb.groupBy('productVariantId');
         }
