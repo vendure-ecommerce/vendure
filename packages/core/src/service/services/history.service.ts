@@ -14,6 +14,8 @@ import { Administrator } from '../../entity/administrator/administrator.entity';
 import { CustomerHistoryEntry } from '../../entity/history-entry/customer-history-entry.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { OrderHistoryEntry } from '../../entity/history-entry/order-history-entry.entity';
+import { EventBus } from '../../event-bus';
+import { HistoryEntryEvent } from '../../event-bus/events/history-entry-event';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderState } from '../helpers/order-state-machine/order-state';
@@ -150,6 +152,7 @@ export class HistoryService {
         private connection: TransactionalConnection,
         private administratorService: AdministratorService,
         private listQueryBuilder: ListQueryBuilder,
+        private eventBus: EventBus,
     ) {}
 
     async getHistoryForOrder(
@@ -187,7 +190,9 @@ export class HistoryService {
             order: { id: orderId },
             administrator,
         });
-        return this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
+        const history = await this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
+        this.eventBus.publish(new HistoryEntryEvent(ctx, history, 'created', 'order', { type, data }));
+        return history;
     }
 
     async getHistoryForCustomer(
@@ -226,7 +231,9 @@ export class HistoryService {
             customer: { id: customerId },
             administrator,
         });
-        return this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
+        const history = await this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
+        this.eventBus.publish(new HistoryEntryEvent(ctx, history, 'created', 'customer', { type, data }));
+        return history;
     }
 
     async updateOrderHistoryEntry<T extends keyof OrderHistoryEntryData>(
@@ -247,12 +254,15 @@ export class HistoryService {
         if (administrator) {
             entry.administrator = administrator;
         }
-        return this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
+        const newEntry = await this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
+        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'updated', 'order', args));
+        return newEntry;
     }
 
     async deleteOrderHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
         const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, id);
         await this.connection.getRepository(ctx, OrderHistoryEntry).remove(entry);
+        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'deleted', 'order', id));
     }
 
     async updateCustomerHistoryEntry<T extends keyof CustomerHistoryEntryData>(
@@ -270,12 +280,15 @@ export class HistoryService {
         if (administrator) {
             entry.administrator = administrator;
         }
-        return this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
+        const newEntry = await this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
+        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'updated', 'customer', args));
+        return newEntry;
     }
 
     async deleteCustomerHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
         const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, id);
         await this.connection.getRepository(ctx, CustomerHistoryEntry).remove(entry);
+        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'deleted', 'customer', id));
     }
 
     private async getAdministratorFromContext(ctx: RequestContext): Promise<Administrator | undefined> {

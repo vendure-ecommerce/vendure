@@ -34,6 +34,8 @@ import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
+import { EventBus } from '../../event-bus';
+import { PromotionEvent } from '../../event-bus/events/promotion-event';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -57,6 +59,7 @@ export class PromotionService {
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
         private configArgService: ConfigArgService,
+        private eventBus: EventBus,
     ) {
         this.availableConditions = this.configService.promotionOptions.promotionConditions || [];
         this.availableActions = this.configService.promotionOptions.promotionActions || [];
@@ -116,6 +119,7 @@ export class PromotionService {
         }
         await this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
+        this.eventBus.publish(new PromotionEvent(ctx, newPromotion, 'created', input));
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
@@ -142,14 +146,17 @@ export class PromotionService {
         }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
+        this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
     async softDeletePromotion(ctx: RequestContext, promotionId: ID): Promise<DeletionResponse> {
-        await this.connection.getEntityOrThrow(ctx, Promotion, promotionId);
+        const promotion = await this.connection.getEntityOrThrow(ctx, Promotion, promotionId);
         await this.connection
             .getRepository(ctx, Promotion)
             .update({ id: promotionId }, { deletedAt: new Date() });
+        this.eventBus.publish(new PromotionEvent(ctx, promotion, 'deleted', promotionId));
+
         return {
             result: DeletionResult.DELETED,
         };

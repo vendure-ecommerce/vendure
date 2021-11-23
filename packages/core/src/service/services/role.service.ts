@@ -30,6 +30,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Channel } from '../../entity/channel/channel.entity';
 import { Role } from '../../entity/role/role.entity';
 import { User } from '../../entity/user/user.entity';
+import { EventBus } from '../../event-bus';
+import { RoleEvent } from '../../event-bus/events/role-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -49,6 +51,7 @@ export class RoleService {
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
+        private eventBus: EventBus,
     ) {}
 
     async initRoles() {
@@ -143,7 +146,9 @@ export class RoleService {
         } else {
             targetChannels = [ctx.channel];
         }
-        return this.createRoleForChannels(ctx, input, targetChannels);
+        const role = await this.createRoleForChannels(ctx, input, targetChannels);
+        this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
+        return role;
     }
 
     async update(ctx: RequestContext, input: UpdateRoleInput): Promise<Role> {
@@ -166,7 +171,8 @@ export class RoleService {
             updatedRole.channels = await this.getPermittedChannels(ctx, input.channelIds);
         }
         await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
-        return assertFound(this.findOne(ctx, role.id));
+        this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
+        return await assertFound(this.findOne(ctx, role.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
@@ -178,6 +184,7 @@ export class RoleService {
             throw new InternalServerError(`error.cannot-delete-role`, { roleCode: role.code });
         }
         await this.connection.getRepository(ctx, Role).remove(role);
+        this.eventBus.publish(new RoleEvent(ctx, role, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

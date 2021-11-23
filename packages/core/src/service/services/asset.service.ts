@@ -266,7 +266,7 @@ export class AssetService {
                 result.tags = tags;
                 await this.connection.getRepository(ctx, Asset).save(result);
             }
-            this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
+            this.eventBus.publish(new AssetEvent(ctx, result, 'created', input));
             resolve(result);
         });
     }
@@ -284,7 +284,7 @@ export class AssetService {
             asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
         }
         const updatedAsset = await this.connection.getRepository(ctx, Asset).save(asset);
-        this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated'));
+        this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated', input));
         return updatedAsset;
     }
 
@@ -419,7 +419,7 @@ export class AssetService {
             } catch (e) {
                 Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
             }
-            this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted'));
+            this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
         }
         return {
             result: DeletionResult.DELETED,
