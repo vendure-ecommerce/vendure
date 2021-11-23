@@ -11,6 +11,7 @@ export const SUPER_ADMIN_ROLE_DESCRIPTION = 'SuperAdmin';
 export const SUPER_ADMIN_USER_IDENTIFIER = 'superadmin';
 export const SUPER_ADMIN_USER_PASSWORD = 'superadmin';
 export const CUSTOMER_ROLE_CODE = '__customer_role__';
+export const CUSTOMER_SELLER_ROLE_CODE = 'customer-seller-role';
 export const CUSTOMER_ROLE_DESCRIPTION = 'Customer';
 export const ROOT_COLLECTION_NAME = '__root_collection__';
 export const DEFAULT_AUTH_TOKEN_HEADER_KEY = 'vendure-auth-token';

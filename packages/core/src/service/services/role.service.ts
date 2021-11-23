@@ -14,6 +14,7 @@ import {
 } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { CUSTOMER_SELLER_ROLE_CODE } from '@vendure/common/src/shared-constants';
 
 import { RequestContext } from '../../api/common/request-context';
 import { getAllPermissionsMetadata } from '../../common/constants';
@@ -98,6 +99,15 @@ export class RoleService {
         return this.getRoleByCode(CUSTOMER_ROLE_CODE).then(role => {
             if (!role) {
                 throw new InternalServerError(`error.customer-role-not-found`);
+            }
+            return role;
+        });
+    }
+
+    getCustomerSellerRole(): Promise<Role> {
+        return this.getRoleByCode(CUSTOMER_SELLER_ROLE_CODE).then(role => {
+            if (!role) {
+                throw new InternalServerError(`error.customer-seller-role-not-found`);
             }
             return role;
         });

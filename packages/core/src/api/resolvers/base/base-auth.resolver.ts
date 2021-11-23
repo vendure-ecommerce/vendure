@@ -115,12 +115,6 @@ export class BaseAuthResolver {
         if (isGraphQlErrorResult(session)) {
             return session;
         }
-        if (apiType && apiType === 'admin') {
-            const administrator = await this.administratorService.findOneByUserId(ctx, session.user.id);
-            if (!administrator) {
-                return new InvalidCredentialsError('');
-            }
-        }
         setSessionToken({
             req,
             res,
