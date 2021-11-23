@@ -279,6 +279,7 @@ export type Country = Node & {
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     translations: Array<CountryTranslation>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CountryList = PaginatedList & {
@@ -732,6 +733,7 @@ export type CustomerGroup = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     customers: CustomerList;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CustomerGroupCustomersArgs = {
@@ -1837,7 +1839,7 @@ export type OrderItem = Node & {
     /** The price of a single unit including discounts and tax */
     discountedUnitPriceWithTax: Scalars['Int'];
     /**
-     * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
@@ -1885,7 +1887,7 @@ export type OrderLine = Node & {
     /** The price of a single unit including discounts and tax */
     discountedUnitPriceWithTax: Scalars['Int'];
     /**
-     * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
@@ -1897,14 +1899,14 @@ export type OrderLine = Node & {
     taxRate: Scalars['Float'];
     /** The total price of the line excluding tax and discounts. */
     linePrice: Scalars['Int'];
-    /** The total price of the line including tax bit excluding discounts. */
+    /** The total price of the line including tax but excluding discounts. */
     linePriceWithTax: Scalars['Int'];
     /** The price of the line including discounts, excluding tax */
     discountedLinePrice: Scalars['Int'];
     /** The price of the line including discounts and tax */
     discountedLinePriceWithTax: Scalars['Int'];
     /**
-     * The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
      * and refund calculations.
      */
@@ -2449,6 +2451,7 @@ export type Promotion = Node & {
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;
     actions: Array<ConfigurableOperation>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type PromotionList = PaginatedList & {
@@ -2810,6 +2813,7 @@ export type TaxCategory = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     isDefault: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TaxLine = {
@@ -2827,6 +2831,7 @@ export type TaxRate = Node & {
     category: TaxCategory;
     zone: Zone;
     customerGroup?: Maybe<CustomerGroup>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TaxRateList = PaginatedList & {
@@ -2934,6 +2939,7 @@ export type Zone = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     members: Array<Country>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TestOrderFragmentFragment = Pick<

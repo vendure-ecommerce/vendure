@@ -1,8 +1,10 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { Country } from '../country/country.entity';
+import { CustomZoneFields } from '../custom-entity-fields';
 
 /**
  * @description
@@ -12,7 +14,7 @@ import { Country } from '../country/country.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Zone extends VendureEntity {
+export class Zone extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Zone>) {
         super(input);
     }
@@ -22,4 +24,7 @@ export class Zone extends VendureEntity {
     @ManyToMany(type => Country)
     @JoinTable()
     members: Country[];
+
+    @Column(type => CustomZoneFields)
+    customFields: CustomZoneFields;
 }

@@ -2,7 +2,9 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { CustomCountryFields } from '../custom-entity-fields';
 
 import { CountryTranslation } from './country-translation.entity';
 
@@ -15,7 +17,7 @@ import { CountryTranslation } from './country-translation.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Country extends VendureEntity implements Translatable {
+export class Country extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<Country>) {
         super(input);
     }
@@ -28,4 +30,7 @@ export class Country extends VendureEntity implements Translatable {
 
     @OneToMany(type => CountryTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Country>>;
+
+    @Column(type => CustomCountryFields)
+    customFields: CustomCountryFields;
 }

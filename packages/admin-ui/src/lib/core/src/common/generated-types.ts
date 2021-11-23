@@ -491,6 +491,7 @@ export type Country = Node & {
   name: Scalars['String'];
   enabled: Scalars['Boolean'];
   translations: Array<CountryTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CountryFilterParameter = {
@@ -542,6 +543,7 @@ export type CountryTranslationInput = {
   id?: Maybe<Scalars['ID']>;
   languageCode: LanguageCode;
   name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateAddressInput = {
@@ -611,11 +613,13 @@ export type CreateCountryInput = {
   code: Scalars['String'];
   translations: Array<CountryTranslationInput>;
   enabled: Scalars['Boolean'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateCustomerGroupInput = {
   name: Scalars['String'];
   customerIds?: Maybe<Array<Scalars['ID']>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateCustomerInput = {
@@ -669,6 +673,7 @@ export type CreatePaymentMethodInput = {
   enabled: Scalars['Boolean'];
   checker?: Maybe<ConfigurableOperationInput>;
   handler: ConfigurableOperationInput;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductInput = {
@@ -726,6 +731,7 @@ export type CreatePromotionInput = {
   perCustomerUsageLimit?: Maybe<Scalars['Int']>;
   conditions: Array<ConfigurableOperationInput>;
   actions: Array<ConfigurableOperationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreatePromotionResult = Promotion | MissingConditionsError;
@@ -753,6 +759,7 @@ export type CreateTagInput = {
 export type CreateTaxCategoryInput = {
   name: Scalars['String'];
   isDefault?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateTaxRateInput = {
@@ -762,11 +769,13 @@ export type CreateTaxRateInput = {
   categoryId: Scalars['ID'];
   zoneId: Scalars['ID'];
   customerGroupId?: Maybe<Scalars['ID']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateZoneInput = {
   name: Scalars['String'];
   memberIds?: Maybe<Array<Scalars['ID']>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 /**
@@ -1134,19 +1143,26 @@ export type CustomFields = {
   Asset: Array<CustomFieldConfig>;
   Channel: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
+  Country: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
+  CustomerGroup: Array<CustomFieldConfig>;
   Facet: Array<CustomFieldConfig>;
   FacetValue: Array<CustomFieldConfig>;
   Fulfillment: Array<CustomFieldConfig>;
   GlobalSettings: Array<CustomFieldConfig>;
   Order: Array<CustomFieldConfig>;
   OrderLine: Array<CustomFieldConfig>;
+  PaymentMethod: Array<CustomFieldConfig>;
   Product: Array<CustomFieldConfig>;
   ProductOption: Array<CustomFieldConfig>;
   ProductOptionGroup: Array<CustomFieldConfig>;
   ProductVariant: Array<CustomFieldConfig>;
-  User: Array<CustomFieldConfig>;
+  Promotion: Array<CustomFieldConfig>;
   ShippingMethod: Array<CustomFieldConfig>;
+  TaxCategory: Array<CustomFieldConfig>;
+  TaxRate: Array<CustomFieldConfig>;
+  User: Array<CustomFieldConfig>;
+  Zone: Array<CustomFieldConfig>;
 };
 
 export type Customer = Node & {
@@ -1194,6 +1210,7 @@ export type CustomerGroup = Node & {
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
   customers: CustomerList;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -3386,6 +3403,7 @@ export type PaymentMethod = Node & {
   enabled: Scalars['Boolean'];
   checker?: Maybe<ConfigurableOperation>;
   handler: ConfigurableOperation;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type PaymentMethodFilterParameter = {
@@ -3929,6 +3947,7 @@ export type Promotion = Node & {
   enabled: Scalars['Boolean'];
   conditions: Array<ConfigurableOperation>;
   actions: Array<ConfigurableOperation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type PromotionFilterParameter = {
@@ -4785,6 +4804,7 @@ export type TaxCategory = Node & {
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
   isDefault: Scalars['Boolean'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TaxLine = {
@@ -4804,6 +4824,7 @@ export type TaxRate = Node & {
   category: TaxCategory;
   zone: Zone;
   customerGroup?: Maybe<CustomerGroup>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TaxRateFilterParameter = {
@@ -4977,11 +4998,13 @@ export type UpdateCountryInput = {
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<CountryTranslationInput>>;
   enabled?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateCustomerGroupInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateCustomerInput = {
@@ -5056,6 +5079,7 @@ export type UpdatePaymentMethodInput = {
   enabled?: Maybe<Scalars['Boolean']>;
   checker?: Maybe<ConfigurableOperationInput>;
   handler?: Maybe<ConfigurableOperationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductInput = {
@@ -5109,6 +5133,7 @@ export type UpdatePromotionInput = {
   perCustomerUsageLimit?: Maybe<Scalars['Int']>;
   conditions?: Maybe<Array<ConfigurableOperationInput>>;
   actions?: Maybe<Array<ConfigurableOperationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdatePromotionResult = Promotion | MissingConditionsError;
@@ -5140,6 +5165,7 @@ export type UpdateTaxCategoryInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   isDefault?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateTaxRateInput = {
@@ -5150,11 +5176,13 @@ export type UpdateTaxRateInput = {
   categoryId?: Maybe<Scalars['ID']>;
   zoneId?: Maybe<Scalars['ID']>;
   customerGroupId?: Maybe<Scalars['ID']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateZoneInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -5195,6 +5223,7 @@ export type Zone = Node & {
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
   members: Array<Country>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type RoleFragment = (

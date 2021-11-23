@@ -298,6 +298,7 @@ export type Country = Node & {
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
     translations: Array<CountryTranslation>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CountryList = PaginatedList & {
@@ -760,6 +761,7 @@ export type CustomerGroup = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     customers: CustomerList;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CustomerGroupCustomersArgs = {
@@ -2536,6 +2538,7 @@ export type Promotion = Node & {
     enabled: Scalars['Boolean'];
     conditions: Array<ConfigurableOperation>;
     actions: Array<ConfigurableOperation>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type PromotionList = PaginatedList & {
@@ -2920,6 +2923,7 @@ export type TaxCategory = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     isDefault: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TaxLine = {
@@ -2939,6 +2943,7 @@ export type TaxRate = Node & {
     category: TaxCategory;
     zone: Zone;
     customerGroup?: Maybe<CustomerGroup>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type TaxRateList = PaginatedList & {
@@ -3052,4 +3057,5 @@ export type Zone = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     members: Array<Country>;
+    customFields?: Maybe<Scalars['JSON']>;
 };

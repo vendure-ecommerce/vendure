@@ -45,7 +45,6 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
-        // passwordHashingStrategy: new PlaintextHashingStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -56,7 +55,15 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Country: [{ name: 'foo', type: 'localeString' }],
+        CustomerGroup: [{ name: 'foo', type: 'string' }],
+        PaymentMethod: [{ name: 'foo', type: 'string' }],
+        Promotion: [{ name: 'foo', type: 'string' }],
+        TaxCategory: [{ name: 'foo', type: 'string' }],
+        TaxRate: [{ name: 'foo', type: 'string' }],
+        Zone: [{ name: 'foo', type: 'string' }],
+    },
     logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

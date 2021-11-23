@@ -45,7 +45,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
  */
 export type TypedCustomSingleFieldConfig<
     T extends CustomFieldType,
-    C extends CustomField
+    C extends CustomField,
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: false;
     defaultValue?: DefaultValueType<T>;
@@ -57,7 +57,7 @@ export type TypedCustomSingleFieldConfig<
 
 export type TypedCustomListFieldConfig<
     T extends CustomFieldType,
-    C extends CustomField
+    C extends CustomField,
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: true;
     defaultValue?: Array<DefaultValueType<T>>;
@@ -66,7 +66,7 @@ export type TypedCustomListFieldConfig<
 
 export type TypedCustomFieldConfig<
     T extends CustomFieldType,
-    C extends CustomField
+    C extends CustomField,
 > = BaseTypedCustomFieldConfig<T, C> &
     (TypedCustomSingleFieldConfig<T, C> | TypedCustomListFieldConfig<T, C>);
 
@@ -192,19 +192,26 @@ export interface CustomFields {
     Asset?: CustomFieldConfig[];
     Channel?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
+    Country?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
+    CustomerGroup?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
     FacetValue?: CustomFieldConfig[];
     Fulfillment?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
+    PaymentMethod?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
-    User?: CustomFieldConfig[];
+    Promotion?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    TaxCategory?: CustomFieldConfig[];
+    TaxRate?: CustomFieldConfig[];
+    User?: CustomFieldConfig[];
+    Zone?: CustomFieldConfig[];
 }
 
 /**
