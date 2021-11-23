@@ -40,7 +40,7 @@ export const devConfig: VendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: ['bearer', 'cookie'] as const,
-        requireVerification: true,
+        requireVerification: false,
         customPermissions: [],
         cookieOptions: {
             secret: 'abc',
@@ -67,7 +67,7 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
-        BullMQJobQueuePlugin.init({}),
+        // BullMQJobQueuePlugin.init({}),
         // DefaultJobQueuePlugin.init(),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
@@ -129,11 +129,11 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'mariadb',
-                host: '127.0.0.1',
+                host: 'cloud.kvisnia.me',
                 port: 3306,
-                username: 'root',
-                password: '',
-                database: 'vendure-dev',
+                username: 'poc',
+                password: 'poc',
+                database: 'poc',
             };
     }
 }

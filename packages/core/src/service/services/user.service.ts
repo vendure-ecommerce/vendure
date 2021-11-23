@@ -65,7 +65,8 @@ export class UserService {
         const user = new User();
         user.identifier = identifier;
         const customerRole = await this.roleService.getCustomerRole();
-        user.roles = [customerRole];
+        const customerSellerRole = await this.roleService.getCustomerSellerRole();
+        user.roles = [customerRole,customerSellerRole];
         return this.connection
             .getRepository(ctx, User)
             .save(await this.addNativeAuthenticationMethod(ctx, user, identifier, password));
