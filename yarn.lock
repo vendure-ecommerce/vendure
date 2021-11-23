@@ -3654,10 +3654,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@sqltools/formatter@1.2.2":
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/@sqltools/formatter/-/formatter-1.2.2.tgz#9390a8127c0dcba61ebd7fdcc748655e191bdd68"
-  integrity sha512-/5O7Fq6Vnv8L6ucmPjaWbVG1XkP4FO+w5glqfkIsq3Xw4oyNAdJddbnYodNDAfjVUvo/rrSCTom4kAND7T1o5Q==
+"@sqltools/formatter@^1.2.2":
+  version "1.2.3"
+  resolved "https://registry.npmjs.org/@sqltools/formatter/-/formatter-1.2.3.tgz#1185726610acc37317ddab11c3c7f9066966bd20"
+  integrity sha512-O3uyB/JbkAEMZaP3YqyHH7TMnex7tWyCbCI4EfJdOCoN6HIhqdJBWTM6aCCiWQ/5f5wxjgU735QAIpJbjDvmzg==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -5994,6 +5994,14 @@ buffer@^5.2.1, buffer@^5.5.0, buffer@^5.7.0:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
 
+buffer@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.npmjs.org/buffer/-/buffer-6.0.3.tgz#2ace578459cc8fbe2a70aaa8f52ee63b6a74c6c6"
+  integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==
+  dependencies:
+    base64-js "^1.3.1"
+    ieee754 "^1.2.1"
+
 builtin-modules@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
@@ -6430,7 +6438,7 @@ cli-cursor@^3.1.0:
   dependencies:
     restore-cursor "^3.1.0"
 
-cli-highlight@^2.1.10:
+cli-highlight@^2.1.11:
   version "2.1.11"
   resolved "https://registry.npmjs.org/cli-highlight/-/cli-highlight-2.1.11.tgz#49736fa452f0aaf4fae580e30acb26828d2dc1bf"
   integrity sha512-9KDcoEVwyUXrjcJNvHD0NFc/hiwe/WPVYIleQh2O1N2Zro5gWJZ/K+3DGn8w8P/F6FxOgzyC5bxDyHIgCSPhGg==
@@ -8742,11 +8750,6 @@ fd-slicer@~1.1.0:
   integrity sha1-JcfInLH5B3+IkbvmHY85Dq4lbx4=
   dependencies:
     pend "~1.2.0"
-
-figlet@^1.1.1:
-  version "1.5.2"
-  resolved "https://registry.npmjs.org/figlet/-/figlet-1.5.2.tgz#dda34ff233c9a48e36fcff6741aeb5bafe49b634"
-  integrity sha512-WOn21V8AhyE1QqVfPIVxe3tupJacq1xGkPTB4iagT6o+P2cAgEOOwIxMftr4+ZCTI6d551ij9j61DFr0nsP2uQ==
 
 figures@^1.7.0:
   version "1.7.0"
@@ -11538,7 +11541,7 @@ js-beautify@^1.6.14:
   resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
   integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
 
-js-yaml@^3.13.1, js-yaml@^3.14.0:
+js-yaml@^3.13.1:
   version "3.14.1"
   resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-3.14.1.tgz#dae812fdb3825fa306609a8717383c50c36a0537"
   integrity sha512-okMH7OXXJ7YrN9Ok3/SXrnu4iX9yOk+25nqX4imS2npuvTYDmo/QEZoqwZkYaIDk3jVvBOTOIEgEhaLOynBS9g==
@@ -14396,11 +14399,6 @@ parent-module@^1.0.0:
   integrity sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==
   dependencies:
     callsites "^3.0.0"
-
-parent-require@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/parent-require/-/parent-require-1.0.0.tgz#746a167638083a860b0eef6732cb27ed46c32977"
-  integrity sha1-dGoWdjgIOoYLDu9nMssn7UbDKXc=
 
 parse-filepath@^1.0.1, parse-filepath@^1.0.2:
   version "1.0.2"
@@ -18312,27 +18310,27 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typeorm@0.2.31:
-  version "0.2.31"
-  resolved "https://registry.npmjs.org/typeorm/-/typeorm-0.2.31.tgz#82b8a1b233224f81c738f53b0380386ccf360917"
-  integrity sha512-dVvCEVHH48DG0QPXAKfo0l6ecQrl3A8ucGP4Yw4myz4YEDMProebTQo8as83uyES+nrwCbu3qdkL4ncC2+qcMA==
+typeorm@0.2.41:
+  version "0.2.41"
+  resolved "https://registry.npmjs.org/typeorm/-/typeorm-0.2.41.tgz#88758101ac158dc0a0a903d70eaacea2974281cc"
+  integrity sha512-/d8CLJJxKPgsnrZWiMyPI0rz2MFZnBQrnQ5XP3Vu3mswv2WPexb58QM6BEtmRmlTMYN5KFWUz8SKluze+wS9xw==
   dependencies:
-    "@sqltools/formatter" "1.2.2"
+    "@sqltools/formatter" "^1.2.2"
     app-root-path "^3.0.0"
-    buffer "^5.5.0"
+    buffer "^6.0.3"
     chalk "^4.1.0"
-    cli-highlight "^2.1.10"
-    debug "^4.1.1"
+    cli-highlight "^2.1.11"
+    debug "^4.3.1"
     dotenv "^8.2.0"
     glob "^7.1.6"
-    js-yaml "^3.14.0"
+    js-yaml "^4.0.0"
     mkdirp "^1.0.4"
     reflect-metadata "^0.1.13"
     sha.js "^2.4.11"
-    tslib "^1.13.0"
+    tslib "^2.1.0"
     xml2js "^0.4.23"
-    yargonaut "^1.1.2"
-    yargs "^16.0.3"
+    yargs "^17.0.1"
+    zen-observable-ts "^1.0.0"
 
 typescript@4.3.5:
   version "4.3.5"
@@ -19340,15 +19338,6 @@ yaml@^1.10.0, yaml@^1.10.2:
   resolved "https://registry.npmjs.org/yaml/-/yaml-1.10.2.tgz#2301c5ffbf12b467de8da2333a459e29e7920e4b"
   integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
 
-yargonaut@^1.1.2:
-  version "1.1.4"
-  resolved "https://registry.npmjs.org/yargonaut/-/yargonaut-1.1.4.tgz#c64f56432c7465271221f53f5cc517890c3d6e0c"
-  integrity sha512-rHgFmbgXAAzl+1nngqOcwEljqHGG9uUZoPjsdZEs1w5JW9RXYzrSvH/u70C1JE5qFi0qjsdhnUX/dJRpWqitSA==
-  dependencies:
-    chalk "^1.1.1"
-    figlet "^1.1.1"
-    parent-require "^1.0.0"
-
 yargs-parser@20.2.4:
   version "20.2.4"
   resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-20.2.4.tgz#b42890f14566796f85ae8e3a25290d205f154a54"
@@ -19442,6 +19431,19 @@ yargs@^17.0.0:
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
 
+yargs@^17.0.1:
+  version "17.2.1"
+  resolved "https://registry.npmjs.org/yargs/-/yargs-17.2.1.tgz#e2c95b9796a0e1f7f3bf4427863b42e0418191ea"
+  integrity sha512-XfR8du6ua4K6uLGm5S6fA+FIJom/MdJcFNVY8geLlp2v8GYbOXD4EB1tPNZsRn4vBzKGMgb5DRZMeWuFc2GO8Q==
+  dependencies:
+    cliui "^7.0.2"
+    escalade "^3.1.1"
+    get-caller-file "^2.0.5"
+    require-directory "^2.1.1"
+    string-width "^4.2.0"
+    y18n "^5.0.5"
+    yargs-parser "^20.2.2"
+
 yargs@^7.1.0:
   version "7.1.2"
   resolved "https://registry.npmjs.org/yargs/-/yargs-7.1.2.tgz#63a0a5d42143879fdbb30370741374e0641d55db"
@@ -19487,7 +19489,7 @@ zen-observable-ts@^0.8.21:
     tslib "^1.9.3"
     zen-observable "^0.8.0"
 
-zen-observable-ts@^1.1.0:
+zen-observable-ts@^1.0.0, zen-observable-ts@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/zen-observable-ts/-/zen-observable-ts-1.1.0.tgz#2d1aa9d79b87058e9b75698b92791c1838551f83"
   integrity sha512-1h4zlLSqI2cRLPJUHJFL8bCWHhkpuXkF+dbGkRaWjgDIG26DmzyshUMrdV/rL3UnR+mhaX4fRq8LPouq0MYYIA==

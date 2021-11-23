@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { merge, Subject } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { delay, filter, map, take } from 'rxjs/operators';
 import { Connection, EntitySubscriberInterface } from 'typeorm';
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
 import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
@@ -58,6 +58,13 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
                     filter(event => event.queryRunner === queryRunner),
                     take(1),
                     map(event => event.queryRunner),
+                    // This `delay(0)` call appears to be necessary with the upgrade to TypeORM
+                    // v0.2.41, otherwise an active queryRunner can still get picked up in an event
+                    // subscriber function. This is manifested by the e2e test
+                    // "Transaction infrastructure › passing transaction via EventBus" failing
+                    // in the database-transactions.e2e-spec.ts suite, and a bunch of errors
+                    // in the default-search-plugin.e2e-spec.ts suite when using sqljs.
+                    delay(0),
                 )
                 .toPromise();
         } else {
