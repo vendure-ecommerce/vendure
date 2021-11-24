@@ -5687,6 +5687,11 @@ export type CustomerFragment = (
   )>> }
 );
 
+export type CustomerGroupFragment = (
+  { __typename?: 'CustomerGroup' }
+  & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+);
+
 export type GetCustomerListQueryVariables = Exact<{
   options?: Maybe<CustomerListOptions>;
 }>;
@@ -5792,7 +5797,7 @@ export type CreateCustomerGroupMutationVariables = Exact<{
 
 export type CreateCustomerGroupMutation = { createCustomerGroup: (
     { __typename?: 'CustomerGroup' }
-    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & CustomerGroupFragment
   ) };
 
 export type UpdateCustomerGroupMutationVariables = Exact<{
@@ -5802,7 +5807,7 @@ export type UpdateCustomerGroupMutationVariables = Exact<{
 
 export type UpdateCustomerGroupMutation = { updateCustomerGroup: (
     { __typename?: 'CustomerGroup' }
-    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & CustomerGroupFragment
   ) };
 
 export type DeleteCustomerGroupMutationVariables = Exact<{
@@ -5825,7 +5830,7 @@ export type GetCustomerGroupsQuery = { customerGroups: (
     & Pick<CustomerGroupList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'CustomerGroup' }
-      & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+      & CustomerGroupFragment
     )> }
   ) };
 
@@ -5837,7 +5842,6 @@ export type GetCustomerGroupWithCustomersQueryVariables = Exact<{
 
 export type GetCustomerGroupWithCustomersQuery = { customerGroup?: Maybe<(
     { __typename?: 'CustomerGroup' }
-    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
     & { customers: (
       { __typename?: 'CustomerList' }
       & Pick<CustomerList, 'totalItems'>
@@ -5846,6 +5850,7 @@ export type GetCustomerGroupWithCustomersQuery = { customerGroup?: Maybe<(
         & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'emailAddress' | 'firstName' | 'lastName'>
       )> }
     ) }
+    & CustomerGroupFragment
   )> };
 
 export type AddCustomersToGroupMutationVariables = Exact<{
@@ -5856,7 +5861,7 @@ export type AddCustomersToGroupMutationVariables = Exact<{
 
 export type AddCustomersToGroupMutation = { addCustomersToGroup: (
     { __typename?: 'CustomerGroup' }
-    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & CustomerGroupFragment
   ) };
 
 export type RemoveCustomersFromGroupMutationVariables = Exact<{
@@ -5867,7 +5872,7 @@ export type RemoveCustomersFromGroupMutationVariables = Exact<{
 
 export type RemoveCustomersFromGroupMutation = { removeCustomersFromGroup: (
     { __typename?: 'CustomerGroup' }
-    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & CustomerGroupFragment
   ) };
 
 export type GetCustomerHistoryQueryVariables = Exact<{
@@ -7329,7 +7334,7 @@ export type DeleteCountryMutation = { deleteCountry: (
 
 export type ZoneFragment = (
   { __typename?: 'Zone' }
-  & Pick<Zone, 'id' | 'name'>
+  & Pick<Zone, 'id' | 'createdAt' | 'updatedAt' | 'name'>
   & { members: Array<(
     { __typename?: 'Country' }
     & CountryFragment
@@ -7341,11 +7346,11 @@ export type GetZonesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetZonesQuery = { zones: Array<(
     { __typename?: 'Zone' }
-    & Pick<Zone, 'id' | 'createdAt' | 'updatedAt' | 'name'>
     & { members: Array<(
       { __typename?: 'Country' }
       & Pick<Country, 'createdAt' | 'updatedAt' | 'id' | 'name' | 'code' | 'enabled'>
     )> }
+    & ZoneFragment
   )> };
 
 export type GetZoneQueryVariables = Exact<{
@@ -8051,7 +8056,55 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'TextCustomFieldConfig' }
           & CustomFields_TextCustomFieldConfig_Fragment
+        )>, Country: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Customer: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
+        )>, CustomerGroup: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
         ) | (
@@ -8219,6 +8272,30 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'TextCustomFieldConfig' }
           & CustomFields_TextCustomFieldConfig_Fragment
+        )>, PaymentMethod: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Product: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -8315,6 +8392,30 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'TextCustomFieldConfig' }
           & CustomFields_TextCustomFieldConfig_Fragment
+        )>, Promotion: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, ShippingMethod: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -8339,7 +8440,79 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'TextCustomFieldConfig' }
           & CustomFields_TextCustomFieldConfig_Fragment
+        )>, TaxCategory: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
+        )>, TaxRate: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, User: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
+        )>, Zone: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
         ) | (
@@ -9006,6 +9179,10 @@ export namespace Customer {
   export type Fragment = CustomerFragment;
   export type User = (NonNullable<CustomerFragment['user']>);
   export type Addresses = NonNullable<(NonNullable<CustomerFragment['addresses']>)[number]>;
+}
+
+export namespace CustomerGroup {
+  export type Fragment = CustomerGroupFragment;
 }
 
 export namespace GetCustomerList {
@@ -10074,19 +10251,26 @@ export namespace GetServerConfig {
   export type Asset = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Asset']>)[number]>;
   export type Channel = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Channel']>)[number]>;
   export type Collection = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Collection']>)[number]>;
+  export type Country = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Country']>)[number]>;
   export type Customer = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Customer']>)[number]>;
+  export type CustomerGroup = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['CustomerGroup']>)[number]>;
   export type Facet = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Facet']>)[number]>;
   export type FacetValue = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['FacetValue']>)[number]>;
   export type Fulfillment = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Fulfillment']>)[number]>;
   export type _GlobalSettings = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['GlobalSettings']>)[number]>;
   export type Order = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Order']>)[number]>;
   export type OrderLine = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['OrderLine']>)[number]>;
+  export type PaymentMethod = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['PaymentMethod']>)[number]>;
   export type Product = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Product']>)[number]>;
   export type ProductOption = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ProductOption']>)[number]>;
   export type ProductOptionGroup = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ProductOptionGroup']>)[number]>;
   export type ProductVariant = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ProductVariant']>)[number]>;
+  export type Promotion = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Promotion']>)[number]>;
   export type ShippingMethod = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ShippingMethod']>)[number]>;
+  export type TaxCategory = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['TaxCategory']>)[number]>;
+  export type TaxRate = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['TaxRate']>)[number]>;
   export type User = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['User']>)[number]>;
+  export type Zone = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Zone']>)[number]>;
 }
 
 export namespace JobInfo {

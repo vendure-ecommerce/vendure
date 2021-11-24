@@ -2,11 +2,27 @@
     <span *ngIf="group.id">{{ 'customer.update-customer-group' | translate }}</span>
     <span *ngIf="!group.id">{{ 'customer.create-customer-group' | translate }}</span>
 </ng-template>
-
-<vdr-form-field [label]="'common.name' | translate" for="name">
-    <input id="name" type="text" [(ngModel)]="group.name" [readonly]="!(['CreateCustomerGroup', 'UpdateCustomerGroup'] | hasPermission)" />
-</vdr-form-field>
-
+<form [formGroup]="form">
+    <vdr-form-field [label]="'common.name' | translate" for="name">
+        <input
+            id="name"
+            type="text"
+            formControlName="name"
+            [readonly]="!(['CreateCustomerGroup', 'UpdateCustomerGroup'] | hasPermission)"
+        />
+    </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customField.name"
+                entityName="CustomerGroup"
+                [customFieldsFormGroup]="form.get(['customFields'])"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
+</form>
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
     <button type="submit" (click)="save()" [disabled]="!group.name" class="btn btn-primary">

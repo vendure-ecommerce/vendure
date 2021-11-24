@@ -56,13 +56,16 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {
-        Country: [{ name: 'foo', type: 'localeString' }],
-        CustomerGroup: [{ name: 'foo', type: 'string' }],
-        PaymentMethod: [{ name: 'foo', type: 'string' }],
-        Promotion: [{ name: 'foo', type: 'string' }],
-        TaxCategory: [{ name: 'foo', type: 'string' }],
-        TaxRate: [{ name: 'foo', type: 'string' }],
-        Zone: [{ name: 'foo', type: 'string' }],
+        // Country: [
+        //     { name: 'foo', type: 'localeString' },
+        //     { name: 'rating', type: 'int' },
+        // ],
+        // CustomerGroup: [{ name: 'foo', type: 'string' }],
+        // PaymentMethod: [{ name: 'foo', type: 'string' }],
+        // Promotion: [{ name: 'foo', type: 'string' }],
+        // TaxCategory: [{ name: 'foo', type: 'string' }],
+        // TaxRate: [{ name: 'foo', type: 'string' }],
+        // Zone: [{ name: 'foo', type: 'string' }],
     },
     logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {

@@ -6,6 +6,7 @@ import {
     BaseDetailComponent,
     CreateTaxRateInput,
     CustomerGroup,
+    CustomFieldConfig,
     DataService,
     GetZones,
     LanguageCode,
@@ -27,11 +28,13 @@ import { mergeMap, take } from 'rxjs/operators';
 })
 export class TaxRateDetailComponent
     extends BaseDetailComponent<TaxRate.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     taxCategories$: Observable<TaxCategory.Fragment[]>;
     zones$: Observable<GetZones.Zones[]>;
     groups$: Observable<CustomerGroup[]>;
     detailForm: FormGroup;
+    customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxRate];
 
     constructor(
@@ -44,6 +47,7 @@ export class TaxRateDetailComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('TaxRate');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             enabled: [true],
@@ -51,6 +55,9 @@ export class TaxRateDetailComponent
             taxCategoryId: [''],
             zoneId: [''],
             customerGroupId: [''],
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -64,6 +71,10 @@ export class TaxRateDetailComponent
 
     ngOnDestroy() {
         this.destroy();
+    }
+
+    customFieldIsSet(name: string): boolean {
+        return !!this.detailForm.get(['customFields', name]);
     }
 
     saveButtonEnabled(): boolean {
@@ -82,6 +93,7 @@ export class TaxRateDetailComponent
             categoryId: formValue.taxCategoryId,
             zoneId: formValue.zoneId,
             customerGroupId: formValue.customerGroupId,
+            customFields: formValue.customFields,
         } as CreateTaxRateInput;
         this.dataService.settings.createTaxRate(input).subscribe(
             data => {
@@ -117,6 +129,7 @@ export class TaxRateDetailComponent
                         categoryId: formValue.taxCategoryId,
                         zoneId: formValue.zoneId,
                         customerGroupId: formValue.customerGroupId,
+                        customFields: formValue.customFields,
                     } as UpdateTaxRateInput;
                     return this.dataService.settings.updateTaxRate(input);
                 }),
@@ -149,5 +162,17 @@ export class TaxRateDetailComponent
             zoneId: entity.zone ? entity.zone.id : '',
             customerGroupId: entity.customerGroup ? entity.customerGroup.id : '',
         });
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value = (entity as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
+                }
+            }
+        }
     }
 }

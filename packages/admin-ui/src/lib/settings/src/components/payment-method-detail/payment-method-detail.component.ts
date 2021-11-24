@@ -9,6 +9,7 @@ import {
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
+    CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
     getConfigArgValue,
@@ -31,8 +32,10 @@ import { mergeMap, take } from 'rxjs/operators';
 })
 export class PaymentMethodDetailComponent
     extends BaseDetailComponent<PaymentMethod.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     detailForm: FormGroup;
+    customFields: CustomFieldConfig[];
     checkers: ConfigurableOperationDefinition[] = [];
     handlers: ConfigurableOperationDefinition[] = [];
     selectedChecker?: ConfigurableOperation | null;
@@ -51,6 +54,7 @@ export class PaymentMethodDetailComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('PaymentMethod');
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             name: ['', Validators.required],
@@ -58,6 +62,9 @@ export class PaymentMethodDetailComponent
             enabled: [true, Validators.required],
             checker: {},
             handler: {},
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -90,6 +97,10 @@ export class PaymentMethodDetailComponent
                 codeControl.setValue(normalizeString(nameValue, '-'));
             }
         }
+    }
+
+    customFieldIsSet(name: string): boolean {
+        return !!this.detailForm.get(['customFields', name]);
     }
 
     configArgsIsPopulated(): boolean {
@@ -154,6 +165,7 @@ export class PaymentMethodDetailComponent
                             ? toConfigurableOperationInput(selectedChecker, formValue.checker)
                             : null,
                         handler: toConfigurableOperationInput(selectedHandler, formValue.handler),
+                        customFields: formValue.customFields,
                     };
                     return this.dataService.settings.createPaymentMethod(input);
                 }),
@@ -196,6 +208,7 @@ export class PaymentMethodDetailComponent
                             ? toConfigurableOperationInput(selectedChecker, formValue.checker)
                             : null,
                         handler: toConfigurableOperationInput(selectedHandler, formValue.handler),
+                        customFields: formValue.customFields,
                     };
                     return this.dataService.settings.updatePaymentMethod(input);
                 }),
@@ -236,6 +249,18 @@ export class PaymentMethodDetailComponent
                 code: paymentMethod.handler.code,
                 args: paymentMethod.handler.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
             };
+        }
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value = (paymentMethod as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
+                }
+            }
         }
     }
 }

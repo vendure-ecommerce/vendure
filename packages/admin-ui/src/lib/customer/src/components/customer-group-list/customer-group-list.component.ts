@@ -48,17 +48,17 @@ export class CustomerGroupListComponent implements OnInit {
     ngOnInit(): void {
         this.groups$ = this.dataService.customer
             .getCustomerGroupList()
-            .mapStream((data) => data.customerGroups.items);
+            .mapStream(data => data.customerGroups.items);
         const activeGroupId$ = this.route.paramMap.pipe(
-            map((pm) => pm.get('contents')),
+            map(pm => pm.get('contents')),
             distinctUntilChanged(),
             tap(() => (this.selectedCustomerIds = [])),
         );
-        this.listIsEmpty$ = this.groups$.pipe(map((groups) => groups.length === 0));
+        this.listIsEmpty$ = this.groups$.pipe(map(groups => groups.length === 0));
         this.activeGroup$ = combineLatest(this.groups$, activeGroupId$).pipe(
             map(([groups, activeGroupId]) => {
                 if (activeGroupId) {
-                    return groups.find((g) => g.id === activeGroupId);
+                    return groups.find(g => g.id === activeGroupId);
                 }
             }),
         );
@@ -79,23 +79,25 @@ export class CustomerGroupListComponent implements OnInit {
                                 },
                             },
                         })
-                        .mapStream((res) => res.customerGroup?.customers);
+                        .mapStream(res => res.customerGroup?.customers);
                 } else {
                     return of(undefined);
                 }
             }),
         );
 
-        this.members$ = membersResult$.pipe(map((res) => res?.items ?? []));
-        this.membersTotal$ = membersResult$.pipe(map((res) => res?.totalItems ?? 0));
+        this.members$ = membersResult$.pipe(map(res => res?.items ?? []));
+        this.membersTotal$ = membersResult$.pipe(map(res => res?.totalItems ?? 0));
     }
 
     create() {
         this.modalService
             .fromComponent(CustomerGroupDetailDialogComponent, { locals: { group: { name: '' } } })
             .pipe(
-                switchMap((name) =>
-                    name ? this.dataService.customer.createCustomerGroup({ name, customerIds: [] }) : EMPTY,
+                switchMap(result =>
+                    result
+                        ? this.dataService.customer.createCustomerGroup({ ...result, customerIds: [] })
+                        : EMPTY,
                 ),
                 // refresh list
                 switchMap(() => this.dataService.customer.getCustomerGroupList().single$),
@@ -106,7 +108,7 @@ export class CustomerGroupListComponent implements OnInit {
                         entity: 'CustomerGroup',
                     });
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'CustomerGroup',
                     });
@@ -124,11 +126,11 @@ export class CustomerGroupListComponent implements OnInit {
                 ],
             })
             .pipe(
-                switchMap((response) =>
+                switchMap(response =>
                     response ? this.dataService.customer.deleteCustomerGroup(groupId) : EMPTY,
                 ),
 
-                switchMap((result) => {
+                switchMap(result => {
                     if (result.deleteCustomerGroup.result === DeletionResult.DELETED) {
                         // refresh list
                         return this.dataService.customer
@@ -140,7 +142,7 @@ export class CustomerGroupListComponent implements OnInit {
                 }),
             )
             .subscribe(
-                (result) => {
+                result => {
                     if (typeof result.errorMessage === 'string') {
                         this.notificationService.error(result.errorMessage);
                     } else {
@@ -149,7 +151,7 @@ export class CustomerGroupListComponent implements OnInit {
                         });
                     }
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'CustomerGroup',
                     });
@@ -161,8 +163,10 @@ export class CustomerGroupListComponent implements OnInit {
         this.modalService
             .fromComponent(CustomerGroupDetailDialogComponent, { locals: { group } })
             .pipe(
-                switchMap((name) =>
-                    name ? this.dataService.customer.updateCustomerGroup({ id: group.id, name }) : EMPTY,
+                switchMap(result =>
+                    result
+                        ? this.dataService.customer.updateCustomerGroup({ id: group.id, ...result })
+                        : EMPTY,
                 ),
             )
             .subscribe(
@@ -171,7 +175,7 @@ export class CustomerGroupListComponent implements OnInit {
                         entity: 'CustomerGroup',
                     });
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'CustomerGroup',
                     });
@@ -196,7 +200,7 @@ export class CustomerGroupListComponent implements OnInit {
                 verticalAlign: 'top',
             })
             .pipe(
-                switchMap((customerIds) =>
+                switchMap(customerIds =>
                     customerIds
                         ? this.dataService.customer
                               .addCustomersToGroup(group.id, customerIds)
@@ -205,7 +209,7 @@ export class CustomerGroupListComponent implements OnInit {
                 ),
             )
             .subscribe({
-                next: (result) => {
+                next: result => {
                     this.notificationService.success(_(`customer.add-customers-to-group-success`), {
                         customerCount: result.length,
                         groupName: group.name,

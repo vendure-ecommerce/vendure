@@ -3,7 +3,7 @@
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <clr-toggle-wrapper *vdrIfPermissions="'UpdatePromotion'">
-                <input type="checkbox" clrToggle name="enabled" [formControl]="detailForm.get(['enabled'])" />
+                <input type="checkbox" clrToggle name="enabled" [formControl]="detailForm.get(['enabled'])"/>
                 <label>{{ 'common.enabled' | translate }}</label>
             </clr-toggle-wrapper>
         </div>
@@ -65,6 +65,17 @@
             formControlName="perCustomerUsageLimit"
         />
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="Promotion"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
 
     <div class="clr-row">
         <div class="clr-col" formArrayName="conditions">

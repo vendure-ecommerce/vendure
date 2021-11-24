@@ -88,6 +88,8 @@ export const DELETE_COUNTRY = gql`
 export const ZONE_FRAGMENT = gql`
     fragment Zone on Zone {
         id
+        createdAt
+        updatedAt
         name
         members {
             ...Country
@@ -99,10 +101,7 @@ export const ZONE_FRAGMENT = gql`
 export const GET_ZONES = gql`
     query GetZones {
         zones {
-            id
-            createdAt
-            updatedAt
-            name
+            ...Zone
             members {
                 createdAt
                 updatedAt
@@ -113,6 +112,7 @@ export const GET_ZONES = gql`
             }
         }
     }
+    ${ZONE_FRAGMENT}
 `;
 
 export const GET_ZONE = gql`
@@ -647,7 +647,13 @@ export const GET_SERVER_CONFIG = gql`
                     Collection {
                         ...CustomFields
                     }
+                    Country {
+                        ...CustomFields
+                    }
                     Customer {
+                        ...CustomFields
+                    }
+                    CustomerGroup {
                         ...CustomFields
                     }
                     Facet {
@@ -668,6 +674,9 @@ export const GET_SERVER_CONFIG = gql`
                     OrderLine {
                         ...CustomFields
                     }
+                    PaymentMethod {
+                        ...CustomFields
+                    }
                     Product {
                         ...CustomFields
                     }
@@ -680,10 +689,22 @@ export const GET_SERVER_CONFIG = gql`
                     ProductVariant {
                         ...CustomFields
                     }
+                    Promotion {
+                        ...CustomFields
+                    }
                     ShippingMethod {
                         ...CustomFields
                     }
+                    TaxCategory {
+                        ...CustomFields
+                    }
+                    TaxRate {
+                        ...CustomFields
+                    }
                     User {
+                        ...CustomFields
+                    }
+                    Zone {
                         ...CustomFields
                     }
                 }

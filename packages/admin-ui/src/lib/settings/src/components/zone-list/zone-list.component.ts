@@ -55,8 +55,8 @@ export class ZoneListComponent implements OnInit {
         this.modalService
             .fromComponent(ZoneDetailDialogComponent, { locals: { zone: { name: '' } } })
             .pipe(
-                switchMap(name =>
-                    name ? this.dataService.settings.createZone({ name, memberIds: [] }) : EMPTY,
+                switchMap(result =>
+                    result ? this.dataService.settings.createZone({ ...result, memberIds: [] }) : EMPTY,
                 ),
                 // refresh list
                 switchMap(() => this.dataService.settings.getZones().single$),
@@ -120,8 +120,8 @@ export class ZoneListComponent implements OnInit {
         this.modalService
             .fromComponent(ZoneDetailDialogComponent, { locals: { zone } })
             .pipe(
-                switchMap(name =>
-                    name ? this.dataService.settings.updateZone({ id: zone.id, name }) : EMPTY,
+                switchMap(result =>
+                    result ? this.dataService.settings.updateZone({ id: zone.id, ...result }) : EMPTY,
                 ),
             )
             .subscribe(

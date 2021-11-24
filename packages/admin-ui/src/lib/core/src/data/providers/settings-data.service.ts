@@ -131,13 +131,13 @@ export class SettingsDataService {
 
     createCountry(input: CreateCountryInput) {
         return this.baseDataService.mutate<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
-            input: pick(input, ['code', 'enabled', 'translations']),
+            input: pick(input, ['code', 'enabled', 'translations', 'customFields']),
         });
     }
 
     updateCountry(input: UpdateCountryInput) {
         return this.baseDataService.mutate<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
-            input: pick(input, ['id', 'code', 'enabled', 'translations']),
+            input: pick(input, ['id', 'code', 'enabled', 'translations', 'customFields']),
         });
     }
 

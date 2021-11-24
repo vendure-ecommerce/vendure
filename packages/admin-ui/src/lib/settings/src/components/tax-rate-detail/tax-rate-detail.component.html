@@ -79,4 +79,15 @@
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="TaxRate"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
 </form>

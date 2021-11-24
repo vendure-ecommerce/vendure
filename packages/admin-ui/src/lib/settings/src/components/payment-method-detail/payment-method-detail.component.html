@@ -64,6 +64,17 @@
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="PaymentMethod"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
 
     <div class="clr-row mt4">
         <div class="clr-col">
