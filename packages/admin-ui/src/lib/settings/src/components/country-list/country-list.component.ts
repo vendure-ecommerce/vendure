@@ -6,8 +6,10 @@ import {
     DeletionResult,
     GetCountryList,
     GetZones,
+    LanguageCode,
     ModalService,
     NotificationService,
+    ServerConfigService,
     Zone,
 } from '@vendure/admin-ui/core';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
@@ -23,24 +25,39 @@ export class CountryListComponent implements OnInit, OnDestroy {
     searchTerm = new FormControl('');
     countriesWithZones$: Observable<Array<GetCountryList.Items & { zones: GetZones.Zones[] }>>;
     zones$: Observable<GetZones.Zones[]>;
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
 
     private countries: GetCountryList.Items[] = [];
-    private destroy$ = new Subject();
+    private destroy$ = new Subject<void>();
+    private refresh$ = new Subject<void>();
 
     constructor(
         private dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
+        private serverConfigService: ServerConfigService,
     ) {}
 
     ngOnInit() {
-        const countries$ = this.searchTerm.valueChanges.pipe(
-            startWith(null),
-            switchMap(term => this.dataService.settings.getCountries(999, 0, term).stream$),
-            tap(data => (this.countries = data.countries.items)),
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage);
+
+        const countries$ = combineLatest(
+            this.contentLanguage$,
+            this.searchTerm.valueChanges.pipe(startWith(null)),
+        ).pipe(
+            map(([__, term]) => term),
+            switchMap(term => this.dataService.settings.getCountries(999, 0, term).single$),
+            tap(data => {
+                this.countries = data.countries.items;
+            }),
             map(data => data.countries.items),
         );
+
         this.zones$ = this.dataService.settings.getZones().mapStream(data => data.zones);
+
         this.countriesWithZones$ = combineLatest(countries$, this.zones$).pipe(
             map(([countries, zones]) => {
                 return countries.map(country => ({
@@ -49,11 +66,17 @@ export class CountryListComponent implements OnInit, OnDestroy {
                 }));
             }),
         );
+
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
     }
 
     ngOnDestroy() {
-        this.destroy$.next();
+        this.destroy$.next(undefined);
         this.destroy$.complete();
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 
     deleteCountry(countryId: string) {
