@@ -132,17 +132,18 @@ export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' 
 export type DefaultFormComponentId =
     | 'boolean-form-input'
     | 'currency-form-input'
+    | 'customer-group-form-input'
     | 'date-form-input'
     | 'facet-value-form-input'
+    | 'json-editor-form-input'
     | 'number-form-input'
-    | 'select-form-input'
-    | 'product-selector-form-input'
-    | 'customer-group-form-input'
-    | 'text-form-input'
-    | 'textarea-form-input'
-    | 'rich-text-form-input'
     | 'password-form-input'
-    | 'relation-form-input';
+    | 'product-selector-form-input'
+    | 'relation-form-input'
+    | 'rich-text-form-input'
+    | 'select-form-input'
+    | 'text-form-input'
+    | 'textarea-form-input';
 
 /**
  * @description
@@ -151,40 +152,46 @@ export type DefaultFormComponentId =
  * @docsCategory ConfigurableOperationDef
  */
 type DefaultFormConfigHash = {
+    'boolean-form-input': {};
+    'currency-form-input': {};
+    'customer-group-form-input': {};
     'date-form-input': { min?: string; max?: string; yearRange?: number };
+    'facet-value-form-input': {};
+    'json-editor-form-input': { height?: string };
     'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
+    'password-form-input': {};
+    'product-selector-form-input': {};
+    'relation-form-input': {};
+    'rich-text-form-input': {};
     'select-form-input': {
         options?: Array<{ value: string; label?: Array<Omit<LocalizedString, '__typename'>> }>;
     };
-    'boolean-form-input': {};
-    'currency-form-input': {};
-    'facet-value-form-input': {};
-    'product-selector-form-input': {};
-    'customer-group-form-input': {};
     'text-form-input': {};
     'textarea-form-input': {
         spellcheck?: boolean;
     };
-    'rich-text-form-input': {};
-    'password-form-input': {};
-    'relation-form-input': {};
 };
 
 export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
 
 export type UiComponentConfig =
-    | ({ component: 'number-form-input' } & DefaultFormComponentConfig<'number-form-input'>)
-    | ({ component: 'date-form-input' } & DefaultFormComponentConfig<'date-form-input'>)
-    | ({ component: 'select-form-input' } & DefaultFormComponentConfig<'select-form-input'>)
-    | ({ component: 'text-form-input' } & DefaultFormComponentConfig<'text-form-input'>)
     | ({ component: 'boolean-form-input' } & DefaultFormComponentConfig<'boolean-form-input'>)
     | ({ component: 'currency-form-input' } & DefaultFormComponentConfig<'currency-form-input'>)
+    | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
+    | ({ component: 'date-form-input' } & DefaultFormComponentConfig<'date-form-input'>)
     | ({ component: 'facet-value-form-input' } & DefaultFormComponentConfig<'facet-value-form-input'>)
+    | ({ component: 'json-editor-form-input' } & DefaultFormComponentConfig<'json-editor-form-input'>)
+    | ({ component: 'number-form-input' } & DefaultFormComponentConfig<'number-form-input'>)
+    | ({ component: 'password-form-input' } & DefaultFormComponentConfig<'password-form-input'>)
     | ({
           component: 'product-selector-form-input';
       } & DefaultFormComponentConfig<'product-selector-form-input'>)
-    | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
-    | { component: string; [prop: string]: Json };
+    | ({ component: 'relation-form-input' } & DefaultFormComponentConfig<'relation-form-input'>)
+    | ({ component: 'rich-text-form-input' } & DefaultFormComponentConfig<'rich-text-form-input'>)
+    | ({ component: 'select-form-input' } & DefaultFormComponentConfig<'select-form-input'>)
+    | ({ component: 'text-form-input' } & DefaultFormComponentConfig<'text-form-input'>)
+    | ({ component: 'textarea-form-input' } & DefaultFormComponentConfig<'textarea-form-input'>)
+    | { component: string; [prop: string]: any };
 
 export type CustomFieldsObject = { [key: string]: any };
 

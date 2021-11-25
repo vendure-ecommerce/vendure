@@ -43,6 +43,7 @@
     "@webcomponents/custom-elements": "^1.4.3",
     "apollo-angular": "^2.4.0",
     "apollo-upload-client": "^14.1.3",
+    "codejar": "^3.5.0",
     "core-js": "^3.9.1",
     "dayjs": "^1.10.4",
     "graphql": "15.5.1",

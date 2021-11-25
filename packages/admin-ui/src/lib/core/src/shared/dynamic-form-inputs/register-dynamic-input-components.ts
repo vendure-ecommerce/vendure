@@ -9,6 +9,7 @@ import {
 } from '../../providers/custom-field-component/custom-field-component.service';
 
 import { BooleanFormInputComponent } from './boolean-form-input/boolean-form-input.component';
+import { JsonEditorFormInputComponent } from './code-editor-form-input/json-editor-form-input.component';
 import { CurrencyFormInputComponent } from './currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './date-form-input/date-form-input.component';
@@ -36,6 +37,7 @@ export const defaultFormInputs = [
     RelationFormInputComponent,
     TextareaFormInputComponent,
     RichTextFormInputComponent,
+    JsonEditorFormInputComponent,
 ];
 
 /**

@@ -83,6 +83,7 @@ import { IfDefaultChannelActiveDirective } from './directives/if-default-channel
 import { IfMultichannelDirective } from './directives/if-multichannel.directive';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
+import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/date-form-input.component';
@@ -244,6 +245,7 @@ const DYNAMIC_FORM_INPUTS = [
     RelationSelectorDialogComponent,
     TextareaFormInputComponent,
     RichTextFormInputComponent,
+    JsonEditorFormInputComponent,
 ];
 
 @NgModule({
