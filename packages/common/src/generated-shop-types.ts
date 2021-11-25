@@ -127,6 +127,7 @@ export type BooleanCustomFieldConfig = CustomField & {
     readonly?: Maybe<Scalars['Boolean']>;
     internal?: Maybe<Scalars['Boolean']>;
     nullable?: Maybe<Scalars['Boolean']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type BooleanOperators = {
@@ -712,6 +713,7 @@ export type CustomField = {
     readonly?: Maybe<Scalars['Boolean']>;
     internal?: Maybe<Scalars['Boolean']>;
     nullable?: Maybe<Scalars['Boolean']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type CustomFieldConfig =
@@ -827,6 +829,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
     min?: Maybe<Scalars['String']>;
     max?: Maybe<Scalars['String']>;
     step?: Maybe<Scalars['Int']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type DeletionResponse = {
@@ -1009,6 +1012,7 @@ export type FloatCustomFieldConfig = CustomField & {
     min?: Maybe<Scalars['Float']>;
     max?: Maybe<Scalars['Float']>;
     step?: Maybe<Scalars['Float']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type Fulfillment = Node & {
@@ -1153,6 +1157,7 @@ export type IntCustomFieldConfig = CustomField & {
     min?: Maybe<Scalars['Int']>;
     max?: Maybe<Scalars['Int']>;
     step?: Maybe<Scalars['Int']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if the user authentication credentials are not valid */
@@ -1501,6 +1506,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
     internal?: Maybe<Scalars['Boolean']>;
     nullable?: Maybe<Scalars['Boolean']>;
     pattern?: Maybe<Scalars['String']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type LocalizedString = {
@@ -2678,6 +2684,7 @@ export type RelationCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']>;
     entity: Scalars['String'];
     scalarFields: Array<Scalars['String']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
@@ -2865,6 +2872,7 @@ export type StringCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']>;
     pattern?: Maybe<Scalars['String']>;
     options?: Maybe<Array<StringFieldOption>>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type StringFieldOption = {
@@ -2962,6 +2970,7 @@ export type TextCustomFieldConfig = CustomField & {
     readonly?: Maybe<Scalars['Boolean']>;
     internal?: Maybe<Scalars['Boolean']>;
     nullable?: Maybe<Scalars['Boolean']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;

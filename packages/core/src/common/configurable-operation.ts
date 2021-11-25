@@ -8,7 +8,12 @@ import {
     Maybe,
     StringFieldOption,
 } from '@vendure/common/lib/generated-types';
-import { ConfigArgType, DefaultFormComponentConfig, ID } from '@vendure/common/lib/shared-types';
+import {
+    ConfigArgType,
+    DefaultFormComponentConfig,
+    ID,
+    UiComponentConfig,
+} from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../api/common/request-context';
@@ -36,20 +41,6 @@ import { InjectableStrategy } from './types/injectable-strategy';
  * @docsCategory ConfigurableOperationDef
  */
 export type LocalizedStringArray = Array<Omit<LocalizedString, '__typename'>>;
-
-export type UiComponentConfig =
-    | ({ component: 'number-form-input' } & DefaultFormComponentConfig<'number-form-input'>)
-    | ({ component: 'date-form-input' } & DefaultFormComponentConfig<'date-form-input'>)
-    | ({ component: 'select-form-input' } & DefaultFormComponentConfig<'select-form-input'>)
-    | ({ component: 'text-form-input' } & DefaultFormComponentConfig<'text-form-input'>)
-    | ({ component: 'boolean-form-input' } & DefaultFormComponentConfig<'boolean-form-input'>)
-    | ({ component: 'currency-form-input' } & DefaultFormComponentConfig<'currency-form-input'>)
-    | ({ component: 'facet-value-form-input' } & DefaultFormComponentConfig<'facet-value-form-input'>)
-    | ({
-          component: 'product-selector-form-input';
-      } & DefaultFormComponentConfig<'product-selector-form-input'>)
-    | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
-    | { component: string; [prop: string]: any };
 
 export interface ConfigArgCommonDef<T extends ConfigArgType> {
     type: T;

@@ -10,7 +10,12 @@ import {
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
+import {
+    CustomFieldsObject,
+    CustomFieldType,
+    Type,
+    UiComponentConfig,
+} from '@vendure/common/lib/shared-types';
 
 import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
@@ -35,6 +40,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
      */
     public?: boolean;
     nullable?: boolean;
+    ui?: UiComponentConfig;
 };
 
 /**
