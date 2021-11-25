@@ -334,6 +334,6 @@
 
     .ProseMirror p {
         margin-bottom: 0.5rem;
-        color: var(--color-grey-800);
+        color: var(--color-grey-800) !important;
     }
 }

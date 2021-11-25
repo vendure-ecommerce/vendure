@@ -17,6 +17,7 @@ import { NumberFormInputComponent } from './number-form-input/number-form-input.
 import { PasswordFormInputComponent } from './password-form-input/password-form-input.component';
 import { ProductSelectorFormInputComponent } from './product-selector-form-input/product-selector-form-input.component';
 import { RelationFormInputComponent } from './relation-form-input/relation-form-input.component';
+import { RichTextFormInputComponent } from './rich-text-form-input/rich-text-form-input.component';
 import { SelectFormInputComponent } from './select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './text-form-input/text-form-input.component';
 import { TextareaFormInputComponent } from './textarea-form-input/textarea-form-input.component';
@@ -34,6 +35,7 @@ export const defaultFormInputs = [
     PasswordFormInputComponent,
     RelationFormInputComponent,
     TextareaFormInputComponent,
+    RichTextFormInputComponent,
 ];
 
 /**

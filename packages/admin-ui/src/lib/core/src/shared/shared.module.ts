@@ -102,6 +102,7 @@ import {
 } from './dynamic-form-inputs/relation-form-input/relation-card/relation-card.component';
 import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-input/relation-form-input.component';
 import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
+import { RichTextFormInputComponent } from './dynamic-form-inputs/rich-text-form-input/rich-text-form-input.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
@@ -242,6 +243,7 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
     TextareaFormInputComponent,
+    RichTextFormInputComponent,
 ];
 
 @NgModule({

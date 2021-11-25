@@ -140,6 +140,7 @@ export type DefaultFormComponentId =
     | 'customer-group-form-input'
     | 'text-form-input'
     | 'textarea-form-input'
+    | 'rich-text-form-input'
     | 'password-form-input'
     | 'relation-form-input';
 
@@ -164,6 +165,7 @@ type DefaultFormConfigHash = {
     'textarea-form-input': {
         spellcheck?: boolean;
     };
+    'rich-text-form-input': {};
     'password-form-input': {};
     'relation-form-input': {};
 };
