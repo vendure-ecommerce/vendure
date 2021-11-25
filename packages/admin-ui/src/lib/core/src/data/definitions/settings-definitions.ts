@@ -507,6 +507,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
         }
         readonly
         nullable
+        ui
     }
 `;
 
