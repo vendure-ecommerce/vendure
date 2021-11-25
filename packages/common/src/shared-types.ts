@@ -184,7 +184,7 @@ export type UiComponentConfig =
           component: 'product-selector-form-input';
       } & DefaultFormComponentConfig<'product-selector-form-input'>)
     | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
-    | { component: string; [prop: string]: any };
+    | { component: string; [prop: string]: Json };
 
 export type CustomFieldsObject = { [key: string]: any };
 

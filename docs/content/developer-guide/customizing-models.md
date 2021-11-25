@@ -55,6 +55,32 @@ mutation {
 }
 ```
 
+## CustomField UI Form Inputs
+
+By default, the Admin UI will use an appropriate input component depending on the `type` of the custom field.
+For instance, `string` fields will use a `<input type="text">` component, and `boolean` fields will use a `<input type="checkbox">` component.
+
+These defaults can be overridden by using the `ui` property of the custom field config object. For example, if we want a number to be displayed as a currency input:
+
+```TypeScript {hl_lines=[8]}
+const config = {
+  // ...
+  customFields: {
+    ProductVariant: [
+      { 
+        name: 'rrp',
+        type: 'int', 
+        ui: { component: 'currency-form-input' },
+      },
+    ]
+  }
+}
+```
+
+The built-in form inputs are listed in the [DefaultFormConfigHash docs]({{< relref "default-form-config-hash" >}}).
+
+If you want to use a completely custom form input component which is not provided by the Admin UI, you'll need to create a plugin which [extends the Admin UI]({{< relref "extending-the-admin-ui" >}}) with [custom form inputs]({{< relref "custom-form-inputs" >}}). 
+
 ## TypeScript Typings
 
 Because custom fields are generated at run-time, TypeScript has no way of knowing about them based on your
@@ -273,7 +299,9 @@ mutation {
   }
 }
 ```
-#### UI for relation type
+
+{{% alert %}}
+**UI for relation type**
 
 The Admin UI app has built-in selection components for "relation" custom fields which reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will instead see the message:
 
@@ -281,4 +309,5 @@ The Admin UI app has built-in selection components for "relation" custom fields 
 No input component configured for "<entity>" type
 ```
 
-In this case, you will need to create a UI extension which defines a custom field control for that custom field. You can read more about this in the [CustomField Controls guide]({{< relref "custom-field-controls" >}})
+In this case, you will need to create a UI extension which defines a custom field control for that custom field. You can read more about this in the [custom form input guide]({{< relref "custom-form-inputs" >}})
+{{< /alert >}}

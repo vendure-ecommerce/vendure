@@ -13,6 +13,8 @@ export type CustomFieldEntityName = Exclude<keyof CustomFields, '__typename'>;
 
 /**
  * This service allows the registration of custom controls for customFields.
+ *
+ * @deprecated The ComponentRegistryService now handles custom field components directly.
  */
 @Injectable({
     providedIn: 'root',

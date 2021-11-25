@@ -41,7 +41,8 @@ export const defaultFormInputs = [
 /**
  * @description
  * Registers a custom FormInputComponent which can be used to control the argument inputs
- * of a {@link ConfigurableOperationDef} (e.g. CollectionFilter, ShippingMethod etc)
+ * of a {@link ConfigurableOperationDef} (e.g. CollectionFilter, ShippingMethod etc) or for
+ * a custom field.
  *
  * @example
  * ```TypeScript
@@ -82,6 +83,8 @@ export function registerFormInputComponent(id: string, component: Type<FormInput
  * })
  * export class MyUiExtensionModule {}
  * ```
+ *
+ * @deprecated use `registerFormInputComponent()` in combination with the customField `ui` config instead.
  */
 export function registerCustomFieldComponent(
     entity: CustomFieldEntityName,

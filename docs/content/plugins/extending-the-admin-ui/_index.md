@@ -30,7 +30,7 @@ Angular uses the concept of modules ([NgModules](https://angular.io/guide/ngmodu
 
 When creating your UI extensions, you can set your module to be either `lazy` or `shared`. Shared modules are loaded _eagerly_, i.e. their code is bundled up with the main app and loaded as soon as the app loads. 
 
-As a rule, modules defining new routes should be lazily loaded (so that the code is only loaded once that route is activated), and modules defining [new navigations items]({{< relref "adding-navigation-items" >}}) and [CustomField controls]({{< relref "custom-field-controls" >}}) should be set to `shared`.
+As a rule, modules defining new routes should be lazily loaded (so that the code is only loaded once that route is activated), and modules defining [new navigations items]({{< relref "adding-navigation-items" >}}) and [custom form input]({{< relref "custom-form-inputs" >}}) should be set to `shared`.
 
 ## Dev mode
 
