@@ -74,6 +74,7 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
+import { TabbedCustomFieldsComponent } from './components/tabbed-custom-fields/tabbed-custom-fields.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { TagSelectorComponent } from './components/tag-selector/tag-selector.component';
 import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
@@ -223,6 +224,7 @@ const DECLARATIONS = [
     RelationSelectorDialogComponent,
     RelationCardComponent,
     StatusBadgeComponent,
+    TabbedCustomFieldsComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

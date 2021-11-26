@@ -61,13 +61,11 @@
     </vdr-form-field>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                *ngIf="customFieldIsSet(customField.name)"
-                entityName="Country"
-                [customFieldsFormGroup]="detailForm.get('customFields')"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="Country"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!(updatePermission | hasPermission)"
+        ></vdr-tabbed-custom-fields>
     </section>
 </form>

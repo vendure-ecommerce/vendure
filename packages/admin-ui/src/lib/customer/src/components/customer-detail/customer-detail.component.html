@@ -70,14 +70,11 @@
 
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                *ngIf="customFieldIsSet(customField.name)"
-                entityName="Customer"
-                [customFieldsFormGroup]="detailForm.get(['customer', 'customFields'])"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="Customer"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get(['customer', 'customFields'])"
+        ></vdr-tabbed-custom-fields>
     </section>
 </form>
 

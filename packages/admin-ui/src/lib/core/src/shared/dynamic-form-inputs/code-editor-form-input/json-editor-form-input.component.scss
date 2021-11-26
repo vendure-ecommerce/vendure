@@ -12,6 +12,9 @@
     height: 340px;
     letter-spacing: normal;
     line-height: 20px;
+    resize: both;
+    text-align: initial;
+    min-width: 200px;
 
     &:focus {
         border-color: var(--color-primary-500);

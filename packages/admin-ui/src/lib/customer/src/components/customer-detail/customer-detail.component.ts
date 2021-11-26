@@ -129,10 +129,6 @@ export class CustomerDetailComponent
         this.orderListUpdates$.complete();
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customer', 'customFields', name]);
-    }
-
     getAddressFormControls(): FormControl[] {
         const formArray = this.detailForm.get(['addresses']) as FormArray;
         return formArray.controls as FormControl[];

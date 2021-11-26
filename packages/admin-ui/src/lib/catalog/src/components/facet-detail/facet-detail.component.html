@@ -73,14 +73,12 @@
 
         <section formGroupName="customFields" *ngIf="customFields.length">
             <label>{{ 'common.custom-fields' | translate }}</label>
-            <ng-container *ngFor="let customField of customFields">
-                <vdr-custom-field-control
-                    *ngIf="customFieldIsSet(customField.name)"
-                    entityName="Facet"
-                    [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
-                    [customField]="customField"
-                ></vdr-custom-field-control>
-            </ng-container>
+            <vdr-tabbed-custom-fields
+                entityName="Facet"
+                [customFields]="customFields"
+                [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
+                [readonly]="!(updatePermission | hasPermission)"
+            ></vdr-tabbed-custom-fields>
         </section>
     </section>
 
@@ -93,8 +91,8 @@
                     <th></th>
                     <th>{{ 'common.name' | translate }}</th>
                     <th>{{ 'common.code' | translate }}</th>
-                    <ng-container *ngFor="let customField of customValueFields">
-                        <th>{{ customField.name }}</th>
+                    <ng-container *ngIf="customValueFields.length">
+                        <th>{{ 'common.custom-fields' | translate }}</th>
                     </ng-container>
                     <th></th>
                 </tr>
@@ -117,17 +115,26 @@
                         />
                     </td>
                     <td class="align-middle"><input type="text" formControlName="code" readonly /></td>
-                    <ng-container *ngFor="let customField of customValueFields">
-                        <td class="align-middle">
-                            <vdr-custom-field-control
-                                *ngIf="customValueFieldIsSet(i, customField.name)"
-                                entityName="FacetValue"
-                                [showLabel]="false"
-                                [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
-                                [customField]="customField"
-                            ></vdr-custom-field-control>
-                        </td>
-                    </ng-container>
+                    <td class="" *ngIf="customValueFields.length">
+<!--                    <ng-container *ngFor="let customField of customValueFields">-->
+<!--                       -->
+<!--                            <vdr-custom-field-control-->
+<!--                                *ngIf="customValueFieldIsSet(i, customField.name)"-->
+<!--                                entityName="FacetValue"-->
+<!--                                [showLabel]="false"-->
+<!--                                [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"-->
+<!--                                [customField]="customField"-->
+<!--                            ></vdr-custom-field-control>-->
+<!--                      -->
+<!--                    </ng-container>-->
+                        <vdr-tabbed-custom-fields
+                            entityName="FacetValue"
+                            [customFields]="customFields"
+                            [compact]="true"
+                            [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        ></vdr-tabbed-custom-fields>
+                    </td>
                     <td class="align-middle">
                         <vdr-dropdown>
                             <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>

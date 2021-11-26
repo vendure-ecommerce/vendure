@@ -174,7 +174,7 @@ type DefaultFormConfigHash = {
 
 export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
 
-export type UiComponentConfig =
+export type UiComponentConfig = (
     | ({ component: 'boolean-form-input' } & DefaultFormComponentConfig<'boolean-form-input'>)
     | ({ component: 'currency-form-input' } & DefaultFormComponentConfig<'currency-form-input'>)
     | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
@@ -191,7 +191,8 @@ export type UiComponentConfig =
     | ({ component: 'select-form-input' } & DefaultFormComponentConfig<'select-form-input'>)
     | ({ component: 'text-form-input' } & DefaultFormComponentConfig<'text-form-input'>)
     | ({ component: 'textarea-form-input' } & DefaultFormComponentConfig<'textarea-form-input'>)
-    | { component: string; [prop: string]: any };
+    | { component: string; [prop: string]: any }
+) & { tab?: string };
 
 export type CustomFieldsObject = { [key: string]: any };
 

@@ -136,10 +136,6 @@ export class ShippingMethodDetailComponent
         this.destroy();
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     updateCode(currentCode: string, nameValue: string) {
         if (!currentCode) {
             const codeControl = this.detailForm.get(['code']);

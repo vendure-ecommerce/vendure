@@ -59,10 +59,6 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         });
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     save() {
         if (!this.detailForm.dirty) {
             return;

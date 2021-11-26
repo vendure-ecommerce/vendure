@@ -99,10 +99,6 @@ export class PaymentMethodDetailComponent
         }
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     configArgsIsPopulated(): boolean {
         const configArgsGroup = this.detailForm.get('configArgs') as FormGroup | undefined;
         if (!configArgsGroup) {

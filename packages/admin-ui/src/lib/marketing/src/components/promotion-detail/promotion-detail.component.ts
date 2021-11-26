@@ -81,10 +81,6 @@ export class PromotionDetailComponent
         this.destroy();
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     getAvailableConditions(): ConfigurableOperationDefinition[] {
         return this.allConditions.filter(o => !this.conditions.find(c => c.code === o.code));
     }

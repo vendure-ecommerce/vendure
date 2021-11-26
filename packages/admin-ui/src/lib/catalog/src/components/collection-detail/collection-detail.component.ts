@@ -94,10 +94,6 @@ export class CollectionDetailComponent
         return this.allFilters.find(f => f.code === filter.code);
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     assetsChanged(): boolean {
         return !!Object.values(this.assetChanges).length;
     }

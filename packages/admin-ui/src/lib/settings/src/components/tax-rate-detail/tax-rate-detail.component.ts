@@ -73,10 +73,6 @@ export class TaxRateDetailComponent
         this.destroy();
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     saveButtonEnabled(): boolean {
         return this.detailForm.dirty && this.detailForm.valid;
     }

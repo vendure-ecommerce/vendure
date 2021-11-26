@@ -67,10 +67,6 @@ export class TaxCategoryDetailComponent
         return this.detailForm.dirty && this.detailForm.valid;
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     create() {
         if (!this.detailForm.dirty) {
             return;

@@ -64,10 +64,6 @@ export class CountryDetailComponent
         this.destroy();
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     create() {
         if (!this.detailForm.dirty) {
             return;

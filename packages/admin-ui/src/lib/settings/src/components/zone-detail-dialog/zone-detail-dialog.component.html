@@ -11,14 +11,12 @@
             [readonly]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)"
         />
     </vdr-form-field>
-    <ng-container *ngFor="let customField of customFields">
-        <vdr-custom-field-control
-            *ngIf="customField.name"
-            entityName="Zone"
-            [customFieldsFormGroup]="form.get(['customFields'])"
-            [customField]="customField"
-        ></vdr-custom-field-control>
-    </ng-container>
+    <vdr-tabbed-custom-fields
+        entityName="Zone"
+        [customFields]="customFields"
+        [customFieldsFormGroup]="form.get('customFields')"
+        [readonly]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)"
+    ></vdr-tabbed-custom-fields>
 </form>
 
 <ng-template vdrDialogButtons>

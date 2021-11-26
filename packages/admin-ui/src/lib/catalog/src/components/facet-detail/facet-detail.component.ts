@@ -93,10 +93,6 @@ export class FacetDetailComponent
         }
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['facet', 'customFields', name]);
-    }
-
     customValueFieldIsSet(index: number, name: string): boolean {
         return !!this.detailForm.get(['values', index, 'customFields', name]);
     }

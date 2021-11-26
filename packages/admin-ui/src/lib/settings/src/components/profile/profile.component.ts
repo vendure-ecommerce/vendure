@@ -58,10 +58,6 @@ export class ProfileComponent
         this.destroy();
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     save() {
         this.entity$
             .pipe(
