@@ -1,4 +1,4 @@
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -8,10 +8,12 @@ import { ServerConfigService } from '../data/server-config';
 
 import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
+import { TranslationOf } from './utilities/find-translation';
 import { getDefaultUiLanguage } from './utilities/get-default-ui-language';
 
 export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }>
-    implements DeactivateAware {
+    implements DeactivateAware
+{
     entity$: Observable<Entity>;
     availableLanguages$: Observable<LanguageCode[]>;
     languageCode$: Observable<LanguageCode>;
@@ -75,6 +77,25 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     }
 
     protected abstract setFormValues(entity: Entity, languageCode: LanguageCode): void;
+
+    protected setCustomFieldFormValues<T = Entity>(
+        customFields: CustomFieldConfig[],
+        formGroup: AbstractControl | null,
+        entity: T,
+        currentTranslation?: TranslationOf<T>,
+    ) {
+        for (const fieldDef of customFields) {
+            const key = fieldDef.name;
+            const value =
+                fieldDef.type === 'localeString'
+                    ? (currentTranslation as any).customFields?.[key]
+                    : (entity as any).customFields?.[key];
+            const control = formGroup?.get(key);
+            if (control) {
+                control.patchValue(value);
+            }
+        }
+    }
 
     protected getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
         return this.serverConfigService.getCustomFieldsFor(key);

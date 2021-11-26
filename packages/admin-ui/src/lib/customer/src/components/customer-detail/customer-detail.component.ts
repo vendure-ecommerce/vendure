@@ -51,8 +51,10 @@ type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
     styleUrls: ['./customer-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrders>
-    implements OnInit, OnDestroy {
+export class CustomerDetailComponent
+    extends BaseDetailComponent<CustomerWithOrders>
+    implements OnInit, OnDestroy
+{
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     addressCustomFields: CustomFieldConfig[];
@@ -228,11 +230,13 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const saveOperations: Array<Observable<
-                        | UpdateCustomer.UpdateCustomer
-                        | CreateCustomerAddress.CreateCustomerAddress
-                        | UpdateCustomerAddress.UpdateCustomerAddress
-                    >> = [];
+                    const saveOperations: Array<
+                        Observable<
+                            | UpdateCustomer.UpdateCustomer
+                            | CreateCustomerAddress.CreateCustomerAddress
+                            | UpdateCustomerAddress.UpdateCustomerAddress
+                        >
+                    > = [];
                     const customerForm = this.detailForm.get('customer');
                     if (customerForm && customerForm.dirty) {
                         const formValue = customerForm.value;
@@ -427,7 +431,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             });
     }
 
-    protected setFormValues(entity: Customer.Fragment): void {
+    protected setFormValues(entity: CustomerWithOrders): void {
         const customerGroup = this.detailForm.get('customer');
         if (customerGroup) {
             customerGroup.patchValue({
@@ -470,16 +474,11 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         }
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['customer', 'customFields']) as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = (entity as any).customFields?.[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['customer', 'customFields']),
+                entity,
+            );
         }
         this.changeDetector.markForCheck();
     }

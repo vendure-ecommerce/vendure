@@ -23,7 +23,8 @@ import { mergeMap, take } from 'rxjs/operators';
 })
 export class ProfileComponent
     extends BaseDetailComponent<GetActiveAdministrator.ActiveAdministrator>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
 
@@ -100,16 +101,11 @@ export class ProfileComponent
             lastName: administrator.lastName,
         });
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = (administrator as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get('customFields'),
+                administrator,
+            );
         }
     }
 }

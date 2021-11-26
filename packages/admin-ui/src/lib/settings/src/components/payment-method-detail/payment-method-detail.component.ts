@@ -251,16 +251,11 @@ export class PaymentMethodDetailComponent
             };
         }
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = (paymentMethod as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get('customFields'),
+                paymentMethod,
+            );
         }
     }
 }
