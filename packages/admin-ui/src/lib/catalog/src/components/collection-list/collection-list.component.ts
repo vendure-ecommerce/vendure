@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -10,8 +11,17 @@ import {
     QueryResult,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { combineLatest, EMPTY, Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    map,
+    shareReplay,
+    switchMap,
+    take,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 
 import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
@@ -22,6 +32,7 @@ import { RearrangeEvent } from '../collection-tree/collection-tree.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionListComponent implements OnInit, OnDestroy {
+    filterTermControl = new FormControl('');
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
     items$: Observable<GetCollectionList.Items[]>;
@@ -29,6 +40,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     contentLanguage$: Observable<LanguageCode>;
     expandAll = false;
     private queryResult: QueryResult<any>;
+    private destroy$ = new Subject<void>();
 
     constructor(
         private dataService: DataService,
@@ -61,10 +73,16 @@ export class CollectionListComponent implements OnInit, OnDestroy {
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
+
+        this.filterTermControl.valueChanges
+            .pipe(debounceTime(250), takeUntil(this.destroy$))
+            .subscribe(() => this.refresh());
     }
 
     ngOnDestroy() {
         this.queryResult.completed$.next();
+        this.destroy$.next(undefined);
+        this.destroy$.complete();
     }
 
     onRearrange(event: RearrangeEvent) {
@@ -124,6 +142,20 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     }
 
     private refresh() {
-        this.queryResult.ref.refetch();
+        this.queryResult.ref.refetch({
+            options: {
+                skip: 0,
+                take: 1000,
+                ...(this.filterTermControl.value
+                    ? {
+                          filter: {
+                              name: {
+                                  contains: this.filterTermControl.value,
+                              },
+                          },
+                      }
+                    : {}),
+            },
+        });
     }
 }
