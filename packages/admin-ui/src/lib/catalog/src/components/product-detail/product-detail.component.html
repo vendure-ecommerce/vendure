@@ -137,23 +137,6 @@
                                     [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                 ></vdr-tabbed-custom-fields>
                             </section>
-
-                            <div class="facets">
-                                <vdr-facet-value-chip
-                                    *ngFor="let facetValue of facetValues$ | async"
-                                    [facetValue]="facetValue"
-                                    [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
-                                    (remove)="removeProductFacetValue(facetValue.id)"
-                                ></vdr-facet-value-chip>
-                                <button
-                                    class="btn btn-sm btn-secondary"
-                                    *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
-                                    (click)="selectProductFacetValue()"
-                                >
-                                    <clr-icon shape="plus"></clr-icon>
-                                    {{ 'catalog.add-facets' | translate }}
-                                </button>
-                            </div>
                         </section>
                     </div>
                     <div class="clr-col-md-auto">
@@ -162,6 +145,22 @@
                             [featuredAsset]="assetChanges.featuredAsset || product.featuredAsset"
                             (change)="assetChanges = $event"
                         ></vdr-product-assets>
+                        <div class="facets">
+                            <vdr-facet-value-chip
+                                *ngFor="let facetValue of facetValues$ | async"
+                                [facetValue]="facetValue"
+                                [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
+                                (remove)="removeProductFacetValue(facetValue.id)"
+                            ></vdr-facet-value-chip>
+                            <button
+                                class="btn btn-sm btn-secondary"
+                                *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
+                                (click)="selectProductFacetValue()"
+                            >
+                                <clr-icon shape="plus"></clr-icon>
+                                {{ 'catalog.add-facets' | translate }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 
