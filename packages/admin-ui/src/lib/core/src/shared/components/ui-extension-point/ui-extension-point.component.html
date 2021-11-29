@@ -22,6 +22,11 @@ addNavMenuItem({{ '{' }}
   {{ '}' }},
   '{{ locationId }}'
 )</pre>
+                <pre *ngIf="api === 'detailComponent'">
+registerCustomDetailComponent({{ '{' }}
+  locationId: '{{ locationId }}',
+  component: MyCustomComponent,
+{{ '}' }})</pre>
             </div>
         </vdr-dropdown-menu>
     </vdr-dropdown>

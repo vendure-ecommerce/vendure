@@ -118,6 +118,12 @@
                 </tbody>
             </table>
 
+            <vdr-custom-detail-component-host
+                locationId="order-detail"
+                [entity$]="entity$"
+                [detailForm]="detailForm"
+            ></vdr-custom-detail-component-host>
+
             <vdr-order-history
                 [order]="order"
                 [history]="history$ | async"

@@ -34,6 +34,7 @@ import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.
 import { ChipComponent } from './components/chip/chip.component';
 import { ConfigurableInputComponent } from './components/configurable-input/configurable-input.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
+import { CustomDetailComponentHostComponent } from './components/custom-detail-component-host/custom-detail-component-host.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
@@ -227,6 +228,7 @@ const DECLARATIONS = [
     StatusBadgeComponent,
     TabbedCustomFieldsComponent,
     UiExtensionPointComponent,
+    CustomDetailComponentHostComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

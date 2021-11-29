@@ -25,7 +25,7 @@ By default, the "intensity" field will be displayed as a number input:
 
 {{< figure src="./ui-extensions-custom-field-default.jpg" >}}
 
-But let's say we want to display a range slider instead. Here's how we can do this using our shared extension module combined with the `registerFormInputComponent()` function:
+But let's say we want to display a range slider instead. Here's how we can do this using our shared extension module combined with the [registerFormInputComponent function]({{< relref "register-form-input-component" >}}):
 
 ```TypeScript
 import { NgModule, Component } from '@angular/core';

@@ -28,10 +28,20 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'common.code' | translate" for="code">
-        <input id="code" type="text" [readonly]="!(updatePermission | hasPermission)" formControlName="code"/>
+        <input
+            id="code"
+            type="text"
+            [readonly]="!(updatePermission | hasPermission)"
+            formControlName="code"
+        />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.channel-token' | translate" for="token">
-        <input id="token" type="text" [readonly]="!(updatePermission | hasPermission)" formControlName="token"/>
+        <input
+            id="token"
+            type="text"
+            [readonly]="!(updatePermission | hasPermission)"
+            formControlName="token"
+        />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.currency' | translate" for="defaultTaxZoneId">
         <select
@@ -121,4 +131,9 @@
             [readonly]="!(updatePermission | hasPermission)"
         ></vdr-tabbed-custom-fields>
     </section>
+    <vdr-custom-detail-component-host
+        locationId="channel-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 </form>

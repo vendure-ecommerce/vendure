@@ -88,4 +88,9 @@
             [readonly]="!(updatePermission | hasPermission)"
         ></vdr-tabbed-custom-fields>
     </section>
+    <vdr-custom-detail-component-host
+        locationId="tax-rate-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 </form>

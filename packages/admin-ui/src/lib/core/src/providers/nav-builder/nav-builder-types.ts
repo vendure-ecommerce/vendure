@@ -1,7 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 
-import { UIExtensionLocationId } from '../../common/ui-extension-types';
+import { ActionBarLocationId, UIExtensionLocationId } from '../../common/component-registry-types';
 import { DataService } from '../../data/providers/data.service';
 import { NotificationService } from '../notification/notification.service';
 
@@ -12,7 +12,7 @@ export type NavMenuBadgeType = 'none' | 'info' | 'success' | 'warning' | 'error'
  * A color-coded notification badge which will be displayed by the
  * NavMenuItem's icon.
  *
- * @docsCategory navigation
+ * @docsCategory nav-menu
  * @docsPage navigation-types
  */
 export interface NavMenuBadge {
@@ -31,8 +31,7 @@ export interface NavMenuBadge {
  * A NavMenuItem is a menu item in the main (left-hand side) nav
  * bar.
  *
- * @docsCategory navigation
- * @docsPage navigation-types
+ * @docsCategory nav-menu
  */
 export interface NavMenuItem {
     id: string;
@@ -52,8 +51,7 @@ export interface NavMenuItem {
  * A NavMenuSection is a grouping of links in the main
  * (left-hand side) nav bar.
  *
- * @docsCategory navigation
- * @docsPage navigation-types
+ * @docsCategory nav-menu
  */
 export interface NavMenuSection {
     id: string;
@@ -71,8 +69,7 @@ export interface NavMenuSection {
  * @description
  * Utilities available to the onClick handler of an ActionBarItem.
  *
- * @docsCategory navigation
- * @docsPage navigation-types
+ * @docsCategory action-bar
  */
 export interface OnClickContext {
     route: ActivatedRoute;
@@ -84,13 +81,12 @@ export interface OnClickContext {
  * @description
  * A button in the ActionBar area at the top of one of the list or detail views.
  *
- * @docsCategory navigation
- * @docsPage navigation-types
+ * @docsCategory action-bar
  */
 export interface ActionBarItem {
     id: string;
     label: string;
-    locationId: UIExtensionLocationId;
+    locationId: ActionBarLocationId;
     disabled?: Observable<boolean>;
     onClick?: (event: MouseEvent, context: OnClickContext) => void;
     routerLink?: RouterLinkDefinition;

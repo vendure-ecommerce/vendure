@@ -70,6 +70,11 @@
             [readonly]="!('UpdateAdministrator' | hasPermission)"
         ></vdr-tabbed-custom-fields>
     </section>
+    <vdr-custom-detail-component-host
+        locationId="administrator-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
     <label class="clr-control-label">{{ 'settings.roles' | translate }}</label>
     <ng-select
         [items]="allRoles$ | async"

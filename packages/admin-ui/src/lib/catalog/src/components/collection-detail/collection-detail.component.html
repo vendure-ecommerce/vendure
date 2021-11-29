@@ -86,6 +86,11 @@
                     [readonly]="!(updatePermission | hasPermission)"
                 ></vdr-tabbed-custom-fields>
             </section>
+            <vdr-custom-detail-component-host
+                locationId="collection-detail"
+                [entity$]="entity$"
+                [detailForm]="detailForm"
+            ></vdr-custom-detail-component-host>
         </div>
         <div class="clr-col-md-auto">
             <vdr-product-assets

@@ -137,6 +137,11 @@
                                     [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                 ></vdr-tabbed-custom-fields>
                             </section>
+                            <vdr-custom-detail-component-host
+                                locationId="product-detail"
+                                [entity$]="entity$"
+                                [detailForm]="detailForm"
+                            ></vdr-custom-detail-component-host>
                         </section>
                     </div>
                     <div class="clr-col-md-auto">
