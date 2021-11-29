@@ -9,6 +9,14 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
 import { GetProductVariant, ProductSelectorSearch } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
+/**
+ * @description
+ * Allows the selection of multiple ProductVariants via an autocomplete select input.
+ * Should be used with `ID` type **list** fields which represent ProductVariant IDs.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-product-selector-form-input',
     templateUrl: './product-selector-form-input.component.html',

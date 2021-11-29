@@ -4,6 +4,13 @@ import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Displays a password text input. Should be used with `string` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-password-form-input',
     templateUrl: './password-form-input.component.html',

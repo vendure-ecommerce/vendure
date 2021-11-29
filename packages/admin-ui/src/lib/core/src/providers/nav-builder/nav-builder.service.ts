@@ -38,6 +38,7 @@ import {
  * })
  * export class MyUiExtensionModule {}
  * ```
+ * @docsCategory navigation
  */
 export function addNavMenuSection(config: NavMenuSection, before?: string): Provider {
     return {
@@ -76,7 +77,9 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  *   ],
  * })
  * export class MyUiExtensionModule {}
- * ```
+ * ``
+ *
+ * @docsCategory navigation
  */
 export function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string): Provider {
     return {
@@ -112,6 +115,7 @@ export function addNavMenuItem(config: NavMenuItem, sectionId: string, before?: 
  * })
  * export class MyUiExtensionModule {}
  * ```
+ * @docsCategory navigation
  */
 export function addActionBarItem(config: ActionBarItem): Provider {
     return {

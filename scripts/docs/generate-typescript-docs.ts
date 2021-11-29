@@ -25,10 +25,14 @@ const sections: DocsSectionConfig[] = [
             'packages/elasticsearch-plugin/src/',
             'packages/job-queue-plugin/src/',
             'packages/testing/src/',
-            'packages/ui-devkit/src/',
         ],
         exclude: [/generated-shop-types/],
         outputPath: 'typescript-api',
+    },
+    {
+        sourceDirs: ['packages/admin-ui/src/lib/', 'packages/ui-devkit/src/'],
+        exclude: [/generated-types/],
+        outputPath: 'admin-ui-api',
     },
 ];
 

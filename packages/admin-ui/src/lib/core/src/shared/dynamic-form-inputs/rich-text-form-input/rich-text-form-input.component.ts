@@ -4,6 +4,13 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Uses the {@link RichTextEditorComponent} as in input for `text` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-rich-text-form-input',
     templateUrl: './rich-text-form-input.component.html',

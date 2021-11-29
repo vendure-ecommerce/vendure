@@ -57,6 +57,35 @@ export const defaultFormInputs = [
  * })
  * export class MyUiExtensionModule {}
  * ```
+ *
+ * This input component can then be used in a custom field:
+ *
+ * @example
+ * ```TypeScript
+ * const config = {
+ *   // ...
+ *   customFields: {
+ *     ProductVariant: [
+ *       {
+ *         name: 'rrp',
+ *         type: 'int',
+ *         ui: { component: 'my-custom-input' },
+ *       },
+ *     ]
+ *   }
+ * }
+ * ```
+ *
+ * or with an argument of a {@link ConfigurableOperationDef}:
+ *
+ * @example
+ * ```TypeScript
+ * args: {
+ *   rrp: { type: 'int', ui: { component: 'my-custom-input' } },
+ * }
+ * ```
+ *
+ * @docsCategory custom-input-components
  */
 export function registerFormInputComponent(id: string, component: Type<FormInputComponent>): FactoryProvider {
     return {
@@ -71,6 +100,8 @@ export function registerFormInputComponent(id: string, component: Type<FormInput
 
 /**
  * @description
+ * **Deprecated** use `registerFormInputComponent()` in combination with the customField `ui` config instead.
+ *
  * Registers a custom component to act as the form input control for the given custom field.
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
@@ -87,6 +118,8 @@ export function registerFormInputComponent(id: string, component: Type<FormInput
  * ```
  *
  * @deprecated use `registerFormInputComponent()` in combination with the customField `ui` config instead.
+ *
+ * @docsCategory custom-input-components
  */
 export function registerCustomFieldComponent(
     entity: CustomFieldEntityName,

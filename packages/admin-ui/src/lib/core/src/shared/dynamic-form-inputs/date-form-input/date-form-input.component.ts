@@ -4,6 +4,13 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Allows selection of a datetime. Default input for `datetime` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-date-form-input',
     templateUrl: './date-form-input.component.html',

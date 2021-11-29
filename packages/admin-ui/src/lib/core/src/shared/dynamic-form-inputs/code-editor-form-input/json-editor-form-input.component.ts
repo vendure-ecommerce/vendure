@@ -29,6 +29,14 @@ export function jsonValidator(): ValidatorFn {
     };
 }
 
+/**
+ * @description
+ * A JSON editor input with syntax highlighting and error detection. Works well
+ * with `text` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-json-editor-form-input',
     templateUrl: './json-editor-form-input.component.html',

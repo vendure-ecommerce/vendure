@@ -11,6 +11,45 @@ import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types
 import { TranslationOf } from './utilities/find-translation';
 import { getDefaultUiLanguage } from './utilities/get-default-ui-language';
 
+/**
+ * @description
+ * A base class for entity detail views. It should be used in conjunction with the
+ * {@link BaseEntityResolver}.
+ *
+ * @example
+ * ```TypeScript
+ * \@Component({
+ *   selector: 'app-my-entity',
+ *   templateUrl: './my-entity.component.html',
+ *   styleUrls: ['./my-entity.component.scss'],
+ *   changeDetection: ChangeDetectionStrategy.OnPush,
+ * })
+ * export class GlobalSettingsComponent extends BaseDetailComponent<MyEntity.Fragment> implements OnInit {
+ *   detailForm: FormGroup;
+ *
+ *   constructor(
+ *     router: Router,
+ *     route: ActivatedRoute,
+ *     serverConfigService: ServerConfigService,
+ *     protected dataService: DataService,
+ *     private formBuilder: FormBuilder,
+ *   ) {
+ *     super(route, router, serverConfigService, dataService);
+ *     this.detailForm = this.formBuilder.group({
+ *       name: [''],
+ *     });
+ *   }
+ *
+ *   protected setFormValues(entity: MyEntity.Fragment, languageCode: LanguageCode): void {
+ *     this.detailForm.patchValue({
+ *       name: entity.name,
+ *     });
+ *   }
+ * }
+ * ```
+ *
+ * @docsCategory list-detail-views
+ */
 export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }>
     implements DeactivateAware
 {

@@ -15,6 +15,7 @@ import { DataService } from '../../data/providers/data.service';
 import { IfDirectiveBase } from './if-directive-base';
 
 /**
+ * @description
  * Conditionally shows/hides templates based on the current active user having the specified permission.
  * Based on the ngIf source. Also support "else" templates:
  *
@@ -26,6 +27,8 @@ import { IfDirectiveBase } from './if-directive-base';
  *
  * The permission can be a single string, or an array. If an array is passed, then _all_ of the permissions
  * must match (logical AND)
+ *
+ * @docsCategory directives
  */
 @Directive({
     selector: '[vdrIfPermissions]',

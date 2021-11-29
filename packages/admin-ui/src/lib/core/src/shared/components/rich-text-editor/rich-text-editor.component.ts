@@ -14,7 +14,18 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ProsemirrorService } from './prosemirror/prosemirror.service';
 
 /**
- * A rich text (HTML) editor based on Trix (https://github.com/basecamp/trix)
+ * @description
+ * A rich text (HTML) editor based on Prosemirror (https://prosemirror.net/)
+ *
+ * @example
+ * ```HTML
+ * <vdr-rich-text-editor
+ *     [(ngModel)]="description"
+ *     label="Description"
+ * ></vdr-rich-text-editor>
+ * ```
+ *
+ * @docsCategory components
  */
 @Component({
     selector: 'vdr-rich-text-editor',

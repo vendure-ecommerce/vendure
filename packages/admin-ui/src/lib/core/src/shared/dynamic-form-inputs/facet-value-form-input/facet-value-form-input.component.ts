@@ -8,6 +8,14 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
 import { FacetWithValues } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
+/**
+ * @description
+ * Allows the selection of multiple FacetValues via an autocomplete select input.
+ * Should be used with `ID` type **list** fields which represent FacetValue IDs.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-facet-value-form-input',
     templateUrl: './facet-value-form-input.component.html',

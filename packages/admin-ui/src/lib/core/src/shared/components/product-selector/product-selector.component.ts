@@ -6,6 +6,18 @@ import { debounceTime, distinctUntilChanged, mapTo, switchMap, tap, throttleTime
 import { ProductSelectorSearch } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
+/**
+ * @description
+ * A component for selecting product variants via an autocomplete-style select input.
+ *
+ * @example
+ * ```HTML
+ * <vdr-product-selector
+ *   (productSelected)="selectResult($event)"></vdr-product-selector>
+ * ```
+ *
+ * @docsCategory components
+ */
 @Component({
     selector: 'vdr-product-selector',
     templateUrl: './product-selector.component.html',

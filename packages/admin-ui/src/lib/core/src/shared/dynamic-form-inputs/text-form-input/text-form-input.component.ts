@@ -4,6 +4,13 @@ import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Uses a regular text form input. This is the default input for `string` and `localeString` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-text-form-input',
     templateUrl: './text-form-input.component.html',
