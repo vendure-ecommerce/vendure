@@ -10,6 +10,7 @@ import {
     SetActiveChannel,
     SetAsLoggedIn,
     SetContentLanguage,
+    SetDisplayUiExtensionPoints,
     SetUiLanguage,
     SetUiTheme,
     UpdateUserChannels,
@@ -24,6 +25,7 @@ import {
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
     SET_CONTENT_LANGUAGE,
+    SET_DISPLAY_UI_EXTENSION_POINTS,
     SET_UI_LANGUAGE,
     SET_UI_THEME,
     UPDATE_USER_CHANNELS,
@@ -94,6 +96,15 @@ export class ClientDataService {
     setUiTheme(theme: string) {
         return this.baseDataService.mutate<SetUiTheme.Mutation, SetUiTheme.Variables>(SET_UI_THEME, {
             theme,
+        });
+    }
+
+    setDisplayUiExtensionPoints(display: boolean) {
+        return this.baseDataService.mutate<
+            SetDisplayUiExtensionPoints.Mutation,
+            SetDisplayUiExtensionPoints.Variables
+        >(SET_DISPLAY_UI_EXTENSION_POINTS, {
+            display,
         });
     }
 

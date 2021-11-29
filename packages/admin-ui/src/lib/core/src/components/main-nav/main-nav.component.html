@@ -7,29 +7,37 @@
                 [class.collapsible]="section.collapsible"
                 *ngIf="shouldDisplayLink(section)"
             >
-                <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
-                    <vdr-status-badge *ngIf="sectionBadge !== 'none'" [type]="sectionBadge"></vdr-status-badge>
-                </ng-container>
-                <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
-                <label [for]="section.id">{{ section.label | translate }}</label>
-                <ul class="nav-list">
-                    <ng-container *ngFor="let item of section.items">
-                        <li *ngIf="shouldDisplayLink(item)">
-                            <a
-                                class="nav-link"
-                                [attr.data-item-id]="section.id"
-                                [routerLink]="getRouterLink(item)"
-                                routerLinkActive="active"
-                            >
-                                <ng-container *ngIf="item.statusBadge | async as itemBadge">
-                                    <vdr-status-badge *ngIf="itemBadge.type !== 'none'" [type]="itemBadge.type"></vdr-status-badge>
-                                </ng-container>
-                                <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
-                                {{ item.label | translate }}
-                            </a>
-                        </li>
+                <vdr-ui-extension-point [locationId]="section.id" api="navMenu" [topPx]="-6" [leftPx]="8">
+                    <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
+                        <vdr-status-badge
+                            *ngIf="sectionBadge !== 'none'"
+                            [type]="sectionBadge"
+                        ></vdr-status-badge>
                     </ng-container>
-                </ul>
+                    <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
+                    <label [for]="section.id">{{ section.label | translate }}</label>
+                    <ul class="nav-list">
+                        <ng-container *ngFor="let item of section.items">
+                            <li *ngIf="shouldDisplayLink(item)">
+                                <a
+                                    class="nav-link"
+                                    [attr.data-item-id]="section.id"
+                                    [routerLink]="getRouterLink(item)"
+                                    routerLinkActive="active"
+                                >
+                                    <ng-container *ngIf="item.statusBadge | async as itemBadge">
+                                        <vdr-status-badge
+                                            *ngIf="itemBadge.type !== 'none'"
+                                            [type]="itemBadge.type"
+                                        ></vdr-status-badge>
+                                    </ng-container>
+                                    <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
+                                    {{ item.label | translate }}
+                                </a>
+                            </li>
+                        </ng-container>
+                    </ul>
+                </vdr-ui-extension-point>
             </section>
         </ng-container>
     </section>

@@ -52,6 +52,12 @@ export const SET_UI_LANGUAGE = gql`
     }
 `;
 
+export const SET_DISPLAY_UI_EXTENSION_POINTS = gql`
+    mutation SetDisplayUiExtensionPoints($display: Boolean!) {
+        setDisplayUiExtensionPoints(display: $display) @client
+    }
+`;
+
 export const SET_CONTENT_LANGUAGE = gql`
     mutation SetContentLanguage($languageCode: LanguageCode!) {
         setContentLanguage(languageCode: $languageCode) @client
@@ -87,6 +93,7 @@ export const GET_UI_STATE = gql`
             language
             contentLanguage
             theme
+            displayUiExtensionPoints
         }
     }
 `;
@@ -103,6 +110,7 @@ export const GET_CLIENT_STATE = gql`
             language
             contentLanguage
             theme
+            displayUiExtensionPoints
         }
     }
     ${USER_STATUS_FRAGMENT}

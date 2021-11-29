@@ -13,6 +13,7 @@ type Mutation {
     setContentLanguage(languageCode: LanguageCode!): LanguageCode!
     setUiTheme(theme: String!): String!
     setActiveChannel(channelId: ID!): UserStatus!
+    setDisplayUiExtensionPoints(display: Boolean!): Boolean!
     updateUserChannels(channels: [CurrentUserChannelInput!]!): UserStatus!
 }
 
@@ -33,6 +34,7 @@ type UiState {
     language: LanguageCode!
     contentLanguage: LanguageCode!
     theme: String!
+    displayUiExtensionPoints: Boolean!
 }
 
 input CurrentUserChannelInput {

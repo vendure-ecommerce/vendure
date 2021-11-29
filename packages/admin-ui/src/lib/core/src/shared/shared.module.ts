@@ -79,6 +79,7 @@ import { TableRowActionComponent } from './components/table-row-action/table-row
 import { TagSelectorComponent } from './components/tag-selector/tag-selector.component';
 import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
 import { TitleInputComponent } from './components/title-input/title-input.component';
+import { UiExtensionPointComponent } from './components/ui-extension-point/ui-extension-point.component';
 import { DisabledDirective } from './directives/disabled.directive';
 import { IfDefaultChannelActiveDirective } from './directives/if-default-channel-active.directive';
 import { IfMultichannelDirective } from './directives/if-multichannel.directive';
@@ -225,6 +226,7 @@ const DECLARATIONS = [
     RelationCardComponent,
     StatusBadgeComponent,
     TabbedCustomFieldsComponent,
+    UiExtensionPointComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

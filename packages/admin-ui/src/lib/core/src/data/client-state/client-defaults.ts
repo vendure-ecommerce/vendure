@@ -25,6 +25,7 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
             language: currentLanguage,
             contentLanguage: currentContentLanguage,
             theme: activeTheme,
+            displayUiExtensionPoints: false,
             __typename: 'UiState',
         } as GetUiState.UiState,
     };

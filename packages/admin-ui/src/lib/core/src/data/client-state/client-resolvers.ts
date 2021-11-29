@@ -8,6 +8,7 @@ import {
     SetActiveChannel,
     SetAsLoggedIn,
     SetContentLanguage,
+    SetDisplayUiExtensionPoints,
     SetUiLanguage,
     SetUiTheme,
     UpdateUserChannels,
@@ -79,6 +80,7 @@ export const clientResolvers: ResolverDefinition = {
                     language: args.languageCode,
                     contentLanguage: previous.uiState.contentLanguage,
                     theme: previous.uiState.theme,
+                    displayUiExtensionPoints: previous.uiState.displayUiExtensionPoints,
                 },
             };
             cache.writeQuery({ query: GET_UI_STATE, data });
@@ -93,6 +95,7 @@ export const clientResolvers: ResolverDefinition = {
                     language: previous.uiState.language,
                     contentLanguage: args.languageCode,
                     theme: previous.uiState.theme,
+                    displayUiExtensionPoints: previous.uiState.displayUiExtensionPoints,
                 },
             };
             cache.writeQuery({ query: GET_UI_STATE, data });
@@ -107,10 +110,26 @@ export const clientResolvers: ResolverDefinition = {
                     language: previous.uiState.language,
                     contentLanguage: previous.uiState.contentLanguage,
                     theme: args.theme,
+                    displayUiExtensionPoints: previous.uiState.displayUiExtensionPoints,
                 },
             };
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.theme;
+        },
+        setDisplayUiExtensionPoints: (_, args: SetDisplayUiExtensionPoints.Variables, { cache }): boolean => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+            const data: GetUiState.Query = {
+                uiState: {
+                    __typename: 'UiState',
+                    language: previous.uiState.language,
+                    contentLanguage: previous.uiState.contentLanguage,
+                    displayUiExtensionPoints: args.display,
+                    theme: previous.uiState.theme,
+                },
+            };
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.display;
         },
         setActiveChannel: (_, args: SetActiveChannel.Variables, { cache }): UserStatus => {
             // tslint:disable-next-line:no-non-null-assertion

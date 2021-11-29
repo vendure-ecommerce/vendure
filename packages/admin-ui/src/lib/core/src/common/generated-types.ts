@@ -2390,6 +2390,7 @@ export type Mutation = {
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
   setContentLanguage: LanguageCode;
+  setDisplayUiExtensionPoints: Scalars['Boolean'];
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiTheme: Scalars['String'];
@@ -2843,6 +2844,11 @@ export type MutationSetAsLoggedInArgs = {
 
 export type MutationSetContentLanguageArgs = {
   languageCode: LanguageCode;
+};
+
+
+export type MutationSetDisplayUiExtensionPointsArgs = {
+  display: Scalars['Boolean'];
 };
 
 
@@ -4924,6 +4930,7 @@ export type UiState = {
   language: LanguageCode;
   contentLanguage: LanguageCode;
   theme: Scalars['String'];
+  displayUiExtensionPoints: Scalars['Boolean'];
 };
 
 export type UpdateActiveAdministratorInput = {
@@ -5481,6 +5488,13 @@ export type SetUiLanguageMutationVariables = Exact<{
 
 export type SetUiLanguageMutation = Pick<Mutation, 'setUiLanguage'>;
 
+export type SetDisplayUiExtensionPointsMutationVariables = Exact<{
+  display: Scalars['Boolean'];
+}>;
+
+
+export type SetDisplayUiExtensionPointsMutation = Pick<Mutation, 'setDisplayUiExtensionPoints'>;
+
 export type SetContentLanguageMutationVariables = Exact<{
   languageCode: LanguageCode;
 }>;
@@ -5516,7 +5530,7 @@ export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUiStateQuery = { uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'contentLanguage' | 'theme'>
+    & Pick<UiState, 'language' | 'contentLanguage' | 'theme' | 'displayUiExtensionPoints'>
   ) };
 
 export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
@@ -9066,6 +9080,11 @@ export namespace SetAsLoggedOut {
 export namespace SetUiLanguage {
   export type Variables = SetUiLanguageMutationVariables;
   export type Mutation = SetUiLanguageMutation;
+}
+
+export namespace SetDisplayUiExtensionPoints {
+  export type Variables = SetDisplayUiExtensionPointsMutationVariables;
+  export type Mutation = SetDisplayUiExtensionPointsMutation;
 }
 
 export namespace SetContentLanguage {

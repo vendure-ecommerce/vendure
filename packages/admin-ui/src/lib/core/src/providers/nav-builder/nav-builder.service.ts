@@ -28,10 +28,11 @@ import {
  *   imports: [SharedModule],
  *   providers: [
  *     addNavMenuSection({
- *       id: 'reviews',
- *       label: 'Product Reviews',
- *       routerLink: ['/extensions/reviews'],
- *       icon: 'star',
+ *       id: 'reports',
+ *       label: 'Reports',
+ *       items: [{
+ *           // ...
+ *       }],
  *     },
  *     'settings'),
  *   ],
@@ -67,11 +68,10 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  *   imports: [SharedModule],
  *   providers: [
  *     addNavMenuItem({
- *       id: 'reports',
- *       label: 'Reports',
- *       items: [{
- *           // ...
- *       }],
+ *       id: 'reviews',
+ *       label: 'Product Reviews',
+ *       routerLink: ['/extensions/reviews'],
+ *       icon: 'star',
  *     },
  *     'marketing'),
  *   ],
