@@ -1,23 +1,18 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { addActionBarItem, AppComponent, AppComponentModule } from '@vendure/admin-ui/core';
+import { AppComponent, AppComponentModule } from '@vendure/admin-ui/core';
 
 import { routes } from './app.routes';
 
 @NgModule({
     declarations: [],
     imports: [
+        CommonModule,
         AppComponentModule,
         RouterModule.forRoot(routes, { useHash: false, relativeLinkResolution: 'legacy' }),
     ],
-    providers: [
-        addActionBarItem({
-            id: 'test',
-            locationId: 'product-detail',
-            buttonStyle: 'link',
-            label: 'Test Button',
-        }),
-    ],
+    providers: [],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
