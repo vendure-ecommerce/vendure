@@ -215,3 +215,8 @@ populate(
   },
 );
 ```
+
+{{< alert >}}
+If you require more control over how your data is being imported - for example if you also need to import data into custom entities - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts]({{< relref "stand-alone-scripts" >}}).
+{{< /alert >}} 
+
