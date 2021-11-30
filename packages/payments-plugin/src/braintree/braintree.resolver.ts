@@ -11,7 +11,7 @@ import {
 } from '@vendure/core';
 
 import { getGateway } from './braintree-common';
-import { braintreePaymentMethodHandler } from './braintree-payment-method';
+import { braintreePaymentMethodHandler } from './braintree.handler';
 import { loggerCtx } from './constants';
 import { PaymentMethodArgsHash } from './types';
 

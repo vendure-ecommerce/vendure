@@ -9,7 +9,7 @@ import { loggerCtx } from './constants';
  */
 export const braintreePaymentMethodHandler = new PaymentMethodHandler({
     code: 'braintree',
-    description: [{ languageCode: LanguageCode.en, value: 'Braintree' }],
+    description: [{ languageCode: LanguageCode.en, value: 'Braintree payments' }],
     args: {
         merchantId: { type: 'string', label: [{ languageCode: LanguageCode.en, value: 'Merchant ID' }] },
         publicKey: { type: 'string', label: [{ languageCode: LanguageCode.en, value: 'Private Key' }] },
