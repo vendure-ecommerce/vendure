@@ -27,7 +27,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             entityOptions: { entityIdStrategy: new UuidIdStrategy() },
-            logger: new DefaultLogger({ level: LogLevel.Info }),
+            // logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-uuid-tests',
