@@ -1251,6 +1251,7 @@ describe('Shop orders', () => {
                     GET_ACTIVE_ORDER_WITH_PAYMENTS,
                 );
                 const payment = order!.payments![0];
+                expect(order!.state).toBe('ArrangingPayment');
                 expect(order!.payments!.length).toBe(1);
                 expect(payment.method).toBe(testFailingPaymentMethod.code);
                 expect(payment.state).toBe('Declined');

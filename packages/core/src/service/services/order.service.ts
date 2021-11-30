@@ -1003,7 +1003,7 @@ export class OrderService {
         input: ManualPaymentInput,
     ): Promise<ErrorResultUnion<AddManualPaymentToOrderResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, input.orderId);
-        if (order.state !== 'ArrangingAdditionalPayment') {
+        if (order.state !== 'ArrangingAdditionalPayment' && order.state !== 'ArrangingPayment') {
             return new ManualPaymentStateError();
         }
         const existingPayments = await this.getOrderPayments(ctx, order.id);
