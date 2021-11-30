@@ -164,7 +164,7 @@ Passed as input to the `addPaymentToOrder` mutation.
 """
 input PaymentInput {
     """
-    This field should correspond to the `code` property of a PaymentMethodHandler.
+    This field should correspond to the `code` property of a PaymentMethod.
     """
     method: String!
     """

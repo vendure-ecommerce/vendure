@@ -24,6 +24,7 @@ const sections: DocsSectionConfig[] = [
             'packages/email-plugin/src/',
             'packages/elasticsearch-plugin/src/',
             'packages/job-queue-plugin/src/',
+            'packages/payments-plugin/src/',
             'packages/testing/src/',
         ],
         exclude: [/generated-shop-types/],

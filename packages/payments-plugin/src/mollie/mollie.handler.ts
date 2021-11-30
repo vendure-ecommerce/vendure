@@ -26,22 +26,32 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     args: {
         apiKey: {
             type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'API Key' }],
         },
         redirectUrl: {
             type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
         },
     },
     init(injector) {
         paymentMethodService = injector.get(PaymentMethodService);
         options = injector.get(PLUGIN_INIT_OPTIONS);
     },
-    createPayment: async (ctx, order, amount, args, _metadata): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
+    createPayment: async (
+        ctx,
+        order,
+        amount,
+        args,
+        _metadata,
+    ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
         try {
             const { apiKey } = args;
             let { redirectUrl } = args;
             const paymentMethods = await paymentMethodService.findAll(ctx);
-            const paymentMethod = paymentMethods.items.find(pm =>
-                pm.handler.args.find(arg => arg.value === apiKey) && pm.handler.args.find(arg => arg.value === redirectUrl),
+            const paymentMethod = paymentMethods.items.find(
+                pm =>
+                    pm.handler.args.find(arg => arg.value === apiKey) &&
+                    pm.handler.args.find(arg => arg.value === redirectUrl),
             );
             if (!paymentMethod) {
                 throw Error(`No paymentMethod found for given apiKey`); // This should never happen
@@ -78,7 +88,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             return {
                 amount: order.totalWithTax,
                 state: 'Error',
-                errorMessage: err.message
+                errorMessage: err.message,
             };
         }
     },

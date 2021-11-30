@@ -30,6 +30,7 @@ const VALID_SCOPES: string[] = [
     'email-plugin',
     'email',
     'job-queue-plugin',
+    'payments-plugin',
     'testing',
     'ui-devkit',
 ];

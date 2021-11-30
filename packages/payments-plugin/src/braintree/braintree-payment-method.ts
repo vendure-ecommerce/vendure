@@ -11,9 +11,9 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
     code: 'braintree',
     description: [{ languageCode: LanguageCode.en, value: 'Braintree' }],
     args: {
-        merchantId: { type: 'string' },
-        publicKey: { type: 'string' },
-        privateKey: { type: 'string' },
+        merchantId: { type: 'string', label: [{ languageCode: LanguageCode.en, value: 'Merchant ID' }] },
+        publicKey: { type: 'string', label: [{ languageCode: LanguageCode.en, value: 'Private Key' }] },
+        privateKey: { type: 'string', label: [{ languageCode: LanguageCode.en, value: 'Public Key' }] },
     },
 
     async createPayment(ctx, order, amount, args, metadata) {
