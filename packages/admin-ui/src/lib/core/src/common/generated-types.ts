@@ -2243,7 +2243,10 @@ export type Mutation = {
   addCustomersToGroup: CustomerGroup;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
   /**
-   * Used to manually create a new Payment against an Order. This is used when a completed Order
+   * Used to manually create a new Payment against an Order.
+   * This can be used by an Administrator when an Order is in the ArrangingPayment state.
+   *
+   * It is also used when a completed Order
    * has been modified (using `modifyOrder`) and the price has increased. The extra payment
    * can then be manually arranged by the administrator, and the details used to create a new
    * Payment.
@@ -2393,6 +2396,7 @@ export type Mutation = {
   setDisplayUiExtensionPoints: Scalars['Boolean'];
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
+  setUiLocale?: Maybe<Scalars['String']>;
   setUiTheme: Scalars['String'];
   settlePayment: SettlePaymentResult;
   settleRefund: SettleRefundResult;
@@ -2859,6 +2863,11 @@ export type MutationSetOrderCustomFieldsArgs = {
 
 export type MutationSetUiLanguageArgs = {
   languageCode: LanguageCode;
+};
+
+
+export type MutationSetUiLocaleArgs = {
+  locale?: Maybe<Scalars['String']>;
 };
 
 
@@ -4928,6 +4937,7 @@ export type TransitionPaymentToStateResult = Payment | PaymentStateTransitionErr
 export type UiState = {
   __typename?: 'UiState';
   language: LanguageCode;
+  locale?: Maybe<Scalars['String']>;
   contentLanguage: LanguageCode;
   theme: Scalars['String'];
   displayUiExtensionPoints: Scalars['Boolean'];
@@ -5483,10 +5493,18 @@ export type SetAsLoggedOutMutation = { setAsLoggedOut: (
 
 export type SetUiLanguageMutationVariables = Exact<{
   languageCode: LanguageCode;
+  locale?: Maybe<Scalars['String']>;
 }>;
 
 
-export type SetUiLanguageMutation = Pick<Mutation, 'setUiLanguage'>;
+export type SetUiLanguageMutation = Pick<Mutation, 'setUiLanguage' | 'setUiLocale'>;
+
+export type SetUiLocaleMutationVariables = Exact<{
+  locale?: Maybe<Scalars['String']>;
+}>;
+
+
+export type SetUiLocaleMutation = Pick<Mutation, 'setUiLocale'>;
 
 export type SetDisplayUiExtensionPointsMutationVariables = Exact<{
   display: Scalars['Boolean'];
@@ -5530,7 +5548,7 @@ export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUiStateQuery = { uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'contentLanguage' | 'theme' | 'displayUiExtensionPoints'>
+    & Pick<UiState, 'language' | 'locale' | 'contentLanguage' | 'theme' | 'displayUiExtensionPoints'>
   ) };
 
 export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
@@ -5544,7 +5562,7 @@ export type GetClientStateQuery = { networkStatus: (
     & UserStatusFragment
   ), uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'contentLanguage' | 'theme'>
+    & Pick<UiState, 'language' | 'locale' | 'contentLanguage' | 'theme' | 'displayUiExtensionPoints'>
   ) };
 
 export type SetActiveChannelMutationVariables = Exact<{
@@ -9080,6 +9098,11 @@ export namespace SetAsLoggedOut {
 export namespace SetUiLanguage {
   export type Variables = SetUiLanguageMutationVariables;
   export type Mutation = SetUiLanguageMutation;
+}
+
+export namespace SetUiLocale {
+  export type Variables = SetUiLocaleMutationVariables;
+  export type Mutation = SetUiLocaleMutation;
 }
 
 export namespace SetDisplayUiExtensionPoints {

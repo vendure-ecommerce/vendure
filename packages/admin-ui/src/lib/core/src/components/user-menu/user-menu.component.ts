@@ -10,7 +10,7 @@ import { LanguageCode } from '../../common/generated-types';
 export class UserMenuComponent {
     @Input() userName = '';
     @Input() availableLanguages: LanguageCode[] = [];
-    @Input() uiLanguage: LanguageCode;
+    @Input() uiLanguageAndLocale: [LanguageCode, string | undefined];
     @Output() logOut = new EventEmitter<void>();
     @Output() selectUiLanguage = new EventEmitter<void>();
 }

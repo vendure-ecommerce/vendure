@@ -19,7 +19,7 @@ import { UiLanguageSwitcherDialogComponent } from '../ui-language-switcher-dialo
 })
 export class AppShellComponent implements OnInit {
     userName$: Observable<string>;
-    uiLanguage$: Observable<LanguageCode>;
+    uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
     availableLanguages: LanguageCode[] = [];
 
     constructor(
@@ -35,30 +35,36 @@ export class AppShellComponent implements OnInit {
         this.userName$ = this.dataService.client
             .userStatus()
             .single$.pipe(map(data => data.userStatus.username));
-        this.uiLanguage$ = this.dataService.client.uiState().stream$.pipe(map(data => data.uiState.language));
+        this.uiLanguageAndLocale$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
         this.availableLanguages = this.i18nService.availableLanguages;
     }
 
     selectUiLanguage() {
-        this.uiLanguage$
+        this.uiLanguageAndLocale$
             .pipe(
                 take(1),
-                switchMap(currentLanguage =>
+                switchMap(([currentLanguage, currentLocale]) =>
                     this.modalService.fromComponent(UiLanguageSwitcherDialogComponent, {
                         closable: true,
-                        size: 'md',
+                        size: 'lg',
                         locals: {
                             availableLanguages: this.availableLanguages,
                             currentLanguage,
+                            currentLocale,
                         },
                     }),
                 ),
-                switchMap(value => (value ? this.dataService.client.setUiLanguage(value) : EMPTY)),
+                switchMap(result =>
+                    result ? this.dataService.client.setUiLanguage(result[0], result[1]) : EMPTY,
+                ),
             )
             .subscribe(result => {
                 if (result.setUiLanguage) {
                     this.i18nService.setLanguage(result.setUiLanguage);
                     this.localStorageService.set('uiLanguageCode', result.setUiLanguage);
+                    this.localStorageService.set('uiLocale', result.setUiLocale ?? undefined);
                 }
             });
     }

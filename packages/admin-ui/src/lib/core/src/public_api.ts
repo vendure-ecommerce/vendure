@@ -205,6 +205,7 @@ export * from './shared/pipes/locale-currency-name.pipe';
 export * from './shared/pipes/locale-currency.pipe';
 export * from './shared/pipes/locale-date.pipe';
 export * from './shared/pipes/locale-language-name.pipe';
+export * from './shared/pipes/locale-region-name.pipe';
 export * from './shared/pipes/sentence-case.pipe';
 export * from './shared/pipes/sort.pipe';
 export * from './shared/pipes/state-i18n-token.pipe';

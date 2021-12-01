@@ -120,6 +120,7 @@ import { LocaleCurrencyNamePipe } from './pipes/locale-currency-name.pipe';
 import { LocaleCurrencyPipe } from './pipes/locale-currency.pipe';
 import { LocaleDatePipe } from './pipes/locale-date.pipe';
 import { LocaleLanguageNamePipe } from './pipes/locale-language-name.pipe';
+import { LocaleRegionNamePipe } from './pipes/locale-region-name.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
@@ -221,6 +222,7 @@ const DECLARATIONS = [
     LocaleDatePipe,
     LocaleCurrencyPipe,
     LocaleLanguageNamePipe,
+    LocaleRegionNamePipe,
     TagSelectorComponent,
     ManageTagsDialogComponent,
     RelationSelectorDialogComponent,

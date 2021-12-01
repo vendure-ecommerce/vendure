@@ -12,6 +12,7 @@ import {
     SetContentLanguage,
     SetDisplayUiExtensionPoints,
     SetUiLanguage,
+    SetUiLocale,
     SetUiTheme,
     UpdateUserChannels,
 } from '../../common/generated-types';
@@ -26,7 +27,8 @@ import {
     SET_AS_LOGGED_OUT,
     SET_CONTENT_LANGUAGE,
     SET_DISPLAY_UI_EXTENSION_POINTS,
-    SET_UI_LANGUAGE,
+    SET_UI_LANGUAGE_AND_LOCALE,
+    SET_UI_LOCALE,
     SET_UI_THEME,
     UPDATE_USER_CHANNELS,
 } from '../definitions/client-definitions';
@@ -78,9 +80,19 @@ export class ClientDataService {
         return this.baseDataService.query<GetUiState.Query>(GET_UI_STATE, {}, 'cache-first');
     }
 
-    setUiLanguage(languageCode: LanguageCode) {
-        return this.baseDataService.mutate<SetUiLanguage.Mutation, SetUiLanguage.Variables>(SET_UI_LANGUAGE, {
-            languageCode,
+    setUiLanguage(languageCode: LanguageCode, locale?: string) {
+        return this.baseDataService.mutate<SetUiLanguage.Mutation, SetUiLanguage.Variables>(
+            SET_UI_LANGUAGE_AND_LOCALE,
+            {
+                languageCode,
+                locale,
+            },
+        );
+    }
+
+    setUiLocale(locale: string | undefined) {
+        return this.baseDataService.mutate<SetUiLocale.Mutation, SetUiLocale.Variables>(SET_UI_LOCALE, {
+            locale,
         });
     }
 

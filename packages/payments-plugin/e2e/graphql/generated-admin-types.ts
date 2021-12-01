@@ -2291,7 +2291,10 @@ export type Mutation = {
      */
     modifyOrder: ModifyOrderResult;
     /**
-     * Used to manually create a new Payment against an Order. This is used when a completed Order
+     * Used to manually create a new Payment against an Order.
+     * This can be used by an Administrator when an Order is in the ArrangingPayment state.
+     *
+     * It is also used when a completed Order
      * has been modified (using `modifyOrder`) and the price has increased. The extra payment
      * can then be manually arranged by the administrator, and the details used to create a new
      * Payment.

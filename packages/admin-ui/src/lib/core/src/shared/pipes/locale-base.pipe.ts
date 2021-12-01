@@ -16,9 +16,12 @@ export abstract class LocaleBasePipe implements OnDestroy, PipeTransform {
         if (dataService && changeDetectorRef) {
             this.subscription = dataService.client
                 .uiState()
-                .mapStream(data => data.uiState.language)
-                .subscribe(languageCode => {
-                    this.locale = languageCode.replace(/_/g, '-');
+                .mapStream(data => data.uiState)
+                .subscribe(({ language, locale }) => {
+                    this.locale = language.replace(/_/g, '-');
+                    if (locale) {
+                        this.locale += `-${locale}`;
+                    }
                     changeDetectorRef.markForCheck();
                 });
         }

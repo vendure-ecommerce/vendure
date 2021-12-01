@@ -10,6 +10,7 @@ type Mutation {
     setAsLoggedIn(input: UserStatusInput!): UserStatus!
     setAsLoggedOut: UserStatus!
     setUiLanguage(languageCode: LanguageCode!): LanguageCode!
+    setUiLocale(locale: String): String
     setContentLanguage(languageCode: LanguageCode!): LanguageCode!
     setUiTheme(theme: String!): String!
     setActiveChannel(channelId: ID!): UserStatus!
@@ -32,6 +33,7 @@ type UserStatus {
 
 type UiState {
     language: LanguageCode!
+    locale: String
     contentLanguage: LanguageCode!
     theme: String!
     displayUiExtensionPoints: Boolean!

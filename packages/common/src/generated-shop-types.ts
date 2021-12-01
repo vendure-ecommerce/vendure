@@ -2129,7 +2129,7 @@ export type PaymentFailedError = ErrorResult & {
 
 /** Passed as input to the `addPaymentToOrder` mutation. */
 export type PaymentInput = {
-    /** This field should correspond to the `code` property of a PaymentMethodHandler. */
+    /** This field should correspond to the `code` property of a PaymentMethod. */
     method: Scalars['String'];
     /**
      * This field should contain arbitrary data passed to the specified PaymentMethodHandler's `createPayment()` method
