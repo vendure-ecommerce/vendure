@@ -15,8 +15,8 @@ import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { ReadStream } from 'fs-extra';
 import { ReadStream as FSReadStream } from 'fs';
+import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import { Readable, Stream } from 'stream';
@@ -250,13 +250,13 @@ export class AssetService {
             stream.on('error', (err: any) => {
                 reject(err);
             });
-            const result = await this.createAssetInternal(
-                ctx,
-                stream,
-                filename,
-                mimetype,
-                input.customFields,
-            );
+            let result: Asset | MimeTypeError;
+            try {
+                result = await this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields);
+            } catch (e) {
+                reject(e);
+                return;
+            }
             if (isGraphQlErrorResult(result)) {
                 resolve(result);
                 return;
@@ -394,7 +394,8 @@ export class AssetService {
         stream: ReadStream | Readable,
         maybeFilePath?: string,
     ): Promise<CreateAssetResult> {
-        const filePath = stream instanceof ReadStream || stream instanceof FSReadStream ? stream.path : maybeFilePath;
+        const filePath =
+            stream instanceof ReadStream || stream instanceof FSReadStream ? stream.path : maybeFilePath;
         if (typeof filePath === 'string') {
             const filename = path.basename(filePath);
             const mimetype = mime.lookup(filename) || 'application/octet-stream';
@@ -460,7 +461,7 @@ export class AssetService {
         try {
             preview = await assetPreviewStrategy.generatePreviewImage(ctx, mimetype, sourceFile);
         } catch (e) {
-            Logger.error(`Could not create Asset preview image: ${e.message}`);
+            Logger.error(`Could not create Asset preview image: ${e.message}`, undefined, e.stack);
             throw e;
         }
         const previewFileIdentifier = await assetStorageStrategy.writeFileFromBuffer(
