@@ -294,7 +294,7 @@ export class CollectionService implements OnModuleInit {
         const getChildren = async (id: ID, _descendants: Collection[] = [], depth = 1) => {
             const children = await this.connection
                 .getRepository(ctx, Collection)
-                .find({ where: { parent: { id } } });
+                .find({ where: { parent: { id } }, order: { position: 'ASC' } });
             for (const child of children) {
                 _descendants.push(child);
                 if (depth < maxDepth) {
