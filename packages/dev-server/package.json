@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "populate": "node -r ts-node/register populate-dev-server.ts",
-    "run:server": "node -r ts-node/register index.ts",
-    "run:worker": "node -r ts-node/register index-worker.ts",
+    "run:server": "ts-node-dev index.ts",
+    "run:worker": "ts-node-dev index-worker.ts",
     "start": "concurrently yarn:run*",
     "load-test:1k": "node -r ts-node/register load-testing/run-load-test.ts 1000",
     "load-test:10k": "node -r ts-node/register load-testing/run-load-test.ts 10000",
