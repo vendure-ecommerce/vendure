@@ -19,7 +19,13 @@ import express from 'express';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
+import {
+    defaultAvailableLanguages,
+    defaultLanguage,
+    defaultLocale,
+    DEFAULT_APP_PATH,
+    loggerCtx,
+} from './constants';
 
 /**
  * @description
@@ -227,6 +233,7 @@ export class AdminUiPlugin implements NestModule {
                 authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,
             ),
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
+            defaultLocale: propOrDefault('defaultLocale', defaultLocale),
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
             loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
             brand: AdminUiPlugin.options.adminUiConfig?.brand,
