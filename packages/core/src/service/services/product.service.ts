@@ -84,7 +84,6 @@ export class ProductService {
                 const items = products.map(product =>
                     translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
                 );
-                console.log("hello from production!");
                 return {
                     items,
                     totalItems,
@@ -179,6 +178,7 @@ export class ProductService {
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
         await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
+        input.user = ctx.activeUserId;
         const product = await this.translatableSaver.create({
             ctx,
             input,

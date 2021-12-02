@@ -11,6 +11,7 @@ import { CustomProductFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
+import { User } from '../user/user.entity';
 
 import { ProductAsset } from './product-asset.entity';
 import { ProductTranslation } from './product-translation.entity';
@@ -67,4 +68,7 @@ export class Product
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
+
+    @ManyToOne(type => User, (user) => user.id, { onDelete: 'CASCADE' })
+    user: User;
 }
