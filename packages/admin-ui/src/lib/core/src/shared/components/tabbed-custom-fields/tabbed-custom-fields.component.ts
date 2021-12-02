@@ -33,7 +33,7 @@ export class TabbedCustomFieldsComponent implements OnInit {
     private groupByTabs(customFieldConfigs: CustomFieldConfig[]): GroupedCustomFields {
         const tabMap = new Map<string, CustomFieldConfig[]>();
         for (const field of customFieldConfigs) {
-            const tabName = field.ui.tab ?? this.defaultTabName;
+            const tabName = field.ui?.tab ?? this.defaultTabName;
             if (tabMap.has(tabName)) {
                 tabMap.get(tabName)?.push(field);
             } else {
