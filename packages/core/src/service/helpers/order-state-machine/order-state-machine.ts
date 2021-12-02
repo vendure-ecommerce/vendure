@@ -16,6 +16,8 @@ import { OrderModification } from '../../../entity/order-modification/order-modi
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { OrderPlacedEvent } from '../../../event-bus/events/order-placed-event';
+import { EventBus } from '../../../event-bus/index';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
@@ -42,6 +44,7 @@ export class OrderStateMachine {
         private stockMovementService: StockMovementService,
         private historyService: HistoryService,
         private promotionService: PromotionService,
+        private eventBus: EventBus,
     ) {
         this.config = this.initConfig();
     }
@@ -179,6 +182,7 @@ export class OrderStateMachine {
                 order.active = false;
                 order.orderPlacedAt = new Date();
                 await this.promotionService.addPromotionsToOrder(ctx, order);
+                this.eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
             }
         }
         const shouldAllocateStock = await stockAllocationStrategy.shouldAllocateStock(
