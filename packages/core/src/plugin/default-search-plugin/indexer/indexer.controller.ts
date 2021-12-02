@@ -401,7 +401,7 @@ export class IndexerController {
             }
         }
 
-        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));
+        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items, { chunk: 2500 }));
     }
 
     /**

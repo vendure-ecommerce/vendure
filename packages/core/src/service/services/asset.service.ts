@@ -16,6 +16,7 @@ import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { ReadStream } from 'fs-extra';
+import { ReadStream as FSReadStream } from 'fs';
 import mime from 'mime-types';
 import path from 'path';
 import { Readable, Stream } from 'stream';
@@ -393,7 +394,7 @@ export class AssetService {
         stream: ReadStream | Readable,
         maybeFilePath?: string,
     ): Promise<CreateAssetResult> {
-        const filePath = stream instanceof ReadStream ? stream.path : maybeFilePath;
+        const filePath = stream instanceof ReadStream || stream instanceof FSReadStream ? stream.path : maybeFilePath;
         if (typeof filePath === 'string') {
             const filename = path.basename(filePath);
             const mimetype = mime.lookup(filename) || 'application/octet-stream';

@@ -42,7 +42,7 @@ export interface AssetChange {
 export class ProductAssetsComponent {
     @Input('assets') set assetsSetter(val: Asset[]) {
         // create a new non-readonly array of assets
-        this.assets = val.slice();
+        this.assets = (val || []).slice();
     }
 
     @Input() featuredAsset: Asset | undefined;
