@@ -43,7 +43,7 @@ export interface CreatePaymentResult {
      * In a single-step payment flow, this should be set to `'Settled'`.
      * In a two-step flow, this should be set to `'Authorized'`.
      *
-     * If using a {@link CustomOrderProcess}, may be something else
+     * If using a {@link CustomPaymentProcess}, may be something else
      * entirely according to your business logic.
      */
     state: Exclude<PaymentState, 'Error'>;
