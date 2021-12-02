@@ -836,6 +836,11 @@ export class OrderService {
             return result;
         }
         const { fulfillment, fromState, toState, orders } = result;
+        if (toState === 'Cancelled') {
+            await this.stockMovementService.createCancellationsForOrderItems(ctx, fulfillment.orderItems);
+            const lines = await this.groupOrderItemsIntoLines(ctx, fulfillment.orderItems);
+            await this.stockMovementService.createAllocationsForOrderLines(ctx, lines);
+        }
         await Promise.all(
             orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order, fromState, toState)),
         );
@@ -1670,5 +1675,30 @@ export class OrderService {
             merged.public = { ...m1.public, ...m2.public };
         }
         return merged;
+    }
+
+    private async groupOrderItemsIntoLines(
+        ctx: RequestContext,
+        orderItems: OrderItem[],
+    ): Promise<Array<{ orderLine: OrderLine; quantity: number }>> {
+        const orderLineIdQuantityMap = new Map<ID, number>();
+        for (const item of orderItems) {
+            const quantity = orderLineIdQuantityMap.get(item.lineId);
+            if (quantity == null) {
+                orderLineIdQuantityMap.set(item.lineId, 1);
+            } else {
+                orderLineIdQuantityMap.set(item.lineId, quantity + 1);
+            }
+        }
+        const orderLines = await this.connection
+            .getRepository(ctx, OrderLine)
+            .findByIds([...orderLineIdQuantityMap.keys()], {
+                relations: ['productVariant'],
+            });
+        return orderLines.map(orderLine => ({
+            orderLine,
+            // tslint:disable-next-line:no-non-null-assertion
+            quantity: orderLineIdQuantityMap.get(orderLine.id)!,
+        }));
     }
 }

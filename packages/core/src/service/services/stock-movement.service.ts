@@ -101,23 +101,37 @@ export class StockMovementService {
         if (order.active !== false) {
             throw new InternalServerError('error.cannot-create-allocations-for-active-order');
         }
+        const lines = order.lines.map(orderLine => ({ orderLine, quantity: orderLine.quantity }));
+        return this.createAllocationsForOrderLines(ctx, lines);
+    }
+
+    /**
+     * @description
+     * Creates a new {@link Allocation} for each of the given OrderLines. For ProductVariants
+     * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
+     * increased, indicating that this quantity of stock is allocated and cannot be sold.
+     */
+    async createAllocationsForOrderLines(
+        ctx: RequestContext,
+        lines: Array<{ orderLine: OrderLine; quantity: number }>,
+    ): Promise<Allocation[]> {
         const allocations: Allocation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        for (const line of order.lines) {
+        for (const { orderLine, quantity } of lines) {
             const productVariant = await this.connection.getEntityOrThrow(
                 ctx,
                 ProductVariant,
-                line.productVariant.id,
+                orderLine.productVariant.id,
             );
             const allocation = new Allocation({
                 productVariant,
-                quantity: line.quantity,
-                orderLine: line,
+                quantity,
+                orderLine,
             });
             allocations.push(allocation);
 
             if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
-                productVariant.stockAllocated += line.quantity;
+                productVariant.stockAllocated += quantity;
                 await this.connection
                     .getRepository(ctx, ProductVariant)
                     .save(productVariant, { reload: false });
