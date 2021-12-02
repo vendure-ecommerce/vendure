@@ -6354,6 +6354,12 @@ export type GetTaxRatesQuery = {
     taxRates: Pick<TaxRateList, 'totalItems'> & { items: Array<TaxRateFragment> };
 };
 
+export type GetShippingMethodListQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetShippingMethodListQuery = {
+    shippingMethods: Pick<ShippingMethodList, 'totalItems'> & { items: Array<ShippingMethodFragment> };
+};
+
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -6779,12 +6785,6 @@ export type DeleteRoleMutation = { deleteRole: Pick<DeletionResponse, 'result' |
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
 export type LogoutMutation = { logout: Pick<Success, 'success'> };
-
-export type GetShippingMethodListQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetShippingMethodListQuery = {
-    shippingMethods: Pick<ShippingMethodList, 'totalItems'> & { items: Array<ShippingMethodFragment> };
-};
 
 export type GetShippingMethodQueryVariables = Exact<{
     id: Scalars['ID'];
@@ -8696,6 +8696,15 @@ export namespace GetTaxRates {
     export type Items = NonNullable<NonNullable<NonNullable<GetTaxRatesQuery['taxRates']>['items']>[number]>;
 }
 
+export namespace GetShippingMethodList {
+    export type Variables = GetShippingMethodListQueryVariables;
+    export type Query = GetShippingMethodListQuery;
+    export type ShippingMethods = NonNullable<GetShippingMethodListQuery['shippingMethods']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetShippingMethodListQuery['shippingMethods']>['items']>[number]
+    >;
+}
+
 export namespace CancelJob {
     export type Variables = CancelJobMutationVariables;
     export type Mutation = CancelJobMutation;
@@ -9150,15 +9159,6 @@ export namespace Logout {
     export type Variables = LogoutMutationVariables;
     export type Mutation = LogoutMutation;
     export type Logout = NonNullable<LogoutMutation['logout']>;
-}
-
-export namespace GetShippingMethodList {
-    export type Variables = GetShippingMethodListQueryVariables;
-    export type Query = GetShippingMethodListQuery;
-    export type ShippingMethods = NonNullable<GetShippingMethodListQuery['shippingMethods']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<GetShippingMethodListQuery['shippingMethods']>['items']>[number]
-    >;
 }
 
 export namespace GetShippingMethod {
