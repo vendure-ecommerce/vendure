@@ -11,7 +11,7 @@
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "build": "rimraf package && tsc -p ./tsconfig.build.json",
-        "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payment-plugin",
+        "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payments-plugin",
         "lint": "tslint --fix --project ./",
         "ci": "yarn build"
     },
