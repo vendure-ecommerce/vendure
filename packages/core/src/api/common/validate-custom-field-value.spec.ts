@@ -1,6 +1,8 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { fail } from 'assert';
 
 import { Injector } from '../../common/injector';
+import { CustomFieldConfig } from '../../config/custom-field/custom-field-types';
 
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
@@ -174,6 +176,64 @@ describe('validateCustomFieldValue()', () => {
 
         it('fails validate fn localized string de', async () => {
             await assertThrowsError(validate2('bad', LanguageCode.de), 'ungültig');
+        });
+    });
+
+    describe('list types', () => {
+        it('number list', async () => {
+            const validate = (value: number[]) => () =>
+                validateCustomFieldValue(
+                    {
+                        name: 'test',
+                        type: 'int',
+                        list: true,
+                        min: 0,
+                        max: 10,
+                    },
+                    value,
+                    injector,
+                );
+
+            expect(await validate([1, 2, 6])).not.toThrow();
+            await assertThrowsError(validate([1, 15, 3]), 'error.field-invalid-number-range-max');
+        });
+
+        it('string list with options', async () => {
+            const validate = (value: string[]) => () =>
+                validateCustomFieldValue(
+                    {
+                        name: 'test',
+                        list: true,
+                        type: 'string',
+                        options: [{ value: 'small' }, { value: 'large' }],
+                    },
+                    value,
+                    injector,
+                );
+
+            expect(await validate(['small', 'large'])).not.toThrow();
+            await assertThrowsError(validate(['small', 'huge']), 'error.field-invalid-string-option');
+        });
+
+        it('list with validate function', async () => {
+            const validate = (value: string[]) => () =>
+                validateCustomFieldValue(
+                    {
+                        name: 'test',
+                        type: 'string',
+                        list: true,
+                        validate: (v: string[]) => {
+                            if (!v.every(val => val === 'valid')) {
+                                return 'invalid';
+                            }
+                        },
+                    },
+                    value,
+                    injector,
+                );
+
+            expect(await validate(['valid', 'valid'])).not.toThrow();
+            await assertThrowsError(validate(['bad input', 'valid']), 'invalid');
         });
     });
 });

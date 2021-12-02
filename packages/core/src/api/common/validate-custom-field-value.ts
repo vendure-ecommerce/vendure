@@ -19,7 +19,7 @@ import {
  */
 export async function validateCustomFieldValue(
     config: CustomFieldConfig,
-    value: any,
+    value: any | any[],
     injector: Injector,
     languageCode?: LanguageCode,
 ): Promise<void> {
@@ -33,6 +33,17 @@ export async function validateCustomFieldValue(
             });
         }
     }
+    if (config.list === true && Array.isArray(value)) {
+        for (const singleValue of value) {
+            validateSingleValue(config, singleValue);
+        }
+    } else {
+        validateSingleValue(config, value);
+    }
+    await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, languageCode);
+}
+
+function validateSingleValue(config: CustomFieldConfig, value: any) {
     switch (config.type) {
         case 'string':
         case 'localeString':
@@ -52,7 +63,6 @@ export async function validateCustomFieldValue(
         default:
             assertNever(config);
     }
-    await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, languageCode);
 }
 
 async function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
