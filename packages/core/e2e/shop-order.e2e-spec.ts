@@ -807,7 +807,32 @@ describe('Shop orders', () => {
             expect(customer!.addresses).toEqual([]);
         });
 
-        it('can transition to ArrangingPayment once Customer has been set', async () => {
+        it('attempting to transition to ArrangingPayment returns error result when Order has no ShippingMethod', async () => {
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToState.Mutation,
+                TransitionToState.Variables
+            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+            orderResultGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.transitionError).toBe(
+                `Cannot transition Order to the "ArrangingPayment" state without a ShippingMethod`,
+            );
+            expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
+        });
+
+        it('can transition to ArrangingPayment once Customer and ShippingMethod has been set', async () => {
+            const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+                GET_ELIGIBLE_SHIPPING_METHODS,
+            );
+
+            const { setOrderShippingMethod } = await shopClient.query<
+                SetShippingMethod.Mutation,
+                SetShippingMethod.Variables
+            >(SET_SHIPPING_METHOD, {
+                id: eligibleShippingMethods[0].id,
+            });
+            orderResultGuard.assertSuccess(setOrderShippingMethod);
+
             const { transitionOrderToState } = await shopClient.query<
                 TransitionToState.Mutation,
                 TransitionToState.Variables

@@ -33,8 +33,10 @@ import {
     AddPaymentToOrder,
     ErrorCode,
     GetProductStockLevel,
+    GetShippingMethods,
     PaymentInput,
     SetShippingAddress,
+    SetShippingMethod,
     TestOrderFragmentFragment,
     TestOrderWithPaymentsFragment,
     TransitionToState,
@@ -52,8 +54,10 @@ import {
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
+    GET_ELIGIBLE_SHIPPING_METHODS,
     GET_PRODUCT_WITH_STOCK_LEVEL,
     SET_SHIPPING_ADDRESS,
+    SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -84,6 +88,15 @@ describe('Stock control', () => {
             { id: productId },
         );
         return product;
+    }
+
+    async function setFirstEligibleShippingMethod() {
+        const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+            GET_ELIGIBLE_SHIPPING_METHODS,
+        );
+        await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
+            id: eligibleShippingMethods[0].id,
+        });
     }
 
     beforeAll(async () => {
@@ -259,6 +272,7 @@ describe('Stock control', () => {
                     } as CreateAddressInput,
                 },
             );
+            await setFirstEligibleShippingMethod();
             await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
                 TRANSITION_TO_STATE,
                 { state: 'ArrangingPayment' as OrderState },
@@ -440,6 +454,7 @@ describe('Stock control', () => {
                     } as CreateAddressInput,
                 },
             );
+            await setFirstEligibleShippingMethod();
             await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
                 TRANSITION_TO_STATE,
                 { state: 'ArrangingPayment' as OrderState },
@@ -1091,6 +1106,7 @@ describe('Stock control', () => {
                     } as CreateAddressInput,
                 },
             );
+            await setFirstEligibleShippingMethod();
             await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
                 TRANSITION_TO_STATE,
                 {

@@ -129,6 +129,9 @@ export class OrderStateMachine {
             if (!data.order.customer) {
                 return `message.cannot-transition-to-payment-without-customer`;
             }
+            if (!data.order.shippingLines || data.order.shippingLines.length === 0) {
+                return `message.cannot-transition-to-payment-without-shipping-method`;
+            }
         }
         if (toState === 'PaymentAuthorized') {
             const hasAnAuthorizedPayment = !!data.order.payments.find(p => p.state === 'Authorized');
