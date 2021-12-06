@@ -20,7 +20,7 @@ export class AssetEvent extends VendureEntityEvent<Asset, AssetInputTypes> {
         ctx: RequestContext,
         entity: Asset,
         type: 'created' | 'updated' | 'deleted',
-        input: AssetInputTypes,
+        input?: AssetInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

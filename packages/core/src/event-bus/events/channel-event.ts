@@ -20,7 +20,7 @@ export class ChannelEvent extends VendureEntityEvent<Channel, ChannelInputTypes>
         ctx: RequestContext,
         entity: Channel,
         type: 'created' | 'updated' | 'deleted',
-        input: ChannelInputTypes,
+        input?: ChannelInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

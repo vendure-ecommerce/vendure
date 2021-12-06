@@ -22,7 +22,7 @@ export class CustomerGroupEntityEvent extends VendureEntityEvent<CustomerGroup, 
         ctx: RequestContext,
         entity: CustomerGroup,
         type: 'created' | 'updated' | 'deleted',
-        input: CustomerGroupInputTypes,
+        input?: CustomerGroupInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

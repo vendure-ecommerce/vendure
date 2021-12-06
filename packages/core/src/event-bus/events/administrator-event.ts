@@ -20,7 +20,7 @@ export class AdministratorEvent extends VendureEntityEvent<Administrator, Admini
         ctx: RequestContext,
         entity: Administrator,
         type: 'created' | 'updated' | 'deleted',
-        input: AdministratorInputTypes,
+        input?: AdministratorInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

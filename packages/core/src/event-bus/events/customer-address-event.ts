@@ -24,7 +24,7 @@ export class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAd
         public ctx: RequestContext,
         public entity: Address,
         public type: 'created' | 'updated' | 'deleted',
-        public input: CustomerAddressInputTypes,
+        public input?: CustomerAddressInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

@@ -14,7 +14,7 @@ import { VendureEntityEvent } from '../vendure-entity-event';
  * @since 1.4
  */
 export class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGlobalSettingsInput> {
-    constructor(ctx: RequestContext, entity: GlobalSettings, input: UpdateGlobalSettingsInput) {
+    constructor(ctx: RequestContext, entity: GlobalSettings, input?: UpdateGlobalSettingsInput) {
         super(entity, 'updated', ctx, input);
     }
 }

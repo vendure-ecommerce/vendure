@@ -20,7 +20,7 @@ export class FacetEvent extends VendureEntityEvent<Facet, FacetInputTypes> {
         ctx: RequestContext,
         entity: Facet,
         type: 'created' | 'updated' | 'deleted',
-        input: FacetInputTypes,
+        input?: FacetInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

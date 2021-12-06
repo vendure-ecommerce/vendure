@@ -26,7 +26,7 @@ export class ProductOptionGroupEvent extends VendureEntityEvent<
         ctx: RequestContext,
         entity: ProductOptionGroup,
         type: 'created' | 'updated',
-        input: ProductOptionGroupInputTypes,
+        input?: ProductOptionGroupInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

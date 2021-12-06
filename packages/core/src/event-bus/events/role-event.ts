@@ -20,7 +20,7 @@ export class RoleEvent extends VendureEntityEvent<Role, RoleInputTypes> {
         ctx: RequestContext,
         entity: Role,
         type: 'created' | 'updated' | 'deleted',
-        input: RoleInputTypes,
+        input?: RoleInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

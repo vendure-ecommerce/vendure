@@ -20,7 +20,7 @@ export class PromotionEvent extends VendureEntityEvent<Promotion, PromotionInput
         ctx: RequestContext,
         entity: Promotion,
         type: 'created' | 'updated' | 'deleted',
-        input: PromotionInputTypes,
+        input?: PromotionInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

@@ -20,7 +20,7 @@ export class TaxRateEvent extends VendureEntityEvent<TaxRate, TaxRateInputTypes>
         ctx: RequestContext,
         entity: TaxRate,
         type: 'created' | 'updated' | 'deleted',
-        input: TaxRateInputTypes,
+        input?: TaxRateInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

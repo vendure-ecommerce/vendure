@@ -20,7 +20,7 @@ export class TaxCategoryEvent extends VendureEntityEvent<TaxCategory, TaxCategor
         ctx: RequestContext,
         entity: TaxCategory,
         type: 'created' | 'updated' | 'deleted',
-        input: TaxCategoryInputTypes,
+        input?: TaxCategoryInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

@@ -14,13 +14,13 @@ export abstract class VendureEntityEvent<Entity, Input = any> extends VendureEve
     public readonly entity: Entity;
     public readonly type: 'created' | 'updated' | 'deleted';
     public readonly ctx: RequestContext;
-    public readonly input: Input;
+    public readonly input?: Input;
 
     protected constructor(
         entity: Entity,
         type: 'created' | 'updated' | 'deleted',
         ctx: RequestContext,
-        input: Input,
+        input?: Input,
     ) {
         super();
         this.entity = entity;

@@ -20,7 +20,7 @@ export class ProductEvent extends VendureEntityEvent<Product, ProductInputTypes>
         ctx: RequestContext,
         entity: Product,
         type: 'created' | 'updated' | 'deleted',
-        input: ProductInputTypes,
+        input?: ProductInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

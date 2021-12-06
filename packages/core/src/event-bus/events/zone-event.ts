@@ -20,7 +20,7 @@ export class ZoneEvent extends VendureEntityEvent<Zone, ZoneInputTypes> {
         ctx: RequestContext,
         entity: Zone,
         type: 'created' | 'updated' | 'deleted',
-        input: ZoneInputTypes,
+        input?: ZoneInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

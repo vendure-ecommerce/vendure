@@ -20,7 +20,7 @@ export class CountryEvent extends VendureEntityEvent<Country, CountryInputTypes>
         ctx: RequestContext,
         entity: Country,
         type: 'created' | 'updated' | 'deleted',
-        input: CountryInputTypes,
+        input?: CountryInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

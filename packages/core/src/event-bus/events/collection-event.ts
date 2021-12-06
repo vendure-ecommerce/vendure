@@ -20,7 +20,7 @@ export class CollectionEvent extends VendureEntityEvent<Collection, CollectionIn
         ctx: RequestContext,
         entity: Collection,
         type: 'created' | 'updated' | 'deleted',
-        input: CollectionInputTypes,
+        input?: CollectionInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

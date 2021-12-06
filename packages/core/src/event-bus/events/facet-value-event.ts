@@ -28,7 +28,7 @@ export class FacetValueEvent extends VendureEntityEvent<FacetValue, FacetValueIn
         ctx: RequestContext,
         entity: FacetValue,
         type: 'created' | 'updated' | 'deleted',
-        input: FacetValueInputTypes,
+        input?: FacetValueInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

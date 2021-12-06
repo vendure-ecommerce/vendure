@@ -20,7 +20,7 @@ export class ProductVariantEvent extends VendureEntityEvent<ProductVariant[], Pr
         ctx: RequestContext,
         entity: ProductVariant[],
         type: 'created' | 'updated' | 'deleted',
-        input: ProductVariantInputTypes,
+        input?: ProductVariantInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

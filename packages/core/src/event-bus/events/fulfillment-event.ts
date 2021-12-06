@@ -25,7 +25,7 @@ type CreateFulfillmentInput = {
  * @since 1.4
  */
 export class FulfillmentEvent extends VendureEntityEvent<Fulfillment, CreateFulfillmentInput> {
-    constructor(ctx: RequestContext, entity: Fulfillment, input: CreateFulfillmentInput) {
+    constructor(ctx: RequestContext, entity: Fulfillment, input?: CreateFulfillmentInput) {
         super(entity, 'created', ctx, input);
     }
 }

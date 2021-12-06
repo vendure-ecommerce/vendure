@@ -20,7 +20,7 @@ export class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, Ship
         ctx: RequestContext,
         entity: ShippingMethod,
         type: 'created' | 'updated' | 'deleted',
-        input: ShippingMethodInputTypes,
+        input?: ShippingMethodInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

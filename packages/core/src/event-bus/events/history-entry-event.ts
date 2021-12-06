@@ -28,7 +28,7 @@ export class HistoryEntryEvent extends VendureEntityEvent<HistoryEntry, HistoryI
         entity: HistoryEntry,
         type: 'created' | 'updated' | 'deleted',
         historyType: 'order' | 'customer' | string,
-        input: HistoryInput,
+        input?: HistoryInput,
     ) {
         super(entity, type, ctx, input);
         this.historyType = historyType;

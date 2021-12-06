@@ -20,7 +20,7 @@ export class PaymentMethodEvent extends VendureEntityEvent<PaymentMethod, Paymen
         ctx: RequestContext,
         entity: PaymentMethod,
         type: 'created' | 'updated' | 'deleted',
-        input: PaymentMethodInputTypes,
+        input?: PaymentMethodInputTypes,
     ) {
         super(entity, type, ctx, input);
     }

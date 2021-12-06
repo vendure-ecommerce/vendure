@@ -24,7 +24,7 @@ export class CustomerEvent extends VendureEntityEvent<Customer, CustomerInputTyp
         ctx: RequestContext,
         entity: Customer,
         type: 'created' | 'updated' | 'deleted',
-        input: CustomerInputTypes,
+        input?: CustomerInputTypes,
     ) {
         super(entity, type, ctx, input);
     }
