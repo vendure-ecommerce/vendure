@@ -1,10 +1,10 @@
 import { BraintreeGateway, Environment, Transaction } from 'braintree';
 
-import { PaymentMethodArgsHash } from './types';
+import { BraintreePluginOptions, PaymentMethodArgsHash } from './types';
 
-export function getGateway(args: PaymentMethodArgsHash): BraintreeGateway {
+export function getGateway(args: PaymentMethodArgsHash, options: BraintreePluginOptions): BraintreeGateway {
     return new BraintreeGateway({
-        environment: Environment.Sandbox,
+        environment: options.environment || Environment.Sandbox,
         merchantId: args.merchantId,
         privateKey: args.privateKey,
         publicKey: args.publicKey,

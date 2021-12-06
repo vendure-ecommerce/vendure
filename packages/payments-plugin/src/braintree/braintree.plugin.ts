@@ -3,6 +3,8 @@ import { gql } from 'apollo-server-core';
 
 import { braintreePaymentMethodHandler } from './braintree.handler';
 import { BraintreeResolver } from './braintree.resolver';
+import { BRAINTREE_PLUGIN_OPTIONS } from './constants';
+import { BraintreePluginOptions } from './types';
 
 /**
  * @description
@@ -27,11 +29,12 @@ import { BraintreeResolver } from './braintree.resolver';
  * 1. Add the plugin to your VendureConfig `plugins` array:
  *     ```TypeScript
  *     import { BraintreePlugin } from '\@vendure/payments-plugin/package/braintree';
+ *     import { Environment } from 'braintree';
  *
  *     // ...
  *
  *     plugins: [
- *       BraintreePlugin,
+ *       BraintreePlugin.init({ environment: Environment.Sandbox }),
  *     ]
  *     ```
  * 2. Create a new PaymentMethod in the Admin UI, and select "Braintree payments" as the handler.
@@ -176,7 +179,12 @@ import { BraintreeResolver } from './braintree.resolver';
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [],
+    providers: [
+        {
+            provide: BRAINTREE_PLUGIN_OPTIONS,
+            useFactory: () => BraintreePlugin.options,
+        },
+    ],
     configuration: config => {
         config.paymentOptions.paymentMethodHandlers.push(braintreePaymentMethodHandler);
         return config;
@@ -190,4 +198,10 @@ import { BraintreeResolver } from './braintree.resolver';
         resolvers: [BraintreeResolver],
     },
 })
-export class BraintreePlugin {}
+export class BraintreePlugin {
+    static options: BraintreePluginOptions = {};
+    static init(options: BraintreePluginOptions): BraintreePlugin {
+        this.options = options;
+        return BraintreePlugin;
+    }
+}

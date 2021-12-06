@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     Ctx,
@@ -12,12 +13,16 @@ import {
 
 import { getGateway } from './braintree-common';
 import { braintreePaymentMethodHandler } from './braintree.handler';
-import { loggerCtx } from './constants';
-import { PaymentMethodArgsHash } from './types';
+import { BRAINTREE_PLUGIN_OPTIONS, loggerCtx } from './constants';
+import { BraintreePluginOptions, PaymentMethodArgsHash } from './types';
 
 @Resolver()
 export class BraintreeResolver {
-    constructor(private connection: TransactionalConnection, private orderService: OrderService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private orderService: OrderService,
+        @Inject(BRAINTREE_PLUGIN_OPTIONS) private options: BraintreePluginOptions,
+    ) {}
 
     @Query()
     async generateBraintreeClientToken(@Ctx() ctx: RequestContext, @Args() { orderId }: { orderId: ID }) {
@@ -25,14 +30,16 @@ export class BraintreeResolver {
         if (order && order.customer) {
             const customerId = order.customer.id.toString();
             const args = await this.getPaymentMethodArgs(ctx);
-            const gateway = getGateway(args);
+            const gateway = getGateway(args, this.options);
             try {
-                const result = await gateway.clientToken.generate({
-                    customerId,
-                });
+                const result = await gateway.clientToken.generate({});
                 return result.clientToken;
             } catch (e) {
-                Logger.error(e);
+                Logger.error(
+                    `Could not generate Braintree clientToken. Check the configured credentials.`,
+                    loggerCtx,
+                );
+                throw e;
             }
         } else {
             throw new InternalServerError(`[${loggerCtx}] Could not find a Customer for the given Order`);
