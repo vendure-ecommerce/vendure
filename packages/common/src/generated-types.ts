@@ -89,6 +89,7 @@ export type Administrator = Node & {
 };
 
 export type AdministratorFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   firstName?: Maybe<StringOperators>;
@@ -172,6 +173,7 @@ export type Asset = Node & {
 };
 
 export type AssetFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   name?: Maybe<StringOperators>;
@@ -273,6 +275,7 @@ export type BooleanCustomFieldConfig = CustomField & {
   ui?: Maybe<Scalars['JSON']>;
 };
 
+/** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
   eq?: Maybe<Scalars['Boolean']>;
 };
@@ -369,6 +372,7 @@ export type CollectionBreadcrumb = {
 
 export type CollectionFilterParameter = {
   isPrivate?: Maybe<BooleanOperators>;
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
@@ -495,6 +499,7 @@ export type Country = Node & {
 };
 
 export type CountryFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
@@ -1188,6 +1193,7 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   title?: Maybe<StringOperators>;
@@ -1213,6 +1219,7 @@ export type CustomerGroupCustomersArgs = {
 };
 
 export type CustomerGroupFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   name?: Maybe<StringOperators>;
@@ -1274,6 +1281,7 @@ export type CustomerSortParameter = {
   emailAddress?: Maybe<SortOrder>;
 };
 
+/** Operators for filtering on a DateTime field */
 export type DateOperators = {
   eq?: Maybe<Scalars['DateTime']>;
   before?: Maybe<Scalars['DateTime']>;
@@ -1413,6 +1421,7 @@ export type Facet = Node & {
 
 export type FacetFilterParameter = {
   isPrivate?: Maybe<BooleanOperators>;
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
@@ -1590,6 +1599,7 @@ export type HistoryEntry = Node & {
 
 export type HistoryEntryFilterParameter = {
   isPublic?: Maybe<BooleanOperators>;
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   type?: Maybe<StringOperators>;
@@ -1646,6 +1656,14 @@ export enum HistoryEntryType {
   ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
   ORDER_MODIFIED = 'ORDER_MODIFIED'
 }
+
+/** Operators for filtering on an ID field */
+export type IdOperators = {
+  eq?: Maybe<Scalars['String']>;
+  notEq?: Maybe<Scalars['String']>;
+  in?: Maybe<Array<Scalars['String']>>;
+  notIn?: Maybe<Array<Scalars['String']>>;
+};
 
 export type ImportInfo = {
   __typename?: 'ImportInfo';
@@ -1740,6 +1758,7 @@ export type JobBufferSize = {
 };
 
 export type JobFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   startedAt?: Maybe<DateOperators>;
   settledAt?: Maybe<DateOperators>;
@@ -3018,6 +3037,7 @@ export type NothingToRefundError = ErrorResult & {
   message: Scalars['String'];
 };
 
+/** Operators for filtering on a Int or Float field */
 export type NumberOperators = {
   eq?: Maybe<Scalars['Float']>;
   lt?: Maybe<Scalars['Float']>;
@@ -3113,6 +3133,7 @@ export type OrderAddress = {
 
 export type OrderFilterParameter = {
   customerLastName?: Maybe<StringOperators>;
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   orderPlacedAt?: Maybe<DateOperators>;
@@ -3364,6 +3385,7 @@ export type PaymentMethod = Node & {
 };
 
 export type PaymentMethodFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   name?: Maybe<StringOperators>;
@@ -3663,6 +3685,7 @@ export type ProductVariantListArgs = {
 
 export type ProductFilterParameter = {
   enabled?: Maybe<BooleanOperators>;
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
@@ -3830,6 +3853,8 @@ export type ProductVariantFilterParameter = {
   stockAllocated?: Maybe<NumberOperators>;
   outOfStockThreshold?: Maybe<NumberOperators>;
   useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
+  id?: Maybe<IdOperators>;
+  productId?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
@@ -3908,6 +3933,7 @@ export type Promotion = Node & {
 };
 
 export type PromotionFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   startsAt?: Maybe<DateOperators>;
@@ -4372,6 +4398,7 @@ export type Role = Node & {
 };
 
 export type RoleFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   code?: Maybe<StringOperators>;
@@ -4533,6 +4560,7 @@ export type ShippingMethod = Node & {
 };
 
 export type ShippingMethodFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   code?: Maybe<StringOperators>;
@@ -4676,6 +4704,7 @@ export type StringFieldOption = {
   label?: Maybe<Array<LocalizedString>>;
 };
 
+/** Operators for filtering on a String field */
 export type StringOperators = {
   eq?: Maybe<Scalars['String']>;
   notEq?: Maybe<Scalars['String']>;
@@ -4723,6 +4752,7 @@ export type Tag = Node & {
 };
 
 export type TagFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   value?: Maybe<StringOperators>;
@@ -4785,6 +4815,7 @@ export type TaxRate = Node & {
 };
 
 export type TaxRateFilterParameter = {
+  id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   name?: Maybe<StringOperators>;
