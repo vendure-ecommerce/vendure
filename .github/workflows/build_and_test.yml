@@ -109,7 +109,7 @@ jobs:
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       matrix:
-        db: [mariadb, mysql, postgres]
+        db: [sqljs, mariadb, mysql, postgres]
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ env.node }}
