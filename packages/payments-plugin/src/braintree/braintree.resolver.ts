@@ -28,11 +28,11 @@ export class BraintreeResolver {
     async generateBraintreeClientToken(@Ctx() ctx: RequestContext, @Args() { orderId }: { orderId: ID }) {
         const order = await this.orderService.findOne(ctx, orderId);
         if (order && order.customer) {
-            const customerId = order.customer.id.toString();
+            const customerId = order.customer.customFields.braintreeCustomerId ?? undefined;
             const args = await this.getPaymentMethodArgs(ctx);
             const gateway = getGateway(args, this.options);
             try {
-                const result = await gateway.clientToken.generate({});
+                const result = await gateway.clientToken.generate({ customerId });
                 return result.clientToken;
             } catch (e) {
                 Logger.error(

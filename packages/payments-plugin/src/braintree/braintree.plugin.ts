@@ -1,4 +1,4 @@
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { LanguageCode, PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
 import { gql } from 'apollo-server-core';
 
 import { braintreePaymentMethodHandler } from './braintree.handler';
@@ -34,7 +34,12 @@ import { BraintreePluginOptions } from './types';
  *     // ...
  *
  *     plugins: [
- *       BraintreePlugin.init({ environment: Environment.Sandbox }),
+ *       BraintreePlugin.init({
+ *         environment: Environment.Sandbox,
+ *         // This allows saving customer payment
+ *         // methods with Braintree
+ *         storeCustomersInBraintree: true,
+ *       }),
  *     ]
  *     ```
  * 2. Create a new PaymentMethod in the Admin UI, and select "Braintree payments" as the handler.
@@ -100,6 +105,14 @@ import { BraintreePluginOptions } from './types';
  *       },
  *     }),
  *   );
+ *
+ *   // If you are using the `storeCustomersInBraintree` option, then the
+ *   // customer might already have a stored payment method selected as
+ *   // soon as the dropin script loads. In this case, show the submit
+ *   // button immediately.
+ *   if (dropin.isPaymentMethodRequestable()) {
+ *     showSubmitButton = true;
+ *   }
  *
  *   dropin.on('paymentMethodRequestable', (payload) => {
  *     if (payload.type === 'CreditCard') {
@@ -187,6 +200,16 @@ import { BraintreePluginOptions } from './types';
     ],
     configuration: config => {
         config.paymentOptions.paymentMethodHandlers.push(braintreePaymentMethodHandler);
+        if (BraintreePlugin.options.storeCustomersInBraintree === true) {
+            config.customFields.Customer.push({
+                name: 'braintreeCustomerId',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Braintree Customer ID' }],
+                nullable: true,
+                public: false,
+                readonly: true,
+            });
+        }
         return config;
     },
     shopApiExtensions: {
@@ -200,7 +223,7 @@ import { BraintreePluginOptions } from './types';
 })
 export class BraintreePlugin {
     static options: BraintreePluginOptions = {};
-    static init(options: BraintreePluginOptions): BraintreePlugin {
+    static init(options: BraintreePluginOptions): Type<BraintreePlugin> {
         this.options = options;
         return BraintreePlugin;
     }
