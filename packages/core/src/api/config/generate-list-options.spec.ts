@@ -22,6 +22,8 @@ describe('generateListOptions()', () => {
         DESC
     }
 
+    input IDOperators { dummy: String }
+
     input StringOperators { dummy: String }
 
     input BooleanOperators { dummy: String }
@@ -268,6 +270,7 @@ describe('generateListOptions()', () => {
         expect(printType(result.getType('PersonFilterParameter')!)).toBe(
             removeLeadingWhitespace(`
                    input PersonFilterParameter {
+                     id: IDOperators
                      name: StringOperators
                    }`),
         );
@@ -328,6 +331,7 @@ describe('generateListOptions()', () => {
         expect(printType(result.getType('OrderFilterParameter')!)).toBe(
             removeLeadingWhitespace(`
                    input OrderFilterParameter {
+                     id: IDOperators
                      code: StringOperators
                    }`),
         );
