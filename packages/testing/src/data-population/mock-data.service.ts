@@ -1,3 +1,4 @@
+import { CreateAddressInput, CreateCustomerInput } from '@vendure/common/lib/generated-types';
 import faker from 'faker/locale/en_GB';
 import gql from 'graphql-tag';
 
@@ -15,6 +16,37 @@ export class MockDataService {
         faker.seed(1);
     }
 
+    static getCustomers(
+        count: number,
+    ): Array<{ customer: CreateCustomerInput; address: CreateAddressInput }> {
+        faker.seed(1);
+        const results: Array<{ customer: CreateCustomerInput; address: CreateAddressInput }> = [];
+        for (let i = 0; i < count; i++) {
+            const firstName = faker.name.firstName();
+            const lastName = faker.name.lastName();
+            const customer: CreateCustomerInput = {
+                firstName,
+                lastName,
+                emailAddress: faker.internet.email(firstName, lastName),
+                phoneNumber: faker.phone.phoneNumber(),
+            };
+            const address: CreateAddressInput = {
+                fullName: `${firstName} ${lastName}`,
+                streetLine1: faker.address.streetAddress(),
+                city: faker.address.city(),
+                province: faker.address.county(),
+                postalCode: faker.address.zipCode(),
+                countryCode: 'GB',
+            };
+            results.push({ customer, address });
+        }
+        return results;
+    }
+
+    /**
+     * @deprecated
+     * Use `MockDataService.getCustomers()` and create customers directly with CustomerService.
+     */
     async populateCustomers(count: number = 5): Promise<any> {
         for (let i = 0; i < count; i++) {
             const firstName = faker.name.firstName();
@@ -50,7 +82,7 @@ export class MockDataService {
 
             if (customer) {
                 const query2 = gql`
-                    mutation($customerId: ID!, $input: CreateAddressInput!) {
+                    mutation ($customerId: ID!, $input: CreateAddressInput!) {
                         createCustomerAddress(customerId: $customerId, input: $input) {
                             id
                             streetLine1

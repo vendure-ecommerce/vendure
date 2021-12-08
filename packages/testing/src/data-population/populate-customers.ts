@@ -1,6 +1,7 @@
-import { VendureConfig } from '@vendure/core';
+import { INestApplicationContext } from '@nestjs/common';
+import { CustomerService, isGraphQlErrorResult, RequestContext } from '@vendure/core';
 
-import { SimpleGraphQLClient } from '../simple-graphql-client';
+import { getSuperadminContext } from '../utils/get-superadmin-context';
 
 import { MockDataService } from './mock-data.service';
 
@@ -8,16 +9,24 @@ import { MockDataService } from './mock-data.service';
  * Creates customers with addresses by making API calls to the Admin API.
  */
 export async function populateCustomers(
+    app: INestApplicationContext,
     count: number,
-    config: Required<VendureConfig>,
-    logging: boolean = false,
-    simpleGraphQLClient = new SimpleGraphQLClient(
-        config,
-        `http://localhost:${config.apiOptions.port}/${config.apiOptions.adminApiPath}`,
-    ),
+    loggingFn: (message: string) => void,
 ) {
-    const client = simpleGraphQLClient;
-    await client.asSuperAdmin();
-    const mockDataService = new MockDataService(client, logging);
-    await mockDataService.populateCustomers(count);
+    const customerService = app.get(CustomerService);
+    const customerData = MockDataService.getCustomers(count);
+    const ctx = await getSuperadminContext(app);
+    const password = 'test';
+    for (const { customer, address } of customerData) {
+        try {
+            const createdCustomer = await customerService.create(ctx, customer, password);
+            if (isGraphQlErrorResult(createdCustomer)) {
+                loggingFn(`Failed to create customer: ${createdCustomer.message}`);
+                continue;
+            }
+            await customerService.createAddress(ctx, createdCustomer.id, address);
+        } catch (e) {
+            loggingFn(`Failed to create customer: ${e.message}`);
+        }
+    }
 }
