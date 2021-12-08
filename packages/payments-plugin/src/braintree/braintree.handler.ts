@@ -3,14 +3,12 @@ import {
     Customer,
     EntityHydrator,
     Injector,
-    InternalServerError,
     Logger,
     Order,
     PaymentMethodHandler,
     RequestContext,
     TransactionalConnection,
 } from '@vendure/core';
-import { ConfigArgValues } from '@vendure/core/src/common/configurable-operation';
 import { BraintreeGateway } from 'braintree';
 
 import { extractMetadataFromTransaction, getGateway } from './braintree-common';
@@ -20,6 +18,7 @@ import { BraintreePluginOptions } from './types';
 let options: BraintreePluginOptions;
 let connection: TransactionalConnection;
 let entityHydrator: EntityHydrator;
+
 /**
  * The handler for Braintree payments.
  */
