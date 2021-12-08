@@ -182,6 +182,7 @@ export class PaymentMethodService {
                 description: method.description,
                 isEligible,
                 eligibilityMessage,
+                customFields: method.customFields,
             });
         }
         return results;

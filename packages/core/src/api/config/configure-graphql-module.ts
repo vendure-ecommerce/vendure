@@ -32,8 +32,10 @@ import {
     addGraphQLCustomFields,
     addModifyOrderCustomFields,
     addOrderLineCustomFieldsInput,
+    addPaymentMethodQuoteCustomFields,
     addRegisterCustomerCustomFieldsInput,
     addServerConfigCustomFields,
+    addShippingMethodQuoteCustomFields,
 } from './graphql-custom-fields';
 
 export interface GraphQLApiOptions {
@@ -145,6 +147,8 @@ async function createGraphQLOptions(
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
         schema = addModifyOrderCustomFields(schema, customFields.Order || []);
+        schema = addShippingMethodQuoteCustomFields(schema, customFields.ShippingMethod || []);
+        schema = addPaymentMethodQuoteCustomFields(schema, customFields.PaymentMethod || []);
         schema = generateAuthenticationTypes(schema, authStrategies);
         schema = generateErrorCodeEnum(schema);
         if (apiType === 'admin') {

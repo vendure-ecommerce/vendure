@@ -3409,6 +3409,7 @@ export type PaymentMethodQuote = {
   description: Scalars['String'];
   isEligible: Scalars['Boolean'];
   eligibilityMessage?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type PaymentMethodSortParameter = {
@@ -4569,6 +4570,7 @@ export type ShippingMethodQuote = {
   description: Scalars['String'];
   /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
   metadata?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodSortParameter = {

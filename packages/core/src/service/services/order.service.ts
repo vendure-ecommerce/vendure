@@ -741,6 +741,7 @@ export class OrderService {
                 name: eligible.method.name,
                 code: eligible.method.code,
                 metadata,
+                customFields: eligible.method.customFields,
             };
         });
     }
