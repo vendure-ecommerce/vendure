@@ -16,6 +16,7 @@ type Product implements Node {
     facetValues: [FacetValue!]!
     translations: [ProductTranslation!]!
     collections: [Collection!]!
+    user: User
 }
 
 type ProductTranslation {
