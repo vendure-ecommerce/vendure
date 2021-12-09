@@ -2,11 +2,9 @@ import { Args, Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { ProductVariantListOptions } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
-import { UserService } from '../../../../dist';
 
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
-import { User } from '../../../entity';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
@@ -14,6 +12,8 @@ import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { User } from '../../../entity/user/user.entity';
+import { UserService } from '../../../service';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { AssetService } from '../../../service/services/asset.service';
 import { CollectionService } from '../../../service/services/collection.service';
@@ -118,7 +118,7 @@ export class ProductEntityResolver {
         if (product.user) {
             return product.user;
         }
-        return this.userService.getUserById(ctx, product.user.id);
+        return this.userService.getUser(ctx, product.user);
     }
 
     @ResolveField()
