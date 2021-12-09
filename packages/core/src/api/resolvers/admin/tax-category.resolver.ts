@@ -20,8 +20,13 @@ export class TaxCategoryResolver {
     constructor(private taxCategoryService: TaxCategoryService) {}
 
     @Query()
-    @Allow(Permission.ReadSettings, Permission.ReadCatalog, Permission.ReadTaxCategory)
-    taxCategories(@Ctx() ctx: RequestContext): Promise<TaxCategory[]> {
+    @Allow(
+        Permission.ReadSettings,
+        Permission.ReadCatalog,
+        Permission.ReadProduct,
+        Permission.ReadTaxCategory,
+    )
+    async taxCategories(@Ctx() ctx: RequestContext): Promise<TaxCategory[]> {
         return this.taxCategoryService.findAll(ctx);
     }
 
