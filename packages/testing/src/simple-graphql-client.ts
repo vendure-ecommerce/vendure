@@ -38,8 +38,9 @@ const LOGIN = gql`
  */
 export class SimpleGraphQLClient {
     private authToken: string;
-    private channelToken: string | null = null;
     private headers: { [key: string]: any } = {};
+    private channelToken: string | null = null;
+    
 
     constructor(private vendureConfig: Required<VendureConfig>, private apiUrl: string = '') {}
 
