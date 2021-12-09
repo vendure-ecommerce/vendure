@@ -47,6 +47,12 @@ export class UserService {
         });
     }
 
+    async getUser(ctx: RequestContext, user: User): Promise<User | undefined> {
+        return this.connection.getRepository(ctx, User).findOne(user.id, {
+            relations: ['roles', 'roles.channels', 'authenticationMethods'],
+        });
+    }
+
     async getUserByEmailAddress(ctx: RequestContext, emailAddress: string): Promise<User | undefined> {
         return this.connection.getRepository(ctx, User).findOne({
             where: {
