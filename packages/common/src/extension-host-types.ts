@@ -7,6 +7,19 @@ export interface BaseExtensionMessage {
     data: any;
 }
 
+export interface ActiveRouteData {
+    url: string;
+    origin: string;
+    pathname: string;
+    params: { [key: string]: any };
+    queryParams: { [key: string]: any };
+    fragment: string | null;
+}
+
+export interface ActivatedRouteMessage extends BaseExtensionMessage {
+    type: 'active-route';
+}
+
 export interface QueryMessage extends BaseExtensionMessage {
     type: 'graphql-query';
     data: {
@@ -44,7 +57,8 @@ export interface DestroyMessage extends BaseExtensionMessage {
     data: null;
 }
 
-export type ExtensionMesssage =
+export type ExtensionMessage =
+    | ActivatedRouteMessage
     | QueryMessage
     | MutationMessage
     | NotificationMessage
