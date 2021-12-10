@@ -115,7 +115,6 @@ const INDEX_PREFIX = 'e2e-tests';
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: INDEX_PREFIX,

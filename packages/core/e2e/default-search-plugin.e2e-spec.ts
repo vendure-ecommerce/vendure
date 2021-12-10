@@ -91,7 +91,6 @@ interface SearchProductShopVariables extends SearchProductsShop.Variables {
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
             plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
         }),
     );
@@ -103,11 +102,10 @@ describe('Default search plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        if (testConfig().dbConnectionOptions.type === 'mysql') {
-            // Mysql seems to occasionally run into some kind of race condition
-            // relating to the populating of data, so we add a pause here.
-            await new Promise(resolve => setTimeout(resolve, 10000));
-        }
+
+        // A precaution against a race condition in which the index
+        // rebuild is not completed in time for the first test.
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
