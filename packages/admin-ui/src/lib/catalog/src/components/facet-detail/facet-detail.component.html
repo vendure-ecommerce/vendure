@@ -119,20 +119,9 @@
                     </td>
                     <td class="align-middle"><input type="text" formControlName="code" readonly /></td>
                     <td class="" *ngIf="customValueFields.length">
-                        <!--                    <ng-container *ngFor="let customField of customValueFields">-->
-                        <!--                       -->
-                        <!--                            <vdr-custom-field-control-->
-                        <!--                                *ngIf="customValueFieldIsSet(i, customField.name)"-->
-                        <!--                                entityName="FacetValue"-->
-                        <!--                                [showLabel]="false"-->
-                        <!--                                [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"-->
-                        <!--                                [customField]="customField"-->
-                        <!--                            ></vdr-custom-field-control>-->
-                        <!--                      -->
-                        <!--                    </ng-container>-->
                         <vdr-tabbed-custom-fields
                             entityName="FacetValue"
-                            [customFields]="customFields"
+                            [customFields]="customValueFields"
                             [compact]="true"
                             [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
                             [readonly]="!(updatePermission | hasPermission)"

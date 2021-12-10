@@ -40,6 +40,8 @@ export class TabbedCustomFieldsComponent implements OnInit {
                 tabMap.set(tabName, [field]);
             }
         }
-        return Array.from(tabMap.entries()).map(([tabName, customFields]) => ({ tabName, customFields }));
+        return Array.from(tabMap.entries())
+            .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+            .map(([tabName, customFields]) => ({ tabName, customFields }));
     }
 }
