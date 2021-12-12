@@ -9,12 +9,12 @@ import {
 import {
     CUSTOMER_ROLE_CODE,
     CUSTOMER_ROLE_DESCRIPTION,
+    CUSTOMER_SELLER_ROLE_CODE,
     SUPER_ADMIN_ROLE_CODE,
     SUPER_ADMIN_ROLE_DESCRIPTION,
 } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { CUSTOMER_SELLER_ROLE_CODE } from '@vendure/common/src/shared-constants';
 
 import { RequestContext } from '../../api/common/request-context';
 import { getAllPermissionsMetadata } from '../../common/constants';
