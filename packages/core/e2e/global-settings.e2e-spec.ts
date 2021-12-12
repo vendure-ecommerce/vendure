@@ -16,7 +16,7 @@ import { UPDATE_GLOBAL_SETTINGS } from './graphql/shared-definitions';
 
 describe('GlobalSettings resolver', () => {
     const { server, adminClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         ...{
             customFields: {
                 Customer: [{ name: 'age', type: 'int' }],

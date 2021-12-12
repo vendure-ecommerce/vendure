@@ -13,7 +13,7 @@ import { ADD_ITEM_TO_ORDER, SEARCH_PRODUCTS_SHOP } from './graphql/shop-definiti
 describe('custom OrderItemPriceCalculationStrategy', () => {
     let variants: SearchProductsShop.Items[];
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             customFields: {
                 OrderLine: [{ name: 'giftWrap', type: 'boolean' }],
             },

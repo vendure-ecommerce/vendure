@@ -37,7 +37,7 @@ import {
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Shop customers', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     let customer: GetCustomer.Customer;
 
     const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard(

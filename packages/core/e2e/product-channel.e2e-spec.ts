@@ -38,7 +38,7 @@ import {
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ChannelAware Products and ProductVariants', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
     const THIRD_CHANNEL_TOKEN = 'third_channel_token';
     let secondChannelAdminRole: CreateRole.CreateRole;

@@ -3177,7 +3177,7 @@ export type OrderItem = Node & {
   /** The price of a single unit including discounts and tax */
   discountedUnitPriceWithTax: Scalars['Int'];
   /**
-   * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+   * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
    * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
    * and refund calculations.
    */
@@ -3227,7 +3227,7 @@ export type OrderLine = Node & {
   /** The price of a single unit including discounts and tax */
   discountedUnitPriceWithTax: Scalars['Int'];
   /**
-   * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+   * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
    * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
    * and refund calculations.
    */
@@ -3239,14 +3239,14 @@ export type OrderLine = Node & {
   taxRate: Scalars['Float'];
   /** The total price of the line excluding tax and discounts. */
   linePrice: Scalars['Int'];
-  /** The total price of the line including tax bit excluding discounts. */
+  /** The total price of the line including tax but excluding discounts. */
   linePriceWithTax: Scalars['Int'];
   /** The price of the line including discounts, excluding tax */
   discountedLinePrice: Scalars['Int'];
   /** The price of the line including discounts and tax */
   discountedLinePriceWithTax: Scalars['Int'];
   /**
-   * The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+   * The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
    * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
    * and refund calculations.
    */
@@ -7463,6 +7463,27 @@ export type GetTaxRateListQuery = { taxRates: (
     )> }
   ) };
 
+export type GetTaxRateListSimpleQueryVariables = Exact<{
+  options?: Maybe<TaxRateListOptions>;
+}>;
+
+
+export type GetTaxRateListSimpleQuery = { taxRates: (
+    { __typename?: 'TaxRateList' }
+    & Pick<TaxRateList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'TaxRate' }
+      & Pick<TaxRate, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'value'>
+      & { category: (
+        { __typename?: 'TaxCategory' }
+        & Pick<TaxCategory, 'id' | 'name'>
+      ), zone: (
+        { __typename?: 'Zone' }
+        & Pick<Zone, 'id' | 'name'>
+      ) }
+    )> }
+  ) };
+
 export type GetTaxRateQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -9849,6 +9870,15 @@ export namespace GetTaxRateList {
   export type Query = GetTaxRateListQuery;
   export type TaxRates = (NonNullable<GetTaxRateListQuery['taxRates']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetTaxRateListQuery['taxRates']>)['items']>)[number]>;
+}
+
+export namespace GetTaxRateListSimple {
+  export type Variables = GetTaxRateListSimpleQueryVariables;
+  export type Query = GetTaxRateListSimpleQuery;
+  export type TaxRates = (NonNullable<GetTaxRateListSimpleQuery['taxRates']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetTaxRateListSimpleQuery['taxRates']>)['items']>)[number]>;
+  export type Category = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetTaxRateListSimpleQuery['taxRates']>)['items']>)[number]>['category']>);
+  export type Zone = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetTaxRateListSimpleQuery['taxRates']>)['items']>)[number]>['zone']>);
 }
 
 export namespace GetTaxRate {

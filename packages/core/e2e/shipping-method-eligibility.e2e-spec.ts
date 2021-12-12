@@ -90,16 +90,15 @@ const calculator = new ShippingCalculator({
 
 describe('ShippingMethod eligibility', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         shippingOptions: {
             shippingEligibilityCheckers: [defaultShippingEligibilityChecker, checker1, checker2, checker3],
             shippingCalculators: [defaultShippingCalculator, calculator],
         },
     });
 
-    const orderGuard: ErrorResultGuard<
-        UpdatedOrderFragment | TestOrderFragmentFragment
-    > = createErrorResultGuard(input => !!input.lines);
+    const orderGuard: ErrorResultGuard<UpdatedOrderFragment | TestOrderFragmentFragment> =
+        createErrorResultGuard(input => !!input.lines);
 
     let singleLineShippingMethod: ShippingMethodFragment;
     let multiLineShippingMethod: ShippingMethodFragment;

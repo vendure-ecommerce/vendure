@@ -116,10 +116,12 @@ export class AdminUiPlugin implements NestModule {
             ? path.join(app.sourcePath, 'src')
             : (app && app.path) || DEFAULT_APP_PATH;
         const adminUiConfigPath = path.join(adminUiAppPath, 'vendure-ui-config.json');
+        const indexHtmlPath = path.join(adminUiAppPath, 'index.html');
 
-        const overwriteConfig = () => {
+        const overwriteConfig = async () => {
             const uiConfig = this.getAdminUiConfig(adminUiConfig);
-            return this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
+            await this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
+            await this.overwriteBaseHref(indexHtmlPath, route);
         };
 
         let port: number;
@@ -245,7 +247,7 @@ export class AdminUiPlugin implements NestModule {
      */
     private async overwriteAdminUiConfig(adminUiConfigPath: string, config: AdminUiConfig) {
         try {
-            const content = await this.pollForConfigFile(adminUiConfigPath);
+            const content = await this.pollForFile(adminUiConfigPath);
         } catch (e) {
             Logger.error(e.message, loggerCtx);
             throw e;
@@ -259,11 +261,35 @@ export class AdminUiPlugin implements NestModule {
     }
 
     /**
+     * Overwrites the parts of the admin-ui app's `vendure-ui-config.json` file relating to connecting to
+     * the server admin API.
+     */
+    private async overwriteBaseHref(indexHtmlPath: string, baseHref: string) {
+        let indexHtmlContent: string;
+        try {
+            indexHtmlContent = await this.pollForFile(indexHtmlPath);
+        } catch (e) {
+            Logger.error(e.message, loggerCtx);
+            throw e;
+        }
+        try {
+            const withCustomBaseHref = indexHtmlContent.replace(
+                /<base href=".+"\s*\/>/,
+                `<base href="/${baseHref}/" />`,
+            );
+            await fs.writeFile(indexHtmlPath, withCustomBaseHref);
+        } catch (e) {
+            throw new Error('[AdminUiPlugin] Could not write index.html file:\n' + e.message);
+        }
+        Logger.verbose(`Applied baseHref "/${baseHref}/" to index.html file`, loggerCtx);
+    }
+
+    /**
      * It might be that the ui-devkit compiler has not yet copied the config
      * file to the expected location (particularly when running in watch mode),
      * so polling is used to check multiple times with a delay.
      */
-    private async pollForConfigFile(adminUiConfigPath: string) {
+    private async pollForFile(filePath: string) {
         const maxRetries = 10;
         const retryDelay = 200;
         let attempts = 0;
@@ -272,19 +298,19 @@ export class AdminUiPlugin implements NestModule {
 
         while (attempts < maxRetries) {
             try {
-                Logger.verbose(`Checking for config file: ${adminUiConfigPath}`, loggerCtx);
-                const configFileContent = await fs.readFile(adminUiConfigPath, 'utf-8');
+                Logger.verbose(`Checking for admin ui file: ${filePath}`, loggerCtx);
+                const configFileContent = await fs.readFile(filePath, 'utf-8');
                 return configFileContent;
             } catch (e) {
                 attempts++;
                 Logger.verbose(
-                    `Unable to locate config file: ${adminUiConfigPath} (attempt ${attempts})`,
+                    `Unable to locate admin ui file: ${filePath} (attempt ${attempts})`,
                     loggerCtx,
                 );
             }
             await pause();
         }
-        throw new Error(`Unable to locate config file: ${adminUiConfigPath}`);
+        throw new Error(`Unable to locate admin ui file: ${filePath}`);
     }
 
     private static isDevModeApp(

@@ -15,7 +15,7 @@ import {
 
 describe('Transaction infrastructure', () => {
     const { server, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             plugins: [TransactionTestPlugin],
         }),
     );

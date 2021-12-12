@@ -16,7 +16,7 @@ fixPostgresTimezone();
 
 const validateInjectorSpy = jest.fn();
 
-const customConfig = mergeConfig(testConfig, {
+const customConfig = mergeConfig(testConfig(), {
     dbConnectionOptions: {
         timezone: 'Z',
     },
@@ -322,7 +322,7 @@ describe('Custom fields', () => {
             dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
             // MySQL does not support defaults on TEXT fields, which is what "simple-json" uses
             // internally. See https://stackoverflow.com/q/3466872/772859
-            stringListWithDefault: testConfig.dbConnectionOptions.type === 'mysql' ? null : ['cat'],
+            stringListWithDefault: customConfig.dbConnectionOptions.type === 'mysql' ? null : ['cat'],
         };
 
         expect(product).toEqual({

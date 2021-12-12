@@ -71,7 +71,7 @@ describe('Order fulfillments', () => {
     let f1Id: string;
 
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
             },

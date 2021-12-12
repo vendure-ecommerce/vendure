@@ -21,14 +21,10 @@ describe('AssetServerPlugin', () => {
     const previewFilePath = path.join(__dirname, TEST_ASSET_DIR, `preview/71/${IMAGE_BASENAME}__preview.jpg`);
 
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
-            apiOptions: {
-                port: 5050,
-            },
+        mergeConfig(testConfig(), {
             logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 AssetServerPlugin.init({
-                    port: 3060,
                     assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
                     route: 'assets',
                 }),

@@ -32,7 +32,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-const { server, adminClient } = createTestEnvironment(testConfig);
+const { server, adminClient } = createTestEnvironment(testConfig());
 const SECOND_CHANNEL_TOKEN = 'second_channel_token';
 let createdAssetId: string;
 let channel2Id: string;

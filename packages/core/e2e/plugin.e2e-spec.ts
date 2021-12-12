@@ -17,8 +17,9 @@ import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
 
 describe('Plugins', () => {
     const onConstructorFn = jest.fn();
+    const activeConfig = testConfig();
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...activeConfig,
         plugins: [
             TestPluginWithAllLifecycleHooks.init(onConstructorFn),
             TestPluginWithConfig.setup(),
@@ -104,7 +105,7 @@ describe('Plugins', () => {
     });
 
     describe('REST plugins', () => {
-        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/test`;
+        const restControllerUrl = `http://localhost:${activeConfig.apiOptions.port}/test`;
 
         it('public route', async () => {
             const response = await shopClient.fetch(restControllerUrl + '/public');

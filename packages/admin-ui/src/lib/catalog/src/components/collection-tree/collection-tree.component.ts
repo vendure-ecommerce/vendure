@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Collection } from '@vendure/admin-ui/core';
 
-import { arrayToTree, HasParent, RootNode } from './array-to-tree';
+import { arrayToTree, HasParent, RootNode, TreeNode } from './array-to-tree';
 
 export type RearrangeEvent = { collectionId: string; parentId: string; index: number };
 export type CollectionPartial = Pick<Collection.Fragment, 'id' | 'parent' | 'name'>;
@@ -28,10 +28,12 @@ export class CollectionTreeComponent implements OnChanges {
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
     @Output() deleteCollection = new EventEmitter<string>();
     collectionTree: RootNode<CollectionPartial>;
+    private allMoveListItems: Array<{ path: string; id: string; ancestorIdPath: Set<string> }> = [];
 
     ngOnChanges(changes: SimpleChanges) {
         if ('collections' in changes && this.collections) {
             this.collectionTree = arrayToTree(this.collections, this.collectionTree);
+            this.allMoveListItems = [];
         }
     }
 
@@ -55,6 +57,35 @@ export class CollectionTreeComponent implements OnChanges {
 
     onDelete(id: string) {
         this.deleteCollection.emit(id);
+    }
+
+    getMoveListItems(collection: CollectionPartial) {
+        if (this.allMoveListItems.length === 0) {
+            this.allMoveListItems = this.calculateAllMoveListItems();
+        }
+        return this.allMoveListItems.filter(
+            item =>
+                item.id !== collection.id &&
+                !item.ancestorIdPath.has(collection.id) &&
+                item.id !== collection.parent?.id,
+        );
+    }
+
+    calculateAllMoveListItems() {
+        const visit = (
+            node: TreeNode<any>,
+            parentPath: string[],
+            ancestorIdPath: Set<string>,
+            output: Array<{ path: string; id: string; ancestorIdPath: Set<string> }>,
+        ) => {
+            const path = parentPath.concat(node.name);
+            output.push({ path: path.slice(1).join(' / ') || 'root', id: node.id, ancestorIdPath });
+            node.children.forEach(child =>
+                visit(child, path, new Set<string>([...ancestorIdPath, node.id]), output),
+            );
+            return output;
+        };
+        return visit(this.collectionTree, [], new Set<string>(), []);
     }
 
     private isRootNode<T extends HasParent>(node: T | RootNode<T>): node is RootNode<T> {

@@ -2966,7 +2966,7 @@ export type OrderItem = Node & {
     /** The price of a single unit including discounts and tax */
     discountedUnitPriceWithTax: Scalars['Int'];
     /**
-     * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
@@ -3014,7 +3014,7 @@ export type OrderLine = Node & {
     /** The price of a single unit including discounts and tax */
     discountedUnitPriceWithTax: Scalars['Int'];
     /**
-     * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
@@ -3026,14 +3026,14 @@ export type OrderLine = Node & {
     taxRate: Scalars['Float'];
     /** The total price of the line excluding tax and discounts. */
     linePrice: Scalars['Int'];
-    /** The total price of the line including tax bit excluding discounts. */
+    /** The total price of the line including tax but excluding discounts. */
     linePriceWithTax: Scalars['Int'];
     /** The price of the line including discounts, excluding tax */
     discountedLinePrice: Scalars['Int'];
     /** The price of the line including discounts and tax */
     discountedLinePriceWithTax: Scalars['Int'];
     /**
-     * The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
      * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
      * and refund calculations.
      */
@@ -6405,6 +6405,21 @@ export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: neve
 
 export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
+export type GetTaxRateListQueryVariables = Exact<{
+    options?: Maybe<TaxRateListOptions>;
+}>;
+
+export type GetTaxRateListQuery = {
+    taxRates: Pick<TaxRateList, 'totalItems'> & {
+        items: Array<
+            Pick<TaxRate, 'id' | 'name' | 'enabled' | 'value'> & {
+                category: Pick<TaxCategory, 'id' | 'name'>;
+                zone: Pick<Zone, 'id' | 'name'>;
+            }
+        >;
+    };
+};
+
 export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetOrderListFulfillmentsQuery = {
@@ -6864,6 +6879,17 @@ export type UpdateStockMutationVariables = Exact<{
 }>;
 
 export type UpdateStockMutation = { updateProductVariants: Array<Maybe<VariantWithStockFragment>> };
+
+export type TransitionFulfillmentToStateMutationVariables = Exact<{
+    id: Scalars['ID'];
+    state: Scalars['String'];
+}>;
+
+export type TransitionFulfillmentToStateMutation = {
+    transitionFulfillmentToState:
+        | Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'createdAt'>
+        | Pick<FulfillmentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
+};
 
 export type GetTagListQueryVariables = Exact<{
     options?: Maybe<TagListOptions>;
@@ -8727,6 +8753,21 @@ export namespace DeletePromotionAdHoc1 {
     export type DeletePromotion = NonNullable<DeletePromotionAdHoc1Mutation['deletePromotion']>;
 }
 
+export namespace GetTaxRateList {
+    export type Variables = GetTaxRateListQueryVariables;
+    export type Query = GetTaxRateListQuery;
+    export type TaxRates = NonNullable<GetTaxRateListQuery['taxRates']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetTaxRateListQuery['taxRates']>['items']>[number]
+    >;
+    export type Category = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetTaxRateListQuery['taxRates']>['items']>[number]>['category']
+    >;
+    export type Zone = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetTaxRateListQuery['taxRates']>['items']>[number]>['zone']
+    >;
+}
+
 export namespace GetOrderListFulfillments {
     export type Variables = GetOrderListFulfillmentsQueryVariables;
     export type Query = GetOrderListFulfillmentsQuery;
@@ -9245,6 +9286,26 @@ export namespace UpdateStock {
     export type Mutation = UpdateStockMutation;
     export type UpdateProductVariants = NonNullable<
         NonNullable<UpdateStockMutation['updateProductVariants']>[number]
+    >;
+}
+
+export namespace TransitionFulfillmentToState {
+    export type Variables = TransitionFulfillmentToStateMutationVariables;
+    export type Mutation = TransitionFulfillmentToStateMutation;
+    export type TransitionFulfillmentToState = NonNullable<
+        TransitionFulfillmentToStateMutation['transitionFulfillmentToState']
+    >;
+    export type FulfillmentInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>,
+        { __typename?: 'Fulfillment' }
+    >;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>,
+        { __typename?: 'ErrorResult' }
+    >;
+    export type FulfillmentStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>,
+        { __typename?: 'FulfillmentStateTransitionError' }
     >;
 }
 

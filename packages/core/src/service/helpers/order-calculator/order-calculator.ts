@@ -404,6 +404,7 @@ export class OrderCalculator {
             shippingLine.listPrice = cheapest.result.price;
             shippingLine.listPriceIncludesTax = cheapest.result.priceIncludesTax;
             shippingLine.shippingMethod = cheapest.method;
+            shippingLine.shippingMethodId = cheapest.method.id;
             shippingLine.taxLines = [
                 {
                     description: 'shipping tax',

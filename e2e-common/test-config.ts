@@ -6,10 +6,19 @@ import {
     SqljsInitializer,
     testConfig as defaultTestConfig,
 } from '@vendure/testing';
+import fs from 'fs-extra';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
 import { getPackageDir } from './get-package-dir';
+
+declare global {
+    namespace NodeJS {
+        interface Global {
+            e2eServerPortsUsed: number[];
+        }
+    }
+}
 
 /**
  * We use a relatively long timeout on the initial beforeAll() function of the
@@ -33,24 +42,43 @@ if (process.env.E2E_DEBUG) {
     // tslint:disable-next-line:no-console
     console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
     jest.setTimeout(1800 * 1000);
+} else {
+    jest.setTimeout(15 * 1000);
 }
 /**
- * Increase default timeout in CI to 10 seconds because occasionally valid tests fail due to
+ * Increase default timeout in CI because occasionally valid tests fail due to
  * timeouts.
  */
 if (process.env.CI) {
-    jest.setTimeout(10 * 1000);
+    jest.setTimeout(30 * 1000);
 }
 
-export const testConfig = mergeConfig(defaultTestConfig, {
-    importExportOptions: {
-        importAssetsDir: path.join(packageDir, 'fixtures/assets'),
-    },
-    jobQueueOptions: {
-        pollInterval: 100,
-    },
-    dbConnectionOptions: getDbConfig(),
-});
+export const testConfig = () => {
+    const portsFile = path.join(__dirname, 'ports.json');
+    fs.ensureFileSync(portsFile);
+    let usedPorts: number[];
+    try {
+        usedPorts = fs.readJSONSync(portsFile) ?? [3010];
+    } catch (e) {
+        usedPorts = [3010];
+    }
+    const nextPort = Math.max(...usedPorts) + 1;
+    usedPorts.push(nextPort);
+    if (100 < usedPorts.length) {
+        // reset the used ports after it gets 100 entries long
+        usedPorts = [3010];
+    }
+    fs.writeJSONSync(portsFile, usedPorts);
+    return mergeConfig(defaultTestConfig, {
+        apiOptions: {
+            port: nextPort,
+        },
+        importExportOptions: {
+            importAssetsDir: path.join(packageDir, 'fixtures/assets'),
+        },
+        dbConnectionOptions: getDbConfig(),
+    });
+};
 
 function getDbConfig(): ConnectionOptions {
     const dbType = process.env.DB || 'sqljs';

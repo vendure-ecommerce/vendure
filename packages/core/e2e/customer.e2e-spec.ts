@@ -76,7 +76,7 @@ class TestEmailPlugin implements OnModuleInit {
 
 describe('Customer resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, { plugins: [TestEmailPlugin] }),
+        mergeConfig(testConfig(), { plugins: [TestEmailPlugin] }),
     );
 
     let firstCustomer: GetCustomerList.Items;

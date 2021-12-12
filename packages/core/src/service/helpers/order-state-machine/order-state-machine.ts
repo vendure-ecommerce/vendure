@@ -90,6 +90,9 @@ export class OrderStateMachine {
             }
         }
         if (fromState === 'ArrangingAdditionalPayment') {
+            if (toState === 'Cancelled') {
+                return;
+            }
             const existingPayments = await this.connection.getRepository(data.ctx, Payment).find({
                 relations: ['refunds'],
                 where: {

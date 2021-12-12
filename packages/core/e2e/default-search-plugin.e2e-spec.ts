@@ -82,7 +82,7 @@ interface SearchProductShopVariables extends SearchProductsShop.Variables {
 
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             logger: new DefaultLogger(),
             plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
         }),
@@ -95,7 +95,7 @@ describe('Default search plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        if (testConfig.dbConnectionOptions.type === 'mysql') {
+        if (testConfig().dbConnectionOptions.type === 'mysql') {
             // Mysql seems to occasionally run into some kind of race condition
             // relating to the populating of data, so we add a pause here.
             await new Promise(resolve => setTimeout(resolve, 10000));
@@ -521,6 +521,23 @@ describe('Default search plugin', () => {
                 { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
                 { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
                 { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+            ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1236
+        it('returns correct facetValues when not grouped by product, with search term', async () => {
+            const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
+                SEARCH_GET_FACET_VALUES,
+                {
+                    input: {
+                        groupByProduct: false,
+                        term: 'laptop',
+                    },
+                },
+            );
+            expect(result.search.facetValues).toEqual([
+                { count: 4, facetValue: { id: 'T_1', name: 'electronics' } },
+                { count: 4, facetValue: { id: 'T_2', name: 'computers' } },
             ]);
         });
 

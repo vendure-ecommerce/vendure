@@ -53,7 +53,7 @@ const calculatorWithMetadata = new ShippingCalculator({
 
 describe('ShippingMethod resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         shippingOptions: {
             shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
             shippingCalculators: [defaultShippingCalculator, calculatorWithMetadata],

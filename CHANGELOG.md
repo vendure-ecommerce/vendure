@@ -1,8 +1,48 @@
-<<<<<<< HEAD
-## <small>1.3.1 (2021-10-14)</small>
+## <small>1.3.4 (2021-11-23)</small>
 
 
-=======
+#### Fixes
+
+* **core** Correctly deep-merge hydrated entities ([32d19e3](https://github.com/vendure-ecommerce/vendure/commit/32d19e3)), closes [#1229](https://github.com/vendure-ecommerce/vendure/issues/1229)
+* **core** Correctly set OrderItem prices on tax zone change ([731f8d9](https://github.com/vendure-ecommerce/vendure/commit/731f8d9)), closes [#1216](https://github.com/vendure-ecommerce/vendure/issues/1216)
+* **core** Do not list deleted ProductVariants in Collections ([5cd8e1a](https://github.com/vendure-ecommerce/vendure/commit/5cd8e1a)), closes [#1213](https://github.com/vendure-ecommerce/vendure/issues/1213)
+* **core** Fix argsArrayToHash, case where arg not present in this.args (#1224) ([454fdf5](https://github.com/vendure-ecommerce/vendure/commit/454fdf5)), closes [#1224](https://github.com/vendure-ecommerce/vendure/issues/1224)
+* **core** Fix edge case FK error when creating new Collections ([160f457](https://github.com/vendure-ecommerce/vendure/commit/160f457)), closes [#1215](https://github.com/vendure-ecommerce/vendure/issues/1215)
+* **core** Fix ONLY_FULL_GROUP_BY error when searching with MySQL ([94fa4db](https://github.com/vendure-ecommerce/vendure/commit/94fa4db)), closes [#1236](https://github.com/vendure-ecommerce/vendure/issues/1236)
+* **core** Fix ProductService.assignProductsToChannel to properly assign assets to channel (#1235) ([a3066b0](https://github.com/vendure-ecommerce/vendure/commit/a3066b0)), closes [#1235](https://github.com/vendure-ecommerce/vendure/issues/1235)
+* **testing** Fix "fail is not defined" error ([c474d93](https://github.com/vendure-ecommerce/vendure/commit/c474d93))
+
+## <small>1.3.3 (2021-11-09)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly display primitive value job queue results ([d8c2195](https://github.com/vendure-ecommerce/vendure/commit/d8c2195)), closes [#881](https://github.com/vendure-ecommerce/vendure/issues/881)
+* **admin-ui** Fix display of channels in Role detail ([dee331a](https://github.com/vendure-ecommerce/vendure/commit/dee331a)), closes [#1211](https://github.com/vendure-ecommerce/vendure/issues/1211)
+* **core** Correctly cancel sales when cancelling Fulfillment ([00ac70d](https://github.com/vendure-ecommerce/vendure/commit/00ac70d)), closes [#1198](https://github.com/vendure-ecommerce/vendure/issues/1198)
+* **core** Export missing tax config types ([08951b3](https://github.com/vendure-ecommerce/vendure/commit/08951b3))
+* **core** Fix error thrown when shipping address company is null ([303a216](https://github.com/vendure-ecommerce/vendure/commit/303a216)), closes [#744](https://github.com/vendure-ecommerce/vendure/issues/744)
+* **core** Make populator.populateCollections more robust to bad input ([15762e0](https://github.com/vendure-ecommerce/vendure/commit/15762e0))
+
+## <small>1.3.2 (2021-10-28)</small>
+
+
+#### Perf
+
+* **admin-ui** Improve performance of Collection list view ([4bf6dff](https://github.com/vendure-ecommerce/vendure/commit/4bf6dff)), closes [#1123](https://github.com/vendure-ecommerce/vendure/issues/1123)
+
+#### Fixes
+
+* **admin-ui-plugin** Correctly handle base href for custom routes ([752cc13](https://github.com/vendure-ecommerce/vendure/commit/752cc13)), closes [#1152](https://github.com/vendure-ecommerce/vendure/issues/1152)
+* **admin-ui** Add pt_PT translation to ui config ([c7a7bbd](https://github.com/vendure-ecommerce/vendure/commit/c7a7bbd))
+* **admin-ui** Currency input handles currencies without minor units ([fd643b3](https://github.com/vendure-ecommerce/vendure/commit/fd643b3)), closes [#1146](https://github.com/vendure-ecommerce/vendure/issues/1146)
+* **core** Allow an Order in ArrangingAdditionalPayment to be cancelled ([3e1a3cf](https://github.com/vendure-ecommerce/vendure/commit/3e1a3cf)), closes [#1177](https://github.com/vendure-ecommerce/vendure/issues/1177)
+* **core** Export ShippingLine entity ([98927dd](https://github.com/vendure-ecommerce/vendure/commit/98927dd))
+* **core** Fix error in validating custom fields with introspection fields in query ([f856491](https://github.com/vendure-ecommerce/vendure/commit/f856491)), closes [#1091](https://github.com/vendure-ecommerce/vendure/issues/1091)
+* **core** Fix order modification with refund on shipping ([95bff8f](https://github.com/vendure-ecommerce/vendure/commit/95bff8f)), closes [#1197](https://github.com/vendure-ecommerce/vendure/issues/1197)
+* **core** Fix polynomial regex vulnerability ([6675757](https://github.com/vendure-ecommerce/vendure/commit/6675757))
+* **create** Update TypeScript to match current supported version ([3be6b88](https://github.com/vendure-ecommerce/vendure/commit/3be6b88)), closes [#1188](https://github.com/vendure-ecommerce/vendure/issues/1188)
+
 ## <small>1.3.1 (2021-10-19)</small>
 
 
@@ -20,7 +60,6 @@
 * **core** Improve perf of DefaultSearchPlugin reindex job ([bfc72f2](https://github.com/vendure-ecommerce/vendure/commit/bfc72f2))
 * **elasticsearch-plugin** Optimize indexing using RequestContextCache ([75da3b3](https://github.com/vendure-ecommerce/vendure/commit/75da3b3))
 
->>>>>>> 3be6b8820a668b9b8b1f11289390d0d5c7074863
 ## 1.3.0 (2021-10-13)
 
 

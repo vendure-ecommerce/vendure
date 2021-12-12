@@ -97,7 +97,7 @@ const testCalculator = new ShippingCalculator({
 
 describe('Order modification', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [
                     testSuccessfulPaymentMethod,
@@ -1504,6 +1504,55 @@ describe('Order modification', () => {
                 originalTotalWithTax - order.lines[0].proratedUnitPriceWithTax,
             );
             expect(modifyOrder.payments![0].refunds![0].total).toBe(order.lines[0].proratedUnitPriceWithTax);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1197
+    describe('refund on shipping when change made to shippingAddress', () => {
+        let order: OrderWithModificationsFragment;
+        beforeAll(async () => {
+            const createdOrder = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            ]);
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: createdOrder.id,
+                        updateShippingAddress: {
+                            countryCode: 'GB',
+                        },
+                        refund: {
+                            paymentId: createdOrder.payments![0].id,
+                            reason: 'discount',
+                        },
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+            order = modifyOrder;
+        });
+
+        it('creates a Refund with the correct amount', async () => {
+            expect(order.payments?.[0].refunds[0].total).toBe(SHIPPING_OTHER - SHIPPING_GB);
+        });
+
+        it('allows transition to PaymentSettled', async () => {
+            const { transitionOrderToState } = await adminClient.query<
+                AdminTransition.Mutation,
+                AdminTransition.Variables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order.id,
+                state: 'PaymentSettled',
+            });
+
+            orderGuard.assertSuccess(transitionOrderToState);
+
+            expect(transitionOrderToState.state).toBe('PaymentSettled');
         });
     });
 

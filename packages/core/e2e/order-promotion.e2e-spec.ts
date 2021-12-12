@@ -87,7 +87,7 @@ import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order
 
 describe('Promotions applied to Orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         paymentOptions: {
             paymentMethodHandlers: [testSuccessfulPaymentMethod],
         },

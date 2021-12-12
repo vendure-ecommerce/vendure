@@ -9,7 +9,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 describe('Import resolver', () => {
     const { server, adminClient } = createTestEnvironment({
-        ...testConfig,
+        ...testConfig(),
         customFields: {
             Product: [
                 { type: 'string', name: 'pageType' },

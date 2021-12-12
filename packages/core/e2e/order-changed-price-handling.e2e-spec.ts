@@ -40,7 +40,7 @@ class TestChangedPriceStrategy implements ChangedPriceHandlingStrategy {
 
 describe('ChangedPriceHandlingStrategy', () => {
     const { server, shopClient, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             orderOptions: {
                 changedPriceHandlingStrategy: new TestChangedPriceStrategy(),
             },

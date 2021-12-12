@@ -332,6 +332,7 @@ export class ShopOrderResolver {
                             const address = order.shippingAddress;
                             await this.customerService.createAddress(ctx, order.customer.id, {
                                 ...address,
+                                company: address.company || '',
                                 streetLine1: address.streetLine1 || '',
                                 streetLine2: address.streetLine2 || '',
                                 countryCode: address.countryCode || '',

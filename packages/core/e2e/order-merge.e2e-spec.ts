@@ -51,7 +51,7 @@ describe('Order merging', () => {
     let customers: GetCustomerList.Items[];
 
     const { server, shopClient, adminClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             orderOptions: {
                 mergeStrategy: new DelegateMergeStrategy(),
             },

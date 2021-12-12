@@ -16,7 +16,7 @@ import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT } from './graphql/shared-defi
 
 /* tslint:disable:no-non-null-assertion */
 describe('Localization', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(testConfig());
 
     beforeAll(async () => {
         await server.init({

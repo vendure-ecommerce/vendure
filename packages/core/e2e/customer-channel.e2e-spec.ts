@@ -41,7 +41,7 @@ import { DELETE_ADDRESS, REGISTER_ACCOUNT } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ChannelAware Customers', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
     let firstCustomer: GetCustomerList.Items;
     let secondCustomer: GetCustomerList.Items;

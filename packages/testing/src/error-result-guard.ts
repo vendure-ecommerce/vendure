@@ -1,4 +1,4 @@
-declare function fail(error?: any): never;
+import { fail } from 'assert';
 
 /**
  * @description

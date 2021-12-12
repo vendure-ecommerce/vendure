@@ -24,7 +24,7 @@ describe('BullMQJobQueuePlugin', () => {
     });
 
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, {
+        mergeConfig(testConfig(), {
             apiOptions: {
                 port: 4050,
             },
