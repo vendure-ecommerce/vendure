@@ -8,7 +8,7 @@
 * **admin-ui** Fix layout of Zone & CustomerGroup lists ([cd8b93d](https://github.com/vendure-ecommerce/vendure/commit/cd8b93d))
 * **admin-ui** Fix rendering of custom field lists ([da9e2ce](https://github.com/vendure-ecommerce/vendure/commit/da9e2ce))
 * **admin-ui** Fix tax rate permissions so product variants do not need access to customer groups (#1274) ([0a49fea](https://github.com/vendure-ecommerce/vendure/commit/0a49fea)), closes [#1274](https://github.com/vendure-ecommerce/vendure/issues/1274)
-* **admin-ui** General custom field tab always frist ([873526d](https://github.com/vendure-ecommerce/vendure/commit/873526d))
+* **admin-ui** General custom field tab always comes first ([873526d](https://github.com/vendure-ecommerce/vendure/commit/873526d))
 * **core** Add Permission.ReadProduct to Allow decorator of TaxCategoryResolver.taxCategories (#1275) ([ff24fc0](https://github.com/vendure-ecommerce/vendure/commit/ff24fc0)), closes [#1275](https://github.com/vendure-ecommerce/vendure/issues/1275)
 * **core** Add Permission.ReadProduct to Allow decorator of TaxRateResolver.taxRates (#1258) ([5f5f767](https://github.com/vendure-ecommerce/vendure/commit/5f5f767)), closes [#1258](https://github.com/vendure-ecommerce/vendure/issues/1258)
 * **core** Clear shippingLines if no eligible ShippingMethods exist ([f9bc532](https://github.com/vendure-ecommerce/vendure/commit/f9bc532)), closes [#1195](https://github.com/vendure-ecommerce/vendure/issues/1195)
@@ -52,6 +52,8 @@
 * **core** Upgrade TypeORM to v0.2.41 ([44f6fd5](https://github.com/vendure-ecommerce/vendure/commit/44f6fd5))
 * **elasticsearch-plugin** Add custom sort parameter mapping (#1230) ([0d1f687](https://github.com/vendure-ecommerce/vendure/commit/0d1f687)), closes [#1230](https://github.com/vendure-ecommerce/vendure/issues/1230) [#1220](https://github.com/vendure-ecommerce/vendure/issues/1220) [#1220](https://github.com/vendure-ecommerce/vendure/issues/1220)
 * **elasticsearch-plugin** Add option to hide indexed fields in api (#1181) (#1212) ([9193dee](https://github.com/vendure-ecommerce/vendure/commit/9193dee)), closes [#1181](https://github.com/vendure-ecommerce/vendure/issues/1181) [#1212](https://github.com/vendure-ecommerce/vendure/issues/1212)
+* **payments-plugin** Add MolliePlugin - Mollie Payments integration
+* **payments-plugin** Add BraintreePlugin - Braintree Payments integration
 * **payments-plugin** Add support for Braintree vault to store cc data ([1d93db8](https://github.com/vendure-ecommerce/vendure/commit/1d93db8))
 * **payments-plugin** Allow Braintree environment to be set ([55d67d9](https://github.com/vendure-ecommerce/vendure/commit/55d67d9))
 * **ui-devkit** Expose route data in hosted UI extensions ([c3a21ff](https://github.com/vendure-ecommerce/vendure/commit/c3a21ff)), closes [#1281](https://github.com/vendure-ecommerce/vendure/issues/1281)
