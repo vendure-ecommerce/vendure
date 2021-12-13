@@ -41,7 +41,7 @@ export class TabbedCustomFieldsComponent implements OnInit {
             }
         }
         return Array.from(tabMap.entries())
-            .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+            .sort((a, b) => (a[0] === this.defaultTabName ? -1 : 1))
             .map(([tabName, customFields]) => ({ tabName, customFields }));
     }
 }
