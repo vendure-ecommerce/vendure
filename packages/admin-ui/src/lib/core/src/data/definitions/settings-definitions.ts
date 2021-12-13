@@ -259,6 +259,30 @@ export const GET_TAX_RATE_LIST = gql`
     ${TAX_RATE_FRAGMENT}
 `;
 
+export const GET_TAX_RATE_LIST_SIMPLE = gql`
+    query GetTaxRateListSimple($options: TaxRateListOptions) {
+        taxRates(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                enabled
+                value
+                category {
+                    id
+                    name
+                }
+                zone {
+                    id
+                    name
+                }
+            }
+            totalItems
+        }
+    }
+`;
+
 export const GET_TAX_RATE = gql`
     query GetTaxRate($id: ID!) {
         taxRate(id: $id) {

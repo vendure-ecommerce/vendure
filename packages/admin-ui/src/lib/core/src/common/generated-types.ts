@@ -7571,6 +7571,27 @@ export type GetTaxRateListQuery = { taxRates: (
     )> }
   ) };
 
+export type GetTaxRateListSimpleQueryVariables = Exact<{
+  options?: Maybe<TaxRateListOptions>;
+}>;
+
+
+export type GetTaxRateListSimpleQuery = { taxRates: (
+    { __typename?: 'TaxRateList' }
+    & Pick<TaxRateList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'TaxRate' }
+      & Pick<TaxRate, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'value'>
+      & { category: (
+        { __typename?: 'TaxCategory' }
+        & Pick<TaxCategory, 'id' | 'name'>
+      ), zone: (
+        { __typename?: 'Zone' }
+        & Pick<Zone, 'id' | 'name'>
+      ) }
+    )> }
+  ) };
+
 export type GetTaxRateQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -10139,6 +10160,15 @@ export namespace GetTaxRateList {
   export type Query = GetTaxRateListQuery;
   export type TaxRates = (NonNullable<GetTaxRateListQuery['taxRates']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetTaxRateListQuery['taxRates']>)['items']>)[number]>;
+}
+
+export namespace GetTaxRateListSimple {
+  export type Variables = GetTaxRateListSimpleQueryVariables;
+  export type Query = GetTaxRateListSimpleQuery;
+  export type TaxRates = (NonNullable<GetTaxRateListSimpleQuery['taxRates']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetTaxRateListSimpleQuery['taxRates']>)['items']>)[number]>;
+  export type Category = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetTaxRateListSimpleQuery['taxRates']>)['items']>)[number]>['category']>);
+  export type Zone = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetTaxRateListSimpleQuery['taxRates']>)['items']>)[number]>['zone']>);
 }
 
 export namespace GetTaxRate {
