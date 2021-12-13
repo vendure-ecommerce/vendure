@@ -36,12 +36,13 @@ import {
 export interface AdminUiPluginOptions {
     /**
      * @description
-     * The route to the admin ui.
+     * The route to the Admin UI.
      */
     route: string;
     /**
      * @description
-     * The port on which the server will listen. If not
+     * The port on which the server will listen. This port will be proxied by the AdminUiPlugin to the same port that
+     * the Vendure server is running on.
      */
     port: number;
     /**
