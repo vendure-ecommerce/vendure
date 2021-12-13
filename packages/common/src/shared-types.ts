@@ -147,7 +147,7 @@ export type DefaultFormComponentId =
 
 /**
  * @description
- * Used to defined the expected arguments for a given default form input component.
+ * Used to define the expected arguments for a given default form input component.
  *
  * @docsCategory ConfigurableOperationDef
  */
@@ -166,33 +166,30 @@ type DefaultFormConfigHash = {
     'select-form-input': {
         options?: Array<{ value: string; label?: Array<Omit<LocalizedString, '__typename'>> }>;
     };
-    'text-form-input': {};
+    'text-form-input': { prefix?: string; suffix?: string };
     'textarea-form-input': {
         spellcheck?: boolean;
     };
 };
 
-export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
+export type DefaultFormComponentUiConfig<T extends DefaultFormComponentId | string> =
+    T extends DefaultFormComponentId ? DefaultFormConfigHash[T] : any;
 
-export type UiComponentConfig = (
-    | ({ component: 'boolean-form-input' } & DefaultFormComponentConfig<'boolean-form-input'>)
-    | ({ component: 'currency-form-input' } & DefaultFormComponentConfig<'currency-form-input'>)
-    | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
-    | ({ component: 'date-form-input' } & DefaultFormComponentConfig<'date-form-input'>)
-    | ({ component: 'facet-value-form-input' } & DefaultFormComponentConfig<'facet-value-form-input'>)
-    | ({ component: 'json-editor-form-input' } & DefaultFormComponentConfig<'json-editor-form-input'>)
-    | ({ component: 'number-form-input' } & DefaultFormComponentConfig<'number-form-input'>)
-    | ({ component: 'password-form-input' } & DefaultFormComponentConfig<'password-form-input'>)
-    | ({
-          component: 'product-selector-form-input';
-      } & DefaultFormComponentConfig<'product-selector-form-input'>)
-    | ({ component: 'relation-form-input' } & DefaultFormComponentConfig<'relation-form-input'>)
-    | ({ component: 'rich-text-form-input' } & DefaultFormComponentConfig<'rich-text-form-input'>)
-    | ({ component: 'select-form-input' } & DefaultFormComponentConfig<'select-form-input'>)
-    | ({ component: 'text-form-input' } & DefaultFormComponentConfig<'text-form-input'>)
-    | ({ component: 'textarea-form-input' } & DefaultFormComponentConfig<'textarea-form-input'>)
-    | { component: string; [prop: string]: any }
-) & { tab?: string };
+export type DefaultFormComponentConfig<T extends DefaultFormComponentId | string> =
+    DefaultFormComponentUiConfig<T> & {
+        ui?: DefaultFormComponentUiConfig<T>;
+    };
+
+export type UiComponentConfig<T extends DefaultFormComponentId | string> = T extends DefaultFormComponentId
+    ? {
+          component: T;
+          tab?: string;
+      } & DefaultFormConfigHash[T]
+    : {
+          component: string;
+          tab?: string;
+          [prop: string]: any;
+      };
 
 export type CustomFieldsObject = { [key: string]: any };
 

@@ -49,12 +49,15 @@ export class JsonEditorFormInputComponent implements FormInputComponent, AfterVi
     formControl: FormControl;
     config: DefaultFormComponentConfig<'json-editor-form-input'>;
     isValid = true;
-    height: DefaultFormComponentConfig<'json-editor-form-input'>['height'];
     errorMessage: string | undefined;
     @ViewChild('editor') private editorElementRef: ElementRef<HTMLDivElement>;
     jar: CodeJar;
 
     constructor(private changeDetector: ChangeDetectorRef) {}
+
+    get height() {
+        return this.config.ui?.height || this.config.height;
+    }
 
     ngOnInit() {
         this.formControl.addValidators(jsonValidator());

@@ -49,7 +49,7 @@ export interface ConfigArgCommonDef<T extends ConfigArgType> {
     list?: boolean;
     label?: LocalizedStringArray;
     description?: LocalizedStringArray;
-    ui?: UiComponentConfig;
+    ui?: UiComponentConfig<string>;
 }
 
 export type ConfigArgListDef<

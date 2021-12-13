@@ -13,6 +13,7 @@ import {
 import {
     CustomFieldsObject,
     CustomFieldType,
+    DefaultFormComponentId,
     Type,
     UiComponentConfig,
 } from '@vendure/common/lib/shared-types';
@@ -40,7 +41,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
      */
     public?: boolean;
     nullable?: boolean;
-    ui?: UiComponentConfig;
+    ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 
 /**

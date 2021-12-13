@@ -24,4 +24,8 @@ export class SelectFormInputComponent implements FormInputComponent {
     @Input() readonly: boolean;
     formControl: FormControl;
     config: DefaultFormComponentConfig<'select-form-input'> & CustomFieldConfigFragment;
+
+    get options() {
+        return this.config.ui?.options || this.config.options;
+    }
 }

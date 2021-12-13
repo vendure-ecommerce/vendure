@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 
@@ -21,5 +21,13 @@ export class TextFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'text-form-input';
     readonly: boolean;
     formControl: FormControl;
-    config: InputComponentConfig;
+    config: DefaultFormComponentConfig<'text-form-input'>;
+
+    get prefix() {
+        return this.config.ui?.prefix || this.config.prefix;
+    }
+
+    get suffix() {
+        return this.config.ui?.suffix || this.config.suffix;
+    }
 }
