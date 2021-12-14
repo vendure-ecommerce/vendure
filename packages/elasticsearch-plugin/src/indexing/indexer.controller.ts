@@ -44,6 +44,7 @@ import {
 
 import { createIndices, getClient, getIndexNameByAlias } from './indexing-utils';
 import { MutableRequestContext } from './mutable-request-context';
+const REINDEX_CHUNK_SIZE = 2500;
 
 export const defaultProductRelations: Array<EntityRelationPaths<Product>> = [
     'variants',
@@ -232,7 +233,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         return asyncObservable(async observer => {
             return this.asyncQueue.push(async () => {
                 const timeStart = Date.now();
-                const operations: BulkVariantOperation[] = [];
                 const ctx = MutableRequestContext.deserialize(rawContext);
 
                 const reindexTempName = new Date().getTime();
@@ -335,42 +335,97 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     }
                 }
 
-                const deletedProductIds = await this.connection
+                const totalDeletedProductIds = await this.connection
                     .getRepository(Product)
                     .createQueryBuilder('product')
-                    .select('product.id')
                     .where('product.deletedAt IS NOT NULL')
-                    .getMany();
+                    .getCount();
 
-                for (const { id: deletedProductId } of deletedProductIds) {
-                    operations.push(...(await this.deleteProductOperations(ctx, deletedProductId)));
-                }
-
-                const productIds = await this.connection
+                const totalProductIds = await this.connection
                     .getRepository(Product)
                     .createQueryBuilder('product')
-                    .select('product.id')
                     .where('product.deletedAt IS NULL')
-                    .getMany();
+                    .getCount();
 
-                Logger.verbose(`Reindexing ${productIds.length} Products`, loggerCtx);
+                // Run delete operation by bulk
+                Logger.verbose(`Will reindex ${totalDeletedProductIds.length} deleted products`, loggerCtx);
 
+                let deletedProductIds = [];
+                let skip = 0;
+                let finishedDeletedItem = 0;
+                do {
+                    const operations: BulkVariantOperation[] = [];
+                    deletedProductIds = await this.connection
+                        .getRepository(Product)
+                        .createQueryBuilder('product')
+                        .select('product.id')
+                        .where('product.deletedAt IS NOT NULL')
+                        .getMany();
+
+                    for (const { id: deletedProductId } of deletedProductIds) {
+                        operations.push(...(await this.deleteProductOperations(ctx, deletedProductId)));
+                        finishedDeletedItem++;
+
+                        observer.next({
+                            total: totalDeletedProductIds + totalProductIds,
+                            completed: Math.min(
+                                finishedDeletedItem,
+                                totalDeletedProductIds + totalProductIds,
+                            ),
+                            duration: +new Date() - timeStart,
+                        });
+                    }
+
+                    Logger.verbose(`Will execute ${operations.length} bulk update operations`, loggerCtx);
+                    await this.executeBulkOperations(operations);
+                    skip += REINDEX_CHUNK_SIZE;
+
+                    Logger.verbose(`Done ${finishedDeletedItem} / ${totalProductIds} products`);
+                } while (deletedProductIds.length >= REINDEX_CHUNK_SIZE);
+
+                // Run update operation by bulk
+                Logger.verbose(`Will reindex ${totalProductIds.length} products`, loggerCtx);
+
+                let productIds = [];
+                skip = 0;
                 let finishedProductsCount = 0;
-                for (const { id: productId } of productIds) {
-                    operations.push(...(await this.updateProductsOperations(ctx, [productId])));
-                    finishedProductsCount++;
-                    observer.next({
-                        total: productIds.length,
-                        completed: Math.min(finishedProductsCount, productIds.length),
-                        duration: +new Date() - timeStart,
-                    });
-                }
-                Logger.verbose(`Will execute ${operations.length} bulk update operations`, loggerCtx);
-                await this.executeBulkOperations(operations);
+                do {
+                    const operations: BulkVariantOperation[] = [];
+
+                    productIds = await this.connection
+                        .getRepository(Product)
+                        .createQueryBuilder('product')
+                        .select('product.id')
+                        .where('product.deletedAt IS NULL')
+                        .skip(skip)
+                        .take(REINDEX_CHUNK_SIZE)
+                        .getMany();
+
+                    for (const { id: productId } of productIds) {
+                        operations.push(...(await this.updateProductsOperations(ctx, [productId])));
+                        finishedProductsCount++;
+                        observer.next({
+                            total: totalDeletedProductIds + totalProductIds,
+                            completed: Math.min(
+                                finishedProductsCount,
+                                totalDeletedProductIds + totalProductIds,
+                            ),
+                            duration: +new Date() - timeStart,
+                        });
+                    }
+
+                    Logger.verbose(`Will execute ${operations.length} bulk update operations`, loggerCtx);
+                    await this.executeBulkOperations(operations);
+                    skip += REINDEX_CHUNK_SIZE;
+
+                    Logger.verbose(`Done ${finishedProductsCount} / ${totalProductIds} products`);
+                } while (productIds.length >= REINDEX_CHUNK_SIZE);
+
                 Logger.verbose(`Completed reindexing!`, loggerCtx);
+
                 return {
-                    total: productIds.length,
-                    completed: productIds.length,
+                    total: totalDeletedProductIds + totalProductIds,
+                    completed: totalDeletedProductIds + totalProductIds,
                     duration: +new Date() - timeStart,
                 };
             });
