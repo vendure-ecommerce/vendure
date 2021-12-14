@@ -31,7 +31,9 @@ import {
 import {
     AddItemToOrder,
     AddPaymentToOrder,
+    AdjustItemQuantity,
     ErrorCode,
+    GetActiveOrder,
     GetProductStockLevel,
     GetShippingMethods,
     PaymentInput,
@@ -54,6 +56,8 @@ import {
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
+    ADJUST_ITEM_QUANTITY,
+    GET_ACTIVE_ORDER,
     GET_ELIGIBLE_SHIPPING_METHODS,
     GET_PRODUCT_WITH_STOCK_LEVEL,
     SET_SHIPPING_ADDRESS,
@@ -941,6 +945,7 @@ describe('Stock control', () => {
         describe('edge cases', () => {
             const variant5Id = 'T_5';
             const variant6Id = 'T_6';
+            const variant7Id = 'T_7';
 
             beforeAll(async () => {
                 // First place an order which creates a backorder (excess of allocated units)
@@ -957,6 +962,13 @@ describe('Stock control', () => {
                             },
                             {
                                 id: variant6Id,
+                                stockOnHand: 3,
+                                outOfStockThreshold: 0,
+                                trackInventory: GlobalFlag.TRUE,
+                                useGlobalOutOfStockThreshold: false,
+                            },
+                            {
+                                id: variant7Id,
                                 stockOnHand: 3,
                                 outOfStockThreshold: 0,
                                 trackInventory: GlobalFlag.TRUE,
@@ -1054,6 +1066,58 @@ describe('Stock control', () => {
                 // Still adds as many as available to the Order
                 expect((add2 as any).order.lines[0].productVariant.id).toBe(variant6Id);
                 expect((add2 as any).order.lines[0].quantity).toBe(3);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1273
+            it('adjustOrderLine when saleable stock changes to zero', async () => {
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                id: variant7Id,
+                                stockOnHand: 10,
+                            },
+                        ],
+                    },
+                );
+
+                await shopClient.asAnonymousUser();
+                const { addItemToOrder: add1 } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: variant7Id,
+                    quantity: 1,
+                });
+                orderGuard.assertSuccess(add1);
+                expect(add1.lines.length).toBe(1);
+
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                id: variant7Id,
+                                stockOnHand: 0,
+                            },
+                        ],
+                    },
+                );
+
+                const { adjustOrderLine: add2 } = await shopClient.query<
+                    AdjustItemQuantity.Mutation,
+                    AdjustItemQuantity.Variables
+                >(ADJUST_ITEM_QUANTITY, {
+                    orderLineId: add1.lines[0].id,
+                    quantity: 2,
+                });
+                orderGuard.assertErrorResult(add2);
+
+                expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
+
+                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                expect(activeOrder!.lines.length).toBe(0);
             });
         });
     });
