@@ -3,22 +3,8 @@
 
 #### Fixes
 
-* **admin-ui** Fix display of facet value custom fields ([f4a6dbd](https://github.com/vendure-ecommerce/vendure/commit/f4a6dbd)), closes [#1282](https://github.com/vendure-ecommerce/vendure/issues/1282)
-* **admin-ui** Fix tax rate permissions so product variants do not need access to customer groups (#1274) ([0a49fea](https://github.com/vendure-ecommerce/vendure/commit/0a49fea)), closes [#1274](https://github.com/vendure-ecommerce/vendure/issues/1274)
-* **admin-ui** General custom field tab always frist ([873526d](https://github.com/vendure-ecommerce/vendure/commit/873526d))
-* **core** Add Permission.ReadProduct to Allow decorator of TaxCategoryResolver.taxCategories (#1275) ([ff24fc0](https://github.com/vendure-ecommerce/vendure/commit/ff24fc0)), closes [#1275](https://github.com/vendure-ecommerce/vendure/issues/1275)
-* **core** Add Permission.ReadProduct to Allow decorator of TaxRateResolver.taxRates (#1258) ([5f5f767](https://github.com/vendure-ecommerce/vendure/commit/5f5f767)), closes [#1258](https://github.com/vendure-ecommerce/vendure/issues/1258)
 * **core** Fix `Unknown type "ShippingMethodCustomFields"` error ([d810450](https://github.com/vendure-ecommerce/vendure/commit/d810450))
-* **core** Fix EntityRelationPaths type for optional properties ([2d065f9](https://github.com/vendure-ecommerce/vendure/commit/2d065f9))
 * **core** Fix FK error with adjustOrderLine when zero saleable stock ([28aeddb](https://github.com/vendure-ecommerce/vendure/commit/28aeddb)), closes [#1273](https://github.com/vendure-ecommerce/vendure/issues/1273)
-
-#### Features
-
-* **admin-ui** Add filtering to FacetListComponent ([0ab212e](https://github.com/vendure-ecommerce/vendure/commit/0ab212e))
-* **core** Allow PaginatedList queries to filter on ID fields ([fa3d5ed](https://github.com/vendure-ecommerce/vendure/commit/fa3d5ed)), closes [#1259](https://github.com/vendure-ecommerce/vendure/issues/1259)
-* **core** Expose customfields on ShippingMethod- & PaymentMethodQuote ([52972db](https://github.com/vendure-ecommerce/vendure/commit/52972db)), closes [#1260](https://github.com/vendure-ecommerce/vendure/issues/1260)
-* **payments-plugin** Add support for Braintree vault to store cc data ([1d93db8](https://github.com/vendure-ecommerce/vendure/commit/1d93db8))
-* **ui-devkit** Expose route data in hosted UI extensions ([c3a21ff](https://github.com/vendure-ecommerce/vendure/commit/c3a21ff)), closes [#1281](https://github.com/vendure-ecommerce/vendure/issues/1281)
 
 ## 1.4.0 (2021-12-13)
 

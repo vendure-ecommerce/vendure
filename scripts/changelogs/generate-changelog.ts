@@ -57,7 +57,7 @@ function generateChangelogForPackage() {
                     return context(null, null);
                 }
             },
-            releaseCount: 2,
+            releaseCount: 1,
             outputUnreleased: true,
         },
         {
