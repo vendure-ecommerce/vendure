@@ -88,7 +88,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * For example, defining the following preset:
  *
  * ```ts
- * new AssetServerPlugin({
+ * AssetServerPlugin.init({
  *   // ...
  *   presets: [
  *     { name: 'my-preset', width: 85, height: 85, mode: 'crop' },
