@@ -348,7 +348,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     .getCount();
 
                 // Run delete operation by bulk
-                Logger.verbose(`Will reindex ${totalDeletedProductIds.length} deleted products`, loggerCtx);
+                Logger.verbose(`Will reindex ${totalDeletedProductIds} deleted products`, loggerCtx);
 
                 let deletedProductIds = [];
                 let skip = 0;
@@ -384,7 +384,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 } while (deletedProductIds.length >= REINDEX_CHUNK_SIZE);
 
                 // Run update operation by bulk
-                Logger.verbose(`Will reindex ${totalProductIds.length} products`, loggerCtx);
+                Logger.verbose(`Will reindex ${totalProductIds} products`, loggerCtx);
 
                 let productIds = [];
                 skip = 0;
