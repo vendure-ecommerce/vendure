@@ -3,6 +3,8 @@ import { forkJoin } from 'rxjs';
 
 import { ConfigService } from '../../../config/config.service';
 import { isInspectableJobQueueStrategy } from '../../../config/job-queue/inspectable-job-queue-strategy';
+import { EventBus } from '../../../event-bus/event-bus';
+import { JobBufferEvent } from '../../../event-bus/events/job-buffer-event';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
 import { SubscribableJob } from '../../../job-queue/subscribable-job';
 import { BUFFER_SEARCH_INDEX_UPDATES } from '../constants';
@@ -16,6 +18,7 @@ export class SearchJobBufferService implements OnApplicationBootstrap {
     readonly collectionJobBuffer = new CollectionJobBuffer();
 
     constructor(
+        private eventBus: EventBus,
         private jobQueueService: JobQueueService,
         private configService: ConfigService,
         @Inject(BUFFER_SEARCH_INDEX_UPDATES) private bufferUpdates: boolean,
@@ -25,6 +28,10 @@ export class SearchJobBufferService implements OnApplicationBootstrap {
         if (this.bufferUpdates === true) {
             this.jobQueueService.addBuffer(this.searchIndexJobBuffer);
             this.jobQueueService.addBuffer(this.collectionJobBuffer);
+
+            this.eventBus.ofType(JobBufferEvent).subscribe(() => {
+                return this.runPendingSearchUpdates()
+            })
         }
     }
 
