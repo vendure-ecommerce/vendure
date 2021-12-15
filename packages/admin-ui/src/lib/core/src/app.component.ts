@@ -74,7 +74,7 @@ export class AppComponent implements OnInit {
 
     @HostListener('window:keydown', ['$event'])
     handleGlobalHotkeys(event: KeyboardEvent) {
-        if (event.ctrlKey === true && event.key === 'u') {
+        if ((event.ctrlKey === true || event.metaKey === true) && event.key === 'u') {
             event.preventDefault();
             if (isDevMode()) {
                 this.dataService.client
