@@ -380,7 +380,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     await this.executeBulkOperations(operations);
                     skip += REINDEX_CHUNK_SIZE;
 
-                    Logger.verbose(`Done ${finishedDeletedItem} / ${totalProductIds} products`);
+                    Logger.verbose(`Done ${finishedDeletedItem} / ${totalDeletedProductIds} products`);
                 } while (deletedProductIds.length >= REINDEX_CHUNK_SIZE);
 
                 // Run update operation by bulk
