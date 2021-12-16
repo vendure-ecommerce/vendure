@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ExtensionMesssage, MessageResponse } from '@vendure/common/lib/extension-host-types';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import { ActiveRouteData, ExtensionMessage, MessageResponse } from '@vendure/common/lib/extension-host-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { parse } from 'graphql';
 import { merge, Observer, Subject } from 'rxjs';
@@ -11,13 +12,15 @@ import { NotificationService } from '../../../providers/notification/notificatio
 @Injectable()
 export class ExtensionHostService implements OnDestroy {
     private extensionWindow: Window;
+    private routeSnapshot: ActivatedRouteSnapshot;
     private cancellationMessage$ = new Subject<string>();
     private destroyMessage$ = new Subject<void>();
 
     constructor(private dataService: DataService, private notificationService: NotificationService) {}
 
-    init(extensionWindow: Window) {
+    init(extensionWindow: Window, routeSnapshot: ActivatedRouteSnapshot) {
         this.extensionWindow = extensionWindow;
+        this.routeSnapshot = routeSnapshot;
         window.addEventListener('message', this.handleMessage);
     }
 
@@ -30,7 +33,7 @@ export class ExtensionHostService implements OnDestroy {
         this.destroy();
     }
 
-    private handleMessage = (message: MessageEvent) => {
+    private handleMessage = (message: MessageEvent<ExtensionMessage>) => {
         const { data, origin } = message;
         if (this.isExtensionMessage(data)) {
             const cancellation$ = this.cancellationMessage$.pipe(
@@ -44,6 +47,25 @@ export class ExtensionHostService implements OnDestroy {
                 }
                 case 'destroy': {
                     this.destroyMessage$.next();
+                    break;
+                }
+                case 'active-route': {
+                    const routeData: ActiveRouteData = {
+                        url: window.location.href,
+                        origin: window.location.origin,
+                        pathname: window.location.pathname,
+                        params: this.routeSnapshot.params,
+                        queryParams: this.routeSnapshot.queryParams,
+                        fragment: this.routeSnapshot.fragment,
+                    };
+                    this.sendMessage(
+                        { data: routeData, error: false, complete: false, requestId: data.requestId },
+                        origin,
+                    );
+                    this.sendMessage(
+                        { data: null, error: false, complete: true, requestId: data.requestId },
+                        origin,
+                    );
                     break;
                 }
                 case 'graphql-query': {
@@ -70,7 +92,7 @@ export class ExtensionHostService implements OnDestroy {
                     assertNever(data);
             }
         }
-    }
+    };
 
     private createObserver(requestId: string, origin: string): Observer<any> {
         return {
@@ -84,7 +106,7 @@ export class ExtensionHostService implements OnDestroy {
         this.extensionWindow.postMessage(response, origin);
     }
 
-    private isExtensionMessage(input: any): input is ExtensionMesssage {
+    private isExtensionMessage(input: any): input is ExtensionMessage {
         return (
             input.hasOwnProperty('type') && input.hasOwnProperty('data') && input.hasOwnProperty('requestId')
         );

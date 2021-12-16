@@ -6,7 +6,6 @@ import {
     LanguageCode,
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -17,6 +16,8 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { EventBus } from '../../event-bus';
+import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -41,6 +42,7 @@ export class FacetService {
         private configService: ConfigService,
         private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
+        private eventBus: EventBus,
     ) {}
 
     findAll(
@@ -112,7 +114,13 @@ export class FacetService {
                 await this.channelService.assignToCurrentChannel(f, ctx);
             },
         });
-        await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
+        const facetWithRelations = await this.customFieldRelationService.updateRelations(
+            ctx,
+            Facet,
+            input,
+            facet,
+        );
+        this.eventBus.publish(new FacetEvent(ctx, facetWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, facet.id));
     }
 
@@ -127,6 +135,7 @@ export class FacetService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
+        this.eventBus.publish(new FacetEvent(ctx, facet, 'updated', input));
         return assertFound(this.findOne(ctx, facet.id));
     }
 
@@ -159,6 +168,7 @@ export class FacetService {
             await this.connection.getRepository(ctx, Facet).remove(facet);
             message = ctx.translate('message.facet-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
+            this.eventBus.publish(new FacetEvent(ctx, facet, 'deleted', id));
         } else {
             message = ctx.translate('message.facet-used', i18nVars);
             result = DeletionResult.NOT_DELETED;

@@ -4,6 +4,13 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Allows selection of a datetime. Default input for `datetime` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-date-form-input',
     templateUrl: './date-form-input.component.html',
@@ -15,4 +22,13 @@ export class DateFormInputComponent implements FormInputComponent {
     @Input() readonly: boolean;
     formControl: FormControl;
     config: DefaultFormComponentConfig<'date-form-input'>;
+    get min() {
+        return this.config.ui?.min || this.config.min;
+    }
+    get max() {
+        return this.config.ui?.max || this.config.max;
+    }
+    get yearRange() {
+        return this.config.ui?.yearRange || this.config.yearRange;
+    }
 }

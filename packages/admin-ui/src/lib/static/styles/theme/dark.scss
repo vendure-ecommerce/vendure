@@ -36,6 +36,15 @@
     --color-form-input-bg: hsl(212, 35%, 95%);
     --color-timeline-thread: var(--color-primary-700);
 
+    --color-json-editor-background-color: var(--color-grey-600);
+    --color-json-editor-text: var(--color-grey-100);
+    --color-json-editor-string: var(--color-secondary-300);
+    --color-json-editor-number: var(--color-primary-300);
+    --color-json-editor-boolean: var(--color-primary-300);
+    --color-json-editor-null: var(--color-grey-300-grey-500);
+    --color-json-editor-key: var(--color-success-300);
+    --color-json-editor-error: var(--color-error-200);
+
     // clarity styles
     --clr-global-app-background: hsl(201, 30%, 15%);
     --clr-global-selection-color: hsl(203, 32%, 29%);

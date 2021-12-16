@@ -37,4 +37,5 @@ export class MockEntityManager implements MockClass<EntityManager> {
     getMongoRepository = jest.fn();
     getCustomRepository = jest.fn();
     release = jest.fn();
+    upsert = jest.fn();
 }

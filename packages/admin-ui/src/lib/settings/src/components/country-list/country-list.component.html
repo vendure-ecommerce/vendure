@@ -7,6 +7,11 @@
             [placeholder]="'settings.search-country-by-name' | translate"
             class="search-input"
         />
+        <vdr-language-selector
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="contentLanguage$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
     </vdr-ab-left>
 
     <vdr-ab-right>
@@ -32,7 +37,7 @@
         <td class="left align-middle">{{ country.name }}</td>
         <td class="left align-middle">
             <a [routerLink]="['/settings', 'zones', { contents: zone.id }]" *ngFor="let zone of country.zones">
-            <vdr-chip [colorFrom]="zone.name">{{ zone.name }}</vdr-chip>
+                <vdr-chip [colorFrom]="zone.name">{{ zone.name }}</vdr-chip>
             </a>
         </td>
         <td class="left align-middle">

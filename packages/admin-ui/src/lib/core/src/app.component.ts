@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, HostListener, Inject, isDevMode, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { filter, map, switchMap } from 'rxjs/operators';
 
@@ -62,5 +62,32 @@ export class AppComponent implements OnInit {
                     }
                 },
             });
+
+        if (isDevMode()) {
+            // tslint:disable-next-line:no-console
+            console.log(
+                `%cVendure Admin UI: Press "ctrl/cmd + u" to view UI extension points`,
+                `color: #17C1FF; font-weight: bold;`,
+            );
+        }
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    handleGlobalHotkeys(event: KeyboardEvent) {
+        if ((event.ctrlKey === true || event.metaKey === true) && event.key === 'u') {
+            event.preventDefault();
+            if (isDevMode()) {
+                this.dataService.client
+                    .uiState()
+                    .single$.pipe(
+                        switchMap(({ uiState }) =>
+                            this.dataService.client.setDisplayUiExtensionPoints(
+                                !uiState.displayUiExtensionPoints,
+                            ),
+                        ),
+                    )
+                    .subscribe();
+            }
+        }
     }
 }

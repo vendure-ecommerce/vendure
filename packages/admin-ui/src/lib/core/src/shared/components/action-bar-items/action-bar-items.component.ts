@@ -12,6 +12,7 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
+import { ActionBarLocationId } from '../../../common/component-registry-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ActionBarItem } from '../../../providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../../providers/nav-builder/nav-builder.service';
@@ -26,7 +27,7 @@ import { NotificationService } from '../../../providers/notification/notificatio
 export class ActionBarItemsComponent implements OnInit, OnChanges {
     @HostBinding('attr.data-location-id')
     @Input()
-    locationId: string;
+    locationId: ActionBarLocationId;
 
     items$: Observable<ActionBarItem[]>;
     private locationId$ = new BehaviorSubject<string>('');

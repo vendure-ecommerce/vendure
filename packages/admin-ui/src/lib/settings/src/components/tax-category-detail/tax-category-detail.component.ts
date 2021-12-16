@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, Permission } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, CustomFieldConfig, Permission } from '@vendure/admin-ui/core';
 import {
     ConfigurableOperation,
     CreateTaxCategoryInput,
@@ -24,9 +24,11 @@ import { mergeMap, take } from 'rxjs/operators';
 })
 export class TaxCategoryDetailComponent
     extends BaseDetailComponent<TaxCategory.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     taxCategory$: Observable<TaxCategory.Fragment>;
     detailForm: FormGroup;
+    customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxCategory];
 
     private taxCondition: ConfigurableOperation;
@@ -42,9 +44,13 @@ export class TaxCategoryDetailComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('TaxCategory');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             isDefault: false,
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -66,7 +72,11 @@ export class TaxCategoryDetailComponent
             return;
         }
         const formValue = this.detailForm.value;
-        const input = { name: formValue.name, isDefault: formValue.isDefault } as CreateTaxCategoryInput;
+        const input = {
+            name: formValue.name,
+            isDefault: formValue.isDefault,
+            customFields: formValue.customFields,
+        } as CreateTaxCategoryInput;
         this.dataService.settings.createTaxCategory(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
@@ -97,6 +107,7 @@ export class TaxCategoryDetailComponent
                         id: taxCategory.id,
                         name: formValue.name,
                         isDefault: formValue.isDefault,
+                        customFields: formValue.customFields,
                     } as UpdateTaxCategoryInput;
                     return this.dataService.settings.updateTaxCategory(input);
                 }),
@@ -125,5 +136,8 @@ export class TaxCategoryDetailComponent
             name: entity.name,
             isDefault: entity.isDefault,
         });
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
+        }
     }
 }

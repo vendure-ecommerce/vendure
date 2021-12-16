@@ -73,6 +73,7 @@ input ConfigurableOperationInput {
     arguments: [ConfigArgInput!]!
 }
 
+"Operators for filtering on a String field"
 input StringOperators {
     eq: String
     notEq: String
@@ -83,6 +84,15 @@ input StringOperators {
     regex: String
 }
 
+"Operators for filtering on an ID field"
+input IDOperators {
+    eq: String
+    notEq: String
+    in: [String!]
+    notIn: [String!]
+}
+
+"Operators for filtering on a Boolean field"
 input BooleanOperators {
     eq: Boolean
 }
@@ -92,6 +102,7 @@ input NumberRange {
     end: Float!
 }
 
+"Operators for filtering on a Int or Float field"
 input NumberOperators {
     eq: Float
     lt: Float
@@ -106,6 +117,7 @@ input DateRange {
     end: DateTime!
 }
 
+"Operators for filtering on a DateTime field"
 input DateOperators {
     eq: DateTime
     before: DateTime

@@ -15,7 +15,7 @@ import { Dialog, ModalOptions } from '../../../providers/modal/modal.service';
 import { DialogButtonsDirective } from './dialog-buttons.directive';
 
 /**
- * This component should only be instatiated dynamically by the ModalService. It should not be used
+ * This component should only be instantiated dynamically by the ModalService. It should not be used
  * directly in templates. See {@link ModalService.fromComponent} method for more detail.
  */
 @Component({

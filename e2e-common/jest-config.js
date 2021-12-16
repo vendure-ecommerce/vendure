@@ -12,6 +12,7 @@ module.exports = {
     moduleFileExtensions: ['js', 'json', 'ts'],
     rootDir: packageDirname,
     testRegex: '.e2e-spec.ts$',
+    maxWorkers: process.env.CI ? 1 : 3,
     transform: {
         '^.+\\.ts$': 'ts-jest',
     },

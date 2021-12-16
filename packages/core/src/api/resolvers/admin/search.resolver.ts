@@ -32,7 +32,7 @@ export class SearchResolver {
     }
 
     @Query()
-    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }

@@ -13,6 +13,12 @@ describe('LocaleLanguageNamePipe', () => {
         expect(pipe.transform('zh_Hant', 'en')).toBe('Traditional Chinese');
     });
 
+    it('return correct names for language plus region', () => {
+        expect(pipe.transform('en-MY', 'en')).toBe('English (Malaysia)');
+        expect(pipe.transform('de-AT', 'de')).toBe('Österreichisches Deutsch');
+        expect(pipe.transform('zh_Hant-CN', 'en')).toBe('Traditional Chinese (China)');
+    });
+
     it('returns code for unknown codes', () => {
         expect(pipe.transform('xx')).toBe('xx');
     });

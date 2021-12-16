@@ -21,6 +21,7 @@ cd ../core && npm publish -reg $VERDACCIO &&\
 cd ../create && npm publish -reg $VERDACCIO &&\
 cd ../elasticsearch-plugin && npm publish -reg $VERDACCIO &&\
 cd ../email-plugin && npm publish -reg $VERDACCIO &&\
+cd ../payments-plugin && npm publish -reg $VERDACCIO &&\
 cd ../testing && npm publish -reg $VERDACCIO &&\
 cd ../ui-devkit && npm publish -reg $VERDACCIO &&\
 cd ../job-queue-plugin && npm publish -reg $VERDACCIO &&\

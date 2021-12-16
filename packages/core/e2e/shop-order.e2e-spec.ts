@@ -1,26 +1,38 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { Asset, mergeConfig } from '@vendure/core';
+import {
+    Asset,
+    defaultShippingCalculator,
+    defaultShippingEligibilityChecker,
+    mergeConfig,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { manualFulfillmentHandler } from '../src/index';
 
 import {
     testErrorPaymentMethod,
     testFailingPaymentMethod,
     testSuccessfulPaymentMethod,
 } from './fixtures/test-payment-methods';
+import { countryCodeShippingEligibilityChecker } from './fixtures/test-shipping-eligibility-checkers';
 import {
     AttemptLogin,
     CreateAddressInput,
+    CreateShippingMethod,
+    CreateShippingMethodInput,
     DeleteProduct,
     DeleteProductVariant,
+    DeleteShippingMethod,
     GetCountryList,
     GetCustomer,
     GetCustomerList,
+    GetShippingMethodList,
+    LanguageCode,
     UpdateCountry,
     UpdateProduct,
     UpdateProductVariants,
@@ -53,11 +65,14 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
+    CREATE_SHIPPING_METHOD,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
+    DELETE_SHIPPING_METHOD,
     GET_COUNTRY_LIST,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
+    GET_SHIPPING_METHOD_LIST,
     UPDATE_COUNTRY,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -94,6 +109,12 @@ describe('Shop orders', () => {
                     testSuccessfulPaymentMethod,
                     testFailingPaymentMethod,
                     testErrorPaymentMethod,
+                ],
+            },
+            shippingOptions: {
+                shippingEligibilityCheckers: [
+                    defaultShippingEligibilityChecker,
+                    countryCodeShippingEligibilityChecker,
                 ],
             },
             customFields: {
@@ -807,7 +828,32 @@ describe('Shop orders', () => {
             expect(customer!.addresses).toEqual([]);
         });
 
-        it('can transition to ArrangingPayment once Customer has been set', async () => {
+        it('attempting to transition to ArrangingPayment returns error result when Order has no ShippingMethod', async () => {
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToState.Mutation,
+                TransitionToState.Variables
+            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+            orderResultGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.transitionError).toBe(
+                `Cannot transition Order to the "ArrangingPayment" state without a ShippingMethod`,
+            );
+            expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
+        });
+
+        it('can transition to ArrangingPayment once Customer and ShippingMethod has been set', async () => {
+            const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+                GET_ELIGIBLE_SHIPPING_METHODS,
+            );
+
+            const { setOrderShippingMethod } = await shopClient.query<
+                SetShippingMethod.Mutation,
+                SetShippingMethod.Variables
+            >(SET_SHIPPING_METHOD, {
+                id: eligibleShippingMethods[0].id,
+            });
+            orderResultGuard.assertSuccess(setOrderShippingMethod);
+
             const { transitionOrderToState } = await shopClient.query<
                 TransitionToState.Mutation,
                 TransitionToState.Variables
@@ -1251,6 +1297,7 @@ describe('Shop orders', () => {
                     GET_ACTIVE_ORDER_WITH_PAYMENTS,
                 );
                 const payment = order!.payments![0];
+                expect(order!.state).toBe('ArrangingPayment');
                 expect(order!.payments!.length).toBe(1);
                 expect(payment.method).toBe(testFailingPaymentMethod.code);
                 expect(payment.state).toBe('Declined');
@@ -1815,6 +1862,132 @@ describe('Shop orders', () => {
                 `Cannot transition to "ArrangingPayment" because the Order contains ProductVariants which are no longer available`,
             );
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1195
+    describe('shipping method invalidation', () => {
+        let GBShippingMethodId: string;
+        let ATShippingMethodId: string;
+
+        beforeAll(async () => {
+            // First we will remove all ShippingMethods and set up 2 specialized ones
+            const { shippingMethods } = await adminClient.query<GetShippingMethodList.Query>(
+                GET_SHIPPING_METHOD_LIST,
+            );
+            for (const method of shippingMethods.items) {
+                await adminClient.query<DeleteShippingMethod.Mutation, DeleteShippingMethod.Variables>(
+                    DELETE_SHIPPING_METHOD,
+                    {
+                        id: method.id,
+                    },
+                );
+            }
+
+            function createCountryCodeShippingMethodInput(countryCode: string): CreateShippingMethodInput {
+                return {
+                    code: `${countryCode}-shipping`,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: `${countryCode} shipping`, description: '' },
+                    ],
+                    fulfillmentHandler: manualFulfillmentHandler.code,
+                    checker: {
+                        code: countryCodeShippingEligibilityChecker.code,
+                        arguments: [{ name: 'countryCode', value: countryCode }],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '1000' },
+                            { name: 'taxRate', value: '0' },
+                            { name: 'includesTax', value: 'auto' },
+                        ],
+                    },
+                };
+            }
+
+            // Now create 2 shipping methods, valid only for a single country
+            const result1 = await adminClient.query<
+                CreateShippingMethod.Mutation,
+                CreateShippingMethod.Variables
+            >(CREATE_SHIPPING_METHOD, {
+                input: createCountryCodeShippingMethodInput('GB'),
+            });
+            GBShippingMethodId = result1.createShippingMethod.id;
+            const result2 = await adminClient.query<
+                CreateShippingMethod.Mutation,
+                CreateShippingMethod.Variables
+            >(CREATE_SHIPPING_METHOD, {
+                input: createCountryCodeShippingMethodInput('AT'),
+            });
+            ATShippingMethodId = result2.createShippingMethod.id;
+
+            // Now create an order to GB and set the GB shipping method
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
+                SET_CUSTOMER,
+                {
+                    input: {
+                        emailAddress: 'test-2@test.com',
+                        firstName: 'Test',
+                        lastName: 'Person 2',
+                    },
+                },
+            );
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        streetLine1: '12 the street',
+                        countryCode: 'GB',
+                    },
+                },
+            );
+            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
+                SET_SHIPPING_METHOD,
+                {
+                    id: GBShippingMethodId,
+                },
+            );
+        });
+
+        it('if selected method no longer eligible, next best is set automatically', async () => {
+            const result1 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(result1.activeOrder?.shippingLines[0].shippingMethod.id).toBe(GBShippingMethodId);
+
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        streetLine1: '12 the street',
+                        countryCode: 'AT',
+                    },
+                },
+            );
+
+            const result2 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(result2.activeOrder?.shippingLines[0].shippingMethod.id).toBe(ATShippingMethodId);
+        });
+
+        it('if no method is eligible, shipping lines are cleared', async () => {
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        streetLine1: '12 the street',
+                        countryCode: 'US',
+                    },
+                },
+            );
+
+            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(result.activeOrder?.shippingLines).toEqual([]);
         });
     });
 });

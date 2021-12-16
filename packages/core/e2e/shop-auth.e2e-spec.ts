@@ -653,6 +653,10 @@ describe('Shop auth & accounts', () => {
 
             expect(updateCustomerEmailAddress.success).toBe(true);
 
+            // Allow for occasional race condition where the event does not
+            // publish before the assertions are made.
+            await new Promise(resolve => setTimeout(resolve, 10));
+
             expect(sendEmailFn).toHaveBeenCalled();
             expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
         });

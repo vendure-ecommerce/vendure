@@ -4,6 +4,13 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Displays a number input. Default input for `int` and `float` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-number-form-input',
     templateUrl: './number-form-input.component.html',
@@ -15,4 +22,20 @@ export class NumberFormInputComponent implements FormInputComponent {
     @Input() readonly: boolean;
     formControl: FormControl;
     config: DefaultFormComponentConfig<'number-form-input'>;
+
+    get prefix() {
+        return this.config.ui?.prefix || this.config.prefix;
+    }
+    get suffix() {
+        return this.config.ui?.suffix || this.config.suffix;
+    }
+    get min() {
+        return this.config.ui?.min || this.config.min;
+    }
+    get max() {
+        return this.config.ui?.max || this.config.max;
+    }
+    get step() {
+        return this.config.ui?.step || this.config.step;
+    }
 }

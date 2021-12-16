@@ -8,6 +8,14 @@ import { FormInputComponent } from '../../../common/component-registry-types';
 import { GetCustomerGroups } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
+/**
+ * @description
+ * Allows the selection of a Customer via an autocomplete select input.
+ * Should be used with `ID` type fields which represent Customer IDs.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-customer-group-form-input',
     templateUrl: './customer-group-form-input.component.html',

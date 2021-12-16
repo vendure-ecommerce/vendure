@@ -40,6 +40,7 @@ import {
     GetTaxCategory,
     GetTaxRate,
     GetTaxRateList,
+    GetTaxRateListSimple,
     GetZone,
     GetZones,
     JobListOptions,
@@ -93,6 +94,7 @@ import {
     GET_TAX_CATEGORY,
     GET_TAX_RATE,
     GET_TAX_RATE_LIST,
+    GET_TAX_RATE_LIST_SIMPLE,
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
@@ -131,13 +133,13 @@ export class SettingsDataService {
 
     createCountry(input: CreateCountryInput) {
         return this.baseDataService.mutate<CreateCountry.Mutation, CreateCountry.Variables>(CREATE_COUNTRY, {
-            input: pick(input, ['code', 'enabled', 'translations']),
+            input: pick(input, ['code', 'enabled', 'translations', 'customFields']),
         });
     }
 
     updateCountry(input: UpdateCountryInput) {
         return this.baseDataService.mutate<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
-            input: pick(input, ['id', 'code', 'enabled', 'translations']),
+            input: pick(input, ['id', 'code', 'enabled', 'translations', 'customFields']),
         });
     }
 
@@ -233,6 +235,19 @@ export class SettingsDataService {
     getTaxRates(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
         return this.baseDataService.query<GetTaxRateList.Query, GetTaxRateList.Variables>(
             GET_TAX_RATE_LIST,
+            {
+                options: {
+                    take,
+                    skip,
+                },
+            },
+            fetchPolicy,
+        );
+    }
+
+    getTaxRatesSimple(take: number = 10, skip: number = 0, fetchPolicy?: FetchPolicy) {
+        return this.baseDataService.query<GetTaxRateListSimple.Query, GetTaxRateListSimple.Variables>(
+            GET_TAX_RATE_LIST_SIMPLE,
             {
                 options: {
                     take,

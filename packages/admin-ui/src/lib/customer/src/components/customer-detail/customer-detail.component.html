@@ -3,7 +3,11 @@
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <vdr-customer-status-label [customer]="entity$ | async"></vdr-customer-status-label>
-            <div class="last-login" *ngIf="(entity$ | async)?.user?.lastLogin as lastLogin" [title]="lastLogin | localeDate:'medium'">
+            <div
+                class="last-login"
+                *ngIf="(entity$ | async)?.user?.lastLogin as lastLogin"
+                [title]="lastLogin | localeDate: 'medium'"
+            >
                 {{ 'customer.last-login' | translate }}: {{ lastLogin | timeAgo }}
             </div>
         </div>
@@ -58,27 +62,29 @@
         <input id="emailAddress" type="text" formControlName="emailAddress" />
     </vdr-form-field>
     <vdr-form-field
-           [label]="'customer.phone-number' | translate"
-           for="phoneNumber"
-           [readOnlyToggle]="!(isNew$ | async)"
-       >
-           <input id="phoneNumber" type="text" formControlName="phoneNumber" />
-       </vdr-form-field>
+        [label]="'customer.phone-number' | translate"
+        for="phoneNumber"
+        [readOnlyToggle]="!(isNew$ | async)"
+    >
+        <input id="phoneNumber" type="text" formControlName="phoneNumber" />
+    </vdr-form-field>
     <vdr-form-field [label]="'customer.password' | translate" for="password" *ngIf="isNew$ | async">
         <input id="password" type="password" formControlName="password" />
     </vdr-form-field>
 
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                *ngIf="customFieldIsSet(customField.name)"
-                entityName="Customer"
-                [customFieldsFormGroup]="detailForm.get(['customer', 'customFields'])"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="Customer"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get(['customer', 'customFields'])"
+        ></vdr-tabbed-custom-fields>
     </section>
+    <vdr-custom-detail-component-host
+        locationId="customer-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 </form>
 
 <div class="groups" *ngIf="(entity$ | async)?.groups as groups">
@@ -96,7 +102,11 @@
         {{ 'customer.not-a-member-of-any-groups' | translate }}
     </ng-template>
     <div>
-        <button class="btn btn-sm btn-secondary" (click)="addToGroup()" *vdrIfPermissions="'UpdateCustomerGroup'">
+        <button
+            class="btn btn-sm btn-secondary"
+            (click)="addToGroup()"
+            *vdrIfPermissions="'UpdateCustomerGroup'"
+        >
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.add-customer-to-group' | translate }}
         </button>

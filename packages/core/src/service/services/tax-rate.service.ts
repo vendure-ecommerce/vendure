@@ -18,6 +18,7 @@ import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { TaxRateEvent } from '../../event-bus/events/tax-rate-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -76,6 +77,7 @@ export class TaxRateService {
         const newTaxRate = await this.connection.getRepository(ctx, TaxRate).save(taxRate);
         await this.updateActiveTaxRates(ctx);
         this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
+        this.eventBus.publish(new TaxRateEvent(ctx, newTaxRate, 'created', input));
         return assertFound(this.findOne(ctx, newTaxRate.id));
     }
 
@@ -110,6 +112,8 @@ export class TaxRateService {
         await this.connection.commitOpenTransaction(ctx);
 
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
+        this.eventBus.publish(new TaxRateEvent(ctx, updatedTaxRate, 'updated', input));
+
         return assertFound(this.findOne(ctx, taxRate.id));
     }
 
@@ -117,6 +121,7 @@ export class TaxRateService {
         const taxRate = await this.connection.getEntityOrThrow(ctx, TaxRate, id);
         try {
             await this.connection.getRepository(ctx, TaxRate).remove(taxRate);
+            this.eventBus.publish(new TaxRateEvent(ctx, taxRate, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };

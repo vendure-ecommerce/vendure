@@ -94,10 +94,6 @@ export class CollectionDetailComponent
         return this.allFilters.find(f => f.code === filter.code);
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     assetsChanged(): boolean {
         return !!Object.values(this.assetChanges).length;
     }
@@ -240,19 +236,12 @@ export class CollectionDetailComponent
         entity.filters.forEach(f => this.addFilter(f));
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value =
-                    fieldDef.type === 'localeString'
-                        ? (currentTranslation as any).customFields[key]
-                        : (entity as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['customFields']),
+                entity,
+                currentTranslation,
+            );
         }
     }
 

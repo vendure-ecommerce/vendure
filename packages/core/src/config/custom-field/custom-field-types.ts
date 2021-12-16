@@ -10,7 +10,13 @@ import {
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
+import {
+    CustomFieldsObject,
+    CustomFieldType,
+    DefaultFormComponentId,
+    Type,
+    UiComponentConfig,
+} from '@vendure/common/lib/shared-types';
 
 import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
@@ -35,6 +41,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
      */
     public?: boolean;
     nullable?: boolean;
+    ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 
 /**
@@ -45,7 +52,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
  */
 export type TypedCustomSingleFieldConfig<
     T extends CustomFieldType,
-    C extends CustomField
+    C extends CustomField,
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: false;
     defaultValue?: DefaultValueType<T>;
@@ -57,7 +64,7 @@ export type TypedCustomSingleFieldConfig<
 
 export type TypedCustomListFieldConfig<
     T extends CustomFieldType,
-    C extends CustomField
+    C extends CustomField,
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: true;
     defaultValue?: Array<DefaultValueType<T>>;
@@ -66,7 +73,7 @@ export type TypedCustomListFieldConfig<
 
 export type TypedCustomFieldConfig<
     T extends CustomFieldType,
-    C extends CustomField
+    C extends CustomField,
 > = BaseTypedCustomFieldConfig<T, C> &
     (TypedCustomSingleFieldConfig<T, C> | TypedCustomListFieldConfig<T, C>);
 
@@ -110,14 +117,14 @@ export type CustomFieldConfig =
  *
  * All custom fields share some common properties:
  *
- * * `name: string`: The name of the field
- * * `type: string`: A string of type {@link CustomFieldType}
- * * `list: boolean`: If set to `true`, then the field will be an array of the specified type
+ * * `name: string`: The name of the field.
+ * * `type: string`: A string of type {@link CustomFieldType}.
+ * * `list: boolean`: If set to `true`, then the field will be an array of the specified type.
  * * `label?: LocalizedString[]`: An array of localized labels for the field.
  * * `description?: LocalizedString[]`: An array of localized descriptions for the field.
- * * `public?: boolean`: Whether or not the custom field is available via the Shop API. Defaults to `true`
- * * `readonly?: boolean`: Whether or not the custom field can be updated via the GraphQL APIs. Defaults to `false`
- * * `internal?: boolean`: Whether or not the custom field is exposed at all via the GraphQL APIs. Defaults to `false`
+ * * `public?: boolean`: Whether or not the custom field is available via the Shop API. Defaults to `true`.
+ * * `readonly?: boolean`: Whether or not the custom field can be updated via the GraphQL APIs. Defaults to `false`.
+ * * `internal?: boolean`: Whether or not the custom field is exposed at all via the GraphQL APIs. Defaults to `false`.
  * * `defaultValue?: any`: The default value when an Entity is created with this field.
  * * `nullable?: boolean`: Whether the field is nullable in the database. If set to `false`, then a `defaultValue` should be provided.
  * * `validate?: (value: any) => string | LocalizedString[] | void`: A custom validation function. If the value is valid, then
@@ -192,19 +199,26 @@ export interface CustomFields {
     Asset?: CustomFieldConfig[];
     Channel?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
+    Country?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
+    CustomerGroup?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
     FacetValue?: CustomFieldConfig[];
     Fulfillment?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
+    PaymentMethod?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
-    User?: CustomFieldConfig[];
+    Promotion?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    TaxCategory?: CustomFieldConfig[];
+    TaxRate?: CustomFieldConfig[];
+    User?: CustomFieldConfig[];
+    Zone?: CustomFieldConfig[];
 }
 
 /**

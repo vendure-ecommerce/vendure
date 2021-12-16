@@ -1,16 +1,27 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <vdr-language-selector
-            [availableLanguageCodes]="availableLanguages$ | async"
-            [currentLanguageCode]="contentLanguage$ | async"
-            (languageCodeChange)="setLanguage($event)"
-        ></vdr-language-selector>
+        <div class="flex center wrap">
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+            <input
+                type="text"
+                name="searchTerm"
+                [formControl]="filterTermControl"
+                [placeholder]="'catalog.filter-by-name' | translate"
+                class="clr-input search-input ml4"
+            />
+        </div>
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="facet-list"></vdr-action-bar-items>
-        <a class="btn btn-primary"
-           *vdrIfPermissions="['CreateCatalog', 'CreateFacet']"
-           [routerLink]="['./create']">
+        <a
+            class="btn btn-primary"
+            *vdrIfPermissions="['CreateCatalog', 'CreateFacet']"
+            [routerLink]="['./create']"
+        >
             <clr-icon shape="plus"></clr-icon>
             {{ 'catalog.create-new-facet' | translate }}
         </a>
@@ -57,7 +68,9 @@
         </td>
         <td class="left align-middle" [class.private]="facet.isPrivate">
             <vdr-chip>
-                <ng-container *ngIf="!facet.isPrivate; else private">{{ 'catalog.public' | translate }}</ng-container>
+                <ng-container *ngIf="!facet.isPrivate; else private">{{
+                    'catalog.public' | translate
+                }}</ng-container>
                 <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
             </vdr-chip>
         </td>

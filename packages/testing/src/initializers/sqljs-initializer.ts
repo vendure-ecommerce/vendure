@@ -9,7 +9,14 @@ import { TestDbInitializer } from './test-db-initializer';
 export class SqljsInitializer implements TestDbInitializer<SqljsConnectionOptions> {
     private dbFilePath: string;
     private connectionOptions: SqljsConnectionOptions;
-    constructor(private dataDir: string) {}
+
+    /**
+     * @param dataDir
+     * @param postPopulateTimeoutMs Allows you to specify a timeout to wait after the population
+     * step and before the server is shut down. Can resolve occasional race condition issues with
+     * the job queue.
+     */
+    constructor(private dataDir: string, private postPopulateTimeoutMs: number = 0) {}
 
     async init(
         testFileName: string,
@@ -30,6 +37,7 @@ export class SqljsInitializer implements TestDbInitializer<SqljsConnectionOption
             (this.connectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
             (this.connectionOptions as Mutable<SqljsConnectionOptions>).synchronize = true;
             await populateFn();
+            await new Promise(resolve => setTimeout(resolve, this.postPopulateTimeoutMs));
             (this.connectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
             (this.connectionOptions as Mutable<SqljsConnectionOptions>).synchronize = false;
         }

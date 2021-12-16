@@ -5,7 +5,15 @@ import { DataService } from '../../data/providers/data.service';
 import { LocaleBasePipe } from './locale-base.pipe';
 
 /**
- * Displays a human-readable name for a given ISO 4217 currency code.
+ * @description
+ * Displays a human-readable name for a given ISO 639-1 language code.
+ *
+ * @example
+ * ```HTML
+ * {{ 'zh_Hant' | localeLanguageName }}
+ * ```
+ *
+ * @docsCategory pipes
  */
 @Pipe({
     name: 'localeLanguageName',

@@ -98,10 +98,6 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         }
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.customFieldsForm?.get([name]);
-    }
-
     getSourceFileName(): string {
         const parts = this.asset.source.split('/');
         return parts[parts.length - 1];

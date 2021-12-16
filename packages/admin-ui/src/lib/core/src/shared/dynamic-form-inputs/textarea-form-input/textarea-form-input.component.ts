@@ -4,6 +4,13 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * Uses textarea form input. This is the default input for `text` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-textarea-form-input',
     templateUrl: './textarea-form-input.component.html',

@@ -3,12 +3,14 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { CustomCountryFieldsTranslation } from '../custom-entity-fields';
 
 import { Country } from './country.entity';
 
 @Entity()
-export class CountryTranslation extends VendureEntity implements Translation<Country> {
+export class CountryTranslation extends VendureEntity implements Translation<Country>, HasCustomFields {
     constructor(input?: DeepPartial<Translation<CountryTranslation>>) {
         super(input);
     }
@@ -19,4 +21,7 @@ export class CountryTranslation extends VendureEntity implements Translation<Cou
 
     @ManyToOne(type => Country, base => base.translations, { onDelete: 'CASCADE' })
     base: Country;
+
+    @Column(type => CustomCountryFieldsTranslation)
+    customFields: CustomCountryFieldsTranslation;
 }

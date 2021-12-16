@@ -19,7 +19,7 @@
         <button
             class="btn btn-primary"
             *ngIf="
-                order.state === 'ArrangingAdditionalPayment' &&
+                (order.state === 'ArrangingPayment' || order.state === 'ArrangingAdditionalPayment') &&
                 (hasUnsettledModifications(order) || 0 < outstandingPaymentAmount(order))
             "
             (click)="addManualPayment(order)"
@@ -29,7 +29,11 @@
         </button>
         <button
             class="btn btn-primary"
-            *ngIf="order.state !== 'ArrangingAdditionalPayment' && 0 < outstandingPaymentAmount(order)"
+            *ngIf="
+                order.active === false &&
+                order.state !== 'ArrangingAdditionalPayment' &&
+                0 < outstandingPaymentAmount(order)
+            "
             (click)="transitionToState('ArrangingAdditionalPayment')"
         >
             {{ 'order.arrange-additional-payment' | translate }}
@@ -117,6 +121,12 @@
                     </tr>
                 </tbody>
             </table>
+
+            <vdr-custom-detail-component-host
+                locationId="order-detail"
+                [entity$]="entity$"
+                [detailForm]="detailForm"
+            ></vdr-custom-detail-component-host>
 
             <vdr-order-history
                 [order]="order"

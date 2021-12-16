@@ -40,6 +40,9 @@ export class TestEntity extends VendureEntity implements Translatable {
     @Column()
     order: number;
 
+    @Column('varchar')
+    ownerId: ID;
+
     @Column()
     date: Date;
 
@@ -146,6 +149,7 @@ const apiExtensions = gql`
         date: DateTime!
         descriptionLength: Int!
         price: Int!
+        ownerId: ID!
     }
 
     type TestEntityList implements PaginatedList {
@@ -185,6 +189,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     date: new Date('2020-01-05T10:00:00.000Z'),
                     active: true,
                     order: 0,
+                    ownerId: 10,
                 }),
                 new TestEntity({
                     label: 'B',
@@ -192,6 +197,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     date: new Date('2020-01-15T10:00:00.000Z'),
                     active: true,
                     order: 1,
+                    ownerId: 11,
                 }),
                 new TestEntity({
                     label: 'C',
@@ -199,6 +205,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     date: new Date('2020-01-25T10:00:00.000Z'),
                     active: false,
                     order: 2,
+                    ownerId: 12,
                 }),
                 new TestEntity({
                     label: 'D',
@@ -206,6 +213,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     date: new Date('2020-01-30T10:00:00.000Z'),
                     active: true,
                     order: 3,
+                    ownerId: 13,
                 }),
                 new TestEntity({
                     label: 'E',
@@ -213,6 +221,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     date: new Date('2020-02-05T10:00:00.000Z'),
                     active: false,
                     order: 4,
+                    ownerId: 14,
                 }),
                 new TestEntity({
                     label: 'F',
@@ -220,6 +229,7 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     date: new Date('2020-02-07T10:00:00.000Z'),
                     active: false,
                     order: 5,
+                    ownerId: 15,
                 }),
             ]);
 

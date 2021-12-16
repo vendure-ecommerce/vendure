@@ -38,6 +38,27 @@ export type PriceRangeBucket = {
     count: number;
 };
 
+export enum ElasticSearchSortMode {
+    /** Pick the lowest value */
+    MIN = 'min',
+    /** Pick the highest value */
+    MAX = 'max',
+    /** Use the sum of all values as sort value. Only applicable for number based array fields */
+    SUM = 'sum',
+    /** Use the average of all values as sort value. Only applicable for number based array fields */
+    AVG = 'avg',
+    /** Use the median of all values as sort value. Only applicable for number based array fields */
+    MEDIAN = 'median',
+}
+
+export type ElasticSearchSortParameter = {
+    missing?: '_last' | '_first' | string;
+    mode?: ElasticSearchSortMode;
+    order: 'asc' | 'desc';
+} & { [key: string]: any };
+
+export type ElasticSearchSortInput = Array<{ [key: string]: ElasticSearchSortParameter }>;
+
 export type IndexItemAssets = {
     productAssetId: ID | undefined;
     productPreview: string;
@@ -249,6 +270,7 @@ type GraphQlPermittedReturnType = PrimitiveTypeVariations<GraphQlPrimitive>;
 
 type CustomMappingDefinition<Args extends any[], T extends GraphQlPermittedReturnType, R> = {
     graphQlType: T;
+    public?: boolean;
     valueFn: (...args: Args) => R;
 };
 

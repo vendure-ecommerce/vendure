@@ -1,0 +1,31 @@
+@import "variables";
+
+:host {
+    position: relative;
+    display: inline-block;
+}
+
+.wrapper {
+    display: inline-block;
+    height: 100%;
+}
+
+.extension-point-info-trigger {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    z-index: 100;
+    clr-icon {
+        color: var(--color-success-500);
+    }
+}
+
+.extension-info {
+    padding: 12px;
+}
+
+pre {
+    padding: 6px;
+    font-family: 'Source Code Pro', 'Lucida Console', Monaco, monospace;
+    background-color: var(--color-grey-200);
+}

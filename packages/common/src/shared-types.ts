@@ -132,43 +132,64 @@ export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' 
 export type DefaultFormComponentId =
     | 'boolean-form-input'
     | 'currency-form-input'
+    | 'customer-group-form-input'
     | 'date-form-input'
     | 'facet-value-form-input'
+    | 'json-editor-form-input'
     | 'number-form-input'
-    | 'select-form-input'
-    | 'product-selector-form-input'
-    | 'customer-group-form-input'
-    | 'text-form-input'
-    | 'textarea-form-input'
     | 'password-form-input'
-    | 'relation-form-input';
+    | 'product-selector-form-input'
+    | 'relation-form-input'
+    | 'rich-text-form-input'
+    | 'select-form-input'
+    | 'text-form-input'
+    | 'textarea-form-input';
 
 /**
  * @description
- * Used to defined the expected arguments for a given default form input component.
+ * Used to define the expected arguments for a given default form input component.
  *
  * @docsCategory ConfigurableOperationDef
  */
 type DefaultFormConfigHash = {
+    'boolean-form-input': {};
+    'currency-form-input': {};
+    'customer-group-form-input': {};
     'date-form-input': { min?: string; max?: string; yearRange?: number };
+    'facet-value-form-input': {};
+    'json-editor-form-input': { height?: string };
     'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
+    'password-form-input': {};
+    'product-selector-form-input': {};
+    'relation-form-input': {};
+    'rich-text-form-input': {};
     'select-form-input': {
         options?: Array<{ value: string; label?: Array<Omit<LocalizedString, '__typename'>> }>;
     };
-    'boolean-form-input': {};
-    'currency-form-input': {};
-    'facet-value-form-input': {};
-    'product-selector-form-input': {};
-    'customer-group-form-input': {};
-    'text-form-input': {};
+    'text-form-input': { prefix?: string; suffix?: string };
     'textarea-form-input': {
         spellcheck?: boolean;
     };
-    'password-form-input': {};
-    'relation-form-input': {};
 };
 
-export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
+export type DefaultFormComponentUiConfig<T extends DefaultFormComponentId | string> =
+    T extends DefaultFormComponentId ? DefaultFormConfigHash[T] : any;
+
+export type DefaultFormComponentConfig<T extends DefaultFormComponentId | string> =
+    DefaultFormComponentUiConfig<T> & {
+        ui?: DefaultFormComponentUiConfig<T>;
+    };
+
+export type UiComponentConfig<T extends DefaultFormComponentId | string> = T extends DefaultFormComponentId
+    ? {
+          component: T;
+          tab?: string;
+      } & DefaultFormConfigHash[T]
+    : {
+          component: string;
+          tab?: string;
+          [prop: string]: any;
+      };
 
 export type CustomFieldsObject = { [key: string]: any };
 
@@ -232,6 +253,14 @@ export interface AdminUiConfig {
      * @default LanguageCode.en
      */
     defaultLanguage: LanguageCode;
+    /**
+     * @description
+     * The default locale for the Admin UI. The locale affects the formatting of
+     * currencies & dates.
+     *
+     * If not set, the browser default locale will be used.
+     */
+    defaultLocale?: string;
     /**
      * @description
      * An array of languages for which translations exist for the Admin UI.

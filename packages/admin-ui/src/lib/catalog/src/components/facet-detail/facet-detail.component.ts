@@ -33,7 +33,8 @@ import { map, mapTo, mergeMap, switchMap, take } from 'rxjs/operators';
 })
 export class FacetDetailComponent
     extends BaseDetailComponent<FacetWithValues.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
     detailForm: FormGroup;
@@ -90,10 +91,6 @@ export class FacetDetailComponent
                 codeControl.setValue(normalizeString(nameValue, '-'));
             }
         }
-    }
-
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['facet', 'customFields', name]);
     }
 
     customValueFieldIsSet(index: number, name: string): boolean {
@@ -285,18 +282,12 @@ export class FacetDetailComponent
 
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get(['facet', 'customFields']) as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value =
-                    fieldDef.type === 'localeString'
-                        ? (currentTranslation as any).customFields[key]
-                        : (facet as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['facet', 'customFields']),
+                facet,
+                currentTranslation,
+            );
         }
 
         const currentValuesFormArray = this.detailForm.get('values') as FormArray;

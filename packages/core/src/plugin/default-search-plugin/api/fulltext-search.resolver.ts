@@ -95,7 +95,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
     }
 
     @Query()
-    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
         return this.searchJobBufferService.getPendingSearchUpdates();
     }

@@ -1,3 +1,50 @@
+## 1.4.0-beta.0 (2021-12-06)
+
+
+#### Features
+
+* **admin-ui-plugin** Support for defaultLocale ([e7bd576](https://github.com/vendure-ecommerce/vendure/commit/e7bd576)), closes [#1196](https://github.com/vendure-ecommerce/vendure/issues/1196)
+* **admin-ui** Add json editor field input component ([4297b87](https://github.com/vendure-ecommerce/vendure/commit/4297b87))
+* **admin-ui** Add language switcher to Country & Zone list views ([7552fae](https://github.com/vendure-ecommerce/vendure/commit/7552fae))
+* **admin-ui** Add rich text control form input ([0b09598](https://github.com/vendure-ecommerce/vendure/commit/0b09598)), closes [#415](https://github.com/vendure-ecommerce/vendure/issues/415) [#722](https://github.com/vendure-ecommerce/vendure/issues/722)
+* **admin-ui** Add support for tabbed custom fields ([b6cb16f](https://github.com/vendure-ecommerce/vendure/commit/b6cb16f)), closes [#724](https://github.com/vendure-ecommerce/vendure/issues/724)
+* **admin-ui** Allow custom components to embed in detail views ([e15c553](https://github.com/vendure-ecommerce/vendure/commit/e15c553)), closes [#415](https://github.com/vendure-ecommerce/vendure/issues/415)
+* **admin-ui** Allow manual payments to be added by Administrator ([0416869](https://github.com/vendure-ecommerce/vendure/commit/0416869)), closes [#753](https://github.com/vendure-ecommerce/vendure/issues/753)
+* **admin-ui** Display available UI extension points ([0963745](https://github.com/vendure-ecommerce/vendure/commit/0963745)), closes [#415](https://github.com/vendure-ecommerce/vendure/issues/415)
+* **admin-ui** Export all catalog components (#1248) ([e5feac4](https://github.com/vendure-ecommerce/vendure/commit/e5feac4)), closes [#1248](https://github.com/vendure-ecommerce/vendure/issues/1248) [#1245](https://github.com/vendure-ecommerce/vendure/issues/1245)
+* **admin-ui** Implement custom fields on newly-supported entities ([2da2ec9](https://github.com/vendure-ecommerce/vendure/commit/2da2ec9)), closes [#1185](https://github.com/vendure-ecommerce/vendure/issues/1185)
+* **admin-ui** Implement filtering in Collection list view ([aa74129](https://github.com/vendure-ecommerce/vendure/commit/aa74129))
+* **admin-ui** Support for language regions (language + locale) ([b5cdbce](https://github.com/vendure-ecommerce/vendure/commit/b5cdbce)), closes [#1196](https://github.com/vendure-ecommerce/vendure/issues/1196)
+* **admin-ui** Use customField ui components specified in config ([f52459f](https://github.com/vendure-ecommerce/vendure/commit/f52459f)), closes [#415](https://github.com/vendure-ecommerce/vendure/issues/415)
+* **core** Add OrderPlacedEvent ([c1465dc](https://github.com/vendure-ecommerce/vendure/commit/c1465dc)), closes [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219)
+* **core** Allow customField ui components to be specified in config ([e22e006](https://github.com/vendure-ecommerce/vendure/commit/e22e006)), closes [#415](https://github.com/vendure-ecommerce/vendure/issues/415)
+* **core** Allow manual payments to be added by Administrator ([107ca9a](https://github.com/vendure-ecommerce/vendure/commit/107ca9a)), closes [#753](https://github.com/vendure-ecommerce/vendure/issues/753)
+* **core** CustomField support on Country, CustomerGroup, PaymentMethod, Promotion, TaxCategory, ([fac803d](https://github.com/vendure-ecommerce/vendure/commit/fac803d)), closes [#1185](https://github.com/vendure-ecommerce/vendure/issues/1185)
+* **core** Expand the range of events published by the EventBus (#1222) ([edc9d69](https://github.com/vendure-ecommerce/vendure/commit/edc9d69)), closes [#1222](https://github.com/vendure-ecommerce/vendure/issues/1222) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219) [#1219](https://github.com/vendure-ecommerce/vendure/issues/1219)
+* **core** Support CSV import in multiple languages (#1199) ([4754954](https://github.com/vendure-ecommerce/vendure/commit/4754954)), closes [#1199](https://github.com/vendure-ecommerce/vendure/issues/1199)
+* **core** Upgrade TypeORM to v0.2.41 ([44f6fd5](https://github.com/vendure-ecommerce/vendure/commit/44f6fd5))
+* **elasticsearch-plugin** Add custom sort parameter mapping (#1230) ([0d1f687](https://github.com/vendure-ecommerce/vendure/commit/0d1f687)), closes [#1230](https://github.com/vendure-ecommerce/vendure/issues/1230) [#1220](https://github.com/vendure-ecommerce/vendure/issues/1220) [#1220](https://github.com/vendure-ecommerce/vendure/issues/1220)
+* **elasticsearch-plugin** Add option to hide indexed fields in api (#1181) (#1212) ([9193dee](https://github.com/vendure-ecommerce/vendure/commit/9193dee)), closes [#1181](https://github.com/vendure-ecommerce/vendure/issues/1181) [#1212](https://github.com/vendure-ecommerce/vendure/issues/1212)
+* **payments-plugin** Allow Braintree environment to be set ([55d67d9](https://github.com/vendure-ecommerce/vendure/commit/55d67d9))
+
+#### Fixes
+
+* **admin-ui** Fix error if no array of assets is provided (#1249) ([5af2b12](https://github.com/vendure-ecommerce/vendure/commit/5af2b12)), closes [#1249](https://github.com/vendure-ecommerce/vendure/issues/1249)
+* **admin-ui** Fix layout of Zone & CustomerGroup lists ([cd8b93d](https://github.com/vendure-ecommerce/vendure/commit/cd8b93d))
+* **admin-ui** Fix rendering of custom field lists ([da9e2ce](https://github.com/vendure-ecommerce/vendure/commit/da9e2ce))
+* **core** Clear shippingLines if no eligible ShippingMethods exist ([f9bc532](https://github.com/vendure-ecommerce/vendure/commit/f9bc532)), closes [#1195](https://github.com/vendure-ecommerce/vendure/issues/1195)
+* **core** Correctly validate custom field list types ([6f71bf2](https://github.com/vendure-ecommerce/vendure/commit/6f71bf2)), closes [#1241](https://github.com/vendure-ecommerce/vendure/issues/1241)
+* **core** Ensure all Orders have a ShippingMethod before payment ([9b9e547](https://github.com/vendure-ecommerce/vendure/commit/9b9e547))
+* **core** Fix batch size error on postgres when reindexing (#1242) ([57be4c5](https://github.com/vendure-ecommerce/vendure/commit/57be4c5)), closes [#1242](https://github.com/vendure-ecommerce/vendure/issues/1242)
+* **core** Fix caching of zone members when switching language ([3c32fb2](https://github.com/vendure-ecommerce/vendure/commit/3c32fb2))
+* **core** Fix permissions for `pendingSearchIndexUpdates` query ([152e64b](https://github.com/vendure-ecommerce/vendure/commit/152e64b))
+* **core** Fix stream not being instance of ReadStream (#1238) ([5ee371d](https://github.com/vendure-ecommerce/vendure/commit/5ee371d)), closes [#1238](https://github.com/vendure-ecommerce/vendure/issues/1238)
+* **core** Gracefully handle errors in creating asset previews ([c3cfcb3](https://github.com/vendure-ecommerce/vendure/commit/c3cfcb3)), closes [#1246](https://github.com/vendure-ecommerce/vendure/issues/1246)
+* **core** Make facetValueCollectionFilter safe with uuids ([a3fef0f](https://github.com/vendure-ecommerce/vendure/commit/a3fef0f))
+* **core** Make populator.populateCollections more robust to bad input ([8189c1b](https://github.com/vendure-ecommerce/vendure/commit/8189c1b))
+* **core** Order collection.children by position ([f2def43](https://github.com/vendure-ecommerce/vendure/commit/f2def43)), closes [#1239](https://github.com/vendure-ecommerce/vendure/issues/1239)
+* **core** Re-allocate stock when cancelling a Fulfillment ([693fd83](https://github.com/vendure-ecommerce/vendure/commit/693fd83)), closes [#1250](https://github.com/vendure-ecommerce/vendure/issues/1250)
+
 ## 1.3.0-beta.1 (2021-10-08)
 
 

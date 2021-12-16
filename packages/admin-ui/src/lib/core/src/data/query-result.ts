@@ -9,8 +9,12 @@ import { GetUserStatus } from '../common/generated-types';
 import { GET_USER_STATUS } from './definitions/client-definitions';
 
 /**
+ * @description
  * This class wraps the Apollo Angular QueryRef object and exposes some getters
  * for convenience.
+ *
+ * @docsCategory providers
+ * @docsPage DataService
  */
 export class QueryResult<T, V = Record<string, any>> {
     constructor(private queryRef: QueryRef<T, V>, private apollo: Apollo) {
@@ -21,11 +25,13 @@ export class QueryResult<T, V = Record<string, any>> {
     private valueChanges: Observable<ApolloQueryResult<T>>;
 
     /**
-     * Refetch this query whenever the active Channel changes.
+     * @description
+     * Re-fetch this query whenever the active Channel changes.
      */
-    refetchOnChannelChange() {
-        const userStatus$ = this.apollo.watchQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })
-            .valueChanges;
+    refetchOnChannelChange(): QueryResult<T, V> {
+        const userStatus$ = this.apollo.watchQuery<GetUserStatus.Query>({
+            query: GET_USER_STATUS,
+        }).valueChanges;
         const activeChannelId$ = userStatus$.pipe(
             map(data => data.data.userStatus.activeChannelId),
             filter(notNullOrUndefined),
@@ -56,6 +62,7 @@ export class QueryResult<T, V = Record<string, any>> {
     }
 
     /**
+     * @description
      * Returns an Observable which emits a single result and then completes.
      */
     get single$(): Observable<T> {
@@ -71,6 +78,7 @@ export class QueryResult<T, V = Record<string, any>> {
     }
 
     /**
+     * @description
      * Returns an Observable which emits until unsubscribed.
      */
     get stream$(): Observable<T> {
@@ -89,6 +97,7 @@ export class QueryResult<T, V = Record<string, any>> {
     }
 
     /**
+     * @description
      * Returns a single-result Observable after applying the map function.
      */
     mapSingle<R>(mapFn: (item: T) => R): Observable<R> {
@@ -96,6 +105,7 @@ export class QueryResult<T, V = Record<string, any>> {
     }
 
     /**
+     * @description
      * Returns a multiple-result Observable after applying the map function.
      */
     mapStream<R>(mapFn: (item: T) => R): Observable<R> {

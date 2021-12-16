@@ -4,7 +4,9 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { grossPriceOf, netPriceOf, taxComponentOf, taxPayableOn } from '../../common/tax-utils';
 import { idsAreEqual } from '../../common/utils';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { CustomTaxRateFields } from '../custom-entity-fields';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { DecimalTransformer } from '../value-transformers';
@@ -21,7 +23,7 @@ import { Zone } from '../zone/zone.entity';
  * @docsCategory entities
  */
 @Entity()
-export class TaxRate extends VendureEntity {
+export class TaxRate extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<TaxRate>) {
         super(input);
     }
@@ -40,6 +42,9 @@ export class TaxRate extends VendureEntity {
 
     @ManyToOne(type => CustomerGroup, { nullable: true })
     customerGroup?: CustomerGroup;
+
+    @Column(type => CustomTaxRateFields)
+    customFields: CustomTaxRateFields;
 
     /**
      * Returns the tax component of a given gross price.

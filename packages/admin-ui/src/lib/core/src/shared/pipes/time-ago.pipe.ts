@@ -5,7 +5,15 @@ import dayjs from 'dayjs';
 import { I18nService } from '../../providers/i18n/i18n.service';
 
 /**
+ * @description
  * Converts a date into the format "3 minutes ago", "5 hours ago" etc.
+ *
+ * @example
+ * ```HTML
+ * {{ order.orderPlacedAt | timeAgo }}
+ * ```
+ *
+ * @docsCategory pipes
  */
 @Pipe({
     name: 'timeAgo',

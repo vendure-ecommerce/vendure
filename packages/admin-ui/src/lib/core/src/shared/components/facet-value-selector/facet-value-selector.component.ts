@@ -21,6 +21,28 @@ export type FacetValueSeletorItem = {
     value: FacetValue.Fragment;
 };
 
+/**
+ * @description
+ * A form control for selecting facet values.
+ *
+ * @example
+ * ```HTML
+ * <vdr-facet-value-selector
+ *   [facets]="facets"
+ *   (selectedValuesChange)="selectedValues = $event"
+ * ></vdr-facet-value-selector>
+ * ```
+ * The `facets` input should be provided from the parent component
+ * like this:
+ *
+ * @example
+ * ```TypeScript
+ * this.facets = this.dataService
+ *   .facet.getAllFacets()
+ *   .mapSingle(data => data.facets.items);
+ * ```
+ * @docsCategory components
+ */
 @Component({
     selector: 'vdr-facet-value-selector',
     templateUrl: './facet-value-selector.component.html',

@@ -63,15 +63,18 @@
     </vdr-form-field>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                *ngIf="customFieldIsSet(customField.name)"
-                entityName="Administrator"
-                [customFieldsFormGroup]="detailForm.get('customFields')"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="Administrator"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!('UpdateAdministrator' | hasPermission)"
+        ></vdr-tabbed-custom-fields>
     </section>
+    <vdr-custom-detail-component-host
+        locationId="administrator-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
     <label class="clr-control-label">{{ 'settings.roles' | translate }}</label>
     <ng-select
         [items]="allRoles$ | async"

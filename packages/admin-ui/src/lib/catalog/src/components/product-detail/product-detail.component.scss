@@ -1,3 +1,4 @@
+@import "variables";
 
 :host {
     ::ng-deep {
@@ -5,6 +6,16 @@
             top: 24px;
         }
     }
+}
+
+.facets {
+    margin-top: 12px;
+    @media screen and (min-width: $breakpoint-small) {
+        max-width: 340px;
+    }
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 vdr-action-bar clr-toggle-wrapper {

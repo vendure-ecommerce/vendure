@@ -1,0 +1,38 @@
+{
+    "name": "@vendure/payments-plugin",
+    "version": "1.4.1",
+    "license": "MIT",
+    "main": "package/index.js",
+    "types": "package/index.d.ts",
+    "files": [
+        "package/**/*"
+    ],
+    "private": false,
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "build": "rimraf package && tsc -p ./tsconfig.build.json",
+        "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payments-plugin",
+        "lint": "tslint --fix --project ./",
+        "ci": "yarn build"
+    },
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "@mollie/api-client": "3.x",
+        "braintree": "3.x"
+    },
+    "devDependencies": {
+        "@mollie/api-client": "^3.5.1",
+        "@types/braintree": "^2.22.15",
+        "@vendure/common": "^1.4.1",
+        "@vendure/core": "^1.4.1",
+        "@vendure/testing": "^1.4.1",
+        "braintree": "^3.0.0",
+        "nock": "^13.1.4",
+        "rimraf": "^3.0.2",
+        "typescript": "4.3.5"
+    }
+}

@@ -1,6 +1,11 @@
+import { CreateProductInput, UpdateProductInput } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
+
 import { RequestContext } from '../../api/common/request-context';
 import { Product } from '../../entity';
-import { VendureEvent } from '../vendure-event';
+import { VendureEntityEvent } from '../vendure-entity-event';
+
+type ProductInputTypes = CreateProductInput | UpdateProductInput | ID;
 
 /**
  * @description
@@ -10,12 +15,23 @@ import { VendureEvent } from '../vendure-event';
  * @docsCategory events
  * @docsPage Event Types
  */
-export class ProductEvent extends VendureEvent {
+export class ProductEvent extends VendureEntityEvent<Product, ProductInputTypes> {
     constructor(
-        public ctx: RequestContext,
-        public product: Product,
-        public type: 'created' | 'updated' | 'deleted',
+        ctx: RequestContext,
+        entity: Product,
+        type: 'created' | 'updated' | 'deleted',
+        input?: ProductInputTypes,
     ) {
-        super();
+        super(entity, type, ctx, input);
+    }
+
+    /**
+     * Return an product field to become compatible with the
+     * deprecated old version of ProductEvent
+     * @deprecated Use `entity` instead
+     * @since 1.4
+     */
+    get product(): Product {
+        return this.entity;
     }
 }

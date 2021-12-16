@@ -46,11 +46,13 @@ import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
+import { AccountVerifiedEvent } from '../../event-bus/events/account-verified-event';
 import { CustomerAddressEvent } from '../../event-bus/events/customer-address-event';
 import { CustomerEvent } from '../../event-bus/events/customer-event';
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
+import { PasswordResetVerifiedEvent } from '../../event-bus/events/password-reset-verified-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { addressToLine } from '../helpers/utils/address-to-line';
@@ -261,7 +263,7 @@ export class CustomerService {
                 },
             });
         }
-        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created'));
+        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created', input));
         return createdCustomer;
     }
 
@@ -326,7 +328,7 @@ export class CustomerService {
                 input,
             },
         });
-        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated'));
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated', input));
         return assertFound(this.findOne(ctx, customer.id));
     }
 
@@ -459,7 +461,9 @@ export class CustomerService {
                 strategy: NATIVE_AUTH_STRATEGY_NAME,
             },
         });
-        return assertFound(this.findOneByUserId(ctx, result.id));
+        const user = assertFound(this.findOneByUserId(ctx, result.id));
+        this.eventBus.publish(new AccountVerifiedEvent(ctx, customer));
+        return user;
     }
 
     /**
@@ -508,6 +512,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
             data: {},
         });
+        this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
         return result;
     }
 
@@ -636,7 +641,7 @@ export class CustomerService {
         } else {
             customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
             await this.channelService.assignToCurrentChannel(customer, ctx);
-            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created'));
+            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created', input));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);
     }
@@ -668,7 +673,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
-        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created'));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created', input));
         return createdAddress;
     }
 
@@ -676,7 +681,7 @@ export class CustomerService {
         const address = await this.connection.getEntityOrThrow(ctx, Address, input.id, {
             relations: ['customer', 'country'],
         });
-        const customer = await this.connection.findOneInChannel(
+        const customer = await this.connection.findOneInChannel<Customer>(
             ctx,
             Customer,
             address.customer.id,
@@ -704,7 +709,7 @@ export class CustomerService {
                 input,
             },
         });
-        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated'));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated', input));
         return updatedAddress;
     }
 
@@ -732,7 +737,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
-        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted'));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted', id));
         return true;
     }
 
@@ -745,7 +750,7 @@ export class CustomerService {
             .update({ id: customerId }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, customer.user!.id);
-        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted'));
+        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted', customerId));
         return {
             result: DeletionResult.DELETED,
         };

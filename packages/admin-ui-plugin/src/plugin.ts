@@ -19,7 +19,13 @@ import express from 'express';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
+import {
+    defaultAvailableLanguages,
+    defaultLanguage,
+    defaultLocale,
+    DEFAULT_APP_PATH,
+    loggerCtx,
+} from './constants';
 
 /**
  * @description
@@ -30,12 +36,13 @@ import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx
 export interface AdminUiPluginOptions {
     /**
      * @description
-     * The route to the admin ui.
+     * The route to the Admin UI.
      */
     route: string;
     /**
      * @description
-     * The port on which the server will listen. If not
+     * The port on which the server will listen. This port will be proxied by the AdminUiPlugin to the same port that
+     * the Vendure server is running on.
      */
     port: number;
     /**
@@ -227,6 +234,7 @@ export class AdminUiPlugin implements NestModule {
                 authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,
             ),
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
+            defaultLocale: propOrDefault('defaultLocale', defaultLocale),
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
             loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
             brand: AdminUiPlugin.options.adminUiConfig?.brand,

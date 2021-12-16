@@ -114,6 +114,11 @@ export function configureS3AssetStorage(s3Config: S3Config) {
  *
  * **Note:** Rather than instantiating this manually, use the {@link configureS3AssetStorage} function.
  *
+ * ## Use with S3-compatible services
+ * This strategy will also work with any S3-compatible object storage solutions, such as [MinIO](https://min.io/):
+ *
+ * * [How to use AWS SDK for Javascript with MinIO Server](https://docs.min.io/docs/how-to-use-aws-sdk-for-javascript-with-minio-server.html)
+ *
  * @docsCategory asset-server-plugin
  * @docsPage S3AssetStorageStrategy
  * @docsWeight 0

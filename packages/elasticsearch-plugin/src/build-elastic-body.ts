@@ -2,7 +2,7 @@ import { LanguageCode, LogicalOperator, PriceRange, SortOrder } from '@vendure/c
 import { DeepRequired, ID, UserInputError } from '@vendure/core';
 
 import { SearchConfig } from './options';
-import { CustomScriptMapping, ElasticSearchInput, SearchRequestBody } from './types';
+import { CustomScriptMapping, ElasticSearchInput, ElasticSearchSortInput, SearchRequestBody } from './types';
 
 /**
  * Given a SearchInput object, returns the corresponding Elasticsearch body.
@@ -109,7 +109,7 @@ export function buildElasticBody(
         }
     }
 
-    const sortArray = [];
+    const sortArray: ElasticSearchSortInput = [];
     if (sort) {
         if (sort.name) {
             sortArray.push({
@@ -131,7 +131,7 @@ export function buildElasticBody(
         query: searchConfig.mapQuery
             ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
             : query,
-        sort: sortArray,
+        sort: searchConfig.mapSort ? searchConfig.mapSort(sortArray, input) : sortArray,
         from: skip || 0,
         size: take || 10,
         track_total_hits: searchConfig.totalItemsMaxSize,
