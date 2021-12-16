@@ -411,6 +411,8 @@ export class OrderCalculator {
                     taxRate: cheapest.result.taxRate,
                 },
             ];
+        } else {
+            order.shippingLines = [];
         }
     }
 

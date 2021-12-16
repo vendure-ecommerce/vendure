@@ -18,6 +18,9 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Channel, TaxRate } from '../../entity';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
+import { EventBus } from '../../event-bus';
+import { ZoneEvent } from '../../event-bus/events/zone-event';
+import { ZoneMembersEvent } from '../../event-bus/events/zone-members-event';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
@@ -33,7 +36,11 @@ export class ZoneService {
      * We cache all Zones to avoid hitting the DB many times per request.
      */
     private zones: SelfRefreshingCache<Zone[], [RequestContext]>;
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private configService: ConfigService,
+        private eventBus: EventBus,
+    ) {}
 
     /** @internal */
     async initZones() {
@@ -51,10 +58,11 @@ export class ZoneService {
     }
 
     async findAll(ctx: RequestContext): Promise<Zone[]> {
-        return this.zones.memoize([ctx.languageCode], (zones, languageCode) => {
-            return zones.map(zone => {
-                zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode));
-                return zone;
+        return this.zones.memoize([ctx.languageCode], [ctx], (zones, languageCode) => {
+            return zones.map((zone, i) => {
+                const cloneZone = { ...zone };
+                cloneZone.members = zone.members.map(country => translateDeep(country, languageCode));
+                return cloneZone;
             });
         });
     }
@@ -80,6 +88,7 @@ export class ZoneService {
         }
         const newZone = await this.connection.getRepository(ctx, Zone).save(zone);
         await this.zones.refresh(ctx);
+        this.eventBus.publish(new ZoneEvent(ctx, newZone, 'created', input));
         return assertFound(this.findOne(ctx, newZone.id));
     }
 
@@ -88,6 +97,7 @@ export class ZoneService {
         const updatedZone = patchEntity(zone, input);
         await this.connection.getRepository(ctx, Zone).save(updatedZone, { reload: false });
         await this.zones.refresh(ctx);
+        this.eventBus.publish(new ZoneEvent(ctx, zone, 'updated', input));
         return assertFound(this.findOne(ctx, zone.id));
     }
 
@@ -126,6 +136,7 @@ export class ZoneService {
         } else {
             await this.connection.getRepository(ctx, Zone).remove(zone);
             await this.zones.refresh(ctx);
+            this.eventBus.publish(new ZoneEvent(ctx, zone, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
                 message: '',
@@ -133,28 +144,33 @@ export class ZoneService {
         }
     }
 
-    async addMembersToZone(ctx: RequestContext, input: MutationAddMembersToZoneArgs): Promise<Zone> {
-        const countries = await this.getCountriesFromIds(ctx, input.memberIds);
-        const zone = await this.connection.getEntityOrThrow(ctx, Zone, input.zoneId, {
+    async addMembersToZone(
+        ctx: RequestContext,
+        { memberIds, zoneId }: MutationAddMembersToZoneArgs,
+    ): Promise<Zone> {
+        const countries = await this.getCountriesFromIds(ctx, memberIds);
+        const zone = await this.connection.getEntityOrThrow(ctx, Zone, zoneId, {
             relations: ['members'],
         });
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
         await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
         await this.zones.refresh(ctx);
+        this.eventBus.publish(new ZoneMembersEvent(ctx, zone, 'assigned', memberIds));
         return assertFound(this.findOne(ctx, zone.id));
     }
 
     async removeMembersFromZone(
         ctx: RequestContext,
-        input: MutationRemoveMembersFromZoneArgs,
+        { memberIds, zoneId }: MutationRemoveMembersFromZoneArgs,
     ): Promise<Zone> {
-        const zone = await this.connection.getEntityOrThrow(ctx, Zone, input.zoneId, {
+        const zone = await this.connection.getEntityOrThrow(ctx, Zone, zoneId, {
             relations: ['members'],
         });
-        zone.members = zone.members.filter(country => !input.memberIds.includes(country.id));
+        zone.members = zone.members.filter(country => !memberIds.includes(country.id));
         await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
         await this.zones.refresh(ctx);
+        this.eventBus.publish(new ZoneMembersEvent(ctx, zone, 'removed', memberIds));
         return assertFound(this.findOne(ctx, zone.id));
     }
 

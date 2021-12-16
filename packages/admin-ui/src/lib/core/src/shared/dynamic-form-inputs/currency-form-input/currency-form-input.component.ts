@@ -7,6 +7,13 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
 import { CurrencyCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
+/**
+ * @description
+ * An input for monetary values. Should be used with `int` type fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-currency-form-input',
     templateUrl: './currency-form-input.component.html',

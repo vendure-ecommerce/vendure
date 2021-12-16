@@ -9,6 +9,7 @@ import {
     mergeConfig,
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -114,7 +115,6 @@ const INDEX_PREFIX = 'e2e-tests';
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: INDEX_PREFIX,
@@ -135,6 +135,19 @@ describe('Elasticsearch plugin', () => {
                                 return 42;
                             },
                         },
+                        hello: {
+                            graphQlType: 'String!',
+                            public: false,
+                            valueFn: args => {
+                                return 'World';
+                            },
+                        },
+                        priority: {
+                            graphQlType: 'Int!',
+                            valueFn: args => {
+                                return ((args.id as number) % 2) + 1; // only 1 or 2
+                            },
+                        },
                     },
                     searchConfig: {
                         scriptFields: {
@@ -147,10 +160,25 @@ describe('Elasticsearch plugin', () => {
                                 },
                             },
                         },
+                        mapSort: (sort, input) => {
+                            const priority = (input.sort as any)?.priority;
+                            if (priority) {
+                                return [
+                                    ...sort,
+                                    {
+                                        ['product-priority']: {
+                                            order: priority === SortOrder.ASC ? 'asc' : 'desc',
+                                        },
+                                    },
+                                ];
+                            }
+                            return sort;
+                        },
                     },
                     extendSearchInputType: {
                         factor: 'Int',
                     },
+                    extendSearchSortType: ['priority'],
                 }),
                 DefaultJobQueuePlugin,
             ],
@@ -1341,6 +1369,29 @@ describe('Elasticsearch plugin', () => {
                 },
             });
         });
+
+        it('private mappings', async () => {
+            const query = `{
+            search(input: { take: 1, groupByProduct: true, sort: { name: ASC } }) {
+                items {
+                  customMappings {
+                    ...on CustomProductMappings {
+                      answer
+                      hello
+                    }
+                  }
+                }
+              }
+            }`;
+            try {
+                await shopClient.query(gql(query));
+            } catch (error) {
+                expect(error).toBeDefined();
+                expect(error.message).toContain('Cannot query field "hello"');
+                return;
+            }
+            fail('should not be able to query field "hello"');
+        });
     });
 
     describe('scriptFields', () => {
@@ -1382,6 +1433,50 @@ describe('Elasticsearch plugin', () => {
                 productVariantName: 'Bonsai Tree',
                 customScriptFields: {
                     answerMultiplied: 420,
+                },
+            });
+        });
+    });
+
+    describe('sort', () => {
+        it('sort ASC', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { priority: ASC } }) {
+                    items {
+                        customMappings {
+                            ...on CustomProductMappings {
+                              priority
+                            }
+                        }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                customMappings: {
+                    priority: 1,
+                },
+            });
+        });
+
+        it('sort DESC', async () => {
+            const query = `{
+                search(input: { take: 1, groupByProduct: true, sort: { priority: DESC } }) {
+                    items {
+                        customMappings {
+                            ...on CustomProductMappings {
+                              priority
+                            }
+                        }
+                    }
+                  }
+                }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items[0]).toEqual({
+                customMappings: {
+                    priority: 2,
                 },
             });
         });

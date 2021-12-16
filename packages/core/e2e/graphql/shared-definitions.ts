@@ -922,3 +922,14 @@ export const GET_TAX_RATES_LIST = gql`
     }
     ${TAX_RATE_FRAGMENT}
 `;
+export const GET_SHIPPING_METHOD_LIST = gql`
+    query GetShippingMethodList {
+        shippingMethods {
+            items {
+                ...ShippingMethod
+            }
+            totalItems
+        }
+    }
+    ${SHIPPING_METHOD_FRAGMENT}
+`;

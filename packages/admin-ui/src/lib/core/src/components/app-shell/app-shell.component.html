@@ -7,7 +7,7 @@
         <div class="header-actions">
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
             <vdr-user-menu [userName]="userName$ | async"
-                           [uiLanguage]="uiLanguage$ | async"
+                           [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"
                            [availableLanguages]="availableLanguages"
                            (selectUiLanguage)="selectUiLanguage()"
                            (logOut)="logOut()"></vdr-user-menu>

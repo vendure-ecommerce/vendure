@@ -7,12 +7,18 @@ import {
     facetValueCollectionFilter,
     mergeConfig,
 } from '@vendure/core';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
+import {
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    registerInitializer,
+    SimpleGraphQLClient,
+    SqljsInitializer,
+} from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -46,8 +52,8 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
@@ -56,8 +62,8 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -66,6 +72,8 @@ import {
 } from './graphql/shared-definitions';
 import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
+
+registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
 
 // Some of these tests have many steps and can timeout
 // on the default of 5s.
@@ -83,7 +91,6 @@ interface SearchProductShopVariables extends SearchProductsShop.Variables {
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
             plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
         }),
     );
@@ -95,11 +102,10 @@ describe('Default search plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        if (testConfig().dbConnectionOptions.type === 'mysql') {
-            // Mysql seems to occasionally run into some kind of race condition
-            // relating to the populating of data, so we add a pause here.
-            await new Promise(resolve => setTimeout(resolve, 10000));
-        }
+
+        // A precaution against a race condition in which the index
+        // rebuild is not completed in time for the first test.
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

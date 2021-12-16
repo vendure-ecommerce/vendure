@@ -6,6 +6,8 @@ import {
     CustomMapping,
     CustomScriptMapping,
     ElasticSearchInput,
+    ElasticSearchSortInput,
+    ElasticSearchSortParameter,
     GraphQlPrimitive,
     PrimitiveTypeVariations,
 } from './types';
@@ -166,6 +168,10 @@ export interface ElasticsearchOptions {
      * The `graphQlType` property may be one of `String`, `Int`, `Float`, `Boolean`, `ID` or list
      * versions thereof (`[String!]` etc) and can be appended with a `!` to indicate non-nullable fields.
      *
+     * The `public` (default = `true`) property is used to reveal or hide the property in the GraphQL API schema.
+     * If this property is set to `false` it's not accessible in the `customMappings` field but it's still getting
+     * parsed to the elasticsearch index.
+     *
      * This config option defines custom mappings which are accessible when the "groupByProduct"
      * input options is set to `true`.
      *
@@ -178,7 +184,13 @@ export interface ElasticsearchOptions {
      *    },
      *    reviewRating: {
      *        graphQlType: 'Float',
+     *        public: true,
      *        valueFn: product => (product.customFields as any).reviewRating,
+     *    },
+     *    priority: {
+     *        graphQlType: 'Int!',
+     *        public: false,
+     *        valueFn: product => (product.customFields as any).priority,
      *    },
      * }
      * ```
@@ -318,6 +330,30 @@ export interface ElasticsearchOptions {
     extendSearchInputType?: {
         [name: string]: PrimitiveTypeVariations<GraphQlPrimitive>;
     };
+
+    /**
+     * @description
+     * Adds a list of sort parameters. This is mostly important to make the
+     * correct sort order values available inside `input` parameter of the `mapSort` option.
+     *
+     * @example
+     * ```TypeScript
+     * extendSearchSortType: ["distance"]
+     * ```
+     *
+     * will extend the `SearchResultSortParameter` input type like this:
+     *
+     * @example
+     * ```GraphQl
+     * extend input SearchResultSortParameter {
+     *      distance: SortOrder
+     * }
+     * ```
+     *
+     * @default []
+     * @since 1.4.0
+     */
+    extendSearchSortType?: string[];
 }
 
 /**
@@ -521,6 +557,82 @@ export interface SearchConfig {
      * @since 1.3.0
      */
     scriptFields?: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> };
+    /**
+     * @description
+     * Allows extending the `sort` input of the elasticsearch body as covered in
+     * [Elasticsearch sort docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html)
+     *
+     * @example
+     * ```TS
+     * mapSort: (sort, input) => {
+     *     // Assuming `extendSearchSortType: ["priority"]`
+     *     // Assuming priority is never undefined
+     *     const { priority } = input.sort;
+     *     return [
+     *          ...sort,
+     *          {
+     *              // The `product-priority` field corresponds to the `priority` customProductMapping
+     *              // Depending on the index type, this field might require a
+     *              // more detailed input (example: 'productName.keyword')
+     *              ["product-priority"]: {
+     *                  order: priority === SortOrder.ASC ? 'asc' : 'desc'
+     *              }
+     *          }
+     *      ];
+     * }
+     * ```
+     *
+     * A more generic example would be a sort function based on a product location like this:
+     * @example
+     * ```TS
+     * extendSearchInputType: {
+     *   latitude: 'Float',
+     *   longitude: 'Float',
+     * },
+     * extendSearchSortType: ["distance"],
+     * indexMappingProperties: {
+     *   // The `product-location` field corresponds to the `location` customProductMapping
+     *   // defined below. Here we specify that it would be index as a `geo_point` type,
+     *   // which will allow us to perform geo-spacial calculations on it in our script field.
+     *   'product-location': {
+     *     type: 'geo_point',
+     *   },
+     * },
+     * customProductMappings: {
+     *   location: {
+     *     graphQlType: 'String',
+     *     valueFn: (product: Product) => {
+     *       // Assume that the Product entity has this customField defined
+     *       const custom = product.customFields.location;
+     *       return `${custom.latitude},${custom.longitude}`;
+     *     },
+     *   }
+     * },
+     * searchConfig: {
+     *      mapSort: (sort, input) => {
+     *          // Assuming distance is never undefined
+     *          const { distance } = input.sort;
+     *          return [
+     *              ...sort,
+     *              {
+     *                  ["_geo_distance"]: {
+     *                      "product-location": [
+     *                          input.longitude,
+     *                          input.latitude
+     *                      ],
+     *                      order: distance === SortOrder.ASC ? 'asc' : 'desc',
+     *                      unit: "km"
+     *                  }
+     *              }
+     *          ];
+     *      }
+     * }
+     * ```
+     *
+     * @default {}
+     * @since 1.4.0
+     */
+    mapSort?: (sort: ElasticSearchSortInput, input: ElasticSearchInput) => ElasticSearchSortInput;
 }
 
 /**
@@ -590,6 +702,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
         },
         priceRangeBucketInterval: 1000,
         mapQuery: query => query,
+        mapSort: sort => sort,
         scriptFields: {},
     },
     customProductMappings: {},
@@ -598,6 +711,7 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     hydrateProductRelations: [],
     hydrateProductVariantRelations: [],
     extendSearchInputType: {},
+    extendSearchSortType: [],
 };
 
 export function mergeWithDefaults(userOptions: ElasticsearchOptions): ElasticsearchRuntimeOptions {

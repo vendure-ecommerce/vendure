@@ -8,6 +8,13 @@ import { LocaleBasePipe } from './locale-base.pipe';
  * @description
  * A replacement of the Angular DatePipe which makes use of the Intl API
  * to format dates according to the selected UI language.
+ *
+ * @example
+ * ```HTML
+ * {{ order.orderPlacedAt | localeDate }}
+ * ```
+ *
+ * @docsCategory pipes
  */
 @Pipe({
     name: 'localeDate',

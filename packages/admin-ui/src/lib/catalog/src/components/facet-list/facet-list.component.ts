@@ -1,13 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseListComponent, LanguageCode, ServerConfigService } from '@vendure/admin-ui/core';
-import { DeletionResult, GetFacetList } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
+import {
+    BaseListComponent,
+    DataService,
+    DeletionResult,
+    GetFacetList,
+    LanguageCode,
+    ModalService,
+    NotificationService,
+    ServerConfigService,
+} from '@vendure/admin-ui/core';
+import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { EMPTY, Observable } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-facet-list',
@@ -16,7 +23,9 @@ import { map, switchMap, tap } from 'rxjs/operators';
 })
 export class FacetListComponent
     extends BaseListComponent<GetFacetList.Query, GetFacetList.Items>
-    implements OnInit {
+    implements OnInit
+{
+    filterTermControl = new FormControl('');
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
@@ -33,6 +42,20 @@ export class FacetListComponent
         super.setQueryFn(
             (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
             data => data.facets,
+            (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: {
+                            contains: this.filterTermControl.value,
+                        },
+                    },
+                    sort: {
+                        createdAt: SortOrder.DESC,
+                    },
+                },
+            }),
         );
     }
 
@@ -43,6 +66,13 @@ export class FacetListComponent
             .uiState()
             .mapStream(({ uiState }) => uiState.contentLanguage)
             .pipe(tap(() => this.refresh()));
+        this.filterTermControl.valueChanges
+            .pipe(
+                filter(value => 2 <= value.length || value.length === 0),
+                debounceTime(250),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => this.refresh());
     }
 
     toggleDisplayLimit(facet: GetFacetList.Items) {

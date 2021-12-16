@@ -12,7 +12,6 @@ import { ConfigService } from '../../../config/config.service';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
-import { StockMovementService } from '../../services/stock-movement.service';
 
 import {
     FulfillmentState,
@@ -25,11 +24,7 @@ export class FulfillmentStateMachine {
     readonly config: StateMachineConfig<FulfillmentState, FulfillmentTransitionData>;
     private readonly initialState: FulfillmentState = 'Created';
 
-    constructor(
-        private configService: ConfigService,
-        private historyService: HistoryService,
-        private stockMovementService: StockMovementService,
-    ) {
+    constructor(private configService: ConfigService, private historyService: HistoryService) {
         this.config = this.initConfig();
     }
 
@@ -98,10 +93,6 @@ export class FulfillmentStateMachine {
             }),
         );
         await Promise.all(historyEntryPromises);
-        if (toState === 'Cancelled') {
-            const { ctx, orders, fulfillment } = data;
-            await this.stockMovementService.createCancellationsForOrderItems(ctx, fulfillment.orderItems);
-        }
     }
 
     private initConfig(): StateMachineConfig<FulfillmentState, FulfillmentTransitionData> {

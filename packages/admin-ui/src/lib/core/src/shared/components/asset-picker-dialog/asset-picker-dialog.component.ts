@@ -27,7 +27,25 @@ import { AssetGalleryComponent } from '../asset-gallery/asset-gallery.component'
 import { AssetSearchInputComponent } from '../asset-search-input/asset-search-input.component';
 
 /**
+ * @description
  * A dialog which allows the creation and selection of assets.
+ *
+ * @example
+ * ```TypeScript
+ * selectAssets() {
+ *   this.modalService
+ *     .fromComponent(AssetPickerDialogComponent, {
+ *         size: 'xl',
+ *     })
+ *     .subscribe(result => {
+ *         if (result && result.length) {
+ *             // ...
+ *         }
+ *     });
+ * }
+ * ```
+ *
+ * @docsCategory components
  */
 @Component({
     selector: 'vdr-asset-picker-dialog',

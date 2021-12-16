@@ -16,8 +16,19 @@ import { map } from 'rxjs/operators';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
+ * @description
  * A form input control which displays currency in decimal format, whilst working
  * with the integer cent value in the background.
+ *
+ * @example
+ * ```HTML
+ * <vdr-currency-input
+ *     [(ngModel)]="entityPrice"
+ *     [currencyCode]="currencyCode"
+ * ></vdr-currency-input>
+ * ```
+ *
+ * @docsCategory components
  */
 @Component({
     selector: 'vdr-currency-input',

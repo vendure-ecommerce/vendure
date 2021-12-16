@@ -56,7 +56,7 @@ export class ExtensionHostComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.openInIframe) {
             const extensionWindow = this.extensionFrame.nativeElement.contentWindow;
             if (extensionWindow) {
-                this.extensionHostService.init(extensionWindow);
+                this.extensionHostService.init(extensionWindow, this.route.snapshot);
             }
         }
     }
@@ -72,7 +72,7 @@ export class ExtensionHostComponent implements OnInit, AfterViewInit, OnDestroy 
         if (!extensionWindow) {
             return;
         }
-        this.extensionHostService.init(extensionWindow);
+        this.extensionHostService.init(extensionWindow, this.route.snapshot);
         this.extensionWindowIsOpen = true;
         this.extensionWindow = extensionWindow;
 

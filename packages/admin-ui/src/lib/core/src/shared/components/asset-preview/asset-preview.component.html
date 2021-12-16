@@ -101,15 +101,13 @@
     </form>
     <section *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                *ngIf="customFieldIsSet(customField.name)"
-                entityName="Asset"
-                [compact]="true"
-                [customFieldsFormGroup]="customFieldsForm"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="Asset"
+            [compact]="true"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="customFieldsForm"
+            [readonly]="!(['UpdateCatalog', 'UpdateAsset'] | hasPermission)"
+        ></vdr-tabbed-custom-fields>
     </section>
     <div class="flex-spacer"></div>
     <div class="preview-select">
@@ -132,6 +130,7 @@
         [routerLink]="['/catalog', 'assets', asset.id]"
         (click)="editClick.emit()"
     >
-        <clr-icon shape="edit"></clr-icon> {{ 'common.edit' | translate }}
+        <clr-icon shape="edit"></clr-icon>
+        {{ 'common.edit' | translate }}
     </a>
 </div>

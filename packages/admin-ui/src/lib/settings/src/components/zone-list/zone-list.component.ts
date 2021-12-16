@@ -2,15 +2,16 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    Country,
     DataService,
     DeletionResult,
     GetZones,
+    LanguageCode,
     ModalService,
     NotificationService,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
-import { distinctUntilChanged, map, mapTo, startWith, switchMap, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, mapTo, switchMap, tap } from 'rxjs/operators';
 
 import { AddCountryToZoneDialogComponent } from '../add-country-to-zone-dialog/add-country-to-zone-dialog.component';
 import { ZoneDetailDialogComponent } from '../zone-detail-dialog/zone-detail-dialog.component';
@@ -25,6 +26,8 @@ export class ZoneListComponent implements OnInit {
     activeZone$: Observable<GetZones.Zones | undefined>;
     zones$: Observable<GetZones.Zones[]>;
     members$: Observable<GetZones.Members[]>;
+    availableLanguages$: Observable<LanguageCode[]>;
+    contentLanguage$: Observable<LanguageCode>;
     selectedMemberIds: string[] = [];
 
     constructor(
@@ -33,10 +36,12 @@ export class ZoneListComponent implements OnInit {
         private modalService: ModalService,
         private route: ActivatedRoute,
         private router: Router,
+        private serverConfigService: ServerConfigService,
     ) {}
 
     ngOnInit(): void {
-        this.zones$ = this.dataService.settings.getZones().mapStream(data => data.zones);
+        const zonesQueryRef = this.dataService.settings.getZones().ref;
+        this.zones$ = zonesQueryRef.valueChanges.pipe(map(data => data.data.zones));
         const activeZoneId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
@@ -49,14 +54,23 @@ export class ZoneListComponent implements OnInit {
                 }
             }),
         );
+        this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();
+        this.contentLanguage$ = this.dataService.client
+            .uiState()
+            .mapStream(({ uiState }) => uiState.contentLanguage)
+            .pipe(tap(() => zonesQueryRef.refetch()));
+    }
+
+    setLanguage(code: LanguageCode) {
+        this.dataService.client.setContentLanguage(code).subscribe();
     }
 
     create() {
         this.modalService
             .fromComponent(ZoneDetailDialogComponent, { locals: { zone: { name: '' } } })
             .pipe(
-                switchMap(name =>
-                    name ? this.dataService.settings.createZone({ name, memberIds: [] }) : EMPTY,
+                switchMap(result =>
+                    result ? this.dataService.settings.createZone({ ...result, memberIds: [] }) : EMPTY,
                 ),
                 // refresh list
                 switchMap(() => this.dataService.settings.getZones().single$),
@@ -120,8 +134,8 @@ export class ZoneListComponent implements OnInit {
         this.modalService
             .fromComponent(ZoneDetailDialogComponent, { locals: { zone } })
             .pipe(
-                switchMap(name =>
-                    name ? this.dataService.settings.updateZone({ id: zone.id, name }) : EMPTY,
+                switchMap(result =>
+                    result ? this.dataService.settings.updateZone({ id: zone.id, ...result }) : EMPTY,
                 ),
             )
             .subscribe(

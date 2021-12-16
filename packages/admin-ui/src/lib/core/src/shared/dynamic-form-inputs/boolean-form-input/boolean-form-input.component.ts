@@ -4,6 +4,13 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 
+/**
+ * @description
+ * A checkbox input. The default input component for `boolean` fields.
+ *
+ * @docsCategory custom-input-components
+ * @docsPage default-inputs
+ */
 @Component({
     selector: 'vdr-boolean-form-input',
     templateUrl: './boolean-form-input.component.html',

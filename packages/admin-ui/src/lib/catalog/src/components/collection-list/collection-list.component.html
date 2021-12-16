@@ -14,6 +14,13 @@
                 <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" />
                 <label>{{ 'catalog.expand-all-collections' | translate }}</label>
             </clr-checkbox-wrapper>
+            <input
+                type='text'
+                name='searchTerm'
+                [formControl]='filterTermControl'
+                [placeholder]="'catalog.filter-by-name' | translate"
+                class='clr-input search-input ml4'
+            />
         </div>
     </vdr-ab-left>
     <vdr-ab-right>

@@ -4,13 +4,15 @@ import { Observable, Subscription } from 'rxjs';
 import { DataService } from '../../data/providers/data.service';
 
 /**
+ * @description
  * A pipe which checks the provided permission against all the permissions of the current user.
  * Returns `true` if the current user has that permission.
  *
  * @example
- * ```
+ * ```HTML
  * <button [disabled]="!('UpdateCatalog' | hasPermission)">Save Changes</button>
  * ```
+ * @docsCategory pipes
  */
 @Pipe({
     name: 'hasPermission',

@@ -1,20 +1,20 @@
 <form [formGroup]="formGroup">
     <clr-input-container>
         <label>{{ 'customer.full-name' | translate }}</label>
-        <input formControlName="fullName" type="text" clrInput />
+        <input formControlName="fullName" type="text" clrInput/>
     </clr-input-container>
 
     <div class="clr-row">
         <div class="clr-col-md-4">
             <clr-input-container>
                 <label>{{ 'customer.street-line-1' | translate }}</label>
-                <input formControlName="streetLine1" type="text" clrInput />
+                <input formControlName="streetLine1" type="text" clrInput/>
             </clr-input-container>
         </div>
         <div class="clr-col-md-4">
             <clr-input-container>
                 <label>{{ 'customer.street-line-2' | translate }}</label>
-                <input formControlName="streetLine2" type="text" clrInput />
+                <input formControlName="streetLine2" type="text" clrInput/>
             </clr-input-container>
         </div>
     </div>
@@ -22,13 +22,13 @@
         <div class="clr-col-md-4">
             <clr-input-container>
                 <label>{{ 'customer.city' | translate }}</label>
-                <input formControlName="city" type="text" clrInput />
+                <input formControlName="city" type="text" clrInput/>
             </clr-input-container>
         </div>
         <div class="clr-col-md-4">
             <clr-input-container>
                 <label>{{ 'customer.province' | translate }}</label>
-                <input formControlName="province" type="text" clrInput />
+                <input formControlName="province" type="text" clrInput/>
             </clr-input-container>
         </div>
     </div>
@@ -36,7 +36,7 @@
         <div class="clr-col-md-4">
             <clr-input-container>
                 <label>{{ 'customer.postal-code' | translate }}</label>
-                <input formControlName="postalCode" type="text" clrInput />
+                <input formControlName="postalCode" type="text" clrInput/>
             </clr-input-container>
         </div>
         <div class="clr-col-md-4">
@@ -52,16 +52,14 @@
     </div>
     <clr-input-container>
         <label>{{ 'customer.phone-number' | translate }}</label>
-        <input formControlName="phoneNumber" type="text" clrInput />
+        <input formControlName="phoneNumber" type="text" clrInput/>
     </clr-input-container>
     <section formGroupName="customFields" *ngIf="formGroup.get('customFields') as customFieldsGroup">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                entityName="Address"
-                [customFieldsFormGroup]="customFieldsGroup"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="Address"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="customFieldsGroup"
+        ></vdr-tabbed-custom-fields>
     </section>
 </form>

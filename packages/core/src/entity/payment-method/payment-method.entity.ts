@@ -3,8 +3,10 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
+import { CustomPaymentMethodFields } from '../custom-entity-fields';
 
 /**
  * @description
@@ -14,7 +16,7 @@ import { Channel } from '../channel/channel.entity';
  * @docsCategory entities
  */
 @Entity()
-export class PaymentMethod extends VendureEntity implements ChannelAware {
+export class PaymentMethod extends VendureEntity implements ChannelAware, HasCustomFields {
     constructor(input?: DeepPartial<PaymentMethod>) {
         super(input);
     }
@@ -34,4 +36,7 @@ export class PaymentMethod extends VendureEntity implements ChannelAware {
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
+
+    @Column(type => CustomPaymentMethodFields)
+    customFields: CustomPaymentMethodFields;
 }

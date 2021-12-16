@@ -16,6 +16,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Address } from '../../entity';
 import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
+import { EventBus } from '../../event-bus';
+import { CountryEvent } from '../../event-bus/events/country-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -34,7 +36,7 @@ export class CountryService {
         private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
-        private zoneService: ZoneService,
+        private eventBus: EventBus,
     ) {}
 
     findAll(
@@ -94,6 +96,7 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
+        this.eventBus.publish(new CountryEvent(ctx, country, 'created', input));
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -104,6 +107,7 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
+        this.eventBus.publish(new CountryEvent(ctx, country, 'updated', input));
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -122,6 +126,7 @@ export class CountryService {
             };
         } else {
             await this.connection.getRepository(ctx, Country).remove(country);
+            this.eventBus.publish(new CountryEvent(ctx, country, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
                 message: '',

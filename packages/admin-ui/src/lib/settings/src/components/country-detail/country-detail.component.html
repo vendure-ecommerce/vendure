@@ -59,4 +59,18 @@
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <vdr-tabbed-custom-fields
+            entityName="Country"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!(updatePermission | hasPermission)"
+        ></vdr-tabbed-custom-fields>
+    </section>
+    <vdr-custom-detail-component-host
+        locationId="country-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 </form>

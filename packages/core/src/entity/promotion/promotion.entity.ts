@@ -6,6 +6,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import {
     PromotionAction,
     PromotionItemAction,
@@ -14,6 +15,7 @@ import {
 } from '../../config/promotion/promotion-action';
 import { PromotionCondition, PromotionConditionState } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
+import { CustomPromotionFields } from '../custom-entity-fields';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
@@ -50,7 +52,7 @@ export type PromotionTestResult = boolean | PromotionState;
  * @docsCategory entities
  */
 @Entity()
-export class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable {
+export class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable, HasCustomFields {
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
     private readonly allActions: {
@@ -94,6 +96,9 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
+
+    @Column(type => CustomPromotionFields)
+    customFields: CustomPromotionFields;
 
     @Column('simple-json') conditions: ConfigurableOperation[];
 

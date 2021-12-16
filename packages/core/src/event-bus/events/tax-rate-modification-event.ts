@@ -8,6 +8,7 @@ import { VendureEvent } from '../vendure-event';
  *
  * @docsCategory events
  * @docsPage Event Types
+ * @deprecated Use TaxRateEvent instead
  */
 export class TaxRateModificationEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public taxRate: TaxRate) {

@@ -18,8 +18,10 @@ docs/static/intro.js*
 docs/static/intro.css*
 docs/public
 docs/content/typescript-api/*
+docs/content/admin-ui-api/*
 docs/data/build.json
 !docs/content/typescript-api/_index.md
+!docs/content/admin-ui-api/_index.md
 docs/content/graphql-api/*
 !docs/content/graphql-api/_index.md
 !docs/content/graphql-api/shop/_index.md

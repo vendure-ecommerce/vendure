@@ -21,7 +21,11 @@ export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
      * The results cache is cleared along with the rest of the cache according to the configured
      * `ttl` value.
      */
-    memoize<Args extends any[], R>(args: Args, fn: (value: V, ...args: Args) => R): Promise<R>;
+    memoize<Args extends any[], R>(
+        args: Args,
+        refreshArgs: RefreshArgs,
+        fn: (value: V, ...args: Args) => R,
+    ): Promise<R>;
 
     /**
      * @description
@@ -38,6 +42,11 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
         fn: (...args: RefreshArgs) => Promise<V>;
         defaultArgs: RefreshArgs;
     };
+    /**
+     * Intended for unit testing the SelfRefreshingCache only.
+     * By default uses `() => new Date().getTime()`
+     */
+    getTimeFn?: () => number;
 }
 
 /**
@@ -53,20 +62,21 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
 export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
     config: SelfRefreshingCacheConfig<V, RefreshArgs>,
 ): Promise<SelfRefreshingCache<V, RefreshArgs>> {
-    const { ttl, name, refresh } = config;
+    const { ttl, name, refresh, getTimeFn } = config;
+    const getTimeNow = getTimeFn ?? (() => new Date().getTime());
     const initialValue = await refresh.fn(...refresh.defaultArgs);
     let value = initialValue;
-    let expires = new Date().getTime() + ttl;
-    const memoCache = new Map<string, any>();
-    const hashArgs = (...args: any[]) => JSON.stringify([args, expires]);
-    const refreshValue = (...args: RefreshArgs): Promise<V> => {
-        Logger.debug(`Refreshing the SelfRefreshingCache "${name}"`);
+    let expires = getTimeNow() + ttl;
+    const memoCache = new Map<string, { expires: number; value: any }>();
+    const refreshValue = (resetMemoCache = true, args: RefreshArgs): Promise<V> => {
         return refresh
             .fn(...args)
             .then(newValue => {
                 value = newValue;
-                expires = new Date().getTime() + ttl;
-                memoCache.clear();
+                expires = getTimeNow() + ttl;
+                if (resetMemoCache) {
+                    memoCache.clear();
+                }
                 return value;
             })
             .catch(err => {
@@ -78,28 +88,34 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
                 return value;
             });
     };
-    const getValue = async (): Promise<V> => {
-        const now = new Date().getTime();
+    const getValue = async (refreshArgs?: RefreshArgs, resetMemoCache = true): Promise<V> => {
+        const now = getTimeNow();
         if (expires < now) {
-            return refreshValue(...refresh.defaultArgs);
+            return refreshValue(resetMemoCache, refreshArgs ?? refresh.defaultArgs);
         }
         return value;
     };
     const memoize = async <Args extends any[], R>(
         args: Args,
+        refreshArgs: RefreshArgs,
         fn: (value: V, ...args: Args) => R,
     ): Promise<R> => {
-        const cached = memoCache.get(hashArgs(args));
-        if (cached) {
-            return cached;
+        const key = JSON.stringify(args);
+        const cached = memoCache.get(key);
+        const now = getTimeNow();
+        if (cached && now < cached.expires) {
+            return cached.value;
         }
-        let result: Promise<R>;
-        memoCache.set(hashArgs(args), (result = getValue().then(val => fn(val, ...args))));
+        const result = getValue(refreshArgs, false).then(val => fn(val, ...args));
+        memoCache.set(key, {
+            expires: now + ttl,
+            value: result,
+        });
         return result;
     };
     return {
         value: getValue,
-        refresh: refreshValue,
+        refresh: (...args) => refreshValue(true, args),
         memoize,
     };
 }

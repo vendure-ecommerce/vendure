@@ -25,6 +25,17 @@ export type CurrentView = {
     year: number;
 };
 
+/**
+ * @description
+ * A form input for selecting datetime values.
+ *
+ * @example
+ * ```HTML
+ * <vdr-datetime-picker [(ngModel)]="startDate"></vdr-datetime-picker>
+ * ```
+ *
+ * @docsCategory components
+ */
 @Component({
     selector: 'vdr-datetime-picker',
     templateUrl: './datetime-picker.component.html',
@@ -41,28 +52,34 @@ export type CurrentView = {
 })
 export class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, OnInit, OnDestroy {
     /**
+     * @description
      * The range above and below the current year which is selectable from
      * the year select control. If a min or max value is set, these will
      * override the yearRange.
      */
     @Input() yearRange;
     /**
+     * @description
      * The day that the week should start with in the calendar view.
      */
     @Input() weekStartDay: DayOfWeek = 'mon';
     /**
+     * @description
      * The granularity of the minutes time picker
      */
     @Input() timeGranularityInterval = 5;
     /**
+     * @description
      * The minimum date as an ISO string
      */
     @Input() min: string | null = null;
     /**
+     * @description
      * The maximum date as an ISO string
      */
     @Input() max: string | null = null;
     /**
+     * @description
      * Sets the readonly state
      */
     @Input() readonly = false;

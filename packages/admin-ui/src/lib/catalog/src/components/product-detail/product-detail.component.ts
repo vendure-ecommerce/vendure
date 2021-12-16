@@ -366,10 +366,6 @@ export class ProductDetailComponent
             );
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['product', 'customFields', name]);
-    }
-
     assetsChanged(): boolean {
         return !!Object.values(this.assetChanges).length;
     }
@@ -609,19 +605,12 @@ export class ProductDetailComponent
         });
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['product', 'customFields']) as FormGroup;
-            const cfCurrentTranslation =
-                (currentTranslation && (currentTranslation as any).customFields) || {};
-            const cfProduct = (product as any).customFields || {};
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = fieldDef.type === 'localeString' ? cfCurrentTranslation[key] : cfProduct[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['product', 'customFields']),
+                product,
+                currentTranslation,
+            );
         }
         this.buildVariantFormArray(product.variantList.items, languageCode);
     }
@@ -672,18 +661,12 @@ export class ProductDetailComponent
                     );
                     variantFormGroup.addControl('customFields', customFieldsGroup);
                 }
-
-                for (const fieldDef of this.customVariantFields) {
-                    const key = fieldDef.name;
-                    const value =
-                        fieldDef.type === 'localeString'
-                            ? (variantTranslation as any).customFields[key]
-                            : (variant as any).customFields[key];
-                    const control = customFieldsGroup.get(key);
-                    if (control) {
-                        control.patchValue(value);
-                    }
-                }
+                this.setCustomFieldFormValues(
+                    this.customVariantFields,
+                    customFieldsGroup,
+                    variant,
+                    variantTranslation,
+                );
             }
         });
     }

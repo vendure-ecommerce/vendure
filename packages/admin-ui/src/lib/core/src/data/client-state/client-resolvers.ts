@@ -8,7 +8,9 @@ import {
     SetActiveChannel,
     SetAsLoggedIn,
     SetContentLanguage,
+    SetDisplayUiExtensionPoints,
     SetUiLanguage,
+    SetUiLocale,
     SetUiTheme,
     UpdateUserChannels,
     UserStatus,
@@ -73,44 +75,37 @@ export const clientResolvers: ResolverDefinition = {
         setUiLanguage: (_, args: SetUiLanguage.Variables, { cache }): LanguageCode => {
             // tslint:disable-next-line:no-non-null-assertion
             const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
-            const data: GetUiState.Query = {
-                uiState: {
-                    __typename: 'UiState',
-                    language: args.languageCode,
-                    contentLanguage: previous.uiState.contentLanguage,
-                    theme: previous.uiState.theme,
-                },
-            };
+            const data = updateUiState(previous, 'language', args.languageCode);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.languageCode;
+        },
+        setUiLocale: (_, args: SetUiLocale.Variables, { cache }): string | undefined => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+            const data = updateUiState(previous, 'locale', args.locale);
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.locale ?? undefined;
         },
         setContentLanguage: (_, args: SetContentLanguage.Variables, { cache }): LanguageCode => {
             // tslint:disable-next-line:no-non-null-assertion
             const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
-            const data: GetUiState.Query = {
-                uiState: {
-                    __typename: 'UiState',
-                    language: previous.uiState.language,
-                    contentLanguage: args.languageCode,
-                    theme: previous.uiState.theme,
-                },
-            };
+            const data = updateUiState(previous, 'contentLanguage', args.languageCode);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.languageCode;
         },
         setUiTheme: (_, args: SetUiTheme.Variables, { cache }): string => {
             // tslint:disable-next-line:no-non-null-assertion
             const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
-            const data: GetUiState.Query = {
-                uiState: {
-                    __typename: 'UiState',
-                    language: previous.uiState.language,
-                    contentLanguage: previous.uiState.contentLanguage,
-                    theme: args.theme,
-                },
-            };
+            const data = updateUiState(previous, 'theme', args.theme);
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.theme;
+        },
+        setDisplayUiExtensionPoints: (_, args: SetDisplayUiExtensionPoints.Variables, { cache }): boolean => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+            const data = updateUiState(previous, 'displayUiExtensionPoints', args.display);
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.display;
         },
         setActiveChannel: (_, args: SetActiveChannel.Variables, { cache }): UserStatus => {
             // tslint:disable-next-line:no-non-null-assertion
@@ -144,6 +139,20 @@ export const clientResolvers: ResolverDefinition = {
         },
     },
 };
+
+function updateUiState<K extends keyof GetUiState.Query['uiState']>(
+    previous: GetUiState.Query,
+    key: K,
+    value: GetUiState.Query['uiState'][K],
+): GetUiState.Query {
+    return {
+        uiState: {
+            ...previous.uiState,
+            [key]: value,
+            __typename: 'UiState',
+        },
+    };
+}
 
 function updateRequestsInFlight(cache: InMemoryCache, increment: 1 | -1): number {
     const previous = cache.readQuery<GetNetworkStatus.Query>({ query: GET_NEWTORK_STATUS });

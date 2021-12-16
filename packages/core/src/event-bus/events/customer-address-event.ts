@@ -1,21 +1,40 @@
-import { RequestContext } from '../../api/common/request-context';
+import { CreateAddressInput, UpdateAddressInput } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
+
+import { RequestContext } from '../../api';
 import { Address } from '../../entity/address/address.entity';
-import { VendureEvent } from '../vendure-event';
+import { VendureEntityEvent } from '../vendure-entity-event';
+
+/**
+ * Possible input types for Address mutations
+ */
+type CustomerAddressInputTypes = CreateAddressInput | UpdateAddressInput | ID;
 
 /**
  * @description
- * This event is fired whenever a {@link Customer} is added, updated
+ * This event is fired whenever a {@link Address} is added, updated
  * or deleted.
  *
  * @docsCategory events
  * @docsPage Event Types
+ * @since 1.4
  */
-export class CustomerAddressEvent extends VendureEvent {
+export class CustomerAddressEvent extends VendureEntityEvent<Address, CustomerAddressInputTypes> {
     constructor(
         public ctx: RequestContext,
-        public address: Address,
+        public entity: Address,
         public type: 'created' | 'updated' | 'deleted',
+        public input?: CustomerAddressInputTypes,
     ) {
-        super();
+        super(entity, type, ctx, input);
+    }
+
+    /**
+     * Return an address field to become compatible with the
+     * deprecated old version of CustomerAddressEvent
+     * @deprecated Use `entity` instead
+     */
+    get address(): Address {
+        return this.entity;
     }
 }

@@ -76,6 +76,12 @@ To import custom fields with `list` set to `true`, the data should be separated 
 ... ,tablet|pad|android
 ```
 
+#### Importing data in multiple languages
+
+If a field is translatable (i.e. of `localeString` type), you can use column names with an appended language code (e.g. `name:en`, `name:de`, `product:keywords:en`, `product:keywords:de`) to specify its value in multiple languages.
+
+Use of language codes has to be consistent throughout the file. You don't have to translate every translatable field. If there are no translated columns for a field, the generic column's value will be used for all languages. But when you do translate columns, the set of languages for each of them needs to be the same. As an example, you cannot use `name:en` and `name:de`, but only provide `slug:en` (it's okay to use only a `slug` column though, in which case this slug will be used for both the English and the German version).
+
 ## Initial Data
 
 As well as product data, other initialization data can be populated using the [`InitialData` object]({{< relref "initial-data" >}}). **This format is intentionally limited**; more advanced requirements (e.g. setting up ShippingMethods that use custom checkers & calculators) should be carried out via scripts which interact with the [Admin GraphQL API]({{< relref "/docs/graphql-api/admin" >}}).
@@ -209,3 +215,8 @@ populate(
   },
 );
 ```
+
+{{< alert >}}
+If you require more control over how your data is being imported - for example if you also need to import data into custom entities - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts]({{< relref "stand-alone-scripts" >}}).
+{{< /alert >}} 
+

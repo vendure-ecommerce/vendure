@@ -59,10 +59,6 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         });
     }
 
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
-    }
-
     save() {
         if (!this.detailForm.dirty) {
             return;
@@ -102,16 +98,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
             outOfStockThreshold: entity.outOfStockThreshold,
         });
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = (entity as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
         }
     }
 }

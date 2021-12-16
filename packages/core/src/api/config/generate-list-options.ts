@@ -140,7 +140,8 @@ function createSortParameter(schema: GraphQLSchema, targetType: GraphQLObjectTyp
 function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectType): GraphQLInputObjectType {
     const fields: Array<GraphQLField<any, any> | GraphQLInputField> = Object.values(targetType.getFields());
     const targetTypeName = targetType.name;
-    const { StringOperators, BooleanOperators, NumberOperators, DateOperators } = getCommonTypes(schema);
+    const { StringOperators, BooleanOperators, NumberOperators, DateOperators, IDOperators } =
+        getCommonTypes(schema);
 
     const inputName = `${targetTypeName}FilterParameter`;
     const existingInput = schema.getType(inputName);
@@ -184,6 +185,8 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
                 return NumberOperators;
             case 'DateTime':
                 return DateOperators;
+            case 'ID':
+                return IDOperators;
             default:
                 return;
         }
@@ -198,6 +201,7 @@ function getCommonTypes(schema: GraphQLSchema) {
     const NumberOperators = schema.getType('NumberOperators') as GraphQLInputType | null;
     const DateRange = schema.getType('DateRange') as GraphQLInputType | null;
     const DateOperators = schema.getType('DateOperators') as GraphQLInputType | null;
+    const IDOperators = schema.getType('IDOperators') as GraphQLInputType | null;
     if (
         !SortOrder ||
         !StringOperators ||
@@ -205,7 +209,8 @@ function getCommonTypes(schema: GraphQLSchema) {
         !NumberRange ||
         !NumberOperators ||
         !DateRange ||
-        !DateOperators
+        !DateOperators ||
+        !IDOperators
     ) {
         throw new Error(`A common type was not defined`);
     }
@@ -215,6 +220,7 @@ function getCommonTypes(schema: GraphQLSchema) {
         BooleanOperators,
         NumberOperators,
         DateOperators,
+        IDOperators,
     };
 }
 

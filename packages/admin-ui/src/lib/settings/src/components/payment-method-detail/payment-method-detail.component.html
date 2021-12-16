@@ -64,6 +64,21 @@
             />
         </clr-toggle-wrapper>
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <vdr-tabbed-custom-fields
+            entityName="PaymentMethod"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!(updatePermission | hasPermission)"
+        ></vdr-tabbed-custom-fields>
+    </section>
+
+    <vdr-custom-detail-component-host
+        locationId="payment-method-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 
     <div class="clr-row mt4">
         <div class="clr-col">

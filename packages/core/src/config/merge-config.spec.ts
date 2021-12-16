@@ -29,6 +29,17 @@ describe('mergeConfig()', () => {
         });
     });
 
+    it('does not merge arrays', () => {
+        const input: any = {
+            a: [1],
+        };
+
+        const result = mergeConfig(input, { a: [2] } as any);
+        expect(result).toEqual({
+            a: [2],
+        });
+    });
+
     it('merges deep properties', () => {
         const input: any = {
             a: 1,

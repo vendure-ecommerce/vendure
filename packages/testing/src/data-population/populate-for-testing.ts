@@ -29,7 +29,7 @@ export async function populateForTesting<T extends INestApplicationContext>(
     await populateInitialData(app, options.initialData, logFn);
     await populateProducts(app, options.productsCsvPath, logging);
     await populateCollections(app, options.initialData, logFn);
-    await populateCustomers(options.customerCount ?? 10, config, logging);
+    await populateCustomers(app, options.customerCount ?? 10, logFn);
 
     config.authOptions.requireVerification = originalRequireVerification;
     return app;

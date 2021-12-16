@@ -15,7 +15,7 @@ This is a complete example of how to implement a simple plugin step-by-step.
 
 ## Example: RandomCatPlugin
 
-Let's learn about Vendure plugins by writing a plugin which defines a new database entity and GraphQL mutation.
+Let's learn about Vendure plugins by writing a plugin which defines a new database entity and a GraphQL mutation.
 
 This plugin will add a new mutation, `addRandomCat`, to the GraphQL API which allows us to conveniently link a random cat image from [http://random.cat](http://random.cat) to any product in our catalog.
 
@@ -39,7 +39,6 @@ export class RandomCatPlugin {}
 ```
 
 Changing the database schema by `CustomFields` configuration requires a synchronized database. See [Customizing Models With Custom Fields]({{< relref "customizing-models" >}}) for more details.
-
 
 ### Step 2: Create a service to fetch the data
 
@@ -119,11 +118,11 @@ export class RandomCatResolver {
 Some explanations of this code are in order:
 
 * The `@Resolver()` decorator tells Nest that this class contains GraphQL resolvers.
-* We are able to use Nest's dependency injection to inject an instance of our `CatFetcher` class into the constructor of the resolver. We are also injecting an instance of the built-in `ProductService` class, which is responsible for operations on Products.
-* We use the `@Transaction()` decorator to ensure that all database operations in this resolver are run within a transaction. This ensure that if any part of it fails, all changes will be rolled back, keeping our data in a consistent state. For more on this, see the [Transaction Decorator docs]({{< relref "transaction-decorator" >}}).
-* We use the `@Mutation()` decorator to mark this method as a resolver for a mutation with the corresponding name.
-* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "/docs/graphql-api/admin/enums" >}}#permission). Plugins may also define custom permissions, see [Defining customer permissions]({{< relref "defining-custom-permissions" >}}).
-* The `@Ctx()` decorator injects the current `RequestContext` into the resolver. This provides information about the current request such as the current Session, User and Channel. It is required by most of the internal service methods.
+* We are able to use Nest's dependency injection to inject an instance of our `CatFetcher` class into the constructor of the resolver. We are also injecting an instance of the built-in [ProductService class]({{< relref "product-service" >}}), which is responsible for operations on Products.
+* We use the `@Transaction()` decorator to ensure that all database operations in this resolver are run within a transaction. This ensures that if any part of it fails, all changes will be rolled back, keeping our data in a consistent state. For more on this, see the [Transaction Decorator docs]({{< relref "transaction-decorator" >}}).
+* We use the `@Mutation()` decorator to mark this method as a resolver for the GraphQL mutation with the corresponding name.
+* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "/docs/graphql-api/admin/enums" >}}#permission). Plugins may also define custom permissions, see [Defining custom permissions]({{< relref "defining-custom-permissions" >}}).
+* The `@Ctx()` decorator injects the current [RequestContext]({{< relref "request-context" >}}) into the resolver. This provides information about the current request such as the current Session, User and Channel. It is required by most of the internal service methods.
 * The `@Args()` decorator injects the arguments passed to the mutation as an object.
 
 ### Step 5: Import the PluginCommonModule
@@ -176,16 +175,16 @@ export class RandomCatPlugin {}
 
 ### Step 8: Add the plugin to the Vendure config
 
-Finally we need to add an instance of our plugin to the config object with which we bootstrap out Vendure server:
+Finally, we need to add an instance of our plugin to the config object with which we bootstrap our Vendure server:
 
 ```TypeScript
 import { bootstrap } from '@vendure/core';
 
 bootstrap({
-    // .. config options
-    plugins: [
-        RandomCatPlugin,
-    ],
+  // .. config options
+  plugins: [
+      RandomCatPlugin,
+  ],
 });
 ```
 
@@ -228,7 +227,8 @@ import { Injectable } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import gql from 'graphql-tag';
 import http from 'http';
-import { Allow, Ctx, PluginCommonModule, ProductService, RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
+import { Allow, Ctx, PluginCommonModule, ProductService, 
+    RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 const schemaExtension = gql`
@@ -236,23 +236,6 @@ const schemaExtension = gql`
         addRandomCat(id: ID!): Product!
     }
 `;
-
-@VendurePlugin({
-  imports: [PluginCommonModule],
-  providers: [CatFetcher],
-  adminApiExtensions: {
-    schema: schemaExtension,
-    resolvers: [RandomCatResolver],
-  },
-  configuration: config => {
-    config.customFields.Product.push({
-      type: 'string',
-      name: 'catImageUrl',
-    });
-    return config;
-  }
-})
-export class RandomCatPlugin {}
 
 @Injectable()
 export class CatFetcher {
@@ -270,7 +253,8 @@ export class CatFetcher {
 
 @Resolver()
 export class RandomCatResolver {
-  constructor(private productService: ProductService, private catFetcher: CatFetcher) {}
+  constructor(private productService: ProductService, 
+              private catFetcher: CatFetcher) {}
 
   @Mutation()
   @Allow(Permission.UpdateCatalog)
@@ -282,4 +266,21 @@ export class RandomCatResolver {
     });
   }
 }
+
+@VendurePlugin({
+  imports: [PluginCommonModule],
+  providers: [CatFetcher],
+  adminApiExtensions: {
+    schema: schemaExtension,
+    resolvers: [RandomCatResolver],
+  },
+  configuration: config => {
+    config.customFields.Product.push({
+      type: 'string',
+      name: 'catImageUrl',
+    });
+    return config;
+  }
+})
+export class RandomCatPlugin {}
 ```

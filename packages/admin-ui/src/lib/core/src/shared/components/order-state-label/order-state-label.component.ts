@@ -1,5 +1,15 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
+/**
+ * @description
+ * Displays the state of an order in a colored chip.
+ *
+ * @example
+ * ```HTML
+ * <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
+ * ```
+ * @docsCategory components
+ */
 @Component({
     selector: 'vdr-order-state-label',
     templateUrl: './order-state-label.component.html',

@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../../core/typings.d.ts" />
-import { bootstrap, JobQueueService } from '@vendure/core';
+import { bootstrap, JobQueueService, Logger } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
 import { BaseProductRecord } from '@vendure/core/dist/data-import/providers/import-parser/import-parser';
 import { clearAllTables, populateCustomers } from '@vendure/testing';
@@ -51,7 +51,7 @@ if (require.main === module) {
                     )
                     .then(async app => {
                         console.log('populating customers...');
-                        await populateCustomers(10, config, true);
+                        await populateCustomers(app, 10, message => Logger.error(message));
                         return app.close();
                     });
             } else {

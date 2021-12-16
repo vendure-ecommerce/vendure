@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -9,13 +9,13 @@ import {
     FulfillmentStateTransitionError,
     InvalidFulfillmentHandlerError,
 } from '../../common/error/generated-graphql-admin-errors';
-import { OrderStateTransitionError } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { FulfillmentEvent } from '../../event-bus/events/fulfillment-event';
 import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillment-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
@@ -80,11 +80,18 @@ export class FulfillmentService {
                 handlerCode: fulfillmentHandler.code,
             }),
         );
-        await this.customFieldRelationService.updateRelations(
+        const fulfillmentWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
             Fulfillment,
             fulfillmentPartial,
             newFulfillment,
+        );
+        this.eventBus.publish(
+            new FulfillmentEvent(ctx, fulfillmentWithRelations, {
+                orders,
+                items,
+                handler,
+            }),
         );
         return newFulfillment;
     }

@@ -89,6 +89,7 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -504,14 +505,16 @@ export class OrderService {
             orderLine.productVariant,
             quantity,
         );
+        let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+            updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError(correctedQuantity, updatedOrder);
         } else {
@@ -629,6 +632,7 @@ export class OrderService {
             type: HistoryEntryType.ORDER_COUPON_APPLIED,
             data: { couponCode, promotionId: validationResult.id },
         });
+        this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'assigned'));
         return this.applyPriceAdjustments(ctx, order);
     }
 
@@ -656,6 +660,7 @@ export class OrderService {
                 type: HistoryEntryType.ORDER_COUPON_REMOVED,
                 data: { couponCode },
             });
+            this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
             const result = await this.applyPriceAdjustments(ctx, order);
             await this.connection.getRepository(ctx, OrderItem).save(affectedOrderItems);
             return result;
@@ -738,6 +743,7 @@ export class OrderService {
                 name: eligible.method.name,
                 code: eligible.method.code,
                 metadata,
+                customFields: eligible.method.customFields,
             };
         });
     }
@@ -833,6 +839,11 @@ export class OrderService {
             return result;
         }
         const { fulfillment, fromState, toState, orders } = result;
+        if (toState === 'Cancelled') {
+            await this.stockMovementService.createCancellationsForOrderItems(ctx, fulfillment.orderItems);
+            const lines = await this.groupOrderItemsIntoLines(ctx, fulfillment.orderItems);
+            await this.stockMovementService.createAllocationsForOrderLines(ctx, lines);
+        }
         await Promise.all(
             orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order, fromState, toState)),
         );
@@ -1000,7 +1011,7 @@ export class OrderService {
         input: ManualPaymentInput,
     ): Promise<ErrorResultUnion<AddManualPaymentToOrderResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, input.orderId);
-        if (order.state !== 'ArrangingAdditionalPayment') {
+        if (order.state !== 'ArrangingAdditionalPayment' && order.state !== 'ArrangingPayment') {
             return new ManualPaymentStateError();
         }
         const existingPayments = await this.getOrderPayments(ctx, order.id);
@@ -1667,5 +1678,30 @@ export class OrderService {
             merged.public = { ...m1.public, ...m2.public };
         }
         return merged;
+    }
+
+    private async groupOrderItemsIntoLines(
+        ctx: RequestContext,
+        orderItems: OrderItem[],
+    ): Promise<Array<{ orderLine: OrderLine; quantity: number }>> {
+        const orderLineIdQuantityMap = new Map<ID, number>();
+        for (const item of orderItems) {
+            const quantity = orderLineIdQuantityMap.get(item.lineId);
+            if (quantity == null) {
+                orderLineIdQuantityMap.set(item.lineId, 1);
+            } else {
+                orderLineIdQuantityMap.set(item.lineId, quantity + 1);
+            }
+        }
+        const orderLines = await this.connection
+            .getRepository(ctx, OrderLine)
+            .findByIds([...orderLineIdQuantityMap.keys()], {
+                relations: ['productVariant'],
+            });
+        return orderLines.map(orderLine => ({
+            orderLine,
+            // tslint:disable-next-line:no-non-null-assertion
+            quantity: orderLineIdQuantityMap.get(orderLine.id)!,
+        }));
     }
 }

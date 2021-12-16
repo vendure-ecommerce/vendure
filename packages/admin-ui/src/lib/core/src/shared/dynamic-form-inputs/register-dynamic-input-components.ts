@@ -9,6 +9,7 @@ import {
 } from '../../providers/custom-field-component/custom-field-component.service';
 
 import { BooleanFormInputComponent } from './boolean-form-input/boolean-form-input.component';
+import { JsonEditorFormInputComponent } from './code-editor-form-input/json-editor-form-input.component';
 import { CurrencyFormInputComponent } from './currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './date-form-input/date-form-input.component';
@@ -17,6 +18,7 @@ import { NumberFormInputComponent } from './number-form-input/number-form-input.
 import { PasswordFormInputComponent } from './password-form-input/password-form-input.component';
 import { ProductSelectorFormInputComponent } from './product-selector-form-input/product-selector-form-input.component';
 import { RelationFormInputComponent } from './relation-form-input/relation-form-input.component';
+import { RichTextFormInputComponent } from './rich-text-form-input/rich-text-form-input.component';
 import { SelectFormInputComponent } from './select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './text-form-input/text-form-input.component';
 import { TextareaFormInputComponent } from './textarea-form-input/textarea-form-input.component';
@@ -34,12 +36,15 @@ export const defaultFormInputs = [
     PasswordFormInputComponent,
     RelationFormInputComponent,
     TextareaFormInputComponent,
+    RichTextFormInputComponent,
+    JsonEditorFormInputComponent,
 ];
 
 /**
  * @description
  * Registers a custom FormInputComponent which can be used to control the argument inputs
- * of a {@link ConfigurableOperationDef} (e.g. CollectionFilter, ShippingMethod etc)
+ * of a {@link ConfigurableOperationDef} (e.g. CollectionFilter, ShippingMethod etc) or for
+ * a custom field.
  *
  * @example
  * ```TypeScript
@@ -52,6 +57,35 @@ export const defaultFormInputs = [
  * })
  * export class MyUiExtensionModule {}
  * ```
+ *
+ * This input component can then be used in a custom field:
+ *
+ * @example
+ * ```TypeScript
+ * const config = {
+ *   // ...
+ *   customFields: {
+ *     ProductVariant: [
+ *       {
+ *         name: 'rrp',
+ *         type: 'int',
+ *         ui: { component: 'my-custom-input' },
+ *       },
+ *     ]
+ *   }
+ * }
+ * ```
+ *
+ * or with an argument of a {@link ConfigurableOperationDef}:
+ *
+ * @example
+ * ```TypeScript
+ * args: {
+ *   rrp: { type: 'int', ui: { component: 'my-custom-input' } },
+ * }
+ * ```
+ *
+ * @docsCategory custom-input-components
  */
 export function registerFormInputComponent(id: string, component: Type<FormInputComponent>): FactoryProvider {
     return {
@@ -66,6 +100,8 @@ export function registerFormInputComponent(id: string, component: Type<FormInput
 
 /**
  * @description
+ * **Deprecated** use `registerFormInputComponent()` in combination with the customField `ui` config instead.
+ *
  * Registers a custom component to act as the form input control for the given custom field.
  * This should be used in the NgModule `providers` array of your ui extension module.
  *
@@ -80,6 +116,10 @@ export function registerFormInputComponent(id: string, component: Type<FormInput
  * })
  * export class MyUiExtensionModule {}
  * ```
+ *
+ * @deprecated use `registerFormInputComponent()` in combination with the customField `ui` config instead.
+ *
+ * @docsCategory custom-input-components
  */
 export function registerCustomFieldComponent(
     entity: CustomFieldEntityName,

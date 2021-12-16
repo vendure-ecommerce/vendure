@@ -39,7 +39,8 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
 })
 export class ShippingMethodDetailComponent
     extends BaseDetailComponent<ShippingMethod.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     detailForm: FormGroup;
     checkers: ConfigurableOperationDefinition[] = [];
     calculators: ConfigurableOperationDefinition[] = [];
@@ -133,10 +134,6 @@ export class ShippingMethodDetailComponent
 
     ngOnDestroy(): void {
         this.destroy();
-    }
-
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
     }
 
     updateCode(currentCode: string, nameValue: string) {
@@ -323,19 +320,12 @@ export class ShippingMethodDetailComponent
             };
         }
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value =
-                    fieldDef.type === 'localeString'
-                        ? (currentTranslation as any).customFields[key]
-                        : (shippingMethod as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['customFields']),
+                shippingMethod,
+                currentTranslation,
+            );
         }
     }
 }

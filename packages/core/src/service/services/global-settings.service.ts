@@ -6,6 +6,8 @@ import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
+import { EventBus } from '../../event-bus';
+import { GlobalSettingsEvent } from '../../event-bus/events/global-settings-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -21,6 +23,7 @@ export class GlobalSettingsService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private customFieldRelationService: CustomFieldRelationService,
+        private eventBus: EventBus,
     ) {}
 
     /**
@@ -64,6 +67,7 @@ export class GlobalSettingsService {
 
     async updateSettings(ctx: RequestContext, input: UpdateGlobalSettingsInput): Promise<GlobalSettings> {
         const settings = await this.getSettings(ctx);
+        this.eventBus.publish(new GlobalSettingsEvent(ctx, settings, input));
         patchEntity(settings, input);
         await this.customFieldRelationService.updateRelations(ctx, GlobalSettings, input, settings);
         return this.connection.getRepository(ctx, GlobalSettings).save(settings);

@@ -34,7 +34,8 @@ export interface PermissionsByChannel {
 })
 export class AdminDetailComponent
     extends BaseDetailComponent<GetAdministrator.Administrator>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     customFields: CustomFieldConfig[];
     administrator$: Observable<GetAdministrator.Administrator>;
     permissionDefinitions: PermissionDefinition[];
@@ -90,10 +91,6 @@ export class AdminDetailComponent
 
     ngOnDestroy(): void {
         this.destroy();
-    }
-
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
     }
 
     rolesChanged(roles: Role[]) {
@@ -190,16 +187,11 @@ export class AdminDetailComponent
             roles: administrator.user.roles,
         });
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = (administrator as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['customFields']),
+                administrator,
+            );
         }
         const passwordControl = this.detailForm.get('password');
         if (passwordControl) {

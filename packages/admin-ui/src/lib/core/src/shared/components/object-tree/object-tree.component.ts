@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
 
 /**
+ * @description
  * This component displays a plain JavaScript object as an expandable tree.
+ *
+ * @example
+ * ```HTML
+ * <vdr-object-tree [value]="payment.metadata"></vdr-object-tree>
+ * ```
+ *
+ * @docsCategory components
  */
 @Component({
     selector: 'vdr-object-tree',

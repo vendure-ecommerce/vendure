@@ -46,9 +46,22 @@ export const SET_AS_LOGGED_OUT = gql`
     ${USER_STATUS_FRAGMENT}
 `;
 
-export const SET_UI_LANGUAGE = gql`
-    mutation SetUiLanguage($languageCode: LanguageCode!) {
+export const SET_UI_LANGUAGE_AND_LOCALE = gql`
+    mutation SetUiLanguage($languageCode: LanguageCode!, $locale: String) {
         setUiLanguage(languageCode: $languageCode) @client
+        setUiLocale(locale: $locale) @client
+    }
+`;
+
+export const SET_UI_LOCALE = gql`
+    mutation SetUiLocale($locale: String) {
+        setUiLocale(locale: $locale) @client
+    }
+`;
+
+export const SET_DISPLAY_UI_EXTENSION_POINTS = gql`
+    mutation SetDisplayUiExtensionPoints($display: Boolean!) {
+        setDisplayUiExtensionPoints(display: $display) @client
     }
 `;
 
@@ -85,8 +98,10 @@ export const GET_UI_STATE = gql`
     query GetUiState {
         uiState @client {
             language
+            locale
             contentLanguage
             theme
+            displayUiExtensionPoints
         }
     }
 `;
@@ -101,8 +116,10 @@ export const GET_CLIENT_STATE = gql`
         }
         uiState @client {
             language
+            locale
             contentLanguage
             theme
+            displayUiExtensionPoints
         }
     }
     ${USER_STATUS_FRAGMENT}

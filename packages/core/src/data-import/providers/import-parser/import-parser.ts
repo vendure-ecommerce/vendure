@@ -1,76 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { GlobalFlag } from '@vendure/common/lib/generated-types';
+import { GlobalFlag, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { unique } from '@vendure/common/lib/unique';
 import parse from 'csv-parse';
 import { Stream } from 'stream';
 
-export type BaseProductRecord = {
-    name?: string;
-    slug?: string;
-    description?: string;
-    assets?: string;
-    facets?: string;
-    optionGroups?: string;
-    optionValues?: string;
-    sku?: string;
-    price?: string;
-    taxCategory?: string;
-    stockOnHand?: string;
-    trackInventory?: string;
-    variantAssets?: string;
-    variantFacets?: string;
-};
+import { InternalServerError } from '../../../common/error/errors';
+import { ConfigService } from '../../../config/config.service';
+import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 
-export type RawProductRecord = BaseProductRecord & { [customFieldName: string]: string };
+const baseTranslatableColumns = [
+    'name',
+    'slug',
+    'description',
+    'facets',
+    'optionGroups',
+    'optionValues',
+    'variantFacets',
+];
 
-export interface ParsedProductVariant {
-    optionValues: string[];
-    sku: string;
-    price: number;
-    taxCategory: string;
-    stockOnHand: number;
-    trackInventory: GlobalFlag;
-    assetPaths: string[];
-    facets: Array<{
-        facet: string;
-        value: string;
-    }>;
-    customFields: {
-        [name: string]: string;
-    };
-}
-
-export interface ParsedProduct {
-    name: string;
-    slug: string;
-    description: string;
-    assetPaths: string[];
-    optionGroups: Array<{
-        name: string;
-        values: string[];
-    }>;
-    facets: Array<{
-        facet: string;
-        value: string;
-    }>;
-    customFields: {
-        [name: string]: string;
-    };
-}
-
-export interface ParsedProductWithVariants {
-    product: ParsedProduct;
-    variants: ParsedProductVariant[];
-}
-
-export interface ParseResult<T> {
-    results: T[];
-    errors: string[];
-    processed: number;
-}
-
-const requiredColumns: Array<keyof BaseProductRecord> = [
+const requiredColumns: string[] = [
     'name',
     'slug',
     'description',
@@ -85,12 +34,76 @@ const requiredColumns: Array<keyof BaseProductRecord> = [
     'variantFacets',
 ];
 
+export interface ParsedOptionGroup {
+    translations: Array<{
+        languageCode: LanguageCode;
+        name: string;
+        values: string[];
+    }>;
+}
+
+export interface ParsedFacet {
+    translations: Array<{
+        languageCode: LanguageCode;
+        facet: string;
+        value: string;
+    }>;
+}
+
+export interface ParsedProductVariant {
+    sku: string;
+    price: number;
+    taxCategory: string;
+    stockOnHand: number;
+    trackInventory: GlobalFlag;
+    assetPaths: string[];
+    facets: ParsedFacet[];
+    translations: Array<{
+        languageCode: LanguageCode;
+        optionValues: string[];
+        customFields: {
+            [name: string]: string;
+        };
+    }>;
+}
+
+export interface ParsedProduct {
+    assetPaths: string[];
+    optionGroups: ParsedOptionGroup[];
+    facets: ParsedFacet[];
+    translations: Array<{
+        languageCode: LanguageCode;
+        name: string;
+        slug: string;
+        description: string;
+        customFields: {
+            [name: string]: string;
+        };
+    }>;
+}
+
+export interface ParsedProductWithVariants {
+    product: ParsedProduct;
+    variants: ParsedProductVariant[];
+}
+
+export interface ParseResult<T> {
+    results: T[];
+    errors: string[];
+    processed: number;
+}
+
 /**
  * Validates and parses CSV files into a data structure which can then be used to created new entities.
  */
 @Injectable()
 export class ImportParser {
-    async parseProducts(input: string | Stream): Promise<ParseResult<ParsedProductWithVariants>> {
+    constructor(private configService: ConfigService) {}
+
+    async parseProducts(
+        input: string | Stream,
+        mainLanguage: LanguageCode = this.configService.defaultLanguageCode,
+    ): Promise<ParseResult<ParsedProductWithVariants>> {
         const options: parse.Options = {
             trim: true,
             relax_column_count: true,
@@ -104,7 +117,7 @@ export class ImportParser {
                         errors = errors.concat(err);
                     }
                     if (records) {
-                        const parseResult = this.processRawRecords(records);
+                        const parseResult = this.processRawRecords(records, mainLanguage);
                         errors = errors.concat(parseResult.errors);
                         resolve({ results: parseResult.results, errors, processed: parseResult.processed });
                     } else {
@@ -125,7 +138,7 @@ export class ImportParser {
                 });
                 parser.on('error', reject);
                 parser.on('end', () => {
-                    const parseResult = this.processRawRecords(records);
+                    const parseResult = this.processRawRecords(records, mainLanguage);
                     errors = errors.concat(parseResult.errors);
                     resolve({ results: parseResult.results, errors, processed: parseResult.processed });
                 });
@@ -133,17 +146,29 @@ export class ImportParser {
         });
     }
 
-    private processRawRecords(records: string[][]): ParseResult<ParsedProductWithVariants> {
+    private processRawRecords(
+        records: string[][],
+        mainLanguage: LanguageCode,
+    ): ParseResult<ParsedProductWithVariants> {
         const results: ParsedProductWithVariants[] = [];
         const errors: string[] = [];
         let currentRow: ParsedProductWithVariants | undefined;
         const headerRow = records[0];
         const rest = records.slice(1);
         const totalProducts = rest.map(row => row[0]).filter(name => name.trim() !== '').length;
+        const customFieldErrors = this.validateCustomFields(headerRow);
+        if (customFieldErrors.length > 0) {
+            return { results: [], errors: customFieldErrors, processed: 0 };
+        }
+        const translationError = this.validateHeaderTranslations(headerRow);
+        if (translationError) {
+            return { results: [], errors: [translationError], processed: 0 };
+        }
         const columnError = validateRequiredColumns(headerRow);
         if (columnError) {
             return { results: [], errors: [columnError], processed: 0 };
         }
+        const usedLanguages = usedLanguageCodes(headerRow);
         let line = 1;
         for (const record of rest) {
             line++;
@@ -153,18 +178,18 @@ export class ImportParser {
                 continue;
             }
             const r = mapRowToObject(headerRow, record);
-            if (r.name) {
+            if (getRawMainTranslation(r, 'name', mainLanguage)) {
                 if (currentRow) {
                     populateOptionGroupValues(currentRow);
                     results.push(currentRow);
                 }
                 currentRow = {
-                    product: parseProductFromRecord(r),
-                    variants: [parseVariantFromRecord(r)],
+                    product: this.parseProductFromRecord(r, usedLanguages, mainLanguage),
+                    variants: [this.parseVariantFromRecord(r, usedLanguages, mainLanguage)],
                 };
             } else {
                 if (currentRow) {
-                    currentRow.variants.push(parseVariantFromRecord(r));
+                    currentRow.variants.push(this.parseVariantFromRecord(r, usedLanguages, mainLanguage));
                 }
             }
             const optionError = validateOptionValueCount(r, currentRow);
@@ -178,20 +203,320 @@ export class ImportParser {
         }
         return { results, errors, processed: totalProducts };
     }
+
+    private validateCustomFields(rowKeys: string[]): string[] {
+        const errors: string[] = [];
+        for (const rowKey of rowKeys) {
+            const baseKey = getBaseKey(rowKey);
+            const parts = baseKey.split(':');
+            if (parts.length === 1) {
+                continue;
+            }
+            if (parts.length === 2) {
+                let customFieldConfigs: CustomFieldConfig[] = [];
+                if (parts[0] === 'product') {
+                    customFieldConfigs = this.configService.customFields.Product;
+                } else if (parts[0] === 'variant') {
+                    customFieldConfigs = this.configService.customFields.ProductVariant;
+                } else {
+                    continue;
+                }
+                const customFieldConfig = customFieldConfigs.find(config => config.name === parts[1]);
+                if (customFieldConfig) {
+                    continue;
+                }
+            }
+            errors.push(`Invalid custom field: ${rowKey}`);
+        }
+        return errors;
+    }
+
+    private isTranslatable(baseKey: string): boolean {
+        const parts = baseKey.split(':');
+        if (parts.length === 1) {
+            return baseTranslatableColumns.includes(baseKey);
+        }
+        if (parts.length === 2) {
+            let customFieldConfigs: CustomFieldConfig[];
+            if (parts[0] === 'product') {
+                customFieldConfigs = this.configService.customFields.Product;
+            } else if (parts[0] === 'variant') {
+                customFieldConfigs = this.configService.customFields.ProductVariant;
+            } else {
+                throw new InternalServerError(`Invalid column header '${baseKey}'`);
+            }
+            const customFieldConfig = customFieldConfigs.find(config => config.name === parts[1]);
+            if (!customFieldConfig) {
+                throw new InternalServerError(
+                    `Could not find custom field config for column header '${baseKey}'`,
+                );
+            }
+            return customFieldConfig.type === 'localeString';
+        }
+        throw new InternalServerError(`Invalid column header '${baseKey}'`);
+    }
+
+    private validateHeaderTranslations(rowKeys: string[]): string | undefined {
+        const missing: string[] = [];
+        const languageCodes = usedLanguageCodes(rowKeys);
+        const baseKeys = usedBaseKeys(rowKeys);
+        for (const baseKey of baseKeys) {
+            const translatedKeys = languageCodes.map(code => [baseKey, code].join(':'));
+            if (rowKeys.includes(baseKey)) {
+                // Untranslated column header is used -> there should be no translated ones
+                if (rowKeys.some(key => translatedKeys.includes(key))) {
+                    return `The import file must not contain both translated and untranslated columns for field '${baseKey}'`;
+                }
+            } else {
+                if (!this.isTranslatable(baseKey) && translatedKeys.some(key => rowKeys.includes(key))) {
+                    return `The '${baseKey}' field is not translatable.`;
+                }
+                // All column headers must exist for all translations
+                for (const translatedKey of translatedKeys) {
+                    if (!rowKeys.includes(translatedKey)) {
+                        missing.push(translatedKey);
+                    }
+                }
+            }
+        }
+        if (missing.length) {
+            return `The import file is missing the following translations: ${missing
+                .map(m => `"${m}"`)
+                .join(', ')}`;
+        }
+    }
+
+    private parseProductFromRecord(
+        r: { [key: string]: string },
+        usedLanguages: LanguageCode[],
+        mainLanguage: LanguageCode,
+    ): ParsedProduct {
+        const translationCodes = usedLanguages.length === 0 ? [mainLanguage] : usedLanguages;
+
+        const optionGroups: ParsedOptionGroup[] = [];
+        for (const languageCode of translationCodes) {
+            const rawTranslOptionGroups = r.hasOwnProperty(`optionGroups:${languageCode}`)
+                ? r[`optionGroups:${languageCode}`]
+                : r.optionGroups;
+            const translatedOptionGroups = parseStringArray(rawTranslOptionGroups);
+            if (optionGroups.length === 0) {
+                for (const translatedOptionGroup of translatedOptionGroups) {
+                    optionGroups.push({ translations: [] });
+                }
+            }
+            for (const i of optionGroups.map((optionGroup, index) => index)) {
+                optionGroups[i].translations.push({
+                    languageCode,
+                    name: translatedOptionGroups[i],
+                    values: [],
+                });
+            }
+        }
+
+        const facets: ParsedFacet[] = [];
+        for (const languageCode of translationCodes) {
+            const rawTranslatedFacets = r.hasOwnProperty(`facets:${languageCode}`)
+                ? r[`facets:${languageCode}`]
+                : r.facets;
+            const translatedFacets = parseStringArray(rawTranslatedFacets);
+            if (facets.length === 0) {
+                for (const translatedFacet of translatedFacets) {
+                    facets.push({ translations: [] });
+                }
+            }
+            for (const i of facets.map((facet, index) => index)) {
+                const [facet, value] = translatedFacets[i].split(':');
+                facets[i].translations.push({
+                    languageCode,
+                    facet,
+                    value,
+                });
+            }
+        }
+
+        const translations = translationCodes.map(languageCode => {
+            const translatedFields = getRawTranslatedFields(r, languageCode);
+            const parsedTranslatedCustomFields = parseCustomFields('product', translatedFields);
+            const parsedUntranslatedCustomFields = parseCustomFields('product', getRawUntranslatedFields(r));
+            const parsedCustomFields = {
+                ...parsedUntranslatedCustomFields,
+                ...parsedTranslatedCustomFields,
+            };
+            const name = translatedFields.hasOwnProperty('name')
+                ? parseString(translatedFields.name)
+                : r.name;
+            let slug: string;
+            if (translatedFields.hasOwnProperty('slug')) {
+                slug = parseString(translatedFields.slug);
+            } else {
+                slug = parseString(r.slug);
+            }
+            if (slug.length === 0) {
+                slug = normalizeString(name, '-');
+            }
+            return {
+                languageCode,
+                name,
+                slug,
+                description: translatedFields.hasOwnProperty('description')
+                    ? parseString(translatedFields.description)
+                    : r.description,
+                customFields: parsedCustomFields,
+            };
+        });
+        const parsedProduct: ParsedProduct = {
+            assetPaths: parseStringArray(r.assets),
+            optionGroups,
+            facets,
+            translations,
+        };
+        return parsedProduct;
+    }
+
+    private parseVariantFromRecord(
+        r: { [key: string]: string },
+        usedLanguages: LanguageCode[],
+        mainLanguage: LanguageCode,
+    ): ParsedProductVariant {
+        const translationCodes = usedLanguages.length === 0 ? [mainLanguage] : usedLanguages;
+
+        const facets: ParsedFacet[] = [];
+        for (const languageCode of translationCodes) {
+            const rawTranslatedFacets = r.hasOwnProperty(`variantFacets:${languageCode}`)
+                ? r[`variantFacets:${languageCode}`]
+                : r.variantFacets;
+            const translatedFacets = parseStringArray(rawTranslatedFacets);
+            if (facets.length === 0) {
+                for (const translatedFacet of translatedFacets) {
+                    facets.push({ translations: [] });
+                }
+            }
+            for (const i of facets.map((facet, index) => index)) {
+                const [facet, value] = translatedFacets[i].split(':');
+                facets[i].translations.push({
+                    languageCode,
+                    facet,
+                    value,
+                });
+            }
+        }
+
+        const translations = translationCodes.map(languageCode => {
+            const rawTranslOptionValues = r.hasOwnProperty(`optionValues:${languageCode}`)
+                ? r[`optionValues:${languageCode}`]
+                : r.optionValues;
+            const translatedOptionValues = parseStringArray(rawTranslOptionValues);
+            const translatedFields = getRawTranslatedFields(r, languageCode);
+            const parsedTranslatedCustomFields = parseCustomFields('variant', translatedFields);
+            const parsedUntranslatedCustomFields = parseCustomFields('variant', getRawUntranslatedFields(r));
+            const parsedCustomFields = {
+                ...parsedUntranslatedCustomFields,
+                ...parsedTranslatedCustomFields,
+            };
+            return {
+                languageCode,
+                optionValues: translatedOptionValues,
+                customFields: parsedCustomFields,
+            };
+        });
+
+        const parsedVariant: ParsedProductVariant = {
+            sku: parseString(r.sku),
+            price: parseNumber(r.price),
+            taxCategory: parseString(r.taxCategory),
+            stockOnHand: parseNumber(r.stockOnHand),
+            trackInventory:
+                r.trackInventory == null || r.trackInventory === ''
+                    ? GlobalFlag.INHERIT
+                    : parseBoolean(r.trackInventory)
+                    ? GlobalFlag.TRUE
+                    : GlobalFlag.FALSE,
+            assetPaths: parseStringArray(r.variantAssets),
+            facets,
+            translations,
+        };
+        return parsedVariant;
+    }
 }
 
 function populateOptionGroupValues(currentRow: ParsedProductWithVariants) {
-    const values = currentRow.variants.map(v => v.optionValues);
-    currentRow.product.optionGroups.forEach((og, i) => {
-        og.values = unique(values.map(v => v[i]));
-    });
+    for (const translation of currentRow.product.translations) {
+        const values = currentRow.variants.map(variant => {
+            const variantTranslation = variant.translations.find(
+                t => t.languageCode === translation.languageCode,
+            );
+            if (!variantTranslation) {
+                throw new InternalServerError(
+                    `No translation '${translation.languageCode}' for variant SKU '${variant.sku}'`,
+                );
+            }
+            return variantTranslation.optionValues;
+        });
+        currentRow.product.optionGroups.forEach((og, i) => {
+            const ogTranslation = og.translations.find(t => t.languageCode === translation.languageCode);
+            if (!ogTranslation) {
+                throw new InternalServerError(`No translation '${LanguageCode}' for option groups'`);
+            }
+            ogTranslation.values = unique(values.map(v => v[i]));
+        });
+    }
+}
+
+function getLanguageCode(rowKey: string): LanguageCode | undefined {
+    const parts = rowKey.split(':');
+    if (parts.length === 2) {
+        if (parts[1] in LanguageCode) {
+            return parts[1] as LanguageCode;
+        }
+    }
+    if (parts.length === 3) {
+        if (['product', 'productVariant'].includes(parts[0]) && parts[2] in LanguageCode) {
+            return parts[2] as LanguageCode;
+        }
+    }
+}
+
+function getBaseKey(rowKey: string): string {
+    const parts = rowKey.split(':');
+    if (getLanguageCode(rowKey)) {
+        parts.pop();
+        return parts.join(':');
+    } else {
+        return rowKey;
+    }
+}
+
+function usedLanguageCodes(rowKeys: string[]): LanguageCode[] {
+    const languageCodes: LanguageCode[] = [];
+    for (const rowKey of rowKeys) {
+        const languageCode = getLanguageCode(rowKey);
+        if (languageCode && !languageCodes.includes(languageCode)) {
+            languageCodes.push(languageCode);
+        }
+    }
+    return languageCodes;
+}
+
+function usedBaseKeys(rowKeys: string[]): string[] {
+    const baseKeys: string[] = [];
+    for (const rowKey of rowKeys) {
+        const baseKey = getBaseKey(rowKey);
+        if (!baseKeys.includes(baseKey)) {
+            baseKeys.push(baseKey);
+        }
+    }
+    return baseKeys;
 }
 
 function validateRequiredColumns(r: string[]): string | undefined {
     const rowKeys = r;
     const missing: string[] = [];
+    const languageCodes = usedLanguageCodes(rowKeys);
     for (const col of requiredColumns) {
         if (!rowKeys.includes(col)) {
+            if (languageCodes.length > 0 && rowKeys.includes(`${col}:${languageCodes[0]}`)) {
+                continue; // If one translation is present, they are all present (we did 'validateHeaderTranslations' before)
+            }
             missing.push(col);
         }
     }
@@ -213,70 +538,75 @@ function mapRowToObject(columns: string[], row: string[]): { [key: string]: stri
 }
 
 function validateOptionValueCount(
-    r: BaseProductRecord,
+    r: { [key: string]: string },
     currentRow?: ParsedProductWithVariants,
 ): string | undefined {
     if (!currentRow) {
         return;
     }
-    const optionValues = parseStringArray(r.optionValues);
-    if (currentRow.product.optionGroups.length !== optionValues.length) {
-        return `The number of optionValues must match the number of optionGroups`;
+
+    const optionValueKeys = Object.keys(r).filter(key => key.startsWith('optionValues'));
+    for (const key of optionValueKeys) {
+        const optionValues = parseStringArray(r[key]);
+        if (currentRow.product.optionGroups.length !== optionValues.length) {
+            return `The number of optionValues in column '${key}' must match the number of optionGroups`;
+        }
     }
 }
 
-function parseProductFromRecord(r: RawProductRecord): ParsedProduct {
-    const name = parseString(r.name);
-    const slug = parseString(r.slug) || normalizeString(name, '-');
-    return {
-        name,
-        slug,
-        description: parseString(r.description),
-        assetPaths: parseStringArray(r.assets),
-        optionGroups: parseStringArray(r.optionGroups).map(ogName => ({
-            name: ogName,
-            values: [],
-        })),
-        facets: parseStringArray(r.facets).map(pair => {
-            const [facet, value] = pair.split(':');
-            return { facet, value };
-        }),
-        customFields: parseCustomFields('product', r),
-    };
+function getRawMainTranslation(
+    r: { [key: string]: string },
+    field: string,
+    mainLanguage: LanguageCode,
+): string {
+    if (r.hasOwnProperty(field)) {
+        return r[field];
+    } else {
+        return r[`${field}:${mainLanguage}`];
+    }
 }
 
-function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
-    return {
-        optionValues: parseStringArray(r.optionValues),
-        sku: parseString(r.sku),
-        price: parseNumber(r.price),
-        taxCategory: parseString(r.taxCategory),
-        stockOnHand: parseNumber(r.stockOnHand),
-        trackInventory:
-            r.trackInventory == null || r.trackInventory === ''
-                ? GlobalFlag.INHERIT
-                : parseBoolean(r.trackInventory)
-                ? GlobalFlag.TRUE
-                : GlobalFlag.FALSE,
-        assetPaths: parseStringArray(r.variantAssets),
-        facets: parseStringArray(r.variantFacets).map(pair => {
-            const [facet, value] = pair.split(':');
-            return { facet, value };
-        }),
-        customFields: parseCustomFields('variant', r),
-    };
+function getRawTranslatedFields(
+    r: { [key: string]: string },
+    languageCode: LanguageCode,
+): { [key: string]: string } {
+    return Object.entries(r)
+        .filter(([key, value]) => key.endsWith(`:${languageCode}`))
+        .reduce((output, [key, value]) => {
+            const fieldName = key.replace(`:${languageCode}`, '');
+            return {
+                ...output,
+                [fieldName]: value,
+            };
+        }, {});
+}
+
+function getRawUntranslatedFields(r: { [key: string]: string }): { [key: string]: string } {
+    return Object.entries(r)
+        .filter(([key, value]) => {
+            return !getLanguageCode(key);
+        })
+        .reduce((output, [key, value]) => {
+            return {
+                ...output,
+                [key]: value,
+            };
+        }, {});
 }
 
 function isRelationObject(value: string) {
     try {
         const parsed = JSON.parse(value);
         return parsed && parsed.hasOwnProperty('id');
-    } catch(e) {
+    } catch (e) {
         return false;
     }
 }
 
-function parseCustomFields(prefix: 'product' | 'variant', r: RawProductRecord): { [name: string]: string } {
+function parseCustomFields(
+    prefix: 'product' | 'variant',
+    r: { [key: string]: string },
+): { [name: string]: string } {
     return Object.entries(r)
         .filter(([key, value]) => {
             return key.indexOf(`${prefix}:`) === 0;

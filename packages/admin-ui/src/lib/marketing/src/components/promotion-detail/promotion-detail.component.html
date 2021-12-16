@@ -65,6 +65,21 @@
             formControlName="perCustomerUsageLimit"
         />
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <vdr-tabbed-custom-fields
+            entityName="Promotion"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!('UpdatePromotion' | hasPermission)"
+        ></vdr-tabbed-custom-fields>
+    </section>
+
+    <vdr-custom-detail-component-host
+        locationId="promotion-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 
     <div class="clr-row">
         <div class="clr-col" formArrayName="conditions">

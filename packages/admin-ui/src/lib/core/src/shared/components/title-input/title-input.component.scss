@@ -9,7 +9,7 @@
         max-width: 100%;
         &:not(:focus) {
             border-color: transparent !important;
-            background-color: transparent !important;
+            background-color: var(--color-component-bg-100) !important;
         }
         &:focus {
             background-color: var(--clr-global-app-background);
@@ -28,7 +28,7 @@
         position: absolute;
         right: 8px;
         top: 6px;
-        color: var(--color-grey-300);
+        color: var(--color-grey-400);
         opacity: 0;
         transition: opacity 0.2s;
     }

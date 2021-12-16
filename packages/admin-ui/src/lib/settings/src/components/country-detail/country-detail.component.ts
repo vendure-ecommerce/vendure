@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
@@ -7,6 +7,7 @@ import {
     Country,
     CreateCountryInput,
     createUpdatedTranslatable,
+    CustomFieldConfig,
     DataService,
     findTranslation,
     LanguageCode,
@@ -22,12 +23,15 @@ import { mergeMap, take } from 'rxjs/operators';
     selector: 'vdr-country-detail',
     templateUrl: './country-detail.component.html',
     styleUrls: ['./country-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryDetailComponent
     extends BaseDetailComponent<Country.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     country$: Observable<Country.Fragment>;
     detailForm: FormGroup;
+    customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateCountry];
 
     constructor(
@@ -40,10 +44,14 @@ export class CountryDetailComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('Country');
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             name: ['', Validators.required],
             enabled: [true],
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -68,6 +76,7 @@ export class CountryDetailComponent
                     const input: CreateCountryInput = createUpdatedTranslatable({
                         translatable: country,
                         updatedFields: formValue,
+                        customFieldConfig: this.customFields,
                         languageCode,
                         defaultTranslation: {
                             name: formValue.name,
@@ -103,6 +112,7 @@ export class CountryDetailComponent
                     const input: UpdateCountryInput = createUpdatedTranslatable({
                         translatable: country,
                         updatedFields: formValue,
+                        customFieldConfig: this.customFields,
                         languageCode,
                         defaultTranslation: {
                             name: formValue.name,
@@ -136,5 +146,14 @@ export class CountryDetailComponent
             name: currentTranslation ? currentTranslation.name : '',
             enabled: country.enabled,
         });
+
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(
+                this.customFields,
+                this.detailForm.get(['customFields']),
+                country,
+                currentTranslation,
+            );
+        }
     }
 }

@@ -18,20 +18,32 @@ import { PromotionDataService } from './promotion-data.service';
 import { SettingsDataService } from './settings-data.service';
 import { ShippingMethodDataService } from './shipping-method-data.service';
 
+/**
+ * @description
+ * Used to interact with the Admin API via GraphQL queries. Internally this service uses the
+ * Apollo Client, which means it maintains a normalized entity cache. For this reason, it is
+ * advisable to always select the `id` field of any entity, which will allow the returned data
+ * to be effectively cached.
+ *
+ * @docsCategory providers
+ * @docsPage DataService
+ * @docsWeight 0
+ */
 @Injectable()
 export class DataService {
-    promotion: PromotionDataService;
-    administrator: AdministratorDataService;
-    auth: AuthDataService;
-    collection: CollectionDataService;
-    product: ProductDataService;
-    client: ClientDataService;
-    facet: FacetDataService;
-    order: OrderDataService;
-    settings: SettingsDataService;
-    customer: CustomerDataService;
-    shippingMethod: ShippingMethodDataService;
+    /** @internal */ promotion: PromotionDataService;
+    /** @internal */ administrator: AdministratorDataService;
+    /** @internal */ auth: AuthDataService;
+    /** @internal */ collection: CollectionDataService;
+    /** @internal */ product: ProductDataService;
+    /** @internal */ client: ClientDataService;
+    /** @internal */ facet: FacetDataService;
+    /** @internal */ order: OrderDataService;
+    /** @internal */ settings: SettingsDataService;
+    /** @internal */ customer: CustomerDataService;
+    /** @internal */ shippingMethod: ShippingMethodDataService;
 
+    /** @internal */
     constructor(private baseDataService: BaseDataService) {
         this.promotion = new PromotionDataService(baseDataService);
         this.administrator = new AdministratorDataService(baseDataService);
@@ -47,7 +59,23 @@ export class DataService {
     }
 
     /**
-     * Perform a GraphQL query.
+     * @description
+     * Perform a GraphQL query. Returns a {@link QueryResult} which allows further control over
+     * they type of result returned, e.g. stream of values, single value etc.
+     *
+     * @example
+     * ```TypeScript
+     * const result$ = this.dataService.query(gql`
+     *   query MyQuery($id: ID!) {
+     *     product(id: $id) {
+     *       id
+     *       name
+     *       slug
+     *     }
+     *   },
+     *   { id: 123 },
+     * ).mapSingle(data => data.product);
+     * ```
      */
     query<T, V = Record<string, any>>(
         query: DocumentNode,
@@ -58,7 +86,21 @@ export class DataService {
     }
 
     /**
+     * @description
      * Perform a GraphQL mutation.
+     *
+     * @example
+     * ```TypeScript
+     * const result$ = this.dataService.mutate(gql`
+     *   mutation MyMutation($input: UpdateEntityInput!) {
+     *     updateEntity(input: $input) {
+     *       id
+     *       name
+     *     }
+     *   },
+     *   { input: updateEntityInput },
+     * );
+     * ```
      */
     mutate<T, V = Record<string, any>>(
         mutation: DocumentNode,

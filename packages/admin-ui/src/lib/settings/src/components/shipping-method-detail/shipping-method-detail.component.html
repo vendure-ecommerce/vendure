@@ -75,15 +75,19 @@
 
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
-        <ng-container *ngFor="let customField of customFields">
-            <vdr-custom-field-control
-                *ngIf="customFieldIsSet(customField.name)"
-                entityName="ShippingMethod"
-                [customFieldsFormGroup]="detailForm.get('customFields')"
-                [customField]="customField"
-            ></vdr-custom-field-control>
-        </ng-container>
+        <vdr-tabbed-custom-fields
+            entityName="ShippingMethod"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!(updatePermission | hasPermission)"
+        ></vdr-tabbed-custom-fields>
     </section>
+
+    <vdr-custom-detail-component-host
+        locationId="shipping-method-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 
     <div class="clr-row mt4">
         <div class="clr-col">

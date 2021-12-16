@@ -44,7 +44,9 @@
                     id="visibility"
                 />
                 <label class="visible-toggle">
-                    <ng-container *ngIf="detailForm.value.facet.visible; else private">{{ 'catalog.public' | translate }}</ng-container>
+                    <ng-container *ngIf="detailForm.value.facet.visible; else private">{{
+                        'catalog.public' | translate
+                    }}</ng-container>
                     <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
                 </label>
             </clr-toggle-wrapper>
@@ -73,15 +75,18 @@
 
         <section formGroupName="customFields" *ngIf="customFields.length">
             <label>{{ 'common.custom-fields' | translate }}</label>
-            <ng-container *ngFor="let customField of customFields">
-                <vdr-custom-field-control
-                    *ngIf="customFieldIsSet(customField.name)"
-                    entityName="Facet"
-                    [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
-                    [customField]="customField"
-                ></vdr-custom-field-control>
-            </ng-container>
+            <vdr-tabbed-custom-fields
+                entityName="Facet"
+                [customFields]="customFields"
+                [customFieldsFormGroup]="detailForm.get(['facet', 'customFields'])"
+                [readonly]="!(updatePermission | hasPermission)"
+            ></vdr-tabbed-custom-fields>
         </section>
+        <vdr-custom-detail-component-host
+            locationId="facet-detail"
+            [entity$]="entity$"
+            [detailForm]="detailForm"
+        ></vdr-custom-detail-component-host>
     </section>
 
     <section class="form-block" *ngIf="!(isNew$ | async)">
@@ -93,18 +98,14 @@
                     <th></th>
                     <th>{{ 'common.name' | translate }}</th>
                     <th>{{ 'common.code' | translate }}</th>
-                    <ng-container *ngFor="let customField of customValueFields">
-                        <th>{{ customField.name }}</th>
+                    <ng-container *ngIf="customValueFields.length">
+                        <th>{{ 'common.custom-fields' | translate }}</th>
                     </ng-container>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr
-                    class="facet-value"
-                    *ngFor="let value of values; let i = index"
-                    [formGroupName]="i"
-                >
+                <tr class="facet-value" *ngFor="let value of values; let i = index" [formGroupName]="i">
                     <td class="align-middle">
                         <vdr-entity-info [entity]="value"></vdr-entity-info>
                     </td>
@@ -117,17 +118,15 @@
                         />
                     </td>
                     <td class="align-middle"><input type="text" formControlName="code" readonly /></td>
-                    <ng-container *ngFor="let customField of customValueFields">
-                        <td class="align-middle">
-                            <vdr-custom-field-control
-                                *ngIf="customValueFieldIsSet(i, customField.name)"
-                                entityName="FacetValue"
-                                [showLabel]="false"
-                                [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
-                                [customField]="customField"
-                            ></vdr-custom-field-control>
-                        </td>
-                    </ng-container>
+                    <td class="" *ngIf="customValueFields.length">
+                        <vdr-tabbed-custom-fields
+                            entityName="FacetValue"
+                            [customFields]="customValueFields"
+                            [compact]="true"
+                            [customFieldsFormGroup]="detailForm.get(['values', i, 'customFields'])"
+                            [readonly]="!(updatePermission | hasPermission)"
+                        ></vdr-tabbed-custom-fields>
+                    </td>
                     <td class="align-middle">
                         <vdr-dropdown>
                             <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>

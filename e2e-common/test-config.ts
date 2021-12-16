@@ -35,6 +35,16 @@ registerInitializer('mysql', new MysqlInitializer());
 registerInitializer('mariadb', new MysqlInitializer());
 
 /**
+ * Increase default timeout in CI because occasionally valid tests fail due to
+ * timeouts.
+ */
+if (process.env.CI) {
+    jest.setTimeout(30 * 1000);
+} else {
+    jest.setTimeout(15 * 1000);
+}
+
+/**
  * For local debugging of the e2e tests, we set a very long timeout value otherwise tests will
  * automatically fail for going over the 5 second default timeout.
  */
@@ -42,15 +52,6 @@ if (process.env.E2E_DEBUG) {
     // tslint:disable-next-line:no-console
     console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
     jest.setTimeout(1800 * 1000);
-} else {
-    jest.setTimeout(15 * 1000);
-}
-/**
- * Increase default timeout in CI because occasionally valid tests fail due to
- * timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(30 * 1000);
 }
 
 export const testConfig = () => {

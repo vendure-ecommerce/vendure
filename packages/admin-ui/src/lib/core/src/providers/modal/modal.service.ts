@@ -8,11 +8,16 @@ import { SimpleDialogComponent } from '../../shared/components/simple-dialog/sim
 import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 /**
+ * @description
  * Any component intended to be used with the ModalService.fromComponent() method must implement
  * this interface.
+ *
+ * @docsCategory providers
+ * @docsPage ModalService
  */
 export interface Dialog<R = any> {
     /**
+     * @description
      * Function to be invoked in order to close the dialog when the action is complete.
      * The Observable returned from the .fromComponent() method will emit the value passed
      * to this method and then complete.
@@ -27,7 +32,11 @@ export interface DialogButtonConfig<T> {
 }
 
 /**
+ * @description
  * Configures a generic modal dialog.
+ *
+ * @docsCategory providers
+ * @docsPage ModalService
  */
 export interface DialogConfig<T> {
     title: string;
@@ -37,27 +46,44 @@ export interface DialogConfig<T> {
 }
 
 /**
+ * @description
  * Options to configure the behaviour of the modal.
+ *
+ * @docsCategory providers
+ * @docsPage ModalService
  */
 export interface ModalOptions<T> {
-    /** Sets the width of the dialog */
+    /**
+     * @description
+     * Sets the width of the dialog
+     */
     size?: 'sm' | 'md' | 'lg' | 'xl';
-    /** Sets the vertical alignment of the dialog */
+    /**
+     * @description
+     * Sets the vertical alignment of the dialog
+     */
     verticalAlign?: 'top' | 'center' | 'bottom';
     /**
+     * @description
      * When true, the "x" icon is shown
      * and clicking it or the mask will close the dialog
      */
     closable?: boolean;
     /**
-     * Values to be passed directly to the component.
+     * @description
+     * Values to be passed directly to the component being instantiated inside the dialog.
      */
     locals?: Partial<T>;
 }
 
 /**
+ * @description
  * This service is responsible for instantiating a ModalDialog component and
  * embedding the specified component within.
+ *
+ * @docsCategory providers
+ * @docsPage ModalService
+ * @docsWeight 0
  */
 @Injectable({
     providedIn: 'root',
@@ -69,12 +95,13 @@ export class ModalService {
     ) {}
 
     /**
+     * @description
      * Create a modal from a component. The component must implement the {@link Dialog} interface.
      * Additionally, the component should include templates for the title and the buttons to be
      * displayed in the modal dialog. See example:
      *
      * @example
-     * ```
+     * ```HTML
      * class MyDialog implements Dialog {
      *  resolveWith: (result?: any) => void;
      *
@@ -90,20 +117,21 @@ export class ModalService {
      * }
      * ```
      *
-     * ```
+     * @example
+     * ```HTML
      * <ng-template vdrDialogTitle>Title of the modal</ng-template>
      *
      * <p>
-     *     My Content
+     *   My Content
      * </p>
      *
      * <ng-template vdrDialogButtons>
-     *     <button type="button"
-     *             class="btn"
-     *             (click)="cancel()">Cancel</button>
-     *     <button type="button"
-     *             class="btn btn-primary"
-     *             (click)="okay()">Okay</button>
+     *   <button type="button"
+     *           class="btn"
+     *           (click)="cancel()">Cancel</button>
+     *   <button type="button"
+     *           class="btn btn-primary"
+     *           (click)="okay()">Okay</button>
      * </ng-template>
      * ```
      */
@@ -114,13 +142,13 @@ export class ModalService {
         const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
 
         return from(this.overlayHostService.getHostView()).pipe(
-            mergeMap((hostView) => {
+            mergeMap(hostView => {
                 const modalComponentRef = hostView.createComponent(modalFactory);
                 const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
                 modalInstance.childComponentType = component;
                 modalInstance.options = options;
 
-                return new Observable<R>((subscriber) => {
+                return new Observable<R>(subscriber => {
                     modalInstance.closeModal = (result: R) => {
                         modalComponentRef.destroy();
                         subscriber.next(result);
@@ -132,6 +160,7 @@ export class ModalService {
     }
 
     /**
+     * @description
      * Displays a modal dialog with the provided title, body and buttons.
      */
     dialog<T>(config: DialogConfig<T>): Observable<T | undefined> {

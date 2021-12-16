@@ -26,7 +26,8 @@ import { map, mergeMap, take } from 'rxjs/operators';
 })
 export class ChannelDetailComponent
     extends BaseDetailComponent<Channel.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     customFields: CustomFieldConfig[];
     zones$: Observable<GetZones.Zones[]>;
     detailForm: FormGroup;
@@ -67,10 +68,6 @@ export class ChannelDetailComponent
 
     ngOnDestroy() {
         this.destroy();
-    }
-
-    customFieldIsSet(name: string): boolean {
-        return !!this.detailForm.get(['customFields', name]);
     }
 
     saveButtonEnabled(): boolean {
@@ -177,16 +174,7 @@ export class ChannelDetailComponent
             defaultTaxZoneId: entity.defaultTaxZone ? entity.defaultTaxZone.id : '',
         });
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
-
-            for (const fieldDef of this.customFields) {
-                const key = fieldDef.name;
-                const value = (entity as any).customFields[key];
-                const control = customFieldsGroup.get(key);
-                if (control) {
-                    control.patchValue(value);
-                }
-            }
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);
         }
         if (entity.code === DEFAULT_CHANNEL_CODE) {
             const codeControl = this.detailForm.get('code');

@@ -1,7 +1,11 @@
 <div class="variants-list">
     <div
         class="variant-container card"
-        *ngFor="let variant of variants | paginate: paginationConfig || { itemsPerPage: 10, currentPage: 1 }; trackBy: trackById; let i = index"
+        *ngFor="
+            let variant of variants | paginate: paginationConfig || { itemsPerPage: 10, currentPage: 1 };
+            trackBy: trackById;
+            let i = index
+        "
         [class.disabled]="!formGroupMap.get(variant.id)?.get('enabled')?.value"
     >
         <ng-container *ngIf="formGroupMap.get(variant.id) as formGroup" [formGroup]="formGroup">
@@ -43,7 +47,9 @@
                         <vdr-product-assets
                             [compact]="true"
                             [assets]="pendingAssetChanges[variant.id]?.assets || variant.assets"
-                            [featuredAsset]="pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset"
+                            [featuredAsset]="
+                                pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset
+                            "
                             (change)="onAssetChange(variant.id, $event)"
                         ></vdr-product-assets>
                     </div>
@@ -209,17 +215,13 @@
                         <div class="custom-fields">
                             <div class="variant-form-input-row">
                                 <section formGroupName="customFields" *ngIf="customFields.length">
-                                    <!--<label>{{ 'common.custom-fields' | translate }}</label>-->
-                                    <ng-container *ngFor="let customField of customFields">
-                                        <vdr-custom-field-control
-                                            *ngIf="formGroup.get(['customFields', customField.name])"
-                                            entityName="ProductVariant"
-                                            [compact]="true"
-                                            [customFieldsFormGroup]="formGroup.get('customFields')"
-                                            [readonly]="!(updatePermission | hasPermission)"
-                                            [customField]="customField"
-                                        ></vdr-custom-field-control>
-                                    </ng-container>
+                                    <vdr-tabbed-custom-fields
+                                        entityName="ProductVariant"
+                                        [customFields]="customFields"
+                                        [compact]="true"
+                                        [customFieldsFormGroup]="formGroup.get('customFields')"
+                                        [readonly]="!(updatePermission | hasPermission)"
+                                    ></vdr-tabbed-custom-fields>
                                 </section>
                             </div>
                         </div>
@@ -241,7 +243,9 @@
                                 <span class="option-group-name">{{ optionGroupName(option.groupId) }}</span>
                                 {{ optionName(option) }}
                             </vdr-chip>
-                            <a [routerLink]="['./', 'options']" class="btn btn-link btn-sm">{{ 'catalog.edit-options' | translate }}...</a>
+                            <a [routerLink]="['./', 'options']" class="btn btn-link btn-sm"
+                                >{{ 'catalog.edit-options' | translate }}...</a
+                            >
                         </div>
                     </div>
                     <div class="flex-spacer"></div>

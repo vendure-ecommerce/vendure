@@ -8,6 +8,7 @@ export type LocalStorageTypeMap = {
     activeChannelToken: string;
     authToken: string;
     uiLanguageCode: LanguageCode;
+    uiLocale: string | undefined;
     contentLanguageCode: LanguageCode;
     orderListLastCustomFilters: any;
     dashboardWidgetLayout: WidgetLayoutDefinition;

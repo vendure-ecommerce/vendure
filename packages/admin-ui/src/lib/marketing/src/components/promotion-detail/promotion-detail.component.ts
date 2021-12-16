@@ -8,6 +8,7 @@ import {
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreatePromotionInput,
+    CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
     getConfigArgValue,
@@ -27,10 +28,13 @@ import { mergeMap, take } from 'rxjs/operators';
     styleUrls: ['./promotion-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Fragment>
-    implements OnInit, OnDestroy {
+export class PromotionDetailComponent
+    extends BaseDetailComponent<Promotion.Fragment>
+    implements OnInit, OnDestroy
+{
     promotion$: Observable<Promotion.Fragment>;
     detailForm: FormGroup;
+    customFields: CustomFieldConfig[];
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
 
@@ -47,6 +51,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('Promotion');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             enabled: true,
@@ -56,6 +61,9 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             endsAt: null,
             conditions: this.formBuilder.array([]),
             actions: this.formBuilder.array([]),
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -136,6 +144,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             endsAt: formValue.endsAt,
             conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
             actions: this.mapOperationsToInputs(this.actions, formValue.actions),
+            customFields: formValue.customFields,
         };
         this.dataService.promotion.createPromotion(input).subscribe(
             ({ createPromotion }) => {
@@ -180,6 +189,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                         endsAt: formValue.endsAt,
                         conditions: this.mapOperationsToInputs(this.conditions, formValue.conditions),
                         actions: this.mapOperationsToInputs(this.actions, formValue.actions),
+                        customFields: formValue.customFields,
                     };
                     return this.dataService.promotion.updatePromotion(input);
                 }),
@@ -216,6 +226,9 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             this.addOperation('conditions', o);
         });
         entity.actions.forEach(o => this.addOperation('actions', o));
+        if (this.customFields.length) {
+            this.setCustomFieldFormValues(this.customFields, this.detailForm.get('customFields'), entity);
+        }
     }
 
     /**

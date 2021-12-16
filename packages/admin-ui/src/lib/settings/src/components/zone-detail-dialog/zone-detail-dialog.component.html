@@ -2,10 +2,22 @@
     <span *ngIf="zone.id">{{ 'settings.update-zone' | translate }}</span>
     <span *ngIf="!zone.id">{{ 'settings.create-zone' | translate }}</span>
 </ng-template>
-
-<vdr-form-field [label]="'common.name' | translate" for="name">
-    <input id="name" type="text" [(ngModel)]="zone.name" [readonly]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)" />
-</vdr-form-field>
+<form [formGroup]="form">
+    <vdr-form-field [label]="'common.name' | translate" for="name">
+        <input
+            id="name"
+            type="text"
+            formControlName="name"
+            [readonly]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-tabbed-custom-fields
+        entityName="Zone"
+        [customFields]="customFields"
+        [customFieldsFormGroup]="form.get('customFields')"
+        [readonly]="!(['UpdateSettings', 'UpdateZone'] | hasPermission)"
+    ></vdr-tabbed-custom-fields>
+</form>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>

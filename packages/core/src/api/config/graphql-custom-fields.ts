@@ -1,4 +1,3 @@
-import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever, getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
@@ -6,8 +5,6 @@ import {
     GraphQLInputObjectType,
     GraphQLList,
     GraphQLSchema,
-    InputObjectTypeDefinitionNode,
-    ObjectTypeDefinitionNode,
     parse,
 } from 'graphql';
 
@@ -386,6 +383,52 @@ export function addOrderLineCustomFieldsInput(
     }
 
     return extendedSchema;
+}
+
+export function addShippingMethodQuoteCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    shippingMethodCustomFields: CustomFieldConfig[],
+) {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    let customFieldTypeDefs = ``;
+    const publicCustomFields = shippingMethodCustomFields.filter(f => f.public !== false);
+    if (0 < publicCustomFields.length) {
+        customFieldTypeDefs = `
+            extend type ShippingMethodQuote {
+                customFields: ShippingMethodCustomFields
+            }
+        `;
+    } else {
+        customFieldTypeDefs = `
+            extend type ShippingMethodQuote {
+                customFields: JSON
+            }
+        `;
+    }
+    return extendSchema(schema, parse(customFieldTypeDefs));
+}
+
+export function addPaymentMethodQuoteCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    paymentMethodCustomFields: CustomFieldConfig[],
+) {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    let customFieldTypeDefs = ``;
+    const publicCustomFields = paymentMethodCustomFields.filter(f => f.public !== false);
+    if (0 < publicCustomFields.length) {
+        customFieldTypeDefs = `
+            extend type PaymentMethodQuote {
+                customFields: PaymentMethodCustomFields
+            }
+        `;
+    } else {
+        customFieldTypeDefs = `
+            extend type PaymentMethodQuote {
+                customFields: JSON
+            }
+        `;
+    }
+    return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
 /**

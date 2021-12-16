@@ -1,6 +1,7 @@
 import {
+    ActiveRouteData,
     BaseExtensionMessage,
-    ExtensionMesssage,
+    ExtensionMessage,
     MessageResponse,
     NotificationMessage,
     WatchQueryFetchPolicy,
@@ -26,7 +27,42 @@ export function setTargetOrigin(value: string) {
 
 /**
  * @description
+ * Retrieves information about the current route of the host application, since it is not possible
+ * to otherwise get this information from within the child iframe.
+ *
+ * @example
+ * ```TypeScript
+ * import { getActivatedRoute } from '\@vendure/ui-devkit';
+ *
+ * const route = await getActivatedRoute();
+ * const slug = route.params.slug;
+ * ```
+ * @docsCategory ui-devkit
+ * @docsPage UiDevkitClient
+ */
+export function getActivatedRoute(): Promise<ActiveRouteData> {
+    return sendMessage('active-route', {}).toPromise();
+}
+
+/**
+ * @description
  * Perform a GraphQL query and returns either an Observable or a Promise of the result.
+ *
+ * @example
+ * ```TypeScript
+ * import { graphQlQuery } from '\@vendure/ui-devkit';
+ *
+ * const productList = await graphQlQuery(`
+ *   query GetProducts($skip: Int, $take: Int) {
+ *       products(options: { skip: $skip, take: $take }) {
+ *           items { id, name, enabled },
+ *           totalItems
+ *       }
+ *   }`, {
+ *     skip: 0,
+ *     take: 10,
+ *   }).then(data => data.products);
+ * ```
  *
  * @docsCategory ui-devkit
  * @docsPage UiDevkitClient
@@ -54,6 +90,22 @@ export function graphQlQuery<T, V extends { [key: string]: any }>(
  * @description
  * Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
  *
+ * @example
+ * ```TypeScript
+ * import { graphQlMutation } from '\@vendure/ui-devkit';
+ *
+ * const disableProduct = (id: string) => {
+ *   return graphQlMutation(`
+ *     mutation DisableProduct($id: ID!) {
+ *       updateProduct(input: { id: $id, enabled: false }) {
+ *         id
+ *         enabled
+ *       }
+ *     }`, { id })
+ *     .then(data => data.updateProduct)
+ * }
+ * ```
+ *
  * @docsCategory ui-devkit
  * @docsPage UiDevkitClient
  */
@@ -79,20 +131,25 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
  * @description
  * Display a toast notification.
  *
+ * @example
+ * ```TypeScript
+ * import { notify } from '\@vendure/ui-devkit';
+ *
+ * notify({
+ *   message: 'Updated Product',
+ *   type: 'success'
+ * });
+ * ```
+ *
  * @docsCategory ui-devkit
  * @docsPage UiDevkitClient
  */
-export function notify(options: NotificationMessage['data']) {
+export function notify(options: NotificationMessage['data']): void {
     sendMessage('notification', options).toPromise();
 }
 
-function sendMessage<T extends ExtensionMesssage>(type: T['type'], data: T['data']): Observable<any> {
-    const requestId =
-        type +
-        '__' +
-        Math.random()
-            .toString(36)
-            .substr(3);
+function sendMessage<T extends ExtensionMessage>(type: T['type'], data: T['data']): Observable<any> {
+    const requestId = type + '__' + Math.random().toString(36).substr(3);
     const message: BaseExtensionMessage = {
         requestId,
         type,

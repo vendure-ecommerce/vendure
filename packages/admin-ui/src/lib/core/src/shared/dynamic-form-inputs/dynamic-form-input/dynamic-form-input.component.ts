@@ -55,7 +55,8 @@ type InputListItem = {
     ],
 })
 export class DynamicFormInputComponent
-    implements OnInit, OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor {
+    implements OnInit, OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor
+{
     @Input() def: ConfigArgDefinition | CustomFieldConfig;
     @Input() readonly: boolean;
     @Input() control: FormControl;
@@ -148,6 +149,7 @@ export class DynamicFormInputComponent
                                 this.onChange(val);
                                 this.control.patchValue(val, { emitEvent: false });
                             });
+                        setTimeout(() => this.changeDetectorRef.markForCheck());
                     }
                 };
 
@@ -278,9 +280,9 @@ export class DynamicFormInputComponent
         this.changeDetectorRef.markForCheck();
     }
 
-    private getInputComponentConfig(
-        argDef: ConfigArgDefinition | CustomFieldConfig,
-    ): { component: DefaultFormComponentId } {
+    private getInputComponentConfig(argDef: ConfigArgDefinition | CustomFieldConfig): {
+        component: DefaultFormComponentId;
+    } {
         if (this.hasUiConfig(argDef) && argDef.ui.component) {
             return argDef.ui;
         }

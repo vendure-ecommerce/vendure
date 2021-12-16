@@ -130,33 +130,18 @@
 
                             <section formGroupName="customFields" *ngIf="customFields.length">
                                 <label>{{ 'common.custom-fields' | translate }}</label>
-                                <ng-container *ngFor="let customField of customFields">
-                                    <vdr-custom-field-control
-                                        *ngIf="customFieldIsSet(customField.name)"
-                                        entityName="Product"
-                                        [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
-                                        [customField]="customField"
-                                        [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
-                                    ></vdr-custom-field-control>
-                                </ng-container>
+                                <vdr-tabbed-custom-fields
+                                    entityName="Product"
+                                    [customFields]="customFields"
+                                    [customFieldsFormGroup]="detailForm.get(['product', 'customFields'])"
+                                    [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                                ></vdr-tabbed-custom-fields>
                             </section>
-
-                            <div class="facets">
-                                <vdr-facet-value-chip
-                                    *ngFor="let facetValue of facetValues$ | async"
-                                    [facetValue]="facetValue"
-                                    [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
-                                    (remove)="removeProductFacetValue(facetValue.id)"
-                                ></vdr-facet-value-chip>
-                                <button
-                                    class="btn btn-sm btn-secondary"
-                                    *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
-                                    (click)="selectProductFacetValue()"
-                                >
-                                    <clr-icon shape="plus"></clr-icon>
-                                    {{ 'catalog.add-facets' | translate }}
-                                </button>
-                            </div>
+                            <vdr-custom-detail-component-host
+                                locationId="product-detail"
+                                [entity$]="entity$"
+                                [detailForm]="detailForm"
+                            ></vdr-custom-detail-component-host>
                         </section>
                     </div>
                     <div class="clr-col-md-auto">
@@ -165,6 +150,22 @@
                             [featuredAsset]="assetChanges.featuredAsset || product.featuredAsset"
                             (change)="assetChanges = $event"
                         ></vdr-product-assets>
+                        <div class="facets">
+                            <vdr-facet-value-chip
+                                *ngFor="let facetValue of facetValues$ | async"
+                                [facetValue]="facetValue"
+                                [removable]="['UpdateCatalog', 'UpdateProduct'] | hasPermission"
+                                (remove)="removeProductFacetValue(facetValue.id)"
+                            ></vdr-facet-value-chip>
+                            <button
+                                class="btn btn-sm btn-secondary"
+                                *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
+                                (click)="selectProductFacetValue()"
+                            >
+                                <clr-icon shape="plus"></clr-icon>
+                                {{ 'catalog.add-facets' | translate }}
+                            </button>
+                        </div>
                     </div>
                 </div>
 

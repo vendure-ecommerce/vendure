@@ -38,8 +38,8 @@ mutation {
   updateProduct(input: {
     id: 1
     customFields: {
-        infoUrl: "https://some-url.com",
-        downloadable: true,
+      infoUrl: "https://some-url.com",
+      downloadable: true,
     }
     translations: [
       { languageCode: en, customFields: { shortName: "foo" } }  
@@ -54,6 +54,104 @@ mutation {
   }
 }
 ```
+
+## CustomField UI Form Inputs
+
+By default, the Admin UI will use an appropriate input component depending on the `type` of the custom field.
+For instance, `string` fields will use a `<input type="text">` component, and `boolean` fields will use a `<input type="checkbox">` component.
+
+These defaults can be overridden by using the `ui` property of the custom field config object. For example, if we want a number to be displayed as a currency input:
+
+```TypeScript {hl_lines=[8]}
+const config = {
+  // ...
+  customFields: {
+    ProductVariant: [
+      { 
+        name: 'rrp',
+        type: 'int', 
+        ui: { component: 'currency-form-input' },
+      },
+    ]
+  }
+}
+```
+
+The built-in form inputs are listed in the [DefaultFormConfigHash docs]({{< relref "default-form-config-hash" >}}).
+
+If you want to use a completely custom form input component which is not provided by the Admin UI, you'll need to create a plugin which [extends the Admin UI]({{< relref "extending-the-admin-ui" >}}) with [custom form inputs]({{< relref "custom-form-inputs" >}}). 
+
+
+## Configurable Order Products
+
+One common use of custom fields is to support configurable products. Imagine we are selling pens which allow some text to be engraved. To do this we would add a **custom field on the OrderLine**:
+
+```TypeScript
+OrderLine: [
+  {
+    name: 'engravingText',
+    type: 'string',
+    label: [
+      {
+        languageCode: LanguageCode.en,
+        value: 'The text to engrave on the product' 
+      },
+    ],
+  },
+]
+```
+
+Once defined, the [addItemToOrder mutation]({{< relref "/docs/graphql-api/shop/mutations" >}}#additemtoorder) will have a third argument available, which accepts values for the custom field defined above:
+
+```GraphQL
+mutation {
+  addItemToOrder(
+    productVariantId: "42"
+    quantity: 1
+    customFields: {
+      engravingText: "Thanks for all the fish!"
+    }
+  ) {
+    ...on Order {
+      id
+      lines {
+        id
+        quantity
+        customFields {
+          engravingText
+        }
+      }
+    }
+  }
+}
+```
+
+Furthermore, the values of these OrderLine custom fields can even be used to modify the price. This is done by defining a custom [OrderItemPriceCalculationStrategy]({{< relref "order-item-price-calculation-strategy" >}}):
+
+```TypeScript
+import { RequestContext, PriceCalculationResult, 
+  ProductVariant, OrderItemPriceCalculationStrategy } from '@vendure/core';
+
+export class EngravingPriceStrategy implements OrderItemPriceCalculationStrategy {
+  
+  calculateUnitPrice(
+    ctx: RequestContext,
+    productVariant: ProductVariant,
+    customFields: { engravingText?: string },
+  ) {
+    let price = productVariant.listPrice;
+    if (customFields.engravingText) {
+      // Add $5 for engraving
+      price += 500;
+    }
+    return {
+      price,
+      priceIncludesTax: productVariant.listPriceIncludesTax,
+    };
+  }
+}
+```
+
 
 ## TypeScript Typings
 
@@ -103,6 +201,12 @@ When this file is then imported into our service file (either directly or indire
 return product.customFields.infoUrl; 
 // no error, plus TS autocomplete works.
 ```
+{{< alert "warning" >}}
+Note that for the typings to work correctly, **order of imports matters**.
+
+One way to ensure that your custom field typings always get imported first is to include them as the first item in the tsconfig "include" array.
+{{< /alert >}}
+
 
 {{< alert "primary" >}}
 For a working example of this setup, see the [real-world-vendure repo](https://github.com/vendure-ecommerce/real-world-vendure/blob/master/src/plugins/reviews/types.ts)
@@ -273,7 +377,9 @@ mutation {
   }
 }
 ```
-#### UI for relation type
+
+{{% alert %}}
+**UI for relation type**
 
 The Admin UI app has built-in selection components for "relation" custom fields which reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will instead see the message:
 
@@ -281,4 +387,5 @@ The Admin UI app has built-in selection components for "relation" custom fields 
 No input component configured for "<entity>" type
 ```
 
-In this case, you will need to create a UI extension which defines a custom field control for that custom field. You can read more about this in the [CustomField Controls guide]({{< relref "custom-field-controls" >}})
+In this case, you will need to create a UI extension which defines a custom field control for that custom field. You can read more about this in the [custom form input guide]({{< relref "custom-form-inputs" >}})
+{{< /alert >}}

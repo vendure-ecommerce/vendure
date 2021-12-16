@@ -44,7 +44,8 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
 })
 export class OrderDetailComponent
     extends BaseDetailComponent<OrderDetail.Fragment>
-    implements OnInit, OnDestroy {
+    implements OnInit, OnDestroy
+{
     detailForm = new FormGroup({});
     history$: Observable<GetOrderHistory.Items[] | undefined>;
     nextStates$: Observable<string[]>;
@@ -266,6 +267,7 @@ export class OrderDetailComponent
     }
 
     addManualPayment(order: OrderDetailFragment) {
+        const priorState = order.state;
         this.modalService
             .fromComponent(AddManualPaymentDialogComponent, {
                 closable: true,
@@ -291,10 +293,16 @@ export class OrderDetailComponent
                     switch (addManualPaymentToOrder.__typename) {
                         case 'Order':
                             this.notificationService.success(_('order.add-payment-to-order-success'));
-                            return this.orderTransitionService.transitionToPreModifyingState(
-                                order.id,
-                                order.nextStates,
-                            );
+                            if (priorState === 'ArrangingAdditionalPayment') {
+                                return this.orderTransitionService.transitionToPreModifyingState(
+                                    order.id,
+                                    order.nextStates,
+                                );
+                            } else {
+                                return this.dataService.order
+                                    .transitionToState(this.id, 'PaymentSettled')
+                                    .pipe(mapTo('PaymentSettled'));
+                            }
                         case 'ManualPaymentStateError':
                             this.notificationService.error(addManualPaymentToOrder.message);
                             return EMPTY;
@@ -518,9 +526,8 @@ export class OrderDetailComponent
                         return of(undefined);
                     }
 
-                    const operations: Array<
-                        Observable<RefundOrder.RefundOrder | CancelOrder.CancelOrder>
-                    > = [];
+                    const operations: Array<Observable<RefundOrder.RefundOrder | CancelOrder.CancelOrder>> =
+                        [];
                     if (input.refund.lines.length) {
                         operations.push(
                             this.dataService.order

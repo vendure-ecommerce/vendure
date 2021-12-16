@@ -34,6 +34,7 @@ import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.
 import { ChipComponent } from './components/chip/chip.component';
 import { ConfigurableInputComponent } from './components/configurable-input/configurable-input.component';
 import { CurrencyInputComponent } from './components/currency-input/currency-input.component';
+import { CustomDetailComponentHostComponent } from './components/custom-detail-component-host/custom-detail-component-host.component';
 import { CustomFieldControlComponent } from './components/custom-field-control/custom-field-control.component';
 import { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 import { DataTableColumnComponent } from './components/data-table/data-table-column.component';
@@ -74,15 +75,18 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { StatusBadgeComponent } from './components/status-badge/status-badge.component';
+import { TabbedCustomFieldsComponent } from './components/tabbed-custom-fields/tabbed-custom-fields.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
 import { TagSelectorComponent } from './components/tag-selector/tag-selector.component';
 import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
 import { TitleInputComponent } from './components/title-input/title-input.component';
+import { UiExtensionPointComponent } from './components/ui-extension-point/ui-extension-point.component';
 import { DisabledDirective } from './directives/disabled.directive';
 import { IfDefaultChannelActiveDirective } from './directives/if-default-channel-active.directive';
 import { IfMultichannelDirective } from './directives/if-multichannel.directive';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
+import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/date-form-input.component';
@@ -102,6 +106,7 @@ import {
 } from './dynamic-form-inputs/relation-form-input/relation-card/relation-card.component';
 import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-input/relation-form-input.component';
 import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
+import { RichTextFormInputComponent } from './dynamic-form-inputs/rich-text-form-input/rich-text-form-input.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
@@ -115,6 +120,7 @@ import { LocaleCurrencyNamePipe } from './pipes/locale-currency-name.pipe';
 import { LocaleCurrencyPipe } from './pipes/locale-currency.pipe';
 import { LocaleDatePipe } from './pipes/locale-date.pipe';
 import { LocaleLanguageNamePipe } from './pipes/locale-language-name.pipe';
+import { LocaleRegionNamePipe } from './pipes/locale-region-name.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
@@ -216,11 +222,15 @@ const DECLARATIONS = [
     LocaleDatePipe,
     LocaleCurrencyPipe,
     LocaleLanguageNamePipe,
+    LocaleRegionNamePipe,
     TagSelectorComponent,
     ManageTagsDialogComponent,
     RelationSelectorDialogComponent,
     RelationCardComponent,
     StatusBadgeComponent,
+    TabbedCustomFieldsComponent,
+    UiExtensionPointComponent,
+    CustomDetailComponentHostComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -242,6 +252,8 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
     TextareaFormInputComponent,
+    RichTextFormInputComponent,
+    JsonEditorFormInputComponent,
 ];
 
 @NgModule({
