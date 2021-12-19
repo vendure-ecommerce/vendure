@@ -82,6 +82,7 @@ export class SimpleGraphQLClient {
         queryParams?: QueryParams,
     ): Promise<T> {
         const response = await this.makeGraphQlRequest(query, variables, queryParams);
+        
         const result = await this.getResult(response);
 
         if (response.ok && !result.errors && result.data) {
