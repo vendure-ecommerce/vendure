@@ -13,7 +13,7 @@ export class JobRecord extends VendureEntity {
     @Column()
     queueName: string;
 
-    @Column('simple-json', { nullable: true })
+    @Column('longtext', { nullable: true })
     data: any;
 
     @Column('varchar')
