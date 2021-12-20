@@ -1,3 +1,19 @@
+## <small>1.4.2 (2021-12-20)</small>
+
+
+#### Fixes
+
+* **admin-ui** Allow CustomerGroup to be created ([2782df8](https://github.com/vendure-ecommerce/vendure/commit/2782df8)), closes [#1300](https://github.com/vendure-ecommerce/vendure/issues/1300)
+* **admin-ui** Correct the warning about the division in Sass (#1294) ([0e4e952](https://github.com/vendure-ecommerce/vendure/commit/0e4e952)), closes [#1294](https://github.com/vendure-ecommerce/vendure/issues/1294) [#1293](https://github.com/vendure-ecommerce/vendure/issues/1293)
+* **admin-ui** Fix cmd+u shortcut on macOS (#1291) ([0b74cc9](https://github.com/vendure-ecommerce/vendure/commit/0b74cc9)), closes [#1291](https://github.com/vendure-ecommerce/vendure/issues/1291)
+* **admin-ui** Fix null property access error for configurable args ([3f7d46d](https://github.com/vendure-ecommerce/vendure/commit/3f7d46d)), closes [#1296](https://github.com/vendure-ecommerce/vendure/issues/1296)
+* **admin-ui** Remove deprecated showCircularDependencies option ([a30d639](https://github.com/vendure-ecommerce/vendure/commit/a30d639))
+* **core** Correctly record stock movement when modifying orders ([a983f24](https://github.com/vendure-ecommerce/vendure/commit/a983f24)), closes [#1210](https://github.com/vendure-ecommerce/vendure/issues/1210)
+* **core** EntityHydrator correctly handles custom field relations ([fd3e642](https://github.com/vendure-ecommerce/vendure/commit/fd3e642)), closes [#1284](https://github.com/vendure-ecommerce/vendure/issues/1284)
+* **core** Fix email verification for already-verified accounts (#1304) ([2f17b9a](https://github.com/vendure-ecommerce/vendure/commit/2f17b9a)), closes [#1304](https://github.com/vendure-ecommerce/vendure/issues/1304) [#1303](https://github.com/vendure-ecommerce/vendure/issues/1303)
+* **core** Handle search job buffer timeout errors, increase timeout ([8797456](https://github.com/vendure-ecommerce/vendure/commit/8797456)), closes [#1287](https://github.com/vendure-ecommerce/vendure/issues/1287)
+* **core** Handle substring search terms for postgres & mysql ([81e3672](https://github.com/vendure-ecommerce/vendure/commit/81e3672)), closes [#1277](https://github.com/vendure-ecommerce/vendure/issues/1277)
+
 ## <small>1.4.1 (2021-12-14)</small>
 
 
