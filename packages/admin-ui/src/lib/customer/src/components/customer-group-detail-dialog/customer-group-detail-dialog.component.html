@@ -22,7 +22,7 @@
 </form>
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button type="submit" (click)="save()" [disabled]="!group.name" class="btn btn-primary">
+    <button type="submit" (click)="save()" [disabled]="!form.valid" class="btn btn-primary">
         <span *ngIf="group.id">{{ 'customer.update-customer-group' | translate }}</span>
         <span *ngIf="!group.id">{{ 'customer.create-customer-group' | translate }}</span>
     </button>
