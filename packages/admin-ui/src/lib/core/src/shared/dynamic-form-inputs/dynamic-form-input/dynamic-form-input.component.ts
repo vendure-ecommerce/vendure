@@ -192,7 +192,7 @@ export class DynamicFormInputComponent
 
     private updateBindings(changes: SimpleChanges, componentRef: ComponentRef<FormInputComponent>) {
         if ('def' in changes) {
-            componentRef.instance.config = this.isConfigArgDef(this.def) ? this.def.ui : this.def;
+            componentRef.instance.config = simpleDeepClone(this.def);
         }
         if ('readonly' in changes) {
             componentRef.instance.readonly = this.readonly;
@@ -241,7 +241,7 @@ export class DynamicFormInputComponent
     ) {
         const componentRef = viewContainerRef.createComponent(factory);
         const { instance } = componentRef;
-        instance.config = simpleDeepClone(this.isConfigArgDef(this.def) ? this.def.ui : this.def);
+        instance.config = simpleDeepClone(this.def);
         instance.formControl = formControl;
         instance.readonly = this.readonly;
         componentRef.injector.get(ChangeDetectorRef).markForCheck();
