@@ -424,11 +424,9 @@ export class CustomerService {
      */
     async refreshVerificationToken(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.getUserByEmailAddress(ctx, emailAddress);
-        if (user) {
+        if (user && !user.verified) {
             await this.userService.setVerificationToken(ctx, user);
-            if (!user.verified) {
-                this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
-            }
+            this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
         }
     }
 
