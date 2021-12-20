@@ -34,7 +34,6 @@
                 "./src/lib/static/styles"
               ]
             },
-            "showCircularDependencies": false,
             "allowedCommonJsDependencies": [
               "graphql-tag",
               "zen-observable",
