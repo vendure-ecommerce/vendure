@@ -90,6 +90,7 @@ import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
+import { OrderEvent } from '../../event-bus/events/order-event';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -384,6 +385,7 @@ export class OrderService {
         }
         await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
+        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
         const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
         if (isGraphQlErrorResult(transitionResult)) {
             // this should never occur, so we will throw rather than return
@@ -400,7 +402,9 @@ export class OrderService {
         let order = await this.getOrderOrThrow(ctx, orderId);
         order = patchEntity(order, { customFields });
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, order);
-        return this.connection.getRepository(ctx, Order).save(order);
+        const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
+        this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        return updatedOrder;
     }
 
     /**
