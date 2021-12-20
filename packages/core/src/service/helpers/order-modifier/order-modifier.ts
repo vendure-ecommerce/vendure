@@ -182,6 +182,14 @@ export class OrderModifier {
             orderLine.items = await this.connection
                 .getRepository(ctx, OrderItem)
                 .find({ where: { line: orderLine } });
+            if (!order.active) {
+                await this.stockMovementService.createAllocationsForOrderLines(ctx, [
+                    {
+                        orderLine,
+                        quantity: quantity - currentQuantity,
+                    },
+                ]);
+            }
         } else if (quantity < currentQuantity) {
             if (order.active) {
                 // When an Order is still active, it is fine to just delete
@@ -199,9 +207,9 @@ export class OrderModifier {
                 // When an Order is not active (i.e. Customer checked out), then we don't want to just
                 // delete the OrderItems - instead we will cancel them
                 const toSetAsCancelled = orderLine.items.filter(i => !i.cancelled).slice(quantity);
-                const soldItems = toSetAsCancelled.filter(i => !!i.fulfillment);
+                const fulfilledItems = toSetAsCancelled.filter(i => !!i.fulfillment);
                 const allocatedItems = toSetAsCancelled.filter(i => !i.fulfillment);
-                await this.stockMovementService.createCancellationsForOrderItems(ctx, soldItems);
+                await this.stockMovementService.createCancellationsForOrderItems(ctx, fulfilledItems);
                 await this.stockMovementService.createReleasesForOrderItems(ctx, allocatedItems);
                 toSetAsCancelled.forEach(i => (i.cancelled = true));
                 await this.connection.getRepository(ctx, OrderItem).save(toSetAsCancelled, { reload: false });
