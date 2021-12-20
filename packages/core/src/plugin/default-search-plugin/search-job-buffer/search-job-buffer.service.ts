@@ -3,6 +3,7 @@ import { forkJoin } from 'rxjs';
 
 import { ConfigService } from '../../../config/config.service';
 import { isInspectableJobQueueStrategy } from '../../../config/job-queue/inspectable-job-queue-strategy';
+import { Logger } from '../../../config/logger/vendure-logger';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
 import { SubscribableJob } from '../../../job-queue/subscribable-job';
 import { BUFFER_SEARCH_INDEX_UPDATES } from '../constants';
@@ -54,9 +55,13 @@ export class SearchJobBufferService implements OnApplicationBootstrap {
             );
             await forkJoin(
                 ...subscribableCollectionJobs.map(sj =>
-                    sj.updates({ pollInterval: 500, timeoutMs: 3 * 60 * 1000 }),
+                    sj.updates({ pollInterval: 500, timeoutMs: 15 * 60 * 1000 }),
                 ),
-            ).toPromise();
+            )
+                .toPromise()
+                .catch(err => {
+                    Logger.error(err.message);
+                });
         }
         await this.jobQueueService.flush(this.searchIndexJobBuffer);
     }
