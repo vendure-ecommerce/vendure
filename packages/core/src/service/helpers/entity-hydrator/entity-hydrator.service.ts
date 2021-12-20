@@ -22,7 +22,7 @@ import { HydrateOptions } from './entity-hydrator-types';
  *
  * @example
  * ```TypeScript
- * const product = this.productVariantService
+ * const product = await this.productVariantService
  *   .getProductForVariant(ctx, variantId);
  *
  * await this.entityHydrator
@@ -36,6 +36,17 @@ import { HydrateOptions } from './entity-hydrator-types';
  * translatable entities (e.g. Product, Collection, Facet), and if the `applyProductVariantPrices`
  * options is used (see {@link HydrateOptions}), any related ProductVariant will have the correct
  * Channel-specific prices applied to them.
+ *
+ * Custom field relations may also be hydrated:
+ *
+ * @example
+ * ```TypeScript
+ * const customer = await this.customerService
+ *   .findOne(ctx, id);
+ *
+ * await this.entityHydrator
+ *   .hydrate(ctx, customer, { relations: ['customFields.avatar' ]});
+ * ```
  *
  * @docsCategory data-access
  * @since 1.3.0
@@ -156,7 +167,7 @@ export class EntityHydrator {
         const missingRelations: string[] = [];
         for (const relation of options.relations.slice().sort()) {
             if (typeof relation === 'string') {
-                const parts = relation.split('.');
+                const parts = !relation.startsWith('customFields') ? relation.split('.') : [relation];
                 let entity: Record<string, any> | undefined = target;
                 const path = [];
                 for (const part of parts) {

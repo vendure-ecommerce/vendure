@@ -21,6 +21,7 @@ import { VendureEntity } from '../../entity/base/base.entity';
  * @docsCategory Common
  */
 export type EntityRelationPaths<T extends VendureEntity> =
+    | `customFields.${string}`
     | PathsToStringProps1<T>
     | Join<PathsToStringProps2<T>, '.'>
     | TripleDotPath;

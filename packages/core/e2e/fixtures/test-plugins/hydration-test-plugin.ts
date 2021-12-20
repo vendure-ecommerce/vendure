@@ -1,6 +1,8 @@
 /* tslint:disable:no-non-null-assertion */
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
+    Asset,
+    ChannelService,
     Ctx,
     EntityHydrator,
     ID,
@@ -19,6 +21,7 @@ export class TestAdminPluginResolver {
     constructor(
         private connection: TransactionalConnection,
         private orderService: OrderService,
+        private channelService: ChannelService,
         private productVariantService: ProductVariantService,
         private entityHydrator: EntityHydrator,
     ) {}
@@ -88,6 +91,16 @@ export class TestAdminPluginResolver {
         });
         return order?.lines.map(line => line.quantity);
     }
+
+    // Test case for https://github.com/vendure-ecommerce/vendure/issues/1284
+    @Query()
+    async hydrateChannel(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const channel = await this.channelService.findOne(ctx, args.id);
+        await this.entityHydrator.hydrate(ctx, channel!, {
+            relations: ['customFields.thumb'],
+        });
+        return channel;
+    }
 }
 
 @VendurePlugin({
@@ -101,8 +114,13 @@ export class TestAdminPluginResolver {
                 hydrateProductVariant(id: ID!): JSON
                 hydrateOrder(id: ID!): JSON
                 hydrateOrderReturnQuantities(id: ID!): JSON
+                hydrateChannel(id: ID!): JSON
             }
         `,
+    },
+    configuration: config => {
+        config.customFields.Channel.push({ name: 'thumb', type: 'relation', entity: Asset, nullable: true });
+        return config;
     },
 })
 export class HydrationTestPlugin {}
