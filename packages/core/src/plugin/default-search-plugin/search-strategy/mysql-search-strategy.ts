@@ -151,21 +151,21 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 .addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
                 .addSelect(
                     `(SELECT sku_score) +
-                     MATCH (productName) AGAINST (:term) * 2 +
-                     MATCH (productVariantName) AGAINST (:term) * 1.5 +
-                     MATCH (description) AGAINST (:term)* 1`,
+                     MATCH (productName) AGAINST (:term IN BOOLEAN MODE) * 2 +
+                     MATCH (productVariantName) AGAINST (:term IN BOOLEAN MODE) * 1.5 +
+                     MATCH (description) AGAINST (:term IN BOOLEAN MODE) * 1`,
                     'score',
                 )
                 .where(
                     new Brackets(qb1 => {
                         qb1.where('sku LIKE :like_term')
-                            .orWhere('MATCH (productName) AGAINST (:term)')
-                            .orWhere('MATCH (productVariantName) AGAINST (:term)')
-                            .orWhere('MATCH (description) AGAINST (:term)');
+                            .orWhere('MATCH (productName) AGAINST (:term IN BOOLEAN MODE)')
+                            .orWhere('MATCH (productVariantName) AGAINST (:term IN BOOLEAN MODE)')
+                            .orWhere('MATCH (description) AGAINST (:term IN BOOLEAN MODE)');
                     }),
                 )
                 .andWhere('channelId = :channelId')
-                .setParameters({ term, like_term: `%${term}%`, channelId: ctx.channelId });
+                .setParameters({ term: `${term}*`, like_term: `%${term}%`, channelId: ctx.channelId });
 
             qb.innerJoin(`(${termScoreQuery.getQuery()})`, 'term_result', 'inner_productId = si.productId')
                 .addSelect(input.groupByProduct ? 'MAX(term_result.score)' : 'term_result.score', 'score')
