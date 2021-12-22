@@ -18,6 +18,7 @@ export class LatestOrdersWidgetComponent implements OnInit {
                 take: 10,
                 filter: {
                     active: { eq: false },
+                    state: { notEq: 'Cancelled' },
                 },
                 sort: {
                     orderPlacedAt: SortOrder.DESC,
