@@ -1,3 +1,13 @@
+## <small>1.4.3 (2021-12-22)</small>
+
+
+#### Fixes
+
+* **admin-ui** Do not show cancelled orders in latest orders widget ([e842e6e](https://github.com/vendure-ecommerce/vendure/commit/e842e6e))
+* **admin-ui** Fix broken Zone creation dialog ([2bc6f4d](https://github.com/vendure-ecommerce/vendure/commit/2bc6f4d)), closes [#1309](https://github.com/vendure-ecommerce/vendure/issues/1309)
+* **core** Prevent removal of sole SuperAdmin ([a1debff](https://github.com/vendure-ecommerce/vendure/commit/a1debff)), closes [#1307](https://github.com/vendure-ecommerce/vendure/issues/1307)
+* **core** Restore deleted superadmin entities ([498a5c6](https://github.com/vendure-ecommerce/vendure/commit/498a5c6)), closes [#1307](https://github.com/vendure-ecommerce/vendure/issues/1307)
+
 ## <small>1.4.2 (2021-12-20)</small>
 
 
