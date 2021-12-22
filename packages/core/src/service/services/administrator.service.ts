@@ -230,6 +230,32 @@ export class AdministratorService {
                 lastName: 'Admin',
                 roleIds: [superAdminRole.id],
             });
+        } else {
+            const superAdministrator = await this.connection.getRepository(Administrator).findOne({
+                where: {
+                    user: superAdminUser,
+                },
+            });
+            if (!superAdministrator) {
+                const administrator = new Administrator({
+                    emailAddress: superadminCredentials.identifier,
+                    firstName: 'Super',
+                    lastName: 'Admin',
+                });
+                const createdAdministrator = await this.connection
+                    .getRepository(Administrator)
+                    .save(administrator);
+                createdAdministrator.user = superAdminUser;
+                await this.connection.getRepository(Administrator).save(createdAdministrator);
+            } else if (superAdministrator.deletedAt != null) {
+                superAdministrator.deletedAt = null;
+                await this.connection.getRepository(Administrator).save(superAdministrator);
+            }
+
+            if (superAdminUser.deletedAt != null) {
+                superAdminUser.deletedAt = null;
+                await this.connection.getRepository(User).save(superAdminUser);
+            }
         }
     }
 }
