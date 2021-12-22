@@ -360,6 +360,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         .createQueryBuilder('product')
                         .select('product.id')
                         .where('product.deletedAt IS NOT NULL')
+                        .skip(skip)
+                        .take(REINDEX_CHUNK_SIZE)
                         .getMany();
 
                     for (const { id: deletedProductId } of deletedProductIds) {
