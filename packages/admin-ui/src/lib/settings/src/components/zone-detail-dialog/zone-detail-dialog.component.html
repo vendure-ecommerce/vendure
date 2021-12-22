@@ -21,7 +21,7 @@
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button type="submit" (click)="save()" [disabled]="!zone.name" class="btn btn-primary">
+    <button type="submit" (click)="save()" [disabled]="form.invalid" class="btn btn-primary">
         <span *ngIf="zone.id">{{ 'settings.update-zone' | translate }}</span>
         <span *ngIf="!zone.id">{{ 'settings.create-zone' | translate }}</span>
     </button>

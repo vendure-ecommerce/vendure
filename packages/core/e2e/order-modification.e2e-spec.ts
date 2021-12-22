@@ -26,12 +26,14 @@ import {
 import {
     AddManualPayment,
     AdminTransition,
+    CreateFulfillment,
     CreatePromotion,
     CreateShippingMethod,
     ErrorCode,
     GetOrder,
     GetOrderHistory,
     GetOrderWithModifications,
+    GetStockMovement,
     GlobalFlag,
     HistoryEntryType,
     LanguageCode,
@@ -53,10 +55,13 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ADMIN_TRANSITION_TO_STATE,
+    CREATE_FULFILLMENT,
     CREATE_PROMOTION,
     CREATE_SHIPPING_METHOD,
     GET_ORDER,
     GET_ORDER_HISTORY,
+    GET_PRODUCT_WITH_VARIANTS,
+    GET_STOCK_MOVEMENT,
     UPDATE_CHANNEL,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -233,13 +238,7 @@ describe('Order modification', () => {
     });
 
     it('transition to Modifying state', async () => {
-        const { transitionOrderToState } = await adminClient.query<
-            AdminTransition.Mutation,
-            AdminTransition.Variables
-        >(ADMIN_TRANSITION_TO_STATE, {
-            id: orderId,
-            state: 'Modifying',
-        });
+        const transitionOrderToState = await adminTransitionOrderToState(orderId, 'Modifying');
         orderGuard.assertSuccess(transitionOrderToState);
 
         expect(transitionOrderToState.state).toBe('Modifying');
@@ -1114,13 +1113,7 @@ describe('Order modification', () => {
         });
 
         it('cannot transition back to original state if no payment is set', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: orderId2,
-                state: 'PaymentSettled',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(orderId2, 'PaymentSettled');
             orderGuard.assertErrorResult(transitionOrderToState);
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
             expect(transitionOrderToState!.transitionError).toBe(
@@ -1129,25 +1122,16 @@ describe('Order modification', () => {
         });
 
         it('can transition to ArrangingAdditionalPayment state', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: orderId2,
-                state: 'ArrangingAdditionalPayment',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(
+                orderId2,
+                'ArrangingAdditionalPayment',
+            );
             orderGuard.assertSuccess(transitionOrderToState);
             expect(transitionOrderToState!.state).toBe('ArrangingAdditionalPayment');
         });
 
         it('cannot transition from ArrangingAdditionalPayment when total not covered by Payments', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: orderId2,
-                state: 'PaymentSettled',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(orderId2, 'PaymentSettled');
             orderGuard.assertErrorResult(transitionOrderToState);
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
             expect(transitionOrderToState!.transitionError).toBe(
@@ -1189,13 +1173,7 @@ describe('Order modification', () => {
         });
 
         it('transition back to original state', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: orderId2,
-                state: 'PaymentSettled',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(orderId2, 'PaymentSettled');
             orderGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionOrderToState.state).toBe('PaymentSettled');
@@ -1250,13 +1228,10 @@ describe('Order modification', () => {
         });
 
         it('cannot transition to ArrangingAdditionalPayment state if no payment is needed', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: orderId3,
-                state: 'ArrangingAdditionalPayment',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(
+                orderId3,
+                'ArrangingAdditionalPayment',
+            );
             orderGuard.assertErrorResult(transitionOrderToState);
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
             expect(transitionOrderToState!.transitionError).toBe(
@@ -1265,13 +1240,7 @@ describe('Order modification', () => {
         });
 
         it('can transition to original state', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: orderId3,
-                state: 'PaymentSettled',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(orderId3, 'PaymentSettled');
             orderGuard.assertSuccess(transitionOrderToState);
             expect(transitionOrderToState!.state).toBe('PaymentSettled');
 
@@ -1316,13 +1285,7 @@ describe('Order modification', () => {
         const originalTotalWithTax = order.totalWithTax;
         const surcharge = 300;
 
-        const { transitionOrderToState } = await adminClient.query<
-            AdminTransition.Mutation,
-            AdminTransition.Variables
-        >(ADMIN_TRANSITION_TO_STATE, {
-            id: order.id,
-            state: 'Modifying',
-        });
+        const transitionOrderToState = await adminTransitionOrderToState(order.id, 'Modifying');
         orderGuard.assertSuccess(transitionOrderToState);
 
         expect(transitionOrderToState.state).toBe('Modifying');
@@ -1354,13 +1317,7 @@ describe('Order modification', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/872
     describe('correct price calculations when prices include tax', () => {
         async function modifyOrderLineQuantity(order: TestOrderWithPaymentsFragment) {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: order.id,
-                state: 'Modifying',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(order.id, 'Modifying');
             orderGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionOrderToState.state).toBe('Modifying');
@@ -1473,13 +1430,7 @@ describe('Order modification', () => {
 
             const originalTotalWithTax = order.totalWithTax;
 
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: order.id,
-                state: 'Modifying',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(order.id, 'Modifying');
             orderGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionOrderToState.state).toBe('Modifying');
@@ -1542,19 +1493,259 @@ describe('Order modification', () => {
         });
 
         it('allows transition to PaymentSettled', async () => {
-            const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
-            >(ADMIN_TRANSITION_TO_STATE, {
-                id: order.id,
-                state: 'PaymentSettled',
-            });
+            const transitionOrderToState = await adminTransitionOrderToState(order.id, 'PaymentSettled');
 
             orderGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionOrderToState.state).toBe('PaymentSettled');
         });
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1210
+    describe('updating stock levels', () => {
+        async function getVariant(id: 'T_1' | 'T_2' | 'T_3') {
+            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                {
+                    id: 'T_1',
+                },
+            );
+            return product?.variants.find(v => v.id === id)!;
+        }
+
+        let orderId4: string;
+        let orderId5: string;
+
+        it('updates stock when increasing quantity before fulfillment', async () => {
+            const variant1 = await getVariant('T_2');
+            expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(0);
+
+            const order = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_2',
+                    quantity: 1,
+                },
+            ]);
+            orderId4 = order.id;
+
+            const variant2 = await getVariant('T_2');
+            expect(variant2.stockOnHand).toBe(100);
+            expect(variant2.stockAllocated).toBe(1);
+
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order.id,
+                        adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const variant3 = await getVariant('T_2');
+            expect(variant3.stockOnHand).toBe(100);
+            expect(variant3.stockAllocated).toBe(2);
+        });
+
+        it('updates stock when increasing quantity after fulfillment', async () => {
+            const result = await adminTransitionOrderToState(orderId4, 'ArrangingAdditionalPayment');
+            orderGuard.assertSuccess(result);
+            expect(result!.state).toBe('ArrangingAdditionalPayment');
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId4,
+            });
+            const { addManualPaymentToOrder } = await adminClient.query<
+                AddManualPayment.Mutation,
+                AddManualPayment.Variables
+            >(ADD_MANUAL_PAYMENT, {
+                input: {
+                    orderId: orderId4,
+                    method: 'test',
+                    transactionId: 'ABC123',
+                    metadata: {
+                        foo: 'bar',
+                    },
+                },
+            });
+            orderGuard.assertSuccess(addManualPaymentToOrder);
+            await adminTransitionOrderToState(orderId4, 'PaymentSettled');
+            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                CREATE_FULFILLMENT,
+                {
+                    input: {
+                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                        handler: {
+                            code: manualFulfillmentHandler.code,
+                            arguments: [
+                                { name: 'method', value: 'test method' },
+                                { name: 'trackingCode', value: 'ABC123' },
+                            ],
+                        },
+                    },
+                },
+            );
+
+            const variant1 = await getVariant('T_2');
+            expect(variant1.stockOnHand).toBe(98);
+            expect(variant1.stockAllocated).toBe(0);
+
+            await adminTransitionOrderToState(orderId4, 'Modifying');
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order!.id,
+                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 3 }],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const variant2 = await getVariant('T_2');
+            expect(variant2.stockOnHand).toBe(98);
+            expect(variant2.stockAllocated).toBe(1);
+
+            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId4,
+            });
+        });
+
+        it('updates stock when adding item before fulfillment', async () => {
+            const variant1 = await getVariant('T_3');
+            expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(0);
+
+            const order = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_2',
+                    quantity: 1,
+                },
+            ]);
+            orderId5 = order.id;
+
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order!.id,
+                        addItems: [{ productVariantId: 'T_3', quantity: 1 }],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const variant2 = await getVariant('T_3');
+            expect(variant2.stockOnHand).toBe(100);
+            expect(variant2.stockAllocated).toBe(1);
+        });
+
+        it('updates stock when removing item before fulfillment', async () => {
+            const variant1 = await getVariant('T_3');
+            expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(1);
+
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId5,
+            });
+
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: orderId5,
+                        adjustOrderLines: [
+                            {
+                                orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
+                                quantity: 0,
+                            },
+                        ],
+                        refund: {
+                            paymentId: order!.payments![0].id,
+                        },
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const variant2 = await getVariant('T_3');
+            expect(variant2.stockOnHand).toBe(100);
+            expect(variant2.stockAllocated).toBe(0);
+        });
+
+        it('updates stock when removing item after fulfillment', async () => {
+            const variant1 = await getVariant('T_3');
+            expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(0);
+
+            const order = await createOrderAndCheckout([
+                {
+                    productVariantId: 'T_3',
+                    quantity: 1,
+                },
+            ]);
+            const { addFulfillmentToOrder } = await adminClient.query<
+                CreateFulfillment.Mutation,
+                CreateFulfillment.Variables
+            >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
+                },
+            });
+            orderGuard.assertSuccess(addFulfillmentToOrder);
+
+            const variant2 = await getVariant('T_3');
+            expect(variant2.stockOnHand).toBe(99);
+            expect(variant2.stockAllocated).toBe(0);
+
+            await adminTransitionOrderToState(order.id, 'Modifying');
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order.id,
+                        adjustOrderLines: [
+                            {
+                                orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
+                                quantity: 0,
+                            },
+                        ],
+                        refund: {
+                            paymentId: order!.payments![0].id,
+                        },
+                    },
+                },
+            );
+
+            const variant3 = await getVariant('T_3');
+            expect(variant3.stockOnHand).toBe(100);
+            expect(variant3.stockAllocated).toBe(0);
+        });
+    });
+
+    async function adminTransitionOrderToState(id: string, state: string) {
+        const result = await adminClient.query<AdminTransition.Mutation, AdminTransition.Variables>(
+            ADMIN_TRANSITION_TO_STATE,
+            {
+                id,
+                state,
+            },
+        );
+        return result.transitionOrderToState;
+    }
 
     async function assertOrderIsUnchanged(order: OrderWithLinesFragment) {
         const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
@@ -1566,9 +1757,9 @@ describe('Order modification', () => {
         expect(order2!.totalQuantity).toBe(order!.totalQuantity);
     }
 
-    async function createOrderAndTransitionToModifyingState(
+    async function createOrderAndCheckout(
         items: Array<AddItemToOrderMutationVariables & { customFields?: any }>,
-    ): Promise<TestOrderWithPaymentsFragment> {
+    ) {
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
         for (const itemInput of items) {
             await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), itemInput);
@@ -1597,14 +1788,14 @@ describe('Order modification', () => {
 
         const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
         orderGuard.assertSuccess(order);
+        return order;
+    }
 
-        const { transitionOrderToState } = await adminClient.query<
-            AdminTransition.Mutation,
-            AdminTransition.Variables
-        >(ADMIN_TRANSITION_TO_STATE, {
-            id: order.id,
-            state: 'Modifying',
-        });
+    async function createOrderAndTransitionToModifyingState(
+        items: Array<AddItemToOrderMutationVariables & { customFields?: any }>,
+    ): Promise<TestOrderWithPaymentsFragment> {
+        const order = await createOrderAndCheckout(items);
+        await adminTransitionOrderToState(order.id, 'Modifying');
         return order;
     }
 });

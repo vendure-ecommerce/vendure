@@ -18,7 +18,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -52,8 +52,8 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCT_TO_CHANNEL,
     ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
+    ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
@@ -62,8 +62,8 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCT_FROM_CHANNEL,
     REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
+    REMOVE_PRODUCT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -207,6 +207,22 @@ describe('Default search plugin', () => {
             'Instant Camera',
             'Slr Camera',
         ]);
+    }
+
+    async function testMatchPartialSearchTerm(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    term: 'lap',
+                    groupByProduct: true,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual(['Laptop']);
     }
 
     async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
@@ -467,6 +483,8 @@ describe('Default search plugin', () => {
         it('no grouping', () => testNoGrouping(shopClient));
 
         it('matches search term', () => testMatchSearchTerm(shopClient));
+
+        it('matches partial search term', () => testMatchPartialSearchTerm(shopClient));
 
         it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(shopClient));
 
@@ -764,6 +782,8 @@ describe('Default search plugin', () => {
         it('no grouping', () => testNoGrouping(adminClient));
 
         it('matches search term', () => testMatchSearchTerm(adminClient));
+
+        it('matches partial search term', () => testMatchPartialSearchTerm(adminClient));
 
         it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(adminClient));
 

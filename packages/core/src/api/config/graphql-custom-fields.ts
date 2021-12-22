@@ -418,7 +418,7 @@ export function addPaymentMethodQuoteCustomFields(
     if (0 < publicCustomFields.length) {
         customFieldTypeDefs = `
             extend type PaymentMethodQuote {
-                customFields: ShippingMethodCustomFields
+                customFields: PaymentMethodCustomFields
             }
         `;
     } else {

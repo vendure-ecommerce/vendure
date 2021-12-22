@@ -4,10 +4,12 @@ import {
     DeletionResult,
     UpdateAdministratorInput,
 } from '@vendure/common/lib/generated-types';
+import { SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { idsAreEqual } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -144,6 +146,13 @@ export class AdministratorService {
             }
         }
         if (input.roleIds) {
+            const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
+            if (isSoleSuperAdmin) {
+                const superAdminRole = await this.roleService.getSuperAdminRole();
+                if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
+                    throw new InternalServerError('error.superadmin-must-have-superadmin-role');
+                }
+            }
             const removeIds = administrator.user.roles
                 .map(role => role.id)
                 .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
@@ -196,6 +205,10 @@ export class AdministratorService {
         const administrator = await this.connection.getEntityOrThrow(ctx, Administrator, id, {
             relations: ['user'],
         });
+        const isSoleSuperadmin = await this.isSoleSuperadmin(ctx, id);
+        if (isSoleSuperadmin) {
+            throw new InternalServerError('error.cannot-delete-sole-superadmin');
+        }
         await this.connection.getRepository(ctx, Administrator).update({ id }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(ctx, administrator.user!.id);
@@ -203,6 +216,26 @@ export class AdministratorService {
         return {
             result: DeletionResult.DELETED,
         };
+    }
+
+    /**
+     * @description
+     * Resolves to `true` if the administrator ID belongs to the only Administrator
+     * with SuperAdmin permissions.
+     */
+    private async isSoleSuperadmin(ctx: RequestContext, id: ID) {
+        const superAdminRole = await this.roleService.getSuperAdminRole();
+        const allAdmins = await this.connection.getRepository(ctx, Administrator).find({
+            relations: ['user', 'user.roles'],
+        });
+        const superAdmins = allAdmins.filter(
+            admin => !!admin.user.roles.find(r => r.id === superAdminRole.id),
+        );
+        if (1 < superAdmins.length) {
+            return false;
+        } else {
+            return idsAreEqual(superAdmins[0].id, id);
+        }
     }
 
     /**
@@ -230,6 +263,32 @@ export class AdministratorService {
                 lastName: 'Admin',
                 roleIds: [superAdminRole.id],
             });
+        } else {
+            const superAdministrator = await this.connection.getRepository(Administrator).findOne({
+                where: {
+                    user: superAdminUser,
+                },
+            });
+            if (!superAdministrator) {
+                const administrator = new Administrator({
+                    emailAddress: superadminCredentials.identifier,
+                    firstName: 'Super',
+                    lastName: 'Admin',
+                });
+                const createdAdministrator = await this.connection
+                    .getRepository(Administrator)
+                    .save(administrator);
+                createdAdministrator.user = superAdminUser;
+                await this.connection.getRepository(Administrator).save(createdAdministrator);
+            } else if (superAdministrator.deletedAt != null) {
+                superAdministrator.deletedAt = null;
+                await this.connection.getRepository(Administrator).save(superAdministrator);
+            }
+
+            if (superAdminUser.deletedAt != null) {
+                superAdminUser.deletedAt = null;
+                await this.connection.getRepository(User).save(superAdminUser);
+            }
         }
     }
 }

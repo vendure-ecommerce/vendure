@@ -69,7 +69,7 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
                 tap(i => {
                     if (timeoutMs < i * pollInterval) {
                         throw new Error(
-                            `Job ${this.id} update polling timed out after ${timeoutMs}ms. The job may still be running.`,
+                            `Job ${this.id} SubscribableJob update polling timed out after ${timeoutMs}ms. The job may still be running.`,
                         );
                     }
                 }),

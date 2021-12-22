@@ -509,14 +509,16 @@ export class OrderService {
             orderLine.productVariant,
             quantity,
         );
+        let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+            updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError(correctedQuantity, updatedOrder);
         } else {

@@ -9,3 +9,4 @@ type PaymentMethod implements Node {
     checker: ConfigurableOperation
     handler: ConfigurableOperation!
 }
+

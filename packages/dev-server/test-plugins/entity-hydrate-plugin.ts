@@ -1,6 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
+    Asset,
     Ctx,
     EntityHydrator,
     ID,
@@ -28,7 +29,7 @@ class TestResolver {
             relations: ['featuredAsset'],
         });
         await this.entityHydrator.hydrate(ctx, product!, {
-            relations: ['facetValues.facet', 'variants.options', 'assets'],
+            relations: ['facetValues.facet', 'customFields.thumb'],
         });
         return product;
     }
@@ -44,6 +45,14 @@ class TestResolver {
             }
         `,
         resolvers: [TestResolver],
+    },
+    configuration: config => {
+        config.customFields.Product.push({
+            name: 'thumb',
+            type: 'relation',
+            entity: Asset,
+        });
+        return config;
     },
 })
 export class EntityHydratePlugin {}
