@@ -1,5 +1,6 @@
 import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
 import { createTestEnvironment } from '@vendure/testing';
+import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -149,6 +150,48 @@ describe('Administrator resolver', () => {
         >(GET_ADMINISTRATORS);
         expect(after.totalItems).toBe(1);
     });
+
+    it('cannot delete sole SuperAdmin', async () => {
+        const { administrators: before } = await adminClient.query<
+            GetAdministrators.Query,
+            GetAdministrators.Variables
+        >(GET_ADMINISTRATORS);
+        expect(before.totalItems).toBe(1);
+        expect(before.items[0].emailAddress).toBe('superadmin');
+
+        try {
+            const { deleteAdministrator } = await adminClient.query<
+                DeleteAdministrator.Mutation,
+                DeleteAdministrator.Variables
+            >(DELETE_ADMINISTRATOR, {
+                id: before.items[0].id,
+            });
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.message).toBe('The sole SuperAdmin cannot be deleted');
+        }
+
+        const { administrators: after } = await adminClient.query<
+            GetAdministrators.Query,
+            GetAdministrators.Variables
+        >(GET_ADMINISTRATORS);
+        expect(after.totalItems).toBe(1);
+    });
+
+    it(
+        'cannot remove SuperAdmin role from sole SuperAdmin',
+        assertThrowsWithMessage(async () => {
+            const result = await adminClient.query<
+                UpdateAdministrator.Mutation,
+                UpdateAdministrator.Variables
+            >(UPDATE_ADMINISTRATOR, {
+                input: {
+                    id: 'T_1',
+                    roleIds: [],
+                },
+            });
+        }, 'Cannot remove the SuperAdmin role from the sole SuperAdmin'),
+    );
 
     it('cannot query a deleted Administrator', async () => {
         const { administrator } = await adminClient.query<GetAdministrator.Query, GetAdministrator.Variables>(

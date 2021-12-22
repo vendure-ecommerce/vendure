@@ -1,6 +1,7 @@
 {
   "error": {
     "cannot-delete-role": "The role '{ roleCode }' cannot be deleted",
+    "cannot-delete-sole-superadmin": "The sole SuperAdmin cannot be deleted",
     "cannot-locate-customer-for-user": "Cannot locate a Customer for the user",
     "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
     "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
@@ -43,6 +44,7 @@
     "product-variant-options-combination-already-exists": "A ProductVariant with the selected options already exists: {variantName}",
     "promotion-channels-can-only-be-changed-from-default-channel": "Promotions channels may only be changed from the Default Channel",
     "stockonhand-cannot-be-negative": "stockOnHand cannot be a negative value",
+    "superadmin-must-have-superadmin-role": "Cannot remove the SuperAdmin role from the sole SuperAdmin",
     "unauthorized": "The credentials did not match. Please check and try again"
   },
   "errorResult": {
