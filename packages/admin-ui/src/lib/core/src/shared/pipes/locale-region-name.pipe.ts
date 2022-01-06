@@ -30,7 +30,7 @@ export class LocaleRegionNamePipe extends LocaleBasePipe implements PipeTransfor
         if (typeof value !== 'string') {
             return `Invalid region code "${value as any}"`;
         }
-        const activeLocale = typeof locale === 'string' ? locale : this.locale ?? 'en';
+        const activeLocale = this.getActiveLocale(locale);
 
         // Awaiting TS types for this API: https://github.com/microsoft/TypeScript/pull/44022/files
         const DisplayNames = (Intl as any).DisplayNames;
