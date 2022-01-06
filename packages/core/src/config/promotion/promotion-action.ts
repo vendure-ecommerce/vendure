@@ -309,7 +309,7 @@ export class PromotionOrderAction<
 
     /** @internal */
     execute(ctx: RequestContext, order: Order, args: ConfigArg[], state: PromotionState) {
-        const actionState = this.conditions ? pick(state, Object.keys(this.conditions)) : {};
+        const actionState = this.conditions ? pick(state, this.conditions.map(c => c.code)) : {};
         return this.executeFn(ctx, order, this.argsArrayToHash(args), actionState as ConditionState<U>);
     }
 }
@@ -340,7 +340,7 @@ export class PromotionShippingAction<
         args: ConfigArg[],
         state: PromotionState,
     ) {
-        const actionState = this.conditions ? pick(state, Object.keys(this.conditions)) : {};
+        const actionState = this.conditions ? pick(state, this.conditions.map(c => c.code)) : {};
         return this.executeFn(
             ctx,
             shippingLine,
