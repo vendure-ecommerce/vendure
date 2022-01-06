@@ -28,7 +28,7 @@ export class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform 
     transform(value: unknown, ...args: unknown[]): string | unknown {
         const [currencyCode, locale] = args;
         if (typeof value === 'number' && typeof currencyCode === 'string') {
-            const activeLocale = typeof locale === 'string' ? locale : this.locale;
+            const activeLocale = this.getActiveLocale(locale);
             const majorUnits = value / 100;
             return new Intl.NumberFormat(activeLocale, { style: 'currency', currency: currencyCode }).format(
                 majorUnits,

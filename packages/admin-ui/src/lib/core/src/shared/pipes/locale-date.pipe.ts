@@ -27,7 +27,7 @@ export class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
     transform(value: unknown, ...args: unknown[]): unknown {
         const [format, locale] = args;
         if (this.locale || typeof locale === 'string') {
-            const activeLocale = typeof locale === 'string' ? locale : this.locale;
+            const activeLocale = this.getActiveLocale(locale);
             const date =
                 value instanceof Date ? value : typeof value === 'string' ? new Date(value) : undefined;
             if (date) {

@@ -33,5 +33,27 @@ export abstract class LocaleBasePipe implements OnDestroy, PipeTransform {
         }
     }
 
+    /**
+     * Returns the active locale after attempting to ensure that the locale string
+     * is valid for the Intl API.
+     */
+    protected getActiveLocale(localeOverride?: unknown): string {
+        const locale = typeof localeOverride === 'string' ? localeOverride : this.locale ?? 'en';
+        const hyphenated = locale?.replace(/_/g, '-');
+
+        // Check for a double-region string, containing 2 region codes like
+        // pt-BR-BR, which is invalid. In this case, the second region is used
+        // and the first region discarded. This would only ever be an issue for
+        // those languages where the translation file itself encodes the region,
+        // as in pt_BR & pt_PT.
+        const matches = hyphenated?.match(/^([a-zA-Z_-]+)(-[A-Z][A-Z])(-[A-Z][A-z])$/);
+        if (matches?.length) {
+            const overriddenLocale = matches[1] + matches[3];
+            return overriddenLocale;
+        } else {
+            return hyphenated;
+        }
+    }
+
     abstract transform(value: any, ...args): any;
 }
