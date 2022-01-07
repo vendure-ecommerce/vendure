@@ -237,6 +237,9 @@ export class ShopAuthResolver extends BaseAuthResolver {
             req,
             res,
         );
+        if (isGraphQlErrorResult(authResult) && authResult.__typename === 'NotVerifiedError') {
+            return authResult;
+        }
         if (isGraphQlErrorResult(authResult)) {
             // This should never occur in theory
             throw authResult;
