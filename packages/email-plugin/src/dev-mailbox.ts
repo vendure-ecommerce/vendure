@@ -82,7 +82,12 @@ export class DevMailbox {
 
     private async getEmailList(outputPath: string) {
         const list = await fs.readdir(outputPath);
-        const contents: any[] = [];
+        const contents: Array<{
+            fileName: string;
+            date: string;
+            subject: string;
+            recipient: string;
+        }> = [];
         for (const fileName of list.filter(name => name.endsWith('.json'))) {
             const json = await fs.readFile(path.join(outputPath, fileName), 'utf-8');
             const content = JSON.parse(json);
@@ -94,7 +99,7 @@ export class DevMailbox {
             });
         }
         contents.sort((a, b) => {
-            return +new Date(b.date) - +new Date(a.date);
+            return a.fileName < b.fileName ? 1 : -1;
         });
         return contents;
     }
