@@ -1,23 +1,23 @@
 // product-review.entity.ts
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ID as GID, ObjectType } from '@nestjs/graphql';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity } from 'typeorm';
 
-import { VendureEntity } from '../../../entity/base/base.entity';
+import { BaseNode } from './node.entity';
 
 @Entity()
 @ObjectType()
-class Car extends VendureEntity {
+class Car extends BaseNode {
     constructor(input: DeepPartial<Car>) {
         super(input);
     }
 
-    @Column()
     @Field()
+    @Column('text')
     brand: string;
 
-    @Column()
     @Field()
+    @Column()
     model: number;
 }
 

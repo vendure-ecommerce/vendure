@@ -3,6 +3,7 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    CarPlugin,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
@@ -90,6 +91,7 @@ export const devConfig: VendureConfig = {
             route: 'admin',
             port: 5001,
         }),
+        CarPlugin,
     ],
 };
 

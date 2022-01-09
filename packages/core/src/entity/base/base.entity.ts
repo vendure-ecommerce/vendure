@@ -1,3 +1,4 @@
+import { Field, ID as GID, ObjectType } from '@nestjs/graphql';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
@@ -19,10 +20,15 @@ export abstract class VendureEntity {
         }
     }
 
+    @Field(() => GID)
     @PrimaryGeneratedId()
     id: ID;
 
-    @CreateDateColumn() createdAt: Date;
+    @Field()
+    @CreateDateColumn()
+    createdAt: Date;
 
-    @UpdateDateColumn() updatedAt: Date;
+    @Field()
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

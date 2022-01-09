@@ -1,11 +1,19 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Query, Resolver } from '@nestjs/graphql';
 
-import { Ctx, RequestContext } from '../../..';
+import Car from '../entitiy/car.entity';
 
 @Resolver('Car')
 export class CarResolver {
-    @Query()
-    cars(@Ctx() ctx: RequestContext, @Args() args: any) {
-        return [];
+    @Query(returns => [Car])
+    cars() {
+        return [
+            {
+                id: 1,
+                brand: 'Honda',
+                model: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        ];
     }
 }

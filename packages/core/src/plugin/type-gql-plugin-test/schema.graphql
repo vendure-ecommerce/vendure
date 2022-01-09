@@ -1,0 +1,16 @@
+type Car {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  brand: String!
+  model: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  cars: [Car!]!
+}

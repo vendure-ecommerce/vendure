@@ -5,3 +5,4 @@ export * from './default-job-queue-plugin/sql-job-buffer-storage-strategy';
 export * from './vendure-plugin';
 export * from './plugin-common.module';
 export * from './plugin-utils';
+export * from './type-gql-plugin-test/type-gql-test';

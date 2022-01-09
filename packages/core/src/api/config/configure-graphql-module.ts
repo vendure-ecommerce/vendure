@@ -1,8 +1,17 @@
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { stitchSchemas } from '@graphql-tools/stitch';
 import { DynamicModule } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { buildSchema, extendSchema, GraphQLSchema, printSchema, ValidationContext } from 'graphql';
+import {
+    buildSchema,
+    DocumentNode,
+    extendSchema,
+    GraphQLSchema,
+    printSchema,
+    ValidationContext,
+} from 'graphql';
 import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
@@ -139,10 +148,34 @@ async function createGraphQLOptions(
                 : configService.authOptions.adminAuthenticationStrategy;
         let schema = buildSchema(typeDefs);
 
-        getPluginAPIExtensions(configService.plugins, apiType)
-            .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
-            .filter(notNullOrUndefined)
-            .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+        // getPluginAPIExtensions(configService.plugins, apiType)
+        //    .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
+        //    .filter(notNullOrUndefined)
+        //    .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+
+        schema = stitchSchemas({
+            subschemas: [
+                makeExecutableSchema({
+                    typeDefs: printSchema(schema),
+                    resolvers: [],
+                }),
+                ...getPluginAPIExtensions(configService.plugins, apiType)
+                    .map(e => {
+                        const extensionSchema = typeof e.schema === 'function' ? e.schema() : e.schema;
+                        return {
+                            ...e,
+                            schema: extensionSchema,
+                        };
+                    })
+                    .filter(e => notNullOrUndefined(e.schema))
+                    .map(e =>
+                        makeExecutableSchema({
+                            typeDefs: e.schema as DocumentNode,
+                            resolvers: e.resolvers as any,
+                        }),
+                    ),
+            ],
+        });
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
