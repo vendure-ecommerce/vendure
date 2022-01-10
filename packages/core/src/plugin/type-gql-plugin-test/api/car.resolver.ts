@@ -1,12 +1,13 @@
 import { Query, Resolver } from '@nestjs/graphql';
 
-import Car from '../entitiy/car.entity';
+import { PaginatedCars } from '../entitiy/paginatedCars.entity';
 
 @Resolver('Car')
 export class CarResolver {
-    @Query(returns => [Car])
+    @Query(() => PaginatedCars)
     cars() {
-        return [
+        const list = new PaginatedCars();
+        list.items = [
             {
                 id: 1,
                 brand: 'Honda',
@@ -15,5 +16,7 @@ export class CarResolver {
                 updatedAt: new Date(),
             },
         ];
+        list.itemsCount = 1;
+        return list;
     }
 }
