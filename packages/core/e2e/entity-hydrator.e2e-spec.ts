@@ -140,6 +140,15 @@ describe('Entity hydration', () => {
         expect(hydrateProductAsset.assets).toEqual([]);
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/1324
+    it('correctly handles empty nested array relations', async () => {
+        const { hydrateProductWithNoFacets } = await adminClient.query<{
+            hydrateProductWithNoFacets: Product;
+        }>(GET_HYDRATED_PRODUCT_NO_FACETS);
+
+        expect(hydrateProductWithNoFacets.facetValues).toEqual([]);
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/1161
     it('correctly expands missing relations', async () => {
         const { hydrateProductVariant } = await adminClient.query<{ hydrateProductVariant: ProductVariant }>(
@@ -222,6 +231,11 @@ type HydrateProductQuery = { hydrateProduct: Product };
 const GET_HYDRATED_PRODUCT = gql`
     query GetHydratedProduct($id: ID!) {
         hydrateProduct(id: $id)
+    }
+`;
+const GET_HYDRATED_PRODUCT_NO_FACETS = gql`
+    query GetHydratedProductWithNoFacets {
+        hydrateProductWithNoFacets
     }
 `;
 const GET_HYDRATED_PRODUCT_ASSET = gql`

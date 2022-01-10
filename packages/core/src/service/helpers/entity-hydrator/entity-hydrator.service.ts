@@ -218,7 +218,10 @@ export class EntityHydrator {
             const part = path[i];
             const isLast = i === path.length - 1;
             if (relation[part]) {
-                relation = Array.isArray(relation[part]) && !isLast ? relation[part][0] : relation[part];
+                relation =
+                    Array.isArray(relation[part]) && relation[part].length && !isLast
+                        ? relation[part][0]
+                        : relation[part];
             } else {
                 return;
             }

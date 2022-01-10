@@ -1,3 +1,14 @@
+## <small>1.4.4 (2022-01-10)</small>
+
+
+#### Fixes
+
+* **admin-ui** Improve handling of locale combinations ([87f9f78](https://github.com/vendure-ecommerce/vendure/commit/87f9f78))
+* **core** Correctly hydrate nested relations of empty array ([4a11666](https://github.com/vendure-ecommerce/vendure/commit/4a11666)), closes [#1324](https://github.com/vendure-ecommerce/vendure/issues/1324)
+* **core** Fix PromotionActions not passing state correctly (#1323) ([fc739c5](https://github.com/vendure-ecommerce/vendure/commit/fc739c5)), closes [#1323](https://github.com/vendure-ecommerce/vendure/issues/1323) [#1322](https://github.com/vendure-ecommerce/vendure/issues/1322)
+* **core** Return NotVerifiedError for resetPassword on unverified user ([8257d27](https://github.com/vendure-ecommerce/vendure/commit/8257d27)), closes [#1321](https://github.com/vendure-ecommerce/vendure/issues/1321)
+* **email-plugin** Fix sorting of emails in dev-mailbox ([57cc26e](https://github.com/vendure-ecommerce/vendure/commit/57cc26e))
+
 ## <small>1.4.3 (2021-12-22)</small>
 
 

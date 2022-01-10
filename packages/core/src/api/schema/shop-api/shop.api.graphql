@@ -239,6 +239,7 @@ union ResetPasswordResult =
     | PasswordResetTokenInvalidError
     | PasswordResetTokenExpiredError
     | NativeAuthStrategyError
+    | NotVerifiedError
 union NativeAuthenticationResult =
       CurrentUser
     | InvalidCredentialsError
