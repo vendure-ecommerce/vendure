@@ -148,11 +148,6 @@ async function createGraphQLOptions(
                 : configService.authOptions.adminAuthenticationStrategy;
         let schema = buildSchema(typeDefs);
 
-        // getPluginAPIExtensions(configService.plugins, apiType)
-        //    .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
-        //    .filter(notNullOrUndefined)
-        //    .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
-
         schema = stitchSchemas({
             subschemas: [
                 makeExecutableSchema({
