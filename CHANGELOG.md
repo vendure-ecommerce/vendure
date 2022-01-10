@@ -3,7 +3,6 @@
 
 #### Fixes
 
-* **admin-ui** Changes file name from 'pt_PT' to 'pt' to be compatible with Intl API ([a1995a0](https://github.com/vendure-ecommerce/vendure/commit/a1995a0))
 * **admin-ui** Improve handling of locale combinations ([87f9f78](https://github.com/vendure-ecommerce/vendure/commit/87f9f78))
 * **core** Correctly hydrate nested relations of empty array ([4a11666](https://github.com/vendure-ecommerce/vendure/commit/4a11666)), closes [#1324](https://github.com/vendure-ecommerce/vendure/issues/1324)
 * **core** Fix PromotionActions not passing state correctly (#1323) ([fc739c5](https://github.com/vendure-ecommerce/vendure/commit/fc739c5)), closes [#1323](https://github.com/vendure-ecommerce/vendure/issues/1323) [#1322](https://github.com/vendure-ecommerce/vendure/issues/1322)
