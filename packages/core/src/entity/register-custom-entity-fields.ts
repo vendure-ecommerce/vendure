@@ -127,7 +127,13 @@ function registerCustomFieldsForEntity(
                 }
             }
 
-            if (customFields.filter(f => f.type === 'relation').length === customFields.length) {
+            const relationFieldsCount = customFields.filter(f => f.type === 'relation').length;
+            const nonLocaleStringFieldsCount = customFields.filter(
+                f => f.type !== 'localeString' && f.type !== 'relation',
+            ).length;
+
+            if (0 < relationFieldsCount && nonLocaleStringFieldsCount === 0) {
+                // if (customFields.filter(f => f.type === 'relation').length === customFields.length) {
                 // If there are _only_ relational customFields defined for an Entity, then TypeORM
                 // errors when attempting to load that entity ("Cannot set property <fieldName> of undefined").
                 // Therefore as a work-around we will add a "fake" column to the customFields embedded type
