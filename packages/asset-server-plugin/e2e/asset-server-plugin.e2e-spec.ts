@@ -84,6 +84,36 @@ describe('AssetServerPlugin', () => {
         expect(Buffer.compare(responseBuffer, previewFile)).toBe(0);
     });
 
+    it('can handle non-latin filenames', async () => {
+        const FILE_NAME_ZH = '白飯';
+        const filesToUpload = [path.join(__dirname, `fixtures/assets/${FILE_NAME_ZH}.jpg`)];
+        const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+            mutation: CREATE_ASSETS,
+            filePaths: filesToUpload,
+            mapVariables: filePaths => ({
+                input: filePaths.map(p => ({ file: null })),
+            }),
+        });
+        expect(createAssets[0].name).toBe(`${FILE_NAME_ZH}.jpg`);
+        expect(createAssets[0].source).toContain(`${FILE_NAME_ZH}.jpg`);
+
+        const previewUrl = encodeURI(`${createAssets[0].preview}`);
+        const res = await fetch(previewUrl);
+
+        expect(res.status).toBe(200);
+
+        const previewFilePathZH = path.join(
+            __dirname,
+            TEST_ASSET_DIR,
+            `preview/3f/${FILE_NAME_ZH}__preview.jpg`,
+        );
+
+        const responseBuffer = await res.buffer();
+        const previewFile = await fs.readFile(previewFilePathZH);
+
+        expect(Buffer.compare(responseBuffer, previewFile)).toBe(0);
+    });
+
     describe('caching', () => {
         const cacheDir = path.join(__dirname, TEST_ASSET_DIR, 'cache');
         const cacheFileDir = path.join(__dirname, TEST_ASSET_DIR, 'cache', 'preview', '71');
