@@ -43,12 +43,11 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
             // Handle other Nestjs errors
             statusCode = exception.getStatus();
             message = exception.message;
-            let stack = exception.stack;
             if (statusCode === 404) {
-                message = exception.message;
-                stack = undefined;
+                Logger.verbose(exception.message);
+            } else {
+                Logger.error(message, undefined, exception.stack);
             }
-            Logger.error(message, undefined, stack);
         } else {
             Logger.error(exception.message, undefined, exception.stack);
         }
