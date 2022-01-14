@@ -39,6 +39,12 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
                     Logger.verbose(message);
                     break;
             }
+            if (exception.stack) {
+                Logger.debug(exception.stack);
+            }
+            if (isGraphQL) {
+                return exception;
+            }
         } else if (exception instanceof HttpException) {
             // Handle other Nestjs errors
             statusCode = exception.getStatus();
