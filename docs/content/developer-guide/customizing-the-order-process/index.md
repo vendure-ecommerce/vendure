@@ -7,7 +7,7 @@ showtoc: true
 
 Vendure defines an order process which is based on a [finite state machine]({{< relref "fsm" >}}). This means that the [`Order.state` property]({{< relref "order" >}}#state) will be one of a set of [pre-defined states]({{< relref "order-state" >}}). From the current state, the Order can then transition (change) to another state, and the available next states depend on what the current state is.
 
-So, as an example, all orders being in the `AddingItems` state. This means that the Customer is adding items to his or her shopping cart. From there, the Order can transition to the `ArrangingPayment` state. A diagram of the default states and transitions can be found in the [Order Workflow guide]({{< relref "order-workflow" >}}).
+So, as an example, all orders begin in the `AddingItems` state. This means that the Customer is adding items to his or her shopping cart. From there, the Order can transition to the `ArrangingPayment` state. A diagram of the default states and transitions can be found in the [Order Workflow guide]({{< relref "order-workflow" >}}).
 
 ## Defining custom states and transitions
 
