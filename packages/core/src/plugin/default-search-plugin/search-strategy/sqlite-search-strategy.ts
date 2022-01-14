@@ -12,6 +12,7 @@ import { SearchStrategy } from './search-strategy';
 import {
     createCollectionIdCountMap,
     createFacetIdCountMap,
+    createPlaceholderFromId,
     mapToSearchResult,
 } from './search-strategy-utils';
 
@@ -172,7 +173,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             qb.andWhere(
                 new Brackets(qb1 => {
                     for (const id of facetValueIds) {
-                        const placeholder = '_' + id;
+                        const placeholder = createPlaceholderFromId(id);
                         const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
                         const params = { [placeholder]: `%,${id},%` };
                         if (facetValueOperator === LogicalOperator.AND) {
@@ -194,14 +195,14 @@ export class SqliteSearchStrategy implements SearchStrategy {
                                     throw new UserInputError('error.facetfilterinput-invalid-input');
                                 }
                                 if (facetValueFilter.and) {
-                                    const placeholder = '_' + facetValueFilter.and;
+                                    const placeholder = createPlaceholderFromId(facetValueFilter.and);
                                     const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
                                     const params = { [placeholder]: `%,${facetValueFilter.and},%` };
                                     qb2.where(clause, params);
                                 }
                                 if (facetValueFilter.or?.length) {
                                     for (const id of facetValueFilter.or) {
-                                        const placeholder = '_' + id;
+                                        const placeholder = createPlaceholderFromId(id);
                                         const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
                                         const params = { [placeholder]: `%,${id},%` };
                                         qb2.orWhere(clause, params);
