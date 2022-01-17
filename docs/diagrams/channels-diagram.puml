@@ -1,0 +1,25 @@
+@startuml
+!include theme.puml
+title Channels in Vendure
+
+node DefaultChannel as "Default Channel" {
+  [All Products\nAll Collections\nAll Customers\nAll Orders]
+}
+
+package ChannelA as "Channel A" {
+  [Products A\nCollections A\nCustomers A\nOrders A]
+}
+
+package ChannelB as "Channel B" {
+  [Products B\nCollections B\nCustomers B\nOrders B]
+}
+
+package ChannelC as "Channel C" {
+  [Products C\nCollections C\nCustomers C\nOrders C]
+}
+
+DefaultChannel -down-> ChannelA
+DefaultChannel -down-> ChannelB
+DefaultChannel -down-> ChannelC
+
+@enduml
