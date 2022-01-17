@@ -231,10 +231,11 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         return async (err: any, req: Request, res: Response, next: NextFunction) => {
             if (err && (err.status === 404 || err.statusCode === 404)) {
                 if (req.query) {
-                    Logger.debug(`Pre-cached Asset not found: ${req.path}`, loggerCtx);
+                    const decodedReqPath = decodeURIComponent(req.path);
+                    Logger.debug(`Pre-cached Asset not found: ${decodedReqPath}`, loggerCtx);
                     let file: Buffer;
                     try {
-                        file = await AssetServerPlugin.assetStorage.readFileToBuffer(req.path);
+                        file = await AssetServerPlugin.assetStorage.readFileToBuffer(decodedReqPath);
                     } catch (err) {
                         res.status(404).send('Resource not found');
                         return;
@@ -278,10 +279,11 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             }
         }
 
+        const decodedReqPath = decodeURIComponent(req.path);
         if (imageParamHash) {
-            return path.join(this.cacheDir, this.addSuffix(req.path, imageParamHash));
+            return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash));
         } else {
-            return req.path;
+            return decodedReqPath;
         }
     }
 

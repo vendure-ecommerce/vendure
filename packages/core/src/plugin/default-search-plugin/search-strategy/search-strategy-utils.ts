@@ -106,3 +106,7 @@ function parseFocalPoint(focalPoint: any): Coordinate | undefined {
     }
     return;
 }
+
+export function createPlaceholderFromId(id: ID): string {
+    return '_' + id.toString().replace(/-/g, '_');
+}

@@ -15,6 +15,8 @@ Channels are a feature of Vendure which allows multiple sales channels to be rep
 
 Every Vendure server always has a **default Channel**, which contains _all_ entities. Subsequent channels can then contain a subset of the above entities.
 
+{{< figure src="channels_diagram.png" >}}
+
 Use-cases of Channels include:
 
 * Multi-region stores, where there is a distinct website for each territory with its own available inventory, pricing, tax and shipping rules.
@@ -28,3 +30,5 @@ To specify which channel to use when making an API call, set the `'vendure-token
 ## Multi-Tenant (Marketplace) Support
 
 Channels can also be used to implement a multi-tenant or marketplace application. In such a setup, each merchant would have their own dedicated Channel and would be granted permissions on that Channel only.
+ 
+For a detailed guide on how this would be set up, see our [Multi-Tenant guide]({{< relref "multi-tenant" >}}).

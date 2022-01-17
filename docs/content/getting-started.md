@@ -8,6 +8,7 @@ weight: 0
 ## Requirements
  
 * [Node.js](https://nodejs.org/en/) **v12** or above, with support for **even-numbered Node.js versions**.
+* The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors.
 * If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, if you are just testing out Vendure, we recommend using SQLite, which has no external requirements.
 * For Windows users: make sure you have **[windows build tools](https://www.npmjs.com/package/windows-build-tools) installed**
   * `npm install --global --production windows-build-tools`

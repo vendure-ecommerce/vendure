@@ -13,6 +13,7 @@ import { getFieldsToSelect } from './search-strategy-common';
 import {
     createCollectionIdCountMap,
     createFacetIdCountMap,
+    createPlaceholderFromId,
     mapToSearchResult,
 } from './search-strategy-utils';
 
@@ -189,7 +190,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             qb.andWhere(
                 new Brackets(qb1 => {
                     for (const id of facetValueIds) {
-                        const placeholder = '_' + id;
+                        const placeholder = createPlaceholderFromId(id);
                         const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
                         const params = { [placeholder]: id };
                         if (facetValueOperator === LogicalOperator.AND) {
@@ -211,14 +212,14 @@ export class PostgresSearchStrategy implements SearchStrategy {
                                     throw new UserInputError('error.facetfilterinput-invalid-input');
                                 }
                                 if (facetValueFilter.and) {
-                                    const placeholder = '_' + facetValueFilter.and;
+                                    const placeholder = createPlaceholderFromId(facetValueFilter.and);
                                     const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
                                     const params = { [placeholder]: facetValueFilter.and };
                                     qb2.where(clause, params);
                                 }
                                 if (facetValueFilter.or?.length) {
                                     for (const id of facetValueFilter.or) {
-                                        const placeholder = '_' + id;
+                                        const placeholder = createPlaceholderFromId(id);
                                         const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
                                         const params = { [placeholder]: id };
                                         qb2.orWhere(clause, params);
