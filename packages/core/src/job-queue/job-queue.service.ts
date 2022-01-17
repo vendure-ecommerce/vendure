@@ -69,6 +69,9 @@ export class JobQueueService implements OnModuleDestroy {
     async createQueue<Data extends JobData<Data>>(
         options: CreateQueueOptions<Data>,
     ): Promise<JobQueue<Data>> {
+        if (this.configService.jobQueueOptions.prefix) {
+            options = { ...options, name: `${this.configService.jobQueueOptions.prefix}${options.name}` };
+        }
         const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBufferService);
         if (this.hasStarted && this.shouldStartQueue(queue.name)) {
             await queue.start();
