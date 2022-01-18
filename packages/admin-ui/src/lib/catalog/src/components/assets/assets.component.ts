@@ -27,14 +27,14 @@ export interface AssetChange {
 }
 
 /**
- * A component which displays the Assets associated with a product, and allows assets to be removed and
+ * A component which displays the Assets, and allows assets to be removed and
  * added, and for the featured asset to be set.
  *
  * Note: rather complex code for drag drop is due to a limitation of the default CDK implementation
  * which is addressed by a work-around from here: https://github.com/angular/components/issues/13372#issuecomment-483998378
  */
 @Component({
-    selector: 'vdr-product-assets',
+    selector: 'vdr-assets',
     templateUrl: './assets.component.html',
     styleUrls: ['./assets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
