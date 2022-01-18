@@ -50,6 +50,7 @@
                             [featuredAsset]="
                                 pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset
                             "
+                            [updatePermissions]="updatePermission"
                             (change)="onAssetChange(variant.id, $event)"
                         ></vdr-assets>
                     </div>

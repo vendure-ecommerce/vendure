@@ -19,6 +19,7 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
+    Permission,
     ProductDetail,
     ProductVariant,
     ServerConfigService,
@@ -123,6 +124,7 @@ export class ProductDetailComponent
     // Used to store all ProductVariants which have been loaded.
     // It is needed when saving changes to variants.
     private productVariantMap = new Map<string, ProductVariant.Fragment>();
+    public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
 
     constructor(
         route: ActivatedRoute,

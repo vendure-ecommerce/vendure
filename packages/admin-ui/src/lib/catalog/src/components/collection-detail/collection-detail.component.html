@@ -96,6 +96,7 @@
             <vdr-assets
                 [assets]="category.assets"
                 [featuredAsset]="category.featuredAsset"
+                [updatePermissions]="updatePermission"
                 (change)="assetChanges = $event"
             ></vdr-assets>
         </div>

@@ -1,5 +1,4 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ViewportRuler } from '@angular/cdk/overlay';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -7,7 +6,6 @@ import {
     EventEmitter,
     HostBinding,
     Input,
-    Optional,
     Output,
 } from '@angular/core';
 import {
@@ -18,8 +16,6 @@ import {
     Permission,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
-
-import { CollectionDetailComponent } from '../collection-detail/collection-detail.component';
 
 export interface AssetChange {
     assets: Asset[];
@@ -53,23 +49,10 @@ export class AssetsComponent {
 
     public assets: Asset[] = [];
 
-    private readonly updateCollectionPermissions = [Permission.UpdateCatalog, Permission.UpdateCollection];
-    private readonly updateProductPermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
+    @Input()
+    updatePermissions: string | string[] | Permission | Permission[];
 
-    get updatePermissions(): Permission[] {
-        if (this.collectionDetailComponent) {
-            return this.updateCollectionPermissions;
-        } else {
-            return this.updateProductPermissions;
-        }
-    }
-
-    constructor(
-        private modalService: ModalService,
-        private changeDetector: ChangeDetectorRef,
-        private viewportRuler: ViewportRuler,
-        @Optional() private collectionDetailComponent?: CollectionDetailComponent,
-    ) {}
+    constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
     selectAssets() {
         this.modalService
