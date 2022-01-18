@@ -27,7 +27,7 @@ First we will create a new Role, and grant all permissions on the `ace-parts` Ch
 
 Next we create a new Administrator, and assign the Role that was just created.
 
-{{< figure src="create-admin.png" title="Creating a Channel-specific Role" >}}
+{{< figure src="create-admin.png" title="Creating a Channel-specific Administrator" >}}
 
 Repeat the steps of creating a Role and Administrator for the `best-choice` Channel.
 
@@ -62,8 +62,24 @@ For example, switching to the `ace-parts` Channel, and then creating a new Produ
 
 ## The Storefront
 
-Your storefront applications will need to specify which channel they are interested in. This is done by adding a query parameter or header to each API requests, with the key being `vendure-token` and the value being the target Channel's `token` property.
+Your storefront applications will need to specify which channel they are interested in. This is done by adding a **query parameter** or **header** to each API requests, with the key being `vendure-token` and the value being the target Channel's `token` property.
 
 ```text
 https://my-vendure-server.com/shop-api?vendure-token=best-choice
+```
+
+## Determining the Active Channel
+
+When developing plugins and writing custom server code in general, you'll often want to know the Channel that the current request is using. This can be determined from the [RequestContext.channel]({{< relref "/docs/typescript-api/request/request-context" >}}#channel) property.
+
+```TypeScript
+createPayment: async (ctx, order, amount, args) => {
+  if (ctx.channel.code === 'ace-parts') {
+    // Use the Ace Parts account to process
+    // the payment  
+  } else {
+    // Use the Best Choice account to process
+    // the payment  
+  }
+}
 ```
