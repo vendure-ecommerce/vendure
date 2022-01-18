@@ -1,6 +1,6 @@
 type Query {
     collections(options: CollectionListOptions): CollectionList!
-    "Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result."
+    "Get a Collection either by id or slug. If neither id nor slug is specified, an error will result."
     collection(id: ID, slug: String): Collection
     collectionFilters: [ConfigurableOperationDefinition!]!
 }

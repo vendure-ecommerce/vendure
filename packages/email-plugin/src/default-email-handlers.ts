@@ -1,12 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
 import {
     AccountRegistrationEvent,
+    EntityHydrator,
     IdentifierChangeRequestEvent,
     NativeAuthenticationMethod,
     OrderStateTransitionEvent,
     PasswordResetEvent,
-    ShippingMethod,
-    TransactionalConnection,
+    ShippingLine,
 } from '@vendure/core';
 
 import { EmailEventHandler } from './event-handler';
@@ -25,29 +25,23 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
     .loadData(async context => {
-        const shippingMethods: ShippingMethod[] = [];
+        const shippingLines: ShippingLine[] = [];
+        const entityHydrator = context.injector.get(EntityHydrator);
 
         for (const line of context.event.order.shippingLines || []) {
-            let shippingMethod: ShippingMethod | undefined;
-            if (!line.shippingMethod && line.shippingMethodId) {
-                shippingMethod = await context.injector
-                    .get(TransactionalConnection)
-                    .getRepository(ShippingMethod)
-                    .findOne(line.shippingMethodId);
-            } else if (line.shippingMethod) {
-                shippingMethod = line.shippingMethod;
-            }
-            if (shippingMethod) {
-                shippingMethods.push(shippingMethod);
+            await entityHydrator.hydrate(context.event.ctx, line, {
+                relations: ['shippingMethod'],
+            });
+            if (line.shippingMethod) {
+                shippingLines.push(line);
             }
         }
-
-        return { shippingMethods };
+        return { shippingLines };
     })
     .setRecipient(event => event.order.customer!.emailAddress)
     .setFrom(`{{ fromAddress }}`)
     .setSubject(`Order confirmation for #{{ order.code }}`)
-    .setTemplateVars(event => ({ order: event.order, shippingMethods: event.data.shippingMethods }))
+    .setTemplateVars(event => ({ order: event.order, shippingLines: event.data.shippingLines }))
     .setMockEvent(mockOrderStateTransitionEvent);
 
 export const emailVerificationHandler = new EmailEventListener('email-verification')

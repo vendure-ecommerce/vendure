@@ -1,3 +1,17 @@
+## <small>1.4.5 (2022-01-17)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix custom field select input ([2bbb972](https://github.com/vendure-ecommerce/vendure/commit/2bbb972)), closes [#1342](https://github.com/vendure-ecommerce/vendure/issues/1342)
+* **asset-server-plugin** Correctly handle non-latin filenames ([4cf8434](https://github.com/vendure-ecommerce/vendure/commit/4cf8434)), closes [#1343](https://github.com/vendure-ecommerce/vendure/issues/1343)
+* **core** Demote 404 errors to Verbose log level ([6b3c3fe](https://github.com/vendure-ecommerce/vendure/commit/6b3c3fe)), closes [#1335](https://github.com/vendure-ecommerce/vendure/issues/1335)
+* **core** Fix error with certain custom field config ([ba060b4](https://github.com/vendure-ecommerce/vendure/commit/ba060b4)), closes [#1337](https://github.com/vendure-ecommerce/vendure/issues/1337)
+* **core** Fix filtering by facet value uuid in DefaultSearchPlugin ([53babf6](https://github.com/vendure-ecommerce/vendure/commit/53babf6)), closes [#1341](https://github.com/vendure-ecommerce/vendure/issues/1341)
+* **core** Fix typings for EntityHydrator with nullable relations ([8f57547](https://github.com/vendure-ecommerce/vendure/commit/8f57547))
+* **core** Prevent errors being logged by Nest's ExternalExceptionFilter ([cf4f246](https://github.com/vendure-ecommerce/vendure/commit/cf4f246)), closes [#1335](https://github.com/vendure-ecommerce/vendure/issues/1335)
+* **email-plugin** Fix population of shippingLines in order handler ([4cd7ecd](https://github.com/vendure-ecommerce/vendure/commit/4cd7ecd)), closes [#1354](https://github.com/vendure-ecommerce/vendure/issues/1354)
+
 ## <small>1.4.4 (2022-01-10)</small>
 
 
