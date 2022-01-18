@@ -35,11 +35,11 @@ export interface AssetChange {
  */
 @Component({
     selector: 'vdr-product-assets',
-    templateUrl: './product-assets.component.html',
-    styleUrls: ['./product-assets.component.scss'],
+    templateUrl: './assets.component.html',
+    styleUrls: ['./assets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductAssetsComponent {
+export class AssetsComponent {
     @Input('assets') set assetsSetter(val: Asset[]) {
         // create a new non-readonly array of assets
         this.assets = (val || []).slice();
