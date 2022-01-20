@@ -15,7 +15,7 @@
                         ></vdr-status-badge>
                     </ng-container>
                     <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
-                    <label [for]="section.id">{{ section.label | translate }}</label>
+                    <label class="nav-group-header" [for]="section.id">{{ section.label | translate }}</label>
                     <ul class="nav-list">
                         <ng-container *ngFor="let item of section.items">
                             <li *ngIf="shouldDisplayLink(item)">
