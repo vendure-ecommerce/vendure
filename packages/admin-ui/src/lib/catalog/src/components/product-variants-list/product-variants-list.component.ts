@@ -33,7 +33,7 @@ import { PaginationInstance } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
-import { AssetChange } from '../product-assets/product-assets.component';
+import { AssetChange } from '../assets/assets.component';
 import {
     PaginationConfig,
     SelectedAssets,

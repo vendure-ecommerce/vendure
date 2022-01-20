@@ -44,14 +44,15 @@
             <div class="card-block">
                 <div class="variant-body">
                     <div class="assets">
-                        <vdr-product-assets
+                        <vdr-assets
                             [compact]="true"
                             [assets]="pendingAssetChanges[variant.id]?.assets || variant.assets"
                             [featuredAsset]="
                                 pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset
                             "
+                            [updatePermissions]="updatePermission"
                             (change)="onAssetChange(variant.id, $event)"
-                        ></vdr-product-assets>
+                        ></vdr-assets>
                     </div>
                     <div class="variant-form-inputs">
                         <div class="standard-fields">
