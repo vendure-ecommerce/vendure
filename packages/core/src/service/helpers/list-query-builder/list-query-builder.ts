@@ -86,13 +86,13 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  * }
  *
  * # Generated at run-time by Vendure
- * input ProductListOptions
+ * input BlogPostListOptions
  *
  * extend type Query {
  *    blogPosts(options: BlogPostListOptions): BlogPostList!
  * }
  * ```
- * When Vendure bootstraps, it will find the `ProductListOptions` input and, because it is used in a query
+ * When Vendure bootstraps, it will find the `BlogPostListOptions` input and, because it is used in a query
  * returning a `PaginatedList` type, it knows that it should dynamically generate this input. This means
  * all primitive field of the `BlogPost` type (namely, "published", "title" and "body") will have `filter` and
  * `sort` inputs created for them, as well a `skip` and `take` fields for pagination.
