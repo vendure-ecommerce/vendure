@@ -40,11 +40,20 @@ export class ZoneService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private eventBus: EventBus,
-    ) {}
+    ) { }
 
     /** @internal */
     async initZones() {
-        this.zones = await createSelfRefreshingCache({
+        await this.ensureCacheExists();
+    }
+
+    /**
+     * Creates a zones cache, that can be used to reduce number of zones queries to database 
+     *
+     * @internal
+     */
+    async createCache(): Promise<SelfRefreshingCache<Zone[], [RequestContext]>> {
+        return await createSelfRefreshingCache({
             name: 'ZoneService.zones',
             ttl: this.configService.entityOptions.zoneCacheTtl,
             refresh: {
@@ -176,5 +185,16 @@ export class ZoneService {
 
     private getCountriesFromIds(ctx: RequestContext, ids: ID[]): Promise<Country[]> {
         return this.connection.getRepository(ctx, Country).findByIds(ids);
+    }
+
+    /**
+    * Ensures zones cache exists. If not, this method creates one.
+    */
+    private async ensureCacheExists() {
+        if (this.zones) {
+            return
+        }
+
+        this.zones = await this.createCache();
     }
 }
