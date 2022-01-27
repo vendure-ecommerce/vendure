@@ -81,6 +81,25 @@ The built-in form inputs are listed in the [DefaultFormConfigHash docs]({{< relr
 
 If you want to use a completely custom form input component which is not provided by the Admin UI, you'll need to create a plugin which [extends the Admin UI]({{< relref "extending-the-admin-ui" >}}) with [custom form inputs]({{< relref "custom-form-inputs" >}}). 
 
+## Tabbed custom fields
+
+With a large, complex project, it's common for lots of custom fields to be required. This can get visually noisy in the UI, so Vendure supports tabbed custom fields. Just specify the tab name in the `ui` object, and those fields with the same tab name will be grouped in the UI! The tab name can also be a translation token if you need to support multiple languages.
+
+```TypeScript
+const config = {
+  // ...
+  customFields: {
+    Product: [
+      { name: 'additionalInfo', type: 'text', ui: { component: 'rich-text-form-input' } },
+      { name: 'specs', type: 'text', ui: { component: 'json-editor-form-input' } },
+      { name: 'width', type: 'int', ui: { tab: 'Shipping' } },
+      { name: 'height', type: 'int', ui: { tab: 'Shipping' } },
+      { name: 'depth', type: 'int', ui: { tab: 'Shipping' } },
+      { name: 'weight', type: 'int', ui: { tab: 'Shipping' } },
+    ],
+  },
+}
+```
 
 ## Configurable Order Products
 

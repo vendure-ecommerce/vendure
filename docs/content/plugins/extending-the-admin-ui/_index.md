@@ -19,7 +19,7 @@ A UI extension is an [Angular module](https://angular.io/guide/ngmodules) which 
 
 ## Use Your Favourite Framework
 
-The Vendure Admin UI is build with Angular, and writing UI extensions in Angular is seamless and powerful. But if you are not familiar with Angular, that's no problem! You can write UI extensions using **React**, **Vue**, or **any other** web technology of choice!
+The Vendure Admin UI is built with Angular, and writing UI extensions in Angular is seamless and powerful. But if you are not familiar with Angular, that's no problem! You can write UI extensions using **React**, **Vue**, or **any other** web technology of choice!
 
 * [UI extensions in Angular]({{< relref "using-angular" >}})
 * [UI extensions in other frameworks]({{< relref "using-other-frameworks" >}})

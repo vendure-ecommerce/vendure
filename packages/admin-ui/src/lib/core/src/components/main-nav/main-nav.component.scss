@@ -12,7 +12,22 @@ nav.sidenav {
     border-right-color: var(--clr-sidenav-border-color);
 }
 
+.sidenav .nav-group {
+    .nav-list {
+        margin: 0;
+    }
+    .nav-group-header {
+        margin: 0;
+    }
+    .nav-link {
+        display: inline-flex;
+        line-height: 1rem;
+        padding-right: 0.6rem;
+    }
+}
+
 .nav-list clr-icon {
+    flex-shrink: 0;
     margin-right: 12px;
 }
 
