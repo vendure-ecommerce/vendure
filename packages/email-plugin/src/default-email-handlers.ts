@@ -1,6 +1,8 @@
 /* tslint:disable:no-non-null-assertion */
 import {
     AccountRegistrationEvent,
+    AssetStorageStrategy,
+    ConfigService,
     EntityHydrator,
     IdentifierChangeRequestEvent,
     Injector,
@@ -11,6 +13,7 @@ import {
     RequestContext,
     ShippingLine,
 } from '@vendure/core';
+import { Request } from 'express';
 
 import { EmailEventHandler } from './event-handler';
 import { EmailEventListener } from './event-listener';
@@ -28,6 +31,7 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
     .loadData(async ({ event, injector }) => {
+        transformOrderLineAssetUrls(event.ctx, event.order, injector);
         const shippingLines = await hydrateShippingLines(event.ctx, event.order, injector);
         return { shippingLines };
     })
@@ -81,6 +85,34 @@ export const defaultEmailHandlers: Array<EmailEventHandler<any, any>> = [
     emailAddressChangeHandler,
 ];
 
+/**
+ * @description
+ * Applies the configured `AssetStorageStrategy.toAbsoluteUrl()` function to each of the
+ * OrderLine's `featuredAsset.preview` properties, so that they can be correctly displayed
+ * in the email template.
+ * This is required since that step usually happens at the API in middleware, which is not
+ * applicable in this context. So we need to do it manually.
+ *
+ * **Note: Mutates the Order object**
+ */
+export function transformOrderLineAssetUrls(ctx: RequestContext, order: Order, injector: Injector): Order {
+    const { assetStorageStrategy } = injector.get(ConfigService).assetOptions;
+    if (assetStorageStrategy.toAbsoluteUrl) {
+        const toAbsoluteUrl = assetStorageStrategy.toAbsoluteUrl.bind(assetStorageStrategy);
+        for (const line of order.lines) {
+            if (line.featuredAsset) {
+                line.featuredAsset.preview = toAbsoluteUrl(ctx.req as Request, line.featuredAsset.preview);
+            }
+        }
+    }
+    return order;
+}
+
+/**
+ * @description
+ * Ensures that the ShippingLines are hydrated so that we can use the
+ * `shippingMethod.name` property in the email template.
+ */
 export async function hydrateShippingLines(
     ctx: RequestContext,
     order: Order,
