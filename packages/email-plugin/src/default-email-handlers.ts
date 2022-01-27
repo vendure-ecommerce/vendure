@@ -3,9 +3,12 @@ import {
     AccountRegistrationEvent,
     EntityHydrator,
     IdentifierChangeRequestEvent,
+    Injector,
     NativeAuthenticationMethod,
+    Order,
     OrderStateTransitionEvent,
     PasswordResetEvent,
+    RequestContext,
     ShippingLine,
 } from '@vendure/core';
 
@@ -24,18 +27,8 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
         event =>
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
-    .loadData(async context => {
-        const shippingLines: ShippingLine[] = [];
-        const entityHydrator = context.injector.get(EntityHydrator);
-
-        for (const line of context.event.order.shippingLines || []) {
-            await entityHydrator.hydrate(context.event.ctx, line, {
-                relations: ['shippingMethod'],
-            });
-            if (line.shippingMethod) {
-                shippingLines.push(line);
-            }
-        }
+    .loadData(async ({ event, injector }) => {
+        const shippingLines = await hydrateShippingLines(event.ctx, event.order, injector);
         return { shippingLines };
     })
     .setRecipient(event => event.order.customer!.emailAddress)
@@ -87,3 +80,22 @@ export const defaultEmailHandlers: Array<EmailEventHandler<any, any>> = [
     passwordResetHandler,
     emailAddressChangeHandler,
 ];
+
+export async function hydrateShippingLines(
+    ctx: RequestContext,
+    order: Order,
+    injector: Injector,
+): Promise<ShippingLine[]> {
+    const shippingLines: ShippingLine[] = [];
+    const entityHydrator = injector.get(EntityHydrator);
+
+    for (const line of order.shippingLines || []) {
+        await entityHydrator.hydrate(ctx, line, {
+            relations: ['shippingMethod'],
+        });
+        if (line.shippingMethod) {
+            shippingLines.push(line);
+        }
+    }
+    return shippingLines;
+}
