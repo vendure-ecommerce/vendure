@@ -175,6 +175,6 @@ export class AuthGuard implements CanActivate {
             return false;
         }
         const parentType = info?.parentType?.name;
-        return parentType !== 'Query' && parentType !== 'Mutation';
+        return parentType !== 'Query' && parentType !== 'Mutation' && parentType !== 'Subscription';
     }
 }
