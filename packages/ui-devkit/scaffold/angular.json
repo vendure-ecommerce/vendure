@@ -98,7 +98,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "vendure-admin:build"
+            "browserTarget": "vendure-admin:build",
+            "disableHostCheck": true
           }
         }
       }
