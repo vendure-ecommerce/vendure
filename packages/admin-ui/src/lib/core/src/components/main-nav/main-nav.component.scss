@@ -18,6 +18,7 @@ nav.sidenav {
     }
     .nav-group-header {
         margin: 0;
+        line-height: 1.2;
     }
     .nav-link {
         display: inline-flex;
@@ -29,6 +30,10 @@ nav.sidenav {
 .nav-list clr-icon {
     flex-shrink: 0;
     margin-right: 12px;
+}
+
+.nav-group {
+    hyphens: auto;
 }
 
 .nav-group,
