@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { LanguageCode } from '../../common/generated-types';
 
+/** @dynamic */
 @Injectable({
     providedIn: 'root',
 })
