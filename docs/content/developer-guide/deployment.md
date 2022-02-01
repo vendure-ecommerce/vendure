@@ -16,6 +16,24 @@ A typical pattern is to run the Vendure app on the server, e.g. at `http://local
 
 Here is a good guide to setting up a production-ready server for an app such as Vendure: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
 
+## Database Timezone
+
+Vendure internally treats all dates & times as UTC. However, you may sometimes run into issues where dates are offset by some fixed amount of hours. E.g. you place an order at 17:00, but it shows up in the Admin UI as being placed at 19:00. Typically, this is caused by the timezone of your database not being set to UTC.
+
+You can check the timezone in **MySQL/MariaDB** by executing:
+
+```SQL
+SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP);
+```
+and you should expect to see `00:00:00`.
+
+In **Postgres**, you can execute:
+```SQL
+show timezone;
+```
+and you should expect to see `UTC` or `Etc/UTC`.
+
+
 ## Security Considerations
 
 For a production Vendure server, there are a few security-related points to consider when deploying:
