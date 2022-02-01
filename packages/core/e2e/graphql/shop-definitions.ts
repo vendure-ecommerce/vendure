@@ -613,6 +613,35 @@ export const GET_ORDER_BY_CODE_WITH_PAYMENTS = gql`
     ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}
 `;
 
+export const GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS = gql`
+    query GetActiveCustomerOrderWithItemFulfillments {
+        activeCustomer {
+            orders(
+                options: { skip: 0, take: 5, sort: { createdAt: DESC }, filter: { active: { eq: false } } }
+            ) {
+                totalItems
+                items {
+                    id
+                    code
+                    state
+                    lines {
+                        id
+                        items {
+                            id
+                            fulfillment {
+                                id
+                                state
+                                method
+                                trackingCode
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
 export const GET_NEXT_STATES = gql`
     query GetNextOrderStates {
         nextOrderStates

@@ -2505,7 +2505,7 @@ export type Query = {
     activeCustomer?: Maybe<Customer>;
     /**
      * The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
-     * state of `PaymentApproved` or `PaymentSettled`, then that Order is no longer considered "active" and this
+     * state of `PaymentAuthorized` or `PaymentSettled`, then that Order is no longer considered "active" and this
      * query will once again return `null`.
      */
     activeOrder?: Maybe<Order>;
@@ -2513,7 +2513,7 @@ export type Query = {
     availableCountries: Array<Country>;
     /** A list of Collections available to the shop */
     collections: CollectionList;
-    /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
+    /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
     collection?: Maybe<Collection>;
     /** Returns a list of eligible shipping methods based on the current active Order */
     eligibleShippingMethods: Array<ShippingMethodQuote>;
@@ -3439,6 +3439,32 @@ export type GetOrderByCodeWithPaymentsQueryVariables = Exact<{
 
 export type GetOrderByCodeWithPaymentsQuery = { orderByCode?: Maybe<TestOrderWithPaymentsFragment> };
 
+export type GetActiveCustomerOrderWithItemFulfillmentsQueryVariables = Exact<{
+    code: Scalars['String'];
+}>;
+
+export type GetActiveCustomerOrderWithItemFulfillmentsQuery = {
+    activeCustomer?: Maybe<{
+        orders: Pick<OrderList, 'totalItems'> & {
+            items: Array<
+                Pick<Order, 'id' | 'code' | 'state'> & {
+                    lines: Array<
+                        Pick<OrderLine, 'id'> & {
+                            items: Array<
+                                Pick<OrderItem, 'id'> & {
+                                    fulfillment?: Maybe<
+                                        Pick<Fulfillment, 'id' | 'state' | 'method' | 'trackingCode'>
+                                    >;
+                                }
+                            >;
+                        }
+                    >;
+                }
+            >;
+        };
+    }>;
+};
+
 export type GetNextOrderStatesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetNextOrderStatesQuery = Pick<Query, 'nextOrderStates'>;
@@ -3956,6 +3982,73 @@ export namespace GetOrderByCodeWithPayments {
     export type Variables = GetOrderByCodeWithPaymentsQueryVariables;
     export type Query = GetOrderByCodeWithPaymentsQuery;
     export type OrderByCode = NonNullable<GetOrderByCodeWithPaymentsQuery['orderByCode']>;
+}
+
+export namespace GetActiveCustomerOrderWithItemFulfillments {
+    export type Variables = GetActiveCustomerOrderWithItemFulfillmentsQueryVariables;
+    export type Query = GetActiveCustomerOrderWithItemFulfillmentsQuery;
+    export type ActiveCustomer = NonNullable<
+        GetActiveCustomerOrderWithItemFulfillmentsQuery['activeCustomer']
+    >;
+    export type Orders = NonNullable<
+        NonNullable<GetActiveCustomerOrderWithItemFulfillmentsQuery['activeCustomer']>['orders']
+    >;
+    export type Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<GetActiveCustomerOrderWithItemFulfillmentsQuery['activeCustomer']>['orders']
+            >['items']
+        >[number]
+    >;
+    export type Lines = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            GetActiveCustomerOrderWithItemFulfillmentsQuery['activeCustomer']
+                        >['orders']
+                    >['items']
+                >[number]
+            >['lines']
+        >[number]
+    >;
+    export type _Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<
+                                NonNullable<
+                                    GetActiveCustomerOrderWithItemFulfillmentsQuery['activeCustomer']
+                                >['orders']
+                            >['items']
+                        >[number]
+                    >['lines']
+                >[number]
+            >['items']
+        >[number]
+    >;
+    export type Fulfillment = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<
+                                NonNullable<
+                                    NonNullable<
+                                        GetActiveCustomerOrderWithItemFulfillmentsQuery['activeCustomer']
+                                    >['orders']
+                                >['items']
+                            >[number]
+                        >['lines']
+                    >[number]
+                >['items']
+            >[number]
+        >['fulfillment']
+    >;
 }
 
 export namespace GetNextOrderStates {

@@ -70,6 +70,7 @@ import {
     AddPaymentToOrder,
     ApplyCouponCode,
     DeletionResult,
+    GetActiveCustomerOrderWithItemFulfillments,
     GetActiveCustomerWithOrdersProductSlug,
     GetActiveOrder,
     GetOrderByCodeWithPayments,
@@ -102,6 +103,7 @@ import {
     APPLY_COUPON_CODE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
+    GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
@@ -982,6 +984,18 @@ describe('Orders resolver', () => {
             expect(order!.fulfillments![0].orderItems).toEqual([{ id: 'T_3' }]);
             expect(order!.fulfillments![1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
             expect(order!.fulfillments![2].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
+        });
+
+        it('order.line.items.fulfillment resolver', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { activeCustomer } = await shopClient.query<
+                GetActiveCustomerOrderWithItemFulfillments.Query,
+                GetActiveCustomerOrderWithItemFulfillments.Variables
+            >(GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS);
+            const firstCustomerOrder = activeCustomer!.orders.items[0]!;
+            expect(firstCustomerOrder.lines[0].items[0].fulfillment).not.toBeNull();
         });
     });
 
