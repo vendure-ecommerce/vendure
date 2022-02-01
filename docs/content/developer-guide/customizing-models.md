@@ -204,6 +204,7 @@ However, this sacrifices type safety. To make our custom fields type-safe we can
 
 ```TypeScript
 // types.ts
+import { CustomProductFields } from '@vendure/core';
 
 declare module '@vendure/core' {
   interface CustomProductFields {
