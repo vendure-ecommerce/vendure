@@ -175,6 +175,15 @@ export interface AdminUiExtensionLazyModule {
 
 /**
  * @description
+ * Options to configure process (watch or compile) arguments
+ * 
+ * @docsCategory UiDevkit
+ */
+export type UiExtensionCompilerProcessArguments = {
+    [key: string]: any
+}
+/**
+ * @description
  * Options to configure how the Admin UI should be compiled.
  *
  * @docsCategory UiDevkit
@@ -218,6 +227,17 @@ export interface UiExtensionCompilerOptions {
      * @default 4200 | undefined
      */
     watchPort?: number;
+
+    /**
+     * @description
+     * Allows to pass additional arguments for watcher (in development mode) and compiler (in production mode).
+     * 
+     * @example
+     * { '--disable-host-check': true } // to disable host check
+     * 
+     * @default undefined
+     */
+    additionalProcessArguments?: UiExtensionCompilerProcessArguments;
 }
 
 export type Translations = {
