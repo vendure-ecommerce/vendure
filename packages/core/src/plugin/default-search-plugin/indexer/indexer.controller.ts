@@ -35,12 +35,8 @@ import {
 import { MutableRequestContext } from './mutable-request-context';
 
 export const BATCH_SIZE = 1000;
+export const productRelations = ['featuredAsset', 'facetValues', 'facetValues.facet', 'channels'];
 export const variantRelations = [
-    'product',
-    'product.featuredAsset',
-    'product.facetValues',
-    'product.facetValues.facet',
-    'product.channels',
     'featuredAsset',
     'facetValues',
     'facetValues.facet',
@@ -83,7 +79,6 @@ export class IndexerController {
                 Logger.verbose(`Processing batch ${i + 1} of ${batches}`, workerLoggerCtx);
 
                 const variants = await qb
-                    .andWhere('variants__product.deletedAt IS NULL')
                     .take(BATCH_SIZE)
                     .skip(i * BATCH_SIZE)
                     .getMany();
@@ -95,6 +90,7 @@ export class IndexerController {
                 });
             }
             Logger.verbose(`Completed reindexing`, workerLoggerCtx);
+
             return {
                 total: count,
                 completed: count,
@@ -312,7 +308,7 @@ export class IndexerController {
         qb.leftJoin('variants.product', 'product')
             .leftJoin('product.channels', 'channel')
             .where('channel.id = :channelId', { channelId })
-            .andWhere('variants__product.deletedAt IS NULL')
+            .andWhere('product.deletedAt IS NULL')
             .andWhere('variants.deletedAt IS NULL');
         return qb;
     }
@@ -321,14 +317,23 @@ export class IndexerController {
         const items: SearchIndexItem[] = [];
 
         await this.removeSyntheticVariants(variants);
+        const productMap = new Map<ID, Product>();
 
         for (const variant of variants) {
+            let product = productMap.get(variant.productId);
+            if (!product) {
+                product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
+                    relations: productRelations,
+                });
+                productMap.set(variant.productId, product);
+            }
+
             const languageVariants = unique([
                 ...variant.translations.map(t => t.languageCode),
-                ...variant.product.translations.map(t => t.languageCode),
+                ...product.translations.map(t => t.languageCode),
             ]);
             for (const languageCode of languageVariants) {
-                const productTranslation = this.getTranslation(variant.product, languageCode);
+                const productTranslation = this.getTranslation(product, languageCode);
                 const variantTranslation = this.getTranslation(variant, languageCode);
                 const collectionTranslations = variant.collections.map(c =>
                     this.getTranslation(c, languageCode),
@@ -344,29 +349,25 @@ export class IndexerController {
                         price: variant.price,
                         priceWithTax: variant.priceWithTax,
                         sku: variant.sku,
-                        enabled: variant.product.enabled === false ? false : variant.enabled,
+                        enabled: product.enabled === false ? false : variant.enabled,
                         slug: productTranslation.slug,
-                        productId: variant.product.id,
+                        productId: product.id,
                         productName: productTranslation.name,
                         description: this.constrainDescription(productTranslation.description),
                         productVariantName: variantTranslation.name,
-                        productAssetId: variant.product.featuredAsset
-                            ? variant.product.featuredAsset.id
-                            : null,
-                        productPreviewFocalPoint: variant.product.featuredAsset
-                            ? variant.product.featuredAsset.focalPoint
+                        productAssetId: product.featuredAsset ? product.featuredAsset.id : null,
+                        productPreviewFocalPoint: product.featuredAsset
+                            ? product.featuredAsset.focalPoint
                             : null,
                         productVariantPreviewFocalPoint: variant.featuredAsset
                             ? variant.featuredAsset.focalPoint
                             : null,
                         productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
-                        productPreview: variant.product.featuredAsset
-                            ? variant.product.featuredAsset.preview
-                            : '',
+                        productPreview: product.featuredAsset ? product.featuredAsset.preview : '',
                         productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
                         channelIds: variant.channels.map(c => c.id as string),
-                        facetIds: this.getFacetIds(variant),
-                        facetValueIds: this.getFacetValueIds(variant),
+                        facetIds: this.getFacetIds(variant, product),
+                        facetValueIds: this.getFacetValueIds(variant, product),
                         collectionIds: variant.collections.map(c => c.id.toString()),
                         collectionSlugs: collectionTranslations.map(c => c.slug),
                     });
@@ -401,7 +402,9 @@ export class IndexerController {
             }
         }
 
-        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items, { chunk: 2500 }));
+        await this.queue.push(() =>
+            this.connection.getRepository(SearchIndexItem).save(items, { chunk: 2500 }),
+        );
     }
 
     /**
@@ -463,17 +466,17 @@ export class IndexerController {
             translatable.translations[0]) as unknown as Translation<T>;
     }
 
-    private getFacetIds(variant: ProductVariant): string[] {
+    private getFacetIds(variant: ProductVariant, product: Product): string[] {
         const facetIds = (fv: FacetValue) => fv.facet.id.toString();
         const variantFacetIds = variant.facetValues.map(facetIds);
-        const productFacetIds = variant.product.facetValues.map(facetIds);
+        const productFacetIds = product.facetValues.map(facetIds);
         return unique([...variantFacetIds, ...productFacetIds]);
     }
 
-    private getFacetValueIds(variant: ProductVariant): string[] {
+    private getFacetValueIds(variant: ProductVariant, product: Product): string[] {
         const facetValueIds = (fv: FacetValue) => fv.id.toString();
         const variantFacetValueIds = variant.facetValues.map(facetValueIds);
-        const productFacetValueIds = variant.product.facetValues.map(facetValueIds);
+        const productFacetValueIds = product.facetValues.map(facetValueIds);
         return unique([...variantFacetValueIds, ...productFacetValueIds]);
     }
 
