@@ -188,7 +188,7 @@ export function addGraphQLCustomFields(
     const publicAddressFields = customFieldConfig.Address?.filter(
         config => !config.internal && (publicOnly === true ? config.public !== false : true),
     );
-    if (customFieldConfig.Address?.length && publicAddressFields?.length) {
+    if (publicAddressFields?.length) {
         // For custom fields on the Address entity, we also extend the OrderAddress
         // type (which is used to store address snapshots on Orders)
         if (schema.getType('OrderAddress')) {
