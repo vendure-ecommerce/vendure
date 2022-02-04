@@ -2595,7 +2595,7 @@ export type Query = {
     activeCustomer?: Maybe<Customer>;
     /**
      * The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
-     * state of `PaymentApproved` or `PaymentSettled`, then that Order is no longer considered "active" and this
+     * state of `PaymentAuthorized` or `PaymentSettled`, then that Order is no longer considered "active" and this
      * query will once again return `null`.
      */
     activeOrder?: Maybe<Order>;
@@ -2603,7 +2603,7 @@ export type Query = {
     availableCountries: Array<Country>;
     /** A list of Collections available to the shop */
     collections: CollectionList;
-    /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
+    /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
     collection?: Maybe<Collection>;
     /** Returns a list of eligible shipping methods based on the current active Order */
     eligibleShippingMethods: Array<ShippingMethodQuote>;

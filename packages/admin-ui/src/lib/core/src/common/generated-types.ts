@@ -4058,7 +4058,7 @@ export type Query = {
   assets: AssetList;
   channel?: Maybe<Channel>;
   channels: Array<Channel>;
-  /** Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result. */
+  /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
   collection?: Maybe<Collection>;
   collectionFilters: Array<ConfigurableOperationDefinition>;
   collections: CollectionList;

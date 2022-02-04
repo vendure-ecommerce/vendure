@@ -16,6 +16,24 @@ A typical pattern is to run the Vendure app on the server, e.g. at `http://local
 
 Here is a good guide to setting up a production-ready server for an app such as Vendure: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
 
+## Database Timezone
+
+Vendure internally treats all dates & times as UTC. However, you may sometimes run into issues where dates are offset by some fixed amount of hours. E.g. you place an order at 17:00, but it shows up in the Admin UI as being placed at 19:00. Typically, this is caused by the timezone of your database not being set to UTC.
+
+You can check the timezone in **MySQL/MariaDB** by executing:
+
+```SQL
+SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP);
+```
+and you should expect to see `00:00:00`.
+
+In **Postgres**, you can execute:
+```SQL
+show timezone;
+```
+and you should expect to see `UTC` or `Etc/UTC`.
+
+
 ## Security Considerations
 
 For a production Vendure server, there are a few security-related points to consider when deploying:
@@ -112,4 +130,68 @@ REQUEST: GET http://localhost:3020/health
 
 ## Admin UI
 
-If you have customized the Admin UI with extensions, it can make sense to [compile your extensions ahead-of-time as part of the deployment process]({{< relref "/docs/plugins/extending-the-admin-ui" >}}#compiling-as-a-deployment-step).
+If you have customized the Admin UI with extensions, you should [compile your extensions ahead-of-time as part of the deployment process]({{< relref "/docs/plugins/extending-the-admin-ui" >}}#compiling-as-a-deployment-step).
+
+### Deploying a stand-alone Admin UI
+
+Usually, the Admin UI is served from the Vendure server via the AdminUiPlugin. However, you may wish to deploy the Admin UI app elsewhere. Since it is just a static Angular app, it can be deployed to any static hosting service such as Vercel or Netlify.
+
+Here's an example script that can be run as part of your host's `build` command, which will generate a stand-alone app bundle and configure it to point to your remote server API.
+
+This example is for Vercel, and assumes:
+
+* A `BASE_HREF` environment variable to be set to `/`
+* A public (output) directory set to `build/dist`
+* A build command set to `npm run build` or `yarn build`
+* A `build` script defined in your package.json:
+    ```json
+    {
+      "scripts": {
+        "build": "ts-node compile.ts"
+      }
+    }
+    ```
+
+```TypeScript
+// compile.ts
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { DEFAULT_BASE_HREF } from '@vendure/ui-devkit/compiler/constants';
+import path from 'path';
+import { promises as fs } from 'fs';
+
+/**
+ * Compiles the Admin UI. If the BASE_HREF is defined, use that. 
+ * Otherwise, go back to the default admin route.
+ */
+compileUiExtensions({
+  outputPath: path.join(__dirname, 'build'),
+  baseHref: process.env.BASE_HREF ?? DEFAULT_BASE_HREF,
+  extensions: [
+      /* any UI extensions would go here, or leave empty */
+  ],
+})
+  .compile?.()
+  .then(() => {
+    // If building for Vercel deployment, replace the config to make 
+    // api calls to api.example.com instead of localhost.
+    if (process.env.VERCEL) {
+      console.log('Overwriting the vendure-ui-config.json for Vercel deployment.');
+      return fs.writeFile(
+        path.join(__dirname, 'build', 'dist', 'vendure-ui-config.json'),
+        JSON.stringify({
+          apiHost: 'https://api.example.com',
+          apiPort: '443',
+          adminApiPath: 'admin-api',
+          tokenMethod: 'cookie',
+          defaultLanguage: 'en',
+          availableLanguages: ['en', 'de'],
+          hideVendureBranding: false,
+          hideVersion: false,
+        }),
+      );
+    }
+  })
+  .then(() => {
+    process.exit(0);
+  });
+```
