@@ -143,11 +143,19 @@ This example is for Vercel, and assumes:
 * A `BASE_HREF` environment variable to be set to `/`
 * A public (output) directory set to `build/dist`
 * A build command set to `npm run build` or `yarn build`
-* A `build` script defined in your package.json:
+* A package.json like this:
     ```json
     {
+      "name": "standalone-admin-ui",
+      "version": "0.1.0",
+      "private": true,
       "scripts": {
         "build": "ts-node compile.ts"
+      },
+      "devDependencies": {
+        "@vendure/ui-devkit": "^1.4.5",
+        "ts-node": "^10.2.1",
+        "typescript": "~4.3.5"
       }
     }
     ```
