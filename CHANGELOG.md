@@ -1,3 +1,19 @@
+## <small>1.4.6 (2022-02-04)</small>
+
+
+#### Fixes
+
+* **admin-ui** Do not display "undefined" in rich text editor ([e80b8c5](https://github.com/vendure-ecommerce/vendure/commit/e80b8c5)), closes [#1374](https://github.com/vendure-ecommerce/vendure/issues/1374)
+* **admin-ui** Fix error when toggling product list grouping ([1427399](https://github.com/vendure-ecommerce/vendure/commit/1427399)), closes [#1384](https://github.com/vendure-ecommerce/vendure/issues/1384)
+* **admin-ui** Fix hyphenation of long words (#1390) ([671a998](https://github.com/vendure-ecommerce/vendure/commit/671a998)), closes [#1390](https://github.com/vendure-ecommerce/vendure/issues/1390)
+* **admin-ui** Fix localeString error when creating Product ([e7013d0](https://github.com/vendure-ecommerce/vendure/commit/e7013d0)), closes [#1378](https://github.com/vendure-ecommerce/vendure/issues/1378)
+* **admin-ui** Fix long nav items (#1362) ([ffc48c6](https://github.com/vendure-ecommerce/vendure/commit/ffc48c6)), closes [#1362](https://github.com/vendure-ecommerce/vendure/issues/1362) [#1361](https://github.com/vendure-ecommerce/vendure/issues/1361)
+* **core** Add missing Fulfillment entity export ([cc1e4ed](https://github.com/vendure-ecommerce/vendure/commit/cc1e4ed))
+* **core** Fix OrderAddress type AddressCustomFields error (#1394) ([b6dd5f4](https://github.com/vendure-ecommerce/vendure/commit/b6dd5f4)), closes [#1394](https://github.com/vendure-ecommerce/vendure/issues/1394) [#1377](https://github.com/vendure-ecommerce/vendure/issues/1377)
+* **core** Optimize DefaultSearchPlugin reindexing ([b9d2234](https://github.com/vendure-ecommerce/vendure/commit/b9d2234)), closes [#736](https://github.com/vendure-ecommerce/vendure/issues/736)
+* **core** Resolve OrderItem.fulfillment ([6a9efe9](https://github.com/vendure-ecommerce/vendure/commit/6a9efe9)), closes [#1381](https://github.com/vendure-ecommerce/vendure/issues/1381)
+* **elasticsearch-plugin** Fix high memory usage on reindex ([bce86f6](https://github.com/vendure-ecommerce/vendure/commit/bce86f6)), closes [#1120](https://github.com/vendure-ecommerce/vendure/issues/1120)
+
 ## <small>1.4.5 (2022-01-17)</small>
 
 
