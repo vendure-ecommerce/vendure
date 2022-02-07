@@ -6,7 +6,7 @@ import path from 'path';
 const compiledUiDir = path.join(__dirname, 'lib/admin-ui');
 console.log('Building admin-ui from source...');
 
-fs.remove(compiledUiDir);
+fs.removeSync(compiledUiDir);
 
 const adminUiDir = path.join(__dirname, '../admin-ui');
 const buildProcess = spawn('yarn', [`--cwd "${adminUiDir}"`, 'run', 'build:app'], {
