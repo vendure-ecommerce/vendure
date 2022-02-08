@@ -157,8 +157,8 @@ import { Ctx, RequestContext, Product } from '@vendure/core';
 export class FieldOverrideExampleResolver {
   
   @ResolveField()
-  description(@Ctx() ctx: RequestContext, @Parent() variant: Product) {
-    return this.wrapInFormatting(ctx, variant.id);
+  description(@Ctx() ctx: RequestContext, @Parent() product: Product) {
+    return this.wrapInFormatting(ctx, product.id);
   }
   
   private wrapInFormatting(ctx: RequestContext, id: ID): string {
