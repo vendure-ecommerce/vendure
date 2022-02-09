@@ -148,6 +148,47 @@ export function notify(options: NotificationMessage['data']): void {
     sendMessage('notification', options).toPromise();
 }
 
+/**
+ * @description
+ * Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
+ *
+ * @example
+ * ```TypeScript
+ * import { graphQlMutation } from '\@vendure/ui-devkit';
+ *
+ * const disableProduct = (id: string) => {
+ *   return graphQlMutation(`
+ *     mutation DisableProduct($id: ID!) {
+ *       updateProduct(input: { id: $id, enabled: false }) {
+ *         id
+ *         enabled
+ *       }
+ *     }`, { id })
+ *     .then(data => data.updateProduct)
+ * }
+ * ```
+ *
+ * @docsCategory ui-devkit
+ * @docsPage UiDevkitClient
+ */
+ export function toggleAssetDialog<T, V extends { [key: string]: any }>(
+    options?: { [key: string]: any },
+): {
+    then: Promise<T>['then'];
+    stream: Observable<T>;
+} {
+    console.log("Sending asset- dialog message")
+    const result$ = sendMessage('asset-dialog', {options});
+    return {
+        then: (...args: any[]) =>
+            result$
+                .pipe(take(1))
+                .toPromise()
+                .then(...args),
+        stream: result$,
+    };
+}
+
 function sendMessage<T extends ExtensionMessage>(type: T['type'], data: T['data']): Observable<any> {
     const requestId = type + '__' + Math.random().toString(36).substr(3);
     const message: BaseExtensionMessage = {

@@ -7,7 +7,9 @@ import { merge, Observer, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
 import { DataService } from '../../../data/providers/data.service';
+import { ModalService } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
+import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';
 
 @Injectable()
 export class ExtensionHostService implements OnDestroy {
@@ -16,11 +18,12 @@ export class ExtensionHostService implements OnDestroy {
     private cancellationMessage$ = new Subject<string>();
     private destroyMessage$ = new Subject<void>();
 
-    constructor(private dataService: DataService, private notificationService: NotificationService) {}
+    constructor(private dataService: DataService, private notificationService: NotificationService, private modalService: ModalService) {}
 
     init(extensionWindow: Window, routeSnapshot: ActivatedRouteSnapshot) {
         this.extensionWindow = extensionWindow;
         this.routeSnapshot = routeSnapshot;
+        console.log("Registered event listener")
         window.addEventListener('message', this.handleMessage);
     }
 
@@ -34,6 +37,7 @@ export class ExtensionHostService implements OnDestroy {
     }
 
     private handleMessage = (message: MessageEvent<ExtensionMessage>) => {
+        console.log("Got message", message)
         const { data, origin } = message;
         if (this.isExtensionMessage(data)) {
             const cancellation$ = this.cancellationMessage$.pipe(
@@ -87,6 +91,19 @@ export class ExtensionHostService implements OnDestroy {
                 case 'notification': {
                     this.notificationService.notify(data.data);
                     break;
+                }
+                case 'asset-dialog': {
+                    console.log("Hello there from host")
+                    this.modalService
+                        .fromComponent(AssetPickerDialogComponent, {
+                            size: 'xl',
+                        })
+                        .subscribe(result => {
+                            if (result) {
+                                console.log({assets: result})
+                            }
+                        }); 
+                    break
                 }
                 default:
                     assertNever(data);

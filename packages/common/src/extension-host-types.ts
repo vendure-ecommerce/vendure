@@ -57,13 +57,19 @@ export interface DestroyMessage extends BaseExtensionMessage {
     data: null;
 }
 
+export interface AssetDialogMessage extends BaseExtensionMessage {
+    type: 'asset-dialog',
+    data: null
+}
+
 export type ExtensionMessage =
     | ActivatedRouteMessage
     | QueryMessage
     | MutationMessage
     | NotificationMessage
     | CancellationMessage
-    | DestroyMessage;
+    | DestroyMessage
+    | AssetDialogMessage;
 
 export interface MessageResponse {
     requestId: string;
