@@ -342,7 +342,7 @@ Some custom fields may be used internally in your business logic, or for integra
 
 * `public: false` means that it will not be exposed via the Shop API.
 * `readonly: true` means it will be exposed, but cannot be updated via the Admin API. It can only be changed programmatically in plugin code.
-* `internal: false` - means the field _will not_ be exposed via either the Shop or Admin GraphQL APIs. Internal custom fields are useful for purely internal implementation details.
+* `internal: false` - means the field _will_ be exposed via the GraphQL APIs (in this case on the Admin API due to the `public: false` setting). If it was set to `internal: true`, then the field would not be exposed _at all_ in either of the GraphQL APIs, and will not be visible in the Admin UI. Internal custom fields are useful for purely internal implementation details.
 
 ```TypeScript
 Customer: [
@@ -353,7 +353,7 @@ Customer: [
     readonly: true,
     internal: false,
   },
-]
+],
 ```
 
 ### Relations
