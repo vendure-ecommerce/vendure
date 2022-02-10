@@ -1605,7 +1605,7 @@ export type Mutation = {
     /**
      * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
      *
-     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
      * provided here.
      */
     verifyCustomerAccount: VerifyCustomerAccountResult;
