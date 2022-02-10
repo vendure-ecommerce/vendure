@@ -2629,7 +2629,7 @@ export type Query = {
      * general anonymous access to Order data.
      */
     orderByCode?: Maybe<Order>;
-    /** Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
+    /** Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
     product?: Maybe<Product>;
     /** Get a list of Products */
     products: ProductList;

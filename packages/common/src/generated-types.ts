@@ -4024,7 +4024,7 @@ export type Query = {
   pendingSearchIndexUpdates: Scalars['Int'];
   /** List Products */
   products: ProductList;
-  /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
+  /** Get a Product either by id or slug. If neither id nor slug is specified, an error will result. */
   product?: Maybe<Product>;
   /** List ProductVariants either all or for the specific product. */
   productVariants: ProductVariantList;
