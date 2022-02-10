@@ -39,7 +39,7 @@ type Query {
     general anonymous access to Order data.
     """
     orderByCode(code: String!): Order
-    "Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
+    "Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result."
     product(id: ID, slug: String): Product
     "Get a list of Products"
     products(options: ProductListOptions): ProductList!
@@ -89,7 +89,7 @@ type Mutation {
        verificationToken would then be passed to the `verifyCustomerAccount` mutation _without_ a password. The Customer is then
        verified and authenticated in one step.
     2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-       verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosed password of the Customer. The Customer is then
+       verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosen password of the Customer. The Customer is then
        verified and authenticated in one step.
 
     _If `authOptions.requireVerification` is set to `false`:_
@@ -110,7 +110,7 @@ type Mutation {
     """
     Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
 
-    If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+    If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
     provided here.
     """
     verifyCustomerAccount(token: String!, password: String): VerifyCustomerAccountResult!

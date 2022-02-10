@@ -26,7 +26,7 @@ export class IfDefaultChannelActiveDirective extends IfDirectiveBase<[]> {
     }
 
     /**
-     * A template to show if the current user does not have the speicified permission.
+     * A template to show if the current user does not have the specified permission.
      */
     @Input()
     set vdrIfMultichannelElse(templateRef: TemplateRef<any> | null) {
