@@ -2799,7 +2799,7 @@ export type SearchResult = {
     facetValueIds: Array<Scalars['ID']>;
     /** An array of ids of the Collections in which this result appears */
     collectionIds: Array<Scalars['ID']>;
-    /** A relevence score for the result. Differs between database implementations */
+    /** A relevance score for the result. Differs between database implementations */
     score: Scalars['Float'];
 };
 
