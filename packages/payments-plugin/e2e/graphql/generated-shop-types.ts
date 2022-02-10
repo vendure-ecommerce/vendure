@@ -59,7 +59,7 @@ export enum AdjustmentType {
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
 }
 
-/** Retured when attemting to set the Customer for an Order when already logged in. */
+/** Returned when attemting to set the Customer for an Order when already logged in. */
 export type AlreadyLoggedInError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -826,7 +826,7 @@ export type Discount = {
     amountWithTax: Scalars['Int'];
 };
 
-/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+/** Returned when attemting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1072,7 +1072,7 @@ export type IdOperators = {
 };
 
 /**
- * Retured if the token used to change a Customer's email address is valid, but has
+ * Returned if the token used to change a Customer's email address is valid, but has
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type IdentifierChangeTokenExpiredError = ErrorResult & {
@@ -1081,7 +1081,7 @@ export type IdentifierChangeTokenExpiredError = ErrorResult & {
 };
 
 /**
- * Retured if the token used to change a Customer's email address is either
+ * Returned if the token used to change a Customer's email address is either
  * invalid or does not match any expected tokens.
  */
 export type IdentifierChangeTokenInvalidError = ErrorResult & {
@@ -1482,7 +1482,7 @@ export enum LogicalOperator {
     OR = 'OR',
 }
 
-/** Retured when attemting to register or verify a customer account without a password, when one is required. */
+/** Returned when attemting to register or verify a customer account without a password, when one is required. */
 export type MissingPasswordError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1693,7 +1693,7 @@ export type NativeAuthInput = {
     password: Scalars['String'];
 };
 
-/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+/** Returned when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
 export type NativeAuthStrategyError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1705,7 +1705,7 @@ export type NativeAuthenticationResult =
     | NotVerifiedError
     | NativeAuthStrategyError;
 
-/** Retured when attemting to set a negative OrderLine quantity. */
+/** Returned when attemting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1876,7 +1876,7 @@ export type OrderItem = Node & {
     refundId?: Maybe<Scalars['ID']>;
 };
 
-/** Retured when the maximum order size limit has been reached. */
+/** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -2018,14 +2018,14 @@ export type PaginatedList = {
     totalItems: Scalars['Int'];
 };
 
-/** Retured when attemting to verify a customer account with a password, when a password has already been set. */
+/** Returned when attemting to verify a customer account with a password, when a password has already been set. */
 export type PasswordAlreadySetError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
 /**
- * Retured if the token used to reset a Customer's password is valid, but has
+ * Returned if the token used to reset a Customer's password is valid, but has
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type PasswordResetTokenExpiredError = ErrorResult & {
@@ -2034,7 +2034,7 @@ export type PasswordResetTokenExpiredError = ErrorResult & {
 };
 
 /**
- * Retured if the token used to reset a Customer's password is either
+ * Returned if the token used to reset a Customer's password is either
  * invalid or does not match any expected tokens.
  */
 export type PasswordResetTokenInvalidError = ErrorResult & {
@@ -2962,7 +2962,7 @@ export type VerificationTokenExpiredError = ErrorResult & {
 };
 
 /**
- * Retured if the verification token (used to verify a Customer's email address) is either
+ * Returned if the verification token (used to verify a Customer's email address) is either
  * invalid or does not match any expected tokens.
  */
 export type VerificationTokenInvalidError = ErrorResult & {

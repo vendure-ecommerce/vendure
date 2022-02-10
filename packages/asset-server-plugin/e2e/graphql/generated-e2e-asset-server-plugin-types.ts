@@ -1329,7 +1329,7 @@ export type Discount = {
     amountWithTax: Scalars['Int'];
 };
 
-/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+/** Returned when attemting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -2852,7 +2852,7 @@ export type NativeAuthInput = {
     password: Scalars['String'];
 };
 
-/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+/** Returned when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
 export type NativeAuthStrategyError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -2860,7 +2860,7 @@ export type NativeAuthStrategyError = ErrorResult & {
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
 
-/** Retured when attemting to set a negative OrderLine quantity. */
+/** Returned when attemting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -3028,7 +3028,7 @@ export type OrderItem = Node & {
     refundId?: Maybe<Scalars['ID']>;
 };
 
-/** Retured when the maximum order size limit has been reached. */
+/** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
