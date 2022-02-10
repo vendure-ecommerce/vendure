@@ -20,7 +20,7 @@ type OrderStateTransitionError implements ErrorResult {
     toState: String!
 }
 
-"Returned when attemting to create a Customer with an email address already registered to an existing User."
+"Returned when attempting to create a Customer with an email address already registered to an existing User."
 type EmailAddressConflictError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
@@ -33,7 +33,7 @@ type OrderLimitError implements ErrorResult {
     maxItems: Int!
 }
 
-"Returned when attemting to set a negative OrderLine quantity."
+"Returned when attempting to set a negative OrderLine quantity."
 type NegativeQuantityError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!

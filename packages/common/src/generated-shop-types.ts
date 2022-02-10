@@ -61,7 +61,7 @@ export enum AdjustmentType {
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
 }
 
-/** Returned when attemting to set the Customer for an Order when already logged in. */
+/** Returned when attempting to set the Customer for an Order when already logged in. */
 export type AlreadyLoggedInError = ErrorResult & {
     __typename?: 'AlreadyLoggedInError';
     errorCode: ErrorCode;
@@ -858,7 +858,7 @@ export type Discount = {
     amountWithTax: Scalars['Int'];
 };
 
-/** Returned when attemting to create a Customer with an email address already registered to an existing User. */
+/** Returned when attempting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
     __typename?: 'EmailAddressConflictError';
     errorCode: ErrorCode;
@@ -1534,7 +1534,7 @@ export enum LogicalOperator {
     OR = 'OR',
 }
 
-/** Returned when attemting to register or verify a customer account without a password, when one is required. */
+/** Returned when attempting to register or verify a customer account without a password, when one is required. */
 export type MissingPasswordError = ErrorResult & {
     __typename?: 'MissingPasswordError';
     errorCode: ErrorCode;
@@ -1760,7 +1760,7 @@ export type NativeAuthenticationResult =
     | NotVerifiedError
     | NativeAuthStrategyError;
 
-/** Returned when attemting to set a negative OrderLine quantity. */
+/** Returned when attempting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
     __typename?: 'NegativeQuantityError';
     errorCode: ErrorCode;
@@ -2086,7 +2086,7 @@ export type PaginatedList = {
     totalItems: Scalars['Int'];
 };
 
-/** Returned when attemting to verify a customer account with a password, when a password has already been set. */
+/** Returned when attempting to verify a customer account with a password, when a password has already been set. */
 export type PasswordAlreadySetError = ErrorResult & {
     __typename?: 'PasswordAlreadySetError';
     errorCode: ErrorCode;

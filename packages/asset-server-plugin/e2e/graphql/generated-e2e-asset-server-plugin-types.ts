@@ -1329,7 +1329,7 @@ export type Discount = {
     amountWithTax: Scalars['Int'];
 };
 
-/** Returned when attemting to create a Customer with an email address already registered to an existing User. */
+/** Returned when attempting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -2860,7 +2860,7 @@ export type NativeAuthStrategyError = ErrorResult & {
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
 
-/** Returned when attemting to set a negative OrderLine quantity. */
+/** Returned when attempting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
