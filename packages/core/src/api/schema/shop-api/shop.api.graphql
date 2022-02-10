@@ -89,7 +89,7 @@ type Mutation {
        verificationToken would then be passed to the `verifyCustomerAccount` mutation _without_ a password. The Customer is then
        verified and authenticated in one step.
     2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-       verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosed password of the Customer. The Customer is then
+       verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosen password of the Customer. The Customer is then
        verified and authenticated in one step.
 
     _If `authOptions.requireVerification` is set to `false`:_
