@@ -1,0 +1,25 @@
+@startuml
+!include theme.puml
+title Channels & Currencies
+
+node DefaultChannel as "Default Channel" {
+}
+
+package ChannelA as "US Channel" {
+   [currencyCode: USD]
+}
+
+package ChannelB as "EU Channel" {
+   [currencyCode: EUR]
+}
+
+package ChannelC as "UK Channel" {
+  [currencyCode: GBP]
+}
+
+DefaultChannel -down-> ChannelA
+DefaultChannel -down-> ChannelB
+DefaultChannel -down-> ChannelC
+
+
+@enduml

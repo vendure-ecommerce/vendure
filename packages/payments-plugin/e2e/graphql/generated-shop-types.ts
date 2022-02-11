@@ -59,7 +59,7 @@ export enum AdjustmentType {
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
 }
 
-/** Retured when attemting to set the Customer for an Order when already logged in. */
+/** Returned when attempting to set the Customer for an Order when already logged in. */
 export type AlreadyLoggedInError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -826,7 +826,7 @@ export type Discount = {
     amountWithTax: Scalars['Int'];
 };
 
-/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+/** Returned when attempting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1072,7 +1072,7 @@ export type IdOperators = {
 };
 
 /**
- * Retured if the token used to change a Customer's email address is valid, but has
+ * Returned if the token used to change a Customer's email address is valid, but has
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type IdentifierChangeTokenExpiredError = ErrorResult & {
@@ -1081,7 +1081,7 @@ export type IdentifierChangeTokenExpiredError = ErrorResult & {
 };
 
 /**
- * Retured if the token used to change a Customer's email address is either
+ * Returned if the token used to change a Customer's email address is either
  * invalid or does not match any expected tokens.
  */
 export type IdentifierChangeTokenInvalidError = ErrorResult & {
@@ -1482,7 +1482,7 @@ export enum LogicalOperator {
     OR = 'OR',
 }
 
-/** Retured when attemting to register or verify a customer account without a password, when one is required. */
+/** Returned when attempting to register or verify a customer account without a password, when one is required. */
 export type MissingPasswordError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1530,7 +1530,7 @@ export type Mutation = {
      *    verificationToken would then be passed to the `verifyCustomerAccount` mutation _without_ a password. The Customer is then
      *    verified and authenticated in one step.
      * 2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-     *    verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosed password of the Customer. The Customer is then
+     *    verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosen password of the Customer. The Customer is then
      *    verified and authenticated in one step.
      *
      * _If `authOptions.requireVerification` is set to `false`:_
@@ -1551,7 +1551,7 @@ export type Mutation = {
     /**
      * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
      *
-     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
      * provided here.
      */
     verifyCustomerAccount: VerifyCustomerAccountResult;
@@ -1693,7 +1693,7 @@ export type NativeAuthInput = {
     password: Scalars['String'];
 };
 
-/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+/** Returned when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
 export type NativeAuthStrategyError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1705,7 +1705,7 @@ export type NativeAuthenticationResult =
     | NotVerifiedError
     | NativeAuthStrategyError;
 
-/** Retured when attemting to set a negative OrderLine quantity. */
+/** Returned when attempting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -1876,7 +1876,7 @@ export type OrderItem = Node & {
     refundId?: Maybe<Scalars['ID']>;
 };
 
-/** Retured when the maximum order size limit has been reached. */
+/** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -2018,14 +2018,14 @@ export type PaginatedList = {
     totalItems: Scalars['Int'];
 };
 
-/** Retured when attemting to verify a customer account with a password, when a password has already been set. */
+/** Returned when attempting to verify a customer account with a password, when a password has already been set. */
 export type PasswordAlreadySetError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
 /**
- * Retured if the token used to reset a Customer's password is valid, but has
+ * Returned if the token used to reset a Customer's password is valid, but has
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type PasswordResetTokenExpiredError = ErrorResult & {
@@ -2034,7 +2034,7 @@ export type PasswordResetTokenExpiredError = ErrorResult & {
 };
 
 /**
- * Retured if the token used to reset a Customer's password is either
+ * Returned if the token used to reset a Customer's password is either
  * invalid or does not match any expected tokens.
  */
 export type PasswordResetTokenInvalidError = ErrorResult & {
@@ -2539,7 +2539,7 @@ export type Query = {
      * general anonymous access to Order data.
      */
     orderByCode?: Maybe<Order>;
-    /** Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
+    /** Get a Product either by id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
     product?: Maybe<Product>;
     /** Get a list of Products */
     products: ProductList;
@@ -2702,7 +2702,7 @@ export type SearchResult = {
     facetValueIds: Array<Scalars['ID']>;
     /** An array of ids of the Collections in which this result appears */
     collectionIds: Array<Scalars['ID']>;
-    /** A relevence score for the result. Differs between database implementations */
+    /** A relevance score for the result. Differs between database implementations */
     score: Scalars['Float'];
 };
 
@@ -2962,7 +2962,7 @@ export type VerificationTokenExpiredError = ErrorResult & {
 };
 
 /**
- * Retured if the verification token (used to verify a Customer's email address) is either
+ * Returned if the verification token (used to verify a Customer's email address) is either
  * invalid or does not match any expected tokens.
  */
 export type VerificationTokenInvalidError = ErrorResult & {

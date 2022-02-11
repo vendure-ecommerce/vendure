@@ -1,7 +1,7 @@
 type Query {
     "List Products"
     products(options: ProductListOptions): ProductList!
-    "Get a Product either by id or slug. If neither id nor slug is speicified, an error will result."
+    "Get a Product either by id or slug. If neither id nor slug is specified, an error will result."
     product(id: ID, slug: String): Product
     "List ProductVariants either all or for the specific product."
     productVariants(options: ProductVariantListOptions, productId: ID): ProductVariantList!

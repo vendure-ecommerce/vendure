@@ -23,6 +23,41 @@ Use-cases of Channels include:
 * Creating distinct rules and inventory for different sales channels such as Amazon.
 * Specialized stores offering a subset of the main inventory.
 
+## Channels, Currencies & Prices
+
+Each Channel has an associated **currencyCode** property, which sets the currency for all monetary values in that channel.
+
+{{< figure src="channels_currencies_diagram.png" >}}
+
+Internally, there is a one-to-many relation from [ProductVariant]({{< relref "product-variant" >}}) to [ProductVariantPrice]({{< relref "product-variant-price" >}}). So the ProductVariant does _not_ hold a price for the product - this is actually stored on the ProductVariantPrice entity, and there will be one for each Channel to which the ProductVariant has been assigned.
+
+{{< figure src="channels_prices_diagram.png" >}}
+
+{{< alert "warning" >}}
+**Note:** in the diagram above that the ProductVariant is **always assigned to the default Channel**, and thus will have a price in the default channel too. Likewise, the default Channel also has a currencyCode.
+{{< /alert >}}
+
+### Use-case: single shop
+
+This is the simplest set-up. You just use the default Channel for everything
+
+### Use-case: Multiple separate shops
+
+Let's say you are running multiple distinct businesses, each with its own distinct inventory and possibly different currencies. In this case, you set up a Channel for each shop and create the Product & Variants in the relevant shop's Channel.
+
+The default Channel can then be used by the superadmin for administrative purposes, but other than that the default Channel would not be used. Storefronts would only target a specific shop's Channel.
+
+### Use-case: Multiple shops sharing inventory
+
+Let's say you have a single inventory but want to split it between multiple shops. There might be overlap in the inventory, e.g. the US & EU shops share 80% of inventory, and then the rest is specific to either shop.
+
+In this case, you can create the entire inventory in the default Channel and then assign the Products & ProductVariants to each Channel as needed, setting the price as appropriate for the currency used by each shop.
+
+{{< alert "warning" >}}
+**Note:** When creating a new Product & ProductVariants inside a sub-Channel, it will also **always get assigned to the default Channel**. If your sub-Channel uses a different currency from the default Channel, you should be aware that in the default Channel, that ProductVariant will be assigned the **same price** as it has in the sub-Channel. If the currency differs between the Channels, you need to make sure to set the correct price in the default Channel if you are exposing it to Customers via a storefront. 
+{{< /alert >}}
+
+
 ## How to set the channel when using the GraphQL API
 
 To specify which channel to use when making an API call, set the `'vendure-token'` header to match the token of the desired Channel.
