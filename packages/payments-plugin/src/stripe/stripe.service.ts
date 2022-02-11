@@ -18,36 +18,51 @@ export class StripeService {
         });
     }
 
-    async createPaymentIntent(ctx: RequestContext, activeOrder: Order): Promise<string | undefined> {
+    async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string | undefined> {
         let customerId: string | undefined;
 
         if (this.options.storeCustomersInStripe && ctx.activeUserId) {
-            customerId = await this.getStripeCustomerId(ctx, activeOrder);
+            customerId = await this.getStripeCustomerId(ctx, order);
         }
 
         const { client_secret } = await this.stripe.paymentIntents.create({
-            amount: activeOrder.total,
-            currency: activeOrder.currencyCode.toLowerCase(),
+            amount: order.totalWithTax,
+            currency: order.currencyCode.toLowerCase(),
             customer: customerId,
             automatic_payment_methods: {
                 enabled: true,
             },
             metadata: {
                 channelToken: ctx.channel.token,
-                orderId: activeOrder.id,
-                orderCode: activeOrder.code,
+                orderId: order.id,
+                orderCode: order.code,
             },
         });
 
         if (!client_secret) {
             // This should never happen
             Logger.warn(
-                `Payment intent creation for order ${activeOrder.code} did not return client secret`,
+                `Payment intent creation for order ${order.code} did not return client secret`,
                 loggerCtx,
             );
         }
 
         return client_secret ?? undefined;
+    }
+
+    async createRefund(paymentIntentId: string, amount: number): Promise<Stripe.Refund | Stripe.StripeError> {
+        // TODO: Consider passing the "reason" property once this feature request is addressed:
+        // https://github.com/vendure-ecommerce/vendure/issues/893
+        try {
+            const refund = await this.stripe.refunds.create({
+                payment_intent: paymentIntentId,
+                amount,
+            });
+
+            return refund;
+        } catch (e: any) {
+            return e as Stripe.StripeError;
+        }
     }
 
     constructEventFromPayload(payload: Buffer, signature: string): Stripe.Event {
