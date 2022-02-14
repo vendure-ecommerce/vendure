@@ -291,7 +291,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         prop: K,
         defaultVal: OrderItem[K],
     ): OrderItem[K] {
-        const items = this.activeItems.length ? this.activeItems : this.items;
+        const items = this.activeItems.length ? this.activeItems : this.items ?? [];
         return items.length ? items[0][prop] : defaultVal;
     }
 }
