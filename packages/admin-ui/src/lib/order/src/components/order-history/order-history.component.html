@@ -106,6 +106,9 @@
                     <vdr-labeled-data [label]="'order.contents' | translate">
                         <vdr-simple-item-list [items]="items"></vdr-simple-item-list>
                     </vdr-labeled-data>
+                    <vdr-labeled-data [label]="'order.shipping-cancelled' | translate">
+                        {{ entry.data.shippingCancelled }}
+                    </vdr-labeled-data>
                 </vdr-history-entry-detail>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_FULFILLMENT">

@@ -33,4 +33,7 @@
         text-decoration: line-through;
         background-color: var(--color-component-bg-200);
     }
+    .is-disabled td, .is-disabled td input {
+        background-color: var(--color-component-bg-200);
+    }
 }
