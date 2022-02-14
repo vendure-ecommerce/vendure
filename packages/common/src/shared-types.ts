@@ -264,8 +264,6 @@ export interface AdminUiConfig {
     /**
      * @description
      * An array of languages for which translations exist for the Admin UI.
-     *
-     * @default [LanguageCode.en, LanguageCode.es]
      */
     availableLanguages: LanguageCode[];
     /**
