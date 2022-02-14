@@ -1260,8 +1260,23 @@ export class OrderService {
         await this.connection.getRepository(ctx, OrderItem).save(items, { reload: false });
 
         const orderWithItems = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
-            relations: ['lines', 'lines.items'],
+            relations: ['lines', 'lines.items', 'surcharges', 'shippingLines'],
         });
+        if (input.cancelShipping === true) {
+            for (const shippingLine of orderWithItems.shippingLines) {
+                shippingLine.adjustments.push({
+                    adjustmentSource: 'CANCEL_ORDER',
+                    type: AdjustmentType.OTHER,
+                    description: 'shipping cancellation',
+                    amount: -shippingLine.discountedPriceWithTax,
+                });
+                this.connection.getRepository(ctx, ShippingLine).save(shippingLine, { reload: false });
+            }
+        }
+        // Update totals after cancellation
+        this.orderCalculator.calculateOrderTotals(orderWithItems);
+        await this.connection.getRepository(ctx, Order).save(orderWithItems, { reload: false });
+
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId: order.id,
@@ -1269,8 +1284,10 @@ export class OrderService {
             data: {
                 orderItemIds: items.map(i => i.id),
                 reason: input.reason || undefined,
+                shippingCancelled: !!input.cancelShipping,
             },
         });
+
         return orderItemsAreAllCancelled(orderWithItems);
     }
 

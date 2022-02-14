@@ -59,6 +59,7 @@ export type Adjustment = {
 export enum AdjustmentType {
     PROMOTION = 'PROMOTION',
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+    OTHER = 'OTHER',
 }
 
 /** Returned when attempting to set the Customer for an Order when already logged in. */

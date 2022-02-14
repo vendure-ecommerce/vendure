@@ -57,6 +57,7 @@ export type Adjustment = {
 export enum AdjustmentType {
     PROMOTION = 'PROMOTION',
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+    OTHER = 'OTHER',
 }
 
 /** Returned when attempting to set the Customer for an Order when already logged in. */
@@ -3439,9 +3440,7 @@ export type GetOrderByCodeWithPaymentsQueryVariables = Exact<{
 
 export type GetOrderByCodeWithPaymentsQuery = { orderByCode?: Maybe<TestOrderWithPaymentsFragment> };
 
-export type GetActiveCustomerOrderWithItemFulfillmentsQueryVariables = Exact<{
-    code: Scalars['String'];
-}>;
+export type GetActiveCustomerOrderWithItemFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetActiveCustomerOrderWithItemFulfillmentsQuery = {
     activeCustomer?: Maybe<{

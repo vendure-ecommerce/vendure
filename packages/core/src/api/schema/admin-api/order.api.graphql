@@ -63,6 +63,8 @@ input CancelOrderInput {
     orderId: ID!
     "Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled"
     lines: [OrderLineInput!]
+    "Specify whether the shipping charges should also be cancelled. Defaults to false"
+    cancelShipping: Boolean
     reason: String
 }
 
