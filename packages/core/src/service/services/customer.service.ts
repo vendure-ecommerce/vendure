@@ -10,6 +10,7 @@ import {
     CreateAddressInput,
     CreateCustomerInput,
     CreateCustomerResult,
+    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
     HistoryEntryType,
@@ -88,12 +89,20 @@ export class CustomerService {
         ctx: RequestContext,
         options: ListQueryOptions<Customer> | undefined,
     ): Promise<PaginatedList<Customer>> {
+        const relations = ['channels'];
+        const customPropertyMap: { [name: string]: string } = {};
+        const hasPostalCodeFilter = !!(options as CustomerListOptions)?.filter?.postalCode;
+        if (hasPostalCodeFilter) {
+            relations.push('addresses');
+            customPropertyMap.postalCode = 'address.postalCode';
+        }
         return this.listQueryBuilder
             .build(Customer, options, {
-                relations: ['channels'],
+                relations,
                 channelId: ctx.channelId,
                 where: { deletedAt: null },
                 ctx,
+                customPropertyMap,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));

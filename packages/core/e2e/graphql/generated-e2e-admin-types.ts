@@ -1184,6 +1184,7 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+    postalCode?: Maybe<StringOperators>;
     id?: Maybe<IdOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
