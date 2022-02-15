@@ -309,7 +309,7 @@
     "remove-customers-from-group-success": "Odebrán: {customerCount, plural, one {1 zákazník} other {{customerCount} zákazníci/zákazníků}} z \"{ groupName }\"",
     "remove-from-group": "Odebrat ze skupiny",
     "search-customers-by-email": "Hledat podle e-mailové adresy",
-    "search-customers-by-last-name": "",
+    "search-customers-by-email-last-name-postal-code": "",
     "select-customer": "",
     "set-as-default-billing-address": "Nastavit jako výchozí fakturační adresu",
     "set-as-default-shipping-address": "Nastavit jako výchozí dodací adresu",

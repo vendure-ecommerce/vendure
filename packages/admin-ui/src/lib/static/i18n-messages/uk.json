@@ -309,7 +309,7 @@
     "remove-customers-from-group-success": "Видалено {customerCount, plural, one {1 клієнт} other {{customerCount} клієнтів}} из \"{ groupName }\"",
     "remove-from-group": "Вилучити з цієї групи",
     "search-customers-by-email": "Пошук за адресою електронної пошти",
-    "search-customers-by-last-name": "Пошук за прізвищем",
+    "search-customers-by-email-last-name-postal-code": "",
     "select-customer": "Виберіть клієнта",
     "set-as-default-billing-address": "Встановити як білінг за замовчуванням",
     "set-as-default-shipping-address": "Встановити як доставку за замовчуванням",

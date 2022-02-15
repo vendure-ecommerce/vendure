@@ -6,11 +6,12 @@ import {
     BaseListComponent,
     DataService,
     GetCustomerList,
+    LogicalOperator,
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
-import { EMPTY, merge } from 'rxjs';
+import { EMPTY } from 'rxjs';
 import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -20,9 +21,9 @@ import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
 })
 export class CustomerListComponent
     extends BaseListComponent<GetCustomerList.Query, GetCustomerList.Items>
-    implements OnInit {
-    emailSearchTerm = new FormControl('');
-    lastNameSearchTerm = new FormControl('');
+    implements OnInit
+{
+    searchTerm = new FormControl('');
     constructor(
         private dataService: DataService,
         router: Router,
@@ -40,12 +41,16 @@ export class CustomerListComponent
                     take,
                     filter: {
                         emailAddress: {
-                            contains: this.emailSearchTerm.value,
+                            contains: this.searchTerm.value,
                         },
                         lastName: {
-                            contains: this.lastNameSearchTerm.value,
+                            contains: this.searchTerm.value,
+                        },
+                        postalCode: {
+                            contains: this.searchTerm.value,
                         },
                     },
+                    filterOperator: LogicalOperator.OR,
                     sort: {
                         createdAt: SortOrder.DESC,
                     },
@@ -56,7 +61,7 @@ export class CustomerListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        merge(this.emailSearchTerm.valueChanges, this.lastNameSearchTerm.valueChanges)
+        this.searchTerm.valueChanges
             .pipe(
                 filter(value => 2 < value.length || value.length === 0),
                 debounceTime(250),

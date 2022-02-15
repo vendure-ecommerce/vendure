@@ -309,7 +309,7 @@
     "remove-customers-from-group-success": "Excluído {customerCount, plural, one {1 customer} other {{customerCount} customers}} from \"{ groupName }\"",
     "remove-from-group": "Excluir deste grupo",
     "search-customers-by-email": "Busca por email",
-    "search-customers-by-last-name": "",
+    "search-customers-by-email-last-name-postal-code": "Busca por email / sobrenome / cep",
     "select-customer": "",
     "set-as-default-billing-address": "Definir como cobrança padrão",
     "set-as-default-shipping-address": "Definir como remessa padrão",

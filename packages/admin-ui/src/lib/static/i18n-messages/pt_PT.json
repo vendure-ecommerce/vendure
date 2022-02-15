@@ -309,7 +309,7 @@
     "remove-customers-from-group-success": "{customerCount, plural, one {1 cliente eliminado} other {{customerCount} clientes eliminados}} do grupo \"{ groupName }\"",
     "remove-from-group": "Eliminar deste grupo",
     "search-customers-by-email": "Pesquisar por email",
-    "search-customers-by-last-name": "Pesquisar pelo apelido",
+    "search-customers-by-email-last-name-postal-code": "Pesquisar pelo apelido / email / código postal",
     "select-customer": "Seleccione o cliente",
     "set-as-default-billing-address": "Definir como morada de faturação padrão",
     "set-as-default-shipping-address": "Definir como morada de entrega padrão",
