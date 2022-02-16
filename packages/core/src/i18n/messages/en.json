@@ -80,6 +80,7 @@
     "PASSWORD_ALREADY_SET_ERROR": "A password has already been set during registration",
     "PASSWORD_RESET_TOKEN_EXPIRED_ERROR": "Password reset token has expired",
     "PASSWORD_RESET_TOKEN_INVALID_ERROR": "Password reset token not recognized",
+    "PASSWORD_VALIDATION_ERROR": "Password is invalid",
     "PAYMENT_DECLINED_ERROR": "The payment was declined",
     "PAYMENT_FAILED_ERROR": "The payment failed",
     "PAYMENT_ORDER_MISMATCH_ERROR": "The Payment and OrderLines do not belong to the same Order",

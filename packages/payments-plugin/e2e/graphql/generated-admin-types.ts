@@ -274,6 +274,11 @@ export type BooleanCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']>;
 };
 
+/** Operators for filtering on a list of Boolean fields */
+export type BooleanListOperators = {
+    inList: Scalars['Boolean'];
+};
+
 /** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
     eq?: Maybe<Scalars['Boolean']>;
@@ -1269,6 +1274,11 @@ export type CustomerSortParameter = {
     emailAddress?: Maybe<SortOrder>;
 };
 
+/** Operators for filtering on a list of Date fields */
+export type DateListOperators = {
+    inList: Scalars['DateTime'];
+};
+
 /** Operators for filtering on a DateTime field */
 export type DateOperators = {
     eq?: Maybe<Scalars['DateTime']>;
@@ -1626,6 +1636,11 @@ export enum HistoryEntryType {
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
     ORDER_MODIFIED = 'ORDER_MODIFIED',
 }
+
+/** Operators for filtering on a list of ID fields */
+export type IdListOperators = {
+    inList: Scalars['ID'];
+};
 
 /** Operators for filtering on an ID field */
 export type IdOperators = {
@@ -2884,6 +2899,11 @@ export type Node = {
 export type NothingToRefundError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Operators for filtering on a list of Number fields */
+export type NumberListOperators = {
+    inList: Scalars['Float'];
 };
 
 /** Operators for filtering on a Int or Float field */
@@ -4460,6 +4480,11 @@ export type StringCustomFieldConfig = CustomField & {
 export type StringFieldOption = {
     value: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
+};
+
+/** Operators for filtering on a list of String fields */
+export type StringListOperators = {
+    inList: Scalars['String'];
 };
 
 /** Operators for filtering on a String field */

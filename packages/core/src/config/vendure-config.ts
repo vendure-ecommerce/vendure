@@ -1,8 +1,7 @@
-import { DynamicModule, NestMiddleware, Type } from '@nestjs/common';
+import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
-import { RequestHandler } from 'express';
 import { ValidationContext } from 'graphql';
 import { ConnectionOptions } from 'typeorm';
 
@@ -15,6 +14,7 @@ import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-str
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
+import { PasswordValidationStrategy } from './auth/password-validation-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
@@ -400,6 +400,27 @@ export interface AuthOptions {
      * @since 1.3.0
      */
     passwordHashingStrategy?: PasswordHashingStrategy;
+    /**
+     * @description
+     * Allows you to set a custom policy for passwords when using the {@link NativeAuthenticationStrategy}.
+     * By default, it uses the {@link DefaultPasswordValidationStrategy}, which will impose a minimum length
+     * of four characters. To improve security for production, you are encouraged to specify a more strict
+     * policy, which you can do like this:
+     *
+     * @example
+     * ```ts
+     * {
+     *   passwordValidationStrategy: new DefaultPasswordValidationStrategy({
+     *     // Minimum eight characters, at least one letter and one number
+     *     regexp: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+     *   }),
+     * }
+     * ```
+     *
+     * @since 1.5.0
+     * @default DefaultPasswordValidationStrategy
+     */
+    passwordValidationStrategy?: PasswordValidationStrategy;
 }
 
 /**

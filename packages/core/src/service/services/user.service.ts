@@ -3,7 +3,7 @@ import { VerifyCustomerAccountResult } from '@vendure/common/lib/generated-shop-
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { ErrorResultUnion } from '../../common/error/error-result';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import {
     IdentifierChangeTokenExpiredError,
@@ -13,6 +13,7 @@ import {
     PasswordAlreadySetError,
     PasswordResetTokenExpiredError,
     PasswordResetTokenInvalidError,
+    PasswordValidationError,
     VerificationTokenExpiredError,
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
@@ -61,14 +62,20 @@ export class UserService {
      * @description
      * Creates a new User with the special `customer` Role and using the {@link NativeAuthenticationStrategy}.
      */
-    async createCustomerUser(ctx: RequestContext, identifier: string, password?: string): Promise<User> {
+    async createCustomerUser(
+        ctx: RequestContext,
+        identifier: string,
+        password?: string,
+    ): Promise<User | PasswordValidationError> {
         const user = new User();
         user.identifier = identifier;
         const customerRole = await this.roleService.getCustomerRole();
         user.roles = [customerRole];
-        return this.connection
-            .getRepository(ctx, User)
-            .save(await this.addNativeAuthenticationMethod(ctx, user, identifier, password));
+        const addNativeAuthResult = await this.addNativeAuthenticationMethod(ctx, user, identifier, password);
+        if (isGraphQlErrorResult(addNativeAuthResult)) {
+            return addNativeAuthResult;
+        }
+        return this.connection.getRepository(ctx, User).save(addNativeAuthResult);
     }
 
     /**
@@ -82,7 +89,7 @@ export class UserService {
         user: User,
         identifier: string,
         password?: string,
-    ): Promise<User> {
+    ): Promise<User | PasswordValidationError> {
         const checkUser = user.id != null && (await this.getUserById(ctx, user.id));
         if (checkUser) {
             if (
@@ -103,6 +110,10 @@ export class UserService {
             user.verified = true;
         }
         if (password) {
+            const passwordValidationResult = await this.validatePassword(ctx, password);
+            if (passwordValidationResult !== true) {
+                return passwordValidationResult;
+            }
             authenticationMethod.passwordHash = await this.passwordCipher.hash(password);
         } else {
             authenticationMethod.passwordHash = '';
@@ -182,6 +193,10 @@ export class UserService {
                     if (!!nativeAuthMethod.passwordHash) {
                         return new PasswordAlreadySetError();
                     }
+                    const passwordValidationResult = await this.validatePassword(ctx, password);
+                    if (passwordValidationResult !== true) {
+                        return passwordValidationResult;
+                    }
                     nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
                 }
                 nativeAuthMethod.verificationToken = null;
@@ -223,7 +238,9 @@ export class UserService {
         ctx: RequestContext,
         passwordResetToken: string,
         password: string,
-    ): Promise<User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError> {
+    ): Promise<
+        User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError
+    > {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
@@ -232,6 +249,10 @@ export class UserService {
             .getOne();
         if (!user) {
             return new PasswordResetTokenInvalidError();
+        }
+        const passwordValidationResult = await this.validatePassword(ctx, password);
+        if (passwordValidationResult !== true) {
+            return passwordValidationResult;
         }
         if (this.verificationTokenGenerator.verifyVerificationToken(passwordResetToken)) {
             const nativeAuthMethod = user.getNativeAuthenticationMethod();
@@ -358,5 +379,22 @@ export class UserService {
             .getRepository(ctx, NativeAuthenticationMethod)
             .save(nativeAuthMethod, { reload: false });
         return true;
+    }
+
+    private async validatePassword(
+        ctx: RequestContext,
+        password: string,
+    ): Promise<true | PasswordValidationError> {
+        const passwordValidationResult =
+            await this.configService.authOptions.passwordValidationStrategy.validate(ctx, password);
+        if (passwordValidationResult !== true) {
+            const message =
+                typeof passwordValidationResult === 'string'
+                    ? passwordValidationResult
+                    : 'Password is invalid';
+            return new PasswordValidationError(message);
+        } else {
+            return true;
+        }
     }
 }
