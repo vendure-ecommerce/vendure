@@ -1,11 +1,12 @@
 import { ConfigArgValues } from '@vendure/core/dist/common/configurable-operation';
+import '@vendure/core/dist/entity/custom-entity-fields';
 import { Environment } from 'braintree';
 
 import { braintreePaymentMethodHandler } from './braintree.handler';
 
 export type PaymentMethodArgsHash = ConfigArgValues<typeof braintreePaymentMethodHandler['args']>;
 
-declare module '@vendure/core' {
+declare module '@vendure/core/dist/entity/custom-entity-fields' {
     interface CustomCustomerFields {
         braintreeCustomerId?: string;
     }

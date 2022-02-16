@@ -87,9 +87,8 @@ export class StripeService {
 
         const { customer } = order;
 
-        // TODO: fix typings
-        if ((customer.customFields as any).stripeCustomerId) {
-            return (customer.customFields as any).stripeCustomerId;
+        if (customer.customFields.stripeCustomerId) {
+            return customer.customFields.stripeCustomerId;
         }
 
         let stripeCustomerId;
@@ -108,8 +107,7 @@ export class StripeService {
             Logger.info(`Created Stripe Customer record for customerId ${customer.id}`, loggerCtx);
         }
 
-        // TODO: fix typings
-        (customer.customFields as any).stripeCustomerId = stripeCustomerId;
+        customer.customFields.stripeCustomerId = stripeCustomerId;
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
 
         return stripeCustomerId;

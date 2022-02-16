@@ -1,7 +1,7 @@
-import { CustomCustomerFields } from '@vendure/core';
+import '@vendure/core/dist/entity/custom-entity-fields';
 import { IncomingMessage } from 'http';
 
-declare module '@vendure/core' {
+declare module '@vendure/core/dist/entity/custom-entity-fields' {
     interface CustomCustomerFields {
         stripeCustomerId?: string;
     }

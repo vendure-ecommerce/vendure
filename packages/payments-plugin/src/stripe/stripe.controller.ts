@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Headers, Post, Req } from '@nestjs/common';
+import { BadRequestException, Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import {
     ChannelService,
     InternalServerError,
@@ -6,17 +6,22 @@ import {
     Logger,
     Order,
     OrderService,
-    OrderStateTransitionError,
     PaymentMethod,
     RequestContext,
     TransactionalConnection,
 } from '@vendure/core';
+import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
+import { Response } from 'express';
 import Stripe from 'stripe';
 
 import { loggerCtx } from './constants';
 import { stripePaymentMethodHandler } from './stripe.handler';
 import { StripeService } from './stripe.service';
 import { IncomingMessageWithRawBody } from './types';
+
+const missingHeaderErrorMessage = 'Missing stripe-signature header';
+const signatureErrorMessage = 'Error verifying Stripe webhook signature';
+const noPaymentIntentErrorMessage = 'No payment intent in the event payload';
 
 @Controller('payments')
 export class StripeController {
@@ -31,28 +36,34 @@ export class StripeController {
     async webhook(
         @Headers('stripe-signature') signature: string | undefined,
         @Req() request: IncomingMessageWithRawBody,
+        @Res() response: Response,
     ): Promise<void> {
         if (!signature) {
-            throw new BadRequestException('Missing stripe-signature header');
+            Logger.error(missingHeaderErrorMessage, loggerCtx);
+            response.status(HttpStatus.BAD_REQUEST).send(missingHeaderErrorMessage);
+            return;
         }
 
         let event = null;
         try {
             event = this.stripeService.constructEventFromPayload(request.rawBody, signature);
         } catch (e: any) {
-            Logger.error(`Error verifying Stripe webhook signature ${signature}: ${e.message}`);
-            throw new BadRequestException('Error verifying Stripe webhook signature');
+            Logger.error(`${signatureErrorMessage} ${signature}: ${e.message}`, loggerCtx);
+            response.status(HttpStatus.BAD_REQUEST).send(signatureErrorMessage);
+            return;
         }
 
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         if (!paymentIntent) {
-            throw new BadRequestException('No payment intent in the webhook payload');
+            Logger.error(noPaymentIntentErrorMessage, loggerCtx);
+            response.status(HttpStatus.BAD_REQUEST).send(noPaymentIntentErrorMessage);
+            return;
         }
 
         const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
 
         if (event.type === 'payment_intent.payment_failed') {
-            const message = paymentIntent.last_payment_error && paymentIntent.last_payment_error.message;
+            const message = paymentIntent.last_payment_error?.message;
             Logger.warn(`Payment for order ${orderCode} failed: ${message}`, loggerCtx);
             return;
         }
@@ -90,7 +101,10 @@ export class StripeController {
         });
 
         if (!(addPaymentToOrderResult instanceof Order)) {
-            Logger.error(`Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`);
+            Logger.error(
+                `Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`,
+                loggerCtx,
+            );
             return;
         }
 
@@ -110,11 +124,9 @@ export class StripeController {
     }
 
     private async getPaymentMethod(ctx: RequestContext): Promise<PaymentMethod> {
-        const method = await this.connection.getRepository(ctx, PaymentMethod).findOne({
-            where: {
-                code: stripePaymentMethodHandler.code,
-            },
-        });
+        const method = (await this.connection.getRepository(ctx, PaymentMethod).find()).find(
+            m => m.handler.code === stripePaymentMethodHandler.code,
+        );
 
         if (!method) {
             throw new InternalServerError(`[${loggerCtx}] Could not find Stripe PaymentMethod`);
