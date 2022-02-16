@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import {
     ChannelService,
     InternalServerError,
