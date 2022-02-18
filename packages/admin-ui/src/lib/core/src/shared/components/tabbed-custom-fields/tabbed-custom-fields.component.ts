@@ -27,7 +27,7 @@ export class TabbedCustomFieldsComponent implements OnInit {
     }
 
     customFieldIsSet(name: string): boolean {
-        return !!this.customFieldsFormGroup.get(name);
+        return !!this.customFieldsFormGroup?.get(name);
     }
 
     private groupByTabs(customFieldConfigs: CustomFieldConfig[]): GroupedCustomFields {
