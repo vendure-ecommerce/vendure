@@ -30,4 +30,22 @@ describe('unique()', () => {
     it('works an empty array', () => {
         expect(unique([])).toEqual([]);
     });
+
+    it('perf on primitive array', async () => {
+        const bigArray = Array.from({ length: 50000 }).map(() => Math.random().toString().substr(2, 5));
+        const timeStart = new Date().getTime();
+        unique(bigArray);
+        const timeEnd = new Date().getTime();
+        expect(timeEnd - timeStart).toBeLessThan(100);
+    });
+
+    it('perf on object array', async () => {
+        const bigArray = Array.from({ length: 50000 })
+            .map(() => Math.random().toString().substr(2, 5))
+            .map(id => ({ id }));
+        const timeStart = new Date().getTime();
+        unique(bigArray, 'id');
+        const timeEnd = new Date().getTime();
+        expect(timeEnd - timeStart).toBeLessThan(100);
+    });
 });
