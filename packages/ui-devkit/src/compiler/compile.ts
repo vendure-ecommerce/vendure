@@ -31,16 +31,27 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { outputPath, baseHref, devMode, watchPort, extensions } = options;
+    const { outputPath, baseHref, devMode, watchPort, extensions, command } = options;
+    const usingYarn = options.command && options.command === 'npm' ? false : shouldUseYarn();
     if (devMode) {
-        return runWatchMode(outputPath, baseHref || DEFAULT_BASE_HREF, watchPort || 4200, extensions);
+        return runWatchMode(
+            outputPath,
+            baseHref || DEFAULT_BASE_HREF,
+            watchPort || 4200,
+            extensions,
+            usingYarn,
+        );
     } else {
-        return runCompileMode(outputPath, baseHref || DEFAULT_BASE_HREF, extensions);
+        return runCompileMode(outputPath, baseHref || DEFAULT_BASE_HREF, extensions, usingYarn);
     }
 }
 
-function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[]): AdminUiAppConfig {
-    const usingYarn = shouldUseYarn();
+function runCompileMode(
+    outputPath: string,
+    baseHref: string,
+    extensions: Extension[],
+    usingYarn: boolean,
+): AdminUiAppConfig {
     const cmd = usingYarn ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
@@ -79,8 +90,9 @@ function runWatchMode(
     baseHref: string,
     port: number,
     extensions: Extension[],
+    usingYarn: boolean,
 ): AdminUiAppDevModeConfig {
-    const cmd = shouldUseYarn() ? 'yarn' : 'npm';
+    const cmd = usingYarn ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
     let watcher: FSWatcher | undefined;

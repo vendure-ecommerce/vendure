@@ -218,6 +218,15 @@ export interface UiExtensionCompilerOptions {
      * @default 4200 | undefined
      */
     watchPort?: number;
+    /**
+     * @description
+     * Internally, the Angular CLI will be invoked as an npm script. By default, the compiler will use Yarn
+     * to run the script if it is detected, otherwise it will use npm. This setting allows you to explicitly
+     * set which command to use, rather than relying on the default behavior.
+     *
+     * @since 1.5.0
+     */
+    command?: 'yarn' | 'npm';
 }
 
 export type Translations = {
