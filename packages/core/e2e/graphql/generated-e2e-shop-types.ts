@@ -1551,7 +1551,7 @@ export type Mutation = {
     /**
      * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
      *
-     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
+     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
      * provided here.
      */
     verifyCustomerAccount: VerifyCustomerAccountResult;
@@ -2702,7 +2702,7 @@ export type SearchResult = {
     facetValueIds: Array<Scalars['ID']>;
     /** An array of ids of the Collections in which this result appears */
     collectionIds: Array<Scalars['ID']>;
-    /** A relevance score for the result. Differs between database implementations */
+    /** A relevence score for the result. Differs between database implementations */
     score: Scalars['Float'];
 };
 
@@ -3439,9 +3439,7 @@ export type GetOrderByCodeWithPaymentsQueryVariables = Exact<{
 
 export type GetOrderByCodeWithPaymentsQuery = { orderByCode?: Maybe<TestOrderWithPaymentsFragment> };
 
-export type GetActiveCustomerOrderWithItemFulfillmentsQueryVariables = Exact<{
-    code: Scalars['String'];
-}>;
+export type GetActiveCustomerOrderWithItemFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetActiveCustomerOrderWithItemFulfillmentsQuery = {
     activeCustomer?: Maybe<{
