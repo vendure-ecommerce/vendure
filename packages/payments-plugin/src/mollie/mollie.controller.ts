@@ -33,7 +33,7 @@ export class MollieController {
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
-            return Logger.error(`No paymentMethod found with id ${paymentMethod}`, loggerCtx);
+            return Logger.error(`No paymentMethod found with id ${paymentMethodId}`, loggerCtx);
         }
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
         if (!apiKey) {

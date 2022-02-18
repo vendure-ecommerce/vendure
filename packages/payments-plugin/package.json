@@ -22,7 +22,8 @@
     },
     "peerDependencies": {
         "@mollie/api-client": "3.x",
-        "braintree": "3.x"
+        "braintree": "3.x",
+        "stripe": "8.x"
     },
     "devDependencies": {
         "@mollie/api-client": "^3.5.1",
@@ -33,6 +34,7 @@
         "braintree": "^3.0.0",
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
+        "stripe": "^8.197.0",
         "typescript": "4.3.5"
     }
 }
