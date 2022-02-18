@@ -3,7 +3,6 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { Job, JobBuffer } from '../../../job-queue/index';
 import { ApplyCollectionFiltersJobData } from '../../../service/services/collection.service';
-import { UpdateIndexQueueJobData, UpdateVariantsByIdJobData, UpdateVariantsJobData } from '../types';
 
 export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobData> {
     readonly id = 'search-plugin-apply-collection-filters';
@@ -27,7 +26,6 @@ export class CollectionJobBuffer implements JobBuffer<ApplyCollectionFiltersJobD
                 applyToChangedVariantsOnly: referenceJob.data.applyToChangedVariantsOnly,
             },
         });
-
         return [batchedCollectionJob];
     }
 }
