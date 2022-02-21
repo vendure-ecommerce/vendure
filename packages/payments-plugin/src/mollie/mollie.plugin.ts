@@ -59,28 +59,14 @@ export interface MolliePluginOptions {
  * PaymentMethod was given the code "mollie-payment-method".
  *
  * ```GraphQL
- * mutation AddPaymentToOrder {
- *   addPaymentToOrder(input: {
- *     method: "mollie-payment-method"
- *     metadata: {}
- *   }) {
- *    ...on Order {
- *      id
- *      state
- *      payments {
- *          id
- *          metadata
- *      }
- *    }
- *    ...on ErrorResult {
- *      errorCode
- *      message
- *    }
- *   }
+ * mutation CreateMolliePaymentIntent {
+ *   createMolliePaymentIntent(input: {
+ *     paymentMethodCode: "mollie-payment-method"
+ *   })
  * }
  * ```
- * The response will have
- * a `order.payments.metadata.public.redirectLink` in it, which can be used to redirect your customer to the Mollie
+ * The response will be
+ * a redirectUrl, which can be used to redirect your customer to the Mollie
  * platform.
  *
  * After completing payment on the Mollie platform,
@@ -110,7 +96,7 @@ export interface MolliePluginOptions {
     shopApiExtensions: {
         schema: gql`
             input MolliePaymentIntentInput {
-                paymentMethodId: String!
+                paymentMethodCode: String!
             }
             extend type Mutation {
                 createMolliePaymentIntent(input: MolliePaymentIntentInput!): String

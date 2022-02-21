@@ -11,10 +11,10 @@ export class MollieResolver {
     @Allow(Permission.Owner)
     async createStripePaymentIntent(
         @Ctx() ctx: RequestContext,
-        @Args('input') input: { paymentMethodId: string },
+        @Args('input') input: { paymentMethodCode: string },
     ): Promise<string | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
-            return this.mollieService.createPaymentIntent(ctx, input.paymentMethodId);
+            return this.mollieService.createPaymentIntent(ctx, input.paymentMethodCode);
         }
     }
 }
