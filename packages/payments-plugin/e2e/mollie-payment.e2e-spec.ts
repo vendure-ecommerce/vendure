@@ -3,9 +3,7 @@ import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
 import {
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
-    registerInitializer,
     SimpleGraphQLClient,
-    SqljsInitializer,
     TestServer,
 } from '@vendure/testing';
 import nock from 'nock';
@@ -53,6 +51,7 @@ describe('Mollie payments', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
+            logger: new DefaultLogger({ level: LogLevel.Debug }), // FIXME
         });
         const env = createTestEnvironment(devConfig);
         serverPort = devConfig.apiOptions.port;

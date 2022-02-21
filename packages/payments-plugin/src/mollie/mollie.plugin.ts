@@ -1,8 +1,10 @@
 import { PluginCommonModule, RuntimeVendureConfig, VendurePlugin } from '@vendure/core';
+import { gql } from 'graphql-tag';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { MollieController } from './mollie.controller';
 import { molliePaymentHandler } from './mollie.handler';
+import { MollieResolver } from './mollie.resolver';
 
 /**
  * @description
@@ -104,6 +106,17 @@ export interface MolliePluginOptions {
     configuration: (config: RuntimeVendureConfig) => {
         config.paymentOptions.paymentMethodHandlers.push(molliePaymentHandler);
         return config;
+    },
+    shopApiExtensions: {
+        schema: gql`
+            input MolliePaymentIntentInput {
+                paymentMethodId: String!
+            }
+            extend type Mutation {
+                createMolliePaymentIntent(input: MolliePaymentIntentInput!): String
+            }
+        `,
+        resolvers: [MollieResolver],
     },
 })
 export class MolliePlugin {
