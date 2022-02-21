@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { AssetLike } from '@vendure/admin-ui/core';
+
+import { AssetLike } from '../asset-gallery/asset-gallery.component';
 
 @Component({
     selector: 'vdr-asset-preview-links',
