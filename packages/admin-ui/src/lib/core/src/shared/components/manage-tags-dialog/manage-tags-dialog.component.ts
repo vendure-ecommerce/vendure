@@ -3,7 +3,7 @@ import { forkJoin, Observable } from 'rxjs';
 
 import { GetTagList } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
-import { Dialog } from '../../../providers/modal/modal.service';
+import { Dialog } from '../../../providers/modal/modal.types';
 
 @Component({
     selector: 'vdr-manage-tags-dialog',

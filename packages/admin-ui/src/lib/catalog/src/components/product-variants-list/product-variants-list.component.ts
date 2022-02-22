@@ -34,11 +34,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { AssetChange } from '../assets/assets.component';
-import {
-    PaginationConfig,
-    SelectedAssets,
-    VariantFormValue,
-} from '../product-detail/product-detail.component';
+import { PaginationConfig, SelectedAssets, VariantFormValue } from '../product-detail/product-detail.types';
 import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
 
 export interface VariantAssetChange extends AssetChange {

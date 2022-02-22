@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
-import { Dialog, DialogButtonConfig } from '../../../providers/modal/modal.service';
+import { Dialog, DialogButtonConfig } from '../../../providers/modal/modal.types';
 
 /**
  * Used by ModalService.dialog() to host a generic configurable modal dialog.

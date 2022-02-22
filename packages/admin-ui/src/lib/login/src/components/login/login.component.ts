@@ -47,7 +47,7 @@ export class LoginComponent {
             if (redirectToParam && 1 < redirectToParam.length) {
                 redirectTo = atob(decodeURIComponent(redirectToParam[1]));
             }
-        } catch (e) {
+        } catch (e: any) {
             // ignore
         }
         return redirectTo;

@@ -23,7 +23,7 @@ import {
     tap,
 } from 'rxjs/operators';
 
-import { RearrangeEvent } from '../collection-tree/collection-tree.component';
+import { RearrangeEvent } from '../collection-tree/collection-tree.types';
 
 @Component({
     selector: 'vdr-collection-list',

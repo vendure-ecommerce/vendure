@@ -4,7 +4,7 @@ import { mergeMap } from 'rxjs/operators';
 
 import { AssetFragment, GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
-import { Dialog } from '../../../providers/modal/modal.service';
+import { Dialog } from '../../../providers/modal/modal.types';
 
 type AssetLike = GetAssetList.Items | AssetFragment;
 

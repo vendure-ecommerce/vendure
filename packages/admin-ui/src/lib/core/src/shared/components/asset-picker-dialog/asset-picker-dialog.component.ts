@@ -21,7 +21,7 @@ import {
 } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';
-import { Dialog } from '../../../providers/modal/modal.service';
+import { Dialog } from '../../../providers/modal/modal.types';
 import { NotificationService } from '../../../providers/notification/notification.service';
 import { AssetGalleryComponent } from '../asset-gallery/asset-gallery.component';
 import { AssetSearchInputComponent } from '../asset-search-input/asset-search-input.component';

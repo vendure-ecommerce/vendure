@@ -105,7 +105,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
             try {
                 const facetIds = JSON.parse(obj) as string[];
                 this.value = facetIds;
-            } catch (err) {
+            } catch (err: any) {
                 // TODO: log error
                 throw err;
             }

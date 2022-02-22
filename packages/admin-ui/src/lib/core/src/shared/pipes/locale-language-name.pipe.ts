@@ -39,7 +39,7 @@ export class LocaleLanguageNamePipe extends LocaleBasePipe implements PipeTransf
             return new DisplayNames([activeLocale.replace('_', '-')], { type: 'language' }).of(
                 value.replace('_', '-'),
             );
-        } catch (e) {
+        } catch (e: any) {
             return value;
         }
     }

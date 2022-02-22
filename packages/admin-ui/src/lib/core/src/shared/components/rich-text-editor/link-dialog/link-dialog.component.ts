@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
-import { Dialog } from '../../../../providers/modal/modal.service';
+import { Dialog } from '../../../../providers/modal/modal.types';
 
 export interface LinkAttrs {
     href: string;

@@ -11,7 +11,7 @@ import { Permission, ProductDetail, ProductVariant } from '@vendure/admin-ui/cor
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
-import { PaginationConfig, SelectedAssets } from '../product-detail/product-detail.component';
+import { PaginationConfig, SelectedAssets } from '../product-detail/product-detail.types';
 
 @Component({
     selector: 'vdr-product-variants-table',

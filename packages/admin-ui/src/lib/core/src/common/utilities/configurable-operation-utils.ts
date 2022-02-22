@@ -16,7 +16,7 @@ import {
 export function getConfigArgValue(value: any) {
     try {
         return value ? JSON.parse(value) : undefined;
-    } catch (e) {
+    } catch (e: any) {
         return value;
     }
 }

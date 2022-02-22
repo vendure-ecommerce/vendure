@@ -4,7 +4,6 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    Asset,
     BaseDetailComponent,
     CreateProductInput,
     createUpdatedTranslatable,
@@ -14,7 +13,6 @@ import {
     findTranslation,
     flattenFacetValues,
     GetProductWithVariants,
-    GlobalFlag,
     LanguageCode,
     LogicalOperator,
     ModalService,
@@ -58,34 +56,7 @@ import { AssignProductsToChannelDialogComponent } from '../assign-products-to-ch
 import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
 import { VariantAssetChange } from '../product-variants-list/product-variants-list.component';
 
-export type TabName = 'details' | 'variants';
-
-export interface VariantFormValue {
-    id: string;
-    enabled: boolean;
-    sku: string;
-    name: string;
-    price: number;
-    priceWithTax: number;
-    taxCategoryId: string;
-    stockOnHand: number;
-    useGlobalOutOfStockThreshold: boolean;
-    outOfStockThreshold: number;
-    trackInventory: GlobalFlag;
-    facetValueIds: string[];
-    customFields?: any;
-}
-
-export interface SelectedAssets {
-    assets?: Asset[];
-    featuredAsset?: Asset;
-}
-
-export interface PaginationConfig {
-    totalItems: number;
-    currentPage: number;
-    itemsPerPage: number;
-}
+import { PaginationConfig, SelectedAssets, TabName, VariantFormValue } from './product-detail.types';
 
 @Component({
     selector: 'vdr-product-detail',

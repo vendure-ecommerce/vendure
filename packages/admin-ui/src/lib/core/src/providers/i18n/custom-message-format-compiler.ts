@@ -18,7 +18,7 @@ export class InjectableTranslateMessageFormatCompiler extends TranslateMessageFo
     compileTranslations(value: any, lang: string): any {
         try {
             return super.compileTranslations(value, lang);
-        } catch (e) {
+        } catch (e: any) {
             console.error(`There was an error with the ${lang} translations:`);
             console.log(e);
             console.log(
