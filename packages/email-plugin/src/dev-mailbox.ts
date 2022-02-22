@@ -46,7 +46,7 @@ export class DevMailbox {
                         ctx: this.createRequestContext(languageCode as LanguageCode),
                     });
                     res.send({ success: true });
-                } catch (e) {
+                } catch (e: any) {
                     res.statusCode = 500;
                     res.send({ success: false, error: e.message });
                 }

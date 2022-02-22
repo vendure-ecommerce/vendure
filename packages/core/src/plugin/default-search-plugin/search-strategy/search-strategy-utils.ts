@@ -100,7 +100,7 @@ function parseFocalPoint(focalPoint: any): Coordinate | undefined {
     if (focalPoint && typeof focalPoint === 'string') {
         try {
             return JSON.parse(focalPoint);
-        } catch (e) {
+        } catch (e: any) {
             // fall though
         }
     }

@@ -167,7 +167,7 @@ describe('Administrator resolver', () => {
                 id: before.items[0].id,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe('The sole SuperAdmin cannot be deleted');
         }
 

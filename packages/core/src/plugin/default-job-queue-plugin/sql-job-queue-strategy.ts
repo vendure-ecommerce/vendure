@@ -90,7 +90,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
                     // SQLite driver does not support concurrent transactions. See https://github.com/typeorm/typeorm/issues/1884
                     const result = await this.getNextAndSetAsRunning(connection.manager, queueName, false);
                     resolve(result);
-                } catch (e) {
+                } catch (e: any) {
                     reject(e);
                 }
             } else {

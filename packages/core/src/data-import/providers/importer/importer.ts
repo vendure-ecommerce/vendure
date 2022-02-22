@@ -95,7 +95,7 @@ export class Importer {
                     imported: parsed.results.length,
                     processed: parsed.processed,
                 };
-            } catch (err) {
+            } catch (err: any) {
                 return {
                     errors: [err.message],
                     imported: 0,

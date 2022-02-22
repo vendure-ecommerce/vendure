@@ -38,7 +38,7 @@ export class WorkerHealthIndicator extends HealthIndicator implements OnModuleIn
             let isHealthy: boolean;
             try {
                 isHealthy = !!(await job.updates({ timeoutMs: 10000 }).toPromise());
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(e.message);
                 isHealthy = false;
             }

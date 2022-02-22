@@ -41,7 +41,7 @@ export class GlobalSettingsService {
                 const toDelete = result.slice(1);
                 await this.connection.getRepository(GlobalSettings).remove(toDelete);
             }
-        } catch (err) {
+        } catch (err: any) {
             const settings = new GlobalSettings({
                 availableLanguages: [this.configService.defaultLanguageCode],
             });

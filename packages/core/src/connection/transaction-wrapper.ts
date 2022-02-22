@@ -84,7 +84,7 @@ export class TransactionWrapper {
             try {
                 await queryRunner.startTransaction();
                 return true;
-            } catch (err) {
+            } catch (err: any) {
                 lastError = err;
                 if (err instanceof TransactionAlreadyStartedError) {
                     return false;

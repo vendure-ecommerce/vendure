@@ -58,7 +58,7 @@ export class KeycloakAuthenticationStrategy implements AuthenticationStrategy<Ke
                 })
                 .toPromise();
             userInfo = response.data;
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e);
             return false;
         }

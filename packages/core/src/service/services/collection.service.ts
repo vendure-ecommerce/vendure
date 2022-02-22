@@ -108,7 +108,7 @@ export class CollectionService implements OnModuleInit {
                             retries: 5,
                             retryDelay: 50,
                         });
-                    } catch (err) {
+                    } catch (err: any) {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
                     }
                     completed++;
@@ -516,7 +516,7 @@ export class CollectionService implements OnModuleInit {
                     chunk: Math.ceil(collection.productVariants.length / 500),
                     reload: false,
                 });
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e);
         }
         const preIdsSet = new Set(preIds);

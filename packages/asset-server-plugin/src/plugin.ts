@@ -213,7 +213,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 }
                 res.contentType(mimeType);
                 res.send(file);
-            } catch (e) {
+            } catch (e: any) {
                 const err = new Error('File not found');
                 (err as any).status = 404;
                 return next(err);
@@ -235,7 +235,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     let file: Buffer;
                     try {
                         file = await AssetServerPlugin.assetStorage.readFileToBuffer(decodedReqPath);
-                    } catch (err) {
+                    } catch (err: any) {
                         res.status(404).send('Resource not found');
                         return;
                     }
@@ -253,7 +253,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         res.set('Content-Type', `image/${(await image.metadata()).format}`);
                         res.send(imageBuffer);
                         return;
-                    } catch (e) {
+                    } catch (e: any) {
                         Logger.error(e, 'AssetServerPlugin', e.stack);
                         res.status(500).send(e.message);
                         return;

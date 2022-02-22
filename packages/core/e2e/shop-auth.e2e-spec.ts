@@ -640,7 +640,7 @@ describe('Shop auth & accounts', () => {
                     newEmailAddress: NEW_EMAIL_ADDRESS,
                 });
                 fail('should have thrown');
-            } catch (err) {
+            } catch (err: any) {
                 expect(getErrorCode(err)).toBe('FORBIDDEN');
             }
         });
@@ -782,7 +782,7 @@ describe('Shop auth & accounts', () => {
         try {
             const status = await shopClient.queryStatus(operation, variables);
             expect(status).toBe(200);
-        } catch (e) {
+        } catch (e: any) {
             const errorCode = getErrorCode(e);
             if (!errorCode) {
                 fail(`Unexpected failure: ${e}`);
@@ -796,7 +796,7 @@ describe('Shop auth & accounts', () => {
         try {
             const status = await shopClient.query(operation, variables);
             fail(`Should have thrown`);
-        } catch (e) {
+        } catch (e: any) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
     }

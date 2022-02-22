@@ -71,7 +71,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                         Logger.verbose(`Ping to Elasticsearch successful`, loggerCtx);
                         return resolve();
                     }
-                } catch (e) {
+                } catch (e: any) {
                     Logger.verbose(`Ping to Elasticsearch failed with error "${e.message}"`, loggerCtx);
                 }
                 Logger.verbose(
@@ -195,7 +195,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                     totalItems,
                 };
-            } catch (e) {
+            } catch (e: any) {
                 if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
                     // Log runtime error of the script exception instead of stacktrace
                     Logger.error(
@@ -219,7 +219,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                     totalItems: body.hits.total ? body.hits.total.value : 0,
                 };
-            } catch (e) {
+            } catch (e: any) {
                 if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
                     // Log runtime error of the script exception instead of stacktrace
                     Logger.error(
@@ -388,7 +388,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             body = result.body;
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
             throw e;
         }

@@ -193,7 +193,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
                 administrator.lastName = 'modified';
                 try {
                     await adminRepository.save(administrator);
-                } catch (e) {
+                } catch (e: any) {
                     TransactionTestPlugin.errorHandler(e);
                 } finally {
                     TransactionTestPlugin.eventHandlerComplete$.complete();
@@ -204,7 +204,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
                 const adminRepository = this.connection.getRepository(Administrator);
                 try {
                     await adminRepository.findOneOrFail(administrator.id);
-                } catch (e) {
+                } catch (e: any) {
                     TransactionTestPlugin.errorHandler(e);
                 } finally {
                     TransactionTestPlugin.eventHandlerComplete$.complete();

@@ -59,7 +59,7 @@ export async function populateInitialData(
         if (typeof loggingFn === 'function') {
             loggingFn(`Populated initial data`);
         }
-    } catch (err) {
+    } catch (err: any) {
         console.log(err.message);
     }
 }
@@ -78,7 +78,7 @@ export async function populateCollections(
                 loggingFn(`Created ${initialData.collections.length} Collections`);
             }
         }
-    } catch (err) {
+    } catch (err: any) {
         console.log(err.message);
     }
 }

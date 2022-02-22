@@ -15,7 +15,7 @@ export class ElasticsearchHealthIndicator extends HealthIndicator {
         try {
             await this.elasticsearchService.checkConnection();
             isHealthy = true;
-        } catch (e) {
+        } catch (e: any) {
             error = e.message;
         }
         const result = this.getStatus('elasticsearch', isHealthy, { message: error });

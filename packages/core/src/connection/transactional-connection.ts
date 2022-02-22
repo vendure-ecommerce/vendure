@@ -202,7 +202,7 @@ export class TransactionalConnection {
                 try {
                     const result = await this.getEntityOrThrowInternal(ctx, entityType, id, options);
                     return result;
-                } catch (e) {
+                } catch (e: any) {
                     err = e;
                     if (attempt < retriesInt - 1) {
                         await new Promise(resolve => setTimeout(resolve, delay));

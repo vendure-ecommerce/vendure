@@ -58,7 +58,7 @@ function parseContent(content: string | null): string | Buffer | undefined {
         } else if (parsedContent.hasOwnProperty('data')) {
             return Buffer.from(parsedContent.data);
         }
-    } catch (e) {
+    } catch (e: any) {
         // empty
     }
 }

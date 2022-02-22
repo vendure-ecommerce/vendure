@@ -106,7 +106,7 @@ export function asyncObservable<T>(work: (observer: Observer<T>) => Promise<T | 
                     subscriber.next(result);
                 }
                 subscriber.complete();
-            } catch (e) {
+            } catch (e: any) {
                 subscriber.error(e);
             }
         })();

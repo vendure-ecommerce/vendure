@@ -16,7 +16,7 @@ export async function getDefaultChannelToken(logging = true): Promise<string> {
                 code: DEFAULT_CHANNEL_CODE,
             },
         });
-    } catch (err) {
+    } catch (err: any) {
         console.log(`Error occurred when attempting to get default Channel`);
         console.log(err);
     }

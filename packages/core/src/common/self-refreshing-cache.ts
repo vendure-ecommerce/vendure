@@ -64,7 +64,7 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
 ): Promise<SelfRefreshingCache<V, RefreshArgs>> {
     const { ttl, name, refresh, getTimeFn } = config;
     const getTimeNow = getTimeFn ?? (() => new Date().getTime());
-    const initialValue = await refresh.fn(...refresh.defaultArgs);
+    const initialValue: V = await refresh.fn(...refresh.defaultArgs);
     let value = initialValue;
     let expires = getTimeNow() + ttl;
     const memoCache = new Map<string, { expires: number; value: any }>();

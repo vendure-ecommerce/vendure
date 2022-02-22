@@ -157,7 +157,7 @@ describe('Session expiry', () => {
         try {
             await adminClient.query(ME);
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('You are not currently authorized to perform this action');
         }
     }, 10000);

@@ -248,7 +248,7 @@ async function createApp(
                         console.log('[CI] Pausing after close...');
                         await new Promise(resolve => setTimeout(resolve, 10000));
                     }
-                } catch (e) {
+                } catch (e: any) {
                     console.log(e);
                     throw e;
                 }
@@ -258,7 +258,7 @@ async function createApp(
 
     try {
         await tasks.run();
-    } catch (e) {
+    } catch (e: any) {
         console.error(chalk.red(JSON.stringify(e)));
         process.exit(1);
     }
@@ -313,7 +313,7 @@ async function copyEmailTemplates(root: string) {
     const templateDir = path.join(root, 'node_modules/@vendure/email-plugin/templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
-    } catch (err) {
+    } catch (err: any) {
         console.error(chalk.red(`Failed to copy email templates.`));
     }
 }

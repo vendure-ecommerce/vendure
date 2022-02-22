@@ -158,7 +158,7 @@ export class FulfillmentService {
         const fromState = fulfillment.state;
         try {
             await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);
-        } catch (e) {
+        } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new FulfillmentStateTransitionError(transitionError, fromState, state);
         }

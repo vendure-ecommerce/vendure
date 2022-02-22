@@ -66,7 +66,7 @@ describe('Role resolver', () => {
                 },
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.response.errors[0]?.extensions.code).toBe('BAD_USER_INPUT');
         }
     });

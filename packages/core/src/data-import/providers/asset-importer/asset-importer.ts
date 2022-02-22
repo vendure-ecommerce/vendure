@@ -36,7 +36,7 @@ export class AssetImporter {
                             const asset = (await this.assetService.createFromFileStream(stream)) as Asset;
                             this.assetMap.set(assetPath, asset);
                             assets.push(asset);
-                        } catch (err) {
+                        } catch (err: any) {
                             errors.push(err.toString());
                         }
                     }

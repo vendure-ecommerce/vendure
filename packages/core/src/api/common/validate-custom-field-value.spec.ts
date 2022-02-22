@@ -13,7 +13,7 @@ describe('validateCustomFieldValue()', () => {
         try {
             await validateFn();
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toBe(message);
         }
     }

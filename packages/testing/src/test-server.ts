@@ -37,7 +37,7 @@ export class TestServer {
             const populateFn = () => this.populateInitialData(this.vendureConfig, options);
             await initializer.populate(populateFn);
             await initializer.destroy();
-        } catch (e) {
+        } catch (e: any) {
             throw e;
         }
         await this.bootstrap();
@@ -118,7 +118,7 @@ export class TestServer {
             await app.get(JobQueueService).start();
             DefaultLogger.restoreOriginalLogLevel();
             return app;
-        } catch (e) {
+        } catch (e: any) {
             console.log(e);
             throw e;
         }

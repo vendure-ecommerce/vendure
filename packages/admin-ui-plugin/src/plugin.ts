@@ -256,13 +256,13 @@ export class AdminUiPlugin implements NestModule {
     private async overwriteAdminUiConfig(adminUiConfigPath: string, config: AdminUiConfig) {
         try {
             const content = await this.pollForFile(adminUiConfigPath);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx);
             throw e;
         }
         try {
             await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
-        } catch (e) {
+        } catch (e: any) {
             throw new Error('[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + e.message);
         }
         Logger.verbose(`Applied configuration to vendure-ui-config.json file`, loggerCtx);
@@ -276,7 +276,7 @@ export class AdminUiPlugin implements NestModule {
         let indexHtmlContent: string;
         try {
             indexHtmlContent = await this.pollForFile(indexHtmlPath);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx);
             throw e;
         }
@@ -286,7 +286,7 @@ export class AdminUiPlugin implements NestModule {
                 `<base href="/${baseHref}/" />`,
             );
             await fs.writeFile(indexHtmlPath, withCustomBaseHref);
-        } catch (e) {
+        } catch (e: any) {
             throw new Error('[AdminUiPlugin] Could not write index.html file:\n' + e.message);
         }
         Logger.verbose(`Applied baseHref "/${baseHref}/" to index.html file`, loggerCtx);
@@ -309,7 +309,7 @@ export class AdminUiPlugin implements NestModule {
                 Logger.verbose(`Checking for admin ui file: ${filePath}`, loggerCtx);
                 const configFileContent = await fs.readFile(filePath, 'utf-8');
                 return configFileContent;
-            } catch (e) {
+            } catch (e: any) {
                 attempts++;
                 Logger.verbose(
                     `Unable to locate admin ui file: ${filePath} (attempt ${attempts})`,

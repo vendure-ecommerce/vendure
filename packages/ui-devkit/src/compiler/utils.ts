@@ -27,7 +27,7 @@ export function shouldUseYarn(): boolean {
     try {
         execSync('yarnpkg --version', { stdio: 'ignore' });
         return true;
-    } catch (e) {
+    } catch (e: any) {
         return false;
     }
 }
@@ -67,7 +67,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
             // EPERM error in Windows.
             await fs.copy(assetOutputPath, newName);
             await fs.remove(assetOutputPath);
-        } catch (e) {
+        } catch (e: any) {
             logger.log(e);
         }
     }

@@ -218,7 +218,7 @@ describe('Authorization & permissions', () => {
             try {
                 const status = await adminClient.query(gql(GET_PRODUCT_WITH_TRANSACTIONS), { id: 'T_1' });
                 fail(`Should have thrown`);
-            } catch (e) {
+            } catch (e: any) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
         });
@@ -292,7 +292,7 @@ describe('Authorization & permissions', () => {
                     { id: 'T_1' },
                 );
                 fail(`Should have thrown`);
-            } catch (e) {
+            } catch (e: any) {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
         });
@@ -302,7 +302,7 @@ describe('Authorization & permissions', () => {
         try {
             const status = await adminClient.queryStatus(operation, variables);
             expect(status).toBe(200);
-        } catch (e) {
+        } catch (e: any) {
             const errorCode = getErrorCode(e);
             if (!errorCode) {
                 fail(`Unexpected failure: ${e}`);
@@ -316,7 +316,7 @@ describe('Authorization & permissions', () => {
         try {
             const status = await adminClient.query(operation, variables);
             fail(`Should have thrown`);
-        } catch (e) {
+        } catch (e: any) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
     }

@@ -51,7 +51,7 @@ export async function setupScaffold(outputPath: string, extensions: Extension[])
     copyUiDevkit(outputPath);
     try {
         await checkIfNgccWasRun();
-    } catch (e) {
+    } catch (e: any) {
         const cmd = shouldUseYarn() ? 'yarn ngcc' : 'npx ngcc';
         logger.log(
             `An error occurred when running ngcc. Try removing node_modules, re-installing, and then manually running "${cmd}" in the project root.`,

@@ -355,7 +355,7 @@ describe('Asset resolver', () => {
                     }),
                 });
                 fail('Should have thrown');
-            } catch (e) {
+            } catch (e: any) {
                 expect(e.message).toContain('File truncated as it exceeds the 20971520 byte size limit');
             } finally {
                 fs.rmSync(filename);

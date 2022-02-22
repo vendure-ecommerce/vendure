@@ -83,7 +83,7 @@ export class PaymentService {
 
         try {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, state);
-        } catch (e) {
+        } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new PaymentStateTransitionError(transitionError, fromState, state);
         }
@@ -174,7 +174,7 @@ export class PaymentService {
         }
         try {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
-        } catch (e) {
+        } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState });
             return new PaymentStateTransitionError(transitionError, fromState, toState);
         }
@@ -298,7 +298,7 @@ export class PaymentService {
                 const fromState = refund.state;
                 try {
                     await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
-                } catch (e) {
+                } catch (e: any) {
                     return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
                 }
                 await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });

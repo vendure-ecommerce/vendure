@@ -598,7 +598,7 @@ function isRelationObject(value: string) {
     try {
         const parsed = JSON.parse(value);
         return parsed && parsed.hasOwnProperty('id');
-    } catch (e) {
+    } catch (e: any) {
         return false;
     }
 }

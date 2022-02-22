@@ -218,7 +218,7 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
         version = require('../package.json').version;
-    } catch (e) {
+    } catch (e: any) {
         version = ' unknown';
     }
     const { port, shopApiPath, adminApiPath, hostname } = config.apiOptions;
@@ -273,7 +273,7 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
             try {
                 const adminCount = await connection.getRepository(Administrator).count();
                 return 0 < adminCount;
-            } catch (e) {
+            } catch (e: any) {
                 return false;
             }
         };

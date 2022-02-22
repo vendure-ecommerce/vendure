@@ -60,7 +60,7 @@ export const testConfig = () => {
     let usedPorts: number[];
     try {
         usedPorts = fs.readJSONSync(portsFile) ?? [3010];
-    } catch (e) {
+    } catch (e: any) {
         usedPorts = [3010];
     }
     const nextPort = Math.max(...usedPorts) + 1;

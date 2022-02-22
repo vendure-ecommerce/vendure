@@ -34,7 +34,7 @@ export class BraintreeResolver {
             try {
                 const result = await gateway.clientToken.generate({ customerId });
                 return result.clientToken;
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(
                     `Could not generate Braintree clientToken. Check the configured credentials.`,
                     loggerCtx,

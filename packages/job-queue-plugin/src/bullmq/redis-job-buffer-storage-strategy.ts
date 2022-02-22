@@ -65,7 +65,7 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
         try {
             const jobConfig: JobConfig<any> = JSON.parse(jobConfigString);
             return new Job(jobConfig);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not parse buffered job:\n${e.message}`, loggerCtx, e.stack);
             throw e;
         }

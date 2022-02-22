@@ -266,7 +266,7 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
  *         transactionId: result.id.toString(),
  *         metadata: result.outcome,
  *       };
- *     } catch (err) {
+ *     } catch (err: any) {
  *       return {
  *         amount: order.total,
  *         state: 'Declined' as const,

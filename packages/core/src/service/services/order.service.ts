@@ -819,7 +819,7 @@ export class OrderService {
         const fromState = order.state;
         try {
             await this.orderStateMachine.transition(ctx, order, state);
-        } catch (e) {
+        } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new OrderStateTransitionError(transitionError, fromState, state);
         }
@@ -1427,7 +1427,7 @@ export class OrderService {
             return {
                 result: DeletionResult.DELETED,
             };
-        } catch (e) {
+        } catch (e: any) {
             return {
                 result: DeletionResult.NOT_DELETED,
                 message: e.message,

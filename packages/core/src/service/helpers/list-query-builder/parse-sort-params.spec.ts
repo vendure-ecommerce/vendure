@@ -122,7 +122,7 @@ describe('parseSortParams()', () => {
         try {
             parseSortParams(connection as any, Product, sortParams);
             fail('should not get here');
-        } catch (e) {
+        } catch (e: any) {
             expect(e instanceof I18nError).toBe(true);
             expect(e.message).toBe('error.invalid-sort-field');
             expect(e.variables.fieldName).toBe('invalid');

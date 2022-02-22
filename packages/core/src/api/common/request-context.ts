@@ -217,7 +217,7 @@ export class RequestContext {
     translate(key: string, variables?: { [k: string]: any }): string {
         try {
             return this._translationFn(key, variables);
-        } catch (e) {
+        } catch (e: any) {
             return `Translation format error: ${e.message}). Original key: ${key}`;
         }
     }
@@ -249,7 +249,7 @@ export class RequestContext {
                 let val: any;
                 try {
                     val = (target as any)[key];
-                } catch (e) {
+                } catch (e: any) {
                     val = String(e);
                 }
 

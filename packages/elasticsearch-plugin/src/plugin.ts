@@ -269,7 +269,7 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
         const nodeName = this.nodeName();
         try {
             await this.elasticsearchService.checkConnection();
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not connect to Elasticsearch instance at "${nodeName}"`, loggerCtx);
             Logger.error(JSON.stringify(e), loggerCtx);
             this.healthCheckRegistryService.registerIndicatorFunction(() =>

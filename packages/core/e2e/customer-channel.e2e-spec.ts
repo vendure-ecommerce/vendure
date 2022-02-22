@@ -307,7 +307,7 @@ describe('ChannelAware Customers', () => {
 
             try {
                 await Promise.all([shopClient.query<Me.Query>(ME), shopClient.query<Me.Query>(ME)]);
-            } catch (e) {
+            } catch (e: any) {
                 fail('Threw: ' + e.message);
             }
 

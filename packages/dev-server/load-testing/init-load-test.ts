@@ -87,7 +87,7 @@ async function isDatabasePopulated(): Promise<boolean> {
         try {
             const res = await client.query('SELECT COUNT(id) as prodCount FROM product');
             return true;
-        } catch (e) {
+        } catch (e: any) {
             if (e.message === `relation "product" does not exist`) {
                 return false;
             }

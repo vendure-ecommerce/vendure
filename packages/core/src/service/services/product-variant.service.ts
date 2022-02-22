@@ -585,7 +585,7 @@ export class ProductVariantService {
                         variant.taxCategory = variantWithTaxCategory.taxCategory;
                     }
                     resolve(await this.applyChannelPriceAndTax(variant, ctx));
-                } catch (e) {
+                } catch (e: any) {
                     reject(e);
                 }
             });

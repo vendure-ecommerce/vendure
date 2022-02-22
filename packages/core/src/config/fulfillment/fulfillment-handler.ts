@@ -127,7 +127,7 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  *            shippingTransactionId: transaction.id,
  *          }
  *        };
- *      } catch (e) {
+ *      } catch (e: any) {
  *        // Errors thrown from within this function will
  *        // result in a CreateFulfillmentError being returned
  *        throw e;

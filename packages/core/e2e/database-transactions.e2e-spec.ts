@@ -57,7 +57,7 @@ describe('Transaction infrastructure', () => {
                 fail: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -76,7 +76,7 @@ describe('Transaction infrastructure', () => {
                 fail: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -95,7 +95,7 @@ describe('Transaction infrastructure', () => {
                 fail: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -115,7 +115,7 @@ describe('Transaction infrastructure', () => {
                 noContext: false,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 
@@ -135,7 +135,7 @@ describe('Transaction infrastructure', () => {
                 noContext: true,
             });
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.message).toContain('Failed!');
         }
 

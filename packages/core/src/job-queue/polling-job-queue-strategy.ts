@@ -130,7 +130,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                             });
                     }
                 }
-            } catch (e) {
+            } catch (e: any) {
                 this.errorNotifier$.next([
                     `Job queue "${this.queueName}" encountered an error (set log level to Debug for trace): ${e.message}`,
                     e.stack,

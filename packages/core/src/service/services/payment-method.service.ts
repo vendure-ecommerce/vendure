@@ -125,7 +125,7 @@ export class PaymentMethodService {
                 return {
                     result: DeletionResult.DELETED,
                 };
-            } catch (e) {
+            } catch (e: any) {
                 return {
                     result: DeletionResult.NOT_DELETED,
                     message: e.message || String(e),

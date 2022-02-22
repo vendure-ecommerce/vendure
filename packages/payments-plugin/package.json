@@ -35,6 +35,6 @@
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
         "stripe": "^8.197.0",
-        "typescript": "4.3.5"
+        "typescript": "4.5.5"
     }
 }

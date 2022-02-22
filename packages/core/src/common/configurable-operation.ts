@@ -424,7 +424,7 @@ function coerceValueToType<T extends ConfigArgs>(
     if (isList) {
         try {
             return (JSON.parse(value) as string[]).map(v => coerceValueToType(v, type, false)) as any;
-        } catch (err) {
+        } catch (err: any) {
             throw new InternalServerError(err.message);
         }
     }

@@ -83,7 +83,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                     },
                 },
             };
-        } catch (err) {
+        } catch (err: any) {
             Logger.error(err, loggerCtx);
             return {
                 amount: order.totalWithTax,

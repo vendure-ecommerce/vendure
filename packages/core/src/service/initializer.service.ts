@@ -59,7 +59,7 @@ export class InitializerService {
             try {
                 const result = await this.connection.getRepository(Administrator).find();
                 return;
-            } catch (e) {
+            } catch (e: any) {
                 if (attempt < retries - 1) {
                     Logger.warn(`Awaiting DB schema creation... (attempt ${attempt})`);
                     await new Promise(resolve => setTimeout(resolve, delayMs));

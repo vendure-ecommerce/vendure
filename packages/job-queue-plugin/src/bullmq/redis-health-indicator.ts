@@ -40,7 +40,7 @@ export class RedisHealthIndicator extends HealthIndicator {
                         resolve(res);
                     }
                 });
-            } catch (e) {
+            } catch (e: any) {
                 resolve(e);
             }
         });
@@ -48,7 +48,7 @@ export class RedisHealthIndicator extends HealthIndicator {
         try {
             await connection.close();
             // await connection.disconnect();
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Redis health check error closing connection: ${e.message}`, loggerCtx, e.stack);
         }
 

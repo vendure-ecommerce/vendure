@@ -250,7 +250,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         true,
                         `-reindex-${reindexTempName}`,
                     );
-                } catch (e) {
+                } catch (e: any) {
                     Logger.error(`Could not recreate indices.`, loggerCtx);
                     Logger.error(JSON.stringify(e), loggerCtx);
                     throw e;
@@ -365,7 +365,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                             });
                         }
                     }
-                } catch (e) {
+                } catch (e: any) {
                     Logger.error('Could not switch indexes');
                 } finally {
                     const reindexVariantAliasExist = await this.client.indices.existsAlias({
@@ -510,7 +510,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     deletedAt: null,
                 },
             });
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
             throw e;
         }
@@ -785,7 +785,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 );
             }
             return body;
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Error when attempting to run bulk operations [${e.toString()}]`, loggerCtx);
             Logger.error('Error details: ' + JSON.stringify(e.body?.error, null, 2), loggerCtx);
         }
@@ -869,7 +869,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 item[`product-${name}`] = def.valueFn(v.product, variants, languageCode);
             }
             return item;
-        } catch (err) {
+        } catch (err: any) {
             Logger.error(err.toString());
             throw Error(`Error while reindexing!`);
         }
