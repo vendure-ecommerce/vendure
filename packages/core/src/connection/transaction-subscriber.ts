@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { merge, Subject } from 'rxjs';
+import { lastValueFrom, merge, Subject } from 'rxjs';
 import { delay, filter, map, take } from 'rxjs/operators';
 import { Connection, EntitySubscriberInterface } from 'typeorm';
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
@@ -53,8 +53,8 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
 
     awaitRelease(queryRunner: QueryRunner): Promise<QueryRunner> {
         if (queryRunner.isTransactionActive) {
-            return merge(this.commit$, this.rollback$)
-                .pipe(
+            return lastValueFrom(
+                merge(this.commit$, this.rollback$).pipe(
                     filter(event => event.queryRunner === queryRunner),
                     take(1),
                     map(event => event.queryRunner),
@@ -65,8 +65,8 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
                     // in the database-transactions.e2e-spec.ts suite, and a bunch of errors
                     // in the default-search-plugin.e2e-spec.ts suite when using sqljs.
                     delay(0),
-                )
-                .toPromise();
+                ),
+            );
         } else {
             return Promise.resolve(queryRunner);
         }

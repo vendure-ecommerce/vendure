@@ -1,5 +1,5 @@
+import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { IFieldResolver, IResolvers } from 'apollo-server-express';
 import { GraphQLSchema } from 'graphql';
 import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
 import { GraphQLUpload } from 'graphql-upload';

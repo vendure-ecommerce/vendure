@@ -56,7 +56,7 @@ import { VendureEvent } from './vendure-event';
 @Injectable()
 export class EventBus implements OnModuleDestroy {
     private eventStream = new Subject<VendureEvent>();
-    private destroy$ = new Subject();
+    private destroy$ = new Subject<void>();
 
     constructor(private transactionSubscriber: TransactionSubscriber) {}
 

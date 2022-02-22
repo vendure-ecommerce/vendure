@@ -1,4 +1,4 @@
-import { from, Observable, of } from 'rxjs';
+import { from, lastValueFrom, Observable, of } from 'rxjs';
 import { retryWhen, take, tap } from 'rxjs/operators';
 import { Connection, QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
@@ -30,7 +30,7 @@ export class TransactionWrapper {
             // If a QueryRunner already exists on the RequestContext, there must be an existing
             // outer transaction in progress. In that case, we just execute the work function
             // as usual without needing to further wrap in a transaction.
-            return from(work()).toPromise();
+            return lastValueFrom(from(work()));
         }
         const queryRunner = connection.createQueryRunner();
         if (mode === 'auto') {
@@ -40,8 +40,8 @@ export class TransactionWrapper {
 
         try {
             const maxRetries = 5;
-            const result = await from(work())
-                .pipe(
+            const result = await lastValueFrom(
+                from(work()).pipe(
                     retryWhen(errors =>
                         errors.pipe(
                             tap(err => {
@@ -52,8 +52,8 @@ export class TransactionWrapper {
                             take(maxRetries),
                         ),
                     ),
-                )
-                .toPromise();
+                ),
+            );
             if (queryRunner.isTransactionActive) {
                 await queryRunner.commitTransaction();
             }

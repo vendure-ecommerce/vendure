@@ -341,31 +341,37 @@ export function addOrderLineCustomFieldsInput(
             return { ...fields, [name]: { type } };
         }, {}),
     });
-    schemaConfig.types.push(input);
+    schemaConfig.types = [...schemaConfig.types, input];
 
     const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
     const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;
     if (addItemToOrderMutation) {
-        addItemToOrderMutation.args.push({
-            name: 'customFields',
-            type: input,
-            description: null,
-            defaultValue: null,
-            extensions: null,
-            astNode: null,
-            deprecationReason: null,
-        });
+        addItemToOrderMutation.args = [
+            ...addItemToOrderMutation.args,
+            {
+                name: 'customFields',
+                type: input,
+                description: null,
+                defaultValue: null,
+                extensions: {},
+                astNode: null,
+                deprecationReason: null,
+            },
+        ];
     }
     if (adjustOrderLineMutation) {
-        adjustOrderLineMutation.args.push({
-            name: 'customFields',
-            type: input,
-            description: null,
-            defaultValue: null,
-            extensions: null,
-            astNode: null,
-            deprecationReason: null,
-        });
+        adjustOrderLineMutation.args = [
+            ...adjustOrderLineMutation.args,
+            {
+                name: 'customFields',
+                type: input,
+                description: null,
+                defaultValue: null,
+                extensions: {},
+                astNode: null,
+                deprecationReason: null,
+            },
+        ];
     }
 
     let extendedSchema = new GraphQLSchema(schemaConfig);

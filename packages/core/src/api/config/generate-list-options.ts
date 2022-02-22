@@ -2,6 +2,7 @@ import { stitchSchemas, ValidationLevel } from '@graphql-tools/stitch';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
+    getNamedType,
     GraphQLEnumType,
     GraphQLField,
     GraphQLInputField,
@@ -10,6 +11,7 @@ import {
     GraphQLInputObjectType,
     GraphQLInputType,
     GraphQLInt,
+    GraphQLList,
     GraphQLNamedType,
     GraphQLObjectType,
     GraphQLOutputType,
@@ -74,15 +76,18 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
             });
 
             if (!query.args.find(a => a.type.toString() === `${targetTypeName}ListOptions`)) {
-                query.args.push({
-                    name: 'options',
-                    type: generatedListOptions,
-                    description: null,
-                    defaultValue: null,
-                    extensions: null,
-                    astNode: null,
-                    deprecationReason: null,
-                });
+                query.args = [
+                    ...query.args,
+                    {
+                        name: 'options',
+                        type: generatedListOptions,
+                        description: null,
+                        defaultValue: null,
+                        extensions: {},
+                        astNode: null,
+                        deprecationReason: null,
+                    },
+                ];
             }
 
             generatedTypes.push(filterParameter);
@@ -121,7 +126,11 @@ function createSortParameter(schema: GraphQLSchema, targetType: GraphQLObjectTyp
                 if (unwrapNonNullType(field.type) === SortOrder) {
                     return field;
                 } else {
-                    return sortableTypes.includes(unwrapNonNullType(field.type).name) ? field : undefined;
+                    const innerType = unwrapNonNullType(field.type);
+                    if (isListType(innerType)) {
+                        return;
+                    }
+                    return sortableTypes.includes(innerType.name) ? field : undefined;
                 }
             })
             .filter(notNullOrUndefined)
@@ -168,10 +177,10 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
     });
 
     function getFilterType(field: GraphQLField<any, any> | GraphQLInputField): GraphQLInputType | undefined {
-        if (isListType(field.type)) {
+        const innerType = unwrapNonNullType(field.type);
+        if (isListType(innerType)) {
             return;
         }
-        const innerType = unwrapNonNullType(field.type);
         if (isEnumType(innerType)) {
             return StringOperators;
         }
@@ -227,7 +236,9 @@ function getCommonTypes(schema: GraphQLSchema) {
 /**
  * Unwraps the inner type if it is inside a non-nullable type
  */
-function unwrapNonNullType(type: GraphQLOutputType | GraphQLInputType): GraphQLNamedType {
+function unwrapNonNullType(
+    type: GraphQLOutputType | GraphQLInputType,
+): GraphQLNamedType | GraphQLList<GraphQLOutputType | GraphQLInputType> {
     if (isNonNullType(type)) {
         return type.ofType;
     }

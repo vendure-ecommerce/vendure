@@ -1,6 +1,6 @@
 import { AssetType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Observable, Observer } from 'rxjs';
+import { lastValueFrom, Observable, Observer } from 'rxjs';
 
 /**
  * Takes a predicate function and returns a negated version.
@@ -71,7 +71,7 @@ export function normalizeEmailAddress(input: string): string {
 export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observable<T>): Promise<T> {
     let result = await value;
     if (result instanceof Observable) {
-        result = await result.toPromise();
+        result = await lastValueFrom(result);
     }
     return result;
 }

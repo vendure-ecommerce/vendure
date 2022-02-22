@@ -46,7 +46,7 @@
     "codejar": "^3.5.0",
     "core-js": "^3.9.1",
     "dayjs": "^1.10.4",
-    "graphql": "15.5.1",
+    "graphql": "16.3.0",
     "messageformat": "2.3.0",
     "ngx-pagination": "^5.1.1",
     "ngx-translate-messageformat-compiler": "^5.0.1",

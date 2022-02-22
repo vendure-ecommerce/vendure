@@ -23,13 +23,13 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
         }
     }
 
-    serverWillStart(service: GraphQLServiceContext): Promise<void> | void {
+    async serverWillStart(service: GraphQLServiceContext): Promise<void> {
         this.graphqlValueTransformer = new GraphqlValueTransformer(service.schema);
     }
 
-    requestDidStart(): GraphQLRequestListener {
+    async requestDidStart(): Promise<GraphQLRequestListener> {
         return {
-            willSendResponse: requestContext => {
+            willSendResponse: async requestContext => {
                 const { document } = requestContext;
                 if (document) {
                     const data = requestContext.response.data;
