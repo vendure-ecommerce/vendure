@@ -162,7 +162,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     constructor(private processContext: ProcessContext) {}
 
     /** @internal */
-    onApplicationBootstrap(): void | Promise<void> {
+    onApplicationBootstrap(): void {
         if (this.processContext.isWorker) {
             return;
         }
