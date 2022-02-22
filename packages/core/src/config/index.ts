@@ -10,6 +10,7 @@ export * from './auth/password-hashing-strategy';
 export * from './auth/password-validation-strategy';
 export * from './catalog/collection-filter';
 export * from './catalog/default-collection-filters';
+export * from './catalog/product-variant-price-calculation-strategy';
 export * from './config.module';
 export * from './config.service';
 export * from './custom-field/custom-field-types';

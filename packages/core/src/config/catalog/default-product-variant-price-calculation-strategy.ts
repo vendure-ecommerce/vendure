@@ -25,7 +25,6 @@ export class DefaultProductVariantPriceCalculationStrategy implements ProductVar
         const { inputPrice, activeTaxZone, ctx, taxCategory } = args;
         let price = inputPrice;
         let priceIncludesTax = false;
-        const taxRate = await this.taxRateService.getApplicableTaxRate(ctx, activeTaxZone, taxCategory);
 
         if (ctx.channel.pricesIncludeTax) {
             const isDefaultZone = idsAreEqual(activeTaxZone.id, ctx.channel.defaultTaxZone.id);

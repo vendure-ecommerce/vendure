@@ -90,4 +90,36 @@ describe('removeReadonlyCustomFields', () => {
             },
         } as any);
     });
+
+    it('with array of input objects', () => {
+        const config: CustomFieldConfig[] = [
+            { name: 'weight', type: 'int', list: false },
+            { name: 'rating', type: 'float', readonly: true, list: false },
+        ];
+        const entity = {
+            input: [
+                {
+                    id: 1,
+                    name: 'test',
+                    customFields: {
+                        weight: 500,
+                        rating: 123,
+                    },
+                },
+            ],
+        };
+
+        const result = removeReadonlyCustomFields(entity, config);
+        expect(result).toEqual({
+            input: [
+                {
+                    id: 1,
+                    name: 'test',
+                    customFields: {
+                        weight: 500,
+                    },
+                },
+            ],
+        } as any);
+    });
 });

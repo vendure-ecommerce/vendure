@@ -635,10 +635,12 @@ export class ProductVariantService {
             await this.applyChannelPriceAndTax(variant, ctx);
             await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
+            const targetChannel = await this.channelService.findOne(ctx, input.channelId);
+            const price = targetChannel?.pricesIncludeTax ? variant.priceWithTax : variant.price;
             await this.createOrUpdateProductVariantPrice(
                 ctx,
                 variant.id,
-                variant.price * priceFactor,
+                Math.round(price * priceFactor),
                 input.channelId,
             );
             const assetIds = variant.assets?.map(a => a.assetId) || [];

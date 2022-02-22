@@ -1,7 +1,9 @@
 import { ArgumentsHost, ExecutionContext } from '@nestjs/common';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { Request, Response } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
+
+import { InternalServerError } from '../../common/error/errors';
 
 export type RestContext = { req: Request; res: Response; isGraphQL: false; info: undefined };
 export type GraphQLContext = {
@@ -26,22 +28,23 @@ export function parseContext(context: ExecutionContext | ArgumentsHost): RestCon
         };
     }
 
-    const graphQlContext = GqlExecutionContext.create(context as ExecutionContext);
-    const info = graphQlContext.getInfo();
-    let req: Request;
-    let res: Response;
-    if (info) {
-        const ctx = graphQlContext.getContext();
-        req = ctx.req;
-        res = ctx.res;
+    if (context.getType() === 'http') {
+        const httpContext = context.switchToHttp();
+        return {
+            isGraphQL: false,
+            req: httpContext.getRequest(),
+            res: httpContext.getResponse(),
+            info: undefined,
+        };
+    } else if (context.getType<GqlContextType>() === 'graphql') {
+        const gqlContext = GqlExecutionContext.create(context as ExecutionContext);
+        return {
+            isGraphQL: true,
+            req: gqlContext.getContext().req,
+            res: gqlContext.getContext().res,
+            info: gqlContext.getInfo(),
+        };
     } else {
-        req = context.switchToHttp().getRequest();
-        res = context.switchToHttp().getResponse();
+        throw new InternalServerError(`Context "${context.getType()}" is not supported.`);
     }
-    return {
-        req,
-        res,
-        info,
-        isGraphQL: !!info,
-    };
 }

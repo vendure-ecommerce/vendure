@@ -5,9 +5,14 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 
 /**
  * @description
- * The OrderItemPriceCalculationStrategy defines the price of an OrderItem when a ProductVariant gets added
- * to an order via the `addItemToOrder` mutation. By default the {@link DefaultOrderItemPriceCalculationStrategy}
- * is used.
+ * The OrderItemPriceCalculationStrategy defines the price of an OrderItem. By default the 
+ * {@link DefaultOrderItemPriceCalculationStrategy} is used.
+ * 
+ * ### When is the strategy invoked ?
+ * * addItemToOrder (only on the new order line)
+ * * adjustOrderLine  (only on the adjusted order line)
+ * * setOrderShippingAddress (on all order lines)
+ * * setOrderBillingAddress (on all order lines)
  *
  * ### OrderItemPriceCalculationStrategy vs Promotions
  * Both the OrderItemPriceCalculationStrategy and Promotions can be used to alter the price paid for a product.
@@ -34,7 +39,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * * A gift-wrapping service, where a boolean custom field is defined on the OrderLine. If `true`,
  *   a gift-wrapping surcharge would be added to the price.
  * * A product-configurator where e.g. various finishes, colors, and materials can be selected and stored
- *   as OrderLine custom fields.
+ *   as OrderLine custom fields (see [Customizing models](/docs/developer-guide/customizing-models/#configurable-order-products).
  *
  * @docsCategory Orders
  */

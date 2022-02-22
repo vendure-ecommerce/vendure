@@ -1,3 +1,27 @@
+## <small>1.4.7 (2022-02-22)</small>
+
+
+#### Fixes
+
+* **admin-ui** Allow non-SuperAdmins to perform CRUD on Channels ([791d47d](https://github.com/vendure-ecommerce/vendure/commit/791d47d)), closes [#1402](https://github.com/vendure-ecommerce/vendure/issues/1402)
+* **admin-ui** Correctly remove readonly custom field inputs ([75780ce](https://github.com/vendure-ecommerce/vendure/commit/75780ce)), closes [#1403](https://github.com/vendure-ecommerce/vendure/issues/1403)
+* **admin-ui** Fix issues with creating FacetValues with custom fields ([d4d4ee2](https://github.com/vendure-ecommerce/vendure/commit/d4d4ee2)), closes [#1434](https://github.com/vendure-ecommerce/vendure/issues/1434)
+* **admin-ui** Update to latest Angular v12, fix build error ([e54a2f2](https://github.com/vendure-ecommerce/vendure/commit/e54a2f2)), closes [#1408](https://github.com/vendure-ecommerce/vendure/issues/1408)
+* **core** Allow CRUD on Channels for non-SuperAdmins with permissions ([fd2f039](https://github.com/vendure-ecommerce/vendure/commit/fd2f039)), closes [#1402](https://github.com/vendure-ecommerce/vendure/issues/1402)
+* **core** Correctly display unitPrice of cancelled OrderLines ([e7c4373](https://github.com/vendure-ecommerce/vendure/commit/e7c4373)), closes [#1414](https://github.com/vendure-ecommerce/vendure/issues/1414)
+* **core** Fix entity relation paths typings in TS 4.5 ([c5e6c04](https://github.com/vendure-ecommerce/vendure/commit/c5e6c04)), closes [#1409](https://github.com/vendure-ecommerce/vendure/issues/1409)
+* **core** Fix error when using internal relation custom fields ([753470a](https://github.com/vendure-ecommerce/vendure/commit/753470a)), closes [#1416](https://github.com/vendure-ecommerce/vendure/issues/1416)
+* **core** Fix for job cancellation issue (#1420) ([2862dda](https://github.com/vendure-ecommerce/vendure/commit/2862dda)), closes [#1420](https://github.com/vendure-ecommerce/vendure/issues/1420) [#1127](https://github.com/vendure-ecommerce/vendure/issues/1127)
+* **core** Fix regression in accessing OrderLine.items when not defined ([32f2cd7](https://github.com/vendure-ecommerce/vendure/commit/32f2cd7))
+* **core** Fix variant price/tax calculation when assigning to channel ([1a13e73](https://github.com/vendure-ecommerce/vendure/commit/1a13e73)), closes [#1421](https://github.com/vendure-ecommerce/vendure/issues/1421)
+* **core** Improve api context detection & error handling ([42d70f3](https://github.com/vendure-ecommerce/vendure/commit/42d70f3)), closes [#1426](https://github.com/vendure-ecommerce/vendure/issues/1426)
+* **core** Omit private facet values from Product.facetValues ([82e0b26](https://github.com/vendure-ecommerce/vendure/commit/82e0b26)), closes [#1435](https://github.com/vendure-ecommerce/vendure/issues/1435)
+* **payments-plugin** Fix logic for looking up Braintree payment method ([ad4ccf3](https://github.com/vendure-ecommerce/vendure/commit/ad4ccf3))
+
+#### Perf
+
+* **common** Increase perf of `unique` helper by ~1000x ([910adf8](https://github.com/vendure-ecommerce/vendure/commit/910adf8)), closes [#1433](https://github.com/vendure-ecommerce/vendure/issues/1433)
+
 ## <small>1.4.6 (2022-02-04)</small>
 
 

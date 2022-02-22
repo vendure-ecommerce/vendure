@@ -624,7 +624,7 @@ describe('Promotions applied to Orders', () => {
                     quantity: 1,
                 });
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.totalWithTax).toBe(5000);
+                expect(addItemToOrder!.totalWithTax).toBe(6000);
                 expect(addItemToOrder!.discounts.length).toBe(0);
 
                 const { applyCouponCode } = await shopClient.query<
@@ -636,7 +636,7 @@ describe('Promotions applied to Orders', () => {
                 orderResultGuard.assertSuccess(applyCouponCode);
                 expect(applyCouponCode!.discounts.length).toBe(1);
                 expect(applyCouponCode!.discounts[0].description).toBe('20% discount on order');
-                expect(applyCouponCode!.totalWithTax).toBe(4000);
+                expect(applyCouponCode!.totalWithTax).toBe(4800);
             });
         });
 
@@ -702,7 +702,7 @@ describe('Promotions applied to Orders', () => {
                     quantity: 1,
                 });
                 orderResultGuard.assertSuccess(addItemToOrder);
-                expect(addItemToOrder!.totalWithTax).toBe(5000);
+                expect(addItemToOrder!.totalWithTax).toBe(6000);
                 expect(addItemToOrder!.discounts.length).toBe(0);
 
                 const { applyCouponCode } = await shopClient.query<
@@ -714,7 +714,7 @@ describe('Promotions applied to Orders', () => {
                 orderResultGuard.assertSuccess(applyCouponCode);
                 expect(applyCouponCode!.discounts.length).toBe(1);
                 expect(applyCouponCode!.discounts[0].description).toBe('$10 discount on order');
-                expect(applyCouponCode!.totalWithTax).toBe(4000);
+                expect(applyCouponCode!.totalWithTax).toBe(5000);
             });
         });
 
@@ -828,8 +828,8 @@ describe('Promotions applied to Orders', () => {
                 orderResultGuard.assertSuccess(addItemToOrder);
                 expect(addItemToOrder!.discounts.length).toBe(0);
                 expect(getItemSale1Line(addItemToOrder!.lines).discounts.length).toBe(0);
-                expect(addItemToOrder!.total).toBe(1832);
-                expect(addItemToOrder!.totalWithTax).toBe(2200);
+                expect(addItemToOrder!.total).toBe(2200);
+                expect(addItemToOrder!.totalWithTax).toBe(2640);
 
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
@@ -839,8 +839,8 @@ describe('Promotions applied to Orders', () => {
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
-                expect(applyCouponCode!.total).toBe(1334);
-                expect(applyCouponCode!.totalWithTax).toBe(1600);
+                expect(applyCouponCode!.total).toBe(1600);
+                expect(applyCouponCode!.totalWithTax).toBe(1920);
                 expect(getItemSale1Line(applyCouponCode!.lines).discounts.length).toBe(1); // 1x promotion
 
                 const { removeCouponCode } = await shopClient.query<
@@ -851,13 +851,13 @@ describe('Promotions applied to Orders', () => {
                 });
 
                 expect(getItemSale1Line(removeCouponCode!.lines).discounts.length).toBe(0);
-                expect(removeCouponCode!.total).toBe(1832);
-                expect(removeCouponCode!.totalWithTax).toBe(2200);
+                expect(removeCouponCode!.total).toBe(2200);
+                expect(removeCouponCode!.totalWithTax).toBe(2640);
 
                 const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
                 expect(getItemSale1Line(activeOrder!.lines).discounts.length).toBe(0);
-                expect(activeOrder!.total).toBe(1832);
-                expect(activeOrder!.totalWithTax).toBe(2200);
+                expect(activeOrder!.total).toBe(2200);
+                expect(activeOrder!.totalWithTax).toBe(2640);
             });
         });
 
@@ -931,8 +931,8 @@ describe('Promotions applied to Orders', () => {
                 orderResultGuard.assertSuccess(addItemToOrder);
                 expect(addItemToOrder!.discounts.length).toBe(0);
                 expect(addItemToOrder!.lines[0].discounts.length).toBe(0);
-                expect(addItemToOrder!.total).toBe(4167);
-                expect(addItemToOrder!.totalWithTax).toBe(5000);
+                expect(addItemToOrder!.total).toBe(5000);
+                expect(addItemToOrder!.totalWithTax).toBe(6000);
 
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
@@ -942,8 +942,8 @@ describe('Promotions applied to Orders', () => {
                 });
                 orderResultGuard.assertSuccess(applyCouponCode);
 
-                expect(applyCouponCode!.total).toBe(2083);
-                expect(applyCouponCode!.totalWithTax).toBe(2500);
+                expect(applyCouponCode!.total).toBe(2500);
+                expect(applyCouponCode!.totalWithTax).toBe(3000);
                 expect(applyCouponCode!.lines[0].discounts.length).toBe(1); // 1x promotion
             });
         });
@@ -1068,8 +1068,8 @@ describe('Promotions applied to Orders', () => {
                 expect(setOrderShippingMethod.discounts).toEqual([]);
                 expect(setOrderShippingMethod.shipping).toBe(287);
                 expect(setOrderShippingMethod.shippingWithTax).toBe(345);
-                expect(setOrderShippingMethod.total).toBe(4454);
-                expect(setOrderShippingMethod.totalWithTax).toBe(5345);
+                expect(setOrderShippingMethod.total).toBe(5287);
+                expect(setOrderShippingMethod.totalWithTax).toBe(6345);
 
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
@@ -1083,8 +1083,8 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.discounts[0].description).toBe('Free shipping');
                 expect(applyCouponCode.shipping).toBe(0);
                 expect(applyCouponCode.shippingWithTax).toBe(0);
-                expect(applyCouponCode.total).toBe(4167);
-                expect(applyCouponCode.totalWithTax).toBe(5000);
+                expect(applyCouponCode.total).toBe(5000);
+                expect(applyCouponCode.totalWithTax).toBe(6000);
             });
 
             // https://github.com/vendure-ecommerce/vendure/pull/1150
@@ -1251,8 +1251,8 @@ describe('Promotions applied to Orders', () => {
                     saleItemLine.discounts.find(a => a.type === AdjustmentType.PROMOTION)?.description,
                 ).toBe('item promo');
                 expect(apply1.discounts.length).toBe(1);
-                expect(apply1.total).toBe(5001);
-                expect(apply1.totalWithTax).toBe(6000);
+                expect(apply1.total).toBe(6000);
+                expect(apply1.totalWithTax).toBe(7200);
 
                 // Apply the Order-level promo
                 const { applyCouponCode: apply2 } = await shopClient.query<
@@ -1267,8 +1267,8 @@ describe('Promotions applied to Orders', () => {
                     'item promo',
                     'order promo',
                 ]);
-                expect(apply2.total).toBe(4250);
-                expect(apply2.totalWithTax).toBe(5100);
+                expect(apply2.total).toBe(5100);
+                expect(apply2.totalWithTax).toBe(6120);
             });
         });
     });

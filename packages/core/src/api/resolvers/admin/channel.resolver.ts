@@ -43,7 +43,7 @@ export class ChannelResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.SuperAdmin)
+    @Allow(Permission.SuperAdmin, Permission.CreateChannel)
     async createChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateChannelArgs,
@@ -61,7 +61,7 @@ export class ChannelResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.SuperAdmin)
+    @Allow(Permission.SuperAdmin, Permission.UpdateChannel)
     async updateChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateChannelArgs,
@@ -75,7 +75,7 @@ export class ChannelResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.SuperAdmin)
+    @Allow(Permission.SuperAdmin, Permission.DeleteChannel)
     async deleteChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteChannelArgs,

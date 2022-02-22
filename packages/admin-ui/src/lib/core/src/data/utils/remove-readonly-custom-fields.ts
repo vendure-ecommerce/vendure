@@ -6,6 +6,17 @@ import { CustomFieldConfig } from '../../common/generated-types';
 const CREATE_ENTITY_REGEX = /Create([A-Za-z]+)Input/;
 const UPDATE_ENTITY_REGEX = /Update([A-Za-z]+)Input/;
 
+type InputWithOptionalCustomFields = Record<string, any> & {
+    customFields?: Record<string, any>;
+};
+type InputWithCustomFields = Record<string, any> & {
+    customFields: Record<string, any>;
+};
+
+type EntityInput = InputWithOptionalCustomFields & {
+    translations?: InputWithOptionalCustomFields[];
+};
+
 /**
  * Checks the current documentNode for an operation with a variable named "Create<Entity>Input" or "Update<Entity>Input"
  * and if a match is found, returns the <Entity> name.
@@ -48,17 +59,27 @@ function extractInputType(type: TypeNode): NamedTypeNode {
  * Removes any `readonly` custom fields from an entity (including its translations).
  * To be used before submitting the entity for a create or update request.
  */
-export function removeReadonlyCustomFields<T extends { input?: any } & Record<string, any> = any>(
-    variables: T,
+export function removeReadonlyCustomFields(
+    variables: { input?: EntityInput | EntityInput[] } | EntityInput | EntityInput[],
     customFieldConfig: CustomFieldConfig[],
-): T {
-    if (variables.input) {
-        removeReadonly(variables.input, customFieldConfig);
+): { input?: EntityInput | EntityInput[] } | EntityInput | EntityInput[] {
+    if (!Array.isArray(variables)) {
+        if (Array.isArray(variables.input)) {
+            for (const input of variables.input) {
+                removeReadonly(input, customFieldConfig);
+            }
+        } else {
+            removeReadonly(variables.input, customFieldConfig);
+        }
+    } else {
+        for (const input of variables) {
+            removeReadonly(input, customFieldConfig);
+        }
     }
     return removeReadonly(variables, customFieldConfig);
 }
 
-function removeReadonly(input: any, customFieldConfig: CustomFieldConfig[]) {
+function removeReadonly(input: InputWithOptionalCustomFields, customFieldConfig: CustomFieldConfig[]) {
     for (const field of customFieldConfig) {
         if (field.readonly) {
             if (field.type === 'localeString') {
@@ -82,10 +103,10 @@ function removeReadonly(input: any, customFieldConfig: CustomFieldConfig[]) {
     return input;
 }
 
-function hasCustomFields(input: any): input is { customFields: { [key: string]: any } } {
+function hasCustomFields(input: any): input is InputWithCustomFields {
     return input != null && input.hasOwnProperty('customFields');
 }
 
-function hasTranslations(input: any): input is { translations: any[] } {
+function hasTranslations(input: any): input is { translations: InputWithOptionalCustomFields[] } {
     return input != null && input.hasOwnProperty('translations');
 }

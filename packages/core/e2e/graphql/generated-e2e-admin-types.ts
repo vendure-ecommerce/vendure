@@ -5465,6 +5465,21 @@ export type DeleteFacetMutationVariables = Exact<{
 
 export type DeleteFacetMutation = { deleteFacet: Pick<DeletionResponse, 'result' | 'message'> };
 
+export type GetProductWithFacetValuesQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetProductWithFacetValuesQuery = {
+    product?: Maybe<
+        Pick<Product, 'id'> & {
+            facetValues: Array<Pick<FacetValue, 'id' | 'name' | 'code'>>;
+            variants: Array<
+                Pick<ProductVariant, 'id'> & { facetValues: Array<Pick<FacetValue, 'id' | 'name' | 'code'>> }
+            >;
+        }
+    >;
+};
+
 export type GetProductListWithVariantsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetProductListWithVariantsQuery = {
@@ -7805,6 +7820,25 @@ export namespace DeleteFacet {
     export type Variables = DeleteFacetMutationVariables;
     export type Mutation = DeleteFacetMutation;
     export type DeleteFacet = NonNullable<DeleteFacetMutation['deleteFacet']>;
+}
+
+export namespace GetProductWithFacetValues {
+    export type Variables = GetProductWithFacetValuesQueryVariables;
+    export type Query = GetProductWithFacetValuesQuery;
+    export type Product = NonNullable<GetProductWithFacetValuesQuery['product']>;
+    export type FacetValues = NonNullable<
+        NonNullable<NonNullable<GetProductWithFacetValuesQuery['product']>['facetValues']>[number]
+    >;
+    export type Variants = NonNullable<
+        NonNullable<NonNullable<GetProductWithFacetValuesQuery['product']>['variants']>[number]
+    >;
+    export type _FacetValues = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetProductWithFacetValuesQuery['product']>['variants']>[number]
+            >['facetValues']
+        >[number]
+    >;
 }
 
 export namespace GetProductListWithVariants {

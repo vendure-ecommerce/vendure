@@ -47,11 +47,10 @@ export class BraintreeResolver {
     }
 
     private async getPaymentMethodArgs(ctx: RequestContext): Promise<PaymentMethodArgsHash> {
-        const method = await this.connection.getRepository(ctx, PaymentMethod).findOne({
-            where: {
-                code: braintreePaymentMethodHandler.code,
-            },
-        });
+        const method = (await this.connection.getRepository(ctx, PaymentMethod).find()).find(
+            m => m.handler.code === braintreePaymentMethodHandler.code,
+        );
+
         if (!method) {
             throw new InternalServerError(`[${loggerCtx}] Could not find Braintree PaymentMethod`);
         }
