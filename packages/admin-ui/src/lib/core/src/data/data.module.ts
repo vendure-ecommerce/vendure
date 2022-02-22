@@ -3,7 +3,7 @@ import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { ApolloLink } from '@apollo/client/link/core';
-import { APOLLO_OPTIONS } from 'apollo-angular';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { createUploadLink } from 'apollo-upload-client';
 
 import { getAppConfig } from '../app.config';
@@ -84,7 +84,7 @@ export function createApollo(
  * state via the apollo-link-state package.
  */
 @NgModule({
-    imports: [HttpClientModule],
+    imports: [HttpClientModule, ApolloModule],
     exports: [],
     declarations: [],
     providers: [
