@@ -85,7 +85,7 @@ export class PaymentService {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, state);
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
-            return new PaymentStateTransitionError(transitionError, fromState, state);
+            return new PaymentStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         this.eventBus.publish(new PaymentStateTransitionEvent(fromState, state, ctx, payment, payment.order));
@@ -119,7 +119,9 @@ export class PaymentService {
         if (paymentMethod.checker && checker) {
             const eligible = await checker.check(ctx, order, paymentMethod.checker.args);
             if (eligible === false || typeof eligible === 'string') {
-                return new IneligiblePaymentMethodError(typeof eligible === 'string' ? eligible : undefined);
+                return new IneligiblePaymentMethodError({
+                    eligibilityCheckerMessage: typeof eligible === 'string' ? eligible : undefined,
+                });
             }
         }
         const result = await handler.createPayment(
@@ -176,7 +178,7 @@ export class PaymentService {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState });
-            return new PaymentStateTransitionError(transitionError, fromState, toState);
+            return new PaymentStateTransitionError({ transitionError, fromState, toState });
         }
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         this.eventBus.publish(
@@ -299,7 +301,11 @@ export class PaymentService {
                 try {
                     await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
                 } catch (e: any) {
-                    return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
+                    return new RefundStateTransitionError({
+                        transitionError: e.message,
+                        fromState,
+                        toState: createRefundResult.state,
+                    });
                 }
                 await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
                 this.eventBus.publish(

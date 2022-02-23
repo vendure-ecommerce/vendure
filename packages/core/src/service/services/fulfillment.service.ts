@@ -67,7 +67,7 @@ export class FulfillmentService {
             if (isObject(e)) {
                 message = (e as any).message || e.toString();
             }
-            return new CreateFulfillmentError(message);
+            return new CreateFulfillmentError({ fulfillmentHandlerError: message });
         }
 
         const newFulfillment = await this.connection.getRepository(ctx, Fulfillment).save(
@@ -160,7 +160,7 @@ export class FulfillmentService {
             await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
-            return new FulfillmentStateTransitionError(transitionError, fromState, state);
+            return new FulfillmentStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Fulfillment).save(fulfillment, { reload: false });
         this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));

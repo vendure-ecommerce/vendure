@@ -17,27 +17,13 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
+import { DeletionResult, ErrorCode } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    AddNoteToCustomer,
-    CreateAddress,
-    CreateCustomer,
-    CustomerFragment,
-    DeleteCustomer,
-    DeleteCustomerAddress,
-    DeleteCustomerNote,
-    DeletionResult,
-    ErrorCode,
-    GetCustomer,
-    GetCustomerHistory,
-    GetCustomerList,
-    GetCustomerOrders,
-    GetCustomerWithUser,
-    Me,
-    UpdateAddress,
-    UpdateCustomer,
-    UpdateCustomerNote,
-} from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
+    UpdatedOrderFragment,
+} from './graphql/generated-e2e-shop-types';
 import {
     CREATE_ADDRESS,
     CREATE_CUSTOMER,
@@ -74,16 +60,18 @@ class TestEmailPlugin implements OnModuleInit {
     }
 }
 
+type CustomerListItem = Codegen.GetCustomerListQuery['customers']['items'][number];
+
 describe('Customer resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), { plugins: [TestEmailPlugin] }),
     );
 
-    let firstCustomer: GetCustomerList.Items;
-    let secondCustomer: GetCustomerList.Items;
-    let thirdCustomer: GetCustomerList.Items;
+    let firstCustomer: CustomerListItem;
+    let secondCustomer: CustomerListItem;
+    let thirdCustomer: CustomerListItem;
 
-    const customerErrorGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard(
+    const customerErrorGuard: ErrorResultGuard<Codegen.CustomerFragment> = createErrorResultGuard(
         input => !!input.emailAddress,
     );
 
@@ -101,9 +89,10 @@ describe('Customer resolver', () => {
     });
 
     it('customers list', async () => {
-        const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
-            GET_CUSTOMER_LIST,
-        );
+        const result = await adminClient.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST);
 
         expect(result.customers.items.length).toBe(5);
         expect(result.customers.totalItems).toBe(5);
@@ -113,18 +102,18 @@ describe('Customer resolver', () => {
     });
 
     it('customers list filter by postalCode', async () => {
-        const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
-            GET_CUSTOMER_LIST,
-            {
-                options: {
-                    filter: {
-                        postalCode: {
-                            eq: 'NU9 0PW',
-                        },
+        const result = await adminClient.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST, {
+            options: {
+                filter: {
+                    postalCode: {
+                        eq: 'NU9 0PW',
                     },
                 },
             },
-        );
+        });
 
         expect(result.customers.items.length).toBe(1);
         expect(result.customers.items[0].emailAddress).toBe('eliezer56@yahoo.com');
@@ -132,8 +121,8 @@ describe('Customer resolver', () => {
 
     it('customer resolver resolves User', async () => {
         const { customer } = await adminClient.query<
-            GetCustomerWithUser.Query,
-            GetCustomerWithUser.Variables
+            Codegen.GetCustomerWithUserQuery,
+            Codegen.GetCustomerWithUserQueryVariables
         >(GET_CUSTOMER_WITH_USER, {
             id: firstCustomer.id,
         });
@@ -153,37 +142,40 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws on invalid countryCode',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(CREATE_ADDRESS, {
-                        id: firstCustomer.id,
-                        input: {
-                            streetLine1: 'streetLine1',
-                            countryCode: 'INVALID',
+                    adminClient.query<Codegen.CreateAddressMutation, Codegen.CreateAddressMutationVariables>(
+                        CREATE_ADDRESS,
+                        {
+                            id: firstCustomer.id,
+                            input: {
+                                streetLine1: 'streetLine1',
+                                countryCode: 'INVALID',
+                            },
                         },
-                    }),
+                    ),
                 `The countryCode "INVALID" was not recognized`,
             ),
         );
 
         it('createCustomerAddress creates a new address', async () => {
-            const result = await adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(
-                CREATE_ADDRESS,
-                {
-                    id: firstCustomer.id,
-                    input: {
-                        fullName: 'fullName',
-                        company: 'company',
-                        streetLine1: 'streetLine1',
-                        streetLine2: 'streetLine2',
-                        city: 'city',
-                        province: 'province',
-                        postalCode: 'postalCode',
-                        countryCode: 'GB',
-                        phoneNumber: 'phoneNumber',
-                        defaultShippingAddress: false,
-                        defaultBillingAddress: false,
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateAddressMutation,
+                Codegen.CreateAddressMutationVariables
+            >(CREATE_ADDRESS, {
+                id: firstCustomer.id,
+                input: {
+                    fullName: 'fullName',
+                    company: 'company',
+                    streetLine1: 'streetLine1',
+                    streetLine2: 'streetLine2',
+                    city: 'city',
+                    province: 'province',
+                    postalCode: 'postalCode',
+                    countryCode: 'GB',
+                    phoneNumber: 'phoneNumber',
+                    defaultShippingAddress: false,
+                    defaultBillingAddress: false,
                 },
-            );
+            });
             expect(omit(result.createCustomerAddress, ['id'])).toEqual({
                 fullName: 'fullName',
                 company: 'company',
@@ -203,7 +195,10 @@ describe('Customer resolver', () => {
         });
 
         it('customer query returns addresses', async () => {
-            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
 
@@ -212,15 +207,15 @@ describe('Customer resolver', () => {
         });
 
         it('updateCustomerAddress updates the country', async () => {
-            const result = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
-                UPDATE_ADDRESS,
-                {
-                    input: {
-                        id: firstCustomerAddressIds[0],
-                        countryCode: 'AT',
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateAddressMutation,
+                Codegen.UpdateAddressMutationVariables
+            >(UPDATE_ADDRESS, {
+                input: {
+                    id: firstCustomerAddressIds[0],
+                    countryCode: 'AT',
                 },
-            );
+            });
             expect(result.updateCustomerAddress.country).toEqual({
                 code: 'AT',
                 name: 'Austria',
@@ -229,21 +224,24 @@ describe('Customer resolver', () => {
 
         it('updateCustomerAddress allows only a single default address', async () => {
             // set the first customer's second address to be default
-            const result1 = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
-                UPDATE_ADDRESS,
-                {
-                    input: {
-                        id: firstCustomerAddressIds[1],
-                        defaultShippingAddress: true,
-                        defaultBillingAddress: true,
-                    },
+            const result1 = await adminClient.query<
+                Codegen.UpdateAddressMutation,
+                Codegen.UpdateAddressMutationVariables
+            >(UPDATE_ADDRESS, {
+                input: {
+                    id: firstCustomerAddressIds[1],
+                    defaultShippingAddress: true,
+                    defaultBillingAddress: true,
                 },
-            );
+            });
             expect(result1.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result1.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
             // assert the first customer's other addresse is not default
-            const result2 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result2 = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             const otherAddress = result2.customer!.addresses!.filter(
@@ -253,21 +251,24 @@ describe('Customer resolver', () => {
             expect(otherAddress.defaultBillingAddress).toBe(false);
 
             // set the first customer's first address to be default
-            const result3 = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
-                UPDATE_ADDRESS,
-                {
-                    input: {
-                        id: firstCustomerAddressIds[0],
-                        defaultShippingAddress: true,
-                        defaultBillingAddress: true,
-                    },
+            const result3 = await adminClient.query<
+                Codegen.UpdateAddressMutation,
+                Codegen.UpdateAddressMutationVariables
+            >(UPDATE_ADDRESS, {
+                input: {
+                    id: firstCustomerAddressIds[0],
+                    defaultShippingAddress: true,
+                    defaultBillingAddress: true,
                 },
-            );
+            });
             expect(result3.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result3.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
             // assert the first customer's second address is not default
-            const result4 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result4 = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             const otherAddress2 = result4.customer!.addresses!.filter(
@@ -277,27 +278,33 @@ describe('Customer resolver', () => {
             expect(otherAddress2.defaultBillingAddress).toBe(false);
 
             // get the second customer's address id
-            const result5 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result5 = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: secondCustomer.id,
             });
             const secondCustomerAddressId = result5.customer!.addresses![0].id;
 
             // set the second customer's address to be default
-            const result6 = await adminClient.query<UpdateAddress.Mutation, UpdateAddress.Variables>(
-                UPDATE_ADDRESS,
-                {
-                    input: {
-                        id: secondCustomerAddressId,
-                        defaultShippingAddress: true,
-                        defaultBillingAddress: true,
-                    },
+            const result6 = await adminClient.query<
+                Codegen.UpdateAddressMutation,
+                Codegen.UpdateAddressMutationVariables
+            >(UPDATE_ADDRESS, {
+                input: {
+                    id: secondCustomerAddressId,
+                    defaultShippingAddress: true,
+                    defaultBillingAddress: true,
                 },
-            );
+            });
             expect(result6.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result6.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
             // assets the first customer's address defaults are unchanged
-            const result7 = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result7 = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
             expect(result7.customer!.addresses![0].defaultShippingAddress).toBe(true);
@@ -308,8 +315,8 @@ describe('Customer resolver', () => {
 
         it('createCustomerAddress with true defaults unsets existing defaults', async () => {
             const { createCustomerAddress } = await adminClient.query<
-                CreateAddress.Mutation,
-                CreateAddress.Variables
+                Codegen.CreateAddressMutation,
+                Codegen.CreateAddressMutationVariables
             >(CREATE_ADDRESS, {
                 id: firstCustomer.id,
                 input: {
@@ -336,12 +343,12 @@ describe('Customer resolver', () => {
                 defaultBillingAddress: true,
             });
 
-            const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
-                GET_CUSTOMER,
-                {
-                    id: firstCustomer.id,
-                },
-            );
+            const { customer } = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
+                id: firstCustomer.id,
+            });
             for (const address of customer!.addresses!) {
                 const shouldBeDefault = address.id === createCustomerAddress.id;
                 expect(address.defaultShippingAddress).toEqual(shouldBeDefault);
@@ -353,8 +360,8 @@ describe('Customer resolver', () => {
 
         it('deleteCustomerAddress on default address resets defaults', async () => {
             const { deleteCustomerAddress } = await adminClient.query<
-                DeleteCustomerAddress.Mutation,
-                DeleteCustomerAddress.Variables
+                Codegen.DeleteCustomerAddressMutation,
+                Codegen.DeleteCustomerAddressMutationVariables
             >(
                 gql`
                     mutation DeleteCustomerAddress($id: ID!) {
@@ -368,12 +375,12 @@ describe('Customer resolver', () => {
 
             expect(deleteCustomerAddress.success).toBe(true);
 
-            const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
-                GET_CUSTOMER,
-                {
-                    id: firstCustomer.id,
-                },
-            );
+            const { customer } = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
+                id: firstCustomer.id,
+            });
             expect(customer!.addresses!.length).toBe(2);
             const defaultAddress = customer!.addresses!.filter(
                 a => a.defaultBillingAddress && a.defaultShippingAddress,
@@ -396,8 +403,8 @@ describe('Customer resolver', () => {
             await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
             // add an item to the order to create an order
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
@@ -405,8 +412,8 @@ describe('Customer resolver', () => {
             orderResultGuard.assertSuccess(addItemToOrder);
 
             const { customer } = await adminClient.query<
-                GetCustomerOrders.Query,
-                GetCustomerOrders.Variables
+                Codegen.GetCustomerOrdersQuery,
+                Codegen.GetCustomerOrdersQueryVariables
             >(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
 
             expect(customer!.orders.totalItems).toBe(1);
@@ -418,8 +425,8 @@ describe('Customer resolver', () => {
         it('triggers verification event if no password supplied', async () => {
             sendEmailFn = jest.fn();
             const { createCustomer } = await adminClient.query<
-                CreateCustomer.Mutation,
-                CreateCustomer.Variables
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
             >(CREATE_CUSTOMER, {
                 input: {
                     emailAddress: 'test1@test.com',
@@ -438,8 +445,8 @@ describe('Customer resolver', () => {
         it('creates a verified Customer', async () => {
             sendEmailFn = jest.fn();
             const { createCustomer } = await adminClient.query<
-                CreateCustomer.Mutation,
-                CreateCustomer.Variables
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
             >(CREATE_CUSTOMER, {
                 input: {
                     emailAddress: 'test2@test.com',
@@ -456,8 +463,8 @@ describe('Customer resolver', () => {
 
         it('return error result when using an existing, non-deleted emailAddress', async () => {
             const { createCustomer } = await adminClient.query<
-                CreateCustomer.Mutation,
-                CreateCustomer.Variables
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
             >(CREATE_CUSTOMER, {
                 input: {
                     emailAddress: 'test2@test.com',
@@ -476,8 +483,8 @@ describe('Customer resolver', () => {
     describe('update', () => {
         it('returns error result when emailAddress not available', async () => {
             const { updateCustomer } = await adminClient.query<
-                UpdateCustomer.Mutation,
-                UpdateCustomer.Variables
+                Codegen.UpdateCustomerMutation,
+                Codegen.UpdateCustomerMutationVariables
             >(UPDATE_CUSTOMER, {
                 input: {
                     id: thirdCustomer.id,
@@ -492,8 +499,8 @@ describe('Customer resolver', () => {
 
         it('succeeds when emailAddress is available', async () => {
             const { updateCustomer } = await adminClient.query<
-                UpdateCustomer.Mutation,
-                UpdateCustomer.Variables
+                Codegen.UpdateCustomerMutation,
+                Codegen.UpdateCustomerMutationVariables
             >(UPDATE_CUSTOMER, {
                 input: {
                     id: thirdCustomer.id,
@@ -508,7 +515,7 @@ describe('Customer resolver', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/1071
         it('updates the associated User email address', async () => {
             await shopClient.asUserWithCredentials('unique-email@test.com', 'test');
-            const { me } = await shopClient.query<Me.Query>(ME);
+            const { me } = await shopClient.query<Codegen.MeQuery>(ME);
 
             expect(me?.identifier).toBe('unique-email@test.com');
         });
@@ -516,16 +523,19 @@ describe('Customer resolver', () => {
 
     describe('deletion', () => {
         it('deletes a customer', async () => {
-            const result = await adminClient.query<DeleteCustomer.Mutation, DeleteCustomer.Variables>(
-                DELETE_CUSTOMER,
-                { id: thirdCustomer.id },
-            );
+            const result = await adminClient.query<
+                Codegen.DeleteCustomerMutation,
+                Codegen.DeleteCustomerMutationVariables
+            >(DELETE_CUSTOMER, { id: thirdCustomer.id });
 
             expect(result.deleteCustomer).toEqual({ result: DeletionResult.DELETED });
         });
 
         it('cannot get a deleted customer', async () => {
-            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: thirdCustomer.id,
             });
 
@@ -533,9 +543,10 @@ describe('Customer resolver', () => {
         });
 
         it('deleted customer omitted from list', async () => {
-            const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
-                GET_CUSTOMER_LIST,
-            );
+            const result = await adminClient.query<
+                Codegen.GetCustomerListQuery,
+                Codegen.GetCustomerListQueryVariables
+            >(GET_CUSTOMER_LIST);
 
             expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
         });
@@ -544,7 +555,10 @@ describe('Customer resolver', () => {
             'updateCustomer throws for deleted customer',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<UpdateCustomer.Mutation, UpdateCustomer.Variables>(UPDATE_CUSTOMER, {
+                    adminClient.query<
+                        Codegen.UpdateCustomerMutation,
+                        Codegen.UpdateCustomerMutationVariables
+                    >(UPDATE_CUSTOMER, {
                         input: {
                             id: thirdCustomer.id,
                             firstName: 'updated',
@@ -558,21 +572,24 @@ describe('Customer resolver', () => {
             'createCustomerAddress throws for deleted customer',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<CreateAddress.Mutation, CreateAddress.Variables>(CREATE_ADDRESS, {
-                        id: thirdCustomer.id,
-                        input: {
-                            streetLine1: 'test',
-                            countryCode: 'GB',
+                    adminClient.query<Codegen.CreateAddressMutation, Codegen.CreateAddressMutationVariables>(
+                        CREATE_ADDRESS,
+                        {
+                            id: thirdCustomer.id,
+                            input: {
+                                streetLine1: 'test',
+                                countryCode: 'GB',
+                            },
                         },
-                    }),
+                    ),
                 `No Customer with the id '3' could be found`,
             ),
         );
 
         it('new Customer can be created with same emailAddress as a deleted Customer', async () => {
             const { createCustomer } = await adminClient.query<
-                CreateCustomer.Mutation,
-                CreateCustomer.Variables
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
             >(CREATE_CUSTOMER, {
                 input: {
                     emailAddress: thirdCustomer.emailAddress,
@@ -593,8 +610,8 @@ describe('Customer resolver', () => {
 
         it('addNoteToCustomer', async () => {
             const { addNoteToCustomer } = await adminClient.query<
-                AddNoteToCustomer.Mutation,
-                AddNoteToCustomer.Variables
+                Codegen.AddNoteToCustomerMutation,
+                Codegen.AddNoteToCustomerMutationVariables
             >(ADD_NOTE_TO_CUSTOMER, {
                 input: {
                     id: firstCustomer.id,
@@ -604,8 +621,8 @@ describe('Customer resolver', () => {
             });
 
             const { customer } = await adminClient.query<
-                GetCustomerHistory.Query,
-                GetCustomerHistory.Variables
+                Codegen.GetCustomerHistoryQuery,
+                Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, {
                 id: firstCustomer.id,
                 options: {
@@ -631,8 +648,8 @@ describe('Customer resolver', () => {
 
         it('update note', async () => {
             const { updateCustomerNote } = await adminClient.query<
-                UpdateCustomerNote.Mutation,
-                UpdateCustomerNote.Variables
+                Codegen.UpdateCustomerNoteMutation,
+                Codegen.UpdateCustomerNoteMutationVariables
             >(UPDATE_CUSTOMER_NOTE, {
                 input: {
                     noteId,
@@ -647,14 +664,14 @@ describe('Customer resolver', () => {
 
         it('delete note', async () => {
             const { customer: before } = await adminClient.query<
-                GetCustomerHistory.Query,
-                GetCustomerHistory.Variables
+                Codegen.GetCustomerHistoryQuery,
+                Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
             const historyCount = before?.history.totalItems!;
 
             const { deleteCustomerNote } = await adminClient.query<
-                DeleteCustomerNote.Mutation,
-                DeleteCustomerNote.Variables
+                Codegen.DeleteCustomerNoteMutation,
+                Codegen.DeleteCustomerNoteMutationVariables
             >(DELETE_CUSTOMER_NOTE, {
                 id: noteId,
             });
@@ -662,8 +679,8 @@ describe('Customer resolver', () => {
             expect(deleteCustomerNote.result).toBe(DeletionResult.DELETED);
 
             const { customer: after } = await adminClient.query<
-                GetCustomerHistory.Query,
-                GetCustomerHistory.Variables
+                Codegen.GetCustomerHistoryQuery,
+                Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
             expect(after?.history.totalItems).toBe(historyCount - 1);
         });

@@ -8,7 +8,11 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '../../common/src/shared-constants';
 
-import { AttemptLogin, Me } from './graphql/generated-e2e-admin-types';
+import {
+    AttemptLoginMutation,
+    AttemptLoginMutationVariables,
+    MeQuery,
+} from './graphql/generated-e2e-admin-types';
 import { ATTEMPT_LOGIN, ME } from './graphql/shared-definitions';
 
 const testSessionCache = new Map<string, CachedSession>();
@@ -67,7 +71,7 @@ describe('Session caching', () => {
         expect(setSpy.mock.calls.length).toBe(0);
         expect(testSessionCache.size).toBe(0);
 
-        await adminClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
+        await adminClient.query<AttemptLoginMutation, AttemptLoginMutationVariables>(ATTEMPT_LOGIN, {
             username: SUPER_ADMIN_USER_IDENTIFIER,
             password: SUPER_ADMIN_USER_PASSWORD,
         });
@@ -78,7 +82,7 @@ describe('Session caching', () => {
 
     it('takes user data from cache on next request', async () => {
         getSpy.mockClear();
-        const { me } = await adminClient.query<Me.Query>(ME);
+        const { me } = await adminClient.query<MeQuery>(ME);
 
         expect(getSpy.mock.calls.length).toBe(1);
     });
@@ -86,15 +90,15 @@ describe('Session caching', () => {
     it('sets fresh data after TTL expires', async () => {
         setSpy.mockClear();
 
-        await adminClient.query<Me.Query>(ME);
+        await adminClient.query<MeQuery>(ME);
         expect(setSpy.mock.calls.length).toBe(0);
 
-        await adminClient.query<Me.Query>(ME);
+        await adminClient.query<MeQuery>(ME);
         expect(setSpy.mock.calls.length).toBe(0);
 
         await pause(2000);
 
-        await adminClient.query<Me.Query>(ME);
+        await adminClient.query<MeQuery>(ME);
         expect(setSpy.mock.calls.length).toBe(1);
     });
 

@@ -13,19 +13,8 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 
 import { SHIPPING_METHOD_FRAGMENT } from './graphql/fragments';
-import {
-    CreateShippingMethod,
-    DeleteShippingMethod,
-    DeletionResult,
-    GetCalculators,
-    GetEligibilityCheckers,
-    GetShippingMethod,
-    GetShippingMethodList,
-    LanguageCode,
-    TestEligibleMethods,
-    TestShippingMethod,
-    UpdateShippingMethod,
-} from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { DeletionResult, LanguageCode } from './graphql/generated-e2e-admin-types';
 import {
     CREATE_SHIPPING_METHOD,
     DELETE_SHIPPING_METHOD,
@@ -75,7 +64,7 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingEligibilityCheckers', async () => {
-        const { shippingEligibilityCheckers } = await adminClient.query<GetEligibilityCheckers.Query>(
+        const { shippingEligibilityCheckers } = await adminClient.query<Codegen.GetEligibilityCheckersQuery>(
             GET_ELIGIBILITY_CHECKERS,
         );
 
@@ -99,7 +88,7 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingCalculators', async () => {
-        const { shippingCalculators } = await adminClient.query<GetCalculators.Query>(GET_CALCULATORS);
+        const { shippingCalculators } = await adminClient.query<Codegen.GetCalculatorsQuery>(GET_CALCULATORS);
 
         expect(shippingCalculators).toEqual([
             {
@@ -161,7 +150,7 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingMethods', async () => {
-        const { shippingMethods } = await adminClient.query<GetShippingMethodList.Query>(
+        const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
             GET_SHIPPING_METHOD_LIST,
         );
         expect(shippingMethods.totalItems).toEqual(2);
@@ -171,8 +160,8 @@ describe('ShippingMethod resolver', () => {
 
     it('shippingMethod', async () => {
         const { shippingMethod } = await adminClient.query<
-            GetShippingMethod.Query,
-            GetShippingMethod.Variables
+            Codegen.GetShippingMethodQuery,
+            Codegen.GetShippingMethodQueryVariables
         >(GET_SHIPPING_METHOD, {
             id: 'T_1',
         });
@@ -181,8 +170,8 @@ describe('ShippingMethod resolver', () => {
 
     it('createShippingMethod', async () => {
         const { createShippingMethod } = await adminClient.query<
-            CreateShippingMethod.Mutation,
-            CreateShippingMethod.Variables
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'new-method',
@@ -227,8 +216,8 @@ describe('ShippingMethod resolver', () => {
 
     it('testShippingMethod', async () => {
         const { testShippingMethod } = await adminClient.query<
-            TestShippingMethod.Query,
-            TestShippingMethod.Variables
+            Codegen.TestShippingMethodQuery,
+            Codegen.TestShippingMethodQueryVariables
         >(TEST_SHIPPING_METHOD, {
             input: {
                 calculator: {
@@ -264,8 +253,8 @@ describe('ShippingMethod resolver', () => {
 
     it('testEligibleShippingMethods', async () => {
         const { testEligibleShippingMethods } = await adminClient.query<
-            TestEligibleMethods.Query,
-            TestEligibleMethods.Variables
+            Codegen.TestEligibleMethodsQuery,
+            Codegen.TestEligibleMethodsQueryVariables
         >(TEST_ELIGIBLE_SHIPPING_METHODS, {
             input: {
                 lines: [{ productVariantId: 'T_1', quantity: 1 }],
@@ -307,8 +296,8 @@ describe('ShippingMethod resolver', () => {
 
     it('updateShippingMethod', async () => {
         const { updateShippingMethod } = await adminClient.query<
-            UpdateShippingMethod.Mutation,
-            UpdateShippingMethod.Variables
+            Codegen.UpdateShippingMethodMutation,
+            Codegen.UpdateShippingMethodMutationVariables
         >(UPDATE_SHIPPING_METHOD, {
             input: {
                 id: 'T_3',
@@ -320,12 +309,14 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('deleteShippingMethod', async () => {
-        const listResult1 = await adminClient.query<GetShippingMethodList.Query>(GET_SHIPPING_METHOD_LIST);
+        const listResult1 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
+            GET_SHIPPING_METHOD_LIST,
+        );
         expect(listResult1.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3']);
 
         const { deleteShippingMethod } = await adminClient.query<
-            DeleteShippingMethod.Mutation,
-            DeleteShippingMethod.Variables
+            Codegen.DeleteShippingMethodMutation,
+            Codegen.DeleteShippingMethodMutationVariables
         >(DELETE_SHIPPING_METHOD, {
             id: 'T_3',
         });
@@ -335,7 +326,9 @@ describe('ShippingMethod resolver', () => {
             message: null,
         });
 
-        const listResult2 = await adminClient.query<GetShippingMethodList.Query>(GET_SHIPPING_METHOD_LIST);
+        const listResult2 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
+            GET_SHIPPING_METHOD_LIST,
+        );
         expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2']);
     });
 });

@@ -487,7 +487,7 @@ export class AssetService {
     ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
-            return new MimeTypeError(filename, mimetype);
+            return new MimeTypeError({ fileName: filename, mimeType: mimetype });
         }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(ctx, filename);

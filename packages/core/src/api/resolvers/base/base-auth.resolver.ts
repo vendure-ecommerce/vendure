@@ -118,7 +118,7 @@ export class BaseAuthResolver {
         if (apiType && apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(ctx, session.user.id);
             if (!administrator) {
-                return new InvalidCredentialsError('');
+                return new InvalidCredentialsError({ authenticationError: '' });
             }
         }
         setSessionToken({

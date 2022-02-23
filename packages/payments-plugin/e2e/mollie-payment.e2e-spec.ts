@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { PaymentStatus } from '@mollie/api-client';
 import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
 import {
@@ -18,11 +19,19 @@ import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
 import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './graphql/admin-queries';
-import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './graphql/generated-admin-types';
 import {
-    AddItemToOrder,
-    AddPaymentToOrder,
-    GetOrderByCode,
+    CreatePaymentMethodMutation,
+    CreatePaymentMethodMutationVariables,
+    GetCustomerListQuery,
+    GetCustomerListQueryVariables,
+} from './graphql/generated-admin-types';
+import {
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
+    AddPaymentToOrderMutation,
+    AddPaymentToOrderMutationVariables,
+    GetOrderByCodeQuery,
+    GetOrderByCodeQueryVariables,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ORDER_BY_CODE } from './graphql/shop-queries';
@@ -68,7 +77,7 @@ describe('Mollie payments', () => {
         await adminClient.asSuperAdmin();
         ({
             customers: { items: customers },
-        } = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(GET_CUSTOMER_LIST, {
+        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST, {
             options: {
                 take: 2,
             },
@@ -86,8 +95,8 @@ describe('Mollie payments', () => {
 
     it('Should add a Mollie paymentMethod', async () => {
         const { createPaymentMethod } = await adminClient.query<
-            CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables
+            CreatePaymentMethodMutation,
+            CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
@@ -107,7 +116,7 @@ describe('Mollie payments', () => {
     });
 
     it('Should add payment to order', async () => {
-        let mollieRequest;
+        let mollieRequest: any;
         nock('https://api.mollie.com/')
             .post(/.*/, body => {
                 mollieRequest = body;
@@ -115,14 +124,14 @@ describe('Mollie payments', () => {
             })
             .reply(200, mockData.mollieResponse);
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+        await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
             productVariantId: 'T_1',
             quantity: 2,
         });
         await proceedToArrangingPayment(shopClient);
         const { addPaymentToOrder } = await shopClient.query<
-            AddPaymentToOrder.Mutation,
-            AddPaymentToOrder.Variables
+            AddPaymentToOrderMutation,
+            AddPaymentToOrderMutationVariables
         >(ADD_PAYMENT, {
             input: {
                 method: mockData.methodCode,
@@ -157,7 +166,7 @@ describe('Mollie payments', () => {
             body: JSON.stringify({ id: mockData.mollieResponse.id }),
             headers: { 'Content-Type': 'application/json' },
         });
-        const { orderByCode } = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
+        const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
             GET_ORDER_BY_CODE,
             {
                 code: order.code,
@@ -176,19 +185,19 @@ describe('Mollie payments', () => {
                 return true;
             })
             .reply(200, { status: 'failed' });
-        const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
+        const refund = await refundOne(adminClient, order.lines[0].id, order.payments![0].id);
         expect(refund.state).toBe('Failed');
     });
 
     it('Should successfully refund', async () => {
-        let mollieRequest;
+        let mollieRequest: any;
         nock('https://api.mollie.com/')
             .post(/.*/, body => {
                 mollieRequest = body;
                 return true;
             })
             .reply(200, { status: 'pending' });
-        const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
+        const refund = await refundOne(adminClient, order.lines[0].id, order.payments![0].id);
         expect(mollieRequest?.amount.value).toBe('1558.80');
         expect(refund.total).toBe(155880);
         expect(refund.state).toBe('Settled');

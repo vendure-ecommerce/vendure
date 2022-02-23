@@ -36,6 +36,8 @@ import { ASTVisitFn } from 'graphql/language/visitor';
 export const ERROR_INTERFACE_NAME = 'ErrorResult';
 const empty = () => '';
 
+type TransformedField = { name: string; type: string };
+
 const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
     switch (node.kind) {
         case Kind.NON_NULL_TYPE: {
@@ -49,7 +51,7 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
             const type = (node.type.kind === 'ListType' ? node.type.type : node.type) as unknown as string;
             const tsType = isScalar(type) ? `Scalars['${type}']` : 'any';
             const listPart = node.type.kind === 'ListType' ? `[]` : ``;
-            return `${node.name.value}: ${tsType}${listPart}`;
+            return { name: node.name.value, type: `${tsType}${listPart}` };
         }
         case Kind.SCALAR_TYPE_DEFINITION: {
             return '';
@@ -71,7 +73,9 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
                 `export class ${ERROR_INTERFACE_NAME} {`,
                 `  readonly __typename: string;`,
                 `  readonly errorCode: string;`,
-                ...node.fields.filter(f => !(f as any).includes('errorCode:')).map(f => `${f};`),
+                ...node.fields
+                    .filter(f => (f as any as TransformedField).name !== 'errorCode')
+                    .map(f => `  readonly ${f.name}: ${f.type};`),
                 `}`,
             ].join('\n');
         }
@@ -80,6 +84,9 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
                 return '';
             }
             const originalNode = parent[key] as ObjectTypeDefinitionNode;
+            const constructorArgs = (node.fields as any as TransformedField[]).filter(
+                f => f.name !== 'errorCode' && f.name !== 'message',
+            );
 
             return [
                 `export class ${node.name.value} extends ${ERROR_INTERFACE_NAME} {`,
@@ -89,16 +96,16 @@ const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
                 // will not be compatible between the admin and shop variations.
                 `  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
                 `  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
+                ...constructorArgs.map(f => `  readonly ${f.name}: ${f.type};`),
                 `  constructor(`,
-                ...node.fields
-                    .filter(
-                        f =>
-                            !(f as unknown as string).includes('errorCode:') &&
-                            !(f as any).includes('message:'),
-                    )
-                    .map(f => `    public ${f},`),
+                constructorArgs.length
+                    ? `    input: { ${constructorArgs.map(f => `${f.name}: ${f.type}`).join(', ')} }`
+                    : '',
                 `  ) {`,
                 `    super();`,
+                ...(constructorArgs.length
+                    ? constructorArgs.map(f => `    this.${f.name} = input.${f.name}`)
+                    : []),
                 `  }`,
                 `}`,
             ].join('\n');

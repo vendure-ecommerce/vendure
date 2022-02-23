@@ -19,18 +19,18 @@ export async function awaitRunningJobs(
     // e.g. event debouncing is used before triggering the job.
     await new Promise(resolve => setTimeout(resolve, delay));
     do {
-        const { jobs } = await adminClient.query<GetRunningJobs.Query, GetRunningJobs.Variables>(
-            GET_RUNNING_JOBS,
-            {
-                options: {
-                    filter: {
-                        isSettled: {
-                            eq: false,
-                        },
+        const { jobs } = await adminClient.query<
+            Codegen.GetRunningJobsQuery,
+            Codegen.GetRunningJobsQueryVariables
+        >(GET_RUNNING_JOBS, {
+            options: {
+                filter: {
+                    isSettled: {
+                        eq: false,
                     },
                 },
             },
-        );
+        });
         runningJobs = jobs.totalItems;
         timedOut = timeout < +new Date() - startTime;
     } while (runningJobs > 0 && !timedOut);

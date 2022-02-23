@@ -1848,7 +1848,6 @@ export type OrderAddress = {
 export type OrderFilterParameter = {
     active?: InputMaybe<BooleanOperators>;
     code?: InputMaybe<StringOperators>;
-    couponCodes?: InputMaybe<StringOperators>;
     createdAt?: InputMaybe<DateOperators>;
     currencyCode?: InputMaybe<StringOperators>;
     id?: InputMaybe<IdOperators>;
@@ -1999,7 +1998,6 @@ export type OrderPaymentStateError = ErrorResult & {
 
 export type OrderSortParameter = {
     code?: InputMaybe<SortOrder>;
-    couponCodes?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
     orderPlacedAt?: InputMaybe<SortOrder>;

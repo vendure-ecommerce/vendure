@@ -8,8 +8,12 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
-import { UpdateChannel } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
+import { UpdateChannelMutation, UpdateChannelMutationVariables } from './graphql/generated-e2e-admin-types';
+import {
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
+    UpdatedOrderFragment,
+} from './graphql/generated-e2e-shop-types';
 import { UPDATE_CHANNEL } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 
@@ -162,13 +166,13 @@ describe('Entity hydration', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1172
     it('can hydrate entity with getters (Order)', async () => {
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-            ADD_ITEM_TO_ORDER,
-            {
-                productVariantId: 'T_1',
-                quantity: 1,
-            },
-        );
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 1,
+        });
         orderResultGuard.assertSuccess(addItemToOrder);
 
         const { hydrateOrder } = await adminClient.query<{ hydrateOrder: Order }>(GET_HYDRATED_ORDER, {
@@ -182,13 +186,13 @@ describe('Entity hydration', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1229
     it('deep merges existing properties', async () => {
         await shopClient.asAnonymousUser();
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-            ADD_ITEM_TO_ORDER,
-            {
-                productVariantId: 'T_1',
-                quantity: 2,
-            },
-        );
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_1',
+            quantity: 2,
+        });
         orderResultGuard.assertSuccess(addItemToOrder);
 
         const { hydrateOrderReturnQuantities } = await adminClient.query<{
@@ -202,7 +206,7 @@ describe('Entity hydration', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1284
     it('hydrates custom field relations', async () => {
-        await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
             input: {
                 id: 'T_1',
                 customFields: {

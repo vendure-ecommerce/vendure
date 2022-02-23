@@ -265,12 +265,12 @@ export class OrderModifier {
                 quantity,
             );
             if (orderItemsLimit < currentItemsCount + correctedQuantity) {
-                return new OrderLimitError(orderItemsLimit);
+                return new OrderLimitError({ maxItems: orderItemsLimit });
             } else {
                 currentItemsCount += correctedQuantity;
             }
             if (correctedQuantity < quantity) {
-                return new InsufficientStockError(correctedQuantity, order);
+                return new InsufficientStockError({ quantityAvailable: correctedQuantity, order });
             }
             updatedOrderLineIds.push(orderLine.id);
             const initialQuantity = orderLine.quantity;
@@ -299,12 +299,12 @@ export class OrderModifier {
             }
             const resultingOrderTotalQuantity = currentItemsCount + correctedQuantity - orderLine.quantity;
             if (orderItemsLimit < resultingOrderTotalQuantity) {
-                return new OrderLimitError(orderItemsLimit);
+                return new OrderLimitError({ maxItems: orderItemsLimit });
             } else {
                 currentItemsCount += correctedQuantity;
             }
             if (correctedQuantity < quantity) {
-                return new InsufficientStockError(correctedQuantity, order);
+                return new InsufficientStockError({ quantityAvailable: correctedQuantity, order });
             } else {
                 const customFields = (row as any).customFields;
                 if (customFields) {

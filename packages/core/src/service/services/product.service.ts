@@ -343,7 +343,10 @@ export class ProductService {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
         if (product.variants.length) {
-            return new ProductOptionInUseError(optionGroup.code, product.variants.length);
+            return new ProductOptionInUseError({
+                optionGroupCode: optionGroup.code,
+                productVariantCount: product.variants.length,
+            });
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 

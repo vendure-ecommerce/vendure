@@ -7,27 +7,13 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { FACET_VALUE_FRAGMENT, FACET_WITH_VALUES_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    AssignProductsToChannel,
     ChannelFragment,
-    CreateChannel,
-    CreateFacet,
-    CreateFacetValues,
     CurrencyCode,
-    DeleteFacet,
-    DeleteFacetValues,
     DeletionResult,
-    FacetWithValues,
-    GetFacetList,
-    GetFacetWithValues,
-    GetProductListWithVariants,
-    GetProductWithFacetValues,
-    GetProductWithVariants,
+    FacetWithValuesFragment,
     LanguageCode,
-    UpdateFacet,
-    UpdateFacetValues,
-    UpdateProduct,
-    UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -47,8 +33,8 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Facet resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
 
-    let brandFacet: FacetWithValues.Fragment;
-    let speakerTypeFacet: FacetWithValues.Fragment;
+    let brandFacet: FacetWithValuesFragment;
+    let speakerTypeFacet: FacetWithValuesFragment;
 
     beforeAll(async () => {
         await server.init({
@@ -64,7 +50,10 @@ describe('Facet resolver', () => {
     });
 
     it('createFacet', async () => {
-        const result = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
+        const result = await adminClient.query<
+            Codegen.CreateFacetMutation,
+            Codegen.CreateFacetMutationVariables
+        >(CREATE_FACET, {
             input: {
                 isPrivate: false,
                 code: 'speaker-type',
@@ -83,7 +72,10 @@ describe('Facet resolver', () => {
     });
 
     it('updateFacet', async () => {
-        const result = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(UPDATE_FACET, {
+        const result = await adminClient.query<
+            Codegen.UpdateFacetMutation,
+            Codegen.UpdateFacetMutationVariables
+        >(UPDATE_FACET, {
             input: {
                 id: speakerTypeFacet.id,
                 translations: [{ languageCode: LanguageCode.en, name: 'Speaker Category' }],
@@ -96,8 +88,8 @@ describe('Facet resolver', () => {
 
     it('createFacetValues', async () => {
         const { createFacetValues } = await adminClient.query<
-            CreateFacetValues.Mutation,
-            CreateFacetValues.Variables
+            Codegen.CreateFacetValuesMutation,
+            Codegen.CreateFacetValuesMutationVariables
         >(CREATE_FACET_VALUES, {
             input: [
                 {
@@ -133,23 +125,23 @@ describe('Facet resolver', () => {
     });
 
     it('updateFacetValues', async () => {
-        const result = await adminClient.query<UpdateFacetValues.Mutation, UpdateFacetValues.Variables>(
-            UPDATE_FACET_VALUES,
-            {
-                input: [
-                    {
-                        id: speakerTypeFacet.values[0].id,
-                        code: 'compact',
-                    },
-                ],
-            },
-        );
+        const result = await adminClient.query<
+            Codegen.UpdateFacetValuesMutation,
+            Codegen.UpdateFacetValuesMutationVariables
+        >(UPDATE_FACET_VALUES, {
+            input: [
+                {
+                    id: speakerTypeFacet.values[0].id,
+                    code: 'compact',
+                },
+            ],
+        });
 
         expect(result.updateFacetValues[0].code).toBe('compact');
     });
 
     it('facets', async () => {
-        const result = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
+        const result = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
 
         const { items } = result.facets;
         expect(items.length).toBe(2);
@@ -161,7 +153,7 @@ describe('Facet resolver', () => {
     });
 
     it('facets by shop-api', async () => {
-        const result = await shopClient.query<GetFacetList.Query>(GET_FACET_LIST_SIMPLE);
+        const result = await shopClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST_SIMPLE);
 
         const { items } = result.facets;
         expect(items.length).toBe(1);
@@ -169,12 +161,12 @@ describe('Facet resolver', () => {
     });
 
     it('facet', async () => {
-        const result = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-            GET_FACET_WITH_VALUES,
-            {
-                id: speakerTypeFacet.id,
-            },
-        );
+        const result = await adminClient.query<
+            Codegen.GetFacetWithValuesQuery,
+            Codegen.GetFacetWithValuesQueryVariables
+        >(GET_FACET_WITH_VALUES, {
+            id: speakerTypeFacet.id,
+        });
 
         expect(result.facet!.name).toBe('Speaker Category');
     });
@@ -182,15 +174,18 @@ describe('Facet resolver', () => {
     it('product.facetValues resolver omits private facets in shop-api', async () => {
         const publicFacetValue = brandFacet.values[0];
         const privateFacetValue = speakerTypeFacet.values[0];
-        await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-            input: {
-                id: 'T_1',
-                facetValueIds: [publicFacetValue.id, privateFacetValue.id],
+        await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+            UPDATE_PRODUCT,
+            {
+                input: {
+                    id: 'T_1',
+                    facetValueIds: [publicFacetValue.id, privateFacetValue.id],
+                },
             },
-        });
+        );
         const { product } = await shopClient.query<
-            GetProductWithFacetValues.Query,
-            GetProductWithFacetValues.Variables
+            Codegen.GetProductWithFacetValuesQuery,
+            Codegen.GetProductWithFacetValuesQueryVariables
         >(GET_PRODUCT_WITH_FACET_VALUES, {
             id: 'T_1',
         });
@@ -202,20 +197,20 @@ describe('Facet resolver', () => {
     it('productVariant.facetValues resolver omits private facets in shop-api', async () => {
         const publicFacetValue = brandFacet.values[0];
         const privateFacetValue = speakerTypeFacet.values[0];
-        await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-            UPDATE_PRODUCT_VARIANTS,
-            {
-                input: [
-                    {
-                        id: 'T_1',
-                        facetValueIds: [publicFacetValue.id, privateFacetValue.id],
-                    },
-                ],
-            },
-        );
+        await adminClient.query<
+            Codegen.UpdateProductVariantsMutation,
+            Codegen.UpdateProductVariantsMutationVariables
+        >(UPDATE_PRODUCT_VARIANTS, {
+            input: [
+                {
+                    id: 'T_1',
+                    facetValueIds: [publicFacetValue.id, privateFacetValue.id],
+                },
+            ],
+        });
         const { product } = await shopClient.query<
-            GetProductWithFacetValues.Query,
-            GetProductWithFacetValues.Variables
+            Codegen.GetProductWithFacetValuesQuery,
+            Codegen.GetProductWithFacetValuesQueryVariables
         >(GET_PRODUCT_WITH_FACET_VALUES, {
             id: 'T_1',
         });
@@ -226,57 +221,63 @@ describe('Facet resolver', () => {
     });
 
     describe('deletion', () => {
-        let products: GetProductListWithVariants.Items[];
+        let products: Codegen.GetProductListWithVariantsQuery['products']['items'];
 
         beforeAll(async () => {
             // add the FacetValues to products and variants
-            const result1 = await adminClient.query<GetProductListWithVariants.Query>(
+            const result1 = await adminClient.query<Codegen.GetProductListWithVariantsQuery>(
                 GET_PRODUCTS_LIST_WITH_VARIANTS,
             );
             products = result1.products.items;
 
-            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                input: {
-                    id: products[0].id,
-                    facetValueIds: [speakerTypeFacet.values[0].id],
-                },
-            });
-
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                UPDATE_PRODUCT_VARIANTS,
+            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                UPDATE_PRODUCT,
                 {
-                    input: [
-                        {
-                            id: products[0].variants[0].id,
-                            facetValueIds: [speakerTypeFacet.values[0].id],
-                        },
-                    ],
+                    input: {
+                        id: products[0].id,
+                        facetValueIds: [speakerTypeFacet.values[0].id],
+                    },
                 },
             );
 
-            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                input: {
-                    id: products[1].id,
-                    facetValueIds: [speakerTypeFacet.values[1].id],
-                },
+            await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: products[0].variants[0].id,
+                        facetValueIds: [speakerTypeFacet.values[0].id],
+                    },
+                ],
             });
+
+            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: products[1].id,
+                        facetValueIds: [speakerTypeFacet.values[1].id],
+                    },
+                },
+            );
         });
 
         it('deleteFacetValues deletes unused facetValue', async () => {
             const facetValueToDelete = speakerTypeFacet.values[2];
-            const result1 = await adminClient.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
-                DELETE_FACET_VALUES,
-                {
-                    ids: [facetValueToDelete.id],
-                    force: false,
-                },
-            );
-            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-                GET_FACET_WITH_VALUES,
-                {
-                    id: speakerTypeFacet.id,
-                },
-            );
+            const result1 = await adminClient.query<
+                Codegen.DeleteFacetValuesMutation,
+                Codegen.DeleteFacetValuesMutationVariables
+            >(DELETE_FACET_VALUES, {
+                ids: [facetValueToDelete.id],
+                force: false,
+            });
+            const result2 = await adminClient.query<
+                Codegen.GetFacetWithValuesQuery,
+                Codegen.GetFacetWithValuesQueryVariables
+            >(GET_FACET_WITH_VALUES, {
+                id: speakerTypeFacet.id,
+            });
 
             expect(result1.deleteFacetValues).toEqual([
                 {
@@ -290,19 +291,19 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues for FacetValue in use returns NOT_DELETED', async () => {
             const facetValueToDelete = speakerTypeFacet.values[0];
-            const result1 = await adminClient.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
-                DELETE_FACET_VALUES,
-                {
-                    ids: [facetValueToDelete.id],
-                    force: false,
-                },
-            );
-            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-                GET_FACET_WITH_VALUES,
-                {
-                    id: speakerTypeFacet.id,
-                },
-            );
+            const result1 = await adminClient.query<
+                Codegen.DeleteFacetValuesMutation,
+                Codegen.DeleteFacetValuesMutationVariables
+            >(DELETE_FACET_VALUES, {
+                ids: [facetValueToDelete.id],
+                force: false,
+            });
+            const result2 = await adminClient.query<
+                Codegen.GetFacetWithValuesQuery,
+                Codegen.GetFacetWithValuesQueryVariables
+            >(GET_FACET_WITH_VALUES, {
+                id: speakerTypeFacet.id,
+            });
 
             expect(result1.deleteFacetValues).toEqual([
                 {
@@ -316,13 +317,13 @@ describe('Facet resolver', () => {
 
         it('deleteFacetValues for FacetValue in use can be force deleted', async () => {
             const facetValueToDelete = speakerTypeFacet.values[0];
-            const result1 = await adminClient.query<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
-                DELETE_FACET_VALUES,
-                {
-                    ids: [facetValueToDelete.id],
-                    force: true,
-                },
-            );
+            const result1 = await adminClient.query<
+                Codegen.DeleteFacetValuesMutation,
+                Codegen.DeleteFacetValuesMutationVariables
+            >(DELETE_FACET_VALUES, {
+                ids: [facetValueToDelete.id],
+                force: true,
+            });
 
             expect(result1.deleteFacetValues).toEqual([
                 {
@@ -332,18 +333,18 @@ describe('Facet resolver', () => {
             ]);
 
             // FacetValue no longer in the Facet.values array
-            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-                GET_FACET_WITH_VALUES,
-                {
-                    id: speakerTypeFacet.id,
-                },
-            );
+            const result2 = await adminClient.query<
+                Codegen.GetFacetWithValuesQuery,
+                Codegen.GetFacetWithValuesQueryVariables
+            >(GET_FACET_WITH_VALUES, {
+                id: speakerTypeFacet.id,
+            });
             expect(result2.facet!.values[0]).not.toEqual(facetValueToDelete);
 
             // FacetValue no longer in the Product.facetValues array
             const result3 = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: products[0].id,
             });
@@ -351,19 +352,19 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use returns NOT_DELETED', async () => {
-            const result1 = await adminClient.query<DeleteFacet.Mutation, DeleteFacet.Variables>(
-                DELETE_FACET,
-                {
-                    id: speakerTypeFacet.id,
-                    force: false,
-                },
-            );
-            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-                GET_FACET_WITH_VALUES,
-                {
-                    id: speakerTypeFacet.id,
-                },
-            );
+            const result1 = await adminClient.query<
+                Codegen.DeleteFacetMutation,
+                Codegen.DeleteFacetMutationVariables
+            >(DELETE_FACET, {
+                id: speakerTypeFacet.id,
+                force: false,
+            });
+            const result2 = await adminClient.query<
+                Codegen.GetFacetWithValuesQuery,
+                Codegen.GetFacetWithValuesQueryVariables
+            >(GET_FACET_WITH_VALUES, {
+                id: speakerTypeFacet.id,
+            });
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.NOT_DELETED,
@@ -374,13 +375,13 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet that is in use can be force deleted', async () => {
-            const result1 = await adminClient.query<DeleteFacet.Mutation, DeleteFacet.Variables>(
-                DELETE_FACET,
-                {
-                    id: speakerTypeFacet.id,
-                    force: true,
-                },
-            );
+            const result1 = await adminClient.query<
+                Codegen.DeleteFacetMutation,
+                Codegen.DeleteFacetMutationVariables
+            >(DELETE_FACET, {
+                id: speakerTypeFacet.id,
+                force: true,
+            });
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.DELETED,
@@ -388,18 +389,18 @@ describe('Facet resolver', () => {
             });
 
             // FacetValue no longer in the Facet.values array
-            const result2 = await adminClient.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-                GET_FACET_WITH_VALUES,
-                {
-                    id: speakerTypeFacet.id,
-                },
-            );
+            const result2 = await adminClient.query<
+                Codegen.GetFacetWithValuesQuery,
+                Codegen.GetFacetWithValuesQueryVariables
+            >(GET_FACET_WITH_VALUES, {
+                id: speakerTypeFacet.id,
+            });
             expect(result2.facet).toBe(null);
 
             // FacetValue no longer in the Product.facetValues array
             const result3 = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: products[1].id,
             });
@@ -407,35 +408,35 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacet with no FacetValues works', async () => {
-            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
-                CREATE_FACET,
-                {
-                    input: {
-                        code: 'test',
-                        isPrivate: false,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Test' }],
-                    },
+            const { createFacet } = await adminClient.query<
+                Codegen.CreateFacetMutation,
+                Codegen.CreateFacetMutationVariables
+            >(CREATE_FACET, {
+                input: {
+                    code: 'test',
+                    isPrivate: false,
+                    translations: [{ languageCode: LanguageCode.en, name: 'Test' }],
                 },
-            );
-            const result = await adminClient.query<DeleteFacet.Mutation, DeleteFacet.Variables>(
-                DELETE_FACET,
-                {
-                    id: createFacet.id,
-                    force: false,
-                },
-            );
+            });
+            const result = await adminClient.query<
+                Codegen.DeleteFacetMutation,
+                Codegen.DeleteFacetMutationVariables
+            >(DELETE_FACET, {
+                id: createFacet.id,
+                force: false,
+            });
             expect(result.deleteFacet.result).toBe(DeletionResult.DELETED);
         });
     });
 
     describe('channels', () => {
         const SECOND_CHANNEL_TOKEN = 'second_channel_token';
-        let createdFacet: CreateFacet.CreateFacet;
+        let createdFacet: Codegen.CreateFacetMutation['createFacet'];
 
         beforeAll(async () => {
             const { createChannel } = await adminClient.query<
-                CreateChannel.Mutation,
-                CreateChannel.Variables
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
             >(CREATE_CHANNEL, {
                 input: {
                     code: 'second-channel',
@@ -449,8 +450,8 @@ describe('Facet resolver', () => {
             });
 
             const { assignProductsToChannel } = await adminClient.query<
-                AssignProductsToChannel.Mutation,
-                AssignProductsToChannel.Variables
+                Codegen.AssignProductsToChannelMutation,
+                Codegen.AssignProductsToChannelMutationVariables
             >(ASSIGN_PRODUCT_TO_CHANNEL, {
                 input: {
                     channelId: (createChannel as ChannelFragment).id,
@@ -463,26 +464,26 @@ describe('Facet resolver', () => {
         });
 
         it('create Facet in channel', async () => {
-            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
-                CREATE_FACET,
-                {
-                    input: {
-                        isPrivate: false,
-                        code: 'channel-facet',
-                        translations: [{ languageCode: LanguageCode.en, name: 'Channel Facet' }],
-                        values: [
-                            {
-                                code: 'channel-value-1',
-                                translations: [{ languageCode: LanguageCode.en, name: 'Channel Value 1' }],
-                            },
-                            {
-                                code: 'channel-value-2',
-                                translations: [{ languageCode: LanguageCode.en, name: 'Channel Value 2' }],
-                            },
-                        ],
-                    },
+            const { createFacet } = await adminClient.query<
+                Codegen.CreateFacetMutation,
+                Codegen.CreateFacetMutationVariables
+            >(CREATE_FACET, {
+                input: {
+                    isPrivate: false,
+                    code: 'channel-facet',
+                    translations: [{ languageCode: LanguageCode.en, name: 'Channel Facet' }],
+                    values: [
+                        {
+                            code: 'channel-value-1',
+                            translations: [{ languageCode: LanguageCode.en, name: 'Channel Value 1' }],
+                        },
+                        {
+                            code: 'channel-value-2',
+                            translations: [{ languageCode: LanguageCode.en, name: 'Channel Value 2' }],
+                        },
+                    ],
                 },
-            );
+            });
 
             expect(createFacet.code).toBe('channel-facet');
 
@@ -490,7 +491,7 @@ describe('Facet resolver', () => {
         });
 
         it('facets list in channel', async () => {
-            const result = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
+            const result = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
 
             const { items } = result.facets;
             expect(items.length).toBe(1);
@@ -499,28 +500,31 @@ describe('Facet resolver', () => {
 
         it('Product.facetValues in channel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                input: {
-                    id: 'T_1',
-                    facetValueIds: [brandFacet.values[0].id, ...createdFacet.values.map(v => v.id)],
-                },
-            });
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                UPDATE_PRODUCT_VARIANTS,
+            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                UPDATE_PRODUCT,
                 {
-                    input: [
-                        {
-                            id: 'T_1',
-                            facetValueIds: [brandFacet.values[0].id, ...createdFacet.values.map(v => v.id)],
-                        },
-                    ],
+                    input: {
+                        id: 'T_1',
+                        facetValueIds: [brandFacet.values[0].id, ...createdFacet.values.map(v => v.id)],
+                    },
                 },
             );
+            await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: 'T_1',
+                        facetValueIds: [brandFacet.values[0].id, ...createdFacet.values.map(v => v.id)],
+                    },
+                ],
+            });
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_1',
             });
@@ -533,8 +537,8 @@ describe('Facet resolver', () => {
 
         it('ProductVariant.facetValues in channel', async () => {
             const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_1',
             });
@@ -547,16 +551,19 @@ describe('Facet resolver', () => {
 
         it('updating Product facetValuesIds in channel only affects that channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
-                input: {
-                    id: 'T_1',
-                    facetValueIds: [createdFacet.values[0].id],
+            await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
+                UPDATE_PRODUCT,
+                {
+                    input: {
+                        id: 'T_1',
+                        facetValueIds: [createdFacet.values[0].id],
+                    },
                 },
-            });
+            );
 
             const { product: productC2 } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_1',
             });
@@ -565,8 +572,8 @@ describe('Facet resolver', () => {
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { product: productCD } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_1',
             });
@@ -579,21 +586,21 @@ describe('Facet resolver', () => {
 
         it('updating ProductVariant facetValuesIds in channel only affects that channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                UPDATE_PRODUCT_VARIANTS,
-                {
-                    input: [
-                        {
-                            id: 'T_1',
-                            facetValueIds: [createdFacet.values[0].id],
-                        },
-                    ],
-                },
-            );
+            await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: 'T_1',
+                        facetValueIds: [createdFacet.values[0].id],
+                    },
+                ],
+            });
 
             const { product: productC2 } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_1',
             });
@@ -604,8 +611,8 @@ describe('Facet resolver', () => {
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { product: productCD } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
             >(GET_PRODUCT_WITH_VARIANTS, {
                 id: 'T_1',
             });
@@ -620,18 +627,18 @@ describe('Facet resolver', () => {
             'attempting to create FacetValue in Facet from another Channel throws',
             assertThrowsWithMessage(async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                await adminClient.query<CreateFacetValues.Mutation, CreateFacetValues.Variables>(
-                    CREATE_FACET_VALUES,
-                    {
-                        input: [
-                            {
-                                facetId: brandFacet.id,
-                                code: 'channel-brand',
-                                translations: [{ languageCode: LanguageCode.en, name: 'Channel Brand' }],
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.CreateFacetValuesMutation,
+                    Codegen.CreateFacetValuesMutationVariables
+                >(CREATE_FACET_VALUES, {
+                    input: [
+                        {
+                            facetId: brandFacet.id,
+                            code: 'channel-brand',
+                            translations: [{ languageCode: LanguageCode.en, name: 'Channel Brand' }],
+                        },
+                    ],
+                });
             }, `No Facet with the id '1' could be found`),
         );
     });
@@ -639,28 +646,31 @@ describe('Facet resolver', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/715
     describe('code conflicts', () => {
         function createFacetWithCode(code: string) {
-            return adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, {
-                input: {
-                    isPrivate: false,
-                    code,
-                    translations: [{ languageCode: LanguageCode.en, name: `Test Facet (${code})` }],
-                    values: [],
+            return adminClient.query<Codegen.CreateFacetMutation, Codegen.CreateFacetMutationVariables>(
+                CREATE_FACET,
+                {
+                    input: {
+                        isPrivate: false,
+                        code,
+                        translations: [{ languageCode: LanguageCode.en, name: `Test Facet (${code})` }],
+                        values: [],
+                    },
                 },
-            });
+            );
         }
 
         // https://github.com/vendure-ecommerce/vendure/issues/831
         it('updateFacet with unchanged code', async () => {
             const { createFacet } = await createFacetWithCode('some-new-facet');
-            const result = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(
-                UPDATE_FACET,
-                {
-                    input: {
-                        id: createFacet.id,
-                        code: createFacet.code,
-                    },
+            const result = await adminClient.query<
+                Codegen.UpdateFacetMutation,
+                Codegen.UpdateFacetMutationVariables
+            >(UPDATE_FACET, {
+                input: {
+                    id: createFacet.id,
+                    code: createFacet.code,
                 },
-            );
+            });
 
             expect(result.updateFacet.code).toBe(createFacet.code);
         });
@@ -677,15 +687,15 @@ describe('Facet resolver', () => {
             const { createFacet } = await createFacetWithCode('foo');
             expect(createFacet.code).toBe('foo');
 
-            const { updateFacet } = await adminClient.query<UpdateFacet.Mutation, UpdateFacet.Variables>(
-                UPDATE_FACET,
-                {
-                    input: {
-                        id: createFacet.id,
-                        code: 'test-2',
-                    },
+            const { updateFacet } = await adminClient.query<
+                Codegen.UpdateFacetMutation,
+                Codegen.UpdateFacetMutationVariables
+            >(UPDATE_FACET, {
+                input: {
+                    id: createFacet.id,
+                    code: 'test-2',
                 },
-            );
+            });
 
             expect(updateFacet.code).toBe('test-3');
         });

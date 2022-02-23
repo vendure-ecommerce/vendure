@@ -7,14 +7,8 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { omit } from '../../common/lib/omit';
 
 import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
-import {
-    CreateProductOption,
-    CreateProductOptionGroup,
-    LanguageCode,
-    ProductOptionGroupFragment,
-    UpdateProductOption,
-    UpdateProductOptionGroup,
-} from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { LanguageCode } from './graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT_OPTION_GROUP } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -22,8 +16,8 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ProductOption resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
-    let sizeGroup: ProductOptionGroupFragment;
-    let mediumOption: CreateProductOption.CreateProductOption;
+    let sizeGroup: Codegen.ProductOptionGroupFragment;
+    let mediumOption: Codegen.CreateProductOptionMutation['createProductOption'];
 
     beforeAll(async () => {
         await server.init({
@@ -40,8 +34,8 @@ describe('ProductOption resolver', () => {
 
     it('createProductOptionGroup', async () => {
         const { createProductOptionGroup } = await adminClient.query<
-            CreateProductOptionGroup.Mutation,
-            CreateProductOptionGroup.Variables
+            Codegen.CreateProductOptionGroupMutation,
+            Codegen.CreateProductOptionGroupMutationVariables
         >(CREATE_PRODUCT_OPTION_GROUP, {
             input: {
                 code: 'size',
@@ -78,8 +72,8 @@ describe('ProductOption resolver', () => {
 
     it('updateProductOptionGroup', async () => {
         const { updateProductOptionGroup } = await adminClient.query<
-            UpdateProductOptionGroup.Mutation,
-            UpdateProductOptionGroup.Variables
+            Codegen.UpdateProductOptionGroupMutation,
+            Codegen.UpdateProductOptionGroupMutationVariables
         >(UPDATE_PRODUCT_OPTION_GROUP, {
             input: {
                 id: sizeGroup.id,
@@ -96,8 +90,8 @@ describe('ProductOption resolver', () => {
         'createProductOption throws with invalid productOptionGroupId',
         assertThrowsWithMessage(async () => {
             const { createProductOption } = await adminClient.query<
-                CreateProductOption.Mutation,
-                CreateProductOption.Variables
+                Codegen.CreateProductOptionMutation,
+                Codegen.CreateProductOptionMutationVariables
             >(CREATE_PRODUCT_OPTION, {
                 input: {
                     productOptionGroupId: 'T_999',
@@ -113,8 +107,8 @@ describe('ProductOption resolver', () => {
 
     it('createProductOption', async () => {
         const { createProductOption } = await adminClient.query<
-            CreateProductOption.Mutation,
-            CreateProductOption.Variables
+            Codegen.CreateProductOptionMutation,
+            Codegen.CreateProductOptionMutationVariables
         >(CREATE_PRODUCT_OPTION, {
             input: {
                 productOptionGroupId: sizeGroup.id,
@@ -137,8 +131,8 @@ describe('ProductOption resolver', () => {
 
     it('updateProductOption', async () => {
         const { updateProductOption } = await adminClient.query<
-            UpdateProductOption.Mutation,
-            UpdateProductOption.Variables
+            Codegen.UpdateProductOptionMutation,
+            Codegen.UpdateProductOptionMutationVariables
         >(UPDATE_PRODUCT_OPTION, {
             input: {
                 id: 'T_7',

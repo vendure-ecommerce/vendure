@@ -7,7 +7,13 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { PluginWithJobQueue } from './fixtures/test-plugins/with-job-queue';
-import { CancelJob, GetRunningJobs, JobState } from './graphql/generated-e2e-admin-types';
+import {
+    CancelJobMutation,
+    CancelJobMutationVariables,
+    GetRunningJobsQuery,
+    GetRunningJobsQueryVariables,
+    JobState,
+} from './graphql/generated-e2e-admin-types';
 import { GET_RUNNING_JOBS } from './graphql/shared-definitions';
 
 describe('JobQueue', () => {
@@ -45,7 +51,7 @@ describe('JobQueue', () => {
 
     function getJobsInTestQueue(state?: JobState) {
         return adminClient
-            .query<GetRunningJobs.Query, GetRunningJobs.Variables>(GET_RUNNING_JOBS, {
+            .query<GetRunningJobsQuery, GetRunningJobsQueryVariables>(GET_RUNNING_JOBS, {
                 options: {
                     filter: {
                         queueName: {
@@ -120,9 +126,12 @@ describe('JobQueue', () => {
         expect(PluginWithJobQueue.jobHasDoneWork).toBe(false);
         const jobId = jobs.items[0].id;
 
-        const { cancelJob } = await adminClient.query<CancelJob.Mutation, CancelJob.Variables>(CANCEL_JOB, {
-            id: jobId,
-        });
+        const { cancelJob } = await adminClient.query<CancelJobMutation, CancelJobMutationVariables>(
+            CANCEL_JOB,
+            {
+                id: jobId,
+            },
+        );
 
         expect(cancelJob.state).toBe(JobState.CANCELLED);
         expect(cancelJob.isSettled).toBe(true);

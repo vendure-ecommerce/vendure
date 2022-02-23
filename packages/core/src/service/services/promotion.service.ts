@@ -220,15 +220,15 @@ export class PromotionService {
             },
         });
         if (!promotion) {
-            return new CouponCodeInvalidError(couponCode);
+            return new CouponCodeInvalidError({ couponCode });
         }
         if (promotion.endsAt && +promotion.endsAt < +new Date()) {
-            return new CouponCodeExpiredError(couponCode);
+            return new CouponCodeExpiredError({ couponCode });
         }
         if (customerId && promotion.perCustomerUsageLimit != null) {
             const usageCount = await this.countPromotionUsagesForCustomer(ctx, promotion.id, customerId);
             if (promotion.perCustomerUsageLimit <= usageCount) {
-                return new CouponCodeLimitError(couponCode, promotion.perCustomerUsageLimit);
+                return new CouponCodeLimitError({ couponCode, limit: promotion.perCustomerUsageLimit });
             }
         }
         return promotion;

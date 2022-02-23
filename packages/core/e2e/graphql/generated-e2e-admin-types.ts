@@ -3001,12 +3001,10 @@ export type OrderAddress = {
 export type OrderFilterParameter = {
     active?: InputMaybe<BooleanOperators>;
     code?: InputMaybe<StringOperators>;
-    couponCodes?: InputMaybe<StringOperators>;
     createdAt?: InputMaybe<DateOperators>;
     currencyCode?: InputMaybe<StringOperators>;
     customerLastName?: InputMaybe<StringOperators>;
     id?: InputMaybe<IdOperators>;
-    nextStates?: InputMaybe<StringOperators>;
     orderPlacedAt?: InputMaybe<DateOperators>;
     shipping?: InputMaybe<NumberOperators>;
     shippingWithTax?: InputMaybe<NumberOperators>;
@@ -3171,11 +3169,9 @@ export type OrderProcessState = {
 
 export type OrderSortParameter = {
     code?: InputMaybe<SortOrder>;
-    couponCodes?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
     customerLastName?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
-    nextStates?: InputMaybe<SortOrder>;
     orderPlacedAt?: InputMaybe<SortOrder>;
     shipping?: InputMaybe<SortOrder>;
     shippingWithTax?: InputMaybe<SortOrder>;
@@ -4197,7 +4193,6 @@ export type RoleFilterParameter = {
     createdAt?: InputMaybe<DateOperators>;
     description?: InputMaybe<StringOperators>;
     id?: InputMaybe<IdOperators>;
-    permissions?: InputMaybe<StringOperators>;
     updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -7978,6 +7973,18 @@ export type GetAssetFragmentFirstQueryVariables = Exact<{
 }>;
 
 export type GetAssetFragmentFirstQuery = { asset?: { id: string; preview: string } | null };
+
+export type AssetWithTagsAndFocalPointFragment = {
+    id: string;
+    name: string;
+    fileSize: number;
+    mimeType: string;
+    type: AssetType;
+    preview: string;
+    source: string;
+    focalPoint?: { x: number; y: number } | null;
+    tags: Array<{ id: string; value: string }>;
+};
 
 export type CreateAssetsMutationVariables = Exact<{
     input: Array<CreateAssetInput> | CreateAssetInput;

@@ -22,7 +22,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrderMutation } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 

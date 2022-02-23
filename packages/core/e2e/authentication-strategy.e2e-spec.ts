@@ -17,19 +17,9 @@ import {
     VALID_AUTH_TOKEN,
 } from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
-import {
-    Authenticate,
-    CreateCustomer,
-    CurrentUserFragment,
-    CustomerFragment,
-    DeleteCustomer,
-    GetCustomerHistory,
-    GetCustomers,
-    GetCustomerUserAuth,
-    HistoryEntryType,
-    Me,
-} from './graphql/generated-e2e-admin-types';
-import { Register } from './graphql/generated-e2e-shop-types';
+import { CurrentUserFragment, CustomerFragment, HistoryEntryType } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { RegisterMutation, RegisterMutationVariables } from './graphql/generated-e2e-shop-types';
 import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
 import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
 
@@ -105,10 +95,10 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('creates a new Customer with valid token', async () => {
-            const { customers: before } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            const { customers: before } = await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(before.totalItems).toBe(1);
 
-            const { authenticate } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+            const { authenticate } = await shopClient.query<Codegen.AuthenticateMutation>(AUTHENTICATE, {
                 input: {
                     test_strategy: {
                         token: VALID_AUTH_TOKEN,
@@ -120,7 +110,7 @@ describe('AuthenticationStrategy', () => {
 
             expect(authenticate.identifier).toEqual(userData.email);
 
-            const { customers: after } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            const { customers: after } = await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(after.totalItems).toBe(2);
             expect(after.items.map(i => i.emailAddress)).toEqual([
                 'hayden.zieme12@hotmail.com',
@@ -131,8 +121,8 @@ describe('AuthenticationStrategy', () => {
 
         it('creates customer history entry', async () => {
             const { customer } = await adminClient.query<
-                GetCustomerHistory.Query,
-                GetCustomerHistory.Variables
+                Codegen.GetCustomerHistoryQuery,
+                Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, {
                 id: newCustomerId,
             });
@@ -157,8 +147,8 @@ describe('AuthenticationStrategy', () => {
 
         it('user authenticationMethod populated', async () => {
             const { customer } = await adminClient.query<
-                GetCustomerUserAuth.Query,
-                GetCustomerUserAuth.Variables
+                Codegen.GetCustomerUserAuthQuery,
+                Codegen.GetCustomerUserAuthQueryVariables
             >(GET_CUSTOMER_USER_AUTH, {
                 id: newCustomerId,
             });
@@ -168,7 +158,7 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('creates authenticated session', async () => {
-            const { me } = await shopClient.query<Me.Query>(ME);
+            const { me } = await shopClient.query<Codegen.MeQuery>(ME);
 
             expect(me?.identifier).toBe(userData.email);
         });
@@ -178,7 +168,7 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('logging in again re-uses created User & Customer', async () => {
-            const { authenticate } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+            const { authenticate } = await shopClient.query<Codegen.AuthenticateMutation>(AUTHENTICATE, {
                 input: {
                     test_strategy: {
                         token: VALID_AUTH_TOKEN,
@@ -189,7 +179,7 @@ describe('AuthenticationStrategy', () => {
             currentUserGuard.assertSuccess(authenticate);
             expect(authenticate.identifier).toEqual(userData.email);
 
-            const { customers: after } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            const { customers: after } = await adminClient.query<Codegen.GetCustomersQuery>(GET_CUSTOMERS);
             expect(after.totalItems).toBe(2);
             expect(after.items.map(i => i.emailAddress)).toEqual([
                 'hayden.zieme12@hotmail.com',
@@ -210,38 +200,50 @@ describe('AuthenticationStrategy', () => {
                 },
             ];
 
-            const { customers: customers1 } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            const { customers: customers1 } = await adminClient.query<Codegen.GetCustomersQuery>(
+                GET_CUSTOMERS,
+            );
             expect(customers1.items).toEqual(EXPECTED_CUSTOMERS);
-            const { authenticate: auth1 } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
-                input: {
-                    test_strategy2: {
-                        token: VALID_AUTH_TOKEN,
-                        email: userData.email,
+            const { authenticate: auth1 } = await shopClient.query<Codegen.AuthenticateMutation>(
+                AUTHENTICATE,
+                {
+                    input: {
+                        test_strategy2: {
+                            token: VALID_AUTH_TOKEN,
+                            email: userData.email,
+                        },
                     },
                 },
-            });
+            );
 
             currentUserGuard.assertSuccess(auth1);
             expect(auth1.identifier).toBe(userData.email);
 
-            const { customers: customers2 } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            const { customers: customers2 } = await adminClient.query<Codegen.GetCustomersQuery>(
+                GET_CUSTOMERS,
+            );
             expect(customers2.items).toEqual(EXPECTED_CUSTOMERS);
 
             await shopClient.asAnonymousUser();
 
-            const { authenticate: auth2 } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
-                input: {
-                    test_strategy: {
-                        token: VALID_AUTH_TOKEN,
-                        userData,
+            const { authenticate: auth2 } = await shopClient.query<Codegen.AuthenticateMutation>(
+                AUTHENTICATE,
+                {
+                    input: {
+                        test_strategy: {
+                            token: VALID_AUTH_TOKEN,
+                            userData,
+                        },
                     },
                 },
-            });
+            );
 
             currentUserGuard.assertSuccess(auth2);
             expect(auth2.identifier).toBe(userData.email);
 
-            const { customers: customers3 } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
+            const { customers: customers3 } = await adminClient.query<Codegen.GetCustomersQuery>(
+                GET_CUSTOMERS,
+            );
             expect(customers3.items).toEqual(EXPECTED_CUSTOMERS);
         });
 
@@ -250,20 +252,20 @@ describe('AuthenticationStrategy', () => {
                 input => input.success != null,
             );
 
-            const { registerCustomerAccount } = await shopClient.query<Register.Mutation, Register.Variables>(
-                REGISTER_ACCOUNT,
-                {
-                    input: {
-                        emailAddress: userData.email,
-                    },
+            const { registerCustomerAccount } = await shopClient.query<
+                RegisterMutation,
+                RegisterMutationVariables
+            >(REGISTER_ACCOUNT, {
+                input: {
+                    emailAddress: userData.email,
                 },
-            );
+            });
             successErrorGuard.assertSuccess(registerCustomerAccount);
 
             expect(registerCustomerAccount.success).toBe(true);
             const { customer } = await adminClient.query<
-                GetCustomerUserAuth.Query,
-                GetCustomerUserAuth.Variables
+                Codegen.GetCustomerUserAuthQuery,
+                Codegen.GetCustomerUserAuthQueryVariables
             >(GET_CUSTOMER_USER_AUTH, {
                 id: newCustomerId,
             });
@@ -276,8 +278,8 @@ describe('AuthenticationStrategy', () => {
             ]);
 
             const { customer: customer2 } = await adminClient.query<
-                GetCustomerHistory.Query,
-                GetCustomerHistory.Variables
+                Codegen.GetCustomerHistoryQuery,
+                Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, {
                 id: newCustomerId,
                 options: {
@@ -299,22 +301,28 @@ describe('AuthenticationStrategy', () => {
         it('Customer and Admin external auth does not reuse same User for different strategies', async () => {
             const emailAddress = 'hello@test-domain.com';
             await adminClient.asAnonymousUser();
-            const { authenticate: adminAuth } = await adminClient.query<Authenticate.Mutation>(AUTHENTICATE, {
-                input: {
-                    test_sso_strategy_admin: {
-                        email: emailAddress,
+            const { authenticate: adminAuth } = await adminClient.query<Codegen.AuthenticateMutation>(
+                AUTHENTICATE,
+                {
+                    input: {
+                        test_sso_strategy_admin: {
+                            email: emailAddress,
+                        },
                     },
                 },
-            });
+            );
             currentUserGuard.assertSuccess(adminAuth);
 
-            const { authenticate: shopAuth } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
-                input: {
-                    test_sso_strategy_shop: {
-                        email: emailAddress,
+            const { authenticate: shopAuth } = await shopClient.query<Codegen.AuthenticateMutation>(
+                AUTHENTICATE,
+                {
+                    input: {
+                        test_sso_strategy_shop: {
+                            email: emailAddress,
+                        },
                     },
                 },
-            });
+            );
             currentUserGuard.assertSuccess(shopAuth);
 
             expect(adminAuth.id).not.toBe(shopAuth.id);
@@ -327,8 +335,8 @@ describe('AuthenticationStrategy', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/486#issuecomment-704991768
         it('allows login for an email address which is shared by a previously-deleted Customer', async () => {
             const { createCustomer: result1 } = await adminClient.query<
-                CreateCustomer.Mutation,
-                CreateCustomer.Variables
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
             >(CREATE_CUSTOMER, {
                 input: {
                     firstName: 'Test',
@@ -339,13 +347,16 @@ describe('AuthenticationStrategy', () => {
             });
             customerGuard.assertSuccess(result1);
 
-            await adminClient.query<DeleteCustomer.Mutation, DeleteCustomer.Variables>(DELETE_CUSTOMER, {
-                id: result1.id,
-            });
+            await adminClient.query<Codegen.DeleteCustomerMutation, Codegen.DeleteCustomerMutationVariables>(
+                DELETE_CUSTOMER,
+                {
+                    id: result1.id,
+                },
+            );
 
             const { createCustomer: result2 } = await adminClient.query<
-                CreateCustomer.Mutation,
-                CreateCustomer.Variables
+                Codegen.CreateCustomerMutation,
+                Codegen.CreateCustomerMutationVariables
             >(CREATE_CUSTOMER, {
                 input: {
                     firstName: 'Test',

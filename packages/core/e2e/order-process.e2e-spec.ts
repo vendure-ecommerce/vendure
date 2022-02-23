@@ -122,10 +122,13 @@ describe('Order process', () => {
             transitionEndSpy.mockClear();
             await shopClient.asAnonymousUser();
 
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-                productVariantId: 'T_1',
-                quantity: 1,
-            });
+            await shopClient.query<Codegen.AddItemToOrderMutation, Codegen.AddItemToOrderMutationVariables>(
+                ADD_ITEM_TO_ORDER,
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            );
 
             expect(transitionStartSpy).toHaveBeenCalledTimes(1);
             expect(transitionEndSpy).toHaveBeenCalledTimes(1);
@@ -141,12 +144,17 @@ describe('Order process', () => {
         });
 
         it('replaced transition target', async () => {
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-                productVariantId: 'T_1',
-                quantity: 1,
-            });
+            await shopClient.query<Codegen.AddItemToOrderMutation, Codegen.AddItemToOrderMutationVariables>(
+                ADD_ITEM_TO_ORDER,
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            );
 
-            const { nextOrderStates } = await shopClient.query<GetNextOrderStates.Query>(GET_NEXT_STATES);
+            const { nextOrderStates } = await shopClient.query<Codegen.GetNextOrderStatesQuery>(
+                GET_NEXT_STATES,
+            );
 
             expect(nextOrderStates).toEqual(['ValidatingCustomer']);
         });
@@ -156,8 +164,8 @@ describe('Order process', () => {
             transitionEndSpy.mockClear();
 
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                Codegen.TransitionToStateMutation,
+                Codegen.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, {
                 state: 'ValidatingCustomer',
             });
@@ -176,20 +184,20 @@ describe('Order process', () => {
             transitionStartSpy.mockClear();
             transitionErrorSpy.mockClear();
 
-            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                SET_CUSTOMER,
-                {
-                    input: {
-                        firstName: 'Joe',
-                        lastName: 'Test',
-                        emailAddress: 'joetest@gmail.com',
-                    },
+            await shopClient.query<
+                Codegen.SetCustomerForOrderMutation,
+                Codegen.SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    firstName: 'Joe',
+                    lastName: 'Test',
+                    emailAddress: 'joetest@gmail.com',
                 },
-            );
+            });
 
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                Codegen.TransitionToStateMutation,
+                Codegen.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, {
                 state: 'ValidatingCustomer',
             });
@@ -216,20 +224,20 @@ describe('Order process', () => {
         it('custom onTransitionStart handler allows transition', async () => {
             transitionEndSpy.mockClear();
 
-            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                SET_CUSTOMER,
-                {
-                    input: {
-                        firstName: 'Joe',
-                        lastName: 'Test',
-                        emailAddress: 'joetest@company.com',
-                    },
+            await shopClient.query<
+                Codegen.SetCustomerForOrderMutation,
+                Codegen.SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    firstName: 'Joe',
+                    lastName: 'Test',
+                    emailAddress: 'joetest@company.com',
                 },
-            );
+            });
 
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                Codegen.TransitionToStateMutation,
+                Codegen.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, {
                 state: 'ValidatingCustomer',
             });
@@ -244,16 +252,18 @@ describe('Order process', () => {
             transitionEndSpy.mockClear();
             transitionEndSpy2.mockClear();
 
-            const { nextOrderStates } = await shopClient.query<GetNextOrderStates.Query>(GET_NEXT_STATES);
+            const { nextOrderStates } = await shopClient.query<Codegen.GetNextOrderStatesQuery>(
+                GET_NEXT_STATES,
+            );
 
             expect(nextOrderStates).toEqual(['ArrangingPayment', 'AddingItems', 'Cancelled']);
 
-            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
-                TRANSITION_TO_STATE,
-                {
-                    state: 'AddingItems',
-                },
-            );
+            await shopClient.query<
+                Codegen.TransitionToStateMutation,
+                Codegen.TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, {
+                state: 'AddingItems',
+            });
 
             expect(transitionEndSpy.mock.calls[0].slice(0, 2)).toEqual(['ValidatingCustomer', 'AddingItems']);
             expect(transitionEndSpy2.mock.calls[0].slice(0, 2)).toEqual([
@@ -268,46 +278,49 @@ describe('Order process', () => {
 
         beforeAll(async () => {
             await shopClient.asAnonymousUser();
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-                productVariantId: 'T_1',
-                quantity: 1,
+            await shopClient.query<Codegen.AddItemToOrderMutation, Codegen.AddItemToOrderMutationVariables>(
+                ADD_ITEM_TO_ORDER,
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            );
+            await shopClient.query<
+                Codegen.SetCustomerForOrderMutation,
+                Codegen.SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    firstName: 'Su',
+                    lastName: 'Test',
+                    emailAddress: 'sutest@company.com',
+                },
             });
-            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                SET_CUSTOMER,
-                {
-                    input: {
-                        firstName: 'Su',
-                        lastName: 'Test',
-                        emailAddress: 'sutest@company.com',
-                    },
+            await shopClient.query<
+                Codegen.SetShippingAddressMutation,
+                Codegen.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    fullName: 'name',
+                    streetLine1: '12 the street',
+                    city: 'foo',
+                    postalCode: '123456',
+                    countryCode: 'US',
+                    phoneNumber: '4444444',
                 },
-            );
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        fullName: 'name',
-                        streetLine1: '12 the street',
-                        city: 'foo',
-                        postalCode: '123456',
-                        countryCode: 'US',
-                        phoneNumber: '4444444',
-                    },
-                },
-            );
-            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
-                SET_SHIPPING_METHOD,
-                { id: 'T_1' },
-            );
-            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
-                TRANSITION_TO_STATE,
-                {
-                    state: 'ValidatingCustomer',
-                },
-            );
+            });
+            await shopClient.query<
+                Codegen.SetShippingMethodMutation,
+                Codegen.SetShippingMethodMutationVariables
+            >(SET_SHIPPING_METHOD, { id: 'T_1' });
+            await shopClient.query<
+                Codegen.TransitionToStateMutation,
+                Codegen.TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, {
+                state: 'ValidatingCustomer',
+            });
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                Codegen.TransitionToStateMutation,
+                Codegen.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, {
                 state: 'ArrangingPayment',
             });
@@ -320,8 +333,8 @@ describe('Order process', () => {
             expect(order.state).toBe('ArrangingPayment');
 
             const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
+                Codegen.AdminTransitionMutation,
+                Codegen.AdminTransitionMutationVariables
             >(ADMIN_TRANSITION_TO_STATE, {
                 id: order.id,
                 state: 'PaymentAuthorized',
@@ -335,16 +348,19 @@ describe('Order process', () => {
                 'Cannot transition Order to the "PaymentAuthorized" state when the total is not covered by authorized Payments',
             );
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: order.id,
-            });
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
             expect(result.order?.state).toBe('ArrangingPayment');
         });
 
         it('cannot manually transition to PaymentSettled', async () => {
             const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
+                Codegen.AdminTransitionMutation,
+                Codegen.AdminTransitionMutationVariables
             >(ADMIN_TRANSITION_TO_STATE, {
                 id: order.id,
                 state: 'PaymentSettled',
@@ -358,16 +374,19 @@ describe('Order process', () => {
                 'Cannot transition Order to the "PaymentSettled" state when the total is not covered by settled Payments',
             );
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: order.id,
-            });
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
             expect(result.order?.state).toBe('ArrangingPayment');
         });
 
         it('cannot manually transition to Cancelled', async () => {
             const { addPaymentToOrder } = await shopClient.query<
-                AddPaymentToOrder.Mutation,
-                AddPaymentToOrder.Variables
+                Codegen.AddPaymentToOrderMutation,
+                Codegen.AddPaymentToOrderMutationVariables
             >(ADD_PAYMENT, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
@@ -379,8 +398,8 @@ describe('Order process', () => {
             expect(addPaymentToOrder?.state).toBe('PaymentSettled');
 
             const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
+                Codegen.AdminTransitionMutation,
+                Codegen.AdminTransitionMutationVariables
             >(ADMIN_TRANSITION_TO_STATE, {
                 id: order.id,
                 state: 'Cancelled',
@@ -394,16 +413,19 @@ describe('Order process', () => {
                 'Cannot transition Order to the "Cancelled" state unless all OrderItems are cancelled',
             );
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: order.id,
-            });
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
             expect(result.order?.state).toBe('PaymentSettled');
         });
 
         it('cannot manually transition to PartiallyDelivered', async () => {
             const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
+                Codegen.AdminTransitionMutation,
+                Codegen.AdminTransitionMutationVariables
             >(ADMIN_TRANSITION_TO_STATE, {
                 id: order.id,
                 state: 'PartiallyDelivered',
@@ -417,16 +439,19 @@ describe('Order process', () => {
                 'Cannot transition Order to the "PartiallyDelivered" state unless some OrderItems are delivered',
             );
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: order.id,
-            });
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
             expect(result.order?.state).toBe('PaymentSettled');
         });
 
         it('cannot manually transition to PartiallyDelivered', async () => {
             const { transitionOrderToState } = await adminClient.query<
-                AdminTransition.Mutation,
-                AdminTransition.Variables
+                Codegen.AdminTransitionMutation,
+                Codegen.AdminTransitionMutationVariables
             >(ADMIN_TRANSITION_TO_STATE, {
                 id: order.id,
                 state: 'Delivered',
@@ -440,9 +465,12 @@ describe('Order process', () => {
                 'Cannot transition Order to the "Delivered" state unless all OrderItems are delivered',
             );
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: order.id,
-            });
+            const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
             expect(result.order?.state).toBe('PaymentSettled');
         });
     });

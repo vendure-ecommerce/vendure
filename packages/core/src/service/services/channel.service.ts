@@ -64,7 +64,7 @@ export class ChannelService {
     }
 
     /**
-     * Creates a channels cache, that can be used to reduce number of channel queries to database 
+     * Creates a channels cache, that can be used to reduce number of channel queries to database
      *
      * @internal
      */
@@ -277,7 +277,7 @@ export class ChannelService {
      */
     private async ensureCacheExists() {
         if (this.allChannels) {
-            return
+            return;
         }
 
         this.allChannels = await this.createCache();
@@ -319,7 +319,7 @@ export class ChannelService {
                 .getSettings(ctx)
                 .then(s => s.availableLanguages);
             if (!availableLanguageCodes.includes(input.defaultLanguageCode)) {
-                return new LanguageNotAvailableError(input.defaultLanguageCode);
+                return new LanguageNotAvailableError({ languageCode: input.defaultLanguageCode });
             }
         }
     }

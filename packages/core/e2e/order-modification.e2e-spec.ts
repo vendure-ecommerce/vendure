@@ -16,41 +16,26 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
-import { defaultPromotionActions } from '../src/config/promotion/index';
 
 import {
     failsToSettlePaymentMethod,
     testFailingPaymentMethod,
     testSuccessfulPaymentMethod,
 } from './fixtures/test-payment-methods';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
-    AddManualPayment,
-    AdminTransition,
-    CreateFulfillment,
-    CreatePromotion,
-    CreateShippingMethod,
     ErrorCode,
-    GetOrder,
-    GetOrderHistory,
-    GetOrderWithModifications,
-    GetStockMovement,
     GlobalFlag,
     HistoryEntryType,
     LanguageCode,
-    ModifyOrder,
     OrderFragment,
     OrderWithLinesFragment,
     OrderWithModificationsFragment,
-    UpdateChannel,
-    UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     AddItemToOrderMutationVariables,
-    ApplyCouponCode,
-    SetShippingAddress,
-    SetShippingMethod,
     TestOrderWithPaymentsFragment,
-    TransitionToState,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
@@ -60,7 +45,6 @@ import {
     CREATE_SHIPPING_METHOD,
     GET_ORDER,
     GET_ORDER_HISTORY,
-    GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     UPDATE_CHANNEL,
     UPDATE_PRODUCT_VARIANTS,
@@ -150,29 +134,29 @@ describe('Order modification', () => {
         });
         await adminClient.asSuperAdmin();
 
-        await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-            UPDATE_PRODUCT_VARIANTS,
-            {
-                input: [
-                    {
-                        id: 'T_1',
-                        trackInventory: GlobalFlag.TRUE,
-                    },
-                    {
-                        id: 'T_2',
-                        trackInventory: GlobalFlag.TRUE,
-                    },
-                    {
-                        id: 'T_3',
-                        trackInventory: GlobalFlag.TRUE,
-                    },
-                ],
-            },
-        );
+        await adminClient.query<
+            Codegen.UpdateProductVariantsMutation,
+            Codegen.UpdateProductVariantsMutationVariables
+        >(UPDATE_PRODUCT_VARIANTS, {
+            input: [
+                {
+                    id: 'T_1',
+                    trackInventory: GlobalFlag.TRUE,
+                },
+                {
+                    id: 'T_2',
+                    trackInventory: GlobalFlag.TRUE,
+                },
+                {
+                    id: 'T_3',
+                    trackInventory: GlobalFlag.TRUE,
+                },
+            ],
+        });
 
         const { createShippingMethod } = await adminClient.query<
-            CreateShippingMethod.Mutation,
-            CreateShippingMethod.Variables
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'new-method',
@@ -219,19 +203,22 @@ describe('Order modification', () => {
     });
 
     it('modifyOrder returns error result when not in Modifying state', async () => {
-        const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-            id: orderId,
-        });
-        const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-            MODIFY_ORDER,
+        const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+            GET_ORDER,
             {
-                input: {
-                    dryRun: false,
-                    orderId,
-                    adjustOrderLines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 3 })),
-                },
+                id: orderId,
             },
         );
+        const { modifyOrder } = await adminClient.query<
+            Codegen.ModifyOrderMutation,
+            Codegen.ModifyOrderMutationVariables
+        >(MODIFY_ORDER, {
+            input: {
+                dryRun: false,
+                orderId,
+                adjustOrderLines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 3 })),
+            },
+        });
 
         orderGuard.assertErrorResult(modifyOrder);
         expect(modifyOrder.errorCode).toBe(ErrorCode.ORDER_MODIFICATION_STATE_ERROR);
@@ -246,15 +233,15 @@ describe('Order modification', () => {
 
     describe('error cases', () => {
         it('no changes specified error', async () => {
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
                 },
-            );
+            });
 
             orderGuard.assertErrorResult(modifyOrder);
 
@@ -262,19 +249,22 @@ describe('Order modification', () => {
         });
 
         it('no refund paymentId specified', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        surcharges: [{ price: -500, priceIncludesTax: true, description: 'Discount' }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    surcharges: [{ price: -500, priceIncludesTax: true, description: 'Discount' }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.REFUND_PAYMENT_ID_MISSING_ERROR);
@@ -282,19 +272,22 @@ describe('Order modification', () => {
         });
 
         it('addItems negative quantity', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        addItems: [{ productVariantId: 'T_3', quantity: -1 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    addItems: [{ productVariantId: 'T_3', quantity: -1 }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.NEGATIVE_QUANTITY_ERROR);
@@ -302,19 +295,22 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines negative quantity', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: -1 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: -1 }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.NEGATIVE_QUANTITY_ERROR);
@@ -322,19 +318,22 @@ describe('Order modification', () => {
         });
 
         it('addItems insufficient stock', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        addItems: [{ productVariantId: 'T_3', quantity: 500 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    addItems: [{ productVariantId: 'T_3', quantity: 500 }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
@@ -342,19 +341,22 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines insufficient stock', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 500 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 500 }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
@@ -362,19 +364,22 @@ describe('Order modification', () => {
         });
 
         it('addItems order limit', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        addItems: [{ productVariantId: 'T_4', quantity: 9999 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    addItems: [{ productVariantId: 'T_4', quantity: 9999 }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
@@ -382,19 +387,22 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines order limit', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId,
-                        adjustOrderLines: [{ orderLineId: order!.lines[1].id, quantity: 9999 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId,
+                    adjustOrderLines: [{ orderLineId: order!.lines[1].id, quantity: 9999 }],
+                },
+            });
             orderGuard.assertErrorResult(modifyOrder);
 
             expect(modifyOrder.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
@@ -404,19 +412,22 @@ describe('Order modification', () => {
 
     describe('dry run', () => {
         it('addItems', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        addItems: [{ productVariantId: 'T_5', quantity: 1 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    addItems: [{ productVariantId: 'T_5', quantity: 1 }],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax + Math.round(14374 * 1.2); // price of variant T_5
@@ -426,21 +437,24 @@ describe('Order modification', () => {
         });
 
         it('addItems with existing variant id increments existing OrderLine', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        addItems: [
-                            { productVariantId: 'T_1', quantity: 1, customFields: { color: 'green' } } as any,
-                        ],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    addItems: [
+                        { productVariantId: 'T_1', quantity: 1, customFields: { color: 'green' } } as any,
+                    ],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const lineT1 = modifyOrder.lines.find(l => l.productVariant.id === 'T_1');
@@ -450,21 +464,24 @@ describe('Order modification', () => {
         });
 
         it('addItems with existing variant id but different customFields adds new OrderLine', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        addItems: [
-                            { productVariantId: 'T_1', quantity: 1, customFields: { color: 'blue' } } as any,
-                        ],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    addItems: [
+                        { productVariantId: 'T_1', quantity: 1, customFields: { color: 'blue' } } as any,
+                    ],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const lineT1 = modifyOrder.lines.find(l => l.productVariant.id === 'T_1');
@@ -480,19 +497,22 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines up', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 3 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 3 }],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax + order!.lines[0].unitPriceWithTax * 2;
@@ -502,19 +522,22 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines down', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        adjustOrderLines: [{ orderLineId: order!.lines[1].id, quantity: 1 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    adjustOrderLines: [{ orderLineId: order!.lines[1].id, quantity: 1 }],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax - order!.lines[1].unitPriceWithTax;
@@ -525,19 +548,22 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines to zero', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 0 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 0 }],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax - order!.lines[0].linePriceWithTax;
@@ -547,28 +573,31 @@ describe('Order modification', () => {
         });
 
         it('surcharge positive', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        surcharges: [
-                            {
-                                description: 'extra fee',
-                                sku: '123',
-                                price: 300,
-                                priceIncludesTax: true,
-                                taxRate: 20,
-                                taxDescription: 'VAT',
-                            },
-                        ],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    surcharges: [
+                        {
+                            description: 'extra fee',
+                            sku: '123',
+                            price: 300,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
+                        },
+                    ],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax + 300;
@@ -586,28 +615,31 @@ describe('Order modification', () => {
         });
 
         it('surcharge negative', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        surcharges: [
-                            {
-                                description: 'special discount',
-                                sku: '123',
-                                price: -300,
-                                priceIncludesTax: true,
-                                taxRate: 20,
-                                taxDescription: 'VAT',
-                            },
-                        ],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    surcharges: [
+                        {
+                            description: 'special discount',
+                            sku: '123',
+                            price: -300,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
+                        },
+                    ],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax + -300;
@@ -625,24 +657,27 @@ describe('Order modification', () => {
         });
 
         it('does not add a history entry', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: true,
-                        orderId,
-                        addItems: [{ productVariantId: 'T_5', quantity: 1 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    addItems: [{ productVariantId: 'T_5', quantity: 1 }],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const { order: history } = await adminClient.query<
-                GetOrderHistory.Query,
-                GetOrderHistory.Variables
+                Codegen.GetOrderHistoryQuery,
+                Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, {
                 id: orderId,
                 options: { filter: { type: { eq: HistoryEntryType.ORDER_MODIFIED } } },
@@ -655,7 +690,10 @@ describe('Order modification', () => {
 
     describe('wet run', () => {
         async function assertModifiedOrderIsPersisted(order: OrderWithModificationsFragment) {
-            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+            const { order: order2 } = await adminClient.query<
+                Codegen.GetOrderQuery,
+                Codegen.GetOrderQueryVariables
+            >(GET_ORDER, {
                 id: order.id,
             });
             expect(order2!.totalWithTax).toBe(order!.totalWithTax);
@@ -674,16 +712,16 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        addItems: [{ productVariantId: 'T_5', quantity: 1 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    addItems: [{ productVariantId: 'T_5', quantity: 1 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = Math.round(14374 * 1.2); // price of variant T_5
@@ -707,16 +745,16 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 2 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 2 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = order!.lines[0].unitPriceWithTax;
@@ -741,17 +779,17 @@ describe('Order modification', () => {
                     quantity: 2,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 1 }],
-                        refund: { paymentId: order!.payments![0].id },
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 1 }],
+                    refund: { paymentId: order!.payments![0].id },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = -order!.lines[0].unitPriceWithTax;
@@ -788,22 +826,22 @@ describe('Order modification', () => {
                     },
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [
-                            {
-                                orderLineId: order!.lines[0].id,
-                                quantity: 1,
-                                customFields: { color: 'black' },
-                            } as any,
-                        ],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [
+                        {
+                            orderLineId: order!.lines[0].id,
+                            quantity: 1,
+                            customFields: { color: 'black' },
+                        } as any,
+                    ],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
             expect(modifyOrder.lines.length).toBe(1);
 
@@ -817,42 +855,42 @@ describe('Order modification', () => {
         });
 
         it('adjustOrderLines handles quantity correctly', async () => {
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                UPDATE_PRODUCT_VARIANTS,
-                {
-                    input: [
-                        {
-                            id: 'T_6',
-                            stockOnHand: 1,
-                            trackInventory: GlobalFlag.TRUE,
-                        },
-                    ],
-                },
-            );
+            await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: 'T_6',
+                        stockOnHand: 1,
+                        trackInventory: GlobalFlag.TRUE,
+                    },
+                ],
+            });
             const order = await createOrderAndTransitionToModifyingState([
                 {
                     productVariantId: 'T_6',
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [
-                            {
-                                orderLineId: order.lines[0].id,
-                                quantity: 1,
-                            },
-                        ],
-                        updateShippingAddress: {
-                            fullName: 'Jim',
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [
+                        {
+                            orderLineId: order.lines[0].id,
+                            quantity: 1,
                         },
+                    ],
+                    updateShippingAddress: {
+                        fullName: 'Jim',
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
         });
 
@@ -863,25 +901,25 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        surcharges: [
-                            {
-                                description: 'extra fee',
-                                sku: '123',
-                                price: 300,
-                                priceIncludesTax: true,
-                                taxRate: 20,
-                                taxDescription: 'VAT',
-                            },
-                        ],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    surcharges: [
+                        {
+                            description: 'extra fee',
+                            sku: '123',
+                            price: 300,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
+                        },
+                    ],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = 300;
@@ -909,28 +947,28 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order!.id,
-                        surcharges: [
-                            {
-                                description: 'special discount',
-                                sku: '123',
-                                price: -300,
-                                priceIncludesTax: true,
-                                taxRate: 20,
-                                taxDescription: 'VAT',
-                            },
-                        ],
-                        refund: {
-                            paymentId: order!.payments![0].id,
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order!.id,
+                    surcharges: [
+                        {
+                            description: 'special discount',
+                            sku: '123',
+                            price: -300,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
                         },
+                    ],
+                    refund: {
+                        paymentId: order!.payments![0].id,
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax + -300;
@@ -957,21 +995,21 @@ describe('Order modification', () => {
                 },
             ]);
 
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order!.id,
-                        updateShippingAddress: {
-                            countryCode: 'US',
-                        },
-                        options: {
-                            recalculateShipping: true,
-                        },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order!.id,
+                    updateShippingAddress: {
+                        countryCode: 'US',
+                    },
+                    options: {
+                        recalculateShipping: true,
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = SHIPPING_US - SHIPPING_OTHER;
@@ -991,21 +1029,21 @@ describe('Order modification', () => {
                 },
             ]);
 
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order!.id,
-                        updateShippingAddress: {
-                            countryCode: 'US',
-                        },
-                        options: {
-                            recalculateShipping: false,
-                        },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order!.id,
+                    updateShippingAddress: {
+                        countryCode: 'US',
+                    },
+                    options: {
+                        recalculateShipping: false,
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = 0;
@@ -1024,18 +1062,18 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        customFields: {
-                            points: 42,
-                        },
-                    } as any,
-                },
-            );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    customFields: {
+                        points: 42,
+                    },
+                } as any,
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const { order: orderWithCustomFields } = await adminClient.query(
@@ -1048,24 +1086,27 @@ describe('Order modification', () => {
         });
 
         it('adds a history entry', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId: order!.id,
-                        addItems: [{ productVariantId: 'T_5', quantity: 1 }],
-                    },
+                    id: orderId,
                 },
             );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order!.id,
+                    addItems: [{ productVariantId: 'T_5', quantity: 1 }],
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const { order: history } = await adminClient.query<
-                GetOrderHistory.Query,
-                GetOrderHistory.Variables
+                Codegen.GetOrderHistoryQuery,
+                Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, {
                 id: orderId,
                 options: { filter: { type: { eq: HistoryEntryType.ORDER_MODIFIED } } },
@@ -1089,25 +1130,25 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        surcharges: [
-                            {
-                                description: 'extra fee',
-                                sku: '123',
-                                price: 300,
-                                priceIncludesTax: true,
-                                taxRate: 20,
-                                taxDescription: 'VAT',
-                            },
-                        ],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    surcharges: [
+                        {
+                            description: 'extra fee',
+                            sku: '123',
+                            price: 300,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
+                        },
+                    ],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
             orderId2 = modifyOrder.id;
         });
@@ -1141,8 +1182,8 @@ describe('Order modification', () => {
 
         it('addManualPaymentToOrder', async () => {
             const { addManualPaymentToOrder } = await adminClient.query<
-                AddManualPayment.Mutation,
-                AddManualPayment.Variables
+                Codegen.AddManualPaymentMutation,
+                Codegen.AddManualPaymentMutationVariables
             >(ADD_MANUAL_PAYMENT, {
                 input: {
                     orderId: orderId2,
@@ -1190,37 +1231,37 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        surcharges: [
-                            {
-                                description: 'discount',
-                                sku: '123',
-                                price: -300,
-                                priceIncludesTax: true,
-                                taxRate: 20,
-                                taxDescription: 'VAT',
-                            },
-                        ],
-                        refund: {
-                            paymentId: order.payments![0].id,
-                            reason: 'discount',
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    surcharges: [
+                        {
+                            description: 'discount',
+                            sku: '123',
+                            price: -300,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
                         },
+                    ],
+                    refund: {
+                        paymentId: order.payments![0].id,
+                        reason: 'discount',
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
             orderId3 = modifyOrder.id;
         });
 
         it('modification is settled', async () => {
             const { order } = await adminClient.query<
-                GetOrderWithModifications.Query,
-                GetOrderWithModifications.Variables
+                Codegen.GetOrderWithModificationsQuery,
+                Codegen.GetOrderWithModificationsQueryVariables
             >(GET_ORDER_WITH_MODIFICATIONS, { id: orderId3 });
 
             expect(order?.modifications.length).toBe(1);
@@ -1244,9 +1285,12 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(transitionOrderToState);
             expect(transitionOrderToState!.state).toBe('PaymentSettled');
 
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId3,
-            });
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId3,
+                },
+            );
             expect(order?.payments![0].refunds.length).toBe(1);
             expect(order?.payments![0].refunds[0].total).toBe(300);
             expect(order?.payments![0].refunds[0].reason).toBe('discount');
@@ -1255,27 +1299,33 @@ describe('Order modification', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/688 - 4th point
     it('correct additional payment when discounts applied', async () => {
-        await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
-            input: {
-                name: '$5 off',
-                couponCode: '5OFF',
-                enabled: true,
-                conditions: [],
-                actions: [
-                    {
-                        code: orderFixedDiscount.code,
-                        arguments: [{ name: 'discount', value: '500' }],
-                    },
-                ],
+        await adminClient.query<Codegen.CreatePromotionMutation, Codegen.CreatePromotionMutationVariables>(
+            CREATE_PROMOTION,
+            {
+                input: {
+                    name: '$5 off',
+                    couponCode: '5OFF',
+                    enabled: true,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: orderFixedDiscount.code,
+                            arguments: [{ name: 'discount', value: '500' }],
+                        },
+                    ],
+                },
             },
-        });
+        );
 
         await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
         await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
             productVariantId: 'T_1',
             quantity: 1,
         } as any);
-        await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
+        await shopClient.query<
+            CodegenShop.ApplyCouponCodeMutation,
+            CodegenShop.ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, {
             couponCode: '5OFF',
         });
         await proceedToArrangingPayment(shopClient);
@@ -1290,25 +1340,25 @@ describe('Order modification', () => {
 
         expect(transitionOrderToState.state).toBe('Modifying');
 
-        const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-            MODIFY_ORDER,
-            {
-                input: {
-                    dryRun: false,
-                    orderId: order.id,
-                    surcharges: [
-                        {
-                            description: 'extra fee',
-                            sku: '123',
-                            price: surcharge,
-                            priceIncludesTax: true,
-                            taxRate: 20,
-                            taxDescription: 'VAT',
-                        },
-                    ],
-                },
+        const { modifyOrder } = await adminClient.query<
+            Codegen.ModifyOrderMutation,
+            Codegen.ModifyOrderMutationVariables
+        >(MODIFY_ORDER, {
+            input: {
+                dryRun: false,
+                orderId: order.id,
+                surcharges: [
+                    {
+                        description: 'extra fee',
+                        sku: '123',
+                        price: surcharge,
+                        priceIncludesTax: true,
+                        taxRate: 20,
+                        taxDescription: 'VAT',
+                    },
+                ],
             },
-        );
+        });
         orderGuard.assertSuccess(modifyOrder);
 
         expect(modifyOrder.totalWithTax).toBe(originalTotalWithTax + surcharge);
@@ -1322,27 +1372,30 @@ describe('Order modification', () => {
 
             expect(transitionOrderToState.state).toBe('Modifying');
 
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: true,
-                        orderId: order.id,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 2 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId: order.id,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 2 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
             return modifyOrder;
         }
 
         beforeAll(async () => {
-            await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
-                input: {
-                    id: 'T_1',
-                    pricesIncludeTax: true,
+            await adminClient.query<Codegen.UpdateChannelMutation, Codegen.UpdateChannelMutationVariables>(
+                UPDATE_CHANNEL,
+                {
+                    input: {
+                        id: 'T_1',
+                        pricesIncludeTax: true,
+                    },
                 },
-            });
+            );
         });
 
         it('without promotion', async () => {
@@ -1360,7 +1413,10 @@ describe('Order modification', () => {
         });
 
         it('with promotion', async () => {
-            await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
                 input: {
                     name: 'half price',
                     couponCode: 'HALF',
@@ -1382,7 +1438,10 @@ describe('Order modification', () => {
                 productVariantId: 'T_1',
                 quantity: 1,
             } as any);
-            await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, {
                 couponCode: 'HALF',
             });
             await proceedToArrangingPayment(shopClient);
@@ -1401,7 +1460,10 @@ describe('Order modification', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/890
     describe('refund handling when promotions are active on order', () => {
         it('refunds correct amount when order-level promotion applied', async () => {
-            await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
                 input: {
                     name: '$5 off',
                     couponCode: '5OFF2',
@@ -1421,7 +1483,10 @@ describe('Order modification', () => {
                 productVariantId: 'T_1',
                 quantity: 2,
             } as any);
-            await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
+            await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, {
                 couponCode: '5OFF2',
             });
             await proceedToArrangingPayment(shopClient);
@@ -1435,20 +1500,20 @@ describe('Order modification', () => {
 
             expect(transitionOrderToState.state).toBe('Modifying');
 
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
-                        refund: {
-                            paymentId: order.payments![0].id,
-                            reason: 'requested',
-                        },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
+                    refund: {
+                        paymentId: order.payments![0].id,
+                        reason: 'requested',
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             expect(modifyOrder.totalWithTax).toBe(
@@ -1468,22 +1533,22 @@ describe('Order modification', () => {
                     quantity: 1,
                 },
             ]);
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: createdOrder.id,
-                        updateShippingAddress: {
-                            countryCode: 'GB',
-                        },
-                        refund: {
-                            paymentId: createdOrder.payments![0].id,
-                            reason: 'discount',
-                        },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: createdOrder.id,
+                    updateShippingAddress: {
+                        countryCode: 'GB',
+                    },
+                    refund: {
+                        paymentId: createdOrder.payments![0].id,
+                        reason: 'discount',
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
             order = modifyOrder;
         });
@@ -1504,12 +1569,12 @@ describe('Order modification', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1210
     describe('updating stock levels', () => {
         async function getVariant(id: 'T_1' | 'T_2' | 'T_3') {
-            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
-                GET_STOCK_MOVEMENT,
-                {
-                    id: 'T_1',
-                },
-            );
+            const { product } = await adminClient.query<
+                Codegen.GetStockMovementQuery,
+                Codegen.GetStockMovementQueryVariables
+            >(GET_STOCK_MOVEMENT, {
+                id: 'T_1',
+            });
             return product?.variants.find(v => v.id === id)!;
         }
 
@@ -1533,16 +1598,16 @@ describe('Order modification', () => {
             expect(variant2.stockOnHand).toBe(100);
             expect(variant2.stockAllocated).toBe(1);
 
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const variant3 = await getVariant('T_2');
@@ -1554,12 +1619,15 @@ describe('Order modification', () => {
             const result = await adminTransitionOrderToState(orderId4, 'ArrangingAdditionalPayment');
             orderGuard.assertSuccess(result);
             expect(result!.state).toBe('ArrangingAdditionalPayment');
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId4,
-            });
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId4,
+                },
+            );
             const { addManualPaymentToOrder } = await adminClient.query<
-                AddManualPayment.Mutation,
-                AddManualPayment.Variables
+                Codegen.AddManualPaymentMutation,
+                Codegen.AddManualPaymentMutationVariables
             >(ADD_MANUAL_PAYMENT, {
                 input: {
                     orderId: orderId4,
@@ -1572,44 +1640,47 @@ describe('Order modification', () => {
             });
             orderGuard.assertSuccess(addManualPaymentToOrder);
             await adminTransitionOrderToState(orderId4, 'PaymentSettled');
-            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
-                CREATE_FULFILLMENT,
-                {
-                    input: {
-                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
-                        handler: {
-                            code: manualFulfillmentHandler.code,
-                            arguments: [
-                                { name: 'method', value: 'test method' },
-                                { name: 'trackingCode', value: 'ABC123' },
-                            ],
-                        },
+            await adminClient.query<
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
+            >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
                     },
                 },
-            );
+            });
 
             const variant1 = await getVariant('T_2');
             expect(variant1.stockOnHand).toBe(98);
             expect(variant1.stockAllocated).toBe(0);
 
             await adminTransitionOrderToState(orderId4, 'Modifying');
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order!.id,
-                        adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 3 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order!.id,
+                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 3 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const variant2 = await getVariant('T_2');
             expect(variant2.stockOnHand).toBe(98);
             expect(variant2.stockAllocated).toBe(1);
 
-            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+            const { order: order2 } = await adminClient.query<
+                Codegen.GetOrderQuery,
+                Codegen.GetOrderQueryVariables
+            >(GET_ORDER, {
                 id: orderId4,
             });
         });
@@ -1627,16 +1698,16 @@ describe('Order modification', () => {
             ]);
             orderId5 = order.id;
 
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order!.id,
-                        addItems: [{ productVariantId: 'T_3', quantity: 1 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order!.id,
+                    addItems: [{ productVariantId: 'T_3', quantity: 1 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const variant2 = await getVariant('T_3');
@@ -1649,28 +1720,31 @@ describe('Order modification', () => {
             expect(variant1.stockOnHand).toBe(100);
             expect(variant1.stockAllocated).toBe(1);
 
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId5,
-            });
-
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        dryRun: false,
-                        orderId: orderId5,
-                        adjustOrderLines: [
-                            {
-                                orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
-                                quantity: 0,
-                            },
-                        ],
-                        refund: {
-                            paymentId: order!.payments![0].id,
-                        },
-                    },
+                    id: orderId5,
                 },
             );
+
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: orderId5,
+                    adjustOrderLines: [
+                        {
+                            orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
+                            quantity: 0,
+                        },
+                    ],
+                    refund: {
+                        paymentId: order!.payments![0].id,
+                    },
+                },
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             const variant2 = await getVariant('T_3');
@@ -1690,8 +1764,8 @@ describe('Order modification', () => {
                 },
             ]);
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
@@ -1711,24 +1785,24 @@ describe('Order modification', () => {
             expect(variant2.stockAllocated).toBe(0);
 
             await adminTransitionOrderToState(order.id, 'Modifying');
-            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: order.id,
-                        adjustOrderLines: [
-                            {
-                                orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
-                                quantity: 0,
-                            },
-                        ],
-                        refund: {
-                            paymentId: order!.payments![0].id,
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    adjustOrderLines: [
+                        {
+                            orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
+                            quantity: 0,
                         },
+                    ],
+                    refund: {
+                        paymentId: order!.payments![0].id,
                     },
                 },
-            );
+            });
 
             const variant3 = await getVariant('T_3');
             expect(variant3.stockOnHand).toBe(100);
@@ -1737,18 +1811,21 @@ describe('Order modification', () => {
     });
 
     async function adminTransitionOrderToState(id: string, state: string) {
-        const result = await adminClient.query<AdminTransition.Mutation, AdminTransition.Variables>(
-            ADMIN_TRANSITION_TO_STATE,
-            {
-                id,
-                state,
-            },
-        );
+        const result = await adminClient.query<
+            Codegen.AdminTransitionMutation,
+            Codegen.AdminTransitionMutationVariables
+        >(ADMIN_TRANSITION_TO_STATE, {
+            id,
+            state,
+        });
         return result.transitionOrderToState;
     }
 
     async function assertOrderIsUnchanged(order: OrderWithLinesFragment) {
-        const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+        const { order: order2 } = await adminClient.query<
+            Codegen.GetOrderQuery,
+            Codegen.GetOrderQueryVariables
+        >(GET_ORDER, {
             id: order.id,
         });
         expect(order2!.totalWithTax).toBe(order!.totalWithTax);
@@ -1765,26 +1842,32 @@ describe('Order modification', () => {
             await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), itemInput);
         }
 
-        await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-            SET_SHIPPING_ADDRESS,
-            {
-                input: {
-                    fullName: 'name',
-                    streetLine1: '12 the street',
-                    city: 'foo',
-                    postalCode: '123456',
-                    countryCode: 'AT',
-                },
+        await shopClient.query<
+            CodegenShop.SetShippingAddressMutation,
+            CodegenShop.SetShippingAddressMutationVariables
+        >(SET_SHIPPING_ADDRESS, {
+            input: {
+                fullName: 'name',
+                streetLine1: '12 the street',
+                city: 'foo',
+                postalCode: '123456',
+                countryCode: 'AT',
             },
-        );
+        });
 
-        await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
+        await shopClient.query<
+            CodegenShop.SetShippingMethodMutation,
+            CodegenShop.SetShippingMethodMutationVariables
+        >(SET_SHIPPING_METHOD, {
             id: testShippingMethodId,
         });
 
-        await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(TRANSITION_TO_STATE, {
-            state: 'ArrangingPayment',
-        });
+        await shopClient.query<Codegen.TransitionToStateMutation, Codegen.TransitionToStateMutationVariables>(
+            TRANSITION_TO_STATE,
+            {
+                state: 'ArrangingPayment',
+            },
+        );
 
         const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
         orderGuard.assertSuccess(order);

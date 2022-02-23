@@ -10,40 +10,17 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { testSuccessfulPaymentMethod, twoStagePaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
-    CancelOrder,
     CreateAddressInput,
-    CreateFulfillment,
     ErrorCode as AdminErrorCode,
     FulfillmentFragment,
-    GetOrder,
-    GetStockMovement,
     GlobalFlag,
-    SettlePayment,
     StockMovementType,
-    TransitFulfillment,
-    TransitionFulfillmentToState,
-    UpdateGlobalSettings,
     UpdateProductVariantInput,
-    UpdateProductVariants,
-    UpdateStock,
     VariantWithStockFragment,
 } from './graphql/generated-e2e-admin-types';
-import {
-    AddItemToOrder,
-    AddPaymentToOrder,
-    AdjustItemQuantity,
-    ErrorCode,
-    GetActiveOrder,
-    GetProductStockLevel,
-    GetShippingMethods,
-    PaymentInput,
-    SetShippingAddress,
-    SetShippingMethod,
-    TestOrderFragmentFragment,
-    TestOrderWithPaymentsFragment,
-    TransitionToState,
-    UpdatedOrderFragment,
-} from './graphql/generated-e2e-shop-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { ErrorCode, PaymentInput } from './graphql/generated-e2e-shop-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
@@ -79,26 +56,30 @@ describe('Stock control', () => {
         }),
     );
 
-    const orderGuard: ErrorResultGuard<TestOrderFragmentFragment | UpdatedOrderFragment> =
-        createErrorResultGuard(input => !!input.lines);
+    const orderGuard: ErrorResultGuard<
+        CodegenShop.TestOrderFragmentFragment | CodegenShop.UpdatedOrderFragment
+    > = createErrorResultGuard(input => !!input.lines);
 
     const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
         input => !!input.state,
     );
 
     async function getProductWithStockMovement(productId: string) {
-        const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
-            GET_STOCK_MOVEMENT,
-            { id: productId },
-        );
+        const { product } = await adminClient.query<
+            Codegen.GetStockMovementQuery,
+            Codegen.GetStockMovementQueryVariables
+        >(GET_STOCK_MOVEMENT, { id: productId });
         return product;
     }
 
     async function setFirstEligibleShippingMethod() {
-        const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+        const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
             GET_ELIGIBLE_SHIPPING_METHODS,
         );
-        await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
+        await shopClient.query<
+            CodegenShop.SetShippingMethodMutation,
+            CodegenShop.SetShippingMethodMutationVariables
+        >(SET_SHIPPING_METHOD, {
             id: eligibleShippingMethods[0].id,
         });
     }
@@ -123,14 +104,14 @@ describe('Stock control', () => {
         });
         await adminClient.asSuperAdmin();
 
-        await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
-            UPDATE_GLOBAL_SETTINGS,
-            {
-                input: {
-                    trackInventory: false,
-                },
+        await adminClient.query<
+            Codegen.UpdateGlobalSettingsMutation,
+            Codegen.UpdateGlobalSettingsMutationVariables
+        >(UPDATE_GLOBAL_SETTINGS, {
+            input: {
+                trackInventory: false,
             },
-        );
+        });
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -141,10 +122,10 @@ describe('Stock control', () => {
         let variants: VariantWithStockFragment[];
 
         it('stockMovements are initially empty', async () => {
-            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
-                GET_STOCK_MOVEMENT,
-                { id: 'T_1' },
-            );
+            const { product } = await adminClient.query<
+                Codegen.GetStockMovementQuery,
+                Codegen.GetStockMovementQueryVariables
+            >(GET_STOCK_MOVEMENT, { id: 'T_1' });
 
             variants = product!.variants;
             for (const variant of variants) {
@@ -155,8 +136,8 @@ describe('Stock control', () => {
 
         it('updating ProductVariant with same stockOnHand does not create a StockMovement', async () => {
             const { updateProductVariants } = await adminClient.query<
-                UpdateStock.Mutation,
-                UpdateStock.Variables
+                Codegen.UpdateStockMutation,
+                Codegen.UpdateStockMutationVariables
             >(UPDATE_STOCK_ON_HAND, {
                 input: [
                     {
@@ -172,8 +153,8 @@ describe('Stock control', () => {
 
         it('increasing stockOnHand creates a StockMovement with correct quantity', async () => {
             const { updateProductVariants } = await adminClient.query<
-                UpdateStock.Mutation,
-                UpdateStock.Variables
+                Codegen.UpdateStockMutation,
+                Codegen.UpdateStockMutationVariables
             >(UPDATE_STOCK_ON_HAND, {
                 input: [
                     {
@@ -191,8 +172,8 @@ describe('Stock control', () => {
 
         it('decreasing stockOnHand creates a StockMovement with correct quantity', async () => {
             const { updateProductVariants } = await adminClient.query<
-                UpdateStock.Mutation,
-                UpdateStock.Variables
+                Codegen.UpdateStockMutation,
+                Codegen.UpdateStockMutationVariables
             >(UPDATE_STOCK_ON_HAND, {
                 input: [
                     {
@@ -211,17 +192,17 @@ describe('Stock control', () => {
         it(
             'attempting to set a negative stockOnHand throws',
             assertThrowsWithMessage(async () => {
-                const result = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
-                    UPDATE_STOCK_ON_HAND,
-                    {
-                        input: [
-                            {
-                                id: variants[0].id,
-                                stockOnHand: -1,
-                            },
-                        ] as UpdateProductVariantInput[],
-                    },
-                );
+                const result = await adminClient.query<
+                    Codegen.UpdateStockMutation,
+                    Codegen.UpdateStockMutationVariables
+                >(UPDATE_STOCK_ON_HAND, {
+                    input: [
+                        {
+                            id: variants[0].id,
+                            stockOnHand: -1,
+                        },
+                    ] as UpdateProductVariantInput[],
+                });
             }, 'stockOnHand cannot be a negative value'),
         );
     });
@@ -233,60 +214,72 @@ describe('Stock control', () => {
             const product = await getProductWithStockMovement('T_2');
             const [variant1, variant2, variant3] = product!.variants;
 
-            await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(UPDATE_STOCK_ON_HAND, {
-                input: [
-                    {
-                        id: variant1.id,
-                        stockOnHand: 5,
-                        trackInventory: GlobalFlag.FALSE,
-                    },
-                    {
-                        id: variant2.id,
-                        stockOnHand: 5,
-                        trackInventory: GlobalFlag.TRUE,
-                    },
-                    {
-                        id: variant3.id,
-                        stockOnHand: 5,
-                        trackInventory: GlobalFlag.INHERIT,
-                    },
-                ] as UpdateProductVariantInput[],
-            });
+            await adminClient.query<Codegen.UpdateStockMutation, Codegen.UpdateStockMutationVariables>(
+                UPDATE_STOCK_ON_HAND,
+                {
+                    input: [
+                        {
+                            id: variant1.id,
+                            stockOnHand: 5,
+                            trackInventory: GlobalFlag.FALSE,
+                        },
+                        {
+                            id: variant2.id,
+                            stockOnHand: 5,
+                            trackInventory: GlobalFlag.TRUE,
+                        },
+                        {
+                            id: variant3.id,
+                            stockOnHand: 5,
+                            trackInventory: GlobalFlag.INHERIT,
+                        },
+                    ] as UpdateProductVariantInput[],
+                },
+            );
 
             // Add items to order and check out
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variant1.id,
                 quantity: 2,
             });
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variant2.id,
                 quantity: 3,
             });
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variant3.id,
                 quantity: 4,
             });
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '1 Test Street',
-                        countryCode: 'GB',
-                    } as CreateAddressInput,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '1 Test Street',
+                    countryCode: 'GB',
+                } as CreateAddressInput,
+            });
             await setFirstEligibleShippingMethod();
-            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
-                TRANSITION_TO_STATE,
-                { state: 'ArrangingPayment' as OrderState },
-            );
+            await shopClient.query<
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' as OrderState });
         });
 
         it('creates an Allocation when order completed', async () => {
             const { addPaymentToOrder: order } = await shopClient.query<
-                AddPaymentToOrder.Mutation,
-                AddPaymentToOrder.Variables
+                CodegenShop.AddPaymentToOrderMutation,
+                CodegenShop.AddPaymentToOrderMutationVariables
             >(ADD_PAYMENT, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
@@ -328,17 +321,23 @@ describe('Stock control', () => {
         });
 
         it('creates a Release on cancelling an allocated OrderItem and updates stockAllocated', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-
-            await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
-                input: {
-                    orderId: order!.id,
-                    lines: [{ orderLineId: order!.lines.find(l => l.quantity === 3)!.id, quantity: 1 }],
-                    reason: 'Not needed',
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId,
                 },
-            });
+            );
+
+            await adminClient.query<Codegen.CancelOrderMutation, Codegen.CancelOrderMutationVariables>(
+                CANCEL_ORDER,
+                {
+                    input: {
+                        orderId: order!.id,
+                        lines: [{ orderLineId: order!.lines.find(l => l.quantity === 3)!.id, quantity: 1 }],
+                        reason: 'Not needed',
+                    },
+                },
+            );
 
             const product = await getProductWithStockMovement('T_2');
             const [_, variant2, __] = product!.variants;
@@ -351,25 +350,28 @@ describe('Stock control', () => {
         });
 
         it('creates a Sale on Fulfillment creation', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-
-            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
-                CREATE_FULFILLMENT,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
-                        handler: {
-                            code: manualFulfillmentHandler.code,
-                            arguments: [
-                                { name: 'method', value: 'test method' },
-                                { name: 'trackingCode', value: 'ABC123' },
-                            ],
-                        },
-                    },
+                    id: orderId,
                 },
             );
+
+            await adminClient.query<
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
+            >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
+                },
+            });
 
             const product = await getProductWithStockMovement('T_2');
             const [variant1, variant2, variant3] = product!.variants;
@@ -402,17 +404,23 @@ describe('Stock control', () => {
         });
 
         it('creates Cancellations when cancelling items which are part of a Fulfillment', async () => {
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-
-            await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
-                input: {
-                    orderId: order!.id,
-                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    reason: 'Faulty',
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId,
                 },
-            });
+            );
+
+            await adminClient.query<Codegen.CancelOrderMutation, Codegen.CancelOrderMutationVariables>(
+                CANCEL_ORDER,
+                {
+                    input: {
+                        orderId: order!.id,
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                        reason: 'Faulty',
+                    },
+                },
+            );
 
             const product = await getProductWithStockMovement('T_2');
             const [variant1, variant2, variant3] = product!.variants;
@@ -445,27 +453,30 @@ describe('Stock control', () => {
 
             // Add items to order and check out
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: trackedVariant1.id,
                 quantity: 1,
             });
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '1 Test Street',
-                        countryCode: 'GB',
-                    } as CreateAddressInput,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '1 Test Street',
+                    countryCode: 'GB',
+                } as CreateAddressInput,
+            });
             await setFirstEligibleShippingMethod();
-            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
-                TRANSITION_TO_STATE,
-                { state: 'ArrangingPayment' as OrderState },
-            );
+            await shopClient.query<
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' as OrderState });
             const { addPaymentToOrder: order } = await shopClient.query<
-                AddPaymentToOrder.Mutation,
-                AddPaymentToOrder.Variables
+                CodegenShop.AddPaymentToOrderMutation,
+                CodegenShop.AddPaymentToOrderMutationVariables
             >(ADD_PAYMENT, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
@@ -485,8 +496,8 @@ describe('Stock control', () => {
                     .map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [];
 
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: linesInput,
@@ -506,8 +517,8 @@ describe('Stock control', () => {
             expect(trackedVariant3.stockAllocated).toBe(0);
 
             const { transitionFulfillmentToState } = await adminClient.query<
-                TransitionFulfillmentToState.Mutation,
-                TransitionFulfillmentToState.Variables
+                Codegen.TransitionFulfillmentToStateMutation,
+                Codegen.TransitionFulfillmentToStateMutationVariables
             >(TRANSITION_FULFILLMENT_TO_STATE, {
                 state: 'Cancelled',
                 id: (addFulfillmentToOrder as any).id,
@@ -531,15 +542,15 @@ describe('Stock control', () => {
                 { id: 'T_24', quantity: 1, type: 'ALLOCATION' },
             ]);
 
-            const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(
-                CANCEL_ORDER,
-                {
-                    input: {
-                        orderId: order!.id,
-                        reason: 'Not needed',
-                    },
+            const { cancelOrder } = await adminClient.query<
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
+            >(CANCEL_ORDER, {
+                input: {
+                    orderId: order!.id,
+                    reason: 'Not needed',
                 },
-            );
+            });
             orderGuard.assertSuccess(cancelOrder);
 
             const trackedVariant5 = await getTrackedVariant();
@@ -549,69 +560,69 @@ describe('Stock control', () => {
     });
 
     describe('saleable stock level', () => {
-        let order: TestOrderWithPaymentsFragment;
+        let order: CodegenShop.TestOrderWithPaymentsFragment;
 
         beforeAll(async () => {
-            await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
-                UPDATE_GLOBAL_SETTINGS,
-                {
-                    input: {
-                        trackInventory: true,
-                        outOfStockThreshold: -5,
-                    },
+            await adminClient.query<
+                Codegen.UpdateGlobalSettingsMutation,
+                Codegen.UpdateGlobalSettingsMutationVariables
+            >(UPDATE_GLOBAL_SETTINGS, {
+                input: {
+                    trackInventory: true,
+                    outOfStockThreshold: -5,
                 },
-            );
+            });
 
-            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                UPDATE_PRODUCT_VARIANTS,
-                {
-                    input: [
-                        {
-                            id: 'T_1',
-                            stockOnHand: 3,
-                            outOfStockThreshold: 0,
-                            trackInventory: GlobalFlag.TRUE,
-                            useGlobalOutOfStockThreshold: false,
-                        },
-                        {
-                            id: 'T_2',
-                            stockOnHand: 3,
-                            outOfStockThreshold: 0,
-                            trackInventory: GlobalFlag.FALSE,
-                            useGlobalOutOfStockThreshold: false,
-                        },
-                        {
-                            id: 'T_3',
-                            stockOnHand: 3,
-                            outOfStockThreshold: 2,
-                            trackInventory: GlobalFlag.TRUE,
-                            useGlobalOutOfStockThreshold: false,
-                        },
-                        {
-                            id: 'T_4',
-                            stockOnHand: 3,
-                            outOfStockThreshold: 0,
-                            trackInventory: GlobalFlag.TRUE,
-                            useGlobalOutOfStockThreshold: true,
-                        },
-                        {
-                            id: 'T_5',
-                            stockOnHand: 0,
-                            outOfStockThreshold: 0,
-                            trackInventory: GlobalFlag.TRUE,
-                            useGlobalOutOfStockThreshold: false,
-                        },
-                    ],
-                },
-            );
+            await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: 'T_1',
+                        stockOnHand: 3,
+                        outOfStockThreshold: 0,
+                        trackInventory: GlobalFlag.TRUE,
+                        useGlobalOutOfStockThreshold: false,
+                    },
+                    {
+                        id: 'T_2',
+                        stockOnHand: 3,
+                        outOfStockThreshold: 0,
+                        trackInventory: GlobalFlag.FALSE,
+                        useGlobalOutOfStockThreshold: false,
+                    },
+                    {
+                        id: 'T_3',
+                        stockOnHand: 3,
+                        outOfStockThreshold: 2,
+                        trackInventory: GlobalFlag.TRUE,
+                        useGlobalOutOfStockThreshold: false,
+                    },
+                    {
+                        id: 'T_4',
+                        stockOnHand: 3,
+                        outOfStockThreshold: 0,
+                        trackInventory: GlobalFlag.TRUE,
+                        useGlobalOutOfStockThreshold: true,
+                    },
+                    {
+                        id: 'T_5',
+                        stockOnHand: 0,
+                        outOfStockThreshold: 0,
+                        trackInventory: GlobalFlag.TRUE,
+                        useGlobalOutOfStockThreshold: false,
+                    },
+                ],
+            });
 
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
         });
 
         it('stockLevel uses DefaultStockDisplayStrategy', async () => {
             const { product } = await shopClient.query<
-                GetProductStockLevel.Query,
-                GetProductStockLevel.Variables
+                CodegenShop.GetProductStockLevelQuery,
+                CodegenShop.GetProductStockLevelQueryVariables
             >(GET_PRODUCT_WITH_STOCK_LEVEL, {
                 id: 'T_2',
             });
@@ -626,8 +637,8 @@ describe('Stock control', () => {
         it('does not add an empty OrderLine if zero saleable stock', async () => {
             const variantId = 'T_5';
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variantId,
                 quantity: 1,
@@ -644,8 +655,8 @@ describe('Stock control', () => {
         it('returns InsufficientStockError when tracking inventory & adding too many at once', async () => {
             const variantId = 'T_1';
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variantId,
                 quantity: 5,
@@ -673,8 +684,8 @@ describe('Stock control', () => {
         it('does not return error when not tracking inventory', async () => {
             const variantId = 'T_2';
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variantId,
                 quantity: 5,
@@ -697,8 +708,8 @@ describe('Stock control', () => {
         it('returns InsufficientStockError for positive threshold', async () => {
             const variantId = 'T_3';
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variantId,
                 quantity: 2,
@@ -727,8 +738,8 @@ describe('Stock control', () => {
         it('negative threshold allows backorder', async () => {
             const variantId = 'T_4';
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: variantId,
                 quantity: 8,
@@ -771,9 +782,12 @@ describe('Stock control', () => {
         });
 
         it('does not re-allocate stock when transitioning Payment from Authorized -> Settled', async () => {
-            await adminClient.query<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
-                id: order.id,
-            });
+            await adminClient.query<Codegen.SettlePaymentMutation, Codegen.SettlePaymentMutationVariables>(
+                SETTLE_PAYMENT,
+                {
+                    id: order.id,
+                },
+            );
 
             const product = await getProductWithStockMovement('T_1');
             const [variant1, variant2, variant3, variant4] = product!.variants;
@@ -793,8 +807,8 @@ describe('Stock control', () => {
 
         it('addFulfillmentToOrder returns ErrorResult when insufficient stock on hand', async () => {
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
@@ -818,8 +832,8 @@ describe('Stock control', () => {
 
         it('addFulfillmentToOrder succeeds when there is sufficient stockOnHand', async () => {
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines
@@ -846,8 +860,8 @@ describe('Stock control', () => {
 
         it('addFulfillmentToOrder succeeds when inventory is not being tracked', async () => {
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines
@@ -874,8 +888,8 @@ describe('Stock control', () => {
 
         it('addFulfillmentToOrder succeeds when making a partial Fulfillment with quantity equal to stockOnHand', async () => {
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines
@@ -902,8 +916,8 @@ describe('Stock control', () => {
 
         it('fulfillment can be created after adjusting stockOnHand to be sufficient', async () => {
             const { updateProductVariants } = await adminClient.query<
-                UpdateProductVariants.Mutation,
-                UpdateProductVariants.Variables
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
             >(UPDATE_PRODUCT_VARIANTS, {
                 input: [
                     {
@@ -916,8 +930,8 @@ describe('Stock control', () => {
             expect(updateProductVariants[0]!.stockOnHand).toBe(10);
 
             const { addFulfillmentToOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines
@@ -949,38 +963,38 @@ describe('Stock control', () => {
 
             beforeAll(async () => {
                 // First place an order which creates a backorder (excess of allocated units)
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: variant5Id,
-                                stockOnHand: 5,
-                                outOfStockThreshold: -20,
-                                trackInventory: GlobalFlag.TRUE,
-                                useGlobalOutOfStockThreshold: false,
-                            },
-                            {
-                                id: variant6Id,
-                                stockOnHand: 3,
-                                outOfStockThreshold: 0,
-                                trackInventory: GlobalFlag.TRUE,
-                                useGlobalOutOfStockThreshold: false,
-                            },
-                            {
-                                id: variant7Id,
-                                stockOnHand: 3,
-                                outOfStockThreshold: 0,
-                                trackInventory: GlobalFlag.TRUE,
-                                useGlobalOutOfStockThreshold: false,
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: variant5Id,
+                            stockOnHand: 5,
+                            outOfStockThreshold: -20,
+                            trackInventory: GlobalFlag.TRUE,
+                            useGlobalOutOfStockThreshold: false,
+                        },
+                        {
+                            id: variant6Id,
+                            stockOnHand: 3,
+                            outOfStockThreshold: 0,
+                            trackInventory: GlobalFlag.TRUE,
+                            useGlobalOutOfStockThreshold: false,
+                        },
+                        {
+                            id: variant7Id,
+                            stockOnHand: 3,
+                            outOfStockThreshold: 0,
+                            trackInventory: GlobalFlag.TRUE,
+                            useGlobalOutOfStockThreshold: false,
+                        },
+                    ],
+                });
                 await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
                 const { addItemToOrder: add1 } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: variant5Id,
                     quantity: 25,
@@ -994,8 +1008,8 @@ describe('Stock control', () => {
                 await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
                 // The saleable stock level is now 0 (25 allocated, 5 on hand, -20 threshold)
                 const { addItemToOrder } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: variant5Id,
                     quantity: 1,
@@ -1009,22 +1023,22 @@ describe('Stock control', () => {
             });
 
             it('negative saleable stock', async () => {
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: variant5Id,
-                                outOfStockThreshold: -10,
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: variant5Id,
+                            outOfStockThreshold: -10,
+                        },
+                    ],
+                });
                 // The saleable stock level is now -10 (25 allocated, 5 on hand, -10 threshold)
                 await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
                 const { addItemToOrder } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: variant5Id,
                     quantity: 1,
@@ -1041,8 +1055,8 @@ describe('Stock control', () => {
             it('returns InsufficientStockError when tracking inventory & adding too many individually', async () => {
                 await shopClient.asAnonymousUser();
                 const { addItemToOrder: add1 } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: variant6Id,
                     quantity: 3,
@@ -1051,8 +1065,8 @@ describe('Stock control', () => {
                 orderGuard.assertSuccess(add1);
 
                 const { addItemToOrder: add2 } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: variant6Id,
                     quantity: 1,
@@ -1070,22 +1084,22 @@ describe('Stock control', () => {
 
             // https://github.com/vendure-ecommerce/vendure/issues/1273
             it('adjustOrderLine when saleable stock changes to zero', async () => {
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: variant7Id,
-                                stockOnHand: 10,
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: variant7Id,
+                            stockOnHand: 10,
+                        },
+                    ],
+                });
 
                 await shopClient.asAnonymousUser();
                 const { addItemToOrder: add1 } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: variant7Id,
                     quantity: 1,
@@ -1093,21 +1107,21 @@ describe('Stock control', () => {
                 orderGuard.assertSuccess(add1);
                 expect(add1.lines.length).toBe(1);
 
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: variant7Id,
-                                stockOnHand: 0,
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: variant7Id,
+                            stockOnHand: 0,
+                        },
+                    ],
+                });
 
                 const { adjustOrderLine: add2 } = await shopClient.query<
-                    AdjustItemQuantity.Mutation,
-                    AdjustItemQuantity.Variables
+                    CodegenShop.AdjustItemQuantityMutation,
+                    CodegenShop.AdjustItemQuantityMutationVariables
                 >(ADJUST_ITEM_QUANTITY, {
                     orderLineId: add1.lines[0].id,
                     quantity: 2,
@@ -1116,7 +1130,9 @@ describe('Stock control', () => {
 
                 expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
 
-                const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                    GET_ACTIVE_ORDER,
+                );
                 expect(activeOrder!.lines.length).toBe(0);
             });
         });
@@ -1157,14 +1173,17 @@ describe('Stock control', () => {
 
             expect(variant2.stockAllocated).toBe(0);
 
-            await shopClient.query<AddItemToOrder.Mutation, any>(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
-                productVariantId: variant2.id,
-                quantity: 1,
-                customFields: {
-                    customization: 'foo',
+            await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS),
+                {
+                    productVariantId: variant2.id,
+                    quantity: 1,
+                    customFields: {
+                        customization: 'foo',
+                    },
                 },
-            });
-            const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, any>(
+            );
+            const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
                 gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS),
                 {
                     productVariantId: variant2.id,
@@ -1180,25 +1199,25 @@ describe('Stock control', () => {
             // Assert that separate order lines have been created
             expect(addItemToOrder.lines.length).toBe(2);
 
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '1 Test Street',
-                        countryCode: 'GB',
-                    } as CreateAddressInput,
-                },
-            );
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '1 Test Street',
+                    countryCode: 'GB',
+                } as CreateAddressInput,
+            });
             await setFirstEligibleShippingMethod();
-            await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
-                TRANSITION_TO_STATE,
-                {
-                    state: 'ArrangingPayment',
-                },
-            );
+            await shopClient.query<
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, {
+                state: 'ArrangingPayment',
+            });
             const { addPaymentToOrder: order } = await shopClient.query<
-                AddPaymentToOrder.Mutation,
-                AddPaymentToOrder.Variables
+                CodegenShop.AddPaymentToOrderMutation,
+                CodegenShop.AddPaymentToOrderMutationVariables
             >(ADD_PAYMENT, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
@@ -1219,25 +1238,28 @@ describe('Stock control', () => {
 
             expect(variant2.stockOnHand).toBe(3);
 
-            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: orderId,
-            });
-
-            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
-                CREATE_FULFILLMENT,
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
                 {
-                    input: {
-                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
-                        handler: {
-                            code: manualFulfillmentHandler.code,
-                            arguments: [
-                                { name: 'method', value: 'test method' },
-                                { name: 'trackingCode', value: 'ABC123' },
-                            ],
-                        },
-                    },
+                    id: orderId,
                 },
             );
+
+            await adminClient.query<
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
+            >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
+                },
+            });
 
             const product2 = await getProductWithStockMovement('T_2');
             const [variant1_2, variant2_2, variant3_2] = product2!.variants;

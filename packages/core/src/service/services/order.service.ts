@@ -451,7 +451,7 @@ export class OrderService {
             existingOrderLine?.quantity,
         );
         if (correctedQuantity === 0) {
-            return new InsufficientStockError(correctedQuantity, order);
+            return new InsufficientStockError({ order, quantityAvailable: correctedQuantity });
         }
         const orderLine = await this.orderModifier.getOrCreateOrderLine(
             ctx,
@@ -468,7 +468,7 @@ export class OrderService {
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
         if (quantityWasAdjustedDown) {
-            return new InsufficientStockError(correctedQuantity, updatedOrder);
+            return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
         } else {
             return updatedOrder;
         }
@@ -520,7 +520,7 @@ export class OrderService {
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines);
         if (quantityWasAdjustedDown) {
-            return new InsufficientStockError(correctedQuantity, updatedOrder);
+            return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
         } else {
             return updatedOrder;
         }
@@ -821,7 +821,7 @@ export class OrderService {
             await this.orderStateMachine.transition(ctx, order, state);
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
-            return new OrderStateTransitionError(transitionError, fromState, state);
+            return new OrderStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
@@ -978,10 +978,10 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
-            return new PaymentFailedError(payment.errorMessage || '');
+            return new PaymentFailedError({ paymentErrorMessage: payment.errorMessage || '' });
         }
         if (payment.state === 'Declined') {
-            return new PaymentDeclinedError(payment.errorMessage || '');
+            return new PaymentDeclinedError({ paymentErrorMessage: payment.errorMessage || '' });
         }
 
         return this.transitionOrderIfTotalIsCovered(ctx, order);
@@ -1054,7 +1054,7 @@ export class OrderService {
         const payment = await this.paymentService.settlePayment(ctx, paymentId);
         if (!isGraphQlErrorResult(payment)) {
             if (payment.state !== 'Settled') {
-                return new SettlePaymentError(payment.errorMessage || '');
+                return new SettlePaymentError({ paymentErrorMessage: payment.errorMessage || '' });
             }
             const order = await this.findOne(ctx, payment.order.id);
             if (order) {
@@ -1139,11 +1139,11 @@ export class OrderService {
             );
             if (fulfillableStockLevel < lineInput.quantity) {
                 const productVariant = translateDeep(line.productVariant, ctx.languageCode);
-                return new InsufficientStockOnHandError(
-                    productVariant.id as string,
-                    productVariant.name,
-                    productVariant.stockOnHand,
-                );
+                return new InsufficientStockOnHandError({
+                    productVariantId: productVariant.id as string,
+                    productVariantName: productVariant.name,
+                    stockOnHand: productVariant.stockOnHand,
+                });
             }
         }
     }
@@ -1248,7 +1248,7 @@ export class OrderService {
             return new MultipleOrderError();
         }
         if (order.active) {
-            return new CancelActiveOrderError(order.state);
+            return new CancelActiveOrderError({ orderState: order.state });
         }
         const fullOrder = await this.findOne(ctx, order.id);
 
@@ -1330,13 +1330,13 @@ export class OrderService {
             order.state === 'ArrangingPayment' ||
             order.state === 'PaymentAuthorized'
         ) {
-            return new RefundOrderStateError(order.state);
+            return new RefundOrderStateError({ orderState: order.state });
         }
         const alreadyRefunded = items.find(
             i => i.refund?.state === 'Pending' || i.refund?.state === 'Settled',
         );
         if (alreadyRefunded) {
-            return new AlreadyRefundedError(alreadyRefunded.refundId as string);
+            return new AlreadyRefundedError({ refundId: alreadyRefunded.refundId as string });
         }
 
         return await this.paymentService.createRefund(ctx, input, order, items, payment);
@@ -1552,7 +1552,7 @@ export class OrderService {
         const currentItemsCount = summate(order.lines, 'quantity');
         const { orderItemsLimit } = this.configService.orderOptions;
         if (orderItemsLimit < currentItemsCount + quantityToAdd) {
-            return new OrderLimitError(orderItemsLimit);
+            return new OrderLimitError({ maxItems: orderItemsLimit });
         }
     }
 
@@ -1564,7 +1564,7 @@ export class OrderService {
         const currentQuantity = orderLine?.quantity || 0;
         const { orderLineItemsLimit } = this.configService.orderOptions;
         if (orderLineItemsLimit < currentQuantity + quantityToAdd) {
-            return new OrderLimitError(orderLineItemsLimit);
+            return new OrderLimitError({ maxItems: orderLineItemsLimit });
         }
     }
 

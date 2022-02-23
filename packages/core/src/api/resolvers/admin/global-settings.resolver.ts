@@ -85,10 +85,10 @@ export class GlobalSettingsResolver {
                 c => !availableLanguages.includes(c.defaultLanguageCode),
             );
             if (unavailableDefaults.length) {
-                return new ChannelDefaultLanguageError(
-                    unavailableDefaults.map(c => c.defaultLanguageCode).join(', '),
-                    unavailableDefaults.map(c => c.code).join(', '),
-                );
+                return new ChannelDefaultLanguageError({
+                    language: unavailableDefaults.map(c => c.defaultLanguageCode).join(', '),
+                    channelCode: unavailableDefaults.map(c => c.code).join(', '),
+                });
             }
         }
         return this.globalSettingsService.updateSettings(ctx, args.input);
