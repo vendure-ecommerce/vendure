@@ -5,7 +5,8 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
-    GetOrderList,
+    GetOrderListQuery,
+    ItemOf,
     LocalStorageService,
     OrderListOptions,
     ServerConfigService,
@@ -13,7 +14,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, skip, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 
 interface OrderFilterConfig {
     active?: boolean;
@@ -33,8 +34,9 @@ interface FilterPreset {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderListComponent
-    extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
-    implements OnInit {
+    extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
+    implements OnInit
+{
     searchOrderCodeControl = new FormControl('');
     searchLastNameControl = new FormControl('');
     customFilterForm: FormGroup;

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { AdjustmentType, CustomFieldConfig, OrderDetail } from '@vendure/admin-ui/core';
+import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-order-table',
@@ -9,7 +9,7 @@ import { AdjustmentType, CustomFieldConfig, OrderDetail } from '@vendure/admin-u
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderTableComponent implements OnInit {
-    @Input() order: OrderDetail.Fragment;
+    @Input() order: OrderDetailFragment;
     @Input() orderLineCustomFields: CustomFieldConfig[];
     orderLineCustomFieldsVisible = false;
     customFieldsForLine: {
@@ -33,7 +33,7 @@ export class OrderTableComponent implements OnInit {
         this.orderLineCustomFieldsVisible = !this.orderLineCustomFieldsVisible;
     }
 
-    getLineDiscounts(line: OrderDetail.Lines) {
+    getLineDiscounts(line: OrderDetailFragment['lines'][number]) {
         return line.discounts.filter(a => a.type === AdjustmentType.PROMOTION);
     }
 
@@ -57,14 +57,14 @@ export class OrderTableComponent implements OnInit {
         }
     }
 
-    getPromotionLink(promotion: OrderDetail.Discounts): any[] {
+    getPromotionLink(promotion: OrderDetailFragment['discounts'][number]): any[] {
         const id = promotion.adjustmentSource.split(':')[1];
         return ['/marketing', 'promotions', id];
     }
 
     getCouponCodeForAdjustment(
-        order: OrderDetail.Fragment,
-        promotionAdjustment: OrderDetail.Discounts,
+        order: OrderDetailFragment,
+        promotionAdjustment: OrderDetailFragment['discounts'][number],
     ): string | undefined {
         const id = promotionAdjustment.adjustmentSource.split(':')[1];
         const promotion = order.promotions.find(p => p.id === id);

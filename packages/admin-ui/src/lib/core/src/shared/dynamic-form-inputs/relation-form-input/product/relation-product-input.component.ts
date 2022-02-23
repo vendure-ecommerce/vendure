@@ -4,11 +4,8 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
-import {
-    GetProductList,
-    GetProductSimple,
-    RelationCustomFieldConfig,
-} from '../../../../common/generated-types';
+import * as Codegen from '../../../../common/generated-types';
+import { RelationCustomFieldConfig } from '../../../../common/generated-types';
 import { DataService } from '../../../../data/providers/data.service';
 import { ModalService } from '../../../../providers/modal/modal.service';
 import { RelationSelectorDialogComponent } from '../relation-selector-dialog/relation-selector-dialog.component';
@@ -28,8 +25,8 @@ export class RelationProductInputComponent implements OnInit {
 
     searchControl = new FormControl('');
     searchTerm$ = new Subject<string>();
-    results$: Observable<GetProductList.Items[]>;
-    product$: Observable<GetProductSimple.Product | undefined>;
+    results$: Observable<Codegen.GetProductListQuery['products']['items']>;
+    product$: Observable<Codegen.GetProductSimpleQuery['product'] | undefined>;
 
     constructor(private modalService: ModalService, private dataService: DataService) {}
 

@@ -4,9 +4,9 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
     DeletionResult,
-    GetCustomerGroups,
-    GetCustomerGroupWithCustomers,
-    GetZones,
+    GetCustomerGroupsQuery,
+    GetCustomerGroupWithCustomersQuery,
+    ItemOf,
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
@@ -24,10 +24,12 @@ import { CustomerGroupMemberFetchParams } from '../customer-group-member-list/cu
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerGroupListComponent implements OnInit {
-    activeGroup$: Observable<GetCustomerGroups.Items | undefined>;
-    groups$: Observable<GetCustomerGroups.Items[]>;
+    activeGroup$: Observable<ItemOf<GetCustomerGroupsQuery, 'customerGroups'> | undefined>;
+    groups$: Observable<Array<ItemOf<GetCustomerGroupsQuery, 'customerGroups'>>>;
     listIsEmpty$: Observable<boolean>;
-    members$: Observable<GetCustomerGroupWithCustomers.Items[]>;
+    members$: Observable<
+        NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>['customers']['items']
+    >;
     membersTotal$: Observable<number>;
     selectedCustomerIds: string[] = [];
     fetchGroupMembers$ = new BehaviorSubject<CustomerGroupMemberFetchParams>({
@@ -159,7 +161,7 @@ export class CustomerGroupListComponent implements OnInit {
             );
     }
 
-    update(group: GetCustomerGroups.Items) {
+    update(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) {
         this.modalService
             .fromComponent(CustomerGroupDetailDialogComponent, { locals: { group } })
             .pipe(
@@ -189,7 +191,7 @@ export class CustomerGroupListComponent implements OnInit {
         this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
     }
 
-    addToGroup(group: GetCustomerGroupWithCustomers.CustomerGroup) {
+    addToGroup(group: NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>) {
         this.modalService
             .fromComponent(AddCustomerToGroupDialogComponent, {
                 locals: {
@@ -220,7 +222,10 @@ export class CustomerGroupListComponent implements OnInit {
             });
     }
 
-    removeFromGroup(group: GetZones.Zones, customerIds: string[]) {
+    removeFromGroup(
+        group: NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>,
+        customerIds: string[],
+    ) {
         this.dataService.customer.removeCustomersFromGroup(group.id, customerIds).subscribe({
             complete: () => {
                 this.notificationService.success(_(`customer.remove-customers-from-group-success`), {

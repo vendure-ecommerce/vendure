@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver } from '@vendure/admin-ui/core';
-import { GetGlobalSettings } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, DataService, GetGlobalSettingsQuery } from '@vendure/admin-ui/core';
 
 /**
  * Resolves the global settings.
@@ -10,7 +8,7 @@ import { DataService } from '@vendure/admin-ui/core';
 @Injectable({
     providedIn: 'root',
 })
-export class GlobalSettingsResolver extends BaseEntityResolver<GetGlobalSettings.GlobalSettings> {
+export class GlobalSettingsResolver extends BaseEntityResolver<GetGlobalSettingsQuery['globalSettings']> {
     constructor(router: Router, dataService: DataService) {
         super(
             router,

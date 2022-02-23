@@ -4,17 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
-    ConfigArgDefinition,
     configurableDefinitionToInstance,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
     CustomFieldConfig,
     DataService,
-    encodeConfigArgValue,
     getConfigArgValue,
     NotificationService,
-    PaymentMethod,
+    PaymentMethodFragment,
     Permission,
     ServerConfigService,
     toConfigurableOperationInput,
@@ -31,7 +29,7 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentMethodDetailComponent
-    extends BaseDetailComponent<PaymentMethod.Fragment>
+    extends BaseDetailComponent<PaymentMethodFragment>
     implements OnInit, OnDestroy
 {
     detailForm: FormGroup;
@@ -225,7 +223,7 @@ export class PaymentMethodDetailComponent
             );
     }
 
-    protected setFormValues(paymentMethod: PaymentMethod.Fragment): void {
+    protected setFormValues(paymentMethod: PaymentMethodFragment): void {
         this.detailForm.patchValue({
             name: paymentMethod.name,
             code: paymentMethod.code,

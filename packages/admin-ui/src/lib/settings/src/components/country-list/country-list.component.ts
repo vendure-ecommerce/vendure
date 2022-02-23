@@ -4,13 +4,14 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
     DeletionResult,
-    GetCountryList,
-    GetZones,
+    GetCountryListQuery,
+    GetZonesQuery,
+    ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
     ServerConfigService,
-    Zone,
+    ZoneFragment,
 } from '@vendure/admin-ui/core';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
@@ -23,12 +24,14 @@ import { map, startWith, switchMap, tap } from 'rxjs/operators';
 })
 export class CountryListComponent implements OnInit, OnDestroy {
     searchTerm = new FormControl('');
-    countriesWithZones$: Observable<Array<GetCountryList.Items & { zones: GetZones.Zones[] }>>;
-    zones$: Observable<GetZones.Zones[]>;
+    countriesWithZones$: Observable<
+        Array<ItemOf<GetCountryListQuery, 'countries'> & { zones: GetZonesQuery['zones'] }>
+    >;
+    zones$: Observable<GetZonesQuery['zones']>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
 
-    private countries: GetCountryList.Items[] = [];
+    private countries: GetCountryListQuery['countries']['items'] = [];
     private destroy$ = new Subject<void>();
     private refresh$ = new Subject<void>();
 
@@ -112,7 +115,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
             );
     }
 
-    private isZone(input: Zone.Fragment | { name: string } | string): input is Zone.Fragment {
+    private isZone(input: ZoneFragment | { name: string } | string): input is ZoneFragment {
         return input.hasOwnProperty('id');
     }
 }

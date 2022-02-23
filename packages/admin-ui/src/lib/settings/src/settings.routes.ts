@@ -4,13 +4,14 @@ import {
     Administrator,
     CanDeactivateDetailGuard,
     Channel,
-    Country,
+    CountryFragment,
     createResolveData,
     detailBreadcrumb,
+    PaymentMethodFragment,
     Role,
-    ShippingMethod,
-    TaxCategory,
-    TaxRate,
+    ShippingMethodFragment,
+    TaxCategoryFragment,
+    TaxRateFragment,
 } from '@vendure/admin-ui/core';
 
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
@@ -224,7 +225,7 @@ export function roleBreadcrumb(data: any, params: any) {
 }
 
 export function taxCategoryBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<TaxCategory.Fragment>({
+    return detailBreadcrumb<TaxCategoryFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.tax-categories',
@@ -234,7 +235,7 @@ export function taxCategoryBreadcrumb(data: any, params: any) {
 }
 
 export function taxRateBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<TaxRate.Fragment>({
+    return detailBreadcrumb<TaxRateFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.tax-rates',
@@ -244,7 +245,7 @@ export function taxRateBreadcrumb(data: any, params: any) {
 }
 
 export function countryBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<Country.Fragment>({
+    return detailBreadcrumb<CountryFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.countries',
@@ -254,7 +255,7 @@ export function countryBreadcrumb(data: any, params: any) {
 }
 
 export function shippingMethodBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<ShippingMethod.Fragment>({
+    return detailBreadcrumb<ShippingMethodFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.shipping-methods',
@@ -264,7 +265,7 @@ export function shippingMethodBreadcrumb(data: any, params: any) {
 }
 
 export function paymentMethodBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<ShippingMethod.Fragment>({
+    return detailBreadcrumb<PaymentMethodFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.payment-methods',

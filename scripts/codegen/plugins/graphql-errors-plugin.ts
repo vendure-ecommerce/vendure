@@ -1,6 +1,7 @@
 import { PluginFunction } from '@graphql-codegen/plugin-helpers';
 import { buildScalars } from '@graphql-codegen/visitor-plugin-common';
 import {
+    ASTNode,
     ASTVisitor,
     FieldDefinitionNode,
     getNamedType,
@@ -15,6 +16,7 @@ import {
     isObjectType,
     isTypeDefinitionNode,
     isUnionType,
+    Kind,
     ListTypeNode,
     NonNullTypeNode,
     ObjectTypeDefinitionNode,
@@ -23,6 +25,7 @@ import {
     UnionTypeDefinitionNode,
     visit,
 } from 'graphql';
+import { ASTVisitFn } from 'graphql/language/visitor';
 
 // This plugin generates classes for all GraphQL types which implement the `ErrorResult` interface.
 // This means that when returning an error result from a GraphQL operation, you can use one of
@@ -33,71 +36,80 @@ import {
 export const ERROR_INTERFACE_NAME = 'ErrorResult';
 const empty = () => '';
 
-const errorsVisitor: ASTVisitor = {
-    NonNullType(node: NonNullTypeNode): string | ListTypeNode {
-        return node.type.kind === 'NamedType'
-            ? node.type.name.value
-            : node.type.kind === 'ListType'
-            ? node.type
-            : '';
-    },
-    FieldDefinition(node: FieldDefinitionNode): string {
-        const type = (node.type.kind === 'ListType' ? node.type.type : node.type) as unknown as string;
-        const tsType = isScalar(type) ? `Scalars['${type}']` : 'any';
-        const listPart = node.type.kind === 'ListType' ? `[]` : ``;
-        return `${node.name.value}: ${tsType}${listPart}`;
-    },
-    ScalarTypeDefinition: empty,
-    InputObjectTypeDefinition: empty,
-    EnumTypeDefinition: empty,
-    UnionTypeDefinition: empty,
-    InterfaceTypeDefinition(node: InterfaceTypeDefinitionNode) {
-        if (node.name.value !== ERROR_INTERFACE_NAME) {
+const errorsVisitor: ASTVisitFn<ASTNode> = (node, key, parent) => {
+    switch (node.kind) {
+        case Kind.NON_NULL_TYPE: {
+            return node.type.kind === 'NamedType'
+                ? node.type.name.value
+                : node.type.kind === 'ListType'
+                ? node.type
+                : '';
+        }
+        case Kind.FIELD_DEFINITION: {
+            const type = (node.type.kind === 'ListType' ? node.type.type : node.type) as unknown as string;
+            const tsType = isScalar(type) ? `Scalars['${type}']` : 'any';
+            const listPart = node.type.kind === 'ListType' ? `[]` : ``;
+            return `${node.name.value}: ${tsType}${listPart}`;
+        }
+        case Kind.SCALAR_TYPE_DEFINITION: {
             return '';
         }
-        return [
-            `export class ${ERROR_INTERFACE_NAME} {`,
-            `  readonly __typename: string;`,
-            `  readonly errorCode: string;`,
-            ...node.fields.filter(f => !(f as any).includes('errorCode:')).map(f => `${f};`),
-            `}`,
-        ].join('\n');
-    },
-
-    ObjectTypeDefinition(
-        node: ObjectTypeDefinitionNode,
-        key: number | string | undefined,
-        parent: any,
-    ): string {
-        if (!inheritsFromErrorResult(node)) {
+        case Kind.INPUT_OBJECT_TYPE_DEFINITION: {
             return '';
         }
-        const originalNode = parent[key] as ObjectTypeDefinitionNode;
+        case Kind.ENUM_TYPE_DEFINITION: {
+            return '';
+        }
+        case Kind.UNION_TYPE_DEFINITION: {
+            return '';
+        }
+        case Kind.INTERFACE_TYPE_DEFINITION: {
+            if (node.name.value !== ERROR_INTERFACE_NAME) {
+                return '';
+            }
+            return [
+                `export class ${ERROR_INTERFACE_NAME} {`,
+                `  readonly __typename: string;`,
+                `  readonly errorCode: string;`,
+                ...node.fields.filter(f => !(f as any).includes('errorCode:')).map(f => `${f};`),
+                `}`,
+            ].join('\n');
+        }
+        case Kind.OBJECT_TYPE_DEFINITION: {
+            if (!inheritsFromErrorResult(node)) {
+                return '';
+            }
+            const originalNode = parent[key] as ObjectTypeDefinitionNode;
 
-        return [
-            `export class ${node.name.value} extends ${ERROR_INTERFACE_NAME} {`,
-            `  readonly __typename = '${node.name.value}';`,
-            // We cast this to "any" otherwise we need to specify it as type "ErrorCode",
-            // which means shared ErrorResult classes e.g. OrderStateTransitionError
-            // will not be compatible between the admin and shop variations.
-            `  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
-            `  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
-            `  constructor(`,
-            ...node.fields
-                .filter(f => !(f as any).includes('errorCode:') && !(f as any).includes('message:'))
-                .map(f => `    public ${f},`),
-            `  ) {`,
-            `    super();`,
-            `  }`,
-            `}`,
-        ].join('\n');
-    },
+            return [
+                `export class ${node.name.value} extends ${ERROR_INTERFACE_NAME} {`,
+                `  readonly __typename = '${node.name.value}';`,
+                // We cast this to "any" otherwise we need to specify it as type "ErrorCode",
+                // which means shared ErrorResult classes e.g. OrderStateTransitionError
+                // will not be compatible between the admin and shop variations.
+                `  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
+                `  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
+                `  constructor(`,
+                ...node.fields
+                    .filter(
+                        f =>
+                            !(f as unknown as string).includes('errorCode:') &&
+                            !(f as any).includes('message:'),
+                    )
+                    .map(f => `    public ${f},`),
+                `  ) {`,
+                `    super();`,
+                `  }`,
+                `}`,
+            ].join('\n');
+        }
+    }
 };
 
 export const plugin: PluginFunction<any> = (schema, documents, config, info) => {
     const printedSchema = printSchema(schema); // Returns a string representation of the schema
     const astNode = parse(printedSchema); // Transforms the string into ASTNode
-    const result = visit(astNode, { leave: errorsVisitor } as ASTVisitor);
+    const result = visit(astNode, { leave: errorsVisitor });
     const defs = result.definitions
         .filter(d => !!d)
         // Ensure the ErrorResult base class is first

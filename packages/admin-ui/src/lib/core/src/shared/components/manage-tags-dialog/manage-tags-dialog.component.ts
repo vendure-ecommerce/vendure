@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
 
-import { GetTagList } from '../../../common/generated-types';
+import { GetTagListQuery } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { Dialog } from '../../../providers/modal/modal.types';
 
@@ -13,7 +13,7 @@ import { Dialog } from '../../../providers/modal/modal.types';
 })
 export class ManageTagsDialogComponent implements Dialog<boolean>, OnInit {
     resolveWith: (result: boolean | undefined) => void;
-    allTags$: Observable<GetTagList.Items[]>;
+    allTags$: Observable<GetTagListQuery['tags']['items']>;
     toDelete: string[] = [];
     toUpdate: Array<{ id: string; value: string }> = [];
 

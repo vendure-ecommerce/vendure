@@ -10,7 +10,7 @@ import {
     CustomFieldConfig,
     DataService,
     DeletionResult,
-    FacetWithValues,
+    FacetWithValuesFragment,
     findTranslation,
     LanguageCode,
     ModalService,
@@ -32,13 +32,13 @@ import { map, mapTo, mergeMap, switchMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetDetailComponent
-    extends BaseDetailComponent<FacetWithValues.Fragment>
+    extends BaseDetailComponent<FacetWithValuesFragment>
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
     detailForm: FormGroup;
-    values: Array<FacetWithValues.Values | { name: string; code: string }>;
+    values: Array<FacetWithValuesFragment['values'][number] | { name: string; code: string }>;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateFacet];
 
     constructor(
@@ -277,7 +277,7 @@ export class FacetDetailComponent
     /**
      * Sets the values of the form on changes to the facet or current language.
      */
-    protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(facet: FacetWithValuesFragment, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(facet, languageCode);
 
         this.detailForm.patchValue({
@@ -349,7 +349,7 @@ export class FacetDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedFacet(
-        facet: FacetWithValues.Fragment,
+        facet: FacetWithValuesFragment,
         facetFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): CreateFacetInput | UpdateFacetInput {
@@ -372,7 +372,7 @@ export class FacetDetailComponent
      * which can be persisted to the API via a createFacetValues mutation.
      */
     private getCreatedFacetValues(
-        facet: FacetWithValues.Fragment,
+        facet: FacetWithValuesFragment,
         valuesFormArray: FormArray,
         languageCode: LanguageCode,
     ): CreateFacetValueInput[] {
@@ -402,7 +402,7 @@ export class FacetDetailComponent
      * which can be persisted to the API via an updateFacetValues mutation.
      */
     private getUpdatedFacetValues(
-        facet: FacetWithValues.Fragment,
+        facet: FacetWithValuesFragment,
         valuesFormArray: FormArray,
         languageCode: LanguageCode,
     ): UpdateFacetValueInput[] {

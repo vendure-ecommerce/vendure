@@ -71,7 +71,7 @@ Promise.all([
         const disableTsLintPlugin = { add: { content: '// tslint:disable' } };
         const graphQlErrorsPlugin = path.join(__dirname, './plugins/graphql-errors-plugin.js');
         const commonPlugins = [disableTsLintPlugin, 'typescript'];
-        const clientPlugins = [...commonPlugins, 'typescript-operations', 'typescript-compatibility'];
+        const clientPlugins = [...commonPlugins, 'typescript-operations'];
 
         return generate({
             overwrite: true,

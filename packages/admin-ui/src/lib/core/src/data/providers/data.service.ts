@@ -92,13 +92,13 @@ export class DataService {
      * @example
      * ```TypeScript
      * const result$ = this.dataService.mutate(gql`
-     *   mutation MyMutation($input: UpdateEntityInput!) {
+     *   mutation MyMutation($Codegen.UpdateEntityInput!) {
      *     updateEntity(input: $input) {
      *       id
      *       name
      *     }
      *   },
-     *   { input: updateEntityInput },
+     *   { Codegen.updateEntityInput },
      * );
      * ```
      */

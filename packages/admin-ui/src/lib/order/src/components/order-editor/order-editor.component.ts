@@ -8,15 +8,15 @@ import {
     CustomFieldConfig,
     DataService,
     ErrorResult,
-    GetAvailableCountries,
+    GetAvailableCountriesQuery,
     HistoryEntryType,
     LanguageCode,
     ModalService,
     ModifyOrderInput,
     NotificationService,
     OrderAddressFragment,
-    OrderDetail,
-    ProductSelectorSearch,
+    OrderDetailFragment,
+    ProductSelectorSearchQuery,
     ServerConfigService,
     SortOrder,
     SurchargeInput,
@@ -31,9 +31,11 @@ import {
     OrderEditsPreviewDialogComponent,
 } from '../order-edits-preview-dialog/order-edits-preview-dialog.component';
 
+type ProductSelectorItem = ProductSelectorSearchQuery['search']['items'][number];
+
 interface AddedLine {
     productVariantId: string;
-    productAsset?: ProductSelectorSearch.ProductAsset | null;
+    productAsset?: ProductSelectorItem['productAsset'] | null;
     productVariantName: string;
     sku: string;
     priceWithTax: number;
@@ -53,15 +55,16 @@ type ModifyOrderData = Omit<ModifyOrderInput, 'addItems' | 'adjustOrderLines'> &
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderEditorComponent
-    extends BaseDetailComponent<OrderDetail.Fragment>
-    implements OnInit, OnDestroy {
-    availableCountries$: Observable<GetAvailableCountries.Items[]>;
+    extends BaseDetailComponent<OrderDetailFragment>
+    implements OnInit, OnDestroy
+{
+    availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
     addressCustomFields: CustomFieldConfig[];
     detailForm = new FormGroup({});
     orderLineCustomFieldsFormArray: FormArray;
     addItemCustomFieldsFormArray: FormArray;
     addItemCustomFieldsForm: FormGroup;
-    addItemSelectedVariant: ProductSelectorSearch.Items | undefined;
+    addItemSelectedVariant: ProductSelectorItem | undefined;
     orderLineCustomFields: CustomFieldConfig[];
     modifyOrderInput: ModifyOrderData = {
         dryRun: true,
@@ -79,7 +82,7 @@ export class OrderEditorComponent
     note = '';
     recalculateShipping = true;
     previousState: string;
-    private addedVariants = new Map<string, ProductSelectorSearch.Items>();
+    private addedVariants = new Map<string, ProductSelectorItem>();
 
     constructor(
         router: Router,
@@ -95,7 +98,7 @@ export class OrderEditorComponent
     }
 
     get addedLines(): AddedLine[] {
-        const getSinglePriceValue = (price: ProductSelectorSearch.Price) =>
+        const getSinglePriceValue = (price: ProductSelectorItem['price']) =>
             price.__typename === 'SinglePrice' ? price.value : 0;
         return (this.modifyOrderInput.addItems || [])
             .map(row => {
@@ -204,7 +207,7 @@ export class OrderEditorComponent
         this.destroy();
     }
 
-    transitionToPriorState(order: OrderDetail.Fragment) {
+    transitionToPriorState(order: OrderDetailFragment) {
         this.orderTransitionService
             .transitionToPreModifyingState(order.id, order.nextStates)
             .subscribe(result => {
@@ -223,13 +226,13 @@ export class OrderEditorComponent
         );
     }
 
-    isLineModified(line: OrderDetail.Lines): boolean {
+    isLineModified(line: OrderDetailFragment['lines'][number]): boolean {
         return !!this.modifyOrderInput.adjustOrderLines?.find(
             l => l.orderLineId === line.id && l.quantity !== line.quantity,
         );
     }
 
-    updateLineQuantity(line: OrderDetail.Lines, quantity: string) {
+    updateLineQuantity(line: OrderDetailFragment['lines'][number], quantity: string) {
         const { adjustOrderLines } = this.modifyOrderInput;
         let row = adjustOrderLines?.find(l => l.orderLineId === line.id);
         if (row && +quantity === line.quantity) {
@@ -255,7 +258,7 @@ export class OrderEditorComponent
         return item.productVariantId;
     }
 
-    getSelectedItemPrice(result: ProductSelectorSearch.Items | undefined): number {
+    getSelectedItemPrice(result: ProductSelectorItem | undefined): number {
         switch (result?.priceWithTax.__typename) {
             case 'SinglePrice':
                 return result.priceWithTax.value;
@@ -264,7 +267,7 @@ export class OrderEditorComponent
         }
     }
 
-    addItemToOrder(result: ProductSelectorSearch.Items | undefined) {
+    addItemToOrder(result: ProductSelectorItem | undefined) {
         if (!result) {
             return;
         }
@@ -302,7 +305,7 @@ export class OrderEditorComponent
 
     private isMatchingAddItemRow(
         row: ModifyOrderData['addItems'][number],
-        result: ProductSelectorSearch.Items,
+        result: ProductSelectorItem,
         customFields: any,
     ): boolean {
         return (
@@ -344,7 +347,7 @@ export class OrderEditorComponent
         this.modifyOrderInput.surcharges?.splice(index, 1);
     }
 
-    previewAndModify(order: OrderDetail.Fragment) {
+    previewAndModify(order: OrderDetailFragment) {
         const input: ModifyOrderInput = {
             ...this.modifyOrderInput,
             ...(this.billingAddressForm.dirty ? { updateBillingAddress: this.billingAddressForm.value } : {}),
@@ -448,7 +451,7 @@ export class OrderEditorComponent
         }
     }
 
-    protected setFormValues(entity: OrderDetail.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(entity: OrderDetailFragment, languageCode: LanguageCode): void {
         /* not used */
     }
 }

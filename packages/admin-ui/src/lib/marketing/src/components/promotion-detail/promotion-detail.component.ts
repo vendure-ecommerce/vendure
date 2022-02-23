@@ -15,7 +15,7 @@ import {
     getDefaultConfigArgValue,
     LanguageCode,
     NotificationService,
-    Promotion,
+    PromotionFragment,
     ServerConfigService,
     UpdatePromotionInput,
 } from '@vendure/admin-ui/core';
@@ -29,10 +29,10 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PromotionDetailComponent
-    extends BaseDetailComponent<Promotion.Fragment>
+    extends BaseDetailComponent<PromotionFragment>
     implements OnInit, OnDestroy
 {
-    promotion$: Observable<Promotion.Fragment>;
+    promotion$: Observable<PromotionFragment>;
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     conditions: ConfigurableOperation[] = [];
@@ -213,7 +213,7 @@ export class PromotionDetailComponent
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: Promotion.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(entity: PromotionFragment, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             name: entity.name,
             enabled: entity.enabled,

@@ -1,19 +1,6 @@
 import { pick } from '@vendure/common/lib/pick';
 
-import {
-    CreateFacet,
-    CreateFacetInput,
-    CreateFacetValueInput,
-    CreateFacetValues,
-    DeleteFacet,
-    DeleteFacetValues,
-    GetFacetList,
-    GetFacetWithValues,
-    UpdateFacet,
-    UpdateFacetInput,
-    UpdateFacetValueInput,
-    UpdateFacetValues,
-} from '../../common/generated-types';
+import * as Codegen from '../../common/generated-types';
 import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
@@ -31,75 +18,90 @@ export class FacetDataService {
     constructor(private baseDataService: BaseDataService) {}
 
     getFacets(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetFacetList.Query, GetFacetList.Variables>(GET_FACET_LIST, {
-            options: {
-                take,
-                skip,
+        return this.baseDataService.query<Codegen.GetFacetListQuery, Codegen.GetFacetListQueryVariables>(
+            GET_FACET_LIST,
+            {
+                options: {
+                    take,
+                    skip,
+                },
             },
-        });
+        );
     }
 
     getAllFacets() {
-        return this.baseDataService.query<GetFacetList.Query, GetFacetList.Variables>(GET_FACET_LIST, {});
+        return this.baseDataService.query<Codegen.GetFacetListQuery, Codegen.GetFacetListQueryVariables>(
+            GET_FACET_LIST,
+            {},
+        );
     }
 
     getFacet(id: string) {
-        return this.baseDataService.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
-            GET_FACET_WITH_VALUES,
-            {
-                id,
-            },
-        );
-    }
-
-    createFacet(facet: CreateFacetInput) {
-        const input: CreateFacet.Variables = {
-            input: pick(facet, ['code', 'isPrivate', 'translations', 'values', 'customFields']),
-        };
-        return this.baseDataService.mutate<CreateFacet.Mutation, CreateFacet.Variables>(CREATE_FACET, input);
-    }
-
-    updateFacet(facet: UpdateFacetInput) {
-        const input: UpdateFacet.Variables = {
-            input: pick(facet, ['id', 'code', 'isPrivate', 'translations', 'customFields']),
-        };
-        return this.baseDataService.mutate<UpdateFacet.Mutation, UpdateFacet.Variables>(UPDATE_FACET, input);
-    }
-
-    deleteFacet(id: string, force: boolean) {
-        return this.baseDataService.mutate<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
+        return this.baseDataService.query<
+            Codegen.GetFacetWithValuesQuery,
+            Codegen.GetFacetWithValuesQueryVariables
+        >(GET_FACET_WITH_VALUES, {
             id,
-            force,
         });
     }
 
-    createFacetValues(facetValues: CreateFacetValueInput[]) {
-        const input: CreateFacetValues.Variables = {
-            input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
+    createFacet(facet: Codegen.CreateFacetInput) {
+        const input: Codegen.CreateFacetMutationVariables = {
+            input: pick(facet, ['code', 'isPrivate', 'translations', 'values', 'customFields']),
         };
-        return this.baseDataService.mutate<CreateFacetValues.Mutation, CreateFacetValues.Variables>(
-            CREATE_FACET_VALUES,
+        return this.baseDataService.mutate<Codegen.CreateFacetMutation, Codegen.CreateFacetMutationVariables>(
+            CREATE_FACET,
             input,
         );
     }
 
-    updateFacetValues(facetValues: UpdateFacetValueInput[]) {
-        const input: UpdateFacetValues.Variables = {
-            input: facetValues.map(pick(['id', 'code', 'translations', 'customFields'])),
+    updateFacet(facet: Codegen.UpdateFacetInput) {
+        const input: Codegen.UpdateFacetMutationVariables = {
+            input: pick(facet, ['id', 'code', 'isPrivate', 'translations', 'customFields']),
         };
-        return this.baseDataService.mutate<UpdateFacetValues.Mutation, UpdateFacetValues.Variables>(
-            UPDATE_FACET_VALUES,
+        return this.baseDataService.mutate<Codegen.UpdateFacetMutation, Codegen.UpdateFacetMutationVariables>(
+            UPDATE_FACET,
             input,
         );
     }
 
-    deleteFacetValues(ids: string[], force: boolean) {
-        return this.baseDataService.mutate<DeleteFacetValues.Mutation, DeleteFacetValues.Variables>(
-            DELETE_FACET_VALUES,
+    deleteFacet(id: string, force: boolean) {
+        return this.baseDataService.mutate<Codegen.DeleteFacetMutation, Codegen.DeleteFacetMutationVariables>(
+            DELETE_FACET,
             {
-                ids,
+                id,
                 force,
             },
         );
+    }
+
+    createFacetValues(facetValues: Codegen.CreateFacetValueInput[]) {
+        const input: Codegen.CreateFacetValuesMutationVariables = {
+            input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
+        };
+        return this.baseDataService.mutate<
+            Codegen.CreateFacetValuesMutation,
+            Codegen.CreateFacetValuesMutationVariables
+        >(CREATE_FACET_VALUES, input);
+    }
+
+    updateFacetValues(facetValues: Codegen.UpdateFacetValueInput[]) {
+        const input: Codegen.UpdateFacetValuesMutationVariables = {
+            input: facetValues.map(pick(['id', 'code', 'translations', 'customFields'])),
+        };
+        return this.baseDataService.mutate<
+            Codegen.UpdateFacetValuesMutation,
+            Codegen.UpdateFacetValuesMutationVariables
+        >(UPDATE_FACET_VALUES, input);
+    }
+
+    deleteFacetValues(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteFacetValuesMutation,
+            Codegen.DeleteFacetValuesMutationVariables
+        >(DELETE_FACET_VALUES, {
+            ids,
+            force,
+        });
     }
 }

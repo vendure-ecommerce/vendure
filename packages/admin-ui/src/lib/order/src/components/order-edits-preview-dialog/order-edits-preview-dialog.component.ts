@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { CustomFieldConfig, Dialog, ModifyOrderInput, OrderDetail } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, Dialog, ModifyOrderInput, OrderDetailFragment } from '@vendure/admin-ui/core';
 
 export enum OrderEditResultType {
     Refund,
@@ -36,12 +36,12 @@ type OrderEditResult =
 })
 export class OrderEditsPreviewDialogComponent implements OnInit, Dialog<OrderEditResult> {
     // Passed in via the modalService
-    order: OrderDetail.Fragment;
+    order: OrderDetailFragment;
     originalTotalWithTax: number;
     orderLineCustomFields: CustomFieldConfig[];
     modifyOrderInput: ModifyOrderInput;
 
-    selectedPayment?: OrderDetail.Payments;
+    selectedPayment?: NonNullable<OrderDetailFragment['payments']>[number];
     refundNote: string;
     resolveWith: (result?: OrderEditResult) => void;
 

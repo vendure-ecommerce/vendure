@@ -1,16 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 
-import {
-    CustomerFragment,
-    GetCustomerList,
-    GetProductList,
-    GetProductSimple,
-    RelationCustomFieldConfig,
-} from '../../../../common/generated-types';
+import * as Codegen from '../../../../common/generated-types';
+import { CustomerFragment, RelationCustomFieldConfig } from '../../../../common/generated-types';
 import { DataService } from '../../../../data/providers/data.service';
 import { ModalService } from '../../../../providers/modal/modal.service';
 import { RelationSelectorDialogComponent } from '../relation-selector-dialog/relation-selector-dialog.component';
@@ -30,7 +25,7 @@ export class RelationCustomerInputComponent implements OnInit {
 
     searchControl = new FormControl('');
     searchTerm$ = new Subject<string>();
-    results$: Observable<GetCustomerList.Items[]>;
+    results$: Observable<Codegen.GetCustomerListQuery['customers']['items']>;
 
     get customer(): CustomerFragment | undefined {
         return this.parentFormControl.value;

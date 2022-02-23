@@ -4,7 +4,8 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
-    GetAdministrators,
+    GetAdministratorsQuery,
+    ItemOf,
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
@@ -17,8 +18,8 @@ import { switchMap } from 'rxjs/operators';
     styleUrls: ['./administrator-list.component.scss'],
 })
 export class AdministratorListComponent extends BaseListComponent<
-    GetAdministrators.Query,
-    GetAdministrators.Items
+    GetAdministratorsQuery,
+    ItemOf<GetAdministratorsQuery, 'administrators'>
 > {
     constructor(
         private dataService: DataService,
@@ -30,11 +31,11 @@ export class AdministratorListComponent extends BaseListComponent<
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.administrator.getAdministrators(...args),
-            (data) => data.administrators,
+            data => data.administrators,
         );
     }
 
-    deleteAdministrator(administrator: GetAdministrators.Items) {
+    deleteAdministrator(administrator: ItemOf<GetAdministratorsQuery, 'administrators'>) {
         return this.modalService
             .dialog({
                 title: _('catalog.confirm-delete-administrator'),
@@ -45,7 +46,7 @@ export class AdministratorListComponent extends BaseListComponent<
                 ],
             })
             .pipe(
-                switchMap((res) =>
+                switchMap(res =>
                     res ? this.dataService.administrator.deleteAdministrator(administrator.id) : EMPTY,
                 ),
             )
@@ -56,7 +57,7 @@ export class AdministratorListComponent extends BaseListComponent<
                     });
                     this.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Administrator',
                     });

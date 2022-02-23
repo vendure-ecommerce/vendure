@@ -5,7 +5,8 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
-    GetCustomerList,
+    GetCustomerListQuery,
+    ItemOf,
     LogicalOperator,
     ModalService,
     NotificationService,
@@ -20,7 +21,7 @@ import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
     styleUrls: ['./customer-list.component.scss'],
 })
 export class CustomerListComponent
-    extends BaseListComponent<GetCustomerList.Query, GetCustomerList.Items>
+    extends BaseListComponent<GetCustomerListQuery, ItemOf<GetCustomerListQuery, 'customers'>>
     implements OnInit
 {
     searchTerm = new FormControl('');
@@ -70,7 +71,7 @@ export class CustomerListComponent
             .subscribe(() => this.refresh());
     }
 
-    deleteCustomer(customer: GetCustomerList.Items) {
+    deleteCustomer(customer: ItemOf<GetCustomerListQuery, 'customers'>) {
         return this.modalService
             .dialog({
                 title: _('catalog.confirm-delete-customer'),

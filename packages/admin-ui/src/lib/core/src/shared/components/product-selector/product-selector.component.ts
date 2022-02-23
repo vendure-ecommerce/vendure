@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { concat, merge, Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, mapTo, switchMap, tap, throttleTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, mapTo, switchMap, tap } from 'rxjs/operators';
 
-import { ProductSelectorSearch } from '../../../common/generated-types';
+import { ProductSelectorSearchQuery } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
@@ -27,8 +27,8 @@ import { DataService } from '../../../data/providers/data.service';
 export class ProductSelectorComponent implements OnInit {
     searchInput$ = new Subject<string>();
     searchLoading = false;
-    searchResults$: Observable<ProductSelectorSearch.Items[]>;
-    @Output() productSelected = new EventEmitter<ProductSelectorSearch.Items>();
+    searchResults$: Observable<ProductSelectorSearchQuery['search']['items']>;
+    @Output() productSelected = new EventEmitter<ProductSelectorSearchQuery['search']['items'][number]>();
 
     @ViewChild('autoComplete', { static: true })
     private ngSelect: NgSelectComponent;
@@ -58,7 +58,7 @@ export class ProductSelectorComponent implements OnInit {
         this.searchResults$ = concat(of([]), merge(searchItems$, clear$));
     }
 
-    selectResult(product?: ProductSelectorSearch.Items) {
+    selectResult(product?: ProductSelectorSearchQuery['search']['items'][number]) {
         if (product) {
             this.productSelected.emit(product);
             this.ngSelect.clearModel();

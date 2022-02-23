@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseListComponent } from '@vendure/admin-ui/core';
-import { GetRoles, Role } from '@vendure/admin-ui/core';
+import { BaseListComponent, GetRolesQuery, ItemOf } from '@vendure/admin-ui/core';
+import { Role } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
@@ -16,10 +16,13 @@ import { map, switchMap } from 'rxjs/operators';
     styleUrls: ['./role-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRoles.Items> implements OnInit {
+export class RoleListComponent
+    extends BaseListComponent<GetRolesQuery, ItemOf<GetRolesQuery, 'roles'>>
+    implements OnInit
+{
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    visibleRoles$: Observable<GetRoles.Items[]>;
+    visibleRoles$: Observable<Array<ItemOf<GetRolesQuery, 'roles'>>>;
 
     constructor(
         private modalService: ModalService,
@@ -42,7 +45,7 @@ export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRole
         );
     }
 
-    toggleDisplayLimit(role: GetRoles.Items) {
+    toggleDisplayLimit(role: ItemOf<GetRolesQuery, 'roles'>) {
         if (this.displayLimit[role.id] === role.permissions.length) {
             this.displayLimit[role.id] = this.initialLimit;
         } else {

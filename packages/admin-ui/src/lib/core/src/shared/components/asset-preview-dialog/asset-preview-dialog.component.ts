@@ -2,11 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { AssetFragment, GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
+import { GetAssetQuery, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { Dialog } from '../../../providers/modal/modal.types';
-
-type AssetLike = GetAssetList.Items | AssetFragment;
+import { AssetLike } from '../asset-gallery/asset-gallery.types';
 
 @Component({
     selector: 'vdr-asset-preview-dialog',
@@ -19,7 +18,7 @@ export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
     asset: AssetLike;
     assetChanges?: UpdateAssetInput;
     resolveWith: (result?: void) => void;
-    assetWithTags$: Observable<GetAsset.Asset>;
+    assetWithTags$: Observable<GetAssetQuery['asset']>;
 
     ngOnInit() {
         this.assetWithTags$ = of(this.asset).pipe(
@@ -34,7 +33,7 @@ export class AssetPreviewDialogComponent implements Dialog<void>, OnInit {
         );
     }
 
-    private hasTags(asset: AssetLike): asset is GetAssetList.Items {
+    private hasTags(asset: AssetLike): asset is AssetLike & { tags: string[] } {
         return asset.hasOwnProperty('tags');
     }
 }

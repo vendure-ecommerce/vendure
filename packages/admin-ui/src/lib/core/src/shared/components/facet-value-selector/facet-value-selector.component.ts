@@ -10,7 +10,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 
-import { FacetValue, FacetWithValues } from '../../../common/generated-types';
+import { FacetValueFragment, FacetWithValuesFragment } from '../../../common/generated-types';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { DataService } from '../../../data/providers/data.service';
 
@@ -18,7 +18,7 @@ export type FacetValueSeletorItem = {
     name: string;
     facetName: string;
     id: string;
-    value: FacetValue.Fragment;
+    value: FacetValueFragment;
 };
 
 /**
@@ -57,8 +57,8 @@ export type FacetValueSeletorItem = {
     ],
 })
 export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor {
-    @Output() selectedValuesChange = new EventEmitter<FacetValue.Fragment[]>();
-    @Input() facets: FacetWithValues.Fragment[];
+    @Output() selectedValuesChange = new EventEmitter<FacetValueFragment[]>();
+    @Input() facets: FacetWithValuesFragment[];
     @Input() readonly = false;
 
     @ViewChild(NgSelectComponent) private ngSelect: NgSelectComponent;
@@ -100,7 +100,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
         this.ngSelect.focus();
     }
 
-    writeValue(obj: string | FacetValue.Fragment[] | Array<string | number> | null): void {
+    writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null): void {
         if (typeof obj === 'string') {
             try {
                 const facetIds = JSON.parse(obj) as string[];
@@ -120,7 +120,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
         }
     }
 
-    private toSelectorItem = (facetValue: FacetValue.Fragment): FacetValueSeletorItem => {
+    private toSelectorItem = (facetValue: FacetValueFragment): FacetValueSeletorItem => {
         return {
             name: facetValue.name,
             facetName: facetValue.facet.name,

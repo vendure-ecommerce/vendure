@@ -4,8 +4,9 @@ import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/com
 import { Observable } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 
+import { ItemOf } from '../../../common/base-list.component';
 import { FormInputComponent } from '../../../common/component-registry-types';
-import { GetCustomerGroups } from '../../../common/generated-types';
+import { GetCustomerGroupsQuery } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
@@ -26,7 +27,7 @@ export class CustomerGroupFormInputComponent implements FormInputComponent, OnIn
     static readonly id: DefaultFormComponentId = 'customer-group-form-input';
     @Input() readonly: boolean;
     formControl: FormControl;
-    customerGroups$: Observable<GetCustomerGroups.Items[]>;
+    customerGroups$: Observable<GetCustomerGroupsQuery['customerGroups']['items']>;
     config: DefaultFormComponentConfig<'customer-group-form-input'>;
 
     constructor(private dataService: DataService) {}
@@ -40,7 +41,7 @@ export class CustomerGroupFormInputComponent implements FormInputComponent, OnIn
             .pipe(startWith([]));
     }
 
-    selectGroup(group: GetCustomerGroups.Items) {
+    selectGroup(group: ItemOf<GetCustomerGroupsQuery, 'customerGroups'>) {
         this.formControl.setValue(group.id);
     }
 }

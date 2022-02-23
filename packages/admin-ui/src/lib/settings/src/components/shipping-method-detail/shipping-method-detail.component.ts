@@ -12,13 +12,14 @@ import {
     CustomFieldConfig,
     DataService,
     findTranslation,
-    GetActiveChannel,
+    GetActiveChannelQuery,
     getConfigArgValue,
     LanguageCode,
     NotificationService,
     Permission,
     ServerConfigService,
     ShippingMethod,
+    ShippingMethodFragment,
     TestShippingMethodInput,
     TestShippingMethodResult,
     toConfigurableOperationInput,
@@ -38,7 +39,7 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShippingMethodDetailComponent
-    extends BaseDetailComponent<ShippingMethod.Fragment>
+    extends BaseDetailComponent<ShippingMethodFragment>
     implements OnInit, OnDestroy
 {
     detailForm: FormGroup;
@@ -49,7 +50,7 @@ export class ShippingMethodDetailComponent
     selectedCheckerDefinition?: ConfigurableOperationDefinition;
     selectedCalculator?: ConfigurableOperation | null;
     selectedCalculatorDefinition?: ConfigurableOperationDefinition;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
+    activeChannel$: Observable<GetActiveChannelQuery['activeChannel']>;
     testAddress: TestAddress;
     testOrderLines: TestOrderLine[];
     testDataUpdated = false;
@@ -278,7 +279,7 @@ export class ShippingMethodDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedShippingMethod(
-        shippingMethod: ShippingMethod.Fragment,
+        shippingMethod: ShippingMethodFragment,
         formGroup: FormGroup,
         languageCode: LanguageCode,
     ): Omit<CreateShippingMethodInput | UpdateShippingMethodInput, 'checker' | 'calculator'> {
@@ -297,7 +298,7 @@ export class ShippingMethodDetailComponent
         return { ...input, fulfillmentHandler: formValue.fulfillmentHandler };
     }
 
-    protected setFormValues(shippingMethod: ShippingMethod.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(shippingMethod: ShippingMethodFragment, languageCode: LanguageCode): void {
         const currentTranslation = findTranslation(shippingMethod, languageCode);
         this.detailForm.patchValue({
             name: currentTranslation?.name ?? '',

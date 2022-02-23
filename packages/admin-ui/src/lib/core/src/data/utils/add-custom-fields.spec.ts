@@ -1,6 +1,6 @@
-import { DocumentNode, FieldNode, FragmentDefinitionNode } from 'graphql';
+import { DocumentNode, FieldNode, FragmentDefinitionNode, Kind, OperationTypeNode } from 'graphql';
 
-import { CustomFieldConfig, CustomFields } from '../../common/generated-types';
+import { CustomFields } from '../../common/generated-types';
 
 import { addCustomFields } from './add-custom-fields';
 
@@ -10,21 +10,21 @@ describe('addCustomFields()', () => {
 
     function generateFragmentDefinitionFor(type: keyof CustomFields): FragmentDefinitionNode {
         return {
-            kind: 'FragmentDefinition',
+            kind: Kind.FRAGMENT_DEFINITION,
             name: {
-                kind: 'Name',
+                kind: Kind.NAME,
                 value: type,
             },
             typeCondition: {
-                kind: 'NamedType',
+                kind: Kind.NAMED_TYPE,
                 name: {
-                    kind: 'Name',
+                    kind: Kind.NAME,
                     value: type,
                 },
             },
             directives: [],
             selectionSet: {
-                kind: 'SelectionSet',
+                kind: Kind.SELECTION_SET,
                 selections: [],
             },
         };
@@ -32,35 +32,35 @@ describe('addCustomFields()', () => {
 
     beforeEach(() => {
         documentNode = {
-            kind: 'Document',
+            kind: Kind.DOCUMENT,
             definitions: [
                 {
-                    kind: 'OperationDefinition',
-                    operation: 'query',
+                    kind: Kind.OPERATION_DEFINITION,
+                    operation: OperationTypeNode.QUERY,
                     name: {
-                        kind: 'Name',
+                        kind: Kind.NAME,
                         value: 'GetProductWithVariants',
                     },
                     variableDefinitions: [],
                     directives: [],
                     selectionSet: {
-                        kind: 'SelectionSet',
+                        kind: Kind.SELECTION_SET,
                         selections: [
                             {
-                                kind: 'Field',
+                                kind: Kind.FIELD,
                                 name: {
-                                    kind: 'Name',
+                                    kind: Kind.NAME,
                                     value: 'product',
                                 },
                                 arguments: [],
                                 directives: [],
                                 selectionSet: {
-                                    kind: 'SelectionSet',
+                                    kind: Kind.SELECTION_SET,
                                     selections: [
                                         {
-                                            kind: 'FragmentSpread',
+                                            kind: Kind.FRAGMENT_SPREAD,
                                             name: {
-                                                kind: 'Name',
+                                                kind: Kind.NAME,
                                                 value: 'ProductWithVariants',
                                             },
                                             directives: [],
@@ -72,55 +72,55 @@ describe('addCustomFields()', () => {
                     },
                 },
                 {
-                    kind: 'FragmentDefinition',
+                    kind: Kind.FRAGMENT_DEFINITION,
                     name: {
-                        kind: 'Name',
+                        kind: Kind.NAME,
                         value: 'ProductWithVariants',
                     },
                     typeCondition: {
-                        kind: 'NamedType',
+                        kind: Kind.NAMED_TYPE,
                         name: {
-                            kind: 'Name',
+                            kind: Kind.NAME,
                             value: 'Product',
                         },
                     },
                     directives: [],
                     selectionSet: {
-                        kind: 'SelectionSet',
+                        kind: Kind.SELECTION_SET,
                         selections: [
                             {
-                                kind: 'Field',
+                                kind: Kind.FIELD,
                                 name: {
-                                    kind: 'Name',
+                                    kind: Kind.NAME,
                                     value: 'id',
                                 },
                                 arguments: [],
                                 directives: [],
                             },
                             {
-                                kind: 'Field',
+                                kind: Kind.FIELD,
                                 name: {
-                                    kind: 'Name',
+                                    kind: Kind.NAME,
                                     value: 'translations',
                                 },
                                 arguments: [],
                                 directives: [],
                                 selectionSet: {
-                                    kind: 'SelectionSet',
+                                    kind: Kind.SELECTION_SET,
                                     selections: [
                                         {
-                                            kind: 'Field',
+                                            kind: Kind.FIELD,
                                             name: {
-                                                kind: 'Name',
+                                                kind: Kind.NAME,
                                                 value: 'languageCode',
                                             },
                                             arguments: [],
                                             directives: [],
                                         },
                                         {
-                                            kind: 'Field',
+                                            kind: Kind.FIELD,
                                             name: {
-                                                kind: 'Name',
+                                                kind: Kind.NAME,
                                                 value: 'name',
                                             },
                                             arguments: [],

@@ -118,8 +118,8 @@ export class InsufficientStockError extends ErrorResult {
   readonly errorCode = 'INSUFFICIENT_STOCK_ERROR' as any;
   readonly message = 'INSUFFICIENT_STOCK_ERROR';
   constructor(
-    public quantityAvailable: Scalars['Int'],
     public order: any,
+    public quantityAvailable: Scalars['Int'],
   ) {
     super();
   }
@@ -222,9 +222,9 @@ export class OrderStateTransitionError extends ErrorResult {
   readonly errorCode = 'ORDER_STATE_TRANSITION_ERROR' as any;
   readonly message = 'ORDER_STATE_TRANSITION_ERROR';
   constructor(
-    public transitionError: Scalars['String'],
     public fromState: Scalars['String'],
     public toState: Scalars['String'],
+    public transitionError: Scalars['String'],
   ) {
     super();
   }
@@ -325,7 +325,7 @@ export const shopErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
-  RemoveOrderItemsResult: {
+  AddPaymentToOrderResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
@@ -335,7 +335,47 @@ export const shopErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
-  TransitionOrderToStateResult: {
+  AuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  NativeAuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  RefreshCustomerVerificationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  RegisterCustomerAccountResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  RemoveOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  RequestPasswordResetResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  RequestUpdateCustomerEmailAddressResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  ResetPasswordResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  SetCustomerForOrderResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
@@ -350,49 +390,9 @@ export const shopErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
-  AddPaymentToOrderResult: {
+  TransitionOrderToStateResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
-    },
-  },
-  SetCustomerForOrderResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Order';
-    },
-  },
-  NativeAuthenticationResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
-    },
-  },
-  AuthenticationResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
-    },
-  },
-  RegisterCustomerAccountResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Success';
-    },
-  },
-  RefreshCustomerVerificationResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Success';
-    },
-  },
-  VerifyCustomerAccountResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
-    },
-  },
-  UpdateCustomerPasswordResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Success';
-    },
-  },
-  RequestUpdateCustomerEmailAddressResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Success';
     },
   },
   UpdateCustomerEmailAddressResult: {
@@ -400,12 +400,12 @@ export const shopErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Success';
     },
   },
-  RequestPasswordResetResult: {
+  UpdateCustomerPasswordResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Success';
     },
   },
-  ResetPasswordResult: {
+  VerifyCustomerAccountResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
     },

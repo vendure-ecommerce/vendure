@@ -1,6 +1,6 @@
 import { isPrivate } from '@babel/types';
 
-import { FacetWithValues, LanguageCode } from '../generated-types';
+import { FacetWithValuesFragment, LanguageCode } from '../generated-types';
 
 import { flattenFacetValues } from './flatten-facet-values';
 
@@ -57,7 +57,7 @@ describe('flattenFacetValues()', () => {
             facet: {} as any,
         };
 
-        const input: FacetWithValues.Fragment[] = [
+        const input: FacetWithValuesFragment[] = [
             {
                 id: '1',
                 createdAt: '',

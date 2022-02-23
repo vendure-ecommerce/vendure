@@ -5,7 +5,7 @@ import {
     CanDeactivateDetailGuard,
     createResolveData,
     detailBreadcrumb,
-    OrderDetail,
+    OrderDetailFragment,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
@@ -43,7 +43,7 @@ export const orderRoutes: Route[] = [
 ];
 
 export function orderBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<OrderDetail.Fragment>({
+    return detailBreadcrumb<OrderDetailFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.orders',

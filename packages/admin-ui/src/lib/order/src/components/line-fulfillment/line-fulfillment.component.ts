@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { OrderDetail } from '@vendure/admin-ui/core';
-import { unique } from '@vendure/common/lib/unique';
+import { OrderDetailFragment } from '@vendure/admin-ui/core';
 
 export type FulfillmentStatus = 'full' | 'partial' | 'none';
+type Fulfillment = NonNullable<OrderDetailFragment['fulfillments']>[number];
 
 @Component({
     selector: 'vdr-line-fulfillment',
@@ -11,11 +11,14 @@ export type FulfillmentStatus = 'full' | 'partial' | 'none';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineFulfillmentComponent implements OnChanges {
-    @Input() line: OrderDetail.Lines;
+    @Input() line: OrderDetailFragment['lines'][number];
     @Input() orderState: string;
     fulfilledCount = 0;
     fulfillmentStatus: FulfillmentStatus;
-    fulfillments: Array<{ count: number; fulfillment: OrderDetail.Fulfillments }> = [];
+    fulfillments: Array<{
+        count: number;
+        fulfillment: Fulfillment;
+    }> = [];
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.line) {
@@ -28,7 +31,7 @@ export class LineFulfillmentComponent implements OnChanges {
     /**
      * Returns the number of items in an OrderLine which are fulfilled.
      */
-    private getDeliveredCount(line: OrderDetail.Lines): number {
+    private getDeliveredCount(line: OrderDetailFragment['lines'][number]): number {
         return line.items.reduce((sum, item) => sum + (item.fulfillment ? 1 : 0), 0);
     }
 
@@ -43,8 +46,8 @@ export class LineFulfillmentComponent implements OnChanges {
     }
 
     private getFulfillments(
-        line: OrderDetail.Lines,
-    ): Array<{ count: number; fulfillment: OrderDetail.Fulfillments }> {
+        line: OrderDetailFragment['lines'][number],
+    ): Array<{ count: number; fulfillment: Fulfillment }> {
         const counts: { [fulfillmentId: string]: number } = {};
 
         for (const item of line.items) {
@@ -58,7 +61,7 @@ export class LineFulfillmentComponent implements OnChanges {
         }
         const all = line.items.reduce((fulfillments, item) => {
             return item.fulfillment ? [...fulfillments, item.fulfillment] : fulfillments;
-        }, [] as OrderDetail.Fulfillments[]);
+        }, [] as Fulfillment[]);
 
         return Object.entries(counts).map(([id, count]) => {
             return {

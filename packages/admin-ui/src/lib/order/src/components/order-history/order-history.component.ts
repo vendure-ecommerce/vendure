@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
-    GetOrderHistory,
+    GetOrderHistoryQuery,
     HistoryEntry,
     HistoryEntryType,
-    OrderDetail,
     OrderDetailFragment,
     TimelineDisplayType,
 } from '@vendure/admin-ui/core';
+
+type OrderHistoryItem = NonNullable<GetOrderHistoryQuery['order']>['history']['items'][number];
 
 @Component({
     selector: 'vdr-order-history',
@@ -16,7 +17,7 @@ import {
 })
 export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
-    @Input() history: GetOrderHistory.Items[];
+    @Input() history: OrderHistoryItem[];
     @Output() addNote = new EventEmitter<{ note: string; isPublic: boolean }>();
     @Output() updateNote = new EventEmitter<HistoryEntry>();
     @Output() deleteNote = new EventEmitter<HistoryEntry>();
@@ -25,7 +26,7 @@ export class OrderHistoryComponent {
     expanded = false;
     readonly type = HistoryEntryType;
 
-    getDisplayType(entry: GetOrderHistory.Items): TimelineDisplayType {
+    getDisplayType(entry: OrderHistoryItem): TimelineDisplayType {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
             if (entry.data.to === 'Delivered') {
                 return 'success';
@@ -53,7 +54,7 @@ export class OrderHistoryComponent {
         return 'default';
     }
 
-    getTimelineIcon(entry: GetOrderHistory.Items) {
+    getTimelineIcon(entry: OrderHistoryItem) {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
             if (entry.data.to === 'Delivered') {
                 return ['success-standard', 'is-solid'];
@@ -83,7 +84,7 @@ export class OrderHistoryComponent {
         }
     }
 
-    isFeatured(entry: GetOrderHistory.Items): boolean {
+    isFeatured(entry: OrderHistoryItem): boolean {
         switch (entry.type) {
             case HistoryEntryType.ORDER_STATE_TRANSITION: {
                 return (
@@ -104,7 +105,9 @@ export class OrderHistoryComponent {
         }
     }
 
-    getFulfillment(entry: GetOrderHistory.Items): OrderDetail.Fulfillments | undefined {
+    getFulfillment(
+        entry: OrderHistoryItem,
+    ): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined {
         if (
             (entry.type === HistoryEntryType.ORDER_FULFILLMENT ||
                 entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) &&
@@ -114,13 +117,13 @@ export class OrderHistoryComponent {
         }
     }
 
-    getPayment(entry: GetOrderHistory.Items): OrderDetail.Payments | undefined {
+    getPayment(entry: OrderHistoryItem): NonNullable<OrderDetailFragment['payments']>[number] | undefined {
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION && this.order.payments) {
             return this.order.payments.find(p => p.id === entry.data.paymentId);
         }
     }
 
-    getCancelledItems(entry: GetOrderHistory.Items): Array<{ name: string; quantity: number }> {
+    getCancelledItems(entry: OrderHistoryItem): Array<{ name: string; quantity: number }> {
         const itemMap = new Map<string, number>();
         const cancelledItemIds: string[] = entry.data.orderItemIds;
         for (const line of this.order.lines) {
@@ -142,7 +145,7 @@ export class OrderHistoryComponent {
         return this.order.modifications.find(m => m.id === id);
     }
 
-    getName(entry: GetOrderHistory.Items): string {
+    getName(entry: OrderHistoryItem): string {
         const { administrator } = entry;
         if (administrator) {
             return `${administrator.firstName} ${administrator.lastName}`;

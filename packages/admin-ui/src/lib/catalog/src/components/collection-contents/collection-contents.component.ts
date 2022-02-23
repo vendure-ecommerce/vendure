@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DataService, GetCollectionContentsQuery } from '@vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
     debounceTime,
@@ -22,9 +23,6 @@ import {
     tap,
 } from 'rxjs/operators';
 
-import { GetCollectionContents } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-
 @Component({
     selector: 'vdr-collection-contents',
     templateUrl: './collection-contents.component.html',
@@ -35,7 +33,7 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     @Input() collectionId: string;
     @ContentChild(TemplateRef, { static: true }) headerTemplate: TemplateRef<any>;
 
-    contents$: Observable<GetCollectionContents.Items[]>;
+    contents$: Observable<NonNullable<GetCollectionContentsQuery['collection']>['productVariants']['items']>;
     contentsTotalItems$: Observable<number>;
     contentsItemsPerPage$: Observable<number>;
     contentsCurrentPage$: Observable<number>;

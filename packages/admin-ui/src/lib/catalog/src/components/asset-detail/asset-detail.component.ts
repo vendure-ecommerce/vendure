@@ -6,10 +6,12 @@ import {
     Asset,
     BaseDetailComponent,
     CustomFieldConfig,
-    GetAsset,
+    DataService,
+    GetAssetQuery,
     LanguageCode,
+    NotificationService,
+    ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { DataService, NotificationService, ServerConfigService } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-asset-detail',
@@ -17,7 +19,10 @@ import { DataService, NotificationService, ServerConfigService } from '@vendure/
     styleUrls: ['./asset-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssetDetailComponent extends BaseDetailComponent<GetAsset.Asset> implements OnInit, OnDestroy {
+export class AssetDetailComponent
+    extends BaseDetailComponent<NonNullable<GetAssetQuery['asset']>>
+    implements OnInit, OnDestroy
+{
     detailForm = new FormGroup({});
     customFields: CustomFieldConfig[];
 
@@ -74,7 +79,7 @@ export class AssetDetailComponent extends BaseDetailComponent<GetAsset.Asset> im
             );
     }
 
-    protected setFormValues(entity: GetAsset.Asset, languageCode: LanguageCode): void {
+    protected setFormValues(entity: NonNullable<GetAssetQuery['asset']>, languageCode: LanguageCode): void {
         this.detailForm.get('name')?.setValue(entity.name);
         this.detailForm.get('tags')?.setValue(entity.tags);
         if (this.customFields.length) {

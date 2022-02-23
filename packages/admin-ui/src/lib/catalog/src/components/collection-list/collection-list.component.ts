@@ -4,7 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
-    GetCollectionList,
+    GetCollectionListQuery,
+    ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -35,7 +36,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     filterTermControl = new FormControl('');
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
-    items$: Observable<GetCollectionList.Items[]>;
+    items$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     expandAll = false;

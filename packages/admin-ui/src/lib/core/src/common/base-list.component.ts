@@ -1,5 +1,6 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, takeUntil } from 'rxjs/operators';
 
@@ -8,7 +9,15 @@ import { QueryResult } from '../data/query-result';
 export type ListQueryFn<R> = (take: number, skip: number, ...args: any[]) => QueryResult<R, any>;
 export type MappingFn<T, R> = (result: R) => { items: T[]; totalItems: number };
 export type OnPageChangeFn<V> = (skip: number, take: number) => V;
-
+/**
+ * Unwraps a query that returns a paginated list with an "items" property,
+ * returning the type of one of the items in the array.
+ */
+export type ItemOf<T, K extends keyof T> = T[K] extends { items: infer R }
+    ? R extends any[]
+        ? R[number]
+        : R
+    : never;
 /**
  * @description
  * This is a base class which implements the logic required to fetch and manipulate

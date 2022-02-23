@@ -1,13 +1,4 @@
-import {
-    CreatePromotion,
-    CreatePromotionInput,
-    DeletePromotion,
-    GetAdjustmentOperations,
-    GetPromotion,
-    GetPromotionList,
-    UpdatePromotion,
-    UpdatePromotionInput,
-} from '../../common/generated-types';
+import * as Codegen from '../../common/generated-types';
 import {
     CREATE_PROMOTION,
     DELETE_PROMOTION,
@@ -23,49 +14,52 @@ export class PromotionDataService {
     constructor(private baseDataService: BaseDataService) {}
 
     getPromotions(take: number = 10, skip: number = 0) {
-        return this.baseDataService.query<GetPromotionList.Query, GetPromotionList.Variables>(
-            GET_PROMOTION_LIST,
-            {
-                options: {
-                    take,
-                    skip,
-                },
+        return this.baseDataService.query<
+            Codegen.GetPromotionListQuery,
+            Codegen.GetPromotionListQueryVariables
+        >(GET_PROMOTION_LIST, {
+            options: {
+                take,
+                skip,
             },
-        );
-    }
-
-    getPromotion(id: string) {
-        return this.baseDataService.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
-            id,
         });
     }
 
+    getPromotion(id: string) {
+        return this.baseDataService.query<Codegen.GetPromotionQuery, Codegen.GetPromotionQueryVariables>(
+            GET_PROMOTION,
+            {
+                id,
+            },
+        );
+    }
+
     getPromotionActionsAndConditions() {
-        return this.baseDataService.query<GetAdjustmentOperations.Query>(GET_ADJUSTMENT_OPERATIONS);
+        return this.baseDataService.query<Codegen.GetAdjustmentOperationsQuery>(GET_ADJUSTMENT_OPERATIONS);
     }
 
-    createPromotion(input: CreatePromotionInput) {
-        return this.baseDataService.mutate<CreatePromotion.Mutation, CreatePromotion.Variables>(
-            CREATE_PROMOTION,
-            {
-                input,
-            },
-        );
+    createPromotion(input: Codegen.CreatePromotionInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreatePromotionMutation,
+            Codegen.CreatePromotionMutationVariables
+        >(CREATE_PROMOTION, {
+            input,
+        });
     }
 
-    updatePromotion(input: UpdatePromotionInput) {
-        return this.baseDataService.mutate<UpdatePromotion.Mutation, UpdatePromotion.Variables>(
-            UPDATE_PROMOTION,
-            {
-                input,
-            },
-        );
+    updatePromotion(input: Codegen.UpdatePromotionInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdatePromotionMutation,
+            Codegen.UpdatePromotionMutationVariables
+        >(UPDATE_PROMOTION, {
+            input,
+        });
     }
 
     deletePromotion(id: string) {
-        return this.baseDataService.mutate<DeletePromotion.Mutation, DeletePromotion.Variables>(
-            DELETE_PROMOTION,
-            { id },
-        );
+        return this.baseDataService.mutate<
+            Codegen.DeletePromotionMutation,
+            Codegen.DeletePromotionMutationVariables
+        >(DELETE_PROMOTION, { id });
     }
 }

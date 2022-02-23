@@ -13,6 +13,7 @@ import {
     Asset,
     BaseDetailComponent,
     Collection,
+    CollectionFragment,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
@@ -44,7 +45,7 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionDetailComponent
-    extends BaseDetailComponent<Collection.Fragment>
+    extends BaseDetailComponent<CollectionFragment>
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
@@ -223,7 +224,7 @@ export class CollectionDetailComponent
     /**
      * Sets the values of the form on changes to the category or current language.
      */
-    protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(entity: CollectionFragment, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(entity, languageCode);
 
         this.detailForm.patchValue({
@@ -250,7 +251,7 @@ export class CollectionDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedCollection(
-        category: Collection.Fragment,
+        category: CollectionFragment,
         form: FormGroup,
         languageCode: LanguageCode,
     ): CreateCollectionInput | UpdateCollectionInput {

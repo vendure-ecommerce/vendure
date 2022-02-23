@@ -2,20 +2,21 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, CustomFieldConfig, PermissionDefinition } from '@vendure/admin-ui/core';
 import {
     Administrator,
+    AdministratorFragment,
+    BaseDetailComponent,
     CreateAdministratorInput,
-    GetAdministrator,
+    CustomFieldConfig,
+    DataService,
     LanguageCode,
+    NotificationService,
     Permission,
-    Role,
+    PermissionDefinition,
     RoleFragment,
+    ServerConfigService,
     UpdateAdministratorInput,
 } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
 import { CUSTOMER_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
@@ -33,14 +34,14 @@ export interface PermissionsByChannel {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminDetailComponent
-    extends BaseDetailComponent<GetAdministrator.Administrator>
+    extends BaseDetailComponent<AdministratorFragment>
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
-    administrator$: Observable<GetAdministrator.Administrator>;
+    administrator$: Observable<AdministratorFragment>;
     permissionDefinitions: PermissionDefinition[];
-    allRoles$: Observable<Role.Fragment[]>;
-    selectedRoles: Role.Fragment[] = [];
+    allRoles$: Observable<RoleFragment[]>;
+    selectedRoles: RoleFragment[] = [];
     detailForm: FormGroup;
     selectedRolePermissions: { [channelId: string]: PermissionsByChannel } = {} as any;
     selectedChannelId: string | null = null;
@@ -93,7 +94,7 @@ export class AdminDetailComponent
         this.destroy();
     }
 
-    rolesChanged(roles: Role[]) {
+    rolesChanged(roles: RoleFragment[]) {
         this.buildPermissionsMap();
     }
 

@@ -14,22 +14,21 @@ import { FormArray, FormGroup } from '@angular/forms';
 import {
     CustomFieldConfig,
     DataService,
-    FacetValue,
-    FacetWithValues,
+    FacetValueFragment,
+    FacetWithValuesFragment,
     flattenFacetValues,
     GlobalFlag,
     LanguageCode,
     ModalService,
     Permission,
-    ProductDetail,
+    ProductDetailFragment,
     ProductOptionFragment,
-    ProductVariant,
+    ProductVariantFragment,
     TaxCategory,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { PaginationInstance } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
@@ -49,20 +48,20 @@ export interface VariantAssetChange extends AssetChange {
 })
 export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
-    @Input() variants: ProductVariant.Fragment[];
+    @Input() variants: ProductVariantFragment[];
     @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
     @Input() taxCategories: TaxCategory[];
-    @Input() facets: FacetWithValues.Fragment[];
-    @Input() optionGroups: ProductDetail.OptionGroups[];
+    @Input() facets: FacetWithValuesFragment[];
+    @Input() optionGroups: ProductDetailFragment['optionGroups'];
     @Input() customFields: CustomFieldConfig[];
     @Input() customOptionFields: CustomFieldConfig[];
     @Input() activeLanguage: LanguageCode;
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
-    @Output() assignToChannel = new EventEmitter<ProductVariant.Fragment>();
+    @Output() assignToChannel = new EventEmitter<ProductVariantFragment>();
     @Output() removeFromChannel = new EventEmitter<{
         channelId: string;
-        variant: ProductVariant.Fragment;
+        variant: ProductVariantFragment;
     }>();
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
@@ -74,7 +73,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
-    private facetValues: FacetValue.Fragment[];
+    private facetValues: FacetValueFragment[];
     private subscription: Subscription;
 
     constructor(
@@ -122,7 +121,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
-    trackById(index: number, item: ProductVariant.Fragment) {
+    trackById(index: number, item: ProductVariantFragment) {
         return item.id;
     }
 
@@ -143,7 +142,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return '';
     }
 
-    getSaleableStockLevel(variant: ProductVariant.Fragment) {
+    getSaleableStockLevel(variant: ProductVariantFragment) {
         const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
             ? this.globalOutOfStockThreshold
             : variant.outOfStockThreshold;
@@ -198,7 +197,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return translation.name;
     }
 
-    pendingFacetValues(variant: ProductVariant.Fragment) {
+    pendingFacetValues(variant: ProductVariantFragment) {
         if (this.facets) {
             const formFacetValueIds = this.getFacetValueIds(variant.id);
             const variantFacetValueIds = variant.facetValues.map(fv => fv.id);
@@ -211,7 +210,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         }
     }
 
-    existingFacetValues(variant: ProductVariant.Fragment) {
+    existingFacetValues(variant: ProductVariantFragment) {
         const formFacetValueIds = this.getFacetValueIds(variant.id);
         const intersection = [...formFacetValueIds].filter(x =>
             variant.facetValues.map(fv => fv.id).includes(x),
@@ -221,7 +220,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
             .filter(notNullOrUndefined);
     }
 
-    removeFacetValue(variant: ProductVariant.Fragment, facetValueId: string) {
+    removeFacetValue(variant: ProductVariantFragment, facetValueId: string) {
         const formGroup = this.formGroupMap.get(variant.id);
         if (formGroup) {
             const newValue = (formGroup.value as VariantFormValue).facetValueIds.filter(
@@ -238,7 +237,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return -1 < this.selectedVariantIds.indexOf(variantId);
     }
 
-    editOption(option: ProductVariant.Options) {
+    editOption(option: ProductVariantFragment['options'][number]) {
         this.modalService
             .fromComponent(UpdateProductOptionDialogComponent, {
                 size: 'md',

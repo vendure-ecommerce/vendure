@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Customer, DataService, GetCustomerGroupWithCustomers } from '@vendure/admin-ui/core';
+import { Customer, DataService } from '@vendure/admin-ui/core';
 import { ZoneMember } from '@vendure/admin-ui/settings';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, takeUntil, tap } from 'rxjs/operators';
@@ -46,15 +46,15 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.membersCurrentPage$ = this.route.paramMap.pipe(
-            map((qpm) => qpm.get('membersPage')),
-            map((page) => (!page ? 1 : +page)),
+            map(qpm => qpm.get('membersPage')),
+            map(page => (!page ? 1 : +page)),
             startWith(1),
             distinctUntilChanged(),
         );
 
         this.membersItemsPerPage$ = this.route.paramMap.pipe(
-            map((qpm) => qpm.get('membersPerPage')),
-            map((perPage) => (!perPage ? 10 : +perPage)),
+            map(qpm => qpm.get('membersPerPage')),
+            map(perPage => (!perPage ? 10 : +perPage)),
             startWith(10),
             distinctUntilChanged(),
         );
@@ -114,13 +114,13 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
         if (this.areAllSelected()) {
             this.selectionChange.emit([]);
         } else {
-            this.selectionChange.emit(this.members.map((v) => v.id));
+            this.selectionChange.emit(this.members.map(v => v.id));
         }
     }
 
     toggleSelectMember(member: ZoneMember) {
         if (this.selectedMemberIds.includes(member.id)) {
-            this.selectionChange.emit(this.selectedMemberIds.filter((id) => id !== member.id));
+            this.selectionChange.emit(this.selectedMemberIds.filter(id => id !== member.id));
         } else {
             this.selectionChange.emit([...this.selectedMemberIds, member.id]);
         }

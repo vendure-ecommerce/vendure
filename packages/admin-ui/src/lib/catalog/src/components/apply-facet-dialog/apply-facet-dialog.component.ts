@@ -5,7 +5,12 @@ import {
     Component,
     ViewChild,
 } from '@angular/core';
-import { Dialog, FacetValue, FacetValueSelectorComponent, FacetWithValues } from '@vendure/admin-ui/core';
+import {
+    Dialog,
+    FacetValue,
+    FacetValueSelectorComponent,
+    FacetWithValuesFragment,
+} from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-apply-facet-dialog',
@@ -18,7 +23,7 @@ export class ApplyFacetDialogComponent implements Dialog<FacetValue[]>, AfterVie
     resolveWith: (result?: FacetValue[]) => void;
     selectedValues: FacetValue[] = [];
     // Provided by caller
-    facets: FacetWithValues.Fragment[];
+    facets: FacetWithValuesFragment[];
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 

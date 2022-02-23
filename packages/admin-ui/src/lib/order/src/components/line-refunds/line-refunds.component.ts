@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { OrderDetail } from '@vendure/admin-ui/core';
+import { OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-line-refunds',
@@ -8,14 +8,14 @@ import { OrderDetail } from '@vendure/admin-ui/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineRefundsComponent {
-    @Input() line: OrderDetail.Lines;
-    @Input() payments: OrderDetail.Payments[];
+    @Input() line: OrderDetailFragment['lines'][number];
+    @Input() payments: OrderDetailFragment['payments'];
 
     getRefundedCount(): number {
         const refunds =
             this.payments?.reduce(
                 (all, payment) => [...all, ...payment.refunds],
-                [] as OrderDetail.Refunds[],
+                [] as NonNullable<OrderDetailFragment['payments']>[number]['refunds'],
             ) ?? [];
         return this.line.items.filter(i => {
             if (i.refundId === null && !i.cancelled) {

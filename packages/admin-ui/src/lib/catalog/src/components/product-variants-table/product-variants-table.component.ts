@@ -7,7 +7,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { Permission, ProductDetail, ProductVariant } from '@vendure/admin-ui/core';
+import { Permission, ProductDetailFragment, ProductVariantFragment } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
@@ -21,10 +21,10 @@ import { PaginationConfig, SelectedAssets } from '../product-detail/product-deta
 })
 export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
-    @Input() variants: ProductVariant.Fragment[];
+    @Input() variants: ProductVariantFragment[];
     @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
-    @Input() optionGroups: ProductDetail.OptionGroups[];
+    @Input() optionGroups: ProductDetailFragment['optionGroups'];
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     formGroupMap = new Map<string, FormGroup>();
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
@@ -60,7 +60,7 @@ export class ProductVariantsTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    getFeaturedAsset(variant: ProductVariant.Fragment) {
+    getFeaturedAsset(variant: ProductVariantFragment) {
         return this.pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset;
     }
 

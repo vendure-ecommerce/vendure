@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-modification-detail',
@@ -9,9 +9,9 @@ import { OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
 })
 export class ModificationDetailComponent implements OnChanges {
     @Input() order: OrderDetailFragment;
-    @Input() modification: OrderDetail.Modifications;
-    private addedItems = new Map<OrderDetail.Lines, number>();
-    private removedItems = new Map<OrderDetail.Lines, number>();
+    @Input() modification: OrderDetailFragment['modifications'][number];
+    private addedItems = new Map<OrderDetailFragment['lines'][number], number>();
+    private removedItems = new Map<OrderDetailFragment['lines'][number], number>();
 
     ngOnChanges(): void {
         const { added, removed } = this.getModifiedLines();
@@ -36,8 +36,8 @@ export class ModificationDetailComponent implements OnChanges {
     }
 
     private getModifiedLines() {
-        const added = new Map<OrderDetail.Lines, number>();
-        const removed = new Map<OrderDetail.Lines, number>();
+        const added = new Map<OrderDetailFragment['lines'][number], number>();
+        const removed = new Map<OrderDetailFragment['lines'][number], number>();
         for (const _item of this.modification.orderItems || []) {
             const result = this.getOrderLineAndItem(_item.id);
             if (result) {

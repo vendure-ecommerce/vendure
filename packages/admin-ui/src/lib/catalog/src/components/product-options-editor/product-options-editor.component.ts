@@ -1,23 +1,21 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
-    CreateFacetInput,
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
-    FacetWithValues,
     findTranslation,
-    GetProductVariantOptions,
+    GetProductVariantOptionsQuery,
     LanguageCode,
     NotificationService,
     Permission,
-    ProductOption,
+    ProductOptionFragment,
     ProductOptionGroup,
+    ProductOptionGroupFragment,
     ServerConfigService,
-    UpdateFacetInput,
     UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
@@ -26,18 +24,17 @@ import { map, mergeMap, take } from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 
+type ProductWithOptions = NonNullable<GetProductVariantOptionsQuery['product']>;
+
 @Component({
     selector: 'vdr-product-options-editor',
     templateUrl: './product-options-editor.component.html',
     styleUrls: ['./product-options-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductOptionsEditorComponent
-    extends BaseDetailComponent<GetProductVariantOptions.Product>
-    implements OnInit
-{
+export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWithOptions> implements OnInit {
     detailForm: FormGroup;
-    optionGroups$: Observable<GetProductVariantOptions.OptionGroups[]>;
+    optionGroups$: Observable<ProductWithOptions['optionGroups']>;
     languageCode$: Observable<LanguageCode>;
     availableLanguages$: Observable<LanguageCode[]>;
     optionGroupCustomFields: CustomFieldConfig[];
@@ -62,7 +59,7 @@ export class ProductOptionsEditorComponent
 
     ngOnInit(): void {
         this.optionGroups$ = this.route.snapshot.data.entity.pipe(
-            map((product: GetProductVariantOptions.Product) => product.optionGroups),
+            map((product: ProductWithOptions) => product.optionGroups),
         );
         this.detailForm = new FormGroup({
             optionGroups: new FormArray([]),
@@ -150,7 +147,7 @@ export class ProductOptionsEditorComponent
     }
 
     private getUpdatedOptionGroup(
-        optionGroup: ProductOptionGroup.Fragment,
+        optionGroup: ProductOptionGroupFragment,
         optionGroupFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductOptionGroupInput {
@@ -168,7 +165,7 @@ export class ProductOptionsEditorComponent
     }
 
     private getUpdatedOption(
-        option: ProductOption.Fragment,
+        option: ProductOptionFragment,
         optionFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductOptionInput {
@@ -185,7 +182,7 @@ export class ProductOptionsEditorComponent
         return input;
     }
 
-    protected setFormValues(entity: GetProductVariantOptions.Product, languageCode: LanguageCode): void {
+    protected setFormValues(entity: ProductWithOptions, languageCode: LanguageCode): void {
         const groupsFormArray = new FormArray([]);
         for (const optionGroup of entity.optionGroups) {
             const groupTranslation = findTranslation(optionGroup, languageCode);

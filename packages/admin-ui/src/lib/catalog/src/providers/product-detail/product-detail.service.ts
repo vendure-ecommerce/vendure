@@ -4,9 +4,9 @@ import {
     CreateProductVariantInput,
     DataService,
     DeletionResult,
-    FacetWithValues,
+    FacetWithValuesFragment,
     findTranslation,
-    GetProductWithVariants,
+    GetProductWithVariantsQuery,
     LanguageCode,
     UpdateProductInput,
     UpdateProductMutation,
@@ -33,7 +33,7 @@ import { replaceLast } from './replace-last';
 export class ProductDetailService {
     constructor(private dataService: DataService) {}
 
-    getFacets(): Observable<FacetWithValues.Fragment[]> {
+    getFacets(): Observable<FacetWithValuesFragment[]> {
         return this.dataService.facet.getAllFacets().mapSingle(data => data.facets.items);
     }
 
@@ -151,7 +151,7 @@ export class ProductDetailService {
     }
 
     updateProduct(updateOptions: {
-        product: GetProductWithVariants.Product;
+        product: NonNullable<GetProductWithVariantsQuery['product']>;
         languageCode: LanguageCode;
         autoUpdate: boolean;
         productInput?: UpdateProductInput;
@@ -220,7 +220,7 @@ export class ProductDetailService {
 
     updateProductOption(
         input: UpdateProductOptionInput & { autoUpdate: boolean },
-        product: GetProductWithVariants.Product,
+        product: NonNullable<GetProductWithVariantsQuery['product']>,
         languageCode: LanguageCode,
     ) {
         const variants$ = input.autoUpdate

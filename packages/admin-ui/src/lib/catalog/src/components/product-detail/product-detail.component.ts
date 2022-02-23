@@ -9,19 +9,19 @@ import {
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
-    FacetWithValues,
+    FacetWithValuesFragment,
     findTranslation,
     flattenFacetValues,
-    GetProductWithVariants,
+    GetProductWithVariantsQuery,
     LanguageCode,
     LogicalOperator,
     ModalService,
     NotificationService,
     Permission,
-    ProductDetail,
-    ProductVariant,
+    ProductDetailFragment,
+    ProductVariantFragment,
     ServerConfigService,
-    TaxCategory,
+    TaxCategoryFragment,
     unicodePatternValidator,
     UpdateProductInput,
     UpdateProductMutation,
@@ -65,13 +65,13 @@ import { PaginationConfig, SelectedAssets, TabName, VariantFormValue } from './p
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailComponent
-    extends BaseDetailComponent<GetProductWithVariants.Product>
+    extends BaseDetailComponent<NonNullable<GetProductWithVariantsQuery['product']>>
     implements OnInit, OnDestroy
 {
     activeTab$: Observable<TabName>;
-    product$: Observable<GetProductWithVariants.Product>;
-    variants$: Observable<ProductVariant.Fragment[]>;
-    taxCategories$: Observable<TaxCategory.Fragment[]>;
+    product$: Observable<NonNullable<GetProductWithVariantsQuery['product']>>;
+    variants$: Observable<ProductVariantFragment[]>;
+    taxCategories$: Observable<TaxCategoryFragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
     customOptionGroupFields: CustomFieldConfig[];
@@ -81,9 +81,9 @@ export class ProductDetailComponent
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     variantFacetValueChanges: { [variantId: string]: string[] } = {};
-    productChannels$: Observable<ProductDetail.Channels[]>;
-    facetValues$: Observable<ProductDetail.FacetValues[]>;
-    facets$: Observable<FacetWithValues.Fragment[]>;
+    productChannels$: Observable<ProductDetailFragment['channels']>;
+    facetValues$: Observable<ProductDetailFragment['facetValues']>;
+    facets$: Observable<FacetWithValuesFragment[]>;
     totalItems$: Observable<number>;
     currentPage$ = new BehaviorSubject(1);
     itemsPerPage$ = new BehaviorSubject(10);
@@ -94,7 +94,7 @@ export class ProductDetailComponent
     channelPriceIncludesTax$: Observable<boolean>;
     // Used to store all ProductVariants which have been loaded.
     // It is needed when saving changes to variants.
-    private productVariantMap = new Map<string, ProductVariant.Fragment>();
+    private productVariantMap = new Map<string, ProductVariantFragment>();
     public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
 
     constructor(
@@ -291,7 +291,7 @@ export class ProductDetailComponent
             );
     }
 
-    assignVariantToChannel(variant: ProductVariant.Fragment) {
+    assignVariantToChannel(variant: ProductVariantFragment) {
         return this.modalService
             .fromComponent(AssignProductsToChannelDialogComponent, {
                 size: 'lg',
@@ -304,13 +304,7 @@ export class ProductDetailComponent
             .subscribe();
     }
 
-    removeVariantFromChannel({
-        channelId,
-        variant,
-    }: {
-        channelId: string;
-        variant: ProductVariant.Fragment;
-    }) {
+    removeVariantFromChannel({ channelId, variant }: { channelId: string; variant: ProductVariantFragment }) {
         this.modalService
             .dialog({
                 title: _('catalog.remove-product-variant-from-channel'),
@@ -565,7 +559,10 @@ export class ProductDetailComponent
     /**
      * Sets the values of the form on changes to the product or current language.
      */
-    protected setFormValues(product: GetProductWithVariants.Product, languageCode: LanguageCode) {
+    protected setFormValues(
+        product: NonNullable<GetProductWithVariantsQuery['product']>,
+        languageCode: LanguageCode,
+    ) {
         const currentTranslation = findTranslation(product, languageCode);
         this.detailForm.patchValue({
             product: {
@@ -588,7 +585,7 @@ export class ProductDetailComponent
         this.buildVariantFormArray(product.variantList.items, languageCode);
     }
 
-    private buildVariantFormArray(variants: ProductVariant.Fragment[], languageCode: LanguageCode) {
+    private buildVariantFormArray(variants: ProductVariantFragment[], languageCode: LanguageCode) {
         const variantsFormArray = this.detailForm.get('variants') as FormArray;
         variants.forEach((variant, i) => {
             const variantTranslation = findTranslation(variant, languageCode);
@@ -649,7 +646,7 @@ export class ProductDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedProduct(
-        product: GetProductWithVariants.Product,
+        product: NonNullable<GetProductWithVariantsQuery['product']>,
         productFormGroup: FormGroup,
         languageCode: LanguageCode,
     ): UpdateProductInput | CreateProductInput {
@@ -678,7 +675,7 @@ export class ProductDetailComponent
      * which can be persisted to the API.
      */
     private getUpdatedProductVariants(
-        product: GetProductWithVariants.Product,
+        product: NonNullable<GetProductWithVariantsQuery['product']>,
         variantsFormArray: FormArray,
         languageCode: LanguageCode,
         priceIncludesTax: boolean,

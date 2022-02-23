@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
-    Country,
+    CountryFragment,
     CreateCountryInput,
     createUpdatedTranslatable,
     CustomFieldConfig,
@@ -26,10 +26,10 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryDetailComponent
-    extends BaseDetailComponent<Country.Fragment>
+    extends BaseDetailComponent<CountryFragment>
     implements OnInit, OnDestroy
 {
-    country$: Observable<Country.Fragment>;
+    country$: Observable<CountryFragment>;
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateCountry];
@@ -138,7 +138,7 @@ export class CountryDetailComponent
             );
     }
 
-    protected setFormValues(country: Country, languageCode: LanguageCode): void {
+    protected setFormValues(country: CountryFragment, languageCode: LanguageCode): void {
         const currentTranslation = findTranslation(country, languageCode);
 
         this.detailForm.patchValue({

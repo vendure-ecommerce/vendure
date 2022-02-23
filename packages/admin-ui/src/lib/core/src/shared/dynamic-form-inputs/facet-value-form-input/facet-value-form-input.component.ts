@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
-import { FacetWithValues } from '../../../common/generated-types';
+import { FacetWithValuesFragment } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
@@ -27,7 +27,7 @@ export class FacetValueFormInputComponent implements FormInputComponent, OnInit 
     readonly isListInput = true;
     readonly: boolean;
     formControl: FormControl;
-    facets$: Observable<FacetWithValues.Fragment[]>;
+    facets$: Observable<FacetWithValuesFragment[]>;
     config: InputComponentConfig;
     constructor(private dataService: DataService) {}
 

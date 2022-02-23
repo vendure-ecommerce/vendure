@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
+    ItemOf,
     JobQueueService,
     JobState,
     LanguageCode,
@@ -11,21 +12,12 @@ import {
     ModalService,
     NotificationService,
     SearchInput,
-    SearchProducts,
+    SearchProductsQuery,
+    SearchProductsQueryVariables,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { EMPTY, Observable, of } from 'rxjs';
-import {
-    delay,
-    distinctUntilChanged,
-    map,
-    shareReplay,
-    switchMap,
-    take,
-    takeUntil,
-    tap,
-    withLatestFrom,
-} from 'rxjs/operators';
+import { EMPTY, Observable } from 'rxjs';
+import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 
 import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
@@ -35,14 +27,18 @@ import { ProductSearchInputComponent } from '../product-search-input/product-sea
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent
-    extends BaseListComponent<SearchProducts.Query, SearchProducts.Items, SearchProducts.Variables>
+    extends BaseListComponent<
+        SearchProductsQuery,
+        ItemOf<SearchProductsQuery, 'search'>,
+        SearchProductsQueryVariables
+    >
     implements OnInit, AfterViewInit
 {
     searchTerm = '';
     facetValueIds: string[] = [];
     groupByProduct = true;
     selectedFacetValueIds$: Observable<string[]>;
-    facetValues$: Observable<SearchProducts.FacetValues[]>;
+    facetValues$: Observable<SearchProductsQuery['search']['facetValues']>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;

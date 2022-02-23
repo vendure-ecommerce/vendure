@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { CustomFieldConfig, OrderDetail, ServerConfigService } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, OrderDetailFragment, ServerConfigService } from '@vendure/admin-ui/core';
 import { isObject } from '@vendure/common/lib/shared-utils';
 
 @Component({
@@ -11,7 +11,7 @@ import { isObject } from '@vendure/common/lib/shared-utils';
 })
 export class FulfillmentDetailComponent implements OnInit, OnChanges {
     @Input() fulfillmentId: string;
-    @Input() order: OrderDetail.Fragment;
+    @Input() order: OrderDetailFragment;
 
     customFieldConfig: CustomFieldConfig[] = [];
     customFieldFormGroup = new FormGroup({});
@@ -26,7 +26,7 @@ export class FulfillmentDetailComponent implements OnInit, OnChanges {
         this.buildCustomFieldsFormGroup();
     }
 
-    get fulfillment(): OrderDetail.Fulfillments | undefined | null {
+    get fulfillment(): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined | null {
         return this.order.fulfillments && this.order.fulfillments.find(f => f.id === this.fulfillmentId);
     }
 

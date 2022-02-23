@@ -45,8 +45,8 @@ export class ChannelDefaultLanguageError extends ErrorResult {
   readonly errorCode = 'CHANNEL_DEFAULT_LANGUAGE_ERROR' as any;
   readonly message = 'CHANNEL_DEFAULT_LANGUAGE_ERROR';
   constructor(
-    public language: Scalars['String'],
     public channelCode: Scalars['String'],
+    public language: Scalars['String'],
   ) {
     super();
   }
@@ -88,9 +88,9 @@ export class FulfillmentStateTransitionError extends ErrorResult {
   readonly errorCode = 'FULFILLMENT_STATE_TRANSITION_ERROR' as any;
   readonly message = 'FULFILLMENT_STATE_TRANSITION_ERROR';
   constructor(
-    public transitionError: Scalars['String'],
     public fromState: Scalars['String'],
     public toState: Scalars['String'],
+    public transitionError: Scalars['String'],
   ) {
     super();
   }
@@ -101,8 +101,8 @@ export class InsufficientStockError extends ErrorResult {
   readonly errorCode = 'INSUFFICIENT_STOCK_ERROR' as any;
   readonly message = 'INSUFFICIENT_STOCK_ERROR';
   constructor(
-    public quantityAvailable: Scalars['Int'],
     public order: any,
+    public quantityAvailable: Scalars['Int'],
   ) {
     super();
   }
@@ -271,9 +271,9 @@ export class OrderStateTransitionError extends ErrorResult {
   readonly errorCode = 'ORDER_STATE_TRANSITION_ERROR' as any;
   readonly message = 'ORDER_STATE_TRANSITION_ERROR';
   constructor(
-    public transitionError: Scalars['String'],
     public fromState: Scalars['String'],
     public toState: Scalars['String'],
+    public transitionError: Scalars['String'],
   ) {
     super();
   }
@@ -304,9 +304,9 @@ export class PaymentStateTransitionError extends ErrorResult {
   readonly errorCode = 'PAYMENT_STATE_TRANSITION_ERROR' as any;
   readonly message = 'PAYMENT_STATE_TRANSITION_ERROR';
   constructor(
-    public transitionError: Scalars['String'],
     public fromState: Scalars['String'],
     public toState: Scalars['String'],
+    public transitionError: Scalars['String'],
   ) {
     super();
   }
@@ -360,9 +360,9 @@ export class RefundStateTransitionError extends ErrorResult {
   readonly errorCode = 'REFUND_STATE_TRANSITION_ERROR' as any;
   readonly message = 'REFUND_STATE_TRANSITION_ERROR';
   constructor(
-    public transitionError: Scalars['String'],
     public fromState: Scalars['String'],
     public toState: Scalars['String'],
+    public transitionError: Scalars['String'],
   ) {
     super();
   }
@@ -386,14 +386,14 @@ function isGraphQLError(input: any): input is import('@vendure/common/lib/genera
 }
 
 export const adminErrorOperationTypeResolvers = {
-  CreateAssetResult: {
+  AddFulfillmentToOrderResult: {
     __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Asset';
+      return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
     },
   },
-  NativeAuthenticationResult: {
+  AddManualPaymentToOrderResult: {
     __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
   AuthenticationResult: {
@@ -401,12 +401,17 @@ export const adminErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
     },
   },
-  CreateChannelResult: {
+  CancelOrderResult: {
     __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Channel';
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
-  UpdateChannelResult: {
+  CreateAssetResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Asset';
+    },
+  },
+  CreateChannelResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Channel';
     },
@@ -414,6 +419,61 @@ export const adminErrorOperationTypeResolvers = {
   CreateCustomerResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Customer';
+    },
+  },
+  CreatePromotionResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Promotion';
+    },
+  },
+  NativeAuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  ModifyOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  RefundOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Refund';
+    },
+  },
+  RemoveOptionGroupFromProductResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Product';
+    },
+  },
+  SettlePaymentResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+    },
+  },
+  SettleRefundResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Refund';
+    },
+  },
+  TransitionFulfillmentToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
+    },
+  },
+  TransitionOrderToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  TransitionPaymentToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+    },
+  },
+  UpdateChannelResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Channel';
     },
   },
   UpdateCustomerResult: {
@@ -424,66 +484,6 @@ export const adminErrorOperationTypeResolvers = {
   UpdateGlobalSettingsResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'GlobalSettings';
-    },
-  },
-  SettlePaymentResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
-    },
-  },
-  AddFulfillmentToOrderResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
-    },
-  },
-  CancelOrderResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Order';
-    },
-  },
-  RefundOrderResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Refund';
-    },
-  },
-  SettleRefundResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Refund';
-    },
-  },
-  TransitionOrderToStateResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Order';
-    },
-  },
-  TransitionFulfillmentToStateResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
-    },
-  },
-  TransitionPaymentToStateResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
-    },
-  },
-  ModifyOrderResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Order';
-    },
-  },
-  AddManualPaymentToOrderResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Order';
-    },
-  },
-  RemoveOptionGroupFromProductResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Product';
-    },
-  },
-  CreatePromotionResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Promotion';
     },
   },
   UpdatePromotionResult: {

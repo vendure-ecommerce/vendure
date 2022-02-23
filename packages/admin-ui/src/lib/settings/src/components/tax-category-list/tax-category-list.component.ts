@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import {
+    DataService,
+    DeletionResult,
+    GetTaxCategoriesQuery,
+    ModalService,
+    NotificationService,
+    QueryResult,
+    TaxCategoryFragment,
+} from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-
-import { DeletionResult, GetTaxCategories, TaxCategory } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { QueryResult } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-tax-list',
@@ -16,8 +19,8 @@ import { ModalService } from '@vendure/admin-ui/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaxCategoryListComponent {
-    taxCategories$: Observable<TaxCategory.Fragment[]>;
-    private queryResult: QueryResult<GetTaxCategories.Query>;
+    taxCategories$: Observable<TaxCategoryFragment[]>;
+    private queryResult: QueryResult<GetTaxCategoriesQuery>;
 
     constructor(
         private dataService: DataService,
@@ -28,7 +31,7 @@ export class TaxCategoryListComponent {
         this.taxCategories$ = this.queryResult.mapStream(data => data.taxCategories);
     }
 
-    deleteTaxCategory(taxCategory: TaxCategory.Fragment) {
+    deleteTaxCategory(taxCategory: TaxCategoryFragment) {
         return this.modalService
             .dialog({
                 title: _('settings.confirm-delete-tax-category'),

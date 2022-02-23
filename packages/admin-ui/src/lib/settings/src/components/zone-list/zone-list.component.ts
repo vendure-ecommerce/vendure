@@ -4,7 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
     DeletionResult,
-    GetZones,
+    GetZonesQuery,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -23,9 +23,9 @@ import { ZoneDetailDialogComponent } from '../zone-detail-dialog/zone-detail-dia
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ZoneListComponent implements OnInit {
-    activeZone$: Observable<GetZones.Zones | undefined>;
-    zones$: Observable<GetZones.Zones[]>;
-    members$: Observable<GetZones.Members[]>;
+    activeZone$: Observable<GetZonesQuery['zones'][number] | undefined>;
+    zones$: Observable<GetZonesQuery['zones']>;
+    members$: Observable<GetZonesQuery['zones'][number]['members']>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     selectedMemberIds: string[] = [];
@@ -130,7 +130,7 @@ export class ZoneListComponent implements OnInit {
             );
     }
 
-    update(zone: GetZones.Zones) {
+    update(zone: GetZonesQuery['zones'][number]) {
         this.modalService
             .fromComponent(ZoneDetailDialogComponent, { locals: { zone } })
             .pipe(
@@ -158,7 +158,7 @@ export class ZoneListComponent implements OnInit {
         this.router.navigate(['./', params], { relativeTo: this.route, queryParamsHandling: 'preserve' });
     }
 
-    addToZone(zone: GetZones.Zones) {
+    addToZone(zone: GetZonesQuery['zones'][number]) {
         this.modalService
             .fromComponent(AddCountryToZoneDialogComponent, {
                 locals: {
@@ -189,7 +189,7 @@ export class ZoneListComponent implements OnInit {
             });
     }
 
-    removeFromZone(zone: GetZones.Zones, memberIds: string[]) {
+    removeFromZone(zone: GetZonesQuery['zones'][number], memberIds: string[]) {
         this.dataService.settings.removeMembersFromZone(zone.id, memberIds).subscribe({
             complete: () => {
                 this.notificationService.success(_(`settings.remove-countries-from-zone-success`), {

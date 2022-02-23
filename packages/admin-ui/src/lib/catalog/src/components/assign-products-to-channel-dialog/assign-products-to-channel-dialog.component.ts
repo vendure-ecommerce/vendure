@@ -1,12 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetChannels, ProductVariantFragment } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import {
+    DataService,
+    Dialog,
+    GetChannelsQuery,
+    NotificationService,
+    ProductVariantFragment,
+} from '@vendure/admin-ui/core';
 import { combineLatest, from, Observable } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
+
+type Channel = GetChannelsQuery['channels'][number];
 
 @Component({
     selector: 'vdr-assign-products-to-channel-dialog',
@@ -15,9 +20,9 @@ import { map, startWith, switchMap } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<any> {
-    selectedChannel: GetChannels.Channels | null | undefined;
-    currentChannel: GetChannels.Channels;
-    availableChannels: GetChannels.Channels[];
+    selectedChannel: Channel | null | undefined;
+    currentChannel: Channel;
+    availableChannels: Channel[];
     resolveWith: (result?: any) => void;
     variantsPreview$: Observable<Array<{ id: string; name: string; price: number; pricePreview: number }>>;
     priceFactorControl = new FormControl(1);

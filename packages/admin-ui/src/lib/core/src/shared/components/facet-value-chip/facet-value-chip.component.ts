@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { FacetValue } from '../../../common/generated-types';
+import { FacetValueFragment } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-facet-value-chip',
@@ -9,7 +9,7 @@ import { FacetValue } from '../../../common/generated-types';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetValueChipComponent {
-    @Input() facetValue: FacetValue.Fragment;
+    @Input() facetValue: FacetValueFragment;
     @Input() removable = true;
     @Input() displayFacetName = true;
     @Output() remove = new EventEmitter<void>();

@@ -1,13 +1,13 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    Asset,
+    AssetFragment,
     CanDeactivateDetailGuard,
-    Collection,
+    CollectionFragment,
     createResolveData,
     detailBreadcrumb,
-    FacetWithValues,
-    GetProductWithVariants,
+    FacetWithValuesFragment,
+    GetProductWithVariantsQuery,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
@@ -112,7 +112,7 @@ export const catalogRoutes: Route[] = [
 ];
 
 export function productBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<GetProductWithVariants.Product>({
+    return detailBreadcrumb<NonNullable<GetProductWithVariantsQuery['product']>>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.products',
@@ -164,7 +164,7 @@ export function productOptionsEditorBreadcrumb(data: any, params: any) {
 }
 
 export function facetBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<FacetWithValues.Fragment>({
+    return detailBreadcrumb<FacetWithValuesFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.facets',
@@ -174,7 +174,7 @@ export function facetBreadcrumb(data: any, params: any) {
 }
 
 export function collectionBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<Collection.Fragment>({
+    return detailBreadcrumb<CollectionFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.collections',
@@ -184,7 +184,7 @@ export function collectionBreadcrumb(data: any, params: any) {
 }
 
 export function assetBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<Asset.Fragment>({
+    return detailBreadcrumb<AssetFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.assets',

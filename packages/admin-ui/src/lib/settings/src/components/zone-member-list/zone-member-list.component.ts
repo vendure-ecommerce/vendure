@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, ContentChild, EventEmitter, Input, Output } from '@angular/core';
-import { GetZones } from '@vendure/admin-ui/core';
 
 import { ZoneMemberControlsDirective } from './zone-member-controls.directive';
 import { ZoneMemberListHeaderDirective } from './zone-member-list-header.directive';

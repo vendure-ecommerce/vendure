@@ -70,8 +70,8 @@ export class DynamicFormInputComponent
     private componentType: Type<FormInputComponent>;
     private onChange: (val: any) => void;
     private onTouch: () => void;
-    private renderList$ = new Subject();
-    private destroy$ = new Subject();
+    private renderList$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
     constructor(
         private componentRegistryService: ComponentRegistryService,

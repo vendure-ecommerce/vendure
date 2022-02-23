@@ -6,7 +6,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
-import { GetProductVariant, ProductSelectorSearch } from '../../../common/generated-types';
+import { GetProductVariantQuery, ProductSelectorSearchQuery } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 /**
@@ -29,7 +29,7 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
     readonly: boolean;
     formControl: FormControl;
     config: InputComponentConfig;
-    selection$: Observable<GetProductVariant.ProductVariant[]>;
+    selection$: Observable<Array<GetProductVariantQuery['productVariant']>>;
 
     constructor(private dataService: DataService) {}
 
@@ -63,7 +63,7 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
         );
     }
 
-    addProductVariant(product: ProductSelectorSearch.Items) {
+    addProductVariant(product: ProductSelectorSearchQuery['search']['items'][number]) {
         const value = this.formControl.value as string[];
         this.formControl.setValue([...new Set([...value, product.productVariantId])]);
     }

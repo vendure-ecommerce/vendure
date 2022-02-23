@@ -5,24 +5,20 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
     CreateAddressInput,
-    CreateCustomerAddress,
     CreateCustomerAddressMutation,
     CreateCustomerInput,
     Customer,
     CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
-    GetAvailableCountries,
-    GetCustomer,
-    GetCustomerHistory,
+    GetAvailableCountriesQuery,
+    GetCustomerHistoryQuery,
     GetCustomerQuery,
     HistoryEntry,
     ModalService,
     NotificationService,
     ServerConfigService,
     SortOrder,
-    UpdateCustomer,
-    UpdateCustomerAddress,
     UpdateCustomerAddressMutation,
     UpdateCustomerInput,
     UpdateCustomerMutation,
@@ -58,10 +54,10 @@ export class CustomerDetailComponent
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     addressCustomFields: CustomFieldConfig[];
-    availableCountries$: Observable<GetAvailableCountries.Items[]>;
-    orders$: Observable<GetCustomer.Items[]>;
+    availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
+    orders$: Observable<NonNullable<GetCustomerQuery['customer']>['orders']['items']>;
     ordersCount$: Observable<number>;
-    history$: Observable<GetCustomerHistory.Items[] | undefined>;
+    history$: Observable<NonNullable<GetCustomerHistoryQuery['customer']>['history']['items'] | undefined>;
     fetchHistory = new Subject<void>();
     defaultShippingAddressId: string;
     defaultBillingAddressId: string;
@@ -228,9 +224,9 @@ export class CustomerDetailComponent
                 mergeMap(({ id }) => {
                     const saveOperations: Array<
                         Observable<
-                            | UpdateCustomer.UpdateCustomer
-                            | CreateCustomerAddress.CreateCustomerAddress
-                            | UpdateCustomerAddress.UpdateCustomerAddress
+                            | UpdateCustomerMutation['updateCustomer']
+                            | CreateCustomerAddressMutation['createCustomerAddress']
+                            | UpdateCustomerAddressMutation['updateCustomerAddress']
                         >
                     > = [];
                     const customerForm = this.detailForm.get('customer');
@@ -344,7 +340,7 @@ export class CustomerDetailComponent
             });
     }
 
-    removeFromGroup(group: GetCustomer.Groups) {
+    removeFromGroup(group: NonNullable<GetCustomerQuery['customer']>['groups'][number]) {
         this.modalService
             .dialog({
                 title: _('customer.confirm-remove-customer-from-group'),
