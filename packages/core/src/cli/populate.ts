@@ -1,6 +1,7 @@
 import { INestApplicationContext } from '@nestjs/common';
 import fs from 'fs-extra';
 import path from 'path';
+import { lastValueFrom } from 'rxjs';
 
 import { logColored } from './cli-utils';
 
@@ -92,5 +93,5 @@ export async function importProductsFromCsv(
     const importer = app.get(Importer);
     const productData = await fs.readFile(productsCsvPath, 'utf-8');
 
-    return importer.parseAndImport(productData, languageCode, true).toPromise();
+    return lastValueFrom(importer.parseAndImport(productData, languageCode, true));
 }
