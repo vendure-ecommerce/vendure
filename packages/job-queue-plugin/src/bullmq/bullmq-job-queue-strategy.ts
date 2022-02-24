@@ -10,7 +10,7 @@ import {
     Logger,
     PaginatedList,
 } from '@vendure/core';
-import Bull, { Processor, Queue, QueueScheduler, Worker, WorkerOptions } from 'bullmq';
+import Bull, { JobType, Processor, Queue, QueueScheduler, Worker, WorkerOptions } from 'bullmq';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
@@ -49,7 +49,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
         this.queue = new Queue(QUEUE_NAME, {
             ...options.queueOptions,
-            connection: options.connection,
+            connection: options.connection ?? {},
         }).on('error', (e: any) => Logger.error(`BullMQ Queue error: ${e.message}`, loggerCtx, e.stack));
 
         if (await this.queue.isPaused()) {
@@ -80,8 +80,8 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
         this.scheduler = new QueueScheduler(QUEUE_NAME, {
             ...options.schedulerOptions,
-            connection: options.connection,
-        }).on('error', (e: any) => Logger.error(`BullMQ Scheduler error: ${e.message}`, loggerCtx, e.stack));
+            connection: options.connection ?? {},
+        }).on('failed', (e: any) => Logger.error(`BullMQ Scheduler error: ${e.message}`, loggerCtx, e.stack));
     }
 
     async destroy() {
@@ -123,7 +123,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
         const start = options?.skip ?? 0;
         const end = start + (options?.take ?? 10);
-        let jobTypes = ALL_JOB_TYPES;
+        let jobTypes: JobType[] = ALL_JOB_TYPES;
         const stateFilter = options?.filter?.state;
         if (stateFilter?.eq) {
             switch (stateFilter.eq) {
@@ -211,13 +211,13 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             const options: WorkerOptions = {
                 concurrency: DEFAULT_CONCURRENCY,
                 ...this.options.workerOptions,
-                connection: this.options.connection,
+                connection: this.options.connection ?? {},
             };
             this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options)
                 .on('error', (e: any) =>
                     Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack),
                 )
-                .on('failed', (job: Bull.Job, failedReason: string) => {
+                .on('failed', (job: Bull.Job, error: Error) => {
                     Logger.warn(
                         `Job ${job.id} [${job.name}] failed (attempt ${job.attemptsMade} of ${
                             job.opts.attempts ?? 1

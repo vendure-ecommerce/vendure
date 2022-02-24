@@ -33,7 +33,7 @@ export class RedisHealthIndicator extends HealthIndicator {
                     resolve('timeout');
                     return;
                 }
-                client.ping((err, res) => {
+                client.ping((err: any, res: any) => {
                     if (err) {
                         resolve(err);
                     } else {
