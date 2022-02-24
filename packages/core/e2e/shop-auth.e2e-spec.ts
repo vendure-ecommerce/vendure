@@ -99,6 +99,10 @@ const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createE
 
 class TestPasswordValidationStrategy implements PasswordValidationStrategy {
     validate(ctx: RequestContext, password: string): boolean | string {
+        if (password === 'test') {
+            // allow the default seed data password
+            return true;
+        }
         if (password.length < 8) {
             return 'Password must be more than 8 characters';
         }
