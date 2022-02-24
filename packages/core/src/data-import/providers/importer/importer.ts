@@ -28,6 +28,16 @@ export interface ImportProgress extends ImportInfo {
 
 export type OnProgressFn = (progess: ImportProgress) => void;
 
+/**
+ * @description
+ * Parses and imports Products using the CSV import format.
+ *
+ * Internally it is using the {@link ImportParser} to parse the CSV file, and then the
+ * {@link FastImporterService} and the {@link AssetImporter} to actually create the resulting
+ * entities in the Vendure database.
+ *
+ * @docsCategory import-export
+ */
 @Injectable()
 export class Importer {
     private taxCategoryMatches: { [name: string]: ID } = {};
@@ -36,6 +46,7 @@ export class Importer {
     private facetMap = new Map<string, Facet>();
     private facetValueMap = new Map<string, FacetValue>();
 
+    /** @internal */
     constructor(
         private configService: ConfigService,
         private importParser: ImportParser,
@@ -47,6 +58,13 @@ export class Importer {
         private fastImporter: FastImporterService,
     ) {}
 
+    /**
+     * @description
+     * Parses the contents of the [product import CSV file](/docs/developer-guide/importing-product-data/#product-import-format) and imports
+     * the resulting Product & ProductVariants, as well as any associated Assets, Facets & FacetValues.
+     *
+     * The `ctxOrLanguageCode` argument is used to specify the languageCode to be used when creating the Products.
+     */
     parseAndImport(
         input: string | Stream,
         ctxOrLanguageCode: RequestContext | LanguageCode,

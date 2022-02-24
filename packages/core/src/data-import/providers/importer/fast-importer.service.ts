@@ -26,14 +26,20 @@ import { ChannelService } from '../../../service/services/channel.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
 
 /**
+ * @description
  * A service to import entities into the database. This replaces the regular `create` methods of the service layer with faster
- * versions which skip much of the defensive checks and other DB calls which are not needed when running an import.
+ * versions which skip much of the defensive checks and other DB calls which are not needed when running an import. It also
+ * does not publish any events, so e.g. will not trigger search index jobs.
  *
  * In testing, the use of the FastImporterService approximately doubled the speed of bulk imports.
+ *
+ * @docsCategory import-export
  */
 @Injectable()
 export class FastImporterService {
     private defaultChannel: Channel;
+
+    /** @internal */
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,

@@ -8,7 +8,38 @@ import { logColored } from './cli-utils';
 /**
  * @description
  * Populates the Vendure server with some initial data and (optionally) product data from
- * a supplied CSV file.
+ * a supplied CSV file. The format of the CSV file is described in the section
+ * [Importing Product Data](/docs/developer-guide/importing-product-data).
+ *
+ * Internally the `populate()` function does the following:
+ *
+ * 1. Uses the {@link Populator} to populate the {@link InitialData}.
+ * 2. If `productsCsvPath` is provided, uses {@link Importer} to populate Product data.
+ * 3. Uses {@Populator} to populate collections specified in the {@link InitialData}.
+ *
+ * @example
+ * ```TypeScript
+ * import { bootstrap } from '\@vendure/core';
+ * import { populate } from '\@vendure/core/cli';
+ * import { config } from './vendure-config.ts'
+ * import { initialData } from './my-initial-data.ts';
+ *
+ * const productsCsvFile = path.join(__dirname, 'path/to/products.csv')
+ *
+ * populate(
+ *   () => bootstrap(config),
+ *   initialData,
+ *   productsCsvFile,
+ * )
+ * .then(app => app.close())
+ * .then(
+ *   () => process.exit(0),
+ *   err => {
+ *     console.log(err);
+ *     process.exit(1);
+ *   },
+ * );
+ * ```
  *
  * @docsCategory import-export
  */

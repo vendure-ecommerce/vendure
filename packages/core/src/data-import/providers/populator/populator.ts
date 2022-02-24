@@ -30,10 +30,15 @@ import {
 import { AssetImporter } from '../asset-importer/asset-importer';
 
 /**
- * Responsible for populating the database with initial data.
+ * @description
+ * Responsible for populating the database with {@link InitialData}, i.e. non-product data such as countries, tax rates,
+ * shipping methods, payment methods & roles.
+ *
+ * @docsCategory import-export
  */
 @Injectable()
 export class Populator {
+    /** @internal */
     constructor(
         private countryService: CountryService,
         private zoneService: ZoneService,
@@ -50,6 +55,7 @@ export class Populator {
     ) {}
 
     /**
+     * @description
      * Should be run *before* populating the products, so that there are TaxRates by which
      * product prices can be set.
      */
@@ -96,6 +102,7 @@ export class Populator {
     }
 
     /**
+     * @description
      * Should be run *after* the products have been populated, otherwise the expected FacetValues will not
      * yet exist.
      */
