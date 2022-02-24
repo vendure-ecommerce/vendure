@@ -11,6 +11,7 @@ import {
     Customer,
     CustomFieldConfig,
     DataService,
+    DeleteCustomerAddress,
     EditNoteDialogComponent,
     GetAvailableCountries,
     GetCustomer,
@@ -27,7 +28,7 @@ import {
     UpdateCustomerInput,
     UpdateCustomerMutation,
 } from '@vendure/admin-ui/core';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, forkJoin, from, Observable, Subject } from 'rxjs';
 import {
     concatMap,
@@ -65,6 +66,7 @@ export class CustomerDetailComponent
     fetchHistory = new Subject<void>();
     defaultShippingAddressId: string;
     defaultBillingAddressId: string;
+    addressesToDeleteIds = new Set<string>();
     addressDefaultsUpdated = false;
     ordersPerPage = 10;
     currentOrdersPage = 1;
@@ -142,6 +144,14 @@ export class CustomerDetailComponent
     setDefaultShippingAddressId(id: string) {
         this.defaultShippingAddressId = id;
         this.addressDefaultsUpdated = true;
+    }
+
+    toggleDeleteAddress(id: string) {
+        if (this.addressesToDeleteIds.has(id)) {
+            this.addressesToDeleteIds.delete(id);
+        } else {
+            this.addressesToDeleteIds.add(id);
+        }
     }
 
     addAddress() {
@@ -231,6 +241,7 @@ export class CustomerDetailComponent
                             | UpdateCustomer.UpdateCustomer
                             | CreateCustomerAddress.CreateCustomerAddress
                             | UpdateCustomerAddress.UpdateCustomerAddress
+                            | DeleteCustomerAddress.DeleteCustomerAddress
                         >
                     > = [];
                     const customerForm = this.detailForm.get('customer');
@@ -278,14 +289,22 @@ export class CustomerDetailComponent
                                             .pipe(map(res => res.createCustomerAddress)),
                                     );
                                 } else {
-                                    saveOperations.push(
-                                        this.dataService.customer
-                                            .updateCustomerAddress({
-                                                ...input,
-                                                id: address.id,
-                                            })
-                                            .pipe(map(res => res.updateCustomerAddress)),
-                                    );
+                                    if (this.addressesToDeleteIds.has(address.id)) {
+                                        saveOperations.push(
+                                            this.dataService.customer
+                                                .deleteCustomerAddress(address.id)
+                                                .pipe(map(res => res.deleteCustomerAddress)),
+                                        );
+                                    } else {
+                                        saveOperations.push(
+                                            this.dataService.customer
+                                                .updateCustomerAddress({
+                                                    ...input,
+                                                    id: address.id,
+                                                })
+                                                .pipe(map(res => res.updateCustomerAddress)),
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -295,17 +314,23 @@ export class CustomerDetailComponent
             )
             .subscribe(
                 data => {
+                    let notified = false;
                     for (const result of data) {
                         switch (result.__typename) {
                             case 'Customer':
                             case 'Address':
-                                this.notificationService.success(_('common.notify-update-success'), {
-                                    entity: 'Customer',
-                                });
-                                this.detailForm.markAsPristine();
-                                this.addressDefaultsUpdated = false;
-                                this.changeDetector.markForCheck();
-                                this.fetchHistory.next();
+                            case 'Success':
+                                if (!notified) {
+                                    this.notificationService.success(_('common.notify-update-success'), {
+                                        entity: 'Customer',
+                                    });
+                                    notified = true;
+                                    this.detailForm.markAsPristine();
+                                    this.addressDefaultsUpdated = false;
+                                    this.changeDetector.markForCheck();
+                                    this.fetchHistory.next();
+                                    this.dataService.customer.getCustomer(this.id).single$.subscribe();
+                                }
                                 break;
                             case 'EmailAddressConflictError':
                                 this.notificationService.error(result.message);

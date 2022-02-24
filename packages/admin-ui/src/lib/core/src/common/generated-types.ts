@@ -5893,6 +5893,16 @@ export type UpdateCustomerAddressMutation = { updateCustomerAddress: (
     & AddressFragment
   ) };
 
+export type DeleteCustomerAddressMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteCustomerAddressMutation = { deleteCustomerAddress: (
+    { __typename?: 'Success' }
+    & Pick<Success, 'success'>
+  ) };
+
 export type CreateCustomerGroupMutationVariables = Exact<{
   input: CreateCustomerGroupInput;
 }>;
@@ -9364,6 +9374,12 @@ export namespace UpdateCustomerAddress {
   export type Variables = UpdateCustomerAddressMutationVariables;
   export type Mutation = UpdateCustomerAddressMutation;
   export type UpdateCustomerAddress = (NonNullable<UpdateCustomerAddressMutation['updateCustomerAddress']>);
+}
+
+export namespace DeleteCustomerAddress {
+  export type Variables = DeleteCustomerAddressMutationVariables;
+  export type Mutation = DeleteCustomerAddressMutation;
+  export type DeleteCustomerAddress = (NonNullable<DeleteCustomerAddressMutation['deleteCustomerAddress']>);
 }
 
 export namespace CreateCustomerGroup {
