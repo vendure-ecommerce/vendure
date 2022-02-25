@@ -188,8 +188,7 @@ describe('populate() function', () => {
         it('product also assigned to default channel', async () => {
             await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { products } = await adminClient.query<GetProductListQuery>(GET_PRODUCT_LIST);
-            expect(products.totalItems).toBe(1);
-            expect(products.items.map(i => i.name).sort()).toEqual(['Model Hand']);
+            expect(products.items.map(i => i.name).includes('Model Hand')).toBe(true);
         });
     });
 });

@@ -65,38 +65,38 @@ export class Populator {
         let zoneMap: ZoneMap;
         try {
             zoneMap = await this.populateCountries(ctx, data.countries);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate countries`);
             Logger.error(e, 'populator', e.stack);
             throw e;
         }
         try {
             await this.populateTaxRates(ctx, data.taxRates, zoneMap);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate tax rates`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populateShippingMethods(ctx, data.shippingMethods);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate shipping methods`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populatePaymentMethods(ctx, data.paymentMethods);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate payment methods`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.setChannelDefaults(zoneMap, data, ctx.channel);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not set channel defaults`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populateRoles(ctx, data.roles);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate roles`);
             Logger.error(e, 'populator', e.stack);
         }
@@ -121,9 +121,8 @@ export class Populator {
                 filters = (collectionDef.filters || []).map(filter =>
                     this.processFilterDefinition(filter, allFacetValues),
                 );
-            } catch (e) {
-                // tslint:disable-next-line:no-console
-                console.log(e);
+            } catch (e: any) {
+                Logger.error(e.message);
             }
             const collection = await this.collectionService.create(ctx, {
                 translations: [
