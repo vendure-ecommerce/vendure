@@ -34,6 +34,14 @@ const requiredColumns: string[] = [
     'variantFacets',
 ];
 
+/**
+ * @description
+ * The intermediate representation of an OptionGroup after it has been parsed
+ * by the {@link ImportParser}.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ */
 export interface ParsedOptionGroup {
     translations: Array<{
         languageCode: LanguageCode;
@@ -42,6 +50,14 @@ export interface ParsedOptionGroup {
     }>;
 }
 
+/**
+ * @description
+ * The intermediate representation of a Facet after it has been parsed
+ * by the {@link ImportParser}.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ */
 export interface ParsedFacet {
     translations: Array<{
         languageCode: LanguageCode;
@@ -50,6 +66,14 @@ export interface ParsedFacet {
     }>;
 }
 
+/**
+ * @description
+ * The intermediate representation of a ProductVariant after it has been parsed
+ * by the {@link ImportParser}.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ */
 export interface ParsedProductVariant {
     sku: string;
     price: number;
@@ -67,6 +91,14 @@ export interface ParsedProductVariant {
     }>;
 }
 
+/**
+ * @description
+ * The intermediate representation of a Product after it has been parsed
+ * by the {@link ImportParser}.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ */
 export interface ParsedProduct {
     assetPaths: string[];
     optionGroups: ParsedOptionGroup[];
@@ -82,11 +114,26 @@ export interface ParsedProduct {
     }>;
 }
 
+/**
+ * @description
+ * The data structure into which an import CSV file is parsed by the
+ * {@link ImportParser} `parseProducts()` method.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ */
 export interface ParsedProductWithVariants {
     product: ParsedProduct;
     variants: ParsedProductVariant[];
 }
 
+/**
+ * @description
+ * The result returned by the {@link ImportParser} `parseProducts()` method.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ */
 export interface ParseResult<T> {
     results: T[];
     errors: string[];
@@ -94,12 +141,24 @@ export interface ParseResult<T> {
 }
 
 /**
+ * @description
  * Validates and parses CSV files into a data structure which can then be used to created new entities.
+ * This is used internally by the {@link Importer}.
+ *
+ * @docsCategory import-export
+ * @docsPage ImportParser
+ * @docsWeight 0
  */
 @Injectable()
 export class ImportParser {
+    /** @internal */
     constructor(private configService: ConfigService) {}
 
+    /**
+     * @description
+     * Parses the contents of the [product import CSV file](/docs/developer-guide/importing-product-data/#product-import-format) and
+     * returns a data structure which can then be used to populate Vendure using the {@link FastImporterService}.
+     */
     async parseProducts(
         input: string | Stream,
         mainLanguage: LanguageCode = this.configService.defaultLanguageCode,

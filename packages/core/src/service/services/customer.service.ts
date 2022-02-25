@@ -697,6 +697,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
+        createdAddress.customer = customer;
         this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created', input));
         return createdAddress;
     }
@@ -733,6 +734,7 @@ export class CustomerService {
                 input,
             },
         });
+        updatedAddress.customer = customer;
         this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated', input));
         return updatedAddress;
     }
@@ -761,6 +763,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
+        address.customer = customer;
         this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted', id));
         return true;
     }

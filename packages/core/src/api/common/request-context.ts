@@ -79,7 +79,9 @@ export class RequestContext {
      * @description
      * Creates an "empty" RequestContext object. This is only intended to be used
      * when a service method must be called outside the normal request-response
-     * cycle, e.g. when programmatically populating data.
+     * cycle, e.g. when programmatically populating data. Usually a better alternative
+     * is to use the {@link RequestContextService} `create()` method, which allows more control
+     * over the resulting RequestContext object.
      */
     static empty(): RequestContext {
         return new RequestContext({

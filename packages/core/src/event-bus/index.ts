@@ -28,6 +28,8 @@ export * from './events/identifier-change-event';
 export * from './events/identifier-change-request-event';
 export * from './events/login-event';
 export * from './events/logout-event';
+export * from './events/order-event';
+export * from './events/order-line-event';
 export * from './events/order-placed-event';
 export * from './events/order-state-transition-event';
 export * from './events/password-reset-event';

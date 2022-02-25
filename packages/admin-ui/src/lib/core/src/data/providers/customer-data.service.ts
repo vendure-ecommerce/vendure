@@ -6,6 +6,7 @@ import {
     CREATE_CUSTOMER_ADDRESS,
     CREATE_CUSTOMER_GROUP,
     DELETE_CUSTOMER,
+    DELETE_CUSTOMER_ADDRESS,
     DELETE_CUSTOMER_GROUP,
     DELETE_CUSTOMER_NOTE,
     GET_CUSTOMER,
@@ -100,6 +101,13 @@ export class CustomerDataService {
         >(UPDATE_CUSTOMER_ADDRESS, {
             input,
         });
+    }
+
+    deleteCustomerAddress(id: string) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCustomerAddressMutation,
+            Codegen.DeleteCustomerAddressMutationVariables
+        >(DELETE_CUSTOMER_ADDRESS, { id });
     }
 
     createCustomerGroup(input: Codegen.CreateCustomerGroupInput) {

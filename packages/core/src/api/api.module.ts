@@ -10,7 +10,6 @@ import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
-import { RequestContextService } from './common/request-context.service';
 import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AuthGuard } from './middleware/auth-guard';
 import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
@@ -52,7 +51,6 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         })),
     ],
     providers: [
-        RequestContextService,
         {
             provide: APP_GUARD,
             useClass: AuthGuard,

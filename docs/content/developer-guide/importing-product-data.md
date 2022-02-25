@@ -178,6 +178,7 @@ export const initialData: InitialData = {
 
 ## Populating The Server
 
+### The `populate()` function
 The `@vendure/core` package exposes a [`populate()` function]({{< relref "populate" >}}) which can be used along with the data formats described above to populate your Vendure server:
 
 ```TypeScript
@@ -203,7 +204,9 @@ populate(
   () => bootstrap(config),
   initialData,
   productsCsvFile,
-)
+  'my-channel-token' // optional - used to assign imported 
+)                    // entities to the specified Channel
+
 .then(app => {
   return app.close();
 })
@@ -216,7 +219,16 @@ populate(
 );
 ```
 
-{{< alert >}}
-If you require more control over how your data is being imported - for example if you also need to import data into custom entities - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts]({{< relref "stand-alone-scripts" >}}).
-{{< /alert >}} 
+### Custom populate scripts
 
+If you require more control over how your data is being imported - for example if you also need to import data into custom entities - you can create your own CLI script to do this: see [Stand-Alone CLI Scripts]({{< relref "stand-alone-scripts" >}}).
+
+In your script you can make use of the internal parse and import services:
+
+* [Importer]({{< relref "importer" >}})
+* [ImportParser]({{< relref "import-parser" >}})
+* [FastImporterService]({{< relref "fast-importer-service" >}})
+* [AssetImporter]({{< relref "asset-importer" >}})
+* [Populator]({{< relref "populator" >}})
+
+Using these specialized import services is preferable to using the normal service-layer services (ProductService, ProductVariantService etc.) for bulk imports. This is because these import services are optimized for bulk imports (they omit unnecessary checks, use optimized SQL queries) and also do not publish events when creating new entities.
