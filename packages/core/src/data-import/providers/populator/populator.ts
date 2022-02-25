@@ -122,8 +122,7 @@ export class Populator {
                     this.processFilterDefinition(filter, allFacetValues),
                 );
             } catch (e: any) {
-                // tslint:disable-next-line:no-console
-                console.log(e);
+                Logger.error(e.message);
             }
             const collection = await this.collectionService.create(ctx, {
                 translations: [
