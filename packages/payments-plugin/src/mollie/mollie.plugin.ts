@@ -64,7 +64,9 @@ export interface MolliePluginOptions {
  * mutation CreateMolliePaymentIntent {
  *   createMolliePaymentIntent(input: {
  *     paymentMethodCode: "mollie-payment-method"
- *   })
+ *   }) {
+ *       url
+ *   }
  * }
  * ```
  * The response will be

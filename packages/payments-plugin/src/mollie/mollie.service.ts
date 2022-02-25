@@ -63,12 +63,12 @@ export class MollieService {
         }
         const paymentMethod = paymentMethods.items.find(pm => pm.code === paymentMethodCode);
         if (!paymentMethod) {
-            throw Error(`No paymentMethod found with code ${paymentMethodCode}`); // This should never happen
+            return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
         }
         const apiKeyArg = paymentMethod.handler.args.find(arg => arg.name === 'apiKey');
         const redirectUrlArg = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl');
         if (!apiKeyArg || !redirectUrlArg) {
-            throw Error(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured.`);
+            return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
         }
         const apiKey = apiKeyArg.value;
         let redirectUrl = redirectUrlArg.value;
