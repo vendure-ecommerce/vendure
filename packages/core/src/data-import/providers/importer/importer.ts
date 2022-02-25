@@ -158,13 +158,13 @@ export class Importer {
         let imported = 0;
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll(ctx);
-        await this.fastImporter.initialize();
+        await this.fastImporter.initialize(ctx.channel);
         for (const { product, variants } of rows) {
             const productMainTranslation = this.getTranslationByCodeOrFirst(
                 product.translations,
                 ctx.languageCode,
             );
-            const createProductAssets = await this.assetImporter.getAssets(product.assetPaths);
+            const createProductAssets = await this.assetImporter.getAssets(product.assetPaths, ctx);
             const productAssets = createProductAssets.assets;
             if (createProductAssets.errors.length) {
                 errors = errors.concat(createProductAssets.errors);
@@ -176,7 +176,7 @@ export class Importer {
             const createdProductId = await this.fastImporter.createProduct({
                 featuredAssetId: productAssets.length ? productAssets[0].id : undefined,
                 assetIds: productAssets.map(a => a.id),
-                facetValueIds: await this.getFacetValueIds(product.facets, languageCode),
+                facetValueIds: await this.getFacetValueIds(ctx, product.facets, ctx.languageCode),
                 translations: product.translations.map(translation => {
                     return {
                         languageCode: translation.languageCode,
@@ -240,7 +240,7 @@ export class Importer {
                 }
                 let facetValueIds: ID[] = [];
                 if (0 < variant.facets.length) {
-                    facetValueIds = await this.getFacetValueIds(variant.facets, languageCode);
+                    facetValueIds = await this.getFacetValueIds(ctx, variant.facets, languageCode);
                 }
                 const variantCustomFields = this.processCustomFieldValues(
                     variantMainTranslation.customFields,
@@ -289,16 +289,12 @@ export class Importer {
         return errors;
     }
 
-    private async getFacetValueIds(facets: ParsedFacet[], languageCode: LanguageCode): Promise<ID[]> {
+    private async getFacetValueIds(
+        ctx: RequestContext,
+        facets: ParsedFacet[],
+        languageCode: LanguageCode,
+    ): Promise<ID[]> {
         const facetValueIds: ID[] = [];
-        const ctx = new RequestContext({
-            channel: await this.channelService.getDefaultChannel(),
-            apiType: 'admin',
-            isAuthorized: true,
-            authorizedAsOwnerOnly: false,
-            session: {} as any,
-        });
-
         for (const item of facets) {
             const itemMainTranslation = this.getTranslationByCodeOrFirst(item.translations, languageCode);
             const facetName = itemMainTranslation.facet;

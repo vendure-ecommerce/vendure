@@ -204,7 +204,9 @@ populate(
   () => bootstrap(config),
   initialData,
   productsCsvFile,
-)
+  'my-channel-token' // optional - used to assign imported 
+)                    // entities to the specified Channel
+
 .then(app => {
   return app.close();
 })
