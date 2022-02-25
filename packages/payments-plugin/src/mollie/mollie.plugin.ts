@@ -69,7 +69,7 @@ export interface MolliePluginOptions {
  *   }
  * }
  * ```
- * The response will be
+ * The response will contain
  * a redirectUrl, which can be used to redirect your customer to the Mollie
  * platform.
  *
