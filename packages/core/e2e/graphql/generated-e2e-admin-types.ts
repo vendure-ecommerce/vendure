@@ -5287,19 +5287,6 @@ export type GetFacetValuesQuery = {
     };
 };
 
-export type GetCollectionsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetCollectionsQuery = {
-    collections: {
-        items: Array<{
-            id: string;
-            name: string;
-            position: number;
-            parent?: { id: string; name: string } | null;
-        }>;
-    };
-};
-
 export type GetCollectionProductsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -8062,6 +8049,19 @@ export type GetShippingMethodListQuery = {
             description: string;
             calculator: { code: string; args: Array<{ name: string; value: string }> };
             checker: { code: string; args: Array<{ name: string; value: string }> };
+        }>;
+    };
+};
+
+export type GetCollectionsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCollectionsQuery = {
+    collections: {
+        items: Array<{
+            id: string;
+            name: string;
+            position: number;
+            parent?: { id: string; name: string } | null;
         }>;
     };
 };
