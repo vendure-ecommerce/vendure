@@ -28,9 +28,12 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
         stripeService = injector.get(StripeService);
     },
 
-    async createPayment(_, __, amount, ___, metadata): Promise<CreatePaymentResult> {
+    async createPayment(ctx, _, amount, ___, metadata): Promise<CreatePaymentResult> {
         // Payment is already settled in Stripe by the time the webhook in stripe.controller.ts
         // adds the payment to the order
+        if (ctx.apiType !== 'admin') {
+            throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
+        }
         return {
             amount,
             state: 'Settled' as const,

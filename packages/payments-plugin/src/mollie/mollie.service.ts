@@ -90,7 +90,7 @@ export class MollieService {
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
         });
         return {
-            url: payment.getPaymentUrl(),
+            url: payment.getCheckoutUrl(),
         };
     }
 
