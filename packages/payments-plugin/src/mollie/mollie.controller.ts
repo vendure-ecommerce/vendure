@@ -17,6 +17,11 @@ export class MollieController {
         if (!body.id) {
             return Logger.warn(` Ignoring incoming webhook, because it has no body.id.`, loggerCtx);
         }
-        await this.mollieService.settlePayment({ channelToken, paymentMethodId, paymentId: body.id });
+        try {
+            await this.mollieService.settlePayment({ channelToken, paymentMethodId, paymentId: body.id });
+        } catch (error) {
+            Logger.error(`Failed to process incoming webhook: ${error?.message}`, loggerCtx, error);
+            throw error;
+        }
     }
 }

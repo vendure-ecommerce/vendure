@@ -2,9 +2,11 @@ import { PluginCommonModule, RuntimeVendureConfig, VendurePlugin } from '@vendur
 import { gql } from 'graphql-tag';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
+import { shopSchema } from './mollie-shop-schema';
 import { MollieController } from './mollie.controller';
 import { molliePaymentHandler } from './mollie.handler';
 import { MollieResolver } from './mollie.resolver';
+import { MollieService } from './mollie.service';
 
 /**
  * @description
@@ -88,20 +90,15 @@ export interface MolliePluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     controllers: [MollieController],
-    providers: [{ provide: PLUGIN_INIT_OPTIONS, useFactory: () => MolliePlugin.options }],
+    providers: [
+        MollieService,
+        { provide: PLUGIN_INIT_OPTIONS, useFactory: () => MolliePlugin.options }],
     configuration: (config: RuntimeVendureConfig) => {
         config.paymentOptions.paymentMethodHandlers.push(molliePaymentHandler);
         return config;
     },
     shopApiExtensions: {
-        schema: gql`
-            input MolliePaymentIntentInput {
-                paymentMethodCode: String!
-            }
-            extend type Mutation {
-                createMolliePaymentIntent(input: MolliePaymentIntentInput!): String
-            }
-        `,
+        schema: shopSchema,
         resolvers: [MollieResolver],
     },
 })

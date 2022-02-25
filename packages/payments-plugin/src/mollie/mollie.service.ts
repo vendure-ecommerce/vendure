@@ -3,22 +3,29 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
     ChannelService,
+    EntityHydrator,
     LanguageCode,
     Logger,
+    Order,
     OrderService,
-    Payment,
     PaymentMethodService,
     RequestContext,
-    TransactionalConnection,
 } from '@vendure/core';
+import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
+import { MolliePaymentIntentError, MolliePaymentIntentResult } from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
 
 interface SettlePaymentInput {
     channelToken: string;
     paymentMethodId: string;
     paymentId: string;
+}
+
+class PaymentIntentError implements MolliePaymentIntentError {
+    constructor(public message: string, public errorCode = 'MolliePaymentIntentError') {
+    }
 }
 
 @Injectable()
@@ -29,22 +36,34 @@ export class MollieService {
         private activeOrderService: ActiveOrderService,
         private orderService: OrderService,
         private channelService: ChannelService,
-        private connection: TransactionalConnection,
-    ) {}
+        private entityHydrator: EntityHydrator,
+    ) {
+    }
 
     /**
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
      */
-    async createPaymentIntent(ctx: RequestContext, paymentMethodCode: string): Promise<string | undefined> {
+    async createPaymentIntent(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentIntentResult> {
         const [order, paymentMethods] = await Promise.all([
             this.activeOrderService.getOrderFromContext(ctx),
             this.paymentMethodService.findAll(ctx),
         ]);
+        if (!order) {
+            return new PaymentIntentError('No active order found for session');
+        }
+        await this.entityHydrator.hydrate(ctx, order, { relations: ['lines', 'customer', 'shippingLines'] });
+        if (!order.lines?.length) {
+            return new PaymentIntentError('Cannot create payment intent for empty order');
+        }
+        if (!order.customer) {
+            return new PaymentIntentError('Cannot create payment intent for order without customer');
+        }
+        if (!order.shippingLines?.length) {
+            return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
+        }
         const paymentMethod = paymentMethods.items.find(pm => pm.code === paymentMethodCode);
         if (!paymentMethod) {
             throw Error(`No paymentMethod found with code ${paymentMethodCode}`); // This should never happen
-        } else if (!order) {
-            throw Error(`No active order found for session ${ctx.session?.id}`);
         }
         const apiKeyArg = paymentMethod.handler.args.find(arg => arg.name === 'apiKey');
         const redirectUrlArg = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl');
@@ -52,7 +71,7 @@ export class MollieService {
             throw Error(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured.`);
         }
         const apiKey = apiKeyArg.value;
-        let redirectUrl = apiKeyArg.value;
+        let redirectUrl = redirectUrlArg.value;
         const mollieClient = createMollieClient({ apiKey });
         redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
@@ -68,15 +87,17 @@ export class MollieService {
             },
             description: `Order ${order.code}`,
             redirectUrl: `${redirectUrl}/${order.code}`,
-            webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethodId}`,
+            webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
         });
-        return payment.getPaymentUrl();
+        return {
+            url: payment.getPaymentUrl(),
+        };
     }
 
     /**
      * Makes a request to Mollie to verify the given payment by id
      */
-    async settlePayment({ channelToken, paymentMethodId, paymentId }: SettlePaymentInput) {
+    async settlePayment({ channelToken, paymentMethodId, paymentId }: SettlePaymentInput): Promise<void> {
         const ctx = await this.createContext(channelToken);
         Logger.info(`Received payment for ${channelToken}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
@@ -90,22 +111,58 @@ export class MollieService {
         }
         const client = createMollieClient({ apiKey });
         const molliePayment = await client.payments.get(paymentId);
-        Logger.info(
-            `Received payment ${molliePayment.id} for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
-            loggerCtx,
-        );
-        const dbPayment = await this.connection
-            .getRepository(Payment)
-            .findOneOrFail({ where: { transactionId: molliePayment.id } });
-        if (molliePayment.status === PaymentStatus.paid) {
-            await this.orderService.settlePayment(ctx, dbPayment.id);
-            Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
-        } else {
-            Logger.warn(
-                `Received payment for order ${molliePayment.metadata.orderCode} with status ${molliePayment.status}`,
+        const orderCode = molliePayment.metadata.orderCode;
+        if (molliePayment.status !== PaymentStatus.paid) {
+            return Logger.warn(
+                `Received payment for ${channelToken} for order ${orderCode} with status ${molliePayment.status}`,
                 loggerCtx,
             );
         }
+        if (!orderCode) {
+            return Logger.error(`Molliepayment does not have metadata.orderCode, unable to settle payment ${molliePayment.id}!`, loggerCtx);
+        }
+        Logger.info(
+            `Received payment ${molliePayment.id} for order ${orderCode} with status ${molliePayment.status}`,
+            loggerCtx,
+        );
+        const order = await this.orderService.findOneByCode(ctx, orderCode);
+        if (!order) {
+            return Logger.error(`Unable to find order ${orderCode}, unable to settle payment ${molliePayment.id}!`, loggerCtx);
+        }
+        if (order.state !== 'ArrangingPayment') {
+            const transitionToStateResult = await this.orderService.transitionToState(
+                ctx,
+                order.id,
+                'ArrangingPayment',
+            );
+            if (transitionToStateResult instanceof OrderStateTransitionError) {
+                return Logger.error(
+                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
+                    loggerCtx,
+                    transitionToStateResult.transitionError,
+                );
+            }
+        }
+        const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
+            method: paymentMethod.code,
+            metadata: {
+                paymentId: molliePayment.id,
+                mode: molliePayment.mode,
+                method: molliePayment.method,
+                profileId: molliePayment.profileId,
+                settlementAmount: molliePayment.settlementAmount,
+                customerId: molliePayment.customerId,
+                authorizedAt: molliePayment.authorizedAt,
+                paidAt: molliePayment.paidAt,
+            },
+        });
+        if (!(addPaymentToOrderResult instanceof Order)) {
+            return Logger.error(
+                `Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`,
+                loggerCtx,
+            );
+        }
+        Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
     }
 
     private async createContext(channelToken: string): Promise<RequestContext> {

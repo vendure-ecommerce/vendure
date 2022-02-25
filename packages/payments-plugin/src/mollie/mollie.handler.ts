@@ -9,6 +9,7 @@ import {
     PaymentMethodService,
     SettlePaymentResult,
 } from '@vendure/core';
+import { Permission } from '@vendure/core';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import { MollieService } from './mollie.service';
@@ -45,16 +46,19 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         args,
         metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
-        // Payment is already settled in Mollie by the time the webhook in mollie.controller.ts
-        // adds the payment to the order
+        // Creating a payment immediately settles the payment in Mollie flow, so only Admins and internal calls should be allowed to do this
+        if (ctx.apiType !== 'admin') {
+            throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
+        }
         return {
             amount,
             state: 'Settled' as const,
-            transactionId: metadata.paymentIntentId,
+            transactionId: metadata.paymentId,
+            metadata // Store all given metadata on a payment
         };
     },
-    settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
-        // Settlement is handled by incoming webhook in mollie.controller.ts
+    settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
+        // this should never be called
         return { success: true };
     },
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
