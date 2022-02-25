@@ -63,7 +63,6 @@ describe('Mollie payments', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
-            logger: new DefaultLogger({ level: LogLevel.Debug }), // FIXME
         });
         const env = createTestEnvironment(devConfig);
         serverPort = devConfig.apiOptions.port;
