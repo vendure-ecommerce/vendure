@@ -22,6 +22,7 @@ import { PasswordCipher } from './helpers/password-cipher/password-cipher';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
 import { ProductPriceApplicator } from './helpers/product-price-applicator/product-price-applicator';
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
+import { RequestContextService } from './helpers/request-context/request-context.service';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { SlugValidator } from './helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
@@ -116,6 +117,7 @@ const helpers = [
     ActiveOrderService,
     ProductPriceApplicator,
     EntityHydrator,
+    RequestContextService,
 ];
 
 /**

@@ -20,6 +20,7 @@ import {
     ProductVariantFragment,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    UpdateChannel,
     UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -33,6 +34,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_CHANNEL,
     UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -169,11 +171,11 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
 
             expect(product!.variants.map(v => v.price)).toEqual(
-                product1.variants.map(v => Math.round((v.price * PRICE_FACTOR) / 1.2)),
+                product1.variants.map(v => Math.round(v.price * PRICE_FACTOR)),
             );
             // Second Channel is configured to include taxes in price, so they should be the same.
             expect(product!.variants.map(v => v.priceWithTax)).toEqual(
-                product1.variants.map(v => Math.round((v.priceWithTax * PRICE_FACTOR) / 1.2)),
+                product1.variants.map(v => Math.round(v.priceWithTax * PRICE_FACTOR)),
             );
         });
 
@@ -305,11 +307,11 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_3']);
             expect(product!.variants.map(v => v.price)).toEqual([
-                Math.round((product1.variants[0].price * PRICE_FACTOR) / 1.2),
+                Math.round(product1.variants[0].price * PRICE_FACTOR),
             ]);
             // Third Channel is configured to include taxes in price, so they should be the same.
             expect(product!.variants.map(v => v.priceWithTax)).toEqual([
-                product1.variants[0].price * PRICE_FACTOR,
+                Math.round(product1.variants[0].priceWithTax * PRICE_FACTOR),
             ]);
 
             await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);

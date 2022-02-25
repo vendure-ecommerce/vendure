@@ -89,10 +89,11 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
-import { OrderEvent } from '../../event-bus/events/order-event';
-import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
-import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { CouponCodeEvent } from '../../event-bus/index';
+import { OrderEvent } from '../../event-bus/index';
+import { OrderStateTransitionEvent } from '../../event-bus/index';
+import { RefundStateTransitionEvent } from '../../event-bus/index';
+import { OrderLineEvent } from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -513,6 +514,7 @@ export class OrderService {
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+            this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
@@ -544,6 +546,7 @@ export class OrderService {
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
         return updatedOrder;
     }
 

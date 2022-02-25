@@ -89,6 +89,7 @@ export class ProductEntityResolver {
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
+        @Api() apiType: ApiType,
     ): Promise<Array<Translated<FacetValue>>> {
         if (product.facetValues?.length === 0) {
             return [];
@@ -99,7 +100,15 @@ export class ProductEntityResolver {
         } else {
             facetValues = await this.productService.getFacetValuesForProduct(ctx, product.id);
         }
-        return facetValues.filter(fv => fv.channels.find(c => idsAreEqual(c.id, ctx.channelId)));
+        return facetValues.filter(fv => {
+            if (!fv.channels.find(c => idsAreEqual(c.id, ctx.channelId))) {
+                return false;
+            }
+            if (apiType === 'shop' && fv.facet.isPrivate) {
+                return false;
+            }
+            return true;
+        });
     }
 
     @ResolveField()

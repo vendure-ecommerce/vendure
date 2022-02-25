@@ -28,14 +28,14 @@ export class SearchIndexJobBuffer implements JobBuffer<UpdateIndexQueueJobData> 
             collectedJobs,
             item => item.data.type === 'update-product',
         );
-
         const jobsToAdd = [...collectedJobs];
 
         if (variantsJobs.length) {
-            const variantIdsToUpdate = variantsJobs.reduce((result, job) => {
+            const variantIdsToUpdate: ID[] = [];
+            for (const job of variantsJobs) {
                 const ids = job.data.type === 'update-variants-by-id' ? job.data.ids : job.data.variantIds;
-                return [...result, ...ids];
-            }, [] as ID[]);
+                variantIdsToUpdate.push(...ids);
+            }
 
             const referenceJob = variantsJobs[0];
             const batchedVariantJob = new Job<UpdateVariantsByIdJobData>({
@@ -62,7 +62,6 @@ export class SearchIndexJobBuffer implements JobBuffer<UpdateIndexQueueJobData> 
             }
             jobsToAdd.push(...(uniqueProductJobs as Job[]));
         }
-
         return jobsToAdd;
     }
 

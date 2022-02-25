@@ -46,7 +46,6 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  *     AssetServerPlugin.init({
  *       route: 'assets',
  *       assetUploadDir: path.join(__dirname, 'assets'),
- *       port: 4000,
  *     }),
  *   ],
  * };

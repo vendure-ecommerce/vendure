@@ -1,19 +1,16 @@
 /**
+ * @description
  * Returns an array with only unique values. Objects are compared by reference,
  * unless the `byKey` argument is supplied, in which case matching properties will
  * be used to check duplicates
  */
+import { isObject } from './shared-utils';
+
 export function unique<T>(arr: T[], byKey?: keyof T): T[] {
-    return arr.filter((item, index, self) => {
-        return (
-            index ===
-            self.findIndex(i => {
-                if (byKey === undefined) {
-                    return i === item;
-                } else {
-                    return i[byKey] === item[byKey];
-                }
-            })
-        );
-    });
+    if (byKey == null) {
+        return Array.from(new Set(arr));
+    } else {
+        // Based on https://stackoverflow.com/a/58429784/772859
+        return [...new Map(arr.map(item => [item[byKey], item])).values()];
+    }
 }

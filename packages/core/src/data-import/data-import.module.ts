@@ -15,7 +15,7 @@ import { Populator } from './providers/populator/populator';
     // Important! PluginModule must be defined before ServiceModule
     // in order that overrides of Services (e.g. SearchService) are correctly
     // registered with the injector.
-    imports: [PluginModule.forRoot(), ServiceModule, ConnectionModule.forRoot(), ConfigModule],
+    imports: [PluginModule.forRoot(), ServiceModule, ConnectionModule.forPlugin(), ConfigModule],
     exports: [ImportParser, Importer, Populator, FastImporterService, AssetImporter],
     providers: [ImportParser, Importer, Populator, FastImporterService, AssetImporter],
 })
