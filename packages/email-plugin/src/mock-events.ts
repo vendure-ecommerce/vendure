@@ -1,6 +1,7 @@
 import { AdjustmentType } from '@vendure/common/lib/generated-shop-types';
 import {
     AccountRegistrationEvent,
+    CurrencyCode,
     Customer,
     IdentifierChangeRequestEvent,
     NativeAuthenticationMethod,
@@ -11,7 +12,6 @@ import {
     PasswordResetEvent,
     ProductVariant,
     User,
-    CurrencyCode,
 } from '@vendure/core';
 import { ShippingLine } from '@vendure/core/dist/entity/shipping-line/shipping-line.entity';
 
