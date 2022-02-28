@@ -155,9 +155,8 @@ export class MollieService {
             },
         });
         if (!(addPaymentToOrderResult instanceof Order)) {
-            return Logger.error(
+            throw Error(
                 `Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`,
-                loggerCtx,
             );
         }
         Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
