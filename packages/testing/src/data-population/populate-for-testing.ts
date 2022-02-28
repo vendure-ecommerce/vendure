@@ -26,9 +26,9 @@ export async function populateForTesting<T extends INestApplicationContext>(
 
     const logFn = (message: string) => (logging ? console.log(message) : null);
 
-    await populateInitialData(app, options.initialData, logFn);
+    await populateInitialData(app, options.initialData);
     await populateProducts(app, options.productsCsvPath, logging);
-    await populateCollections(app, options.initialData, logFn);
+    await populateCollections(app, options.initialData);
     await populateCustomers(app, options.customerCount ?? 10, logFn);
 
     config.authOptions.requireVerification = originalRequireVerification;

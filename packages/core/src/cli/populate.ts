@@ -86,15 +86,16 @@ export async function populate<T extends INestApplicationContext>(
         );
         if (importResult.errors && importResult.errors.length) {
             const errorFile = path.join(process.cwd(), 'vendure-import-error.log');
-            console.log(
+            Logger.error(
                 `${importResult.errors.length} errors encountered when importing product data. See: ${errorFile}`,
+                loggerCtx,
             );
             await fs.writeFile(errorFile, importResult.errors.join('\n'));
         }
 
         Logger.info(`Imported ${importResult.imported} products`, loggerCtx);
 
-        await populateCollections(app, initialData);
+        await populateCollections(app, initialData, channel);
     }
 
     Logger.info('Done!', loggerCtx);
