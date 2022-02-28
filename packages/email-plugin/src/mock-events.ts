@@ -11,6 +11,7 @@ import {
     PasswordResetEvent,
     ProductVariant,
     User,
+    CurrencyCode,
 } from '@vendure/core';
 import { ShippingLine } from '@vendure/core/dist/entity/shipping-line/shipping-line.entity';
 
@@ -20,7 +21,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
     {} as any,
     new Order({
         id: '6',
-        currencyCode: 'USD',
+        currencyCode: CurrencyCode.USD,
         createdAt: '2018-10-31T11:18:29.261Z',
         updatedAt: '2018-10-31T15:24:17.000Z',
         orderPlacedAt: '2018-10-31T13:54:17.000Z',
