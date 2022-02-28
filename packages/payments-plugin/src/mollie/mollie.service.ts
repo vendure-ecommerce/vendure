@@ -120,7 +120,7 @@ export class MollieService {
             );
         }
         if (!orderCode) {
-            return Logger.error(`Molliepayment does not have metadata.orderCode, unable to settle payment ${molliePayment.id}!`, loggerCtx);
+            throw Error(`Molliepayment does not have metadata.orderCode, unable to settle payment ${molliePayment.id}!`);
         }
         Logger.info(
             `Received payment ${molliePayment.id} for order ${orderCode} with status ${molliePayment.status}`,
@@ -128,7 +128,7 @@ export class MollieService {
         );
         const order = await this.orderService.findOneByCode(ctx, orderCode);
         if (!order) {
-            return Logger.error(`Unable to find order ${orderCode}, unable to settle payment ${molliePayment.id}!`, loggerCtx);
+            throw Error(`Unable to find order ${orderCode}, unable to settle payment ${molliePayment.id}!`);
         }
         if (order.state !== 'ArrangingPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
