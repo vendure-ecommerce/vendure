@@ -90,8 +90,12 @@ export class MollieService {
             redirectUrl: `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
         });
+        const url = payment.getCheckoutUrl();
+        if (!url) {
+            throw Error(`Unable to getCheckoutUrl() from Mollie payment`);
+        }
         return {
-            url: payment.getCheckoutUrl(),
+            url,
         };
     }
 
