@@ -68,6 +68,7 @@ export class MollieService {
         const apiKeyArg = paymentMethod.handler.args.find(arg => arg.name === 'apiKey');
         const redirectUrlArg = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl');
         if (!apiKeyArg || !redirectUrlArg) {
+            Logger.warn(`CreatePaymentIntent failed, because no apiKey or redirect ws configured for ${paymentMethod.code}`, loggerCtx);
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
         }
         const apiKey = apiKeyArg.value;
