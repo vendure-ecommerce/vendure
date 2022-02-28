@@ -137,11 +137,8 @@ export class MollieService {
                 'ArrangingPayment',
             );
             if (transitionToStateResult instanceof OrderStateTransitionError) {
-                return Logger.error(
-                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
-                    loggerCtx,
-                    transitionToStateResult.transitionError,
-                );
+                throw Error(
+                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`);
             }
         }
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
