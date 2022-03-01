@@ -1,6 +1,6 @@
 {
   "name": "@vendure/job-queue-plugin",
-  "version": "1.4.7",
+  "version": "2.0.0-next.0",
   "license": "MIT",
   "main": "package/index.js",
   "types": "package/index.d.ts",
@@ -24,8 +24,8 @@
   "devDependencies": {
     "@google-cloud/pubsub": "^2.8.0",
     "@types/ioredis": "^4.28.8",
-    "@vendure/common": "^1.4.7",
-    "@vendure/core": "^1.4.7",
+    "@vendure/common": "^2.0.0-next.0",
+    "@vendure/core": "^2.0.0-next.0",
     "bullmq": "^1.74.3",
     "rimraf": "^3.0.2",
     "typescript": "4.5.5"
