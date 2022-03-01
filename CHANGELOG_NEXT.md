@@ -37,12 +37,8 @@
 
 ### BREAKING CHANGE
 
-* The internal ErrorResult classes now take all constructors arguments
-as a single input object.
-* The internal ErrorResult classes now take all constructors arguments
-as a single input object.
+* The internal ErrorResult classes now take all constructors arguments as a single input object.
 
-feat(core): Update codegen errors plugin to use object inputs
 ## 1.4.0-beta.0 (2021-12-06)
 
 
