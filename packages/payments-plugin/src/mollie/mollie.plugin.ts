@@ -65,7 +65,13 @@ export interface MolliePluginOptions {
  *   createMolliePaymentIntent(input: {
  *     paymentMethodCode: "mollie-payment-method"
  *   }) {
- *       url
+ *          ... on MolliePaymentIntent {
+                url
+            }
+            ... on MolliePaymentIntentError {
+                errorCode
+                message
+            }
  *   }
  * }
  * ```
