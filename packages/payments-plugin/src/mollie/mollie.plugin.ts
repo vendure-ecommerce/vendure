@@ -57,7 +57,7 @@ export interface MolliePluginOptions {
  *
  * ## Storefront usage
  *
- * In your storefront you add a payment to an order using the `addPaymentToOrder` mutation. In this example, our Mollie
+ * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
  * PaymentMethod was given the code "mollie-payment-method".
  *
  * ```GraphQL

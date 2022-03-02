@@ -1,8 +1,8 @@
 import { gql } from 'graphql-tag';
 
 export const shopSchema = gql`
-    type MolliePaymentIntentError {
-        errorCode: String!
+    type MolliePaymentIntentError implements ErrorResult {
+        errorCode: ErrorCode!
         message: String!
     }
     type MolliePaymentIntent {

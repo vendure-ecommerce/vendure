@@ -14,7 +14,7 @@ import {
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
-import { MolliePaymentIntentError, MolliePaymentIntentResult } from './graphql/generated-shop-types';
+import { ErrorCode, MolliePaymentIntentError, MolliePaymentIntentResult } from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
 
 interface SettlePaymentInput {
@@ -24,7 +24,8 @@ interface SettlePaymentInput {
 }
 
 class PaymentIntentError implements MolliePaymentIntentError {
-    constructor(public message: string, public errorCode = 'MolliePaymentIntentError') {
+    errorCode = ErrorCode.ORDER_PAYMENT_STATE_ERROR;
+    constructor(public message: string) {
     }
 }
 

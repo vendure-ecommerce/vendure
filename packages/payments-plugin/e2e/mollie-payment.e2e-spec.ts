@@ -131,7 +131,7 @@ describe('Mollie payments', () => {
                 paymentMethodCode: mockData.methodCode,
             },
         });
-        expect(result.errorCode).toBe('MolliePaymentIntentError');
+        expect(result.errorCode).toBe('ORDER_PAYMENT_STATE_ERROR');
     });
 
     it('Should get payment url', async () => {

@@ -183,7 +183,7 @@ Promise.all([
                     },
                 [path.join(__dirname, '../../packages/payments-plugin/src/mollie/graphql/generated-shop-types.ts')]:
                     {
-                        schema: [path.join(__dirname, '../../packages/payments-plugin/src/mollie/mollie-shop-schema.ts')],
+                        schema: [SHOP_SCHEMA_OUTPUT_FILE, path.join(__dirname, '../../packages/payments-plugin/src/mollie/mollie-shop-schema.ts')],
                         plugins: clientPlugins,
                         config,
                     },
