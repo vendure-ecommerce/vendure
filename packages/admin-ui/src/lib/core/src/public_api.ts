@@ -147,7 +147,7 @@ export * from './shared/components/modal-dialog/modal-dialog.component';
 export * from './shared/components/object-tree/object-tree.component';
 export * from './shared/components/order-state-label/order-state-label.component';
 export * from './shared/components/pagination-controls/pagination-controls.component';
-export * from './shared/components/product-selector/product-selector.component';
+export * from './shared/components/product-variant-selector/product-variant-selector.component';
 export * from './shared/components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 export * from './shared/components/rich-text-editor/link-dialog/link-dialog.component';
 export * from './shared/components/rich-text-editor/prosemirror/inputrules';

@@ -187,8 +187,8 @@
                 <clr-accordion-panel>
                     <clr-accordion-title>{{ 'order.add-item-to-order' | translate }}</clr-accordion-title>
                     <clr-accordion-content *clrIfExpanded>
-                        <vdr-product-selector class="mb4" (productSelected)="addItemSelectedVariant = $event">
-                        </vdr-product-selector>
+                        <vdr-product-variant-selector class="mb4" (productSelected)="addItemSelectedVariant = $event">
+                        </vdr-product-variant-selector>
                         <div *ngIf="addItemSelectedVariant" class="flex mb4">
                             <img
                                 *ngIf="addItemSelectedVariant.productAsset as asset"

@@ -12,19 +12,19 @@ import { DataService } from '../../../data/providers/data.service';
  *
  * @example
  * ```HTML
- * <vdr-product-selector
+ * <vdr-product-variant-selector
  *   (productSelected)="selectResult($event)"></vdr-product-selector>
  * ```
  *
  * @docsCategory components
  */
 @Component({
-    selector: 'vdr-product-selector',
-    templateUrl: './product-selector.component.html',
-    styleUrls: ['./product-selector.component.scss'],
+    selector: 'vdr-product-variant-selector',
+    templateUrl: './product-variant-selector.component.html',
+    styleUrls: ['./product-variant-selector.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductSelectorComponent implements OnInit {
+export class ProductVariantSelectorComponent implements OnInit {
     searchInput$ = new Subject<string>();
     searchLoading = false;
     searchResults$: Observable<ProductSelectorSearchQuery['search']['items']>;
