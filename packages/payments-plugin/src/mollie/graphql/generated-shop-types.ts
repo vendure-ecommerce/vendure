@@ -1,11 +1,11 @@
 // tslint:disable
-export type Maybe<T> = T;
+export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string | number;
+  ID: string;
   String: string;
   Boolean: boolean;
   Int: number;
@@ -1544,40 +1544,46 @@ export type MissingPasswordError = ErrorResult & {
   message: Scalars['String'];
 };
 
+export type MolliePaymentIntent = {
+  __typename?: 'MolliePaymentIntent';
+  url: Scalars['String'];
+};
+
+export type MolliePaymentIntentError = ErrorResult & {
+  __typename?: 'MolliePaymentIntentError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+export type MolliePaymentIntentInput = {
+  paymentMethodCode: Scalars['String'];
+};
+
+export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
   addItemToOrder: UpdateOrderItemsResult;
-  /** Remove an OrderLine from the Order */
-  removeOrderLine: RemoveOrderItemsResult;
-  /** Remove all OrderLine from the Order */
-  removeAllOrderLines: RemoveOrderItemsResult;
+  /** Add a Payment to the Order */
+  addPaymentToOrder: AddPaymentToOrderResult;
   /** Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
   adjustOrderLine: UpdateOrderItemsResult;
   /** Applies the given coupon code to the active Order */
   applyCouponCode: ApplyCouponCodeResult;
-  /** Removes the given coupon code from the active Order */
-  removeCouponCode?: Maybe<Order>;
-  /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
-  transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
-  /** Sets the shipping address for this order */
-  setOrderShippingAddress: ActiveOrderResult;
-  /** Sets the billing address for this order */
-  setOrderBillingAddress: ActiveOrderResult;
-  /** Allows any custom fields to be set for the active order */
-  setOrderCustomFields: ActiveOrderResult;
-  /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
-  setOrderShippingMethod: SetOrderShippingMethodResult;
-  /** Add a Payment to the Order */
-  addPaymentToOrder: AddPaymentToOrderResult;
-  /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
-  setCustomerForOrder: SetCustomerForOrderResult;
-  /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
-  login: NativeAuthenticationResult;
   /** Authenticates the user using a named authentication strategy */
   authenticate: AuthenticationResult;
+  /** Create a new Customer Address */
+  createCustomerAddress: Address;
+  createMolliePaymentIntent: MolliePaymentIntentResult;
+  /** Delete an existing Address */
+  deleteCustomerAddress: Success;
+  /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
+  login: NativeAuthenticationResult;
   /** End the current authenticated session */
   logout: Success;
+  /** Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true. */
+  refreshCustomerVerification: RefreshCustomerVerificationResult;
   /**
    * Register a Customer account with the given credentials. There are three possible registration flows:
    *
@@ -1595,25 +1601,14 @@ export type Mutation = {
    * 3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.
    */
   registerCustomerAccount: RegisterCustomerAccountResult;
-  /** Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true. */
-  refreshCustomerVerification: RefreshCustomerVerificationResult;
-  /** Update an existing Customer */
-  updateCustomer: Customer;
-  /** Create a new Customer Address */
-  createCustomerAddress: Address;
-  /** Update an existing Address */
-  updateCustomerAddress: Address;
-  /** Delete an existing Address */
-  deleteCustomerAddress: Success;
-  /**
-   * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
-   *
-   * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
-   * provided here.
-   */
-  verifyCustomerAccount: VerifyCustomerAccountResult;
-  /** Update the password of the active Customer */
-  updateCustomerPassword: UpdateCustomerPasswordResult;
+  /** Remove all OrderLine from the Order */
+  removeAllOrderLines: RemoveOrderItemsResult;
+  /** Removes the given coupon code from the active Order */
+  removeCouponCode?: Maybe<Order>;
+  /** Remove an OrderLine from the Order */
+  removeOrderLine: RemoveOrderItemsResult;
+  /** Requests a password reset email to be sent */
+  requestPasswordReset?: Maybe<RequestPasswordResetResult>;
   /**
    * Request to update the emailAddress of the active Customer. If `authOptions.requireVerification` is enabled
    * (as is the default), then the `identifierChangeToken` will be assigned to the current User and
@@ -1621,15 +1616,38 @@ export type Mutation = {
    * that verification token to the Customer, which is then used to verify the change of email address.
    */
   requestUpdateCustomerEmailAddress: RequestUpdateCustomerEmailAddressResult;
+  /** Resets a Customer's password based on the provided token */
+  resetPassword: ResetPasswordResult;
+  /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
+  setCustomerForOrder: SetCustomerForOrderResult;
+  /** Sets the billing address for this order */
+  setOrderBillingAddress: ActiveOrderResult;
+  /** Allows any custom fields to be set for the active order */
+  setOrderCustomFields: ActiveOrderResult;
+  /** Sets the shipping address for this order */
+  setOrderShippingAddress: ActiveOrderResult;
+  /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
+  setOrderShippingMethod: SetOrderShippingMethodResult;
+  /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
+  transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+  /** Update an existing Customer */
+  updateCustomer: Customer;
+  /** Update an existing Address */
+  updateCustomerAddress: Address;
   /**
    * Confirm the update of the emailAddress with the provided token, which has been generated by the
    * `requestUpdateCustomerEmailAddress` mutation.
    */
   updateCustomerEmailAddress: UpdateCustomerEmailAddressResult;
-  /** Requests a password reset email to be sent */
-  requestPasswordReset?: Maybe<RequestPasswordResetResult>;
-  /** Resets a Customer's password based on the provided token */
-  resetPassword: ResetPasswordResult;
+  /** Update the password of the active Customer */
+  updateCustomerPassword: UpdateCustomerPasswordResult;
+  /**
+   * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
+   *
+   * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
+   * provided here.
+   */
+  verifyCustomerAccount: VerifyCustomerAccountResult;
 };
 
 
@@ -1639,8 +1657,8 @@ export type MutationAddItemToOrderArgs = {
 };
 
 
-export type MutationRemoveOrderLineArgs = {
-  orderLineId: Scalars['ID'];
+export type MutationAddPaymentToOrderArgs = {
+  input: PaymentInput;
 };
 
 
@@ -1655,18 +1673,73 @@ export type MutationApplyCouponCodeArgs = {
 };
 
 
+export type MutationAuthenticateArgs = {
+  input: AuthenticationInput;
+  rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCreateCustomerAddressArgs = {
+  input: CreateAddressInput;
+};
+
+
+export type MutationCreateMolliePaymentIntentArgs = {
+  input: MolliePaymentIntentInput;
+};
+
+
+export type MutationDeleteCustomerAddressArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationLoginArgs = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+  rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationRefreshCustomerVerificationArgs = {
+  emailAddress: Scalars['String'];
+};
+
+
+export type MutationRegisterCustomerAccountArgs = {
+  input: RegisterCustomerInput;
+};
+
+
 export type MutationRemoveCouponCodeArgs = {
   couponCode: Scalars['String'];
 };
 
 
-export type MutationTransitionOrderToStateArgs = {
-  state: Scalars['String'];
+export type MutationRemoveOrderLineArgs = {
+  orderLineId: Scalars['ID'];
 };
 
 
-export type MutationSetOrderShippingAddressArgs = {
-  input: CreateAddressInput;
+export type MutationRequestPasswordResetArgs = {
+  emailAddress: Scalars['String'];
+};
+
+
+export type MutationRequestUpdateCustomerEmailAddressArgs = {
+  password: Scalars['String'];
+  newEmailAddress: Scalars['String'];
+};
+
+
+export type MutationResetPasswordArgs = {
+  token: Scalars['String'];
+  password: Scalars['String'];
+};
+
+
+export type MutationSetCustomerForOrderArgs = {
+  input: CreateCustomerInput;
 };
 
 
@@ -1680,41 +1753,18 @@ export type MutationSetOrderCustomFieldsArgs = {
 };
 
 
+export type MutationSetOrderShippingAddressArgs = {
+  input: CreateAddressInput;
+};
+
+
 export type MutationSetOrderShippingMethodArgs = {
   shippingMethodId: Scalars['ID'];
 };
 
 
-export type MutationAddPaymentToOrderArgs = {
-  input: PaymentInput;
-};
-
-
-export type MutationSetCustomerForOrderArgs = {
-  input: CreateCustomerInput;
-};
-
-
-export type MutationLoginArgs = {
-  username: Scalars['String'];
-  password: Scalars['String'];
-  rememberMe?: Maybe<Scalars['Boolean']>;
-};
-
-
-export type MutationAuthenticateArgs = {
-  input: AuthenticationInput;
-  rememberMe?: Maybe<Scalars['Boolean']>;
-};
-
-
-export type MutationRegisterCustomerAccountArgs = {
-  input: RegisterCustomerInput;
-};
-
-
-export type MutationRefreshCustomerVerificationArgs = {
-  emailAddress: Scalars['String'];
+export type MutationTransitionOrderToStateArgs = {
+  state: Scalars['String'];
 };
 
 
@@ -1723,24 +1773,13 @@ export type MutationUpdateCustomerArgs = {
 };
 
 
-export type MutationCreateCustomerAddressArgs = {
-  input: CreateAddressInput;
-};
-
-
 export type MutationUpdateCustomerAddressArgs = {
   input: UpdateAddressInput;
 };
 
 
-export type MutationDeleteCustomerAddressArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type MutationVerifyCustomerAccountArgs = {
+export type MutationUpdateCustomerEmailAddressArgs = {
   token: Scalars['String'];
-  password?: Maybe<Scalars['String']>;
 };
 
 
@@ -1750,25 +1789,9 @@ export type MutationUpdateCustomerPasswordArgs = {
 };
 
 
-export type MutationRequestUpdateCustomerEmailAddressArgs = {
-  password: Scalars['String'];
-  newEmailAddress: Scalars['String'];
-};
-
-
-export type MutationUpdateCustomerEmailAddressArgs = {
+export type MutationVerifyCustomerAccountArgs = {
   token: Scalars['String'];
-};
-
-
-export type MutationRequestPasswordResetArgs = {
-  emailAddress: Scalars['String'];
-};
-
-
-export type MutationResetPasswordArgs = {
-  token: Scalars['String'];
-  password: Scalars['String'];
+  password?: Maybe<Scalars['String']>;
 };
 
 export type NativeAuthInput = {

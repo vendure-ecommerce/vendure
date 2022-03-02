@@ -26,7 +26,7 @@
         "stripe": "8.x"
     },
     "devDependencies": {
-        "@mollie/api-client": "^3.5.1",
+        "@mollie/api-client": "^3.6.0",
         "@types/braintree": "^2.22.15",
         "@vendure/common": "^1.4.7",
         "@vendure/core": "^1.4.7",

@@ -9,12 +9,12 @@ import {
     PaymentMethodService,
     SettlePaymentResult,
 } from '@vendure/core';
+import { Permission } from '@vendure/core';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
-import { MolliePluginOptions } from './mollie.plugin';
+import { MollieService } from './mollie.service';
 
-let paymentMethodService: PaymentMethodService;
-let options: MolliePluginOptions;
+let mollieService: MollieService;
 export const molliePaymentHandler = new PaymentMethodHandler({
     code: 'mollie-payment-handler',
     description: [
@@ -31,69 +31,34 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         redirectUrl: {
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
+            description: [
+                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
+            ],
         },
     },
     init(injector) {
-        paymentMethodService = injector.get(PaymentMethodService);
-        options = injector.get(PLUGIN_INIT_OPTIONS);
+        mollieService = injector.get(MollieService);
     },
     createPayment: async (
         ctx,
         order,
         amount,
         args,
-        _metadata,
+        metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
-        try {
-            const { apiKey } = args;
-            let { redirectUrl } = args;
-            const paymentMethods = await paymentMethodService.findAll(ctx);
-            const paymentMethod = paymentMethods.items.find(
-                pm =>
-                    pm.handler.args.find(arg => arg.value === apiKey) &&
-                    pm.handler.args.find(arg => arg.value === redirectUrl),
-            );
-            if (!paymentMethod) {
-                throw Error(`No paymentMethod found for given apiKey`); // This should never happen
-            }
-            const mollieClient = createMollieClient({ apiKey });
-            redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
-            const vendureHost = options.vendureHost.endsWith('/')
-                ? options.vendureHost.slice(0, -1)
-                : options.vendureHost; // remove appending slash
-            const payment = await mollieClient.payments.create({
-                amount: {
-                    value: `${(order.totalWithTax / 100).toFixed(2)}`,
-                    currency: order.currencyCode,
-                },
-                metadata: {
-                    orderCode: order.code,
-                },
-                description: `Order ${order.code}`,
-                redirectUrl: `${redirectUrl}/${order.code}`,
-                webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
-            });
-            return {
-                amount: order.totalWithTax,
-                transactionId: payment.id,
-                state: 'Authorized' as const,
-                metadata: {
-                    public: {
-                        redirectLink: payment.getPaymentUrl(),
-                    },
-                },
-            };
-        } catch (err) {
-            Logger.error(err, loggerCtx);
-            return {
-                amount: order.totalWithTax,
-                state: 'Error',
-                errorMessage: err.message,
-            };
+        // Creating a payment immediately settles the payment in Mollie flow, so only Admins and internal calls should be allowed to do this
+        if (ctx.apiType !== 'admin') {
+            throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
+        return {
+            amount,
+            state: 'Settled' as const,
+            transactionId: metadata.paymentId,
+            metadata // Store all given metadata on a payment
+        };
     },
-    settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
-        // Settlement is handled by incoming webhook in mollie.controller.ts
+    settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
+        // this should never be called
         return { success: true };
     },
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {

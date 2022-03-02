@@ -1,8 +1,12 @@
 import { PluginCommonModule, RuntimeVendureConfig, VendurePlugin } from '@vendure/core';
+import { gql } from 'graphql-tag';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
+import { shopSchema } from './mollie-shop-schema';
 import { MollieController } from './mollie.controller';
 import { molliePaymentHandler } from './mollie.handler';
+import { MollieResolver } from './mollie.resolver';
+import { MollieService } from './mollie.service';
 
 /**
  * @description
@@ -53,32 +57,26 @@ export interface MolliePluginOptions {
  *
  * ## Storefront usage
  *
- * In your storefront you add a payment to an order using the `addPaymentToOrder` mutation. In this example, our Mollie
+ * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
  * PaymentMethod was given the code "mollie-payment-method".
  *
  * ```GraphQL
- * mutation AddPaymentToOrder {
- *   addPaymentToOrder(input: {
- *     method: "mollie-payment-method"
- *     metadata: {}
+ * mutation CreateMolliePaymentIntent {
+ *   createMolliePaymentIntent(input: {
+ *     paymentMethodCode: "mollie-payment-method"
  *   }) {
- *    ...on Order {
- *      id
- *      state
- *      payments {
- *          id
- *          metadata
- *      }
- *    }
- *    ...on ErrorResult {
- *      errorCode
- *      message
- *    }
+ *          ... on MolliePaymentIntent {
+                url
+            }
+            ... on MolliePaymentIntentError {
+                errorCode
+                message
+            }
  *   }
  * }
  * ```
- * The response will have
- * a `order.payments.metadata.public.redirectLink` in it, which can be used to redirect your customer to the Mollie
+ * The response will contain
+ * a redirectUrl, which can be used to redirect your customer to the Mollie
  * platform.
  *
  * After completing payment on the Mollie platform,
@@ -100,10 +98,16 @@ export interface MolliePluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     controllers: [MollieController],
-    providers: [{ provide: PLUGIN_INIT_OPTIONS, useFactory: () => MolliePlugin.options }],
+    providers: [
+        MollieService,
+        { provide: PLUGIN_INIT_OPTIONS, useFactory: () => MolliePlugin.options }],
     configuration: (config: RuntimeVendureConfig) => {
         config.paymentOptions.paymentMethodHandlers.push(molliePaymentHandler);
         return config;
+    },
+    shopApiExtensions: {
+        schema: shopSchema,
+        resolvers: [MollieResolver],
     },
 })
 export class MolliePlugin {
