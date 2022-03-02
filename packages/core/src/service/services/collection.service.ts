@@ -245,14 +245,14 @@ export class CollectionService implements OnModuleInit {
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
-    ): Promise<Array<{ name: string; id: ID }>> {
+    ): Promise<Array<{ name: string; id: ID; slug: string }>> {
         const rootCollection = await this.getRootCollection(ctx);
         if (idsAreEqual(collection.id, rootCollection.id)) {
             return [pick(rootCollection, ['id', 'name', 'slug'])];
         }
         const pickProps = pick(['id', 'name', 'slug']);
         const ancestors = await this.getAncestors(collection.id, ctx);
-        return [pickProps(rootCollection), ...ancestors.map(pickProps).reverse(), pickProps(collection)];
+        return ancestors.map(pickProps).reverse();
     }
 
     /**
@@ -319,36 +319,14 @@ export class CollectionService implements OnModuleInit {
         collectionId: ID,
         ctx?: RequestContext,
     ): Promise<Array<Translated<Collection> | Collection>> {
-        const getParent = async (id: ID, _ancestors: Collection[] = []): Promise<Collection[]> => {
-            const parent = await this.connection
-                .getRepository(ctx, Collection)
-                .createQueryBuilder()
-                .relation(Collection, 'parent')
-                .of(id)
-                .loadOne();
-            if (parent) {
-                if (!parent.isRoot) {
-                    _ancestors.push(parent);
-                    return getParent(parent.id, _ancestors);
-                }
-            }
-            return _ancestors;
-        };
-        const ancestors = await getParent(collectionId);
-
         return this.connection
-            .getRepository(Collection)
-            .findByIds(ancestors.map(c => c.id))
-            .then(categories => {
-                const resultCategories: Array<Collection | Translated<Collection>> = [];
-                ancestors.forEach(a => {
-                    const category = categories.find(c => c.id === a.id);
-                    if (category) {
-                        resultCategories.push(ctx ? translateDeep(category, ctx.languageCode) : category);
-                    }
-                });
-                return resultCategories;
-            });
+            .getTreeRepository(ctx, Collection)
+            .findAncestors(new Collection({ id: collectionId }), ctx ? { relations: ['translations'] } : {})
+            .then(collections =>
+                collections.map(collection =>
+                    ctx ? translateDeep(collection, ctx.languageCode) : collection,
+                ),
+            );
     }
 
     async create(ctx: RequestContext, input: CreateCollectionInput): Promise<Translated<Collection>> {
