@@ -45,7 +45,9 @@
                         [vdrDisabled]="!(updatePermission | hasPermission)"
                     />
                     <label class="visible-toggle">
-                        <ng-container *ngIf="detailForm.value.visible; else private">{{ 'catalog.public' | translate }}</ng-container>
+                        <ng-container *ngIf="detailForm.value.visible; else private">{{
+                            'catalog.public' | translate
+                        }}</ng-container>
                         <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
                     </label>
                 </clr-toggle-wrapper>
@@ -101,18 +103,39 @@
             ></vdr-assets>
         </div>
     </div>
-    <div class="clr-row" formArrayName="filters">
+    <div class="clr-row">
         <div class="clr-col">
             <label>{{ 'catalog.filters' | translate }}</label>
-            <ng-container *ngFor="let filter of filters; index as i">
-                <vdr-configurable-input
-                    (remove)="removeFilter($event)"
-                    [operation]="filter"
-                    [operationDefinition]="getFilterDefinition(filter)"
-                    [formControlName]="i"
-                    [readonly]="!(updatePermission | hasPermission)"
-                ></vdr-configurable-input>
-            </ng-container>
+            <vdr-form-field [label]="'catalog.filter-inheritance' | translate" for="inheritFilters">
+                <clr-toggle-wrapper>
+                    <input
+                        type="checkbox"
+                        clrToggle
+                        formControlName="inheritFilters"
+                        id="inheritFilters"
+                        [vdrDisabled]="!(updatePermission | hasPermission)"
+                    />
+                    <label class="visible-toggle">
+                        <ng-container *ngIf="detailForm.value.inheritFilters; else noInherit">{{
+                            'catalog.inherit-filters-from-parent' | translate
+                        }}</ng-container>
+                        <ng-template #noInherit>{{
+                            'catalog.do-not-inherit-filters' | translate
+                        }}</ng-template>
+                    </label>
+                </clr-toggle-wrapper>
+            </vdr-form-field>
+            <div formArrayName="filters">
+                <ng-container *ngFor="let filter of filters; index as i">
+                    <vdr-configurable-input
+                        (remove)="removeFilter($event)"
+                        [operation]="filter"
+                        [operationDefinition]="getFilterDefinition(filter)"
+                        [formControlName]="i"
+                        [readonly]="!(updatePermission | hasPermission)"
+                    ></vdr-configurable-input>
+                </ng-container>
+            </div>
 
             <div *vdrIfPermissions="updatePermission">
                 <vdr-dropdown>

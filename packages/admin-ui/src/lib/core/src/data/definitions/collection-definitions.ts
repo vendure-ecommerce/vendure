@@ -28,6 +28,7 @@ export const COLLECTION_FRAGMENT = gql`
         assets {
             ...Asset
         }
+        inheritFilters
         filters {
             ...ConfigurableOperation
         }

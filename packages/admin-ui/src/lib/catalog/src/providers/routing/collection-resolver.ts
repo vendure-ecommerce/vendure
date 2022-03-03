@@ -27,6 +27,7 @@ export class CollectionResolver extends BaseEntityResolver<CollectionFragment> {
                 featuredAsset: null,
                 assets: [],
                 translations: [],
+                inheritFilters: true,
                 filters: [],
                 parent: {} as any,
                 children: null,

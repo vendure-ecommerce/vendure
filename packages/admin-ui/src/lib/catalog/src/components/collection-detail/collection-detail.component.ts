@@ -73,6 +73,7 @@ export class CollectionDetailComponent
             slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
             description: '',
             visible: false,
+            inheritFilters: true,
             filters: this.formBuilder.array([]),
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
@@ -232,6 +233,7 @@ export class CollectionDetailComponent
             slug: currentTranslation ? currentTranslation.slug : '',
             description: currentTranslation ? currentTranslation.description : '',
             visible: !entity.isPrivate,
+            inheritFilters: entity.inheritFilters,
         });
 
         entity.filters.forEach(f => this.addFilter(f));
