@@ -94,6 +94,7 @@ export const config: VendureConfig = {
   // ...
   plugins: [
     AdminUiPlugin.init({
+      route: "admin",
       port: 3002,
       app: compileUiExtensions({
         outputPath: path.join(__dirname, '../admin-ui'),
