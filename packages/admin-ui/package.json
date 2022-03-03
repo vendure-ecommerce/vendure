@@ -69,7 +69,7 @@
     "@angular/cli": "13.2.4",
     "@angular/compiler": "13.2.3",
     "@angular/compiler-cli": "13.2.3",
-    "@biesbjerg/ngx-translate-extract": "^7.0.3",
+    "@bartholomej/ngx-translate-extract": "^8.0.2",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "^14.14.31",
