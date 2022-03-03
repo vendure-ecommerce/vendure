@@ -356,6 +356,7 @@ export type Collection = Node & {
     featuredAsset?: Maybe<Asset>;
     filters: Array<ConfigurableOperation>;
     id: Scalars['ID'];
+    inheritFilters: Scalars['Boolean'];
     isPrivate: Scalars['Boolean'];
     languageCode?: Maybe<LanguageCode>;
     name: Scalars['String'];
@@ -381,6 +382,7 @@ export type CollectionFilterParameter = {
     createdAt?: InputMaybe<DateOperators>;
     description?: InputMaybe<StringOperators>;
     id?: InputMaybe<IdOperators>;
+    inheritFilters?: InputMaybe<BooleanOperators>;
     isPrivate?: InputMaybe<BooleanOperators>;
     languageCode?: InputMaybe<StringOperators>;
     name?: InputMaybe<StringOperators>;
@@ -597,6 +599,7 @@ export type CreateCollectionInput = {
     customFields?: InputMaybe<Scalars['JSON']>;
     featuredAssetId?: InputMaybe<Scalars['ID']>;
     filters: Array<ConfigurableOperationInput>;
+    inheritFilters?: InputMaybe<Scalars['Boolean']>;
     isPrivate?: InputMaybe<Scalars['Boolean']>;
     parentId?: InputMaybe<Scalars['ID']>;
     translations: Array<CreateCollectionTranslationInput>;
@@ -4734,6 +4737,7 @@ export type UpdateCollectionInput = {
     featuredAssetId?: InputMaybe<Scalars['ID']>;
     filters?: InputMaybe<Array<ConfigurableOperationInput>>;
     id: Scalars['ID'];
+    inheritFilters?: InputMaybe<Scalars['Boolean']>;
     isPrivate?: InputMaybe<Scalars['Boolean']>;
     parentId?: InputMaybe<Scalars['ID']>;
     translations?: InputMaybe<Array<UpdateCollectionTranslationInput>>;

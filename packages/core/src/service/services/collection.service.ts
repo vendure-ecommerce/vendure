@@ -471,12 +471,7 @@ export class CollectionService implements OnModuleInit {
         collection: Collection,
         applyToChangedVariantsOnly = true,
     ): Promise<ID[]> {
-        const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
-            ancestors.reduce(
-                (filters, c) => [...filters, ...(c.filters || [])],
-                [] as ConfigurableOperation[],
-            ),
-        );
+        const ancestorFilters = await this.getAncestorFilters(collection);
         const preIds = await this.getCollectionProductVariantIds(collection);
         collection.productVariants = await this.getFilteredProductVariants([
             ...ancestorFilters,
@@ -505,6 +500,24 @@ export class CollectionService implements OnModuleInit {
         } else {
             return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds];
         }
+    }
+
+    /**
+     * Gets all filters of ancestor Collections while respecting the `inheritFilters` setting of each.
+     * As soon as `inheritFilters === false` is encountered, the collected filters are returned.
+     */
+    private async getAncestorFilters(collection: Collection): Promise<ConfigurableOperation[]> {
+        const ancestorFilters: ConfigurableOperation[] = [];
+        if (collection.inheritFilters) {
+            const ancestors = await this.getAncestors(collection.id);
+            for (const ancestor of ancestors) {
+                ancestorFilters.push(...ancestor.filters);
+                if (ancestor.inheritFilters === false) {
+                    return ancestorFilters;
+                }
+            }
+        }
+        return ancestorFilters;
     }
 
     /**

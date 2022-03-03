@@ -1405,6 +1405,7 @@ describe('Collection resolver', () => {
                     'USB Cable',
                     'Tripod',
                     'Hat',
+                    'Boots',
                 ]);
             });
 
@@ -1566,59 +1567,150 @@ describe('Collection resolver', () => {
             });
         });
 
-        it('filter inheritance of nested collections (issue #158)', async () => {
-            const { createCollection: pearElectronics } = await adminClient.query<
-                Codegen.CreateCollectionSelectVariantsMutation,
-                Codegen.CreateCollectionSelectVariantsMutationVariables
-            >(CREATE_COLLECTION_SELECT_VARIANTS, {
-                input: {
-                    parentId: electronicsCollection.id,
-                    translations: [
-                        {
-                            languageCode: LanguageCode.en,
-                            name: 'pear electronics',
-                            description: '',
-                            slug: 'pear-electronics',
-                        },
-                    ],
-                    filters: [
-                        {
-                            code: facetValueCollectionFilter.code,
-                            arguments: [
-                                {
-                                    name: 'facetValueIds',
-                                    value: `["${getFacetValueId('pear')}"]`,
-                                },
-                                {
-                                    name: 'containsAny',
-                                    value: `false`,
-                                },
-                            ],
-                        },
-                    ],
-                } as CreateCollectionInput,
+        describe('filter inheritance', () => {
+            let clothesCollectionId: string;
+
+            it('filter inheritance of nested collections (issue #158)', async () => {
+                const { createCollection: pearElectronics } = await adminClient.query<
+                    Codegen.CreateCollectionSelectVariantsMutation,
+                    Codegen.CreateCollectionSelectVariantsMutationVariables
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                    input: {
+                        parentId: electronicsCollection.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'pear electronics',
+                                description: '',
+                                slug: 'pear-electronics',
+                            },
+                        ],
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('pear')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    } as CreateCollectionInput,
+                });
+
+                await awaitRunningJobs(adminClient, 5000);
+
+                const result = await adminClient.query<
+                    Codegen.GetCollectionProductsQuery,
+                    Codegen.GetCollectionProductsQueryVariables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
+                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                    'Curvy Monitor 24 inch',
+                    'Curvy Monitor 27 inch',
+                    'Gaming PC i7-8700 240GB SSD',
+                    'Instant Camera',
+                    // no "Hat"
+                ]);
             });
 
-            await awaitRunningJobs(adminClient, 5000);
+            it('child collection with no inheritance', async () => {
+                const { createCollection: clothesCollection } = await adminClient.query<
+                    Codegen.CreateCollectionSelectVariantsMutation,
+                    Codegen.CreateCollectionSelectVariantsMutationVariables
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                    input: {
+                        parentId: electronicsCollection.id,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'clothes',
+                                description: '',
+                                slug: 'clothes',
+                            },
+                        ],
+                        inheritFilters: false,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('clothing')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    } as CreateCollectionInput,
+                });
 
-            const result = await adminClient.query<
-                Codegen.GetCollectionProductsQuery,
-                Codegen.GetCollectionProductsQueryVariables
-            >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
-            expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
-                'Laptop 13 inch 8GB',
-                'Laptop 15 inch 8GB',
-                'Laptop 13 inch 16GB',
-                'Laptop 15 inch 16GB',
-                'Curvy Monitor 24 inch',
-                'Curvy Monitor 27 inch',
-                'Gaming PC i7-8700 240GB SSD',
-                'Instant Camera',
-                // no "Hat"
-            ]);
+                await awaitRunningJobs(adminClient, 5000);
+
+                clothesCollectionId = clothesCollection.id;
+
+                const result = await adminClient.query<
+                    Codegen.GetCollectionProductsQuery,
+                    Codegen.GetCollectionProductsQueryVariables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: clothesCollection.id });
+                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Hat', 'Boots']);
+            });
+
+            it('grandchild collection with inheritance (root -> no inherit -> inherit', async () => {
+                const { createCollection: footwearCollection } = await adminClient.query<
+                    Codegen.CreateCollectionSelectVariantsMutation,
+                    Codegen.CreateCollectionSelectVariantsMutationVariables
+                >(CREATE_COLLECTION_SELECT_VARIANTS, {
+                    input: {
+                        parentId: clothesCollectionId,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'footwear',
+                                description: '',
+                                slug: 'footwear',
+                            },
+                        ],
+                        inheritFilters: true,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('footwear')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    } as CreateCollectionInput,
+                });
+
+                await awaitRunningJobs(adminClient, 5000);
+
+                const result = await adminClient.query<
+                    Codegen.GetCollectionProductsQuery,
+                    Codegen.GetCollectionProductsQueryVariables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, { id: footwearCollection.id });
+                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Boots']);
+            });
         });
     });
-
     describe('Product collections property', () => {
         it('returns all collections to which the Product belongs', async () => {
             const result = await adminClient.query<

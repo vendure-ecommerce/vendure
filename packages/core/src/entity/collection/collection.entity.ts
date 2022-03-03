@@ -66,6 +66,11 @@ export class Collection
 
     @Column('simple-json') filters: ConfigurableOperation[];
 
+    /**
+     * @since 2.0.0
+     */
+    @Column({ default: true }) inheritFilters: boolean;
+
     @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
     @JoinTable()
     productVariants: ProductVariant[];

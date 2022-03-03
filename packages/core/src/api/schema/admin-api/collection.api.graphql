@@ -48,6 +48,7 @@ input CreateCollectionInput {
     featuredAssetId: ID
     assetIds: [ID!]
     parentId: ID
+    inheritFilters: Boolean
     filters: [ConfigurableOperationInput!]!
     translations: [CreateCollectionTranslationInput!]!
 }
@@ -58,6 +59,7 @@ input UpdateCollectionInput {
     featuredAssetId: ID
     parentId: ID
     assetIds: [ID!]
+    inheritFilters: Boolean
     filters: [ConfigurableOperationInput!]
     translations: [UpdateCollectionTranslationInput!]
 }
