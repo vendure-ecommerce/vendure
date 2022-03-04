@@ -8,10 +8,8 @@ import {
     FindOneOptions,
     FindOptionsUtils,
     getRepository,
-    getTreeRepository,
     ObjectType,
     Repository,
-    TreeRepository,
 } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
@@ -84,47 +82,6 @@ export class TransactionalConnection {
         } else {
             // tslint:disable-next-line:no-non-null-assertion
             return getRepository(ctxOrTarget ?? maybeTarget!);
-        }
-    }
-
-    /**
-     * @description
-     * Returns a TypeORM tree repository. Note that when no RequestContext is supplied, the repository will not
-     * be aware of any existing transaction. Therefore calling this method without supplying a RequestContext
-     * is discouraged without a deliberate reason.
-     *
-     * @since 2.0.0
-     */
-    getTreeRepository<Entity>(
-        target: ObjectType<Entity> | EntitySchema<Entity> | string,
-    ): TreeRepository<Entity>;
-    /**
-     * @description
-     * Returns a TypeORM tree repository which is bound to any existing transactions. It is recommended to _always_ pass
-     * the RequestContext argument when possible, otherwise the queries will be executed outside of any
-     * ongoing transactions which have been started by the {@link Transaction} decorator.
-     *
-     * @since 2.0.0
-     */
-    getTreeRepository<Entity>(
-        ctx: RequestContext | undefined,
-        target: ObjectType<Entity> | EntitySchema<Entity> | string,
-    ): TreeRepository<Entity>;
-    getTreeRepository<Entity>(
-        ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined,
-        maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
-    ): TreeRepository<Entity> {
-        if (ctxOrTarget instanceof RequestContext) {
-            const transactionManager = this.getTransactionManager(ctxOrTarget);
-            if (transactionManager && maybeTarget && !transactionManager.queryRunner?.isReleased) {
-                return transactionManager.getTreeRepository(maybeTarget);
-            } else {
-                // tslint:disable-next-line:no-non-null-assertion
-                return getTreeRepository(maybeTarget!);
-            }
-        } else {
-            // tslint:disable-next-line:no-non-null-assertion
-            return getTreeRepository(ctxOrTarget ?? maybeTarget!);
         }
     }
 
