@@ -121,7 +121,7 @@ export const config: VendureConfig = {
             // artifacts over to the Admin UI's `/static` directory. In this case we
             // also rename "build" to "react-app". This is why the `extensionUrl`
             // in the module config points to './assets/react-app/index.html'.
-            { path: path.join(__dirname, 'react-app/build'), rename: 'react-app' },
+            { path: path.join(__dirname, 'ui-extension/react-app/build'), rename: 'react-app' },
           ],
         }],
         devMode: true,
