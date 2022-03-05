@@ -9,7 +9,7 @@ import * as path from 'path';
 import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
 import { copyGlobalStyleFile, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
-import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions, UiExtensionCompilerProcessArguments } from './types';
+import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions, UiExtensionCompilerProcessArgument } from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
@@ -47,7 +47,7 @@ export function compileUiExtensions(
     }
 }
 
-function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[], args?: UiExtensionCompilerProcessArguments): AdminUiAppConfig {
+function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[], args?: UiExtensionCompilerProcessArgument[]): AdminUiAppConfig {
     const usingYarn = shouldUseYarn();
     const cmd = usingYarn ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
@@ -87,7 +87,7 @@ function runWatchMode(
     baseHref: string,
     port: number,
     extensions: Extension[],
-    args?: UiExtensionCompilerProcessArguments
+    args?: UiExtensionCompilerProcessArgument[]
 ): AdminUiAppDevModeConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
@@ -235,9 +235,15 @@ function runWatchMode(
     return { sourcePath: outputPath, port, compile, route: baseHrefToRoute(baseHref) };
 }
 
-function buildProcessArguments(args?: UiExtensionCompilerProcessArguments): string[] {
-    return Object.entries(args ?? {}).map(([key, value]) => {
-        return `${key}=${value}`
+function buildProcessArguments(args?: UiExtensionCompilerProcessArgument[]): string[] {
+    return (args ?? []).map(arg => {
+        if (Array.isArray(arg)) {
+            const [key, value] = arg;
+
+            return `${key}=${value}`
+        }
+
+        return arg
     })
 }
 

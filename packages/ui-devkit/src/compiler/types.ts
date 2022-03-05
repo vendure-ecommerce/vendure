@@ -175,13 +175,12 @@ export interface AdminUiExtensionLazyModule {
 
 /**
  * @description
- * Options to configure process (watch or compile) arguments
+ * Argument to configure process (watch or compile)
  * 
  * @docsCategory UiDevkit
  */
-export type UiExtensionCompilerProcessArguments = {
-    [key: string]: any
-}
+export type UiExtensionCompilerProcessArgument = string | [string, any]
+
 /**
  * @description
  * Options to configure how the Admin UI should be compiled.
@@ -230,14 +229,17 @@ export interface UiExtensionCompilerOptions {
 
     /**
      * @description
-     * Allows to pass additional arguments for watcher (in development mode) and compiler (in production mode).
+     * Additional command-line arguments which will get passed to the [ng build](https://angular.io/cli/build) 
+     * command (or [ng serve](https://angular.io/cli/serve) if `devMode = true`).
      * 
      * @example
-     * { '--disable-host-check': true } // to disable host check
+     * ['--disable-host-check'] // to disable host check
      * 
      * @default undefined
+     * 
+     * @since 1.5.0
      */
-    additionalProcessArguments?: UiExtensionCompilerProcessArguments;
+    additionalProcessArguments?: UiExtensionCompilerProcessArgument[];
 }
 
 export type Translations = {
