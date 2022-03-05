@@ -145,11 +145,12 @@
                         </section>
                     </div>
                     <div class="clr-col-md-auto">
-                        <vdr-product-assets
+                        <vdr-assets
                             [assets]="assetChanges.assets || product.assets"
                             [featuredAsset]="assetChanges.featuredAsset || product.featuredAsset"
+                            [updatePermissions]="updatePermissions"
                             (change)="assetChanges = $event"
-                        ></vdr-product-assets>
+                        ></vdr-assets>
                         <div class="facets">
                             <vdr-facet-value-chip
                                 *ngFor="let facetValue of facetValues$ | async"

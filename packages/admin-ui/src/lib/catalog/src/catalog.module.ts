@@ -6,6 +6,7 @@ import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
+import { AssetsComponent } from './components/assets/assets.component';
 import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
@@ -17,7 +18,6 @@ import { FacetDetailComponent } from './components/facet-detail/facet-detail.com
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
-import { ProductAssetsComponent } from './components/product-assets/product-assets.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
@@ -37,7 +37,7 @@ const CATALOG_COMPONENTS = [
     ProductVariantsListComponent,
     ApplyFacetDialogComponent,
     AssetListComponent,
-    ProductAssetsComponent,
+    AssetsComponent,
     VariantPriceDetailComponent,
     CollectionListComponent,
     CollectionDetailComponent,

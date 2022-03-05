@@ -771,6 +771,15 @@ export interface JobQueueOptions {
      * @default false
      */
     enableWorkerHealthCheck?: boolean;
+    /**
+     * @description
+     * Prefixes all job queue names with the passed string. This is useful with multiple deployments
+     * in cloud environments using services such as Amazon SQS or Google Cloud Tasks.
+     *
+     * For example, we might have a staging and a production deployment in the same account/project and
+     * each one will need its own task queue. We can achieve this with a prefix.
+     */
+    prefix?: string;
 }
 
 /**
