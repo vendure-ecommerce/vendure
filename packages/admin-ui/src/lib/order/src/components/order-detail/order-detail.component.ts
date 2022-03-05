@@ -231,7 +231,7 @@ export class OrderDetailComponent
     canAddFulfillment(order: OrderDetail.Fragment): boolean {
         const allItemsFulfilled = order.lines
             .reduce((items, line) => [...items, ...line.items], [] as OrderLineFragment['items'])
-            .every(item => !!item.fulfillment);
+            .every(item => !!item.fulfillment || item.cancelled);
         return (
             !allItemsFulfilled &&
             !this.hasUnsettledModifications(order) &&

@@ -48,6 +48,16 @@
                     >
                         {{ 'customer.set-as-default-billing-address' | translate }}
                     </button>
+                    <div class="dropdown-divider"></div>
+                    <button
+                        type="button"
+                        class="delete-button"
+                        (click)="delete()"
+                        vdrDropdownItem
+                    >
+                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                        {{ 'common.delete' | translate }}
+                    </button>
                 </vdr-dropdown-menu>
             </vdr-dropdown>
         </ng-container>

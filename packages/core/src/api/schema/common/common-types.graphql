@@ -125,6 +125,31 @@ input DateOperators {
     between: DateRange
 }
 
+"Operators for filtering on a list of String fields"
+input StringListOperators {
+    inList: String!
+}
+
+"Operators for filtering on a list of Number fields"
+input NumberListOperators {
+    inList: Float!
+}
+
+"Operators for filtering on a list of Boolean fields"
+input BooleanListOperators {
+    inList: Boolean!
+}
+
+"Operators for filtering on a list of ID fields"
+input IDListOperators {
+    inList: ID!
+}
+
+"Operators for filtering on a list of Date fields"
+input DateListOperators {
+    inList: DateTime!
+}
+
 """
 Used to construct boolean expressions for filtering search results
 by FacetValue ID. Examples:

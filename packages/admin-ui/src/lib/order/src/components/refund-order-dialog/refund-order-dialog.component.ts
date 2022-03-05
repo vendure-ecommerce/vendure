@@ -20,7 +20,8 @@ type SelectionLine = { quantity: number; refund: boolean; cancel: boolean };
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RefundOrderDialogComponent
-    implements OnInit, Dialog<{ cancel: CancelOrderInput; refund: RefundOrderInput }> {
+    implements OnInit, Dialog<{ cancel: CancelOrderInput; refund: RefundOrderInput }>
+{
     order: OrderDetailFragment;
     resolveWith: (result?: { cancel: CancelOrderInput; refund: RefundOrderInput }) => void;
     reason: string;
@@ -147,6 +148,7 @@ export class RefundOrderDialogComponent
                     lines: cancelLines,
                     orderId: this.order.id,
                     reason: this.reason,
+                    cancelShipping: this.refundShipping,
                 },
             });
         }

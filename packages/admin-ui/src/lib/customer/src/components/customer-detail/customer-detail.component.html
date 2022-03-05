@@ -118,14 +118,16 @@
         <h3>{{ 'customer.addresses' | translate }}</h3>
         <vdr-address-card
             *ngFor="let addressForm of getAddressFormControls()"
+            [class.to-delete]="addressesToDeleteIds.has(addressForm.value.id)"
             [availableCountries]="availableCountries$ | async"
             [isDefaultBilling]="defaultBillingAddressId === addressForm.value.id"
             [isDefaultShipping]="defaultShippingAddressId === addressForm.value.id"
             [addressForm]="addressForm"
             [customFields]="addressCustomFields"
-            [editable]="['UpdateCustomer'] | hasPermission"
+            [editable]="(['UpdateCustomer'] | hasPermission) && !addressesToDeleteIds.has(addressForm.value.id)"
             (setAsDefaultBilling)="setDefaultBillingAddressId($event)"
             (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
+            (deleteAddress)="toggleDeleteAddress($event)"
         ></vdr-address-card>
         <button class="btn btn-secondary" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
             <clr-icon shape="plus"></clr-icon>

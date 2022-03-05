@@ -147,6 +147,10 @@ export interface DateOperators {
     between?: DateRange;
 }
 
+export interface ListOperators {
+    inList?: string | number | boolean | Date;
+}
+
 export type PaymentMetadata = {
     [prop: string]: any;
 } & {

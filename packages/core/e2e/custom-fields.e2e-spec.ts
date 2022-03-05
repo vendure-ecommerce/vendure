@@ -772,6 +772,40 @@ describe('Custom fields', () => {
             expect(products.totalItems).toBe(1);
         });
 
+        it('can filter by custom list fields', async () => {
+            const { products: result1 } = await adminClient.query(gql`
+                query {
+                    products(options: { filter: { intListWithValidation: { inList: 42 } } }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(result1.totalItems).toBe(1);
+            const { products: result2 } = await adminClient.query(gql`
+                query {
+                    products(options: { filter: { intListWithValidation: { inList: 43 } } }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(result2.totalItems).toBe(0);
+        });
+
+        it(
+            'cannot sort by custom list fields',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    query {
+                        products(options: { sort: { intListWithValidation: ASC } }) {
+                            totalItems
+                        }
+                    }
+                `);
+            }, `Field "intListWithValidation" is not defined by type "ProductSortParameter".`),
+        );
+
         it(
             'cannot filter by internal field in Admin API',
             assertThrowsWithMessage(async () => {

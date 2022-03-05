@@ -48,6 +48,7 @@ import {
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
+    GET_COLLECTIONS,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -1807,22 +1808,6 @@ const GET_FACET_VALUES = gql`
         }
     }
     ${FACET_VALUE_FRAGMENT}
-`;
-
-const GET_COLLECTIONS = gql`
-    query GetCollections {
-        collections {
-            items {
-                id
-                name
-                position
-                parent {
-                    id
-                    name
-                }
-            }
-        }
-    }
 `;
 
 const GET_COLLECTION_PRODUCT_VARIANTS = gql`

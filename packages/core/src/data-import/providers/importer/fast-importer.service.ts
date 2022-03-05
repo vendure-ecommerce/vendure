@@ -6,6 +6,7 @@ import {
     CreateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -22,37 +23,61 @@ import { ProductAsset } from '../../../entity/product/product-asset.entity';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
+import { RequestContextService } from '../../../service/index';
 import { ChannelService } from '../../../service/services/channel.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
 
 /**
+ * @description
  * A service to import entities into the database. This replaces the regular `create` methods of the service layer with faster
- * versions which skip much of the defensive checks and other DB calls which are not needed when running an import.
+ * versions which skip much of the defensive checks and other DB calls which are not needed when running an import. It also
+ * does not publish any events, so e.g. will not trigger search index jobs.
  *
  * In testing, the use of the FastImporterService approximately doubled the speed of bulk imports.
+ *
+ * @docsCategory import-export
  */
 @Injectable()
 export class FastImporterService {
     private defaultChannel: Channel;
+    private importCtx: RequestContext;
+
+    /** @internal */
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,
         private stockMovementService: StockMovementService,
         private translatableSaver: TranslatableSaver,
+        private requestContextService: RequestContextService,
     ) {}
 
-    async initialize() {
+    /**
+     * @description
+     * This should be called prior to any of the import methods, as it establishes the
+     * default Channel as well as the context in which the new entities will be created.
+     *
+     * Passing a `channel` argument means that Products and ProductVariants will be assigned
+     * to that Channel.
+     */
+    async initialize(channel?: Channel) {
+        this.importCtx = channel
+            ? await this.requestContextService.create({
+                  apiType: 'admin',
+                  channelOrToken: channel,
+              })
+            : RequestContext.empty();
         this.defaultChannel = await this.channelService.getDefaultChannel();
     }
 
     async createProduct(input: CreateProductInput): Promise<ID> {
+        this.ensureInitialized();
         const product = await this.translatableSaver.create({
-            ctx: RequestContext.empty(),
+            ctx: this.importCtx,
             input,
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
-                p.channels = [this.defaultChannel];
+                p.channels = unique([this.defaultChannel, this.importCtx.channel], 'id');
                 if (input.facetValueIds) {
                     p.facetValues = input.facetValueIds.map(id => ({ id } as any));
                 }
@@ -76,8 +101,9 @@ export class FastImporterService {
     }
 
     async createProductOptionGroup(input: CreateProductOptionGroupInput): Promise<ID> {
+        this.ensureInitialized();
         const group = await this.translatableSaver.create({
-            ctx: RequestContext.empty(),
+            ctx: this.importCtx,
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
@@ -86,8 +112,9 @@ export class FastImporterService {
     }
 
     async createProductOption(input: CreateProductOptionInput): Promise<ID> {
+        this.ensureInitialized();
         const option = await this.translatableSaver.create({
-            ctx: RequestContext.empty(),
+            ctx: this.importCtx,
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
@@ -97,6 +124,7 @@ export class FastImporterService {
     }
 
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID) {
+        this.ensureInitialized();
         await this.connection
             .getRepository(Product)
             .createQueryBuilder()
@@ -106,6 +134,7 @@ export class FastImporterService {
     }
 
     async createProductVariant(input: CreateProductVariantInput): Promise<ID> {
+        this.ensureInitialized();
         if (!input.optionIds) {
             input.optionIds = [];
         }
@@ -119,12 +148,12 @@ export class FastImporterService {
         delete inputWithoutPrice.price;
 
         const createdVariant = await this.translatableSaver.create({
-            ctx: RequestContext.empty(),
+            ctx: this.importCtx,
             input: inputWithoutPrice,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async variant => {
-                variant.channels = [this.defaultChannel];
+                variant.channels = unique([this.defaultChannel, this.importCtx.channel], 'id');
                 const { optionIds } = input;
                 if (optionIds && optionIds.length) {
                     variant.options = optionIds.map(id => ({ id } as any));
@@ -152,18 +181,30 @@ export class FastImporterService {
         }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
-                RequestContext.empty(),
+                this.importCtx,
                 createdVariant.id,
                 0,
                 input.stockOnHand,
             );
         }
-        const variantPrice = new ProductVariantPrice({
-            price: input.price,
-            channelId: this.defaultChannel.id,
-        });
-        variantPrice.variant = createdVariant;
-        await this.connection.getRepository(ProductVariantPrice).save(variantPrice, { reload: false });
+        const assignedChannelIds = unique([this.defaultChannel, this.importCtx.channel], 'id').map(c => c.id);
+        for (const channelId of assignedChannelIds) {
+            const variantPrice = new ProductVariantPrice({
+                price: input.price,
+                channelId,
+            });
+            variantPrice.variant = createdVariant;
+            await this.connection.getRepository(ProductVariantPrice).save(variantPrice, { reload: false });
+        }
+
         return createdVariant.id;
+    }
+
+    private ensureInitialized() {
+        if (!this.defaultChannel || !this.importCtx) {
+            throw new Error(
+                `The FastImporterService must be initialized with a call to 'initialize()' before importing data`,
+            );
+        }
     }
 }

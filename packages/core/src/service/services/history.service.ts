@@ -86,6 +86,7 @@ export type OrderHistoryEntryData = {
     };
     [HistoryEntryType.ORDER_CANCELLATION]: {
         orderItemIds: ID[];
+        shippingCancelled: boolean;
         reason?: string;
     };
     [HistoryEntryType.ORDER_REFUND_TRANSITION]: {

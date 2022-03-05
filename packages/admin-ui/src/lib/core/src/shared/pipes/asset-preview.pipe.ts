@@ -24,7 +24,7 @@ export class AssetPreviewPipe implements PipeTransform {
         if (!asset) {
             return '';
         }
-        if (!asset.preview || typeof asset.preview !== 'string') {
+        if (asset.preview == null || typeof asset.preview !== 'string') {
             throw new Error(`Expected an Asset, got ${JSON.stringify(asset)}`);
         }
         const fp = asset.focalPoint ? `&fpx=${asset.focalPoint.x}&fpy=${asset.focalPoint.y}` : '';

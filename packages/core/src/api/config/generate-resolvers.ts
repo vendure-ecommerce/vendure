@@ -166,6 +166,10 @@ function generateCustomFieldRelationResolvers(
             };
         }
         for (const fieldDef of relationCustomFields) {
+            if (fieldDef.internal === true) {
+                // Do not create any resolvers for internal relations
+                continue;
+            }
             const relationResolver: IFieldResolver<any, any> = async (
                 source: any,
                 args: any,

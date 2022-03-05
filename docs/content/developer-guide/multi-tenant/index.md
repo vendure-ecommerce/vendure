@@ -60,6 +60,12 @@ In the Admin UI, you can switch between active Channels using the switcher compo
 
 For example, switching to the `ace-parts` Channel, and then creating a new Product will assign that new Product to the `ace-parts` Channel (_and_ the default Channel, since _everything_ is assigned to the default Channel).
 
+{{< alert "warning" >}}
+**Note:** Care must be taken if you log in with the superadmin account in the default Channel, especially with regard to prices and currencies.
+
+See more details see the Channels guide on [Channels, currencies & prices]({{< relref "/docs/developer-guide/channels" >}}#channels-currencies--prices), and in particular the [multiple shops use-cases]({{< relref "/docs/developer-guide/channels" >}}#use-case-multiple-separate-shops)
+{{< /alert >}}
+
 ## The Storefront
 
 Your storefront applications will need to specify which channel they are interested in. This is done by adding a **query parameter** or **header** to each API requests, with the key being `vendure-token` and the value being the target Channel's `token` property.

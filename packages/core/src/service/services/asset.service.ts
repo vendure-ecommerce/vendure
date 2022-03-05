@@ -425,18 +425,22 @@ export class AssetService {
      * @description
      * Create an Asset from a file stream, for example to create an Asset during data import.
      */
-    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult>;
+    async createFromFileStream(stream: ReadStream, ctx?: RequestContext): Promise<CreateAssetResult>;
     async createFromFileStream(stream: Readable, filePath: string): Promise<CreateAssetResult>;
     async createFromFileStream(
         stream: ReadStream | Readable,
-        maybeFilePath?: string,
+        maybeFilePathOrCtx?: string | RequestContext,
     ): Promise<CreateAssetResult> {
+        const filePathFromArgs =
+            maybeFilePathOrCtx instanceof RequestContext ? undefined : maybeFilePathOrCtx;
         const filePath =
-            stream instanceof ReadStream || stream instanceof FSReadStream ? stream.path : maybeFilePath;
+            stream instanceof ReadStream || stream instanceof FSReadStream ? stream.path : filePathFromArgs;
         if (typeof filePath === 'string') {
             const filename = path.basename(filePath);
             const mimetype = mime.lookup(filename) || 'application/octet-stream';
-            return this.createAssetInternal(RequestContext.empty(), stream, filename, mimetype);
+            const ctx =
+                maybeFilePathOrCtx instanceof RequestContext ? maybeFilePathOrCtx : RequestContext.empty();
+            return this.createAssetInternal(ctx, stream, filename, mimetype);
         } else {
             throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
         }

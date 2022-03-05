@@ -281,10 +281,17 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         this.items.forEach(item => item.clearAdjustments(type));
     }
 
+    /**
+     * @description
+     * Fetches the specified property of the first active (non-cancelled) OrderItem.
+     * If all OrderItems are cancelled (e.g. in a full cancelled Order), then fetches from
+     * the first OrderItem.
+     */
     private firstActiveItemPropOr<K extends keyof OrderItem>(
         prop: K,
         defaultVal: OrderItem[K],
     ): OrderItem[K] {
-        return this.activeItems.length ? this.activeItems[0][prop] : defaultVal;
+        const items = this.activeItems.length ? this.activeItems : this.items ?? [];
+        return items.length ? items[0][prop] : defaultVal;
     }
 }

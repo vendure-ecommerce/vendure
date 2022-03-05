@@ -76,7 +76,18 @@ class ProductVideoService implements OnModuleInit {
   }
 }
 ```
-The `ProductVideoService` is in charge of setting up the JobQueue and adding jobs to that queue.
+The `ProductVideoService` is in charge of setting up the JobQueue and adding jobs to that queue. Calling 
+
+```TypeScript
+productVideoService.transcodeForProduct(id, url);
+```
+
+will add a transcoding job to the queue.
+
+{{< alert warning >}}
+**Note:** plugin code typically gets executed on both the server _and_ the worker. Therefore, you sometimes need to explicitly check
+what context you are in. This can be done with the [ProcessContext]({{< relref "process-context" >}}) provider.
+{{< /alert >}}
 
 ```TypeScript
 // product-video.plugin.ts

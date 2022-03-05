@@ -84,7 +84,8 @@
                 </div>
             </td>
         </tr>
-        <tr class="order-adjustment" *ngFor="let discount of order.discounts">
+        <ng-container *ngFor="let discount of order.discounts">
+            <tr class="order-adjustment" *ngIf="discount.type !== 'OTHER'">
             <td colspan="5" class="left clr-align-middle">
                 <a [routerLink]="getPromotionLink(discount)">{{ discount.description }}</a>
                 <vdr-chip *ngIf="getCouponCodeForAdjustment(order, discount) as couponCode">{{
@@ -97,7 +98,8 @@
                     {{ discount.amount | localeCurrency: order.currencyCode }}
                 </div>
             </td>
-        </tr>
+            </tr>
+        </ng-container>
         <tr class="sub-total">
             <td class="left clr-align-middle">{{ 'order.sub-total' | translate }}</td>
             <td colspan="4"></td>

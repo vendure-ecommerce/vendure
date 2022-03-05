@@ -117,6 +117,20 @@ export class FulfillmentService {
 
     /**
      * @description
+     * Returns the Fulfillment for the given OrderItem (if one exists).
+     */
+    async getFulfillmentByOrderItemId(
+        ctx: RequestContext,
+        orderItemId: ID,
+    ): Promise<Fulfillment | undefined> {
+        const orderItem = await this.connection
+            .getRepository(ctx, OrderItem)
+            .findOne(orderItemId, { relations: ['fulfillments'] });
+        return orderItem?.fulfillment;
+    }
+
+    /**
+     * @description
      * Transitions the specified Fulfillment to a new state and upon successful transition
      * publishes a {@link FulfillmentStateTransitionEvent}.
      */

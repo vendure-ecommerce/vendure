@@ -81,7 +81,7 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
                     return strategy.findOne(id);
                 }),
                 filter(notNullOrUndefined),
-                distinctUntilChanged((a, b) => a?.progress === b?.progress),
+                distinctUntilChanged((a, b) => a?.progress === b?.progress || a?.state === b?.state),
                 takeWhile(
                     job =>
                         job?.state !== JobState.FAILED &&

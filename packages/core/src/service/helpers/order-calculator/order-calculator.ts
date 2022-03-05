@@ -416,7 +416,17 @@ export class OrderCalculator {
         }
     }
 
-    private calculateOrderTotals(order: Order) {
+    /**
+     * @description
+     * Sets the totals properties on an Order by summing each OrderLine, and taking
+     * into account any Surcharges and ShippingLines. Does not save the Order, so
+     * the entity must be persisted to the DB after calling this method.
+     *
+     * Note that this method does *not* evaluate any taxes or promotions. It assumes
+     * that has already been done and is solely responsible for summing the
+     * totals.
+     */
+    public calculateOrderTotals(order: Order) {
         let totalPrice = 0;
         let totalPriceWithTax = 0;
 

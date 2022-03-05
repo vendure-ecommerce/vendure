@@ -104,15 +104,25 @@ export class FacetDetailComponent
     addFacetValue() {
         const valuesFormArray = this.detailForm.get('values') as FormArray | null;
         if (valuesFormArray) {
-            valuesFormArray.insert(
-                valuesFormArray.length,
-                this.formBuilder.group({
-                    id: '',
-                    name: ['', Validators.required],
-                    code: '',
-                }),
-            );
-            this.values.push({ name: '', code: '' });
+            const valueGroup = this.formBuilder.group({
+                id: '',
+                name: ['', Validators.required],
+                code: '',
+            });
+            const newValue: any = { name: '', code: '' };
+            if (this.customValueFields.length) {
+                const customValueFieldsGroup = new FormGroup({});
+                newValue.customFields = {};
+
+                for (const fieldDef of this.customValueFields) {
+                    const key = fieldDef.name;
+                    customValueFieldsGroup.addControl(key, new FormControl());
+                }
+
+                valueGroup.addControl('customFields', customValueFieldsGroup);
+            }
+            valuesFormArray.insert(valuesFormArray.length, valueGroup);
+            this.values.push(newValue);
         }
     }
 
@@ -169,17 +179,15 @@ export class FacetDetailComponent
                     }
                     const valuesArray = this.detailForm.get('values');
                     if (valuesArray && valuesArray.dirty) {
-                        const newValues: CreateFacetValueInput[] = (valuesArray as FormArray).controls
-                            .filter(c => !c.value.id)
-                            .map(c => ({
-                                facetId: facet.id,
-                                code: c.value.code,
-                                translations: [{ name: c.value.name, languageCode }],
-                            }));
-                        if (newValues.length) {
+                        const createdValues = this.getCreatedFacetValues(
+                            facet,
+                            valuesArray as FormArray,
+                            languageCode,
+                        );
+                        if (createdValues.length) {
                             updateOperations.push(
                                 this.dataService.facet
-                                    .createFacetValues(newValues)
+                                    .createFacetValues(createdValues)
                                     .pipe(switchMap(() => this.dataService.facet.getFacet(this.id).single$)),
                             );
                         }
@@ -301,7 +309,9 @@ export class FacetDetailComponent
             };
             const valueControl = currentValuesFormArray.at(i);
             if (valueControl) {
-                valueControl.setValue(group);
+                valueControl.get('id')?.setValue(group.id);
+                valueControl.get('code')?.setValue(group.code);
+                valueControl.get('name')?.setValue(group.name);
             } else {
                 currentValuesFormArray.insert(i, this.formBuilder.group(group));
             }
@@ -358,8 +368,38 @@ export class FacetDetailComponent
     }
 
     /**
-     * Given an array of facet values and the values from the detailForm, this method creates an new array
-     * which can be persisted to the API.
+     * Given an array of facet values and the values from the detailForm, this method creates a new array
+     * which can be persisted to the API via a createFacetValues mutation.
+     */
+    private getCreatedFacetValues(
+        facet: FacetWithValues.Fragment,
+        valuesFormArray: FormArray,
+        languageCode: LanguageCode,
+    ): CreateFacetValueInput[] {
+        return valuesFormArray.controls
+            .filter(c => !c.value.id)
+            .map(c => c.value)
+            .map(value =>
+                createUpdatedTranslatable({
+                    translatable: { ...value, translations: [] as any },
+                    updatedFields: value,
+                    customFieldConfig: this.customValueFields,
+                    languageCode,
+                    defaultTranslation: {
+                        languageCode,
+                        name: '',
+                    },
+                }),
+            )
+            .map(input => ({
+                facetId: facet.id,
+                ...input,
+            }));
+    }
+
+    /**
+     * Given an array of facet values and the values from the detailForm, this method creates a new array
+     * which can be persisted to the API via an updateFacetValues mutation.
      */
     private getUpdatedFacetValues(
         facet: FacetWithValues.Fragment,

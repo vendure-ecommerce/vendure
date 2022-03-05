@@ -10,6 +10,7 @@ import {
     CreateAddressInput,
     CreateCustomerInput,
     CreateCustomerResult,
+    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
     HistoryEntryType,
@@ -31,6 +32,7 @@ import {
     MissingPasswordError,
     PasswordResetTokenExpiredError,
     PasswordResetTokenInvalidError,
+    PasswordValidationError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
@@ -88,12 +90,20 @@ export class CustomerService {
         ctx: RequestContext,
         options: ListQueryOptions<Customer> | undefined,
     ): Promise<PaginatedList<Customer>> {
+        const relations = ['channels'];
+        const customPropertyMap: { [name: string]: string } = {};
+        const hasPostalCodeFilter = !!(options as CustomerListOptions)?.filter?.postalCode;
+        if (hasPostalCodeFilter) {
+            relations.push('addresses');
+            customPropertyMap.postalCode = 'address.postalCode';
+        }
         return this.listQueryBuilder
             .build(Customer, options, {
-                relations: ['channels'],
+                relations,
                 channelId: ctx.channelId,
                 where: { deletedAt: null },
                 ctx,
+                customPropertyMap,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
@@ -224,7 +234,11 @@ export class CustomerService {
             // Not sure when this situation would occur
             return new EmailAddressConflictAdminError();
         }
-        customer.user = await this.userService.createCustomerUser(ctx, input.emailAddress, password);
+        const customerUser = await this.userService.createCustomerUser(ctx, input.emailAddress, password);
+        if (isGraphQlErrorResult(customerUser)) {
+            throw customerUser;
+        }
+        customer.user = customerUser;
 
         if (password && password !== '') {
             const verificationToken = customer.user.getNativeAuthenticationMethod().verificationToken;
@@ -343,7 +357,7 @@ export class CustomerService {
     async registerCustomerAccount(
         ctx: RequestContext,
         input: RegisterCustomerInput,
-    ): Promise<RegisterCustomerAccountResult | EmailAddressConflictError> {
+    ): Promise<RegisterCustomerAccountResult | EmailAddressConflictError | PasswordValidationError> {
         if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
                 return new MissingPasswordError();
@@ -381,19 +395,29 @@ export class CustomerService {
             },
         });
         if (!user) {
-            user = await this.userService.createCustomerUser(
+            const customerUser = await this.userService.createCustomerUser(
                 ctx,
                 input.emailAddress,
                 input.password || undefined,
             );
+            if (isGraphQlErrorResult(customerUser)) {
+                return customerUser;
+            } else {
+                user = customerUser;
+            }
         }
         if (!hasNativeAuthMethod) {
-            user = await this.userService.addNativeAuthenticationMethod(
+            const addAuthenticationResult = await this.userService.addNativeAuthenticationMethod(
                 ctx,
                 user,
                 input.emailAddress,
                 input.password || undefined,
             );
+            if (isGraphQlErrorResult(addAuthenticationResult)) {
+                return addAuthenticationResult;
+            } else {
+                user = addAuthenticationResult;
+            }
         }
         if (!user.verified) {
             user = await this.userService.setVerificationToken(ctx, user);
@@ -495,7 +519,9 @@ export class CustomerService {
         ctx: RequestContext,
         passwordResetToken: string,
         password: string,
-    ): Promise<User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError> {
+    ): Promise<
+        User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError
+    > {
         const result = await this.userService.resetPasswordByToken(ctx, passwordResetToken, password);
         if (isGraphQlErrorResult(result)) {
             return result;
@@ -671,6 +697,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
             data: { address: addressToLine(createdAddress) },
         });
+        createdAddress.customer = customer;
         this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created', input));
         return createdAddress;
     }
@@ -707,6 +734,7 @@ export class CustomerService {
                 input,
             },
         });
+        updatedAddress.customer = customer;
         this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated', input));
         return updatedAddress;
     }
@@ -735,6 +763,7 @@ export class CustomerService {
             },
         });
         await this.connection.getRepository(ctx, Address).remove(address);
+        address.customer = customer;
         this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted', id));
         return true;
     }

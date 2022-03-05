@@ -21,6 +21,7 @@ import {
     GetFacetList,
     GetFacetWithValues,
     GetProductListWithVariants,
+    GetProductWithFacetValues,
     GetProductWithVariants,
     LanguageCode,
     UpdateFacet,
@@ -176,6 +177,52 @@ describe('Facet resolver', () => {
         );
 
         expect(result.facet!.name).toBe('Speaker Category');
+    });
+
+    it('product.facetValues resolver omits private facets in shop-api', async () => {
+        const publicFacetValue = brandFacet.values[0];
+        const privateFacetValue = speakerTypeFacet.values[0];
+        await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+            input: {
+                id: 'T_1',
+                facetValueIds: [publicFacetValue.id, privateFacetValue.id],
+            },
+        });
+        const { product } = await shopClient.query<
+            GetProductWithFacetValues.Query,
+            GetProductWithFacetValues.Variables
+        >(GET_PRODUCT_WITH_FACET_VALUES, {
+            id: 'T_1',
+        });
+
+        expect(product?.facetValues.map(v => v.id).includes(publicFacetValue.id)).toBe(true);
+        expect(product?.facetValues.map(v => v.id).includes(privateFacetValue.id)).toBe(false);
+    });
+
+    it('productVariant.facetValues resolver omits private facets in shop-api', async () => {
+        const publicFacetValue = brandFacet.values[0];
+        const privateFacetValue = speakerTypeFacet.values[0];
+        await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+            UPDATE_PRODUCT_VARIANTS,
+            {
+                input: [
+                    {
+                        id: 'T_1',
+                        facetValueIds: [publicFacetValue.id, privateFacetValue.id],
+                    },
+                ],
+            },
+        );
+        const { product } = await shopClient.query<
+            GetProductWithFacetValues.Query,
+            GetProductWithFacetValues.Variables
+        >(GET_PRODUCT_WITH_FACET_VALUES, {
+            id: 'T_1',
+        });
+
+        const productVariant1 = product?.variants.find(v => v.id === 'T_1');
+        expect(productVariant1?.facetValues.map(v => v.id).includes(publicFacetValue.id)).toBe(true);
+        expect(productVariant1?.facetValues.map(v => v.id).includes(privateFacetValue.id)).toBe(false);
     });
 
     describe('deletion', () => {
@@ -668,6 +715,27 @@ const DELETE_FACET = gql`
         deleteFacet(id: $id, force: $force) {
             result
             message
+        }
+    }
+`;
+
+const GET_PRODUCT_WITH_FACET_VALUES = gql`
+    query GetProductWithFacetValues($id: ID!) {
+        product(id: $id) {
+            id
+            facetValues {
+                id
+                name
+                code
+            }
+            variants {
+                id
+                facetValues {
+                    id
+                    name
+                    code
+                }
+            }
         }
     }
 `;

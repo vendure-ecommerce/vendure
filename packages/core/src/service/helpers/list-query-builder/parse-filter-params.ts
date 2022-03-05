@@ -8,6 +8,7 @@ import {
     BooleanOperators,
     DateOperators,
     FilterParameter,
+    ListOperators,
     NullOptionals,
     NumberOperators,
     StringOperators,
@@ -22,7 +23,7 @@ export interface WhereCondition {
     parameters: { [param: string]: string | number };
 }
 
-type AllOperators = StringOperators & BooleanOperators & NumberOperators & DateOperators;
+type AllOperators = StringOperators & BooleanOperators & NumberOperators & DateOperators & ListOperators;
 type Operator = { [K in keyof AllOperators]-?: K }[keyof AllOperators];
 
 export function parseFilterParams<T extends VendureEntity>(
@@ -95,11 +96,14 @@ function buildWhereCondition(
                 clause: `${fieldName} != :arg${argIndex}`,
                 parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
+        case 'inList':
         case 'contains': {
             const LIKE = dbType === 'postgres' ? 'ILIKE' : 'LIKE';
             return {
                 clause: `${fieldName} ${LIKE} :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
+                parameters: {
+                    [`arg${argIndex}`]: `%${typeof operand === 'string' ? operand.trim() : operand}%`,
+                },
             };
         }
         case 'notContains': {

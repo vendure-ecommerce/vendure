@@ -37,11 +37,16 @@
             <div>{{ 'asset.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}</div>
 
             <ng-container *ngIf="selection.length === 1">
-                <vdr-chip *ngFor="let tag of lastSelected().tags" [colorFrom]="tag.value"><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip>
+                <vdr-chip *ngFor="let tag of lastSelected().tags" [colorFrom]="tag.value"
+                    ><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip
+                >
                 <div>
                     <button (click)="previewAsset(lastSelected())" class="btn btn-link">
                         <clr-icon shape="eye"></clr-icon> {{ 'asset.preview' | translate }}
                     </button>
+                </div>
+                <div>
+                    <vdr-asset-preview-links class="" [asset]="lastSelected()"></vdr-asset-preview-links>
                 </div>
                 <div>
                     <a [routerLink]="['./', lastSelected().id]" class="btn btn-link">

@@ -74,6 +74,7 @@ customFieldConfig.Product?.push(
     { name: 'cfProductVariant', type: 'relation', entity: ProductVariant, list: false },
     { name: 'cfProduct', type: 'relation', entity: Product, list: false },
     { name: 'cfShippingMethod', type: 'relation', entity: ShippingMethod, list: false },
+    { name: 'cfInternalAsset', type: 'relation', entity: Asset, list: false, internal: true },
 );
 
 const customConfig = mergeConfig(testConfig(), {

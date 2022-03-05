@@ -16,7 +16,8 @@ import {
     TRANSITION_TO_STATE,
 } from './graphql/shop-queries';
 
-export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
+
+export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
     await shopClient.query(SET_SHIPPING_ADDRESS, {
         input: {
             fullName: 'name',
@@ -26,15 +27,16 @@ export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient)
             countryCode: 'US',
         },
     });
-
     const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
         GET_ELIGIBLE_SHIPPING_METHODS,
     );
-
     await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(SET_SHIPPING_METHOD, {
         id: eligibleShippingMethods[1].id,
     });
+}
 
+export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
+    await setShipping(shopClient);
     const { transitionOrderToState } = await shopClient.query<
         TransitionToState.Mutation,
         TransitionToState.Variables

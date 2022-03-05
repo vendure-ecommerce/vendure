@@ -31,24 +31,35 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { 
-        outputPath, 
-        baseHref, 
-        devMode, 
-        watchPort, 
-        additionalProcessArguments, 
-        extensions 
-    } = options;
-
+    const { outputPath, baseHref, devMode, watchPort, extensions, command, additionalProcessArguments } = options;
+    const usingYarn = options.command && options.command === 'npm' ? false : shouldUseYarn();
     if (devMode) {
-        return runWatchMode(outputPath, baseHref || DEFAULT_BASE_HREF, watchPort || 4200, extensions, additionalProcessArguments);
+        return runWatchMode(
+            outputPath,
+            baseHref || DEFAULT_BASE_HREF,
+            watchPort || 4200,
+            extensions,
+            usingYarn, 
+            additionalProcessArguments
+        );
     } else {
-        return runCompileMode(outputPath, baseHref || DEFAULT_BASE_HREF, extensions, additionalProcessArguments);
+        return runCompileMode(
+            outputPath, 
+            baseHref || DEFAULT_BASE_HREF, 
+            extensions, 
+            usingYarn, 
+            additionalProcessArguments
+        );
     }
 }
 
-function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[], args?: UiExtensionCompilerProcessArgument[]): AdminUiAppConfig {
-    const usingYarn = shouldUseYarn();
+function runCompileMode(
+    outputPath: string,
+    baseHref: string,
+    extensions: Extension[],
+    usingYarn: boolean,
+    args?: UiExtensionCompilerProcessArgument[]
+): AdminUiAppConfig {
     const cmd = usingYarn ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
@@ -87,9 +98,10 @@ function runWatchMode(
     baseHref: string,
     port: number,
     extensions: Extension[],
+    usingYarn: boolean,
     args?: UiExtensionCompilerProcessArgument[]
 ): AdminUiAppDevModeConfig {
-    const cmd = shouldUseYarn() ? 'yarn' : 'npm';
+    const cmd = usingYarn ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
     let watcher: FSWatcher | undefined;

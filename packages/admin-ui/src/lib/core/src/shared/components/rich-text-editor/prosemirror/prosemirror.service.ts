@@ -81,9 +81,9 @@ export class ProsemirrorService {
         }
     }
 
-    private getStateFromText(text: string): EditorState {
+    private getStateFromText(text: string | null | undefined): EditorState {
         const div = document.createElement('div');
-        div.innerHTML = text;
+        div.innerHTML = text ?? '';
         return EditorState.create({
             doc: DOMParser.fromSchema(this.mySchema).parse(div),
             plugins: this.configurePlugins({ schema: this.mySchema, floatingMenu: false }),

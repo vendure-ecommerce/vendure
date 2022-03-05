@@ -98,6 +98,7 @@ export * from './shared/components/asset-gallery/asset-gallery.component';
 export * from './shared/components/asset-picker-dialog/asset-picker-dialog.component';
 export * from './shared/components/asset-preview/asset-preview.component';
 export * from './shared/components/asset-preview-dialog/asset-preview-dialog.component';
+export * from './shared/components/asset-preview-links/asset-preview-links.component';
 export * from './shared/components/asset-search-input/asset-search-input.component';
 export * from './shared/components/channel-assignment-control/channel-assignment-control.component';
 export * from './shared/components/channel-badge/channel-badge.component';

@@ -647,12 +647,13 @@ describe('EmailPlugin', () => {
             _languageCode: LanguageCode.en,
         } as any);
 
-        const order = ({
+        const order = {
             code: 'ABCDE',
             customer: {
                 emailAddress: 'test@test.com',
             },
-        } as Partial<Order>) as any;
+            lines: [],
+        } as any;
 
         it('filters events with wrong order state', async () => {
             eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'ArrangingPayment', ctx, order));

@@ -1,0 +1,28 @@
+@startuml
+!include theme.puml
+title Channels & Prices
+
+package ProductVariant {
+  [name\nsku\nassets\n...]
+}
+
+package PriceUSD as "ProductVariantPrice" {
+  [US Channel\nprice (in USD)]
+}
+package PriceEUR as "ProductVariantPrice" {
+  [EU Channel\nprice (in EUR)]
+}
+package PriceGBP as "ProductVariantPrice" {
+  [UK Channel\nprice (in GBP)]
+}
+package PriceDefault as "ProductVariantPrice" {
+  [Default Channel\nprice] #LightGray
+}
+
+
+ProductVariant -down-> PriceUSD
+ProductVariant -down-> PriceEUR
+ProductVariant -down-> PriceGBP
+ProductVariant -right-> PriceDefault
+
+@enduml

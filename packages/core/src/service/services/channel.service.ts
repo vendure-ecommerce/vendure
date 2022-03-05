@@ -60,7 +60,16 @@ export class ChannelService {
      */
     async initChannels() {
         await this.ensureDefaultChannelExists();
-        this.allChannels = await createSelfRefreshingCache({
+        await this.ensureCacheExists();
+    }
+
+    /**
+     * Creates a channels cache, that can be used to reduce number of channel queries to database 
+     *
+     * @internal
+     */
+    async createCache(): Promise<SelfRefreshingCache<Channel[], [RequestContext]>> {
+        return createSelfRefreshingCache({
             name: 'ChannelService.allChannels',
             ttl: this.configService.entityOptions.channelCacheTtl,
             refresh: { fn: ctx => this.findAll(ctx), defaultArgs: [RequestContext.empty()] },
@@ -261,6 +270,17 @@ export class ChannelService {
         return !!this.connection.rawConnection
             .getMetadata(entityType)
             .relations.find(r => r.type === Channel && r.propertyName === 'channels');
+    }
+
+    /**
+     * Ensures channel cache exists. If not, this method creates one.
+     */
+    private async ensureCacheExists() {
+        if (this.allChannels) {
+            return
+        }
+
+        this.allChannels = await this.createCache();
     }
 
     /**

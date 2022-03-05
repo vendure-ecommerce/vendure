@@ -31,6 +31,7 @@ export class AddressCardComponent implements OnInit, OnChanges {
     @Input() editable = true;
     @Output() setAsDefaultShipping = new EventEmitter<string>();
     @Output() setAsDefaultBilling = new EventEmitter<string>();
+    @Output() deleteAddress = new EventEmitter<string>();
     private dataDependenciesPopulated = new BehaviorSubject<boolean>(false);
 
     constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
@@ -72,6 +73,11 @@ export class AddressCardComponent implements OnInit, OnChanges {
 
     setAsDefaultShippingAddress() {
         this.setAsDefaultShipping.emit(this.addressForm.value.id);
+        this.addressForm.markAsDirty();
+    }
+
+    delete() {
+        this.deleteAddress.emit(this.addressForm.value.id);
         this.addressForm.markAsDirty();
     }
 

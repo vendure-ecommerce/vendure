@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { LanguageCode } from '../../common/generated-types';
 
+/** @dynamic */
 @Injectable({
     providedIn: 'root',
 })
@@ -13,7 +15,7 @@ export class I18nService {
         return [...this._availableLanguages];
     }
 
-    constructor(private ngxTranslate: TranslateService) {}
+    constructor(private ngxTranslate: TranslateService, @Inject(DOCUMENT) private document: Document) {}
 
     /**
      * Set the default language
@@ -27,6 +29,9 @@ export class I18nService {
      */
     setLanguage(language: LanguageCode): void {
         this.ngxTranslate.use(language);
+        if (this.document?.documentElement) {
+            this.document.documentElement.lang = language;
+        }
     }
 
     /**

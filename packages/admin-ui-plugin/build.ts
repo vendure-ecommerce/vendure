@@ -6,16 +6,16 @@ import path from 'path';
 const compiledUiDir = path.join(__dirname, 'lib/admin-ui');
 console.log('Building admin-ui from source...');
 
-fs.remove(compiledUiDir);
+fs.removeSync(compiledUiDir);
 
 const adminUiDir = path.join(__dirname, '../admin-ui');
-const buildProcess = spawn('yarn', [`--cwd ${adminUiDir}`, 'run', 'build:app'], {
+const buildProcess = spawn('yarn', [`--cwd "${adminUiDir}"`, 'run', 'build:app'], {
     cwd: adminUiDir,
     shell: true,
     stdio: 'inherit',
 });
 
-buildProcess.on('close', (code) => {
+buildProcess.on('close', code => {
     if (code === 0) {
         fs.copySync(path.join(__dirname, '../admin-ui/dist'), compiledUiDir);
     } else {

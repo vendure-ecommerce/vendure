@@ -1,26 +1,89 @@
 import { Injectable } from '@nestjs/common';
 import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Request } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
+import ms from 'ms';
 
-import { idsAreEqual } from '../../common/utils';
-import { ConfigService } from '../../config/config.service';
-import { CachedSession, CachedSessionUser } from '../../config/session-cache/session-cache-strategy';
-import { Channel } from '../../entity/channel/channel.entity';
-import { ChannelService } from '../../service/services/channel.service';
-
-import { getApiType } from './get-api-type';
-import { RequestContext } from './request-context';
+import { ApiType, getApiType } from '../../../api/common/get-api-type';
+import { RequestContext } from '../../../api/common/request-context';
+import { idsAreEqual } from '../../../common/utils';
+import { ConfigService } from '../../../config/config.service';
+import { CachedSession, CachedSessionUser } from '../../../config/session-cache/session-cache-strategy';
+import { Channel } from '../../../entity/channel/channel.entity';
+import { User } from '../../../entity/index';
+import { ChannelService } from '../../services/channel.service';
+import { getUserChannelsPermissions } from '../utils/get-user-channels-permissions';
 
 /**
- * Creates new RequestContext instances.
+ * @description
+ * Creates new {@link RequestContext} instances.
+ *
+ * @docsCategory request
  */
 @Injectable()
 export class RequestContextService {
+    /** @internal */
     constructor(private channelService: ChannelService, private configService: ConfigService) {}
 
     /**
-     * Creates a new RequestContext based on an Express request object.
+     * @description
+     * Creates a RequestContext based on the config provided. This can be useful when interacting
+     * with services outside the request-response cycle, for example in stand-alone scripts or in
+     * worker jobs.
+     *
+     * @since 1.5.0
+     */
+    async create(config: {
+        req?: Request;
+        apiType: ApiType;
+        channelOrToken?: Channel | string;
+        languageCode?: LanguageCode;
+        user?: User;
+        activeOrderId?: ID;
+    }): Promise<RequestContext> {
+        const { req, apiType, channelOrToken, languageCode, user, activeOrderId } = config;
+        let channel: Channel;
+        if (channelOrToken instanceof Channel) {
+            channel = channelOrToken;
+        } else if (typeof channelOrToken === 'string') {
+            channel = await this.channelService.getChannelFromToken(channelOrToken);
+        } else {
+            channel = await this.channelService.getDefaultChannel();
+        }
+        let session: CachedSession | undefined;
+        if (user) {
+            const channelPermissions = user.roles ? getUserChannelsPermissions(user) : [];
+            session = {
+                user: {
+                    id: user.id,
+                    identifier: user.identifier,
+                    verified: user.verified,
+                    channelPermissions,
+                },
+                id: '__dummy_session_id__',
+                token: '__dummy_session_token__',
+                expires: new Date(Date.now() + ms('1y')),
+                cacheExpiry: ms('1y'),
+                activeOrderId,
+            };
+        }
+        return new RequestContext({
+            req,
+            apiType,
+            channel,
+            languageCode,
+            session,
+            isAuthorized: true,
+            authorizedAsOwnerOnly: false,
+        });
+    }
+
+    /**
+     * @description
+     * Creates a new RequestContext based on an Express request object. This is used internally
+     * in the API layer by the AuthGuard, and creates the RequestContext which is then passed
+     * to all resolvers & controllers.
      */
     async fromRequest(
         req: Request,
