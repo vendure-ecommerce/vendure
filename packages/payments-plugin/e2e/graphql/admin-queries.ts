@@ -77,3 +77,20 @@ export const REFUND_ORDER = gql`
     }
     ${REFUND_FRAGMENT}
 `;
+
+export const GET_ORDER_PAYMENTS = gql`
+    query order($id: ID!) {
+        order(id: $id) {
+            id
+            payments {
+                id
+                transactionId
+                method
+                amount
+                state
+                errorMessage
+                metadata
+            }
+        }
+    }
+`;
