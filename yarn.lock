@@ -3082,13 +3082,12 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
-"@mollie/api-client@~3.5.1":
-  version "3.5.1"
-  resolved "https://registry.npmjs.org/@mollie/api-client/-/api-client-3.5.1.tgz#288500f75db1516926b5a379d8c7e9d755f1f84f"
-  integrity sha512-8nEWOvTe9wsK3MKTDvRbM7hmEUc+keRtPOd/9ijq9cyXgHfA8DQcLu9KAJRrd3Q/Cw9p6kYWRyKWoNCkXexghg==
+"@mollie/api-client@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.npmjs.org/@mollie/api-client/-/api-client-3.6.0.tgz#ed4752035fc9f2abe7c15c50704af83d24db8d89"
+  integrity sha512-9eaygcSdBEf36LAWuHyYCnBXtRFWkv9OqbDujpriBc4txJMQryHLTejrSXkDU8TzJ5tEgLwzluVv+Kbgr8+7iQ==
   dependencies:
-    axios "^0.21.1"
-    lodash "^4.17.21"
+    axios "^0.25.0"
 
 "@n1ru4l/graphql-live-query@^0.9.0":
   version "0.9.0"
@@ -5283,12 +5282,12 @@ axios@0.26.0:
   dependencies:
     follow-redirects "^1.14.8"
 
-axios@^0.21.1:
-  version "0.21.4"
-  resolved "https://registry.npmjs.org/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
-  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+axios@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.npmjs.org/axios/-/axios-0.25.0.tgz#349cfbb31331a9b4453190791760a8d35b093e0a"
+  integrity sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==
   dependencies:
-    follow-redirects "^1.14.0"
+    follow-redirects "^1.14.7"
 
 axobject-query@2.0.2:
   version "2.0.2"
@@ -8747,7 +8746,7 @@ flush-write-stream@^1.0.2:
     inherits "^2.0.3"
     readable-stream "^2.3.6"
 
-follow-redirects@^1.0.0, follow-redirects@^1.14.0, follow-redirects@^1.14.8:
+follow-redirects@^1.0.0, follow-redirects@^1.14.7, follow-redirects@^1.14.8:
   version "1.14.9"
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.9.tgz#dd4ea157de7bfaf9ea9b3fbd85aa16951f78d8d7"
   integrity sha512-MQDfihBQYMcyy5dhRDJUHcw7lb2Pv/TuE6xP1vyraLukNDHKbDxDNaOE3NbCAdKQApno+GPRyo1YAp89yCjK4w==
@@ -9894,17 +9893,10 @@ ieee754@^1.1.13, ieee754@^1.1.4, ieee754@^1.2.1:
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
   integrity sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==
 
-ignore-walk@^3.0.1, ignore-walk@^3.0.3:
+ignore-walk@^3.0.1:
   version "3.0.4"
   resolved "https://registry.npmjs.org/ignore-walk/-/ignore-walk-3.0.4.tgz#c9a09f69b7c7b479a5d74ac1a3c0d4236d2a6335"
   integrity sha512-PY6Ii8o1jMRA1z4F2hRkH/xN59ox43DavKvD3oDpfurRlOJyAHpifIwpbdv1n4jt4ov0jSpw3kQ4GhJnpBL6WQ==
-  dependencies:
-    minimatch "^3.0.4"
-
-ignore-walk@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.npmjs.org/ignore-walk/-/ignore-walk-4.0.1.tgz#fc840e8346cf88a3a9380c5b17933cd8f4d39fa3"
-  integrity sha512-rzDQLaW4jQbh2YrOFlJdCtX8qgJTehFRYiUB2r1osqTeDzV/3+Jh8fz1oAPzUThf3iku8Ds4IDqawI5d8mUiQw==
   dependencies:
     minimatch "^3.0.4"
 
@@ -13529,33 +13521,13 @@ npm-package-arg@8.1.5, npm-package-arg@^8.0.0, npm-package-arg@^8.0.1, npm-packa
     semver "^7.3.4"
     validate-npm-package-name "^3.0.0"
 
-npm-packlist@^1.1.6:
+npm-packlist@1.1.12, npm-packlist@^1.1.6, npm-packlist@^2.1.4, npm-packlist@^3.0.0:
   version "1.1.12"
   resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-1.1.12.tgz#22bde2ebc12e72ca482abd67afc51eb49377243a"
   integrity sha512-WJKFOVMeAlsU/pjXuqVdzU0WfgtIBCupkEVwn+1Y0ERAbUfWw8R4GjgVbaKnUjRoD2FoQbHOCbOyT5Mbs9Lw4g==
   dependencies:
     ignore-walk "^3.0.1"
     npm-bundled "^1.0.1"
-
-npm-packlist@^2.1.4:
-  version "2.2.2"
-  resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-2.2.2.tgz#076b97293fa620f632833186a7a8f65aaa6148c8"
-  integrity sha512-Jt01acDvJRhJGthnUJVF/w6gumWOZxO7IkpY/lsX9//zqQgnF7OJaxgQXcerd4uQOLu7W5bkb4mChL9mdfm+Zg==
-  dependencies:
-    glob "^7.1.6"
-    ignore-walk "^3.0.3"
-    npm-bundled "^1.1.1"
-    npm-normalize-package-bin "^1.0.1"
-
-npm-packlist@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.npmjs.org/npm-packlist/-/npm-packlist-3.0.0.tgz#0370df5cfc2fcc8f79b8f42b37798dd9ee32c2a9"
-  integrity sha512-L/cbzmutAwII5glUcf2DBRNY/d0TFd4e/FnaZigJV6JD85RHZXJFGwCndjMWiiViiWSsWt3tiOLpI3ByTnIdFQ==
-  dependencies:
-    glob "^7.1.6"
-    ignore-walk "^4.0.1"
-    npm-bundled "^1.1.1"
-    npm-normalize-package-bin "^1.0.1"
 
 npm-pick-manifest@6.1.1, npm-pick-manifest@^6.0.0, npm-pick-manifest@^6.1.1:
   version "6.1.1"
@@ -16044,7 +16016,7 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
-rxjs@6.6.7, rxjs@^6.3.3, rxjs@^6.5.1, rxjs@^6.5.2, rxjs@^6.5.3, rxjs@^6.6.0, rxjs@^6.6.3, rxjs@^6.6.6:
+rxjs@6.6.7, rxjs@^6.3.3, rxjs@^6.5.1, rxjs@^6.5.2, rxjs@^6.5.3, rxjs@^6.6.0, rxjs@^6.6.3:
   version "6.6.7"
   resolved "https://registry.npmjs.org/rxjs/-/rxjs-6.6.7.tgz#90ac018acabf491bf65044235d5863c4dab804c9"
   integrity sha512-hTdwr+7yYNIT5n4AMYp85KA6yw2Va0FLa3Rguvbpa4W3I5xynaBZo41cM3XM+4Q6fRMj3sBYIR1VAmZMXYJvRQ==
