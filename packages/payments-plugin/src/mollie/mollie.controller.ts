@@ -19,7 +19,7 @@ export class MollieController {
         }
         try {
             await this.mollieService.settlePayment({ channelToken, paymentMethodId, paymentId: body.id });
-        } catch (error) {
+        } catch (error: any) {
             Logger.error(`Failed to process incoming webhook: ${error?.message}`, loggerCtx, error);
             throw error;
         }
