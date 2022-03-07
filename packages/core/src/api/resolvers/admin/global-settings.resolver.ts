@@ -11,6 +11,7 @@ import {
     GraphQLOutputType,
     GraphQLResolveInfo,
     isEnumType,
+    isInterfaceType,
     isListType,
     isNonNullType,
     isObjectType,
@@ -118,7 +119,7 @@ export class GlobalSettingsResolver {
     private getScalarFieldsOfType(info: GraphQLResolveInfo, typeName: string): string[] {
         const type = info.schema.getType(typeName);
 
-        if (type && isObjectType(type)) {
+        if (type && (isObjectType(type) || isInterfaceType(type))) {
             return Object.values(type.getFields())
                 .filter(field => {
                     const namedType = this.getNamedType(field.type);

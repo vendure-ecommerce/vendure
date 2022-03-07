@@ -82,6 +82,32 @@ export interface S3Config {
  * }),
  * ```
  *
+ * ## Usage with MinIO
+ *
+ * Reference: [How to use AWS SDK for Javascript with MinIO Server](https://docs.min.io/docs/how-to-use-aws-sdk-for-javascript-with-minio-server.html)
+ *
+ * @example
+ * ```TypeScript
+ * plugins: [
+ *   AssetServerPlugin.init({
+ *     route: 'assets',
+ *     assetUploadDir: path.join(__dirname, 'assets'),
+ *     port: 5002,
+ *     namingStrategy: new DefaultAssetNamingStrategy(),
+ *     storageStrategyFactory: configureS3AssetStorage({
+ *       bucket: 'my-minio-bucket',
+ *       credentials: {
+ *         accessKeyId: process.env.MINIO_ACCESS_KEY_ID,
+ *         secretAccessKey: process.env.MINIO_SECRET_ACCESS_KEY,
+ *       },
+ *       nativeS3Configuration: {
+ *         endpoint: process.env.MINIO_ENDPOINT ?? 'http://localhost:9000',
+ *         s3ForcePathStyle: true,
+ *         signatureVersion: 'v4',
+ *       },
+ *     }),
+ * }),
+ * ```
  * @docsCategory asset-server-plugin
  * @docsPage S3AssetStorageStrategy
  */
@@ -114,10 +140,9 @@ export function configureS3AssetStorage(s3Config: S3Config) {
  *
  * **Note:** Rather than instantiating this manually, use the {@link configureS3AssetStorage} function.
  *
- * ## Use with S3-compatible services
- * This strategy will also work with any S3-compatible object storage solutions, such as [MinIO](https://min.io/):
- *
- * * [How to use AWS SDK for Javascript with MinIO Server](https://docs.min.io/docs/how-to-use-aws-sdk-for-javascript-with-minio-server.html)
+ * ## Use with S3-compatible services (MinIO)
+ * This strategy will also work with any S3-compatible object storage solutions, such as [MinIO](https://min.io/).
+ * See the {@link configureS3AssetStorage} for an example with MinIO.
  *
  * @docsCategory asset-server-plugin
  * @docsPage S3AssetStorageStrategy
