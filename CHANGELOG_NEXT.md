@@ -1,3 +1,33 @@
+## 2.0.0-next.1 (2022-03-07)
+
+
+#### Fixes
+
+* **admin-ui** Rename vdr-product-selector ([9d9275c](https://github.com/vendure-ecommerce/vendure/commit/9d9275c))
+* **core** Correctly populate Collections in channel ([b42bf1e](https://github.com/vendure-ecommerce/vendure/commit/b42bf1e))
+* **core** Support usage of GQL interfaces on relational custom field (#1460) ([c608516](https://github.com/vendure-ecommerce/vendure/commit/c608516)), closes [#1460](https://github.com/vendure-ecommerce/vendure/issues/1460)
+* **email-plugin** Add currency code in mock email confirmation (#1448) ([ef8b244](https://github.com/vendure-ecommerce/vendure/commit/ef8b244)), closes [#1448](https://github.com/vendure-ecommerce/vendure/issues/1448)
+* **payments-plugin** Mollie payment intent + Stripe unauthorized settlement fix (#1437) ([37e5f58](https://github.com/vendure-ecommerce/vendure/commit/37e5f58)), closes [#1437](https://github.com/vendure-ecommerce/vendure/issues/1437) [#1432](https://github.com/vendure-ecommerce/vendure/issues/1432) [#1340](https://github.com/vendure-ecommerce/vendure/issues/1340)
+
+#### Features
+
+* **admin-ui** Add filter inheritance control to Collection detail view ([7f1b01e](https://github.com/vendure-ecommerce/vendure/commit/7f1b01e)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **admin-ui** Allow custom ng compiler args to be passed to admin ui compiler (#1386) ([d47df21](https://github.com/vendure-ecommerce/vendure/commit/d47df21)), closes [#1386](https://github.com/vendure-ecommerce/vendure/issues/1386)
+* **core** Collections can control inheritance of filters ([5d4206f](https://github.com/vendure-ecommerce/vendure/commit/5d4206f)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **core** Improve Collection tree data structure ([5e7af0d](https://github.com/vendure-ecommerce/vendure/commit/5e7af0d))
+
+
+### BREAKING CHANGE
+
+* The Admin UI component `vdr-product-selector` has been renamed to
+ `vdr-product-variant-selector` to more accurately represent what it does.
+
+ If you are using `vdr-product-selector` if any ui extensions code, update it to use the
+ new selector.
+* The data structure used to represent the tree of Collections has changed,
+which will require a DB migration.
+* The new `inheritFilters` property on the Collection entity will require a DB
+migration.
 ## 2.0.0-next.0 (2022-03-01)
 
 
