@@ -25,7 +25,7 @@ For step-by-step instructions see our [Vue Storefront integration blog post]({{<
  
 {{< figure src="./vercel-commerce-screenshot.webp" >}}
 
-[Next.js](https://nextjs.org/) is a popular React-based framework which many Vendure developers have chosen as the basis of their storefront application. The team behind Next.js have created an e-commerce-specific solution, [Next.js Commerce](https://nextjs.org/commerce), and it includes an official [Vendure integration](https://github.com/vercel/commerce/tree/main/framework/vendure)
+[Next.js](https://nextjs.org/) is a popular React-based framework which many Vendure developers have chosen as the basis of their storefront application. The team behind Next.js have created an e-commerce-specific solution, [Next.js Commerce](https://nextjs.org/commerce), and it includes an official [Vendure integration](https://github.com/vercel/commerce/tree/main/packages/vendure)
 
 [Next.js Commerce Vendure integration demo](https://vendure.vercel.store/)
 
