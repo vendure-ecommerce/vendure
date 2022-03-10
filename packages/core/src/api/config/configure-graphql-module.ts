@@ -119,6 +119,7 @@ async function createGraphQLOptions(
             ...configService.apiOptions.apolloServerPlugins,
         ],
         validationRules: options.validationRules,
+        introspection: configService.apiOptions.introspection ?? true,
     } as GqlModuleOptions;
 
     /**
