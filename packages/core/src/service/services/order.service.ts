@@ -959,7 +959,7 @@ export class OrderService {
         input: PaymentInput,
     ): Promise<ErrorResultUnion<AddPaymentToOrderResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        if (order.state !== 'ArrangingPayment') {
+        if (!this.canAddPaymentToOrder(order)) {
             return new OrderPaymentStateError();
         }
         order.payments = await this.getOrderPayments(ctx, order.id);
@@ -988,6 +988,27 @@ export class OrderService {
         }
 
         return this.transitionOrderIfTotalIsCovered(ctx, order);
+    }
+
+    /**
+     * @description
+     * We can add a Payment to the order if:
+     * 1. the Order is in the `ArrangingPayment` state or
+     * 2. the Order's current state can transition to `PaymentAuthorized` and `PaymentSettled`
+     */
+    private canAddPaymentToOrder(order: Order): boolean {
+        if (order.state === 'ArrangingPayment') {
+            return true;
+        }
+        const canTransitionToPaymentAuthorized = this.orderStateMachine.canTransition(
+            order.state,
+            'PaymentAuthorized',
+        );
+        const canTransitionToPaymentSettled = this.orderStateMachine.canTransition(
+            order.state,
+            'PaymentSettled',
+        );
+        return canTransitionToPaymentAuthorized && canTransitionToPaymentSettled;
     }
 
     private async transitionOrderIfTotalIsCovered(
