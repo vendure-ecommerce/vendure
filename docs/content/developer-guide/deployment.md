@@ -205,14 +205,14 @@ compileUiExtensions({
 ```
 
 
-## Docker / Kubernetes
+## Docker & Kubernetes
 
-For a production ready vendure server running on Kubernetes you can use the following Dockerfile and Kubernetes configuration. 
+For a production ready Vendure server running on Kubernetes you can use the following Dockerfile and Kubernetes configuration. 
 
 ### Docker
 
-Build your Docker container using `docker build -t vendure-shop:latest .`
-
+Assuming a project which has been scaffolded using `@vendure/create`, create a 
+Dockerfile in the root directory that looks like this:
 
 ```Dockerfile
 FROM node:16
@@ -222,9 +222,11 @@ RUN yarn install --production
 RUN yarn build
 ```
 
+Build your Docker container using `docker build -t vendure-shop:latest .`
+
 ### Kubernetes Deployment
 
-This deployment starts the shop container as worker and server.
+This deployment starts the shop container we created above as both worker and server.
 
 ```yaml
 apiVersion: apps/v1
