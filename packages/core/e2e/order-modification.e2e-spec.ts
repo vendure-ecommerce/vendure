@@ -1,10 +1,15 @@
 /* tslint:disable:no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
+import { summate } from '@vendure/common/lib/shared-utils';
 import {
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
+    freeShipping,
+    manualFulfillmentHandler,
     mergeConfig,
+    orderFixedDiscount,
+    orderPercentageDiscount,
     productsPercentageDiscount,
     ShippingCalculator,
 } from '@vendure/core';
@@ -14,9 +19,6 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
-import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
-import { defaultPromotionActions } from '../src/config/promotion/index';
 
 import {
     failsToSettlePaymentMethod,
@@ -28,16 +30,22 @@ import {
     AdminTransition,
     CreateFulfillment,
     CreatePromotion,
+    CreatePromotionMutation,
+    CreatePromotionMutationVariables,
     CreateShippingMethod,
     ErrorCode,
     GetOrder,
     GetOrderHistory,
     GetOrderWithModifications,
+    GetOrderWithModificationsQuery,
+    GetOrderWithModificationsQueryVariables,
     GetStockMovement,
     GlobalFlag,
     HistoryEntryType,
     LanguageCode,
     ModifyOrder,
+    ModifyOrderMutation,
+    ModifyOrderMutationVariables,
     OrderFragment,
     OrderWithLinesFragment,
     OrderWithModificationsFragment,
@@ -60,7 +68,6 @@ import {
     CREATE_SHIPPING_METHOD,
     GET_ORDER,
     GET_ORDER_HISTORY,
-    GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     UPDATE_CHANNEL,
     UPDATE_PRODUCT_VARIANTS,
@@ -1455,6 +1462,7 @@ describe('Order modification', () => {
                 originalTotalWithTax - order.lines[0].proratedUnitPriceWithTax,
             );
             expect(modifyOrder.payments![0].refunds![0].total).toBe(order.lines[0].proratedUnitPriceWithTax);
+            expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
         });
     });
 
@@ -1736,6 +1744,227 @@ describe('Order modification', () => {
         });
     });
 
+    describe('couponCode handling', () => {
+        const CODE_50PC_OFF = '50PC';
+        const CODE_FREE_SHIPPING = 'FREESHIP';
+        let order: TestOrderWithPaymentsFragment;
+        beforeAll(async () => {
+            await adminClient.query<CreatePromotionMutation, CreatePromotionMutationVariables>(
+                CREATE_PROMOTION,
+                {
+                    input: {
+                        name: '50% off',
+                        couponCode: CODE_50PC_OFF,
+                        enabled: true,
+                        conditions: [],
+                        actions: [
+                            {
+                                code: orderPercentageDiscount.code,
+                                arguments: [{ name: 'discount', value: '50' }],
+                            },
+                        ],
+                    },
+                },
+            );
+            await adminClient.query<CreatePromotionMutation, CreatePromotionMutationVariables>(
+                CREATE_PROMOTION,
+                {
+                    input: {
+                        name: 'Free shipping',
+                        couponCode: CODE_FREE_SHIPPING,
+                        enabled: true,
+                        conditions: [],
+                        actions: [{ code: freeShipping.code, arguments: [] }],
+                    },
+                },
+            );
+
+            // create an order and check out
+            await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_1',
+                quantity: 1,
+                customFields: {
+                    color: 'green',
+                },
+            } as any);
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_4',
+                quantity: 2,
+            });
+            await proceedToArrangingPayment(shopClient);
+            const result = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            orderGuard.assertSuccess(result);
+            order = result;
+            const result2 = await adminTransitionOrderToState(order.id, 'Modifying');
+            orderGuard.assertSuccess(result2);
+            expect(result2.state).toBe('Modifying');
+        });
+
+        it('invalid coupon code returns ErrorResult', async () => {
+            const { modifyOrder } = await adminClient.query<
+                ModifyOrderMutation,
+                ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    couponCodes: ['BAD_CODE'],
+                },
+            });
+            orderGuard.assertErrorResult(modifyOrder);
+            expect(modifyOrder.message).toBe('Coupon code "BAD_CODE" is not valid');
+        });
+
+        it('valid coupon code applies Promotion', async () => {
+            const { modifyOrder } = await adminClient.query<
+                ModifyOrderMutation,
+                ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    refund: {
+                        paymentId: order.payments![0].id,
+                    },
+                    couponCodes: [CODE_50PC_OFF],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+            expect(modifyOrder.subTotalWithTax).toBe(order.subTotalWithTax * 0.5);
+        });
+
+        it('adds order.discounts', async () => {
+            const { order: orderWithModifications } = await adminClient.query<
+                GetOrderWithModificationsQuery,
+                GetOrderWithModificationsQueryVariables
+            >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
+            expect(orderWithModifications?.discounts.length).toBe(1);
+            expect(orderWithModifications?.discounts[0].description).toBe('50% off');
+        });
+
+        it('adds order.promotions', async () => {
+            const { order: orderWithModifications } = await adminClient.query<
+                GetOrderWithModificationsQuery,
+                GetOrderWithModificationsQueryVariables
+            >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
+            expect(orderWithModifications?.promotions.length).toBe(1);
+            expect(orderWithModifications?.promotions[0].name).toBe('50% off');
+        });
+
+        it('creates correct refund amount', async () => {
+            const { order: orderWithModifications } = await adminClient.query<
+                GetOrderWithModificationsQuery,
+                GetOrderWithModificationsQueryVariables
+            >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
+            expect(orderWithModifications?.payments![0].refunds.length).toBe(1);
+            expect(orderWithModifications!.totalWithTax).toBe(
+                getOrderPaymentsTotalWithRefunds(orderWithModifications!),
+            );
+            expect(orderWithModifications?.payments![0].refunds[0].total).toBe(
+                order.totalWithTax - orderWithModifications!.totalWithTax,
+            );
+        });
+
+        it('creates history entry for applying couponCode', async () => {
+            const { order: history } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, {
+                id: order.id,
+                options: { filter: { type: { eq: HistoryEntryType.ORDER_COUPON_APPLIED } } },
+            });
+            orderGuard.assertSuccess(history);
+
+            expect(history.history.items.length).toBe(1);
+            expect(pick(history.history.items[0]!, ['type', 'data'])).toEqual({
+                type: HistoryEntryType.ORDER_COUPON_APPLIED,
+                data: { couponCode: CODE_50PC_OFF, promotionId: 'T_4' },
+            });
+        });
+
+        it('removes coupon code', async () => {
+            const { modifyOrder } = await adminClient.query<
+                ModifyOrderMutation,
+                ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    couponCodes: [],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+            expect(modifyOrder.subTotalWithTax).toBe(order.subTotalWithTax);
+        });
+
+        it('removes order.discounts', async () => {
+            const { order: orderWithModifications } = await adminClient.query<
+                GetOrderWithModificationsQuery,
+                GetOrderWithModificationsQueryVariables
+            >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
+            expect(orderWithModifications?.discounts.length).toBe(0);
+        });
+
+        it('removes order.promotions', async () => {
+            const { order: orderWithModifications } = await adminClient.query<
+                GetOrderWithModificationsQuery,
+                GetOrderWithModificationsQueryVariables
+            >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
+            expect(orderWithModifications?.promotions.length).toBe(0);
+        });
+
+        it('creates history entry for removing couponCode', async () => {
+            const { order: history } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, {
+                id: order.id,
+                options: { filter: { type: { eq: HistoryEntryType.ORDER_COUPON_REMOVED } } },
+            });
+            orderGuard.assertSuccess(history);
+
+            expect(history.history.items.length).toBe(1);
+            expect(pick(history.history.items[0]!, ['type', 'data'])).toEqual({
+                type: HistoryEntryType.ORDER_COUPON_REMOVED,
+                data: { couponCode: CODE_50PC_OFF },
+            });
+        });
+
+        it('correct refund for free shipping couponCode', async () => {
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_1',
+                quantity: 1,
+            } as any);
+            await proceedToArrangingPayment(shopClient);
+            const result = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            orderGuard.assertSuccess(result);
+            const order2 = result;
+            const shippingWithTax = order2.shippingWithTax;
+            const result2 = await adminTransitionOrderToState(order2.id, 'Modifying');
+            orderGuard.assertSuccess(result2);
+            expect(result2.state).toBe('Modifying');
+
+            const { modifyOrder } = await adminClient.query<
+                ModifyOrderMutation,
+                ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: order2.id,
+                    refund: {
+                        paymentId: order2.payments![0].id,
+                    },
+                    couponCodes: [CODE_FREE_SHIPPING],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+            expect(modifyOrder.shippingWithTax).toBe(0);
+            expect(modifyOrder!.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder!));
+            expect(modifyOrder.payments![0].refunds[0].total).toBe(shippingWithTax);
+        });
+    });
+
     async function adminTransitionOrderToState(id: string, state: string) {
         const result = await adminClient.query<AdminTransition.Mutation, AdminTransition.Variables>(
             ADMIN_TRANSITION_TO_STATE,
@@ -1798,12 +2027,20 @@ describe('Order modification', () => {
         await adminTransitionOrderToState(order.id, 'Modifying');
         return order;
     }
+
+    function getOrderPaymentsTotalWithRefunds(_order: OrderWithModificationsFragment) {
+        return _order.payments?.reduce((sum, p) => sum + p.amount - summate(p?.refunds, 'total'), 0) ?? 0;
+    }
 });
 
 export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
     fragment OrderWithModifications on Order {
         id
         state
+        subTotal
+        subTotalWithTax
+        shipping
+        shippingWithTax
         total
         totalWithTax
         lines {
@@ -1812,6 +2049,11 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
             linePrice
             linePriceWithTax
             discountedLinePriceWithTax
+            proratedLinePriceWithTax
+            discounts {
+                description
+                amountWithTax
+            }
             productVariant {
                 id
                 name
@@ -1869,6 +2111,17 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
                 total
                 paymentId
             }
+        }
+        promotions {
+            id
+            name
+            couponCode
+        }
+        discounts {
+            description
+            adjustmentSource
+            amount
+            amountWithTax
         }
         shippingAddress {
             streetLine1

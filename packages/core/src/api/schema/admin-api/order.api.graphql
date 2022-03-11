@@ -136,6 +136,7 @@ input ModifyOrderInput {
     note: String
     refund: AdministratorRefundInput
     options: ModifyOrderOptions
+    couponCodes: [String!]
 }
 
 input AddItemInput {
@@ -367,4 +368,7 @@ union ModifyOrderResult =
     | OrderLimitError
     | NegativeQuantityError
     | InsufficientStockError
+    | CouponCodeExpiredError
+    | CouponCodeInvalidError
+    | CouponCodeLimitError
 union AddManualPaymentToOrderResult = Order | ManualPaymentStateError
