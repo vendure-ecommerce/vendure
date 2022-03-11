@@ -203,3 +203,65 @@ compileUiExtensions({
     process.exit(0);
   });
 ```
+
+
+## Docker / Kubernetes
+
+For a production ready vendure server running on Kubernetes you can use the following Dockerfile and Kubernetes configuration. 
+
+### Docker
+
+Build your Docker container using `docker build -t vendure-shop:latest .`
+
+
+```Dockerfile
+FROM node:16
+WORKDIR /usr/src/app
+COPY . .
+RUN yarn install --production
+RUN yarn build
+```
+
+### Kubernetes Deployment
+
+This deployment starts the shop container as worker and server.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vendure-shop
+spec:
+  selector:
+    matchLabels:
+      app: vendure-shop
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vendure-shop
+    spec:
+      containers:
+        - name: server
+          image: vendure-shop:latest
+          command:
+            - node
+          args:
+            - "dist/index.js"
+          env:
+          # your env config here
+          ports:
+            - containerPort: 3000
+
+        - name: worker
+          image: vendure-shop:latest
+          imagePullPolicy: Always
+          command:
+            - node
+          args:
+            - "dist/index-worker.js"
+          env:
+          # your env config here
+          ports:
+            - containerPort: 3000
+```
