@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "Пошук за прізвищем клієнта",
     "search-by-order-code": "Пошук по коду замовлення",
     "select-state": "Виберіть стан",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Помітити як {state}",
     "settle-payment": "Розрахунок платежу",
     "settle-payment-error": "Не вдалося провести оплату",

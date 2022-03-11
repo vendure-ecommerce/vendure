@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "Rechercher par nom du client",
     "search-by-order-code": "Rehercher par numéro de commande",
     "select-state": "Sélectionner un état",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Marquer {state}",
     "settle-payment": "Régler le paiement",
     "settle-payment-error": "Règlement du paiement échoué",

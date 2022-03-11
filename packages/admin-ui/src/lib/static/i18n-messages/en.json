@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "Search by customer last name",
     "search-by-order-code": "Search by order code",
     "select-state": "Select state",
+    "set-coupon-codes": "Set coupon codes",
     "set-fulfillment-state": "Mark as {state}",
     "settle-payment": "Settle payment",
     "settle-payment-error": "Could not settle payment",

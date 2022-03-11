@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "",
     "search-by-order-code": "输入要搜索的订单编号",
     "select-state": "",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "",
     "settle-payment": "结算付款",
     "settle-payment-error": "结算付款失败",

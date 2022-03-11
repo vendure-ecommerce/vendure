@@ -5,6 +5,7 @@ import {
     GetAdjustmentOperations,
     GetPromotion,
     GetPromotionList,
+    PromotionFilterParameter,
     UpdatePromotion,
     UpdatePromotionInput,
 } from '../../common/generated-types';
@@ -22,13 +23,14 @@ import { BaseDataService } from './base-data.service';
 export class PromotionDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getPromotions(take: number = 10, skip: number = 0) {
+    getPromotions(take: number = 10, skip: number = 0, filter?: PromotionFilterParameter) {
         return this.baseDataService.query<GetPromotionList.Query, GetPromotionList.Variables>(
             GET_PROMOTION_LIST,
             {
                 options: {
                     take,
                     skip,
+                    filter,
                 },
             },
         );

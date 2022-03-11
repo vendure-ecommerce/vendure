@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "",
     "search-by-order-code": "Szukaj po numerze zamówienia",
     "select-state": "",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "",
     "settle-payment": "Rozlicz płatność",
     "settle-payment-error": "Nie można rozliczyć płatności",

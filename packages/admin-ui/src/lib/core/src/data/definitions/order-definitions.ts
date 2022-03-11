@@ -127,6 +127,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         state
         nextStates
         active
+        couponCodes
         customer {
             id
             firstName

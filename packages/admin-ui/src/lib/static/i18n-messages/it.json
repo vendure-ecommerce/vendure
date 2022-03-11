@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "Cerca per cognome cliente",
     "search-by-order-code": "Cerca per codice ordine",
     "select-state": "Seleziona stato",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Segna come {state}",
     "settle-payment": "Incassa pagamento",
     "settle-payment-error": "Non è stato possibile incassare il pagamento",

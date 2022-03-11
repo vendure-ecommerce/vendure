@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "",
     "search-by-order-code": "Hledat na základě kódu objednávky",
     "select-state": "Vyberte stav",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Označit jako {state}",
     "settle-payment": "Vypořádání platby",
     "settle-payment-error": "Nelze vyřídit platbu",

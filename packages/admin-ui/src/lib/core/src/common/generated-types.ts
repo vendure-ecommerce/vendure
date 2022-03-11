@@ -560,6 +560,31 @@ export type CountryTranslationInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+  __typename?: 'CouponCodeExpiredError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+  __typename?: 'CouponCodeInvalidError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+  __typename?: 'CouponCodeLimitError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+  limit: Scalars['Int'];
+};
+
 export type CreateAddressInput = {
   fullName?: Maybe<Scalars['String']>;
   company?: Maybe<Scalars['String']>;
@@ -1419,7 +1444,10 @@ export enum ErrorCode {
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
-  INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR'
+  INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+  COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+  COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR'
 }
 
 export type ErrorResult = {
@@ -2253,6 +2281,7 @@ export type ModifyOrderInput = {
   note?: Maybe<Scalars['String']>;
   refund?: Maybe<AdministratorRefundInput>;
   options?: Maybe<ModifyOrderOptions>;
+  couponCodes?: Maybe<Array<Scalars['String']>>;
 };
 
 export type ModifyOrderOptions = {
@@ -2260,7 +2289,7 @@ export type ModifyOrderOptions = {
   recalculateShipping?: Maybe<Scalars['Boolean']>;
 };
 
-export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
+export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError;
 
 export type MoveCollectionInput = {
   collectionId: Scalars['ID'];
@@ -6214,7 +6243,7 @@ export type OrderLineFragment = (
 
 export type OrderDetailFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax' | 'currencyCode' | 'shipping' | 'shippingWithTax'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'couponCodes' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax' | 'currencyCode' | 'shipping' | 'shippingWithTax'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
@@ -6578,6 +6607,15 @@ export type ModifyOrderMutation = { modifyOrder: (
   ) | (
     { __typename?: 'InsufficientStockError' }
     & ErrorResult_InsufficientStockError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeExpiredError' }
+    & ErrorResult_CouponCodeExpiredError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeInvalidError' }
+    & ErrorResult_CouponCodeInvalidError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeLimitError' }
+    & ErrorResult_CouponCodeLimitError_Fragment
   ) };
 
 export type AddManualPaymentMutationVariables = Exact<{
@@ -8786,6 +8824,21 @@ type ErrorResult_ChannelDefaultLanguageError_Fragment = (
   & Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_CouponCodeExpiredError_Fragment = (
+  { __typename?: 'CouponCodeExpiredError' }
+  & Pick<CouponCodeExpiredError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_CouponCodeInvalidError_Fragment = (
+  { __typename?: 'CouponCodeInvalidError' }
+  & Pick<CouponCodeInvalidError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_CouponCodeLimitError_Fragment = (
+  { __typename?: 'CouponCodeLimitError' }
+  & Pick<CouponCodeLimitError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_CreateFulfillmentError_Fragment = (
   { __typename?: 'CreateFulfillmentError' }
   & Pick<CreateFulfillmentError, 'errorCode' | 'message'>
@@ -8936,7 +8989,7 @@ type ErrorResult_SettlePaymentError_Fragment = (
   & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }

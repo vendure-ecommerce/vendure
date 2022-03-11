@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "",
     "search-by-order-code": "Suche nach Bestellnummer",
     "select-state": "Status auswählen",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Abwicklungsstatus wählen",
     "settle-payment": "Zahlung durchführen",
     "settle-payment-error": "Die Zahlung konnte nicht durchgeführt werden",

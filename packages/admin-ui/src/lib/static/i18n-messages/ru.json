@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "Поиск по фамилии клиента",
     "search-by-order-code": "Поиск по коду заказа",
     "select-state": "Выберите состояние",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Отметить как {state}",
     "settle-payment": "Расчет платежа",
     "settle-payment-error": "Не удалось провести оплату",

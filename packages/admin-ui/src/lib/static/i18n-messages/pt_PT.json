@@ -541,6 +541,7 @@
     "search-by-customer-last-name": "Pesquisar pelo apelido do cliente",
     "search-by-order-code": "Pesqusiar pelo código da encomenda",
     "select-state": "Seleccionar estado",
+    "set-coupon-codes": "",
     "set-fulfillment-state": "Marcar como {state}",
     "settle-payment": "Liquidar pagamento",
     "settle-payment-error": "Não foi possível liquidar o pagamento",
