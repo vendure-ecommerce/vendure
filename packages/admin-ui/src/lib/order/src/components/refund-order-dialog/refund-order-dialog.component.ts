@@ -3,6 +3,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CancelOrderInput,
     Dialog,
+    getAppConfig,
     I18nService,
     OrderDetail,
     OrderDetailFragment,
@@ -30,7 +31,10 @@ export class RefundOrderDialogComponent
     lineQuantities: { [lineId: string]: SelectionLine } = {};
     refundShipping = false;
     adjustment = 0;
-    reasons: string[] = [_('order.refund-reason-customer-request'), _('order.refund-reason-not-available')];
+    reasons = getAppConfig().cancellationReasons ?? [
+        _('order.refund-reason-customer-request'),
+        _('order.refund-reason-not-available'),
+    ];
 
     constructor(private i18nService: I18nService) {
         this.reasons = this.reasons.map(r => this.i18nService.translate(r));
