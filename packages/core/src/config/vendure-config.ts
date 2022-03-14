@@ -819,6 +819,8 @@ export interface JobQueueOptions {
      *
      * For example, we might have a staging and a production deployment in the same account/project and
      * each one will need its own task queue. We can achieve this with a prefix.
+     *
+     * @since 1.5.0
      */
     prefix?: string;
 }
