@@ -98,6 +98,7 @@ import { PasswordFormInputComponent } from './dynamic-form-inputs/password-form-
 import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
 import { RelationAssetInputComponent } from './dynamic-form-inputs/relation-form-input/asset/relation-asset-input.component';
 import { RelationCustomerInputComponent } from './dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
+import { RelationGenericInputComponent } from './dynamic-form-inputs/relation-form-input/generic/relation-generic-input.component';
 import { RelationProductVariantInputComponent } from './dynamic-form-inputs/relation-form-input/product-variant/relation-product-variant-input.component';
 import { RelationProductInputComponent } from './dynamic-form-inputs/relation-form-input/product/relation-product-input.component';
 import {
@@ -253,6 +254,7 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardPreviewDirective,
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
+    RelationGenericInputComponent,
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,

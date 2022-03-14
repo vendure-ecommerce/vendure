@@ -186,6 +186,7 @@ export * from './shared/dynamic-form-inputs/product-selector-form-input/product-
 export * from './shared/dynamic-form-inputs/register-dynamic-input-components';
 export * from './shared/dynamic-form-inputs/relation-form-input/asset/relation-asset-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
+export * from './shared/dynamic-form-inputs/relation-form-input/generic/relation-generic-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/product/relation-product-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/product-variant/relation-product-variant-input.component';
 export * from './shared/dynamic-form-inputs/relation-form-input/relation-card/relation-card.component';
