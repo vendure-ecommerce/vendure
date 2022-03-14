@@ -77,6 +77,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
+import { Session } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
@@ -89,9 +90,11 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
-import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
-import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { CouponCodeEvent } from '../../event-bus/index';
+import { OrderEvent } from '../../event-bus/index';
+import { OrderStateTransitionEvent } from '../../event-bus/index';
+import { RefundStateTransitionEvent } from '../../event-bus/index';
+import { OrderLineEvent } from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -384,6 +387,7 @@ export class OrderService {
         }
         await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
+        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
         const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
         if (isGraphQlErrorResult(transitionResult)) {
             // this should never occur, so we will throw rather than return
@@ -400,7 +404,9 @@ export class OrderService {
         let order = await this.getOrderOrThrow(ctx, orderId);
         order = patchEntity(order, { customFields });
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, order);
-        return this.connection.getRepository(ctx, Order).save(order);
+        const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
+        this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        return updatedOrder;
     }
 
     /**
@@ -509,6 +515,7 @@ export class OrderService {
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+            this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
@@ -540,6 +547,7 @@ export class OrderService {
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
         return updatedOrder;
     }
 
@@ -952,7 +960,7 @@ export class OrderService {
         input: PaymentInput,
     ): Promise<ErrorResultUnion<AddPaymentToOrderResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        if (order.state !== 'ArrangingPayment') {
+        if (!this.canAddPaymentToOrder(order)) {
             return new OrderPaymentStateError();
         }
         order.payments = await this.getOrderPayments(ctx, order.id);
@@ -981,6 +989,27 @@ export class OrderService {
         }
 
         return this.transitionOrderIfTotalIsCovered(ctx, order);
+    }
+
+    /**
+     * @description
+     * We can add a Payment to the order if:
+     * 1. the Order is in the `ArrangingPayment` state or
+     * 2. the Order's current state can transition to `PaymentAuthorized` and `PaymentSettled`
+     */
+    private canAddPaymentToOrder(order: Order): boolean {
+        if (order.state === 'ArrangingPayment') {
+            return true;
+        }
+        const canTransitionToPaymentAuthorized = this.orderStateMachine.canTransition(
+            order.state,
+            'PaymentAuthorized',
+        );
+        const canTransitionToPaymentSettled = this.orderStateMachine.canTransition(
+            order.state,
+            'PaymentSettled',
+        );
+        return canTransitionToPaymentAuthorized && canTransitionToPaymentSettled;
     }
 
     private async transitionOrderIfTotalIsCovered(
@@ -1256,8 +1285,23 @@ export class OrderService {
         await this.connection.getRepository(ctx, OrderItem).save(items, { reload: false });
 
         const orderWithItems = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
-            relations: ['lines', 'lines.items'],
+            relations: ['lines', 'lines.items', 'surcharges', 'shippingLines'],
         });
+        if (input.cancelShipping === true) {
+            for (const shippingLine of orderWithItems.shippingLines) {
+                shippingLine.adjustments.push({
+                    adjustmentSource: 'CANCEL_ORDER',
+                    type: AdjustmentType.OTHER,
+                    description: 'shipping cancellation',
+                    amount: -shippingLine.discountedPriceWithTax,
+                });
+                this.connection.getRepository(ctx, ShippingLine).save(shippingLine, { reload: false });
+            }
+        }
+        // Update totals after cancellation
+        this.orderCalculator.calculateOrderTotals(orderWithItems);
+        await this.connection.getRepository(ctx, Order).save(orderWithItems, { reload: false });
+
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId: order.id,
@@ -1265,8 +1309,10 @@ export class OrderService {
             data: {
                 orderItemIds: items.map(i => i.id),
                 reason: input.reason || undefined,
+                shippingCancelled: !!input.cancelShipping,
             },
         });
+
         return orderItemsAreAllCancelled(orderWithItems);
     }
 
@@ -1416,6 +1462,37 @@ export class OrderService {
 
     /**
      * @description
+     * Deletes an Order, ensuring that any Sessions that reference this Order are dereferenced before deletion.
+     *
+     * @since 1.5.0
+     */
+    async deleteOrder(ctx: RequestContext, orderOrId: ID | Order) {
+        const orderToDelete =
+            orderOrId instanceof Order
+                ? orderOrId
+                : await this.connection
+                      .getRepository(ctx, Order)
+                      .findOneOrFail(orderOrId, { relations: ['lines'] });
+        // If there is a Session referencing the Order to be deleted, we must first remove that
+        // reference in order to avoid a foreign key error. See https://github.com/vendure-ecommerce/vendure/issues/1454
+        const sessions = await this.connection
+            .getRepository(ctx, Session)
+            .find({ where: { activeOrderId: orderToDelete.id } });
+        if (sessions.length) {
+            await this.connection
+                .getRepository(ctx, Session)
+                .update(sessions.map(s => s.id) as string[], { activeOrder: null });
+        }
+
+        // TODO: v2 - Will not be needed after adding `{ onDelete: 'CASCADE' }` constraint to ShippingLine.order
+        for (const shippingLine of orderToDelete.shippingLines) {
+            await this.connection.getRepository(ctx, ShippingLine).delete(shippingLine.id);
+        }
+        await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+    }
+
+    /**
+     * @description
      * When a guest user with an anonymous Order signs in and has an existing Order associated with that Customer,
      * we need to reconcile the contents of the two orders.
      *
@@ -1436,11 +1513,7 @@ export class OrderService {
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
-            // TODO: v2 - Will not be needed after adding `{ onDelete: 'CASCADE' }` constraint to ShippingLine.order
-            for (const shippingLine of orderToDelete.shippingLines) {
-                await this.connection.getRepository(ctx, ShippingLine).delete(shippingLine.id);
-            }
-            await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+            await this.deleteOrder(ctx, orderToDelete);
         }
         if (order && linesToInsert) {
             const orderId = order.id;

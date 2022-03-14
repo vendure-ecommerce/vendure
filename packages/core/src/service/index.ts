@@ -13,6 +13,8 @@ export * from './helpers/order-state-machine/order-state';
 export * from './helpers/password-cipher/password-cipher';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './helpers/product-price-applicator/product-price-applicator';
+export * from './helpers/refund-state-machine/refund-state';
+export * from './helpers/request-context/request-context.service';
 export * from './helpers/translatable-saver/translatable-saver';
 export * from './helpers/utils/patch-entity';
 export * from './helpers/utils/translate-entity';

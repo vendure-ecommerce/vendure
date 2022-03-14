@@ -3,15 +3,8 @@
         <input
             type="text"
             name="emailSearchTerm"
-            [formControl]="emailSearchTerm"
-            [placeholder]="'customer.search-customers-by-email' | translate"
-            class="search-input ml3"
-        />
-        <input
-            type="text"
-            name="lastNameSearchTerm"
-            [formControl]="lastNameSearchTerm"
-            [placeholder]="'customer.search-customers-by-last-name' | translate"
+            [formControl]="searchTerm"
+            [placeholder]="'customer.search-customers-by-email-last-name-postal-code' | translate"
             class="search-input ml3"
         />
     </vdr-ab-left>

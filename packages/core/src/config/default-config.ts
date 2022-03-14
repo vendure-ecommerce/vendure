@@ -12,6 +12,7 @@ import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asse
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
+import { DefaultPasswordValidationStrategy } from './auth/default-password-validation-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
@@ -64,6 +65,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             credentials: true,
         },
         middleware: [],
+        introspection: true,
         apolloServerPlugins: [],
     },
     authOptions: {
@@ -87,6 +89,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
+        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -149,6 +152,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
         enableWorkerHealthCheck: false,
+        prefix: '',
     },
     customFields: {
         Address: [],

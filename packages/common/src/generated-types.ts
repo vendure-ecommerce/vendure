@@ -73,7 +73,8 @@ export type Adjustment = {
 
 export enum AdjustmentType {
   PROMOTION = 'PROMOTION',
-  DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION'
+  DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+  OTHER = 'OTHER'
 }
 
 export type Administrator = Node & {
@@ -275,6 +276,11 @@ export type BooleanCustomFieldConfig = CustomField & {
   ui?: Maybe<Scalars['JSON']>;
 };
 
+/** Operators for filtering on a list of Boolean fields */
+export type BooleanListOperators = {
+  inList: Scalars['Boolean'];
+};
+
 /** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
   eq?: Maybe<Scalars['Boolean']>;
@@ -293,6 +299,8 @@ export type CancelOrderInput = {
   orderId: Scalars['ID'];
   /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
   lines?: Maybe<Array<OrderLineInput>>;
+  /** Specify whether the shipping charges should also be cancelled. Defaults to false */
+  cancelShipping?: Maybe<Scalars['Boolean']>;
   reason?: Maybe<Scalars['String']>;
 };
 
@@ -549,6 +557,31 @@ export type CountryTranslationInput = {
   languageCode: LanguageCode;
   name?: Maybe<Scalars['String']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+  __typename?: 'CouponCodeExpiredError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+  __typename?: 'CouponCodeInvalidError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+  __typename?: 'CouponCodeLimitError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+  limit: Scalars['Int'];
 };
 
 export type CreateAddressInput = {
@@ -1193,6 +1226,7 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+  postalCode?: Maybe<StringOperators>;
   id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -1279,6 +1313,11 @@ export type CustomerSortParameter = {
   lastName?: Maybe<SortOrder>;
   phoneNumber?: Maybe<SortOrder>;
   emailAddress?: Maybe<SortOrder>;
+};
+
+/** Operators for filtering on a list of Date fields */
+export type DateListOperators = {
+  inList: Scalars['DateTime'];
 };
 
 /** Operators for filtering on a DateTime field */
@@ -1397,7 +1436,10 @@ export enum ErrorCode {
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
-  INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR'
+  INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+  COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+  COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR'
 }
 
 export type ErrorResult = {
@@ -1656,6 +1698,11 @@ export enum HistoryEntryType {
   ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
   ORDER_MODIFIED = 'ORDER_MODIFIED'
 }
+
+/** Operators for filtering on a list of ID fields */
+export type IdListOperators = {
+  inList: Scalars['ID'];
+};
 
 /** Operators for filtering on an ID field */
 export type IdOperators = {
@@ -2226,6 +2273,7 @@ export type ModifyOrderInput = {
   note?: Maybe<Scalars['String']>;
   refund?: Maybe<AdministratorRefundInput>;
   options?: Maybe<ModifyOrderOptions>;
+  couponCodes?: Maybe<Array<Scalars['String']>>;
 };
 
 export type ModifyOrderOptions = {
@@ -2233,7 +2281,7 @@ export type ModifyOrderOptions = {
   recalculateShipping?: Maybe<Scalars['Boolean']>;
 };
 
-export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
+export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError;
 
 export type MoveCollectionInput = {
   collectionId: Scalars['ID'];
@@ -3035,6 +3083,11 @@ export type NothingToRefundError = ErrorResult & {
   __typename?: 'NothingToRefundError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+};
+
+/** Operators for filtering on a list of Number fields */
+export type NumberListOperators = {
+  inList: Scalars['Float'];
 };
 
 /** Operators for filtering on a Int or Float field */
@@ -4702,6 +4755,11 @@ export type StringFieldOption = {
   __typename?: 'StringFieldOption';
   value: Scalars['String'];
   label?: Maybe<Array<LocalizedString>>;
+};
+
+/** Operators for filtering on a list of String fields */
+export type StringListOperators = {
+  inList: Scalars['String'];
 };
 
 /** Operators for filtering on a String field */

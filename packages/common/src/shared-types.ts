@@ -264,8 +264,6 @@ export interface AdminUiConfig {
     /**
      * @description
      * An array of languages for which translations exist for the Admin UI.
-     *
-     * @default [LanguageCode.en, LanguageCode.es]
      */
     availableLanguages: LanguageCode[];
     /**
@@ -295,6 +293,16 @@ export interface AdminUiConfig {
      * @default false
      */
     hideVersion?: boolean;
+    /**
+     * @description
+     * Allows you to provide default reasons for a refund or cancellation. This will be used in the
+     * refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
+     * tokens (see [Adding Admin UI Translations](/docs/plugins/extending-the-admin-ui/adding-ui-translations/)).
+     *
+     * @since 1.5.0
+     * @default ['order.cancel-reason-customer-request', 'order.cancel-reason-not-available']
+     */
+    cancellationReasons?: string[];
 }
 
 /**

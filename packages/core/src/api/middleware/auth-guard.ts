@@ -10,13 +10,13 @@ import { ConfigService } from '../../config/config.service';
 import { LogLevel } from '../../config/logger/vendure-logger';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Customer } from '../../entity/customer/customer.entity';
+import { RequestContextService } from '../../service/helpers/request-context/request-context.service';
 import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
 import { RequestContext } from '../common/request-context';
-import { RequestContextService } from '../common/request-context.service';
 import { setSessionToken } from '../common/set-session-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 

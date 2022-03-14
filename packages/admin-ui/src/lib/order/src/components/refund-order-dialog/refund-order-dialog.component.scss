@@ -18,6 +18,9 @@
         color: var(--color-grey-300);
     }
 }
+.quantity-col {
+    background-color: var(--color-warning-100);
+}
 .cancel-checkbox-wrapper {
     display: flex;
     align-items: center;
@@ -31,6 +34,9 @@ clr-checkbox-wrapper {
 .refund-details {
     display: flex;
     justify-content: space-between;
+    &.faded {
+        opacity: 0.5;
+    }
 }
 .totals {
     margin-top: 48px;

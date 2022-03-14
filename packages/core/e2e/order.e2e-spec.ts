@@ -1055,7 +1055,7 @@ describe('Orders resolver', () => {
             await assertNoStockMovementsCreated(testOrder.product.id);
         });
 
-        it('cancel from PaymentAuthorized state', async () => {
+        it('cancel from PaymentAuthorized state with cancelShipping: true', async () => {
             const testOrder = await createTestOrder(
                 adminClient,
                 shopClient,
@@ -1087,6 +1087,7 @@ describe('Orders resolver', () => {
                 {
                     input: {
                         orderId: testOrder.orderId,
+                        cancelShipping: true,
                     },
                 },
             );
@@ -1107,6 +1108,8 @@ describe('Orders resolver', () => {
             });
             expect(order2!.active).toBe(false);
             expect(order2!.state).toBe('Cancelled');
+            expect(order2!.totalWithTax).toBe(0);
+            expect(order2!.shippingWithTax).toBe(0);
 
             const result2 = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
                 GET_STOCK_MOVEMENT,
@@ -1339,6 +1342,7 @@ describe('Orders resolver', () => {
                     orderId,
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     reason: 'cancel reason 2',
+                    cancelShipping: true,
                 },
             });
 
@@ -1346,6 +1350,8 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
             expect(order2!.state).toBe('Cancelled');
+            expect(order2!.shippingWithTax).toBe(0);
+            expect(order2!.totalWithTax).toBe(0);
 
             const result = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
                 GET_STOCK_MOVEMENT,
@@ -1365,6 +1371,22 @@ describe('Orders resolver', () => {
                 { type: StockMovementType.RELEASE, quantity: 1 },
                 { type: StockMovementType.RELEASE, quantity: 1 },
             ]);
+        });
+
+        it('cancelled OrderLine.unitPrice is not zero', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            expect(order?.lines[0].unitPrice).toEqual(order?.lines[0].items[0].unitPrice);
+        });
+
+        it('cancelled OrderLine.unitPrice is not zero', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            expect(order?.lines[0].unitPrice).toEqual(order?.lines[0].items[0].unitPrice);
         });
 
         it('order history contains expected entries', async () => {
@@ -1412,6 +1434,7 @@ describe('Orders resolver', () => {
                     data: {
                         orderItemIds: ['T_13'],
                         reason: 'cancel reason 1',
+                        shippingCancelled: false,
                     },
                 },
                 {
@@ -1419,6 +1442,7 @@ describe('Orders resolver', () => {
                     data: {
                         orderItemIds: ['T_14'],
                         reason: 'cancel reason 2',
+                        shippingCancelled: true,
                     },
                 },
                 {

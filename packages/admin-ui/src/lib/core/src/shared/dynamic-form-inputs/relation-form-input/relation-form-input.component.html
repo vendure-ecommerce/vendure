@@ -24,6 +24,10 @@
         [readonly]="readonly"
     ></vdr-relation-product-variant-input>
     <ng-template ngSwitchDefault>
-        No input component configured for "{{ config.entity }}" type
+        <vdr-relation-generic-input
+            [parentFormControl]="formControl"
+               [config]="config"
+               [readonly]="readonly"
+        ></vdr-relation-generic-input>
     </ng-template>
 </div>

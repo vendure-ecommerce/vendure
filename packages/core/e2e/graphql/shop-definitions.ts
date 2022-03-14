@@ -154,6 +154,9 @@ export const REGISTER_ACCOUNT = gql`
                 errorCode
                 message
             }
+            ... on PasswordValidationError {
+                validationErrorMessage
+            }
         }
     }
 `;
@@ -177,6 +180,9 @@ export const VERIFY_EMAIL = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on PasswordValidationError {
+                validationErrorMessage
             }
         }
     }
@@ -216,6 +222,9 @@ export const RESET_PASSWORD = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on PasswordValidationError {
+                validationErrorMessage
             }
         }
     }

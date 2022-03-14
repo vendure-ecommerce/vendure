@@ -107,10 +107,9 @@ export class SessionService implements EntitySubscriberInterface {
      */
     async createAnonymousSession(): Promise<CachedSession> {
         const token = await this.generateSessionToken();
-        const anonymousSessionDurationInMs = ms('1y');
         const session = new AnonymousSession({
             token,
-            expires: this.getExpiryDate(anonymousSessionDurationInMs),
+            expires: this.getExpiryDate(this.sessionDurationInMs),
             invalidated: false,
         });
         // save the new session

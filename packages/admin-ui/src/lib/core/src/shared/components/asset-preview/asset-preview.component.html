@@ -124,13 +124,15 @@
         </clr-select-container>
         <div class="asset-detail">{{ width }} x {{ height }}</div>
     </div>
-    <a
-        *ngIf="!editable"
-        class="btn btn-link btn-sm"
-        [routerLink]="['/catalog', 'assets', asset.id]"
-        (click)="editClick.emit()"
-    >
-        <clr-icon shape="edit"></clr-icon>
-        {{ 'common.edit' | translate }}
-    </a>
+    <vdr-asset-preview-links class="mb4" [asset]="asset"></vdr-asset-preview-links>
+    <div *ngIf="!editable" class="edit-button-wrapper">
+        <a
+            class="btn btn-link btn-sm"
+            [routerLink]="['/catalog', 'assets', asset.id]"
+            (click)="editClick.emit()"
+        >
+            <clr-icon shape="edit"></clr-icon>
+            {{ 'common.edit' | translate }}
+        </a>
+    </div>
 </div>

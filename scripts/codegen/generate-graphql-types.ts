@@ -181,6 +181,12 @@ Promise.all([
                         plugins: clientPlugins,
                         config: e2eConfig,
                     },
+                [path.join(__dirname, '../../packages/payments-plugin/src/mollie/graphql/generated-shop-types.ts')]:
+                    {
+                        schema: [SHOP_SCHEMA_OUTPUT_FILE, path.join(__dirname, '../../packages/payments-plugin/src/mollie/mollie-shop-schema.ts')],
+                        plugins: clientPlugins,
+                        config,
+                    },
             },
         });
     })

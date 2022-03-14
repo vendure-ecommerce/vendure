@@ -112,6 +112,24 @@ describe('Customer resolver', () => {
         thirdCustomer = result.customers.items[2];
     });
 
+    it('customers list filter by postalCode', async () => {
+        const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
+            GET_CUSTOMER_LIST,
+            {
+                options: {
+                    filter: {
+                        postalCode: {
+                            eq: 'NU9 0PW',
+                        },
+                    },
+                },
+            },
+        );
+
+        expect(result.customers.items.length).toBe(1);
+        expect(result.customers.items[0].emailAddress).toBe('eliezer56@yahoo.com');
+    });
+
     it('customer resolver resolves User', async () => {
         const { customer } = await adminClient.query<
             GetCustomerWithUser.Query,

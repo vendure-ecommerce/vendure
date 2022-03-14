@@ -9,7 +9,7 @@ import { PaymentState } from '../payment-state-machine/payment-state';
  */
 export function orderTotalIsCovered(order: Order, state: PaymentState | PaymentState[]): boolean {
     const paymentsTotal = totalCoveredByPayments(order, state);
-    return paymentsTotal === order.totalWithTax;
+    return paymentsTotal >= order.totalWithTax;
 }
 
 /**

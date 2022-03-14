@@ -151,6 +151,14 @@ export const UPDATE_CUSTOMER_ADDRESS = gql`
     ${ADDRESS_FRAGMENT}
 `;
 
+export const DELETE_CUSTOMER_ADDRESS = gql`
+    mutation DeleteCustomerAddress($id: ID!) {
+        deleteCustomerAddress(id: $id) {
+            success
+        }
+    }
+`;
+
 export const CREATE_CUSTOMER_GROUP = gql`
     mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
         createCustomerGroup(input: $input) {

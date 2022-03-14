@@ -30,10 +30,15 @@ import {
 import { AssetImporter } from '../asset-importer/asset-importer';
 
 /**
- * Responsible for populating the database with initial data.
+ * @description
+ * Responsible for populating the database with {@link InitialData}, i.e. non-product data such as countries, tax rates,
+ * shipping methods, payment methods & roles.
+ *
+ * @docsCategory import-export
  */
 @Injectable()
 export class Populator {
+    /** @internal */
     constructor(
         private countryService: CountryService,
         private zoneService: ZoneService,
@@ -50,57 +55,60 @@ export class Populator {
     ) {}
 
     /**
+     * @description
      * Should be run *before* populating the products, so that there are TaxRates by which
-     * product prices can be set.
+     * product prices can be set. If the `channel` argument is set, then any {@link ChannelAware}
+     * entities will be assigned to that Channel.
      */
-    async populateInitialData(data: InitialData) {
-        const { channel, ctx } = await this.createRequestContext(data);
+    async populateInitialData(data: InitialData, channel?: Channel) {
+        const ctx = await this.createRequestContext(data, channel);
         let zoneMap: ZoneMap;
         try {
             zoneMap = await this.populateCountries(ctx, data.countries);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate countries`);
             Logger.error(e, 'populator', e.stack);
             throw e;
         }
         try {
             await this.populateTaxRates(ctx, data.taxRates, zoneMap);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate tax rates`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populateShippingMethods(ctx, data.shippingMethods);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate shipping methods`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populatePaymentMethods(ctx, data.paymentMethods);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate payment methods`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
-            await this.setChannelDefaults(zoneMap, data, channel);
-        } catch (e) {
+            await this.setChannelDefaults(zoneMap, data, ctx.channel);
+        } catch (e: any) {
             Logger.error(`Could not set channel defaults`);
             Logger.error(e, 'populator', e.stack);
         }
         try {
             await this.populateRoles(ctx, data.roles);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not populate roles`);
             Logger.error(e, 'populator', e.stack);
         }
     }
 
     /**
+     * @description
      * Should be run *after* the products have been populated, otherwise the expected FacetValues will not
      * yet exist.
      */
-    async populateCollections(data: InitialData) {
-        const { ctx } = await this.createRequestContext(data);
+    async populateCollections(data: InitialData, channel?: Channel) {
+        const ctx = await this.createRequestContext(data, channel);
 
         const allFacetValues = await this.facetValueService.findAll(ctx.languageCode);
         const collectionMap = new Map<string, Collection>();
@@ -113,9 +121,8 @@ export class Populator {
                 filters = (collectionDef.filters || []).map(filter =>
                     this.processFilterDefinition(filter, allFacetValues),
                 );
-            } catch (e) {
-                // tslint:disable-next-line:no-console
-                console.log(e);
+            } catch (e: any) {
+                Logger.error(e.message);
             }
             const collection = await this.collectionService.create(ctx, {
                 translations: [
@@ -182,23 +189,22 @@ export class Populator {
         }
     }
 
-    private async createRequestContext(data: InitialData) {
-        const channel = await this.channelService.getDefaultChannel();
+    private async createRequestContext(data: InitialData, channel?: Channel) {
         const ctx = new RequestContext({
             apiType: 'admin',
             isAuthorized: true,
             authorizedAsOwnerOnly: false,
-            channel,
+            channel: channel ?? (await this.channelService.getDefaultChannel()),
             languageCode: data.defaultLanguage,
         });
-        return { channel, ctx };
+        return ctx;
     }
 
     private async setChannelDefaults(zoneMap: ZoneMap, data: InitialData, channel: Channel) {
         const defaultZone = zoneMap.get(data.defaultZone);
         if (!defaultZone) {
             throw new Error(
-                `The defaultZone (${data.defaultZone}) did not match any zones from the InitialData`,
+                `The defaultZone (${data.defaultZone}) did not match any existing or created zone names`,
             );
         }
         const defaultZoneId = defaultZone.entity.id;
@@ -210,7 +216,11 @@ export class Populator {
     }
 
     private async populateCountries(ctx: RequestContext, countries: CountryDefinition[]): Promise<ZoneMap> {
-        const zones: ZoneMap = new Map();
+        const zoneMap: ZoneMap = new Map();
+        const existingZones = await this.zoneService.findAll(ctx);
+        for (const zone of existingZones) {
+            zoneMap.set(zone.name, { entity: zone, members: zone.members.map(m => m.id) });
+        }
         for (const { name, code, zone } of countries) {
             const countryEntity = await this.countryService.create(ctx, {
                 code,
@@ -218,23 +228,26 @@ export class Populator {
                 translations: [{ languageCode: ctx.languageCode, name }],
             });
 
-            let zoneItem = zones.get(zone);
+            let zoneItem = zoneMap.get(zone);
             if (!zoneItem) {
                 const zoneEntity = await this.zoneService.create(ctx, { name: zone });
                 zoneItem = { entity: zoneEntity, members: [] };
-                zones.set(zone, zoneItem);
+                zoneMap.set(zone, zoneItem);
             }
-            zoneItem.members.push(countryEntity.id);
+            if (!zoneItem.members.includes(countryEntity.id)) {
+                zoneItem.members.push(countryEntity.id);
+            }
         }
 
         // add the countries to the respective zones
-        for (const zoneItem of zones.values()) {
+        for (const zoneItem of zoneMap.values()) {
             await this.zoneService.addMembersToZone(ctx, {
                 zoneId: zoneItem.entity.id,
                 memberIds: zoneItem.members,
             });
         }
-        return zones;
+
+        return zoneMap;
     }
 
     private async populateTaxRates(

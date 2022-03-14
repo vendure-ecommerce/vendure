@@ -63,6 +63,8 @@ input CancelOrderInput {
     orderId: ID!
     "Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled"
     lines: [OrderLineInput!]
+    "Specify whether the shipping charges should also be cancelled. Defaults to false"
+    cancelShipping: Boolean
     reason: String
 }
 
@@ -134,6 +136,7 @@ input ModifyOrderInput {
     note: String
     refund: AdministratorRefundInput
     options: ModifyOrderOptions
+    couponCodes: [String!]
 }
 
 input AddItemInput {
@@ -365,4 +368,7 @@ union ModifyOrderResult =
     | OrderLimitError
     | NegativeQuantityError
     | InsufficientStockError
+    | CouponCodeExpiredError
+    | CouponCodeInvalidError
+    | CouponCodeLimitError
 union AddManualPaymentToOrderResult = Order | ManualPaymentStateError

@@ -79,6 +79,7 @@ export type Adjustment = {
 export enum AdjustmentType {
     PROMOTION = 'PROMOTION',
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+    OTHER = 'OTHER',
 }
 
 export type Administrator = Node & {
@@ -273,6 +274,11 @@ export type BooleanCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']>;
 };
 
+/** Operators for filtering on a list of Boolean fields */
+export type BooleanListOperators = {
+    inList: Scalars['Boolean'];
+};
+
 /** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
     eq?: Maybe<Scalars['Boolean']>;
@@ -290,6 +296,8 @@ export type CancelOrderInput = {
     orderId: Scalars['ID'];
     /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
     lines?: Maybe<Array<OrderLineInput>>;
+    /** Specify whether the shipping charges should also be cancelled. Defaults to false */
+    cancelShipping?: Maybe<Scalars['Boolean']>;
     reason?: Maybe<Scalars['String']>;
 };
 
@@ -536,6 +544,28 @@ export type CountryTranslationInput = {
     languageCode: LanguageCode;
     name?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+    limit: Scalars['Int'];
 };
 
 export type CreateAddressInput = {
@@ -1181,6 +1211,7 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+    postalCode?: Maybe<StringOperators>;
     id?: Maybe<IdOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -1263,6 +1294,11 @@ export type CustomerSortParameter = {
     lastName?: Maybe<SortOrder>;
     phoneNumber?: Maybe<SortOrder>;
     emailAddress?: Maybe<SortOrder>;
+};
+
+/** Operators for filtering on a list of Date fields */
+export type DateListOperators = {
+    inList: Scalars['DateTime'];
 };
 
 /** Operators for filtering on a DateTime field */
@@ -1376,6 +1412,9 @@ export enum ErrorCode {
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+    COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+    COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+    COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
 }
 
 export type ErrorResult = {
@@ -1622,6 +1661,11 @@ export enum HistoryEntryType {
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
     ORDER_MODIFIED = 'ORDER_MODIFIED',
 }
+
+/** Operators for filtering on a list of ID fields */
+export type IdListOperators = {
+    inList: Scalars['ID'];
+};
 
 /** Operators for filtering on an ID field */
 export type IdOperators = {
@@ -2174,6 +2218,7 @@ export type ModifyOrderInput = {
     note?: Maybe<Scalars['String']>;
     refund?: Maybe<AdministratorRefundInput>;
     options?: Maybe<ModifyOrderOptions>;
+    couponCodes?: Maybe<Array<Scalars['String']>>;
 };
 
 export type ModifyOrderOptions = {
@@ -2189,7 +2234,10 @@ export type ModifyOrderResult =
     | RefundPaymentIdMissingError
     | OrderLimitError
     | NegativeQuantityError
-    | InsufficientStockError;
+    | InsufficientStockError
+    | CouponCodeExpiredError
+    | CouponCodeInvalidError
+    | CouponCodeLimitError;
 
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];
@@ -2880,6 +2928,11 @@ export type Node = {
 export type NothingToRefundError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Operators for filtering on a list of Number fields */
+export type NumberListOperators = {
+    inList: Scalars['Float'];
 };
 
 /** Operators for filtering on a Int or Float field */
@@ -4458,6 +4511,11 @@ export type StringFieldOption = {
     label?: Maybe<Array<LocalizedString>>;
 };
 
+/** Operators for filtering on a list of String fields */
+export type StringListOperators = {
+    inList: Scalars['String'];
+};
+
 /** Operators for filtering on a String field */
 export type StringOperators = {
     eq?: Maybe<Scalars['String']>;
@@ -5092,16 +5150,6 @@ export type MoveCollectionMutation = { moveCollection: CollectionFragment };
 export type GetFacetValuesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFacetValuesQuery = { facets: { items: Array<{ values: Array<FacetValueFragment> }> } };
-
-export type GetCollectionsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetCollectionsQuery = {
-    collections: {
-        items: Array<
-            Pick<Collection, 'id' | 'name' | 'position'> & { parent?: Maybe<Pick<Collection, 'id' | 'name'>> }
-        >;
-    };
-};
 
 export type GetCollectionProductsQueryVariables = Exact<{
     id: Scalars['ID'];
@@ -6408,6 +6456,16 @@ export type GetShippingMethodListQuery = {
     shippingMethods: Pick<ShippingMethodList, 'totalItems'> & { items: Array<ShippingMethodFragment> };
 };
 
+export type GetCollectionsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCollectionsQuery = {
+    collections: {
+        items: Array<
+            Pick<Collection, 'id' | 'name' | 'position'> & { parent?: Maybe<Pick<Collection, 'id' | 'name'>> }
+        >;
+    };
+};
+
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -6430,12 +6488,28 @@ export type GetFulfillmentHandlersQuery = {
     >;
 };
 
-export type OrderWithModificationsFragment = Pick<Order, 'id' | 'state' | 'total' | 'totalWithTax'> & {
+export type OrderWithModificationsFragment = Pick<
+    Order,
+    | 'id'
+    | 'state'
+    | 'subTotal'
+    | 'subTotalWithTax'
+    | 'shipping'
+    | 'shippingWithTax'
+    | 'total'
+    | 'totalWithTax'
+> & {
     lines: Array<
         Pick<
             OrderLine,
-            'id' | 'quantity' | 'linePrice' | 'linePriceWithTax' | 'discountedLinePriceWithTax'
+            | 'id'
+            | 'quantity'
+            | 'linePrice'
+            | 'linePriceWithTax'
+            | 'discountedLinePriceWithTax'
+            | 'proratedLinePriceWithTax'
         > & {
+            discounts: Array<Pick<Discount, 'description' | 'amountWithTax'>>;
             productVariant: Pick<ProductVariant, 'id' | 'name'>;
             items: Array<Pick<OrderItem, 'id' | 'createdAt' | 'updatedAt' | 'cancelled' | 'unitPrice'>>;
         }
@@ -6456,6 +6530,8 @@ export type OrderWithModificationsFragment = Pick<Order, 'id' | 'state' | 'total
             refund?: Maybe<Pick<Refund, 'id' | 'state' | 'total' | 'paymentId'>>;
         }
     >;
+    promotions: Array<Pick<Promotion, 'id' | 'name' | 'couponCode'>>;
+    discounts: Array<Pick<Discount, 'description' | 'adjustmentSource' | 'amount' | 'amountWithTax'>>;
     shippingAddress?: Maybe<
         Pick<OrderAddress, 'streetLine1' | 'city' | 'postalCode' | 'province' | 'countryCode' | 'country'>
     >;
@@ -6483,7 +6559,10 @@ export type ModifyOrderMutation = {
         | Pick<RefundPaymentIdMissingError, 'errorCode' | 'message'>
         | Pick<OrderLimitError, 'errorCode' | 'message'>
         | Pick<NegativeQuantityError, 'errorCode' | 'message'>
-        | Pick<InsufficientStockError, 'errorCode' | 'message'>;
+        | Pick<InsufficientStockError, 'errorCode' | 'message'>
+        | Pick<CouponCodeExpiredError, 'errorCode' | 'message'>
+        | Pick<CouponCodeInvalidError, 'errorCode' | 'message'>
+        | Pick<CouponCodeLimitError, 'errorCode' | 'message'>;
 };
 
 export type AddManualPaymentMutationVariables = Exact<{
@@ -7340,18 +7419,6 @@ export namespace GetFacetValues {
         NonNullable<
             NonNullable<NonNullable<NonNullable<GetFacetValuesQuery['facets']>['items']>[number]>['values']
         >[number]
-    >;
-}
-
-export namespace GetCollections {
-    export type Variables = GetCollectionsQueryVariables;
-    export type Query = GetCollectionsQuery;
-    export type Collections = NonNullable<GetCollectionsQuery['collections']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<GetCollectionsQuery['collections']>['items']>[number]
-    >;
-    export type Parent = NonNullable<
-        NonNullable<NonNullable<NonNullable<GetCollectionsQuery['collections']>['items']>[number]>['parent']
     >;
 }
 
@@ -8772,6 +8839,18 @@ export namespace GetShippingMethodList {
     >;
 }
 
+export namespace GetCollections {
+    export type Variables = GetCollectionsQueryVariables;
+    export type Query = GetCollectionsQuery;
+    export type Collections = NonNullable<GetCollectionsQuery['collections']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetCollectionsQuery['collections']>['items']>[number]
+    >;
+    export type Parent = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetCollectionsQuery['collections']>['items']>[number]>['parent']
+    >;
+}
+
 export namespace CancelJob {
     export type Variables = CancelJobMutationVariables;
     export type Mutation = CancelJobMutation;
@@ -8800,6 +8879,11 @@ export namespace GetFulfillmentHandlers {
 export namespace OrderWithModifications {
     export type Fragment = OrderWithModificationsFragment;
     export type Lines = NonNullable<NonNullable<OrderWithModificationsFragment['lines']>[number]>;
+    export type Discounts = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<OrderWithModificationsFragment['lines']>[number]>['discounts']
+        >[number]
+    >;
     export type ProductVariant = NonNullable<
         NonNullable<NonNullable<OrderWithModificationsFragment['lines']>[number]>['productVariant']
     >;
@@ -8834,6 +8918,8 @@ export namespace OrderWithModifications {
     export type Refund = NonNullable<
         NonNullable<NonNullable<OrderWithModificationsFragment['modifications']>[number]>['refund']
     >;
+    export type Promotions = NonNullable<NonNullable<OrderWithModificationsFragment['promotions']>[number]>;
+    export type _Discounts = NonNullable<NonNullable<OrderWithModificationsFragment['discounts']>[number]>;
     export type ShippingAddress = NonNullable<OrderWithModificationsFragment['shippingAddress']>;
     export type BillingAddress = NonNullable<OrderWithModificationsFragment['billingAddress']>;
 }

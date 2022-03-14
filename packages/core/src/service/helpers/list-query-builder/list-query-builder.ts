@@ -52,11 +52,28 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * not a column in the Order table, it exists on the Customer entity, and Order has a relation to Customer via
      * `Order.customer`. Therefore we can define a customPropertyMap like this:
      *
+     * ```GraphQL
+     * """
+     * Manually extend the filter & sort inputs to include the new
+     * field that we want to be able to use in building list queries.
+     * """
+     * input OrderFilterParameter {
+     *     customerLastName: StringOperators
+     * }
+     *
+     * input OrderSortParameter {
+     *     customerLastName: SortOrder
+     * }
+     * ```
+     *
      * ```ts
      * const qb = this.listQueryBuilder.build(Order, options, {
      *   relations: ['customer'],
      *   customPropertyMap: {
-     *       customerLastName: 'customer.lastName',
+     *     // Tell TypeORM how to map that custom
+     *     // sort/filter field to the property on a
+     *     // related entity
+     *     customerLastName: 'customer.lastName',
      *   },
      * };
      * ```

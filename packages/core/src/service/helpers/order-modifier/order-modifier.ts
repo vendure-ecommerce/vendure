@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ModifyOrderInput, ModifyOrderResult, RefundOrderInput } from '@vendure/common/lib/generated-types';
+import {
+    HistoryEntryType,
+    ModifyOrderInput,
+    ModifyOrderResult,
+    RefundOrderInput,
+} from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 
@@ -7,6 +12,9 @@ import { RequestContext } from '../../../api/common/request-context';
 import { isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../../common/error/errors';
 import {
+    CouponCodeExpiredError,
+    CouponCodeInvalidError,
+    CouponCodeLimitError,
     NoChangesSpecifiedError,
     OrderModificationStateError,
     RefundPaymentIdMissingError,
@@ -16,6 +24,7 @@ import {
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
+import { AdjustmentSource } from '../../../common/types/adjustment-source';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -28,11 +37,16 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
+import { EventBus } from '../../../event-bus/event-bus';
+import { OrderLineEvent } from '../../../event-bus/index';
 import { CountryService } from '../../services/country.service';
+import { HistoryService } from '../../services/history.service';
 import { PaymentService } from '../../services/payment.service';
 import { ProductVariantService } from '../../services/product-variant.service';
+import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
+import { EntityHydrator } from '../entity-hydrator/entity-hydrator.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
 import { patchEntity } from '../utils/patch-entity';
 import { translateDeep } from '../utils/translate-entity';
@@ -59,6 +73,10 @@ export class OrderModifier {
         private stockMovementService: StockMovementService,
         private productVariantService: ProductVariantService,
         private customFieldRelationService: CustomFieldRelationService,
+        private promotionService: PromotionService,
+        private eventBus: EventBus,
+        private entityHydrator: EntityHydrator,
+        private historyService: HistoryService,
     ) {}
 
     /**
@@ -139,6 +157,7 @@ export class OrderModifier {
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
         return lineWithRelations;
     }
 
@@ -216,6 +235,7 @@ export class OrderModifier {
             }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine);
+        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
         return orderLine;
     }
 
@@ -392,6 +412,43 @@ export class OrderModifier {
             modification.billingAddressChange = input.updateBillingAddress;
         }
 
+        if (input.couponCodes) {
+            for (const couponCode of input.couponCodes) {
+                const validationResult = await this.promotionService.validateCouponCode(
+                    ctx,
+                    couponCode,
+                    order.customer && order.customer.id,
+                );
+                if (isGraphQlErrorResult(validationResult)) {
+                    return validationResult as
+                        | CouponCodeExpiredError
+                        | CouponCodeInvalidError
+                        | CouponCodeLimitError;
+                }
+                if (!order.couponCodes.includes(couponCode)) {
+                    // This is a new coupon code that hadn't been applied before
+                    await this.historyService.createHistoryEntryForOrder({
+                        ctx,
+                        orderId: order.id,
+                        type: HistoryEntryType.ORDER_COUPON_APPLIED,
+                        data: { couponCode, promotionId: validationResult.id },
+                    });
+                }
+            }
+            for (const existingCouponCode of order.couponCodes) {
+                if (!input.couponCodes.includes(existingCouponCode)) {
+                    // An existing coupon code has been removed
+                    await this.historyService.createHistoryEntryForOrder({
+                        ctx,
+                        orderId: order.id,
+                        type: HistoryEntryType.ORDER_COUPON_REMOVED,
+                        data: { couponCode: existingCouponCode },
+                    });
+                }
+            }
+            order.couponCodes = input.couponCodes;
+        }
+
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
         const promotions = await this.connection.getRepository(ctx, Promotion).find({
             where: { enabled: true, deletedAt: null },
@@ -421,6 +478,7 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 refundInput.shipping = shippingDelta * -1;
             }
+            refundInput.adjustment += await this.getAdjustmentFromNewlyAppliedPromotions(ctx, order);
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
             if (payment) {
@@ -444,7 +502,18 @@ export class OrderModifier {
             .getRepository(ctx, OrderModification)
             .save(modification);
         await this.connection.getRepository(ctx, Order).save(order);
-        await this.connection.getRepository(ctx, OrderItem).save(modification.orderItems, { reload: false });
+        if (input.couponCodes) {
+            // When coupon codes have changed, this will likely affect the adjustments applied to
+            // OrderItems. So in this case we need to save all of them.
+            const orderItems = order.lines.reduce((all, line) => all.concat(line.items), [] as OrderItem[]);
+            await this.connection.getRepository(ctx, OrderItem).save(orderItems, { reload: false });
+            await this.promotionService.addPromotionsToOrder(ctx, order);
+        } else {
+            // Otherwise, just save those OrderItems that were specifically added/removed
+            await this.connection
+                .getRepository(ctx, OrderItem)
+                .save(modification.orderItems, { reload: false });
+        }
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return { order, modification: createdModification };
     }
@@ -456,8 +525,38 @@ export class OrderModifier {
             !input.surcharges?.length &&
             !input.updateShippingAddress &&
             !input.updateBillingAddress &&
+            !input.couponCodes &&
             !(input as any).customFields;
         return noChanges;
+    }
+
+    private async getAdjustmentFromNewlyAppliedPromotions(ctx: RequestContext, order: Order) {
+        await this.entityHydrator.hydrate(ctx, order, { relations: ['promotions'] });
+        const existingPromotions = order.promotions;
+        const newPromotionDiscounts = order.discounts
+            .filter(discount => {
+                const promotionId = AdjustmentSource.decodeSourceId(discount.adjustmentSource).id;
+                return !existingPromotions.find(p => idsAreEqual(p.id, promotionId));
+            })
+            .filter(discount => {
+                // Filter out any discounts that originate from ShippingLine discounts,
+                // since they are already correctly accounted for in the refund calculation.
+                for (const shippingLine of order.shippingLines) {
+                    if (
+                        shippingLine.discounts.find(
+                            shippingDiscount =>
+                                shippingDiscount.adjustmentSource === discount.adjustmentSource,
+                        )
+                    ) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        if (newPromotionDiscounts.length) {
+            return -summate(newPromotionDiscounts, 'amountWithTax');
+        }
+        return 0;
     }
 
     private getOrderPayments(ctx: RequestContext, orderId: ID): Promise<Payment[]> {

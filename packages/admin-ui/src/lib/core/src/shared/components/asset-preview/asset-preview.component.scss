@@ -58,6 +58,7 @@
 
     ::ng-deep .clr-control-container {
         width: 100%;
+
         .clr-input {
             width: 100%;
         }
@@ -76,9 +77,14 @@
     .preview-select {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
         clr-select-container {
             margin-right: 12px;
         }
     }
+}
+
+.edit-button-wrapper {
+    padding-top: 6px;
+    border-top: 1px solid var(--color-component-border-100);
+    text-align: center;
 }

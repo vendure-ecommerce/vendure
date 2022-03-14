@@ -59,6 +59,7 @@ export type Adjustment = {
 export enum AdjustmentType {
     PROMOTION = 'PROMOTION',
     DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+    OTHER = 'OTHER',
 }
 
 /** Returned when attempting to set the Customer for an Order when already logged in. */
@@ -128,6 +129,11 @@ export type BooleanCustomFieldConfig = CustomField & {
     internal?: Maybe<Scalars['Boolean']>;
     nullable?: Maybe<Scalars['Boolean']>;
     ui?: Maybe<Scalars['JSON']>;
+};
+
+/** Operators for filtering on a list of Boolean fields */
+export type BooleanListOperators = {
+    inList: Scalars['Boolean'];
 };
 
 /** Operators for filtering on a Boolean field */
@@ -803,6 +809,11 @@ export type CustomerSortParameter = {
     emailAddress?: Maybe<SortOrder>;
 };
 
+/** Operators for filtering on a list of Date fields */
+export type DateListOperators = {
+    inList: Scalars['DateTime'];
+};
+
 /** Operators for filtering on a DateTime field */
 export type DateOperators = {
     eq?: Maybe<Scalars['DateTime']>;
@@ -874,17 +885,18 @@ export enum ErrorCode {
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+    COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+    COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+    COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
     INELIGIBLE_PAYMENT_METHOD_ERROR = 'INELIGIBLE_PAYMENT_METHOD_ERROR',
     PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
     PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
-    COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
-    COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
-    COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
     ALREADY_LOGGED_IN_ERROR = 'ALREADY_LOGGED_IN_ERROR',
     MISSING_PASSWORD_ERROR = 'MISSING_PASSWORD_ERROR',
+    PASSWORD_VALIDATION_ERROR = 'PASSWORD_VALIDATION_ERROR',
     PASSWORD_ALREADY_SET_ERROR = 'PASSWORD_ALREADY_SET_ERROR',
     VERIFICATION_TOKEN_INVALID_ERROR = 'VERIFICATION_TOKEN_INVALID_ERROR',
     VERIFICATION_TOKEN_EXPIRED_ERROR = 'VERIFICATION_TOKEN_EXPIRED_ERROR',
@@ -1105,6 +1117,11 @@ export enum HistoryEntryType {
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
     ORDER_MODIFIED = 'ORDER_MODIFIED',
 }
+
+/** Operators for filtering on a list of ID fields */
+export type IdListOperators = {
+    inList: Scalars['ID'];
+};
 
 /** Operators for filtering on an ID field */
 export type IdOperators = {
@@ -1605,7 +1622,7 @@ export type Mutation = {
     /**
      * Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
      *
-     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the password _must_ be
      * provided here.
      */
     verifyCustomerAccount: VerifyCustomerAccountResult;
@@ -1789,6 +1806,11 @@ export type NotVerifiedError = ErrorResult & {
     __typename?: 'NotVerifiedError';
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Operators for filtering on a list of Number fields */
+export type NumberListOperators = {
+    inList: Scalars['Float'];
 };
 
 /** Operators for filtering on a Int or Float field */
@@ -2111,6 +2133,14 @@ export type PasswordResetTokenInvalidError = ErrorResult & {
     __typename?: 'PasswordResetTokenInvalidError';
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Returned when attempting to register or verify a customer account where the given password fails password validation. */
+export type PasswordValidationError = ErrorResult & {
+    __typename?: 'PasswordValidationError';
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    validationErrorMessage: Scalars['String'];
 };
 
 export type Payment = Node & {
@@ -2695,7 +2725,11 @@ export type Refund = Node & {
     metadata?: Maybe<Scalars['JSON']>;
 };
 
-export type RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError;
+export type RegisterCustomerAccountResult =
+    | Success
+    | MissingPasswordError
+    | PasswordValidationError
+    | NativeAuthStrategyError;
 
 export type RegisterCustomerInput = {
     emailAddress: Scalars['String'];
@@ -2735,6 +2769,7 @@ export type ResetPasswordResult =
     | CurrentUser
     | PasswordResetTokenInvalidError
     | PasswordResetTokenExpiredError
+    | PasswordValidationError
     | NativeAuthStrategyError
     | NotVerifiedError;
 
@@ -2799,7 +2834,7 @@ export type SearchResult = {
     facetValueIds: Array<Scalars['ID']>;
     /** An array of ids of the Collections in which this result appears */
     collectionIds: Array<Scalars['ID']>;
-    /** A relevence score for the result. Differs between database implementations */
+    /** A relevance score for the result. Differs between database implementations */
     score: Scalars['Float'];
 };
 
@@ -2915,6 +2950,11 @@ export type StringFieldOption = {
     __typename?: 'StringFieldOption';
     value: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
+};
+
+/** Operators for filtering on a list of String fields */
+export type StringListOperators = {
+    inList: Scalars['String'];
 };
 
 /** Operators for filtering on a String field */
@@ -3042,7 +3082,11 @@ export type UpdateCustomerInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type UpdateCustomerPasswordResult = Success | InvalidCredentialsError | NativeAuthStrategyError;
+export type UpdateCustomerPasswordResult =
+    | Success
+    | InvalidCredentialsError
+    | PasswordValidationError
+    | NativeAuthStrategyError;
 
 export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
@@ -3093,6 +3137,7 @@ export type VerifyCustomerAccountResult =
     | VerificationTokenInvalidError
     | VerificationTokenExpiredError
     | MissingPasswordError
+    | PasswordValidationError
     | PasswordAlreadySetError
     | NativeAuthStrategyError;
 

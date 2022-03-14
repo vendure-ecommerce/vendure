@@ -93,11 +93,12 @@
             ></vdr-custom-detail-component-host>
         </div>
         <div class="clr-col-md-auto">
-            <vdr-product-assets
+            <vdr-assets
                 [assets]="category.assets"
                 [featuredAsset]="category.featuredAsset"
+                [updatePermissions]="updatePermission"
                 (change)="assetChanges = $event"
-            ></vdr-product-assets>
+            ></vdr-assets>
         </div>
     </div>
     <div class="clr-row" formArrayName="filters">

@@ -27,6 +27,7 @@ import { AssetFileInputComponent } from './components/asset-file-input/asset-fil
 import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 import { AssetPreviewDialogComponent } from './components/asset-preview-dialog/asset-preview-dialog.component';
+import { AssetPreviewLinksComponent } from './components/asset-preview-links/asset-preview-links.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { AssetSearchInputComponent } from './components/asset-search-input/asset-search-input.component';
 import { ChannelAssignmentControlComponent } from './components/channel-assignment-control/channel-assignment-control.component';
@@ -97,6 +98,7 @@ import { PasswordFormInputComponent } from './dynamic-form-inputs/password-form-
 import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
 import { RelationAssetInputComponent } from './dynamic-form-inputs/relation-form-input/asset/relation-asset-input.component';
 import { RelationCustomerInputComponent } from './dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
+import { RelationGenericInputComponent } from './dynamic-form-inputs/relation-form-input/generic/relation-generic-input.component';
 import { RelationProductVariantInputComponent } from './dynamic-form-inputs/relation-form-input/product-variant/relation-product-variant-input.component';
 import { RelationProductInputComponent } from './dynamic-form-inputs/relation-form-input/product/relation-product-input.component';
 import {
@@ -231,6 +233,7 @@ const DECLARATIONS = [
     TabbedCustomFieldsComponent,
     UiExtensionPointComponent,
     CustomDetailComponentHostComponent,
+    AssetPreviewLinksComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -251,6 +254,7 @@ const DYNAMIC_FORM_INPUTS = [
     RelationCardPreviewDirective,
     RelationCardDetailDirective,
     RelationSelectorDialogComponent,
+    RelationGenericInputComponent,
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,

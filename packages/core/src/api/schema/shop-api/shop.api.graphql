@@ -213,16 +213,17 @@ union AddPaymentToOrderResult =
     | NoActiveOrderError
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError | NoActiveOrderError
-union RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError
+union RegisterCustomerAccountResult = Success | MissingPasswordError | PasswordValidationError | NativeAuthStrategyError
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
 union VerifyCustomerAccountResult =
       CurrentUser
     | VerificationTokenInvalidError
     | VerificationTokenExpiredError
     | MissingPasswordError
+    | PasswordValidationError
     | PasswordAlreadySetError
     | NativeAuthStrategyError
-union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | NativeAuthStrategyError
+union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError
 union RequestUpdateCustomerEmailAddressResult =
       Success
     | InvalidCredentialsError
@@ -238,6 +239,7 @@ union ResetPasswordResult =
       CurrentUser
     | PasswordResetTokenInvalidError
     | PasswordResetTokenExpiredError
+    | PasswordValidationError
     | NativeAuthStrategyError
     | NotVerifiedError
 union NativeAuthenticationResult =

@@ -1,8 +1,7 @@
-import { DynamicModule, NestMiddleware, Type } from '@nestjs/common';
+import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
-import { RequestHandler } from 'express';
 import { ValidationContext } from 'graphql';
 import { ConnectionOptions } from 'typeorm';
 
@@ -15,6 +14,7 @@ import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-str
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
+import { PasswordValidationStrategy } from './auth/password-validation-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
@@ -177,6 +177,26 @@ export interface ApiOptions {
      * @default []
      */
     apolloServerPlugins?: PluginDefinition[];
+    /**
+     * @description
+     * Controls whether introspection of the GraphQL APIs is enabled. For production, it is recommended to disable
+     * introspection, since exposing your entire schema can allow an attacker to trivially learn all operations
+     * and much more easily find any potentially exploitable queries.
+     *
+     * **Note:** when introspection is disabled, tooling which relies on it for things like autocompletion
+     * will not work.
+     *
+     * @example
+     * ```TypeScript
+     * {
+     *   introspection: process.env.NODE_ENV !== 'production'
+     * }
+     * ```
+     *
+     * @default true
+     * @since 1.5.0
+     */
+    introspection?: boolean;
 }
 
 /**
@@ -400,6 +420,27 @@ export interface AuthOptions {
      * @since 1.3.0
      */
     passwordHashingStrategy?: PasswordHashingStrategy;
+    /**
+     * @description
+     * Allows you to set a custom policy for passwords when using the {@link NativeAuthenticationStrategy}.
+     * By default, it uses the {@link DefaultPasswordValidationStrategy}, which will impose a minimum length
+     * of four characters. To improve security for production, you are encouraged to specify a more strict
+     * policy, which you can do like this:
+     *
+     * @example
+     * ```ts
+     * {
+     *   passwordValidationStrategy: new DefaultPasswordValidationStrategy({
+     *     // Minimum eight characters, at least one letter and one number
+     *     regexp: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+     *   }),
+     * }
+     * ```
+     *
+     * @since 1.5.0
+     * @default DefaultPasswordValidationStrategy
+     */
+    passwordValidationStrategy?: PasswordValidationStrategy;
 }
 
 /**
@@ -771,6 +812,15 @@ export interface JobQueueOptions {
      * @default false
      */
     enableWorkerHealthCheck?: boolean;
+    /**
+     * @description
+     * Prefixes all job queue names with the passed string. This is useful with multiple deployments
+     * in cloud environments using services such as Amazon SQS or Google Cloud Tasks.
+     *
+     * For example, we might have a staging and a production deployment in the same account/project and
+     * each one will need its own task queue. We can achieve this with a prefix.
+     */
+    prefix?: string;
 }
 
 /**

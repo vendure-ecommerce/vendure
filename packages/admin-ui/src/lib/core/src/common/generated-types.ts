@@ -74,7 +74,8 @@ export type Adjustment = {
 
 export enum AdjustmentType {
   PROMOTION = 'PROMOTION',
-  DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION'
+  DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
+  OTHER = 'OTHER'
 }
 
 export type Administrator = Node & {
@@ -276,6 +277,11 @@ export type BooleanCustomFieldConfig = CustomField & {
   ui?: Maybe<Scalars['JSON']>;
 };
 
+/** Operators for filtering on a list of Boolean fields */
+export type BooleanListOperators = {
+  inList: Scalars['Boolean'];
+};
+
 /** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
   eq?: Maybe<Scalars['Boolean']>;
@@ -294,6 +300,8 @@ export type CancelOrderInput = {
   orderId: Scalars['ID'];
   /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
   lines?: Maybe<Array<OrderLineInput>>;
+  /** Specify whether the shipping charges should also be cancelled. Defaults to false */
+  cancelShipping?: Maybe<Scalars['Boolean']>;
   reason?: Maybe<Scalars['String']>;
 };
 
@@ -550,6 +558,31 @@ export type CountryTranslationInput = {
   languageCode: LanguageCode;
   name?: Maybe<Scalars['String']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+  __typename?: 'CouponCodeExpiredError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+  __typename?: 'CouponCodeInvalidError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+  __typename?: 'CouponCodeLimitError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  couponCode: Scalars['String'];
+  limit: Scalars['Int'];
 };
 
 export type CreateAddressInput = {
@@ -1201,6 +1234,7 @@ export type CustomerOrdersArgs = {
 };
 
 export type CustomerFilterParameter = {
+  postalCode?: Maybe<StringOperators>;
   id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -1287,6 +1321,11 @@ export type CustomerSortParameter = {
   lastName?: Maybe<SortOrder>;
   phoneNumber?: Maybe<SortOrder>;
   emailAddress?: Maybe<SortOrder>;
+};
+
+/** Operators for filtering on a list of Date fields */
+export type DateListOperators = {
+  inList: Scalars['DateTime'];
 };
 
 /** Operators for filtering on a DateTime field */
@@ -1405,7 +1444,10 @@ export enum ErrorCode {
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
-  INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR'
+  INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+  COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+  COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR'
 }
 
 export type ErrorResult = {
@@ -1664,6 +1706,11 @@ export enum HistoryEntryType {
   ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
   ORDER_MODIFIED = 'ORDER_MODIFIED'
 }
+
+/** Operators for filtering on a list of ID fields */
+export type IdListOperators = {
+  inList: Scalars['ID'];
+};
 
 /** Operators for filtering on an ID field */
 export type IdOperators = {
@@ -2234,6 +2281,7 @@ export type ModifyOrderInput = {
   note?: Maybe<Scalars['String']>;
   refund?: Maybe<AdministratorRefundInput>;
   options?: Maybe<ModifyOrderOptions>;
+  couponCodes?: Maybe<Array<Scalars['String']>>;
 };
 
 export type ModifyOrderOptions = {
@@ -2241,7 +2289,7 @@ export type ModifyOrderOptions = {
   recalculateShipping?: Maybe<Scalars['Boolean']>;
 };
 
-export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
+export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError;
 
 export type MoveCollectionInput = {
   collectionId: Scalars['ID'];
@@ -3099,6 +3147,11 @@ export type NothingToRefundError = ErrorResult & {
   __typename?: 'NothingToRefundError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+};
+
+/** Operators for filtering on a list of Number fields */
+export type NumberListOperators = {
+  inList: Scalars['Float'];
 };
 
 /** Operators for filtering on a Int or Float field */
@@ -4772,6 +4825,11 @@ export type StringFieldOption = {
   label?: Maybe<Array<LocalizedString>>;
 };
 
+/** Operators for filtering on a list of String fields */
+export type StringListOperators = {
+  inList: Scalars['String'];
+};
+
 /** Operators for filtering on a String field */
 export type StringOperators = {
   eq?: Maybe<Scalars['String']>;
@@ -5864,6 +5922,16 @@ export type UpdateCustomerAddressMutation = { updateCustomerAddress: (
     & AddressFragment
   ) };
 
+export type DeleteCustomerAddressMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteCustomerAddressMutation = { deleteCustomerAddress: (
+    { __typename?: 'Success' }
+    & Pick<Success, 'success'>
+  ) };
+
 export type CreateCustomerGroupMutationVariables = Exact<{
   input: CreateCustomerGroupInput;
 }>;
@@ -6175,7 +6243,7 @@ export type OrderLineFragment = (
 
 export type OrderDetailFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax' | 'currencyCode' | 'shipping' | 'shippingWithTax'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'couponCodes' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax' | 'currencyCode' | 'shipping' | 'shippingWithTax'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
@@ -6539,6 +6607,15 @@ export type ModifyOrderMutation = { modifyOrder: (
   ) | (
     { __typename?: 'InsufficientStockError' }
     & ErrorResult_InsufficientStockError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeExpiredError' }
+    & ErrorResult_CouponCodeExpiredError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeInvalidError' }
+    & ErrorResult_CouponCodeInvalidError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeLimitError' }
+    & ErrorResult_CouponCodeLimitError_Fragment
   ) };
 
 export type AddManualPaymentMutationVariables = Exact<{
@@ -8747,6 +8824,21 @@ type ErrorResult_ChannelDefaultLanguageError_Fragment = (
   & Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_CouponCodeExpiredError_Fragment = (
+  { __typename?: 'CouponCodeExpiredError' }
+  & Pick<CouponCodeExpiredError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_CouponCodeInvalidError_Fragment = (
+  { __typename?: 'CouponCodeInvalidError' }
+  & Pick<CouponCodeInvalidError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_CouponCodeLimitError_Fragment = (
+  { __typename?: 'CouponCodeLimitError' }
+  & Pick<CouponCodeLimitError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_CreateFulfillmentError_Fragment = (
   { __typename?: 'CreateFulfillmentError' }
   & Pick<CreateFulfillmentError, 'errorCode' | 'message'>
@@ -8897,7 +8989,7 @@ type ErrorResult_SettlePaymentError_Fragment = (
   & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }
@@ -9335,6 +9427,12 @@ export namespace UpdateCustomerAddress {
   export type Variables = UpdateCustomerAddressMutationVariables;
   export type Mutation = UpdateCustomerAddressMutation;
   export type UpdateCustomerAddress = (NonNullable<UpdateCustomerAddressMutation['updateCustomerAddress']>);
+}
+
+export namespace DeleteCustomerAddress {
+  export type Variables = DeleteCustomerAddressMutationVariables;
+  export type Mutation = DeleteCustomerAddressMutation;
+  export type DeleteCustomerAddress = (NonNullable<DeleteCustomerAddressMutation['deleteCustomerAddress']>);
 }
 
 export namespace CreateCustomerGroup {

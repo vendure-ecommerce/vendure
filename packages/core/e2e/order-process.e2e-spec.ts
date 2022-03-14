@@ -18,6 +18,8 @@ import {
     SetShippingMethod,
     TestOrderFragmentFragment,
     TransitionToState,
+    TransitionToStateMutation,
+    TransitionToStateMutationVariables,
 } from './graphql/generated-e2e-shop-types';
 import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
 import {
@@ -40,7 +42,7 @@ const transitionErrorSpy = jest.fn();
 
 describe('Order process', () => {
     const VALIDATION_ERROR_MESSAGE = 'Customer must have a company email address';
-    const customOrderProcess: CustomOrderProcess<'ValidatingCustomer'> = {
+    const customOrderProcess: CustomOrderProcess<'ValidatingCustomer' | 'PaymentProcessing'> = {
         init(injector) {
             initSpy(injector.get(TransactionalConnection).rawConnection.name);
         },
@@ -51,6 +53,12 @@ describe('Order process', () => {
             },
             ValidatingCustomer: {
                 to: ['ArrangingPayment', 'AddingItems'],
+            },
+            ArrangingPayment: {
+                to: ['PaymentProcessing'],
+            },
+            PaymentProcessing: {
+                to: ['PaymentAuthorized', 'PaymentSettled'],
             },
         },
         onTransitionStart(fromState, toState, data) {
@@ -260,6 +268,47 @@ describe('Order process', () => {
                 'ValidatingCustomer',
                 'AddingItems',
             ]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/963
+        it('allows addPaymentToOrder from a custom state', async () => {
+            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
+                SET_SHIPPING_METHOD,
+                { id: 'T_1' },
+            );
+            const result0 = await shopClient.query<
+                TransitionToStateMutation,
+                TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, {
+                state: 'ValidatingCustomer',
+            });
+            orderErrorGuard.assertSuccess(result0.transitionOrderToState);
+            const result1 = await shopClient.query<
+                TransitionToStateMutation,
+                TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, {
+                state: 'ArrangingPayment',
+            });
+            orderErrorGuard.assertSuccess(result1.transitionOrderToState);
+            const result2 = await shopClient.query<
+                TransitionToStateMutation,
+                TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, {
+                state: 'PaymentProcessing',
+            });
+            orderErrorGuard.assertSuccess(result2.transitionOrderToState);
+            expect(result2.transitionOrderToState.state).toBe('PaymentProcessing');
+            const { addPaymentToOrder } = await shopClient.query<
+                AddPaymentToOrder.Mutation,
+                AddPaymentToOrder.Variables
+            >(ADD_PAYMENT, {
+                input: {
+                    method: testSuccessfulPaymentMethod.code,
+                    metadata: {},
+                },
+            });
+            orderErrorGuard.assertSuccess(addPaymentToOrder);
+            expect(addPaymentToOrder.state).toBe('PaymentSettled');
         });
     });
 

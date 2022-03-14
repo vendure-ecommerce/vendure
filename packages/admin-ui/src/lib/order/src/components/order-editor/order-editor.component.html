@@ -224,6 +224,28 @@
                         </button>
                     </clr-accordion-content>
                 </clr-accordion-panel>
+                <clr-accordion-panel>
+                    <clr-accordion-title>{{ 'order.set-coupon-codes' | translate }}</clr-accordion-title>
+                    <clr-accordion-content *clrIfExpanded>
+                        <ng-select
+                            [items]="availableCouponCodes$ | async"
+                            appendTo="body"
+                            bindLabel="code"
+                            bindValue="code"
+                            [addTag]="false"
+                            [multiple]="true"
+                            [hideSelected]="true"
+                            [minTermLength]="2"
+                            typeToSearchText=""
+                            [typeahead]="couponCodeInput$"
+                            [formControl]="couponCodesControl"
+                        >
+                            <ng-template ng-option-tmp let-item="item">
+                                <vdr-chip>{{ item.code }}</vdr-chip> {{ item.promotionName }}
+                            </ng-template>
+                        </ng-select>
+                    </clr-accordion-content>
+                </clr-accordion-panel>
 
                 <clr-accordion-panel>
                     <clr-accordion-title>{{ 'order.add-surcharge' | translate }}</clr-accordion-title>

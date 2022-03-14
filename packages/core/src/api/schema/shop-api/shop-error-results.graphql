@@ -37,35 +37,6 @@ type PaymentDeclinedError implements ErrorResult {
     paymentErrorMessage: String!
 }
 
-"Returned if the provided coupon code is invalid"
-type CouponCodeInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-}
-
-"Returned if the provided coupon code is invalid"
-type CouponCodeInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-}
-
-"Returned if the provided coupon code is invalid"
-type CouponCodeExpiredError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-}
-
-"Returned if the provided coupon code is invalid"
-type CouponCodeLimitError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-    limit: Int!
-}
-
 "Returned when attempting to set the Customer for an Order when already logged in."
 type AlreadyLoggedInError implements ErrorResult {
     errorCode: ErrorCode!
@@ -76,6 +47,13 @@ type AlreadyLoggedInError implements ErrorResult {
 type MissingPasswordError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
+}
+
+"Returned when attempting to register or verify a customer account where the given password fails password validation."
+type PasswordValidationError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    validationErrorMessage: String!
 }
 
 "Returned when attempting to verify a customer account with a password, when a password has already been set."
