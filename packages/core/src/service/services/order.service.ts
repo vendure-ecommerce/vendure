@@ -77,6 +77,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
+import { Session } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
@@ -1461,6 +1462,37 @@ export class OrderService {
 
     /**
      * @description
+     * Deletes an Order, ensuring that any Sessions that reference this Order are dereferenced before deletion.
+     *
+     * @since 1.5.0
+     */
+    async deleteOrder(ctx: RequestContext, orderOrId: ID | Order) {
+        const orderToDelete =
+            orderOrId instanceof Order
+                ? orderOrId
+                : await this.connection
+                      .getRepository(ctx, Order)
+                      .findOneOrFail(orderOrId, { relations: ['lines'] });
+        // If there is a Session referencing the Order to be deleted, we must first remove that
+        // reference in order to avoid a foreign key error. See https://github.com/vendure-ecommerce/vendure/issues/1454
+        const sessions = await this.connection
+            .getRepository(ctx, Session)
+            .find({ where: { activeOrderId: orderToDelete.id } });
+        if (sessions.length) {
+            await this.connection
+                .getRepository(ctx, Session)
+                .update(sessions.map(s => s.id) as string[], { activeOrder: null });
+        }
+
+        // TODO: v2 - Will not be needed after adding `{ onDelete: 'CASCADE' }` constraint to ShippingLine.order
+        for (const shippingLine of orderToDelete.shippingLines) {
+            await this.connection.getRepository(ctx, ShippingLine).delete(shippingLine.id);
+        }
+        await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+    }
+
+    /**
+     * @description
      * When a guest user with an anonymous Order signs in and has an existing Order associated with that Customer,
      * we need to reconcile the contents of the two orders.
      *
@@ -1481,11 +1513,7 @@ export class OrderService {
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
-            // TODO: v2 - Will not be needed after adding `{ onDelete: 'CASCADE' }` constraint to ShippingLine.order
-            for (const shippingLine of orderToDelete.shippingLines) {
-                await this.connection.getRepository(ctx, ShippingLine).delete(shippingLine.id);
-            }
-            await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+            await this.deleteOrder(ctx, orderToDelete);
         }
         if (order && linesToInsert) {
             const orderId = order.id;

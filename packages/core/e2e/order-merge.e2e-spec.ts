@@ -17,14 +17,22 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { AttemptLogin, GetCustomerList } from './graphql/generated-e2e-admin-types';
+import {
+    AttemptLogin,
+    AttemptLoginMutation,
+    AttemptLoginMutationVariables,
+    GetCustomerList,
+} from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
+    AddItemToOrderMutation,
+    GetActiveOrderPaymentsQuery,
+    GetNextOrderStatesQuery,
     TestOrderFragmentFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import { ATTEMPT_LOGIN, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
-import { TEST_ORDER_FRAGMENT } from './graphql/shop-definitions';
+import { GET_ACTIVE_ORDER_PAYMENTS, GET_NEXT_STATES, TEST_ORDER_FRAGMENT } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
 /**
@@ -224,6 +232,27 @@ describe('Order merging', () => {
                 quantity: line.quantity,
             })),
         ).toEqual([{ productVariantId: 'T_8', quantity: 1 }]);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1454
+    it('does not throw FK error when merging with a cart with an existing session', async () => {
+        await shopClient.asUserWithCredentials(customers[7].emailAddress, 'test');
+        // Create an Order linked with the current session
+        const { nextOrderStates } = await shopClient.query<GetNextOrderStatesQuery>(GET_NEXT_STATES);
+
+        // unset last auth token to simulate a guest user in a different browser
+        shopClient.setAuthToken('');
+        await shopClient.query<AddItemToOrderMutation, AddItemToOrderWithCustomFields>(
+            ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+            { productVariantId: '1', quantity: 2 },
+        );
+
+        const { login } = await shopClient.query<AttemptLoginMutation, AttemptLoginMutationVariables>(
+            ATTEMPT_LOGIN,
+            { username: customers[7].emailAddress, password: 'test' },
+        );
+
+        expect(login.id).toBe(customers[7].user?.id);
     });
 });
 
