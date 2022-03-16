@@ -13,7 +13,7 @@ import { BaseDataService } from './base-data.service';
 export class PromotionDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getPromotions(take: number = 10, skip: number = 0) {
+    getPromotions(take: number = 10, skip: number = 0, filter?: Codegen.PromotionFilterParameter) {
         return this.baseDataService.query<
             Codegen.GetPromotionListQuery,
             Codegen.GetPromotionListQueryVariables
@@ -21,6 +21,7 @@ export class PromotionDataService {
             options: {
                 take,
                 skip,
+                filter,
             },
         });
     }

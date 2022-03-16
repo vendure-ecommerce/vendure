@@ -246,6 +246,7 @@ export class AdminUiPlugin implements NestModule {
                 'hideVersion',
                 AdminUiPlugin.options.adminUiConfig?.hideVersion || false,
             ),
+            cancellationReasons: propOrDefault('cancellationReasons', undefined),
         };
     }
 

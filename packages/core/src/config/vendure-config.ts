@@ -177,6 +177,26 @@ export interface ApiOptions {
      * @default []
      */
     apolloServerPlugins?: PluginDefinition[];
+    /**
+     * @description
+     * Controls whether introspection of the GraphQL APIs is enabled. For production, it is recommended to disable
+     * introspection, since exposing your entire schema can allow an attacker to trivially learn all operations
+     * and much more easily find any potentially exploitable queries.
+     *
+     * **Note:** when introspection is disabled, tooling which relies on it for things like autocompletion
+     * will not work.
+     *
+     * @example
+     * ```TypeScript
+     * {
+     *   introspection: process.env.NODE_ENV !== 'production'
+     * }
+     * ```
+     *
+     * @default true
+     * @since 1.5.0
+     */
+    introspection?: boolean;
 }
 
 /**
@@ -799,6 +819,8 @@ export interface JobQueueOptions {
      *
      * For example, we might have a staging and a production deployment in the same account/project and
      * each one will need its own task queue. We can achieve this with a prefix.
+     *
+     * @since 1.5.0
      */
     prefix?: string;
 }

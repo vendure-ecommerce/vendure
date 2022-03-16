@@ -37,35 +37,6 @@ type PaymentDeclinedError implements ErrorResult {
     paymentErrorMessage: String!
 }
 
-"Returned if the provided coupon code is invalid"
-type CouponCodeInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-}
-
-"Returned if the provided coupon code is invalid"
-type CouponCodeInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-}
-
-"Returned if the provided coupon code is invalid"
-type CouponCodeExpiredError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-}
-
-"Returned if the provided coupon code is invalid"
-type CouponCodeLimitError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-    limit: Int!
-}
-
 "Returned when attempting to set the Customer for an Order when already logged in."
 type AlreadyLoggedInError implements ErrorResult {
     errorCode: ErrorCode!

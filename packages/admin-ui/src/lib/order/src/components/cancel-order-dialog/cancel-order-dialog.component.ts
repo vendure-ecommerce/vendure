@@ -3,6 +3,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CancelOrderInput,
     Dialog,
+    getAppConfig,
     I18nService,
     OrderDetailFragment,
     OrderLineInput,
@@ -20,7 +21,10 @@ export class CancelOrderDialogComponent implements OnInit, Dialog<CancelOrderInp
     resolveWith: (result?: CancelOrderInput) => void;
     reason: string;
     lineQuantities: { [lineId: string]: number } = {};
-    reasons: string[] = [_('order.cancel-reason-customer-request'), _('order.cancel-reason-not-available')];
+    reasons: string[] = getAppConfig().cancellationReasons ?? [
+        _('order.cancel-reason-customer-request'),
+        _('order.cancel-reason-not-available'),
+    ];
 
     get selectionCount(): number {
         return Object.values(this.lineQuantities).reduce((sum, n) => sum + n, 0);

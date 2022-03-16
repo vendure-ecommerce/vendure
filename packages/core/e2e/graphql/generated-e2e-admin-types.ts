@@ -546,6 +546,28 @@ export type CountryTranslationInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+    limit: Scalars['Int'];
+};
+
 export type CreateAddressInput = {
     fullName?: Maybe<Scalars['String']>;
     company?: Maybe<Scalars['String']>;
@@ -1390,6 +1412,9 @@ export enum ErrorCode {
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+    COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+    COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+    COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
 }
 
 export type ErrorResult = {
@@ -2193,6 +2218,7 @@ export type ModifyOrderInput = {
     note?: Maybe<Scalars['String']>;
     refund?: Maybe<AdministratorRefundInput>;
     options?: Maybe<ModifyOrderOptions>;
+    couponCodes?: Maybe<Array<Scalars['String']>>;
 };
 
 export type ModifyOrderOptions = {
@@ -2208,7 +2234,10 @@ export type ModifyOrderResult =
     | RefundPaymentIdMissingError
     | OrderLimitError
     | NegativeQuantityError
-    | InsufficientStockError;
+    | InsufficientStockError
+    | CouponCodeExpiredError
+    | CouponCodeInvalidError
+    | CouponCodeLimitError;
 
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];
@@ -6459,12 +6488,28 @@ export type GetFulfillmentHandlersQuery = {
     >;
 };
 
-export type OrderWithModificationsFragment = Pick<Order, 'id' | 'state' | 'total' | 'totalWithTax'> & {
+export type OrderWithModificationsFragment = Pick<
+    Order,
+    | 'id'
+    | 'state'
+    | 'subTotal'
+    | 'subTotalWithTax'
+    | 'shipping'
+    | 'shippingWithTax'
+    | 'total'
+    | 'totalWithTax'
+> & {
     lines: Array<
         Pick<
             OrderLine,
-            'id' | 'quantity' | 'linePrice' | 'linePriceWithTax' | 'discountedLinePriceWithTax'
+            | 'id'
+            | 'quantity'
+            | 'linePrice'
+            | 'linePriceWithTax'
+            | 'discountedLinePriceWithTax'
+            | 'proratedLinePriceWithTax'
         > & {
+            discounts: Array<Pick<Discount, 'description' | 'amountWithTax'>>;
             productVariant: Pick<ProductVariant, 'id' | 'name'>;
             items: Array<Pick<OrderItem, 'id' | 'createdAt' | 'updatedAt' | 'cancelled' | 'unitPrice'>>;
         }
@@ -6485,6 +6530,8 @@ export type OrderWithModificationsFragment = Pick<Order, 'id' | 'state' | 'total
             refund?: Maybe<Pick<Refund, 'id' | 'state' | 'total' | 'paymentId'>>;
         }
     >;
+    promotions: Array<Pick<Promotion, 'id' | 'name' | 'couponCode'>>;
+    discounts: Array<Pick<Discount, 'description' | 'adjustmentSource' | 'amount' | 'amountWithTax'>>;
     shippingAddress?: Maybe<
         Pick<OrderAddress, 'streetLine1' | 'city' | 'postalCode' | 'province' | 'countryCode' | 'country'>
     >;
@@ -6512,7 +6559,10 @@ export type ModifyOrderMutation = {
         | Pick<RefundPaymentIdMissingError, 'errorCode' | 'message'>
         | Pick<OrderLimitError, 'errorCode' | 'message'>
         | Pick<NegativeQuantityError, 'errorCode' | 'message'>
-        | Pick<InsufficientStockError, 'errorCode' | 'message'>;
+        | Pick<InsufficientStockError, 'errorCode' | 'message'>
+        | Pick<CouponCodeExpiredError, 'errorCode' | 'message'>
+        | Pick<CouponCodeInvalidError, 'errorCode' | 'message'>
+        | Pick<CouponCodeLimitError, 'errorCode' | 'message'>;
 };
 
 export type AddManualPaymentMutationVariables = Exact<{
@@ -8829,6 +8879,11 @@ export namespace GetFulfillmentHandlers {
 export namespace OrderWithModifications {
     export type Fragment = OrderWithModificationsFragment;
     export type Lines = NonNullable<NonNullable<OrderWithModificationsFragment['lines']>[number]>;
+    export type Discounts = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<OrderWithModificationsFragment['lines']>[number]>['discounts']
+        >[number]
+    >;
     export type ProductVariant = NonNullable<
         NonNullable<NonNullable<OrderWithModificationsFragment['lines']>[number]>['productVariant']
     >;
@@ -8863,6 +8918,8 @@ export namespace OrderWithModifications {
     export type Refund = NonNullable<
         NonNullable<NonNullable<OrderWithModificationsFragment['modifications']>[number]>['refund']
     >;
+    export type Promotions = NonNullable<NonNullable<OrderWithModificationsFragment['promotions']>[number]>;
+    export type _Discounts = NonNullable<NonNullable<OrderWithModificationsFragment['discounts']>[number]>;
     export type ShippingAddress = NonNullable<OrderWithModificationsFragment['shippingAddress']>;
     export type BillingAddress = NonNullable<OrderWithModificationsFragment['billingAddress']>;
 }

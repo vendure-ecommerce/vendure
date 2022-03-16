@@ -1,12 +1,27 @@
 {
-  "apiHost": "http://localhost",
-  "apiPort": "3000",
-  "adminApiPath": "admin-api",
-  "tokenMethod": "bearer",
-  "authTokenHeaderKey": "vendure-auth-token",
-  "defaultLanguage": "en",
-  "availableLanguages": ["en", "es", "zh_Hant", "zh_Hans", "pl", "de", "pt_BR", "pt_PT", "cs", "fr", "ru", "uk", "it"],
-  "brand": "",
-  "hideVendureBranding": false,
-  "hideVersion": false
+    "apiHost": "http://localhost",
+    "apiPort": "3000",
+    "adminApiPath": "admin-api",
+    "tokenMethod": "bearer",
+    "authTokenHeaderKey": "vendure-auth-token",
+    "defaultLanguage": "en",
+    "availableLanguages": [
+        "en",
+        "es",
+        "zh_Hant",
+        "zh_Hans",
+        "pl",
+        "de",
+        "pt_BR",
+        "pt_PT",
+        "cs",
+        "fr",
+        "ru",
+        "uk",
+        "it"
+    ],
+    "brand": "",
+    "hideVendureBranding": false,
+    "hideVersion": false,
+    "cancellationReasons": ["order.cancel-reason-customer-request", "order.cancel-reason-not-available"]
 }

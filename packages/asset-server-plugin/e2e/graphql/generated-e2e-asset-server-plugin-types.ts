@@ -546,6 +546,28 @@ export type CountryTranslationInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+    limit: Scalars['Int'];
+};
+
 export type CreateAddressInput = {
     fullName?: Maybe<Scalars['String']>;
     company?: Maybe<Scalars['String']>;
@@ -1390,6 +1412,9 @@ export enum ErrorCode {
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+    COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+    COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+    COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
 }
 
 export type ErrorResult = {
@@ -2193,6 +2218,7 @@ export type ModifyOrderInput = {
     note?: Maybe<Scalars['String']>;
     refund?: Maybe<AdministratorRefundInput>;
     options?: Maybe<ModifyOrderOptions>;
+    couponCodes?: Maybe<Array<Scalars['String']>>;
 };
 
 export type ModifyOrderOptions = {
@@ -2208,7 +2234,10 @@ export type ModifyOrderResult =
     | RefundPaymentIdMissingError
     | OrderLimitError
     | NegativeQuantityError
-    | InsufficientStockError;
+    | InsufficientStockError
+    | CouponCodeExpiredError
+    | CouponCodeInvalidError
+    | CouponCodeLimitError;
 
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];

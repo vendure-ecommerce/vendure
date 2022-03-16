@@ -20,7 +20,7 @@
                 [class.is-cancelled]="line.quantity === 0"
             >
                 <td class="align-middle thumb">
-                    <img [src]="line.featuredAsset | assetPreview:'tiny'" />
+                    <img [src]="line.featuredAsset | assetPreview: 'tiny'" />
                 </td>
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
@@ -44,14 +44,30 @@
         </table>
     </div>
     <div class="cancellation-details">
-        <clr-radio-wrapper>
-          <input type="radio" clrRadio [value]="true" [(ngModel)]="cancelAll" name="options" (ngModelChange)="radioChanged()" />
-          <label>{{ 'order.cancel-entire-order' | translate }}</label>
-        </clr-radio-wrapper>
-        <clr-radio-wrapper>
-          <input type="radio" clrRadio [value]="false" [(ngModel)]="cancelAll" name="options" (ngModelChange)="radioChanged()" />
-          <label>{{ 'order.cancel-specified-items' | translate }}</label>
-        </clr-radio-wrapper>
+        <ng-container *ngIf="order.active !== true">
+            <clr-radio-wrapper>
+                <input
+                    type="radio"
+                    clrRadio
+                    [value]="true"
+                    [(ngModel)]="cancelAll"
+                    name="options"
+                    (ngModelChange)="radioChanged()"
+                />
+                <label>{{ 'order.cancel-entire-order' | translate }}</label>
+            </clr-radio-wrapper>
+            <clr-radio-wrapper>
+                <input
+                    type="radio"
+                    clrRadio
+                    [value]="false"
+                    [(ngModel)]="cancelAll"
+                    name="options"
+                    (ngModelChange)="radioChanged()"
+                />
+                <label>{{ 'order.cancel-specified-items' | translate }}</label>
+            </clr-radio-wrapper>
+        </ng-container>
         <label class="clr-control-label">{{ 'order.cancellation-reason' | translate }}</label>
         <ng-select
             [items]="reasons"

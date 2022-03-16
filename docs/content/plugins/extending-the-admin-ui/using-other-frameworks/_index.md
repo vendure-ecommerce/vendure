@@ -142,7 +142,7 @@ The `compileUiExtensions()` function returns a `compile()` function which will b
 Next, these source files will be run through the Angular compiler, the output of which will be visible in the console.
 
 {{< alert "warning" >}}
-**Note:** The first time the compiler is run, an additional step ([compatibility compiler](https://angular.io/guide/ivy#ivy-and-libraries)) is run to make sure all dependencies work with the latest version of Angular. This step can take up to a few minutes.
+**Note:** The first time the compiler is run, an additional step ([compatibility compiler](https://v12.angular.io/guide/ivy#ivy-and-libraries)) is run to make sure all dependencies work with the latest version of Angular. This step can take up to a few minutes.
 {{< /alert >}}
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/react-ui` and you should see the default Create React App demo page:

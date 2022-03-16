@@ -46,3 +46,25 @@ type InsufficientStockError implements ErrorResult {
     quantityAvailable: Int!
     order: Order!
 }
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeInvalidError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+}
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeExpiredError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+}
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeLimitError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+    limit: Int!
+}
