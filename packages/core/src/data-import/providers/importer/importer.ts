@@ -356,13 +356,13 @@ export class Importer {
     }
 
     private processCustomFieldValues(customFields: { [field: string]: string }, config: CustomFieldConfig[]) {
-        const processed: { [field: string]: string | string[] | null } = {};
+        const processed: { [field: string]: string | string[] | undefined } = {};
         for (const fieldDef of config) {
             const value = customFields[fieldDef.name];
             if (fieldDef.list === true) {
                 processed[fieldDef.name] = value ? value?.split('|').filter(val => val.trim() !== '') : [];
             } else {
-                processed[fieldDef.name] = value ? value : null;
+                processed[fieldDef.name] = value ? value : undefined;
             }
         }
         return processed;
