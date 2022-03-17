@@ -368,6 +368,26 @@ Object {
       },
       "trackInventory": "FALSE",
     },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": null,
+      },
+      "featuredAsset": null,
+      "id": "T_11",
+      "name": "Artists Smock large navy",
+      "price": 1199,
+      "sku": "10115",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_2",
+        "name": "Reduced Tax",
+      },
+      "trackInventory": "FALSE",
+    },
   ],
 }
 `;
@@ -402,7 +422,7 @@ Object {
         "weight": 243,
       },
       "featuredAsset": null,
-      "id": "T_11",
+      "id": "T_12",
       "name": "奇妙的纸张拉伸器 半英制",
       "price": 4530,
       "sku": "PPS12",
@@ -428,7 +448,7 @@ Object {
         "weight": 344,
       },
       "featuredAsset": null,
-      "id": "T_12",
+      "id": "T_13",
       "name": "奇妙的纸张拉伸器 四分之一英制",
       "price": 3250,
       "sku": "PPS14",
@@ -454,7 +474,7 @@ Object {
         "weight": 656,
       },
       "featuredAsset": null,
-      "id": "T_13",
+      "id": "T_14",
       "name": "奇妙的纸张拉伸器 全英制",
       "price": 5950,
       "sku": "PPSF",
