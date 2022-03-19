@@ -102,15 +102,19 @@ export class TransactionalConnection {
      * of Vendure internal services.
      *
      * If there is already a {@link RequestContext} object available, you should pass it in as the first
-     * argument in order to add a new transaction to it. If not, omit the first argument and an empty
+     * argument in order to create transactional context as the copy. If not, omit the first argument and an empty
      * RequestContext object will be created, which is then used to propagate the transaction to
      * all inner method calls.
      *
      * @example
      * ```TypeScript
-     * private async transferCredit(fromId: ID, toId: ID, amount: number) {
-     *   await this.connection.withTransaction(ctx => {
+     * private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amount: number) {
+     *   await this.connection.withTransaction(outerCtx, ctx => {
      *     await this.giftCardService.updateCustomerCredit(fromId, -amount);
+     * 
+     *     // Note you must not use outerCtx here, instead use ctx. Otherwise this query
+     *     // will be executed outside of transaction
+     *     await this.connection.getRepository(ctx, GiftCard).update(fromId, { transferred: true })
      *
      *     // If some intermediate logic here throws an Error,
      *     // then all DB transactions will be rolled back and neither Customer's
