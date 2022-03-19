@@ -30,7 +30,7 @@ export class TransactionInterceptor implements NestInterceptor {
             );
             return of(
                 this.transactionWrapper.executeInTransaction(
-                    ctx,
+                    ctx.copy(),
                     () => next.handle(),
                     transactionMode,
                     this.connection.rawConnection,

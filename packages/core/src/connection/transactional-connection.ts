@@ -73,8 +73,9 @@ export class TransactionalConnection {
     ): Repository<Entity> {
         if (ctxOrTarget instanceof RequestContext) {
             const transactionManager = this.getTransactionManager(ctxOrTarget);
-            if (transactionManager && maybeTarget && !transactionManager.queryRunner?.isReleased) {
-                return transactionManager.getRepository(maybeTarget);
+            if (transactionManager) {
+                // tslint:disable-next-line:no-non-null-assertion
+                return transactionManager.getRepository(maybeTarget!);
             } else {
                 // tslint:disable-next-line:no-non-null-assertion
                 return getRepository(maybeTarget!);
@@ -131,7 +132,7 @@ export class TransactionalConnection {
         let ctx: RequestContext;
         let work: (ctx: RequestContext) => Promise<T>;
         if (ctxOrWork instanceof RequestContext) {
-            ctx = ctxOrWork;
+            ctx = ctxOrWork.copy();
             // tslint:disable-next-line:no-non-null-assertion
             work = maybeWork!;
         } else {
