@@ -1,3 +1,39 @@
+## 2.0.0-next.2 (2022-03-21)
+
+
+#### Features
+
+* **admin-ui** Add filter inheritance control to Collection detail view ([7f1b01e](https://github.com/vendure-ecommerce/vendure/commit/7f1b01e)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **admin-ui** Update to Angular v13 ([3b49d23](https://github.com/vendure-ecommerce/vendure/commit/3b49d23))
+* **asset-server-plugin** Update to Sharp v0.30 ([15d8e8d](https://github.com/vendure-ecommerce/vendure/commit/15d8e8d))
+* **core** Collections can control inheritance of filters ([5d4206f](https://github.com/vendure-ecommerce/vendure/commit/5d4206f)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **core** Improve Collection tree data structure ([5e7af0d](https://github.com/vendure-ecommerce/vendure/commit/5e7af0d))
+* **core** Update codegen errors plugin to use object inputs ([6b9b2a4](https://github.com/vendure-ecommerce/vendure/commit/6b9b2a4))
+* **core** Update to NestJS v8, Apollo Server v3, GraphQL v16 ([c843860](https://github.com/vendure-ecommerce/vendure/commit/c843860))
+
+#### Fixes
+
+* **admin-ui** Rename vdr-product-selector ([9d9275c](https://github.com/vendure-ecommerce/vendure/commit/9d9275c))
+* **core** Correctly populate Collections in channel ([58090bb](https://github.com/vendure-ecommerce/vendure/commit/58090bb))
+
+
+### BREAKING CHANGE
+
+* The Admin UI component `vdr-product-selector` has been renamed to
+ `vdr-product-variant-selector` to more accurately represent what it does.
+
+ If you are using `vdr-product-selector` if any ui extensions code, update it to use the
+ new selector.
+* The data structure used to represent the tree of Collections has changed,
+which will require a DB migration.
+* The internal ErrorResult classes now take all constructors arguments
+as a single input object.
+* The internal ErrorResult classes now take all constructors arguments
+as a single input object.
+
+feat(core): Update codegen errors plugin to use object inputs
+* The new `inheritFilters` property on the Collection entity will require a DB
+migration.
 ## 2.0.0-next.1 (2022-03-07)
 
 
