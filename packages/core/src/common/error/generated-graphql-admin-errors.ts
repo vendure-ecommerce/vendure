@@ -63,10 +63,12 @@ export class CouponCodeExpiredError extends ErrorResult {
   readonly __typename = 'CouponCodeExpiredError';
   readonly errorCode = 'COUPON_CODE_EXPIRED_ERROR' as any;
   readonly message = 'COUPON_CODE_EXPIRED_ERROR';
+  readonly couponCode: Scalars['String'];
   constructor(
-    public couponCode: Scalars['String'],
+    input: { couponCode: Scalars['String'] }
   ) {
     super();
+    this.couponCode = input.couponCode
   }
 }
 
@@ -74,10 +76,12 @@ export class CouponCodeInvalidError extends ErrorResult {
   readonly __typename = 'CouponCodeInvalidError';
   readonly errorCode = 'COUPON_CODE_INVALID_ERROR' as any;
   readonly message = 'COUPON_CODE_INVALID_ERROR';
+  readonly couponCode: Scalars['String'];
   constructor(
-    public couponCode: Scalars['String'],
+    input: { couponCode: Scalars['String'] }
   ) {
     super();
+    this.couponCode = input.couponCode
   }
 }
 
@@ -85,11 +89,14 @@ export class CouponCodeLimitError extends ErrorResult {
   readonly __typename = 'CouponCodeLimitError';
   readonly errorCode = 'COUPON_CODE_LIMIT_ERROR' as any;
   readonly message = 'COUPON_CODE_LIMIT_ERROR';
+  readonly couponCode: Scalars['String'];
+  readonly limit: Scalars['Int'];
   constructor(
-    public couponCode: Scalars['String'],
-    public limit: Scalars['Int'],
+    input: { couponCode: Scalars['String'], limit: Scalars['Int'] }
   ) {
     super();
+    this.couponCode = input.couponCode
+    this.limit = input.limit
   }
 }
 
