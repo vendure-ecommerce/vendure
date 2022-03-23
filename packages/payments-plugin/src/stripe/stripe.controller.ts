@@ -8,16 +8,16 @@ import {
     OrderService,
     PaymentMethod,
     RequestContext,
-    TransactionalConnection,
+    TransactionalConnection
 } from '@vendure/core';
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 import { Response } from 'express';
 import Stripe from 'stripe';
-
 import { loggerCtx } from './constants';
 import { stripePaymentMethodHandler } from './stripe.handler';
 import { StripeService } from './stripe.service';
 import { IncomingMessageWithRawBody } from './types';
+
 
 const missingHeaderErrorMessage = 'Missing stripe-signature header';
 const signatureErrorMessage = 'Error verifying Stripe webhook signature';
@@ -77,18 +77,25 @@ export class StripeController {
 
         const ctx = await this.createContext(channelToken);
 
-        const transitionToStateResult = await this.orderService.transitionToState(
-            ctx,
-            orderId,
-            'ArrangingPayment',
-        );
+        const order = await this.orderService.findOneByCode(ctx, orderCode);
+        if (!order) {
+            throw Error(`Unable to find order ${orderCode}, unable to settle payment ${paymentIntent.id}!`);
+        }
 
-        if (transitionToStateResult instanceof OrderStateTransitionError) {
-            Logger.error(
-                `Error transitioning order ${orderCode} to ArrangingPayment state: ${transitionToStateResult.message}`,
-                loggerCtx,
+        if (order.state !== 'ArrangingPayment') {
+            const transitionToStateResult = await this.orderService.transitionToState(
+                ctx,
+                orderId,
+                'ArrangingPayment',
             );
-            return;
+
+            if (transitionToStateResult instanceof OrderStateTransitionError) {
+                Logger.error(
+                    `Error transitioning order ${orderCode} to ArrangingPayment state: ${transitionToStateResult.message}`,
+                    loggerCtx,
+                );
+                return;
+            }
         }
 
         const paymentMethod = await this.getPaymentMethod(ctx);
