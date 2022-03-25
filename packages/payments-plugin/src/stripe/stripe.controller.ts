@@ -116,6 +116,7 @@ export class StripeController {
         }
 
         Logger.info(`Stripe payment intent id ${paymentIntent.id} added to order ${orderCode}`, loggerCtx);
+        response.status(HttpStatus.OK).send('Ok');
     }
 
     private async createContext(channelToken: string): Promise<RequestContext> {
