@@ -27,4 +27,16 @@ describe('prorate()', () => {
     it('many weights non-neatly divisible', () => {
         testProrate([10, 20, 10, 30, 50, 20, 10, 40], 93, [5, 10, 5, 15, 24, 10, 5, 19]);
     });
+    it('weights include zero', () => {
+        testProrate([10, 0], 40, [40, 0]);
+    });
+    it('all weights are zero', () => {
+        testProrate([0, 0], 10, [5, 5]);
+    });
+    it('all weights are zero with zero total', () => {
+        testProrate([0, 0], 0, [0, 0]);
+    });
+    it('amount is negative', () => {
+        testProrate([100, 100], -20, [-10, -10]);
+    });
 });

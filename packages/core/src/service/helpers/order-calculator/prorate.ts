@@ -20,7 +20,7 @@ export function prorate(weights: number[], amount: number): number[] {
 
     let i = 0;
     for (const w of weights) {
-        actual[i] = amount * (w / totalWeight);
+        actual[i] = totalWeight === 0 ? amount / weights.length : amount * (w / totalWeight);
         rounded[i] = Math.floor(actual[i]);
         error[i] = actual[i] - rounded[i];
         added += rounded[i];

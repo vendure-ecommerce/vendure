@@ -4,10 +4,12 @@ import { pick } from '@vendure/common/lib/pick';
 import {
     containsProducts,
     customerGroup,
+    DefaultLogger,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     discountOnItemWithFacets,
     hasFacetValues,
+    LogLevel,
     manualFulfillmentHandler,
     minimumOrderAmount,
     orderPercentageDiscount,
@@ -50,6 +52,8 @@ import {
     AdjustItemQuantity,
     AdjustmentType,
     ApplyCouponCode,
+    ApplyCouponCodeMutation,
+    ApplyCouponCodeMutationVariables,
     ErrorCode,
     GetActiveOrder,
     GetOrderPromotionsByCode,
@@ -88,6 +92,7 @@ import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order
 describe('Promotions applied to Orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
+        logger: new DefaultLogger({ level: LogLevel.Info }),
         paymentOptions: {
             paymentMethodHandlers: [testSuccessfulPaymentMethod],
         },
@@ -1503,6 +1508,38 @@ describe('Promotions applied to Orders', () => {
         expect(check2!.discounts.length).toBe(0);
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/1492
+    it('correctly handles pro-ration of variants with 0 price', async () => {
+        const couponCode = '20%_off_order';
+        const promotion = await createPromotion({
+            enabled: true,
+            name: '20% discount on order',
+            couponCode,
+            conditions: [],
+            actions: [
+                {
+                    code: orderPercentageDiscount.code,
+                    arguments: [{ name: 'discount', value: '20' }],
+                },
+            ],
+        });
+        await shopClient.asAnonymousUser();
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: getVariantBySlug('item-100').id,
+            quantity: 1,
+        });
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: getVariantBySlug('item-0').id,
+            quantity: 1,
+        });
+        const { applyCouponCode } = await shopClient.query<
+            ApplyCouponCodeMutation,
+            ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, { couponCode });
+        orderResultGuard.assertSuccess(applyCouponCode);
+        expect(applyCouponCode.totalWithTax).toBe(96);
+    });
+
     async function getProducts() {
         const result = await adminClient.query<GetProductsWithVariantPrices.Query>(
             GET_PRODUCTS_WITH_VARIANT_PRICES,
@@ -1546,7 +1583,7 @@ describe('Promotions applied to Orders', () => {
     }
 
     function getVariantBySlug(
-        slug: 'item-100' | 'item-1000' | 'item-5000' | 'item-sale-100' | 'item-sale-1000',
+        slug: 'item-100' | 'item-1000' | 'item-5000' | 'item-sale-100' | 'item-sale-1000' | 'item-0',
     ): GetProductsWithVariantPrices.Variants {
         return products.find(p => p.slug === slug)!.variants[0];
     }
