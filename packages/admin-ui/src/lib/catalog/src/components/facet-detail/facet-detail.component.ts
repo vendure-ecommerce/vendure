@@ -330,7 +330,7 @@ export class FacetDetailComponent
                         const key = fieldDef.name;
                         const fieldValue =
                             fieldDef.type === 'localeString'
-                                ? (valueTranslation as any).customFields[key]
+                                ? (valueTranslation as any | undefined)?.customFields?.[key]
                                 : (value as any).customFields[key];
                         const control = customValueFieldsGroup.get(key);
                         if (control) {
