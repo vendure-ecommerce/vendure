@@ -209,7 +209,7 @@ describe('Stock control', () => {
         });
 
         it(
-            'attempting to set a negative stockOnHand throws',
+            'attempting to set stockOnHand below saleable stock level throws',
             assertThrowsWithMessage(async () => {
                 const result = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
                     UPDATE_STOCK_ON_HAND,
@@ -940,6 +940,58 @@ describe('Stock control', () => {
 
             expect(variant.stockOnHand).toBe(5);
             expect(variant.stockAllocated).toBe(0);
+        });
+
+        describe('adjusting stockOnHand with negative outOfStockThreshold', () => {
+            const variant1Id = 'T_1';
+            beforeAll(async () => {
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                id: variant1Id,
+                                stockOnHand: 0,
+                                outOfStockThreshold: -20,
+                                trackInventory: GlobalFlag.TRUE,
+                                useGlobalOutOfStockThreshold: false,
+                            },
+                        ],
+                    },
+                );
+            });
+
+            it(
+                'attempting to set stockOnHand below outOfStockThreshold throws',
+                assertThrowsWithMessage(async () => {
+                    const result = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
+                        UPDATE_STOCK_ON_HAND,
+                        {
+                            input: [
+                                {
+                                    id: variant1Id,
+                                    stockOnHand: -21,
+                                },
+                            ] as UpdateProductVariantInput[],
+                        },
+                    );
+                }, 'stockOnHand cannot be a negative value'),
+            );
+
+            it('can set negative stockOnHand that is not less than outOfStockThreshold', async () => {
+                const result = await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(
+                    UPDATE_STOCK_ON_HAND,
+                    {
+                        input: [
+                            {
+                                id: variant1Id,
+                                stockOnHand: -10,
+                            },
+                        ] as UpdateProductVariantInput[],
+                    },
+                );
+                expect(result.updateProductVariants[0]!.stockOnHand).toBe(-10);
+            });
         });
 
         describe('edge cases', () => {
