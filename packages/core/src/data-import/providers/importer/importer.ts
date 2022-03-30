@@ -193,7 +193,9 @@ export class Importer {
             });
 
             const optionsMap: { [optionName: string]: ID } = {};
-            for (const optionGroup of product.optionGroups) {
+            for (const [optionGroup, optionGroupIndex] of product.optionGroups.map(
+                (group, i) => [group, i] as const,
+            )) {
                 const optionGroupMainTranslation = this.getTranslationByCodeOrFirst(
                     optionGroup.translations,
                     ctx.languageCode,
@@ -212,10 +214,12 @@ export class Importer {
                         };
                     }),
                 });
-                for (const optionIndex of optionGroupMainTranslation.values.map((value, index) => index)) {
+                for (const [optionIndex, value] of optionGroupMainTranslation.values.map(
+                    (val, index) => [index, val] as const,
+                )) {
                     const createdOptionId = await this.fastImporter.createProductOption({
                         productOptionGroupId: groupId,
-                        code: normalizeString(optionGroupMainTranslation.values[optionIndex], '-'),
+                        code: normalizeString(value, '-'),
                         translations: optionGroup.translations.map(translation => {
                             return {
                                 languageCode: translation.languageCode,
@@ -223,7 +227,7 @@ export class Importer {
                             };
                         }),
                     });
-                    optionsMap[optionGroupMainTranslation.values[optionIndex]] = createdOptionId;
+                    optionsMap[`${optionGroupIndex}_${value}`] = createdOptionId;
                 }
                 await this.fastImporter.addOptionGroupToProduct(createdProductId, groupId);
             }
@@ -246,6 +250,9 @@ export class Importer {
                     variantMainTranslation.customFields,
                     this.configService.customFields.ProductVariant,
                 );
+                const optionIds = variantMainTranslation.optionValues.map(
+                    (v, index) => optionsMap[`${index}_${v}`],
+                );
                 const createdVariant = await this.fastImporter.createProductVariant({
                     productId: createdProductId,
                     facetValueIds,
@@ -255,7 +262,7 @@ export class Importer {
                     taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
                     stockOnHand: variant.stockOnHand,
                     trackInventory: variant.trackInventory,
-                    optionIds: variantMainTranslation.optionValues.map(v => optionsMap[v]),
+                    optionIds,
                     translations: variant.translations.map(translation => {
                         const productTranslation = product.translations.find(
                             t => t.languageCode === translation.languageCode,

@@ -16,6 +16,9 @@ import {
     GetAssetListQuery,
     GetCollectionsQuery,
     GetProductListQuery,
+    GetProductListQueryVariables,
+    GetProductWithVariantsQuery,
+    GetProductWithVariantsQueryVariables,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -23,6 +26,7 @@ import {
     GET_ASSET_LIST,
     GET_COLLECTIONS,
     GET_PRODUCT_LIST,
+    GET_PRODUCT_WITH_VARIANTS,
 } from './graphql/shared-definitions';
 
 describe('populate() function', () => {
@@ -189,6 +193,70 @@ describe('populate() function', () => {
             await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { products } = await adminClient.query<GetProductListQuery>(GET_PRODUCT_LIST);
             expect(products.items.map(i => i.name).includes('Model Hand')).toBe(true);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1445
+    describe('clashing option names', () => {
+        let app: INestApplication;
+
+        beforeAll(async () => {
+            const initialDataForPopulate: InitialData = {
+                defaultLanguage: initialData.defaultLanguage,
+                defaultZone: initialData.defaultZone,
+                taxRates: [],
+                shippingMethods: [],
+                paymentMethods: [],
+                countries: [],
+                collections: [{ name: 'Collection 1', filters: [] }],
+            };
+            const csvFile = path.join(__dirname, 'fixtures', 'product-import-option-values.csv');
+            app = await populate(
+                async () => {
+                    await server.bootstrap();
+                    return server.app;
+                },
+                initialDataForPopulate,
+                csvFile,
+            );
+        }, TEST_SETUP_TIMEOUT_MS);
+
+        afterAll(async () => {
+            await app.close();
+        });
+
+        it('populates variants & options', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(channel2.token);
+            const { products } = await adminClient.query<GetProductListQuery, GetProductListQueryVariables>(
+                GET_PRODUCT_LIST,
+                {
+                    options: {
+                        filter: {
+                            slug: { eq: 'foo' },
+                        },
+                    },
+                },
+            );
+            expect(products.totalItems).toBe(1);
+            const fooProduct = products.items[0];
+            expect(fooProduct.name).toBe('Foo');
+
+            const { product } = await adminClient.query<
+                GetProductWithVariantsQuery,
+                GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: fooProduct.id,
+            });
+
+            expect(product?.variants.length).toBe(4);
+            expect(product?.optionGroups.map(og => og.name).sort()).toEqual(['Bar', 'Foo']);
+            expect(
+                product?.variants
+                    .find(v => v.sku === 'foo-fiz-buz')
+                    ?.options.map(o => o.name)
+                    .sort(),
+            ).toEqual(['buz', 'fiz']);
         });
     });
 });
