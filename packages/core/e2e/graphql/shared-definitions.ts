@@ -712,6 +712,7 @@ export const CANCEL_ORDER = gql`
     }
     fragment CanceledOrder on Order {
         id
+        state
         lines {
             quantity
             items {

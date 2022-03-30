@@ -6300,7 +6300,7 @@ export type CancelOrderMutation = {
         | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
 };
 
-export type CanceledOrderFragment = Pick<Order, 'id'> & {
+export type CanceledOrderFragment = Pick<Order, 'id' | 'state'> & {
     lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
 };
 

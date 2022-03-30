@@ -33,6 +33,8 @@ import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
     AssignProductsToChannel,
     AssignPromotionToChannel,
+    CancelOrderMutation,
+    CancelOrderMutationVariables,
     ChannelFragment,
     CreateChannel,
     CreateCustomerGroup,
@@ -68,6 +70,7 @@ import {
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     ASSIGN_PROMOTIONS_TO_CHANNEL,
+    CANCEL_ORDER,
     CREATE_CHANNEL,
     CREATE_CUSTOMER_GROUP,
     CREATE_PROMOTION,
@@ -726,6 +729,7 @@ describe('Promotions applied to Orders', () => {
         describe('discountOnItemWithFacets', () => {
             const couponCode = '50%_off_sale_items';
             let promotion: PromotionFragment;
+
             function getItemSale1Line<
                 T extends Array<
                     UpdatedOrderFragment['lines'][number] | TestOrderFragmentFragment['lines'][number]
@@ -1405,6 +1409,8 @@ describe('Promotions applied to Orders', () => {
                 return shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
             }
 
+            let orderId: string;
+
             it('allows initial usage', async () => {
                 await logInAsRegisteredCustomer();
                 await createNewActiveOrder();
@@ -1420,6 +1426,7 @@ describe('Promotions applied to Orders', () => {
                 await proceedToArrangingPayment(shopClient);
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
                 orderGuard.assertSuccess(order);
+                orderId = order.id;
 
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
@@ -1456,6 +1463,33 @@ describe('Promotions applied to Orders', () => {
                 const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
                 expect(activeOrder!.totalWithTax).toBe(6000);
                 expect(activeOrder!.couponCodes).toEqual([]);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1466
+            it('cancelled orders do not count against usage limit', async () => {
+                const { cancelOrder } = await adminClient.query<
+                    CancelOrderMutation,
+                    CancelOrderMutationVariables
+                >(CANCEL_ORDER, {
+                    input: {
+                        orderId,
+                        cancelShipping: true,
+                        reason: 'request',
+                    },
+                });
+                orderResultGuard.assertSuccess(cancelOrder);
+                expect(cancelOrder.state).toBe('Cancelled');
+
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode!.totalWithTax).toBe(0);
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
             });
         });
     });
@@ -1552,6 +1586,7 @@ describe('Promotions applied to Orders', () => {
         );
         products = result.products.items;
     }
+
     async function createGlobalPromotions() {
         const { facets } = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
         const saleFacetValue = facets.items[0].values[0];
