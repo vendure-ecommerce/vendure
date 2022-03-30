@@ -147,6 +147,13 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return '';
     }
 
+    getStockOnHandMinValue(variant: FormGroup) {
+        const effectiveOutOfStockThreshold = variant.get('useGlobalOutOfStockThreshold')?.value
+            ? this.globalOutOfStockThreshold
+            : variant.get('outOfStockThreshold')?.value;
+        return effectiveOutOfStockThreshold;
+    }
+
     getSaleableStockLevel(variant: ProductVariant.Fragment) {
         const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
             ? this.globalOutOfStockThreshold

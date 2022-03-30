@@ -137,7 +137,7 @@
                                         [class.inventory-untracked]="inventoryIsNotTracked(formGroup)"
                                         clrInput
                                         type="number"
-                                        min="0"
+                                        [min]="getStockOnHandMinValue(formGroup)"
                                         step="1"
                                         formControlName="stockOnHand"
                                         [readonly]="!(updatePermission | hasPermission)"
