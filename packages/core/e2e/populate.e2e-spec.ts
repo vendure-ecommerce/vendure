@@ -227,7 +227,7 @@ describe('populate() function', () => {
 
         it('populates variants & options', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(channel2.token);
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { products } = await adminClient.query<GetProductListQuery, GetProductListQueryVariables>(
                 GET_PRODUCT_LIST,
                 {
