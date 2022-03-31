@@ -1,3 +1,21 @@
+## <small>1.5.1 (2022-03-31)</small>
+
+
+#### Fixes
+
+* **admin-ui** Allow stockOnHand to match outOfStockThreshold ([f89bfbe](https://github.com/vendure-ecommerce/vendure/commit/f89bfbe)), closes [#1483](https://github.com/vendure-ecommerce/vendure/issues/1483)
+* **admin-ui** Fix error with FacetValue localeString custom field ([80ef31a](https://github.com/vendure-ecommerce/vendure/commit/80ef31a)), closes [#1442](https://github.com/vendure-ecommerce/vendure/issues/1442)
+* **core** Add missing OrderLine.order field resolver (#1478) ([c6cf4d4](https://github.com/vendure-ecommerce/vendure/commit/c6cf4d4)), closes [#1478](https://github.com/vendure-ecommerce/vendure/issues/1478)
+* **core** Allow stockOnHand adjustments to match outOfStockThreshold ([77239b2](https://github.com/vendure-ecommerce/vendure/commit/77239b2)), closes [#1483](https://github.com/vendure-ecommerce/vendure/issues/1483)
+* **core** Correctly save relation custom fields on CustomerGroup ([1634ed9](https://github.com/vendure-ecommerce/vendure/commit/1634ed9)), closes [#1493](https://github.com/vendure-ecommerce/vendure/issues/1493)
+* **core** Fix error when pro-rating order with 0 price variant ([44cc46d](https://github.com/vendure-ecommerce/vendure/commit/44cc46d)), closes [#1492](https://github.com/vendure-ecommerce/vendure/issues/1492)
+* **core** Fix importing products when 2 options have same name ([316f5e9](https://github.com/vendure-ecommerce/vendure/commit/316f5e9)), closes [#1445](https://github.com/vendure-ecommerce/vendure/issues/1445)
+* **core** Promotion usage limits account for cancelled orders ([ce34f14](https://github.com/vendure-ecommerce/vendure/commit/ce34f14)), closes [#1466](https://github.com/vendure-ecommerce/vendure/issues/1466)
+* **core** Truthy check for custom fields in importer ([a8c44d1](https://github.com/vendure-ecommerce/vendure/commit/a8c44d1))
+* **core** Use subscribers passed in to the dbConnectionOptions ([ea63784](https://github.com/vendure-ecommerce/vendure/commit/ea63784))
+* **payments-plugin** Fix state transitioning error case in Stripe webhook (#1485) ([280d2e3](https://github.com/vendure-ecommerce/vendure/commit/280d2e3)), closes [#1485](https://github.com/vendure-ecommerce/vendure/issues/1485)
+* **payments-plugin** Send 200 response from Stripe webhook (#1487) ([4d55949](https://github.com/vendure-ecommerce/vendure/commit/4d55949)), closes [#1487](https://github.com/vendure-ecommerce/vendure/issues/1487)
+
 ## 1.5.0 (2022-03-15)
 
 
