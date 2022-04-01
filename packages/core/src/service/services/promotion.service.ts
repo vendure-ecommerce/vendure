@@ -38,6 +38,7 @@ import { EventBus } from '../../event-bus';
 import { PromotionEvent } from '../../event-bus/events/promotion-event';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { OrderState } from '../helpers/order-state-machine/order-state';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -258,7 +259,8 @@ export class PromotionService {
             .createQueryBuilder('order')
             .leftJoin('order.promotions', 'promotion')
             .where('promotion.id = :promotionId', { promotionId })
-            .andWhere('order.customer = :customerId', { customerId });
+            .andWhere('order.customer = :customerId', { customerId })
+            .andWhere('order.state != :state', { state: 'Cancelled' as OrderState });
 
         return qb.getCount();
     }

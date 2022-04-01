@@ -35,6 +35,7 @@ import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     ASSIGN_PROMOTIONS_TO_CHANNEL,
+    CANCEL_ORDER,
     CREATE_CHANNEL,
     CREATE_CUSTOMER_GROUP,
     CREATE_PROMOTION,
@@ -1407,6 +1408,8 @@ describe('Promotions applied to Orders', () => {
                 return shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
             }
 
+            let orderId: string;
+
             it('allows initial usage', async () => {
                 await logInAsRegisteredCustomer();
                 await createNewActiveOrder();
@@ -1422,6 +1425,7 @@ describe('Promotions applied to Orders', () => {
                 await proceedToArrangingPayment(shopClient);
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
                 orderGuard.assertSuccess(order);
+                orderId = order.id;
 
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
@@ -1460,6 +1464,33 @@ describe('Promotions applied to Orders', () => {
                 );
                 expect(activeOrder!.totalWithTax).toBe(6000);
                 expect(activeOrder!.couponCodes).toEqual([]);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1466
+            it('cancelled orders do not count against usage limit', async () => {
+                const { cancelOrder } = await adminClient.query<
+                    Codegen.CancelOrderMutation,
+                    Codegen.CancelOrderMutationVariables
+                >(CANCEL_ORDER, {
+                    input: {
+                        orderId,
+                        cancelShipping: true,
+                        reason: 'request',
+                    },
+                });
+                orderResultGuard.assertSuccess(cancelOrder);
+                expect(cancelOrder.state).toBe('Cancelled');
+
+                await logInAsRegisteredCustomer();
+                await createNewActiveOrder();
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode!.totalWithTax).toBe(0);
+                expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
             });
         });
     });
@@ -1519,6 +1550,44 @@ describe('Promotions applied to Orders', () => {
         expect(check2!.discounts.length).toBe(0);
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/1492
+    it('correctly handles pro-ration of variants with 0 price', async () => {
+        const couponCode = '20%_off_order';
+        const promotion = await createPromotion({
+            enabled: true,
+            name: '20% discount on order',
+            couponCode,
+            conditions: [],
+            actions: [
+                {
+                    code: orderPercentageDiscount.code,
+                    arguments: [{ name: 'discount', value: '20' }],
+                },
+            ],
+        });
+        await shopClient.asAnonymousUser();
+        await shopClient.query<
+            CodegenShop.AddItemToOrderMutation,
+            CodegenShop.AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: getVariantBySlug('item-100').id,
+            quantity: 1,
+        });
+        await shopClient.query<
+            CodegenShop.AddItemToOrderMutation,
+            CodegenShop.AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: getVariantBySlug('item-0').id,
+            quantity: 1,
+        });
+        const { applyCouponCode } = await shopClient.query<
+            CodegenShop.ApplyCouponCodeMutation,
+            CodegenShop.ApplyCouponCodeMutationVariables
+        >(APPLY_COUPON_CODE, { couponCode });
+        orderResultGuard.assertSuccess(applyCouponCode);
+        expect(applyCouponCode.totalWithTax).toBe(96);
+    });
+
     async function getProducts() {
         const result = await adminClient.query<Codegen.GetProductsWithVariantPricesQuery>(
             GET_PRODUCTS_WITH_VARIANT_PRICES,
@@ -1531,6 +1600,7 @@ describe('Promotions applied to Orders', () => {
         );
         products = result.products.items;
     }
+
     async function createGlobalPromotions() {
         const { facets } = await adminClient.query<Codegen.GetFacetListQuery>(GET_FACET_LIST);
         const saleFacetValue = facets.items[0].values[0];
@@ -1562,7 +1632,7 @@ describe('Promotions applied to Orders', () => {
     }
 
     function getVariantBySlug(
-        slug: 'item-100' | 'item-1000' | 'item-5000' | 'item-sale-100' | 'item-sale-1000',
+        slug: 'item-100' | 'item-1000' | 'item-5000' | 'item-sale-100' | 'item-sale-1000' | 'item-0',
     ): Codegen.GetProductsWithVariantPricesQuery['products']['items'][number]['variants'][number] {
         return products.find(p => p.slug === slug)!.variants[0];
     }

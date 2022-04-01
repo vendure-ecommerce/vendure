@@ -133,7 +133,10 @@ export async function preBootstrapConfig(
     setConfig({
         dbConnectionOptions: {
             entities,
-            subscribers: Object.values(coreSubscribersMap) as Array<Type<EntitySubscriberInterface>>,
+            subscribers: [
+                ...(userConfig.dbConnectionOptions?.subscribers ?? []),
+                ...(Object.values(coreSubscribersMap) as Array<Type<EntitySubscriberInterface>>),
+            ],
         },
     });
 

@@ -92,7 +92,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  * ```GraphQL
  * type BlogPost implements Node {
  *   id: ID!
- *   published: DataTime!
+ *   published: DateTime!
  *   title: String!
  *   body: String!
  * }

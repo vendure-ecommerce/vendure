@@ -235,6 +235,13 @@ describe('Import resolver', () => {
         expect(pencils.customFields.owner.id).toBe('T_1');
         expect(smock.customFields.owner.id).toBe('T_1');
 
+        // Import non-list custom fields
+        expect(smock.variants[0].customFields.weight).toEqual(500);
+        expect(smock.variants[1].customFields.weight).toEqual(500);
+        expect(smock.variants[2].customFields.weight).toEqual(500);
+        expect(smock.variants[3].customFields.weight).toEqual(500);
+        expect(smock.variants[4].customFields.weight).toEqual(null);
+
         // Import list custom fields
         expect(paperStretcher.customFields.keywords).toEqual(['paper', 'stretching', 'watercolor']);
         expect(easel.customFields.keywords).toEqual([]);

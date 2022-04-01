@@ -73,3 +73,5 @@ export async function request(query: string, variables: any) {
      return response.data;
 }
 ```
+
+Real-world examples with specific clients can be found in the [Configuring a GraphQL Client guide]({{< relref "configuring-a-graphql-client" >}}).

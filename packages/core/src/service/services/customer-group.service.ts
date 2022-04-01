@@ -21,6 +21,7 @@ import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CustomerGroupEntityEvent } from '../../event-bus/events/customer-group-entity-event';
 import { CustomerGroupChangeEvent, CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -39,6 +40,7 @@ export class CustomerGroupService {
         private listQueryBuilder: ListQueryBuilder,
         private historyService: HistoryService,
         private eventBus: EventBus,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     findAll(ctx: RequestContext, options?: CustomerGroupListOptions): Promise<PaginatedList<CustomerGroup>> {
@@ -91,14 +93,21 @@ export class CustomerGroupService {
             await this.connection.getRepository(ctx, Customer).save(customers);
         }
         const savedCustomerGroup = await assertFound(this.findOne(ctx, newCustomerGroup.id));
+        await this.customFieldRelationService.updateRelations(ctx, CustomerGroup, input, savedCustomerGroup);
         this.eventBus.publish(new CustomerGroupEntityEvent(ctx, savedCustomerGroup, 'created', input));
-        return savedCustomerGroup;
+        return assertFound(this.findOne(ctx, savedCustomerGroup.id));
     }
 
     async update(ctx: RequestContext, input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = await this.connection.getEntityOrThrow(ctx, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
         await this.connection.getRepository(ctx, CustomerGroup).save(updatedCustomerGroup, { reload: false });
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            CustomerGroup,
+            input,
+            updatedCustomerGroup,
+        );
         this.eventBus.publish(new CustomerGroupEntityEvent(ctx, customerGroup, 'updated', input));
         return assertFound(this.findOne(ctx, customerGroup.id));
     }

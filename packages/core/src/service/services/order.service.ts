@@ -249,6 +249,16 @@ export class OrderService {
         return order ? this.findOne(ctx, order.id) : undefined;
     }
 
+    async findOneByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Order | undefined> {
+        const order = await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .innerJoin('order.lines', 'line', 'line.id = :orderLineId', { orderLineId })
+            .getOne();
+
+        return order ? this.findOne(ctx, order.id) : undefined;
+    }
+
     async findByCustomerId(
         ctx: RequestContext,
         customerId: ID,

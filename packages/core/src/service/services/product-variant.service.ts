@@ -318,6 +318,23 @@ export class ProductVariantService {
         return variant.stockOnHand - variant.stockAllocated - effectiveOutOfStockThreshold;
     }
 
+    private async getOutOfStockThreshold(ctx: RequestContext, variant: ProductVariant): Promise<number> {
+        const { outOfStockThreshold, trackInventory } = await this.requestCache.get(
+            ctx,
+            'globalSettings',
+            () => this.globalSettingsService.getSettings(ctx),
+        );
+
+        const inventoryNotTracked =
+            variant.trackInventory === GlobalFlag.FALSE ||
+            (variant.trackInventory === GlobalFlag.INHERIT && trackInventory === false);
+        if (inventoryNotTracked) {
+            return 0;
+        } else {
+            return variant.useGlobalOutOfStockThreshold ? outOfStockThreshold : variant.outOfStockThreshold;
+        }
+    }
+
     /**
      * @description
      * Returns the stockLevel to display to the customer, as specified by the configured
@@ -446,7 +463,8 @@ export class ProductVariantService {
             channelId: ctx.channelId,
             relations: ['facetValues', 'facetValues.channels'],
         });
-        if (input.stockOnHand && input.stockOnHand < 0) {
+        const outOfStockThreshold = await this.getOutOfStockThreshold(ctx, existingVariant);
+        if (input.stockOnHand && input.stockOnHand < outOfStockThreshold) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
         }
         const inputWithoutPrice = {
