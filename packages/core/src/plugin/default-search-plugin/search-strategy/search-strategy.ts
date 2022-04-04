@@ -2,12 +2,14 @@ import { SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api';
+import { InjectableStrategy, Injector } from '../../../common';
 
 /**
  * This interface defines the contract that any database-specific search implementations
  * should follow.
  */
-export interface SearchStrategy {
+export interface SearchStrategy extends InjectableStrategy {
+    init: (injector: Injector) => void | Promise<void>;
     getSearchResults(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<SearchResult[]>;
     getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number>;
     /**

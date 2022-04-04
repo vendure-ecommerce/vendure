@@ -4,6 +4,8 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';
 
+import { SearchStrategy } from './search-strategy/search-strategy';
+
 /**
  * @description
  * Options which configure the behaviour of the DefaultSearchPlugin
@@ -35,6 +37,8 @@ export interface DefaultSearchPluginInitOptions {
      * @default false
      */
     bufferUpdates?: boolean;
+
+    searchStategy?: SearchStrategy;
 }
 
 /**

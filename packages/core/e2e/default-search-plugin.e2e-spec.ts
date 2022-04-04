@@ -2,7 +2,6 @@
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
-    DefaultLogger,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
     mergeConfig,

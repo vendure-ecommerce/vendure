@@ -3,8 +3,10 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { Injector } from '../../../common';
 import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { PLUGIN_INIT_OPTIONS } from '../constants';
 import { SearchIndexItem } from '../entities/search-index-item.entity';
 import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 
@@ -22,11 +24,13 @@ import {
  */
 export class PostgresSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
+    private connection: TransactionalConnection;
+    private options: DefaultSearchPluginInitOptions;
 
-    constructor(
-        private connection: TransactionalConnection,
-        private options: DefaultSearchPluginInitOptions,
-    ) {}
+    async init(injector: Injector) {
+        this.connection = injector.get(TransactionalConnection);
+        this.options = injector.get(PLUGIN_INIT_OPTIONS);
+    }
 
     async getFacetValueIds(
         ctx: RequestContext,
