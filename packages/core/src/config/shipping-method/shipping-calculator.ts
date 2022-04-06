@@ -7,7 +7,7 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { Order } from '../../entity/order/order.entity';
+import { ShippingMethod, Order } from '../../entity';
 
 export interface ShippingCalculatorConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     calculate: CalculateShippingFn<T>;
@@ -59,8 +59,8 @@ export class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Confi
      *
      * @internal
      */
-    calculate(ctx: RequestContext, order: Order, args: ConfigArg[]): CalculateShippingFnResult {
-        return this.calculateFn(ctx, order, this.argsArrayToHash(args));
+    calculate(ctx: RequestContext, order: Order, method: ShippingMethod, args: ConfigArg[]): CalculateShippingFnResult {
+        return this.calculateFn(ctx, order, method, this.argsArrayToHash(args));
     }
 }
 
@@ -114,5 +114,6 @@ export type CalculateShippingFnResult =
 export type CalculateShippingFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
+    method: ShippingMethod,
     args: ConfigArgValues<T>,
 ) => CalculateShippingFnResult;
