@@ -9,6 +9,7 @@ import { CrudPermissionDefinition, PermissionDefinition, PermissionMetadata } fr
 export const DEFAULT_LANGUAGE_CODE = LanguageCode.en;
 export const TRANSACTION_MANAGER_KEY = Symbol('TRANSACTION_MANAGER');
 export const REQUEST_CONTEXT_KEY = 'vendureRequestContext';
+export const REQUEST_CONTEXT_MAP_KEY = 'vendureRequestContextMap';
 export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new PermissionDefinition({
         name: 'Authenticated',

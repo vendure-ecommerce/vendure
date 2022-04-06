@@ -136,14 +136,14 @@ export class TransactionalConnection {
         let ctx: RequestContext;
         let work: (ctx: RequestContext) => Promise<T>;
         if (ctxOrWork instanceof RequestContext) {
-            ctx = ctxOrWork.copy();
+            ctx = ctxOrWork;
             // tslint:disable-next-line:no-non-null-assertion
             work = maybeWork!;
         } else {
             ctx = RequestContext.empty();
             work = ctxOrWork;
         }
-        return this.transactionWrapper.executeInTransaction(ctx, () => work(ctx), 'auto', this.rawConnection);
+        return this.transactionWrapper.executeInTransaction(ctx, work, 'auto', this.rawConnection);
     }
 
     /**
