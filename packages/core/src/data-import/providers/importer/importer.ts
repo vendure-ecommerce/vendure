@@ -147,9 +147,10 @@ export class Importer {
     }
 
     /**
+     * @description
      * Imports the products specified in the rows object. Return an array of error messages.
      */
-    private async importProducts(
+    async importProducts(
         ctx: RequestContext,
         rows: ParsedProductWithVariants[],
         onProgress: OnProgressFn,
