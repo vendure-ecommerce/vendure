@@ -40,6 +40,7 @@ export function getPostgresConnectionOptions(databaseName: string) {
 export function getLoadTestConfig(
     tokenMethod: 'cookie' | 'bearer',
     databaseName: string,
+    db?: 'postgres' | 'mysql',
 ): Required<VendureConfig> {
     return mergeConfig(defaultConfig, {
         paymentOptions: {
@@ -50,7 +51,7 @@ export function getLoadTestConfig(
         },
         logger: new DefaultLogger({ level: LogLevel.Info }),
         dbConnectionOptions:
-            process.env.DB === 'postgres'
+            process.env.DB === 'postgres' || db === 'postgres'
                 ? getPostgresConnectionOptions(databaseName)
                 : getMysqlConnectionOptions(databaseName),
         authOptions: {

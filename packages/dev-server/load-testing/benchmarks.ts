@@ -62,7 +62,7 @@ const opts = program.opts() as any;
 runBenchmark(opts).then(() => process.exit(0));
 
 async function runBenchmark(options: Options) {
-    const config = getLoadTestConfig('bearer', DATABASE_NAME);
+    const config = getLoadTestConfig('bearer', DATABASE_NAME, options.db);
     if (options.populate) {
         console.log(`Populating benchmark database "${DATABASE_NAME}"`);
         await clearAllTables(config, true);
