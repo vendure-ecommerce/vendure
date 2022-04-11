@@ -3,7 +3,7 @@
     "module": "commonjs",
     "noLib": false,
     "skipLibCheck": true,
-    "lib": ["es2017", "esnext.asynciterable"],
+    "lib": ["es2019", "esnext.asynciterable"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
