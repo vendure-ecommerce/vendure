@@ -39,7 +39,7 @@ export function parseSortParams<T extends VendureEntity>(
             output[`${translationsAlias}.${key}`] = order as any;
         } else if (calculatedColumnDef) {
             const instruction = calculatedColumnDef.listQuery;
-            if (instruction) {
+            if (instruction && instruction.expression) {
                 output[escapeCalculatedColumnExpression(connection, instruction.expression)] = order as any;
             }
         } else if (customPropertyMap?.[key]) {

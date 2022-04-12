@@ -17,7 +17,7 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { ApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
-import { ListQueryOptions } from '../../../common/types/common-types';
+import { FilterParameter, ListQueryOptions, SortParameter } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -187,7 +187,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             : this.connection.getRepository(entity);
 
         const qb = repo.createQueryBuilder(entity.name.toLowerCase());
-        const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, extendedOptions);
+        const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: minimumRequiredRelations,
             take,
@@ -204,7 +204,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         const { customPropertyMap } = extendedOptions;
         if (customPropertyMap) {
-            this.normalizeCustomPropertyMap(customPropertyMap, qb);
+            this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
         const sort = parseSortParams(
             rawConnection,
@@ -270,6 +270,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
      */
     private getMinimumRequiredRelations<T extends VendureEntity>(
         repository: Repository<T>,
+        options: ListQueryOptions<T>,
         extendedOptions: ExtendedListQueryOptions<T>,
     ): string[] {
         const requiredRelations: string[] = [];
@@ -279,7 +280,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         if (extendedOptions.customPropertyMap) {
             const metadata = repository.metadata;
 
-            for (const path of Object.values(extendedOptions.customPropertyMap)) {
+            for (const [property, path] of Object.entries(extendedOptions.customPropertyMap)) {
+                if (!this.customPropertyIsBeingUsed(property, options)) {
+                    // If the custom property is not being used to filter or sort, then we don't need
+                    // to join the associated relations.
+                    continue;
+                }
                 const tableNameLower = path.split('.')[0];
                 const entityMetadata = repository.manager.connection.entityMetadatas.find(
                     em => em.tableName === tableNameLower,
@@ -293,6 +299,10 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             }
         }
         return unique(requiredRelations);
+    }
+
+    private customPropertyIsBeingUsed(property: string, options: ListQueryOptions<any>): boolean {
+        return !!(options.sort?.[property] || options.filter?.[property]);
     }
 
     /**
@@ -312,11 +322,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     ) {
         const originalGetManyAndCount = qb.getManyAndCount.bind(qb);
         qb.getManyAndCount = async () => {
+            const relations = unique(extendedOptions.relations ?? []);
             const [entities, count] = await originalGetManyAndCount();
-            if (
-                extendedOptions.relations == null ||
-                alreadyJoined.length === extendedOptions.relations.length
-            ) {
+            if (relations == null || alreadyJoined.sort().join() === relations?.sort().join()) {
                 // No further relations need to be joined, so we just
                 // return the regular result.
                 return [entities, count];
@@ -324,7 +332,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             const entityMap = new Map(entities.map(e => [e.id, e]));
             const entitiesIds = entities.map(({ id }) => id);
 
-            const splitRelations = extendedOptions.relations.map(r => r.split('.'));
+            const splitRelations = relations.map(r => r.split('.'));
             const groupedRelationsMap = new Map<string, string[]>();
             for (const relationParts of splitRelations) {
                 const group = groupedRelationsMap.get(relationParts[0]);
@@ -344,15 +352,15 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             }
 
             const entitiesIdsWithRelations = await Promise.all(
-                Array.from(groupedRelationsMap.values())?.map(relations => {
+                Array.from(groupedRelationsMap.values())?.map(relationPaths => {
                     return repo
                         .findByIds(entitiesIds, {
                             select: ['id'],
-                            relations,
+                            relations: relationPaths,
                             loadEagerRelations: false,
                         })
                         .then(results =>
-                            results.map(r => ({ relation: relations[0] as keyof T, entity: r })),
+                            results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),
                         );
                 }),
             ).then(all => all.flat());
@@ -374,22 +382,26 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
      */
     private normalizeCustomPropertyMap(
         customPropertyMap: { [name: string]: string },
+        options: ListQueryOptions<any>,
         qb: SelectQueryBuilder<any>,
     ) {
-        for (const [key, value] of Object.entries(customPropertyMap)) {
-            const parts = customPropertyMap[key].split('.');
+        for (const [property, value] of Object.entries(customPropertyMap)) {
+            if (!this.customPropertyIsBeingUsed(property, options)) {
+                continue;
+            }
+            const parts = customPropertyMap[property].split('.');
             const entityPart = 2 <= parts.length ? parts[parts.length - 2] : qb.alias;
             const columnPart = parts[parts.length - 1];
             const relationAlias = qb.expressionMap.aliases.find(
                 a => a.metadata.tableNameWithoutPrefix === entityPart,
             );
             if (relationAlias) {
-                customPropertyMap[key] = `${relationAlias.name}.${columnPart}`;
+                customPropertyMap[property] = `${relationAlias.name}.${columnPart}`;
             } else {
                 Logger.error(
-                    `The customPropertyMap entry "${key}:${value}" could not be resolved to a related table`,
+                    `The customPropertyMap entry "${property}:${value}" could not be resolved to a related table`,
                 );
-                delete customPropertyMap[key];
+                delete customPropertyMap[property];
             }
         }
     }
