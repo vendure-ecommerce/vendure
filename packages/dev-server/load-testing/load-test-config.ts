@@ -13,32 +13,35 @@ import {
 } from '@vendure/core';
 import path from 'path';
 
-export function getMysqlConnectionOptions(count: number) {
+export function getMysqlConnectionOptions(databaseName: string) {
     return {
         type: 'mysql' as const,
         host: '127.0.0.1',
         port: 3306,
         username: 'root',
         password: '',
-        database: `vendure-load-testing-${count}`,
+        database: databaseName,
         extra: {
             // connectionLimit: 150,
         },
     };
 }
-export function getPostgresConnectionOptions(count: number) {
+export function getPostgresConnectionOptions(databaseName: string) {
     return {
         type: 'postgres' as const,
         host: '127.0.0.1',
         port: 5432,
         username: 'admin',
         password: 'secret',
-        database: `vendure-load-testing-${count}`,
+        database: databaseName,
     };
 }
 
-export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<VendureConfig> {
-    const count = getProductCount();
+export function getLoadTestConfig(
+    tokenMethod: 'cookie' | 'bearer',
+    databaseName: string,
+    db?: 'postgres' | 'mysql',
+): Required<VendureConfig> {
     return mergeConfig(defaultConfig, {
         paymentOptions: {
             paymentMethodHandlers: [dummyPaymentHandler],
@@ -48,9 +51,9 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
         },
         logger: new DefaultLogger({ level: LogLevel.Info }),
         dbConnectionOptions:
-            process.env.DB === 'postgres'
-                ? getPostgresConnectionOptions(count)
-                : getMysqlConnectionOptions(count),
+            process.env.DB === 'postgres' || db === 'postgres'
+                ? getPostgresConnectionOptions(databaseName)
+                : getMysqlConnectionOptions(databaseName),
         authOptions: {
             tokenMethod,
             requireVerification: false,

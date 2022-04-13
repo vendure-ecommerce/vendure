@@ -2,7 +2,14 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { LogicalOperator } from '@vendure/common/lib/generated-types';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Brackets, FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
+import {
+    Brackets,
+    FindConditions,
+    FindManyOptions,
+    FindOneOptions,
+    Repository,
+    SelectQueryBuilder,
+} from 'typeorm';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
@@ -178,9 +185,11 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
             : this.connection.getRepository(entity);
+
         const qb = repo.createQueryBuilder(entity.name.toLowerCase());
+        const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, extendedOptions);
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: extendedOptions.relations,
+            relations: minimumRequiredRelations,
             take,
             skip,
             where: extendedOptions.where || {},
@@ -230,6 +239,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         qb.orderBy(sort);
+        this.optimizeGetManyAndCountMethod(qb, repo, extendedOptions, minimumRequiredRelations);
         return qb;
     }
 
@@ -250,6 +260,110 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             take = takeLimit;
         }
         return { take, skip };
+    }
+
+    /**
+     * @description
+     * As part of list optimization, we only join the minimum required relations which are needed to
+     * get the base list query. Other relations are then joined individually in the patched `getManyAndCount()`
+     * method.
+     */
+    private getMinimumRequiredRelations<T extends VendureEntity>(
+        repository: Repository<T>,
+        extendedOptions: ExtendedListQueryOptions<T>,
+    ): string[] {
+        const requiredRelations: string[] = [];
+        if (extendedOptions.channelId) {
+            requiredRelations.push('channels');
+        }
+        if (extendedOptions.customPropertyMap) {
+            const metadata = repository.metadata;
+
+            for (const path of Object.values(extendedOptions.customPropertyMap)) {
+                const tableNameLower = path.split('.')[0];
+                const entityMetadata = repository.manager.connection.entityMetadatas.find(
+                    em => em.tableName === tableNameLower,
+                );
+                if (entityMetadata) {
+                    const relationMetadata = metadata.relations.find(r => r.type === entityMetadata.target);
+                    if (relationMetadata) {
+                        requiredRelations.push(relationMetadata.propertyName);
+                    }
+                }
+            }
+        }
+        return unique(requiredRelations);
+    }
+
+    /**
+     * @description
+     * This will monkey-patch the `getManyAndCount()` method in order to implement a more efficient
+     * parallel-query based approach to joining multiple relations. This is loosely based on the
+     * solution outlined here: https://github.com/typeorm/typeorm/issues/3857#issuecomment-633006643
+     *
+     * TODO: When upgrading to TypeORM v0.3+, this will likely become redundant due to the new
+     * `relationLoadStrategy` feature.
+     */
+    private optimizeGetManyAndCountMethod<T extends VendureEntity>(
+        qb: SelectQueryBuilder<T>,
+        repo: Repository<T>,
+        extendedOptions: ExtendedListQueryOptions<T>,
+        alreadyJoined: string[],
+    ) {
+        const originalGetManyAndCount = qb.getManyAndCount.bind(qb);
+        qb.getManyAndCount = async () => {
+            const [entities, count] = await originalGetManyAndCount();
+            if (
+                extendedOptions.relations == null ||
+                alreadyJoined.length === extendedOptions.relations.length
+            ) {
+                // No further relations need to be joined, so we just
+                // return the regular result.
+                return [entities, count];
+            }
+            const entityMap = new Map(entities.map(e => [e.id, e]));
+            const entitiesIds = entities.map(({ id }) => id);
+
+            const splitRelations = extendedOptions.relations.map(r => r.split('.'));
+            const groupedRelationsMap = new Map<string, string[]>();
+            for (const relationParts of splitRelations) {
+                const group = groupedRelationsMap.get(relationParts[0]);
+                if (group) {
+                    group.push(relationParts.join('.'));
+                } else {
+                    groupedRelationsMap.set(relationParts[0], [relationParts.join('.')]);
+                }
+            }
+
+            // If the extendedOptions includes relations that were already joined, then
+            // we ignore those now so as not to do the work of joining twice.
+            for (const tableName of alreadyJoined) {
+                if (groupedRelationsMap.get(tableName)?.length === 1) {
+                    groupedRelationsMap.delete(tableName);
+                }
+            }
+
+            const entitiesIdsWithRelations = await Promise.all(
+                Array.from(groupedRelationsMap.values())?.map(relations => {
+                    return repo
+                        .findByIds(entitiesIds, {
+                            select: ['id'],
+                            relations,
+                            loadEagerRelations: false,
+                        })
+                        .then(results =>
+                            results.map(r => ({ relation: relations[0] as keyof T, entity: r })),
+                        );
+                }),
+            ).then(all => all.flat());
+            for (const entry of entitiesIdsWithRelations) {
+                const finalEntity = entityMap.get(entry.entity.id);
+                if (finalEntity) {
+                    finalEntity[entry.relation] = entry.entity[entry.relation];
+                }
+            }
+            return [Array.from(entityMap.values()), count];
+        };
     }
 
     /**
