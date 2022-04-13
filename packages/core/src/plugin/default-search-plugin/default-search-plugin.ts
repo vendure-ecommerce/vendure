@@ -202,7 +202,9 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
     private async initSearchStrategy(): Promise<void> {
         const injector = new Injector(this.moduleRef);
         const searchService = injector.get(FulltextSearchService);
-        await searchService.searchStrategy.init(injector);
+        if (typeof searchService.searchStrategy.init === 'function') {
+            await searchService.searchStrategy.init(injector);
+        }
     }
 
     /**
