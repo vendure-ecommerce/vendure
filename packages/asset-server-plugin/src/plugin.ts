@@ -212,6 +212,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     mimeType = (await fromBuffer(file))?.mime || 'application/octet-stream';
                 }
                 res.contentType(mimeType);
+                res.setHeader('content-security-policy', `default-src 'self'`);
                 res.send(file);
             } catch (e) {
                 const err = new Error('File not found');
@@ -251,6 +252,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                             Logger.debug(`Saved cached asset: ${cachedFileName}`, loggerCtx);
                         }
                         res.set('Content-Type', `image/${(await image.metadata()).format}`);
+                        res.setHeader('content-security-policy', `default-src 'self'`);
                         res.send(imageBuffer);
                         return;
                     } catch (e) {
