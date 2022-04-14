@@ -23,6 +23,7 @@ import { Readable, Stream } from 'stream';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
@@ -106,14 +107,20 @@ export class AssetService {
             });
     }
 
-    findOne(ctx: RequestContext, id: ID): Promise<Asset | undefined> {
-        return this.connection.findOneInChannel(ctx, Asset, id, ctx.channelId);
+    findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<Asset>): Promise<Asset | undefined> {
+        return this.connection.findOneInChannel(ctx, Asset, id, ctx.channelId, {
+            relations: relations ?? [],
+        });
     }
 
-    findAll(ctx: RequestContext, options?: AssetListOptions): Promise<PaginatedList<Asset>> {
+    findAll(
+        ctx: RequestContext,
+        options?: AssetListOptions,
+        relations?: RelationPaths<Asset>,
+    ): Promise<PaginatedList<Asset>> {
         const qb = this.listQueryBuilder.build(Asset, options, {
             ctx,
-            relations: options?.tags ? ['tags', 'channels'] : ['channels'],
+            relations: [...(relations ?? []), 'tags'],
             channelId: ctx.channelId,
         });
         const tags = options?.tags;

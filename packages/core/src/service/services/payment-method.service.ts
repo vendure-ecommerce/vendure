@@ -12,6 +12,7 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
@@ -49,9 +50,10 @@ export class PaymentMethodService {
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<PaymentMethod>,
+        relations: RelationPaths<PaymentMethod> = [],
     ): Promise<PaginatedList<PaymentMethod>> {
         return this.listQueryBuilder
-            .build(PaymentMethod, options, { ctx, relations: ['channels'], channelId: ctx.channelId })
+            .build(PaymentMethod, options, { ctx, relations, channelId: ctx.channelId })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -59,8 +61,14 @@ export class PaymentMethodService {
             }));
     }
 
-    findOne(ctx: RequestContext, paymentMethodId: ID): Promise<PaymentMethod | undefined> {
-        return this.connection.findOneInChannel(ctx, PaymentMethod, paymentMethodId, ctx.channelId);
+    findOne(
+        ctx: RequestContext,
+        paymentMethodId: ID,
+        relations: RelationPaths<PaymentMethod> = [],
+    ): Promise<PaymentMethod | undefined> {
+        return this.connection.findOneInChannel(ctx, PaymentMethod, paymentMethodId, ctx.channelId, {
+            relations,
+        });
     }
 
     async create(ctx: RequestContext, input: CreatePaymentMethodInput): Promise<PaymentMethod> {

@@ -16,6 +16,7 @@ import { CustomerGroup } from '../../../entity/customer-group/customer-group.ent
 import { CustomerGroupService } from '../../../service/services/customer-group.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -28,6 +29,7 @@ export class CustomerGroupResolver {
     customerGroups(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerGroupsArgs,
+        @Relations(CustomerGroup) relations: RelationPaths<CustomerGroup>,
     ): Promise<PaginatedList<CustomerGroup>> {
         return this.customerGroupService.findAll(ctx, args.options || undefined);
     }
@@ -37,6 +39,7 @@ export class CustomerGroupResolver {
     async customerGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerGroupArgs,
+        @Relations(CustomerGroup) relations: RelationPaths<CustomerGroup>,
     ): Promise<CustomerGroup | undefined> {
         return this.customerGroupService.findOne(ctx, args.id);
     }

@@ -22,6 +22,7 @@ import { FacetValueService } from '../../../service/services/facet-value.service
 import { FacetService } from '../../../service/services/facet.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -38,8 +39,9 @@ export class FacetResolver {
     facets(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryFacetsArgs,
+        @Relations(Facet) relations: RelationPaths<Facet>,
     ): Promise<PaginatedList<Translated<Facet>>> {
-        return this.facetService.findAll(ctx, args.options || undefined);
+        return this.facetService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -47,8 +49,9 @@ export class FacetResolver {
     async facet(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryFacetArgs,
+        @Relations(Facet) relations: RelationPaths<Facet>,
     ): Promise<Translated<Facet> | undefined> {
-        return this.facetService.findOne(ctx, args.id);
+        return this.facetService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

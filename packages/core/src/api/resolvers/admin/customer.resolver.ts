@@ -26,6 +26,7 @@ import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -38,8 +39,9 @@ export class CustomerResolver {
     async customers(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomersArgs,
+        @Relations(Customer) relations: RelationPaths<Customer>,
     ): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(ctx, args.options || undefined);
+        return this.customerService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -47,8 +49,9 @@ export class CustomerResolver {
     async customer(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerArgs,
+        @Relations(Customer) relations: RelationPaths<Customer>,
     ): Promise<Customer | undefined> {
-        return this.customerService.findOne(ctx, args.id);
+        return this.customerService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

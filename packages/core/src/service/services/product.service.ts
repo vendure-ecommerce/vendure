@@ -13,6 +13,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
@@ -22,6 +23,7 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
+import { Order } from '../../entity/index';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -72,10 +74,11 @@ export class ProductService {
     async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Product>,
+        relations?: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
         return this.listQueryBuilder
             .build(Product, options, {
-                relations: this.relations,
+                relations: relations || this.relations,
                 channelId: ctx.channelId,
                 where: { deletedAt: null },
                 ctx,
@@ -92,9 +95,19 @@ export class ProductService {
             });
     }
 
-    async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
+    async findOne(
+        ctx: RequestContext,
+        productId: ID,
+        relations?: RelationPaths<Product>,
+    ): Promise<Translated<Product> | undefined> {
+        const effectiveRelations = relations ?? this.relations;
+        if (relations && effectiveRelations.includes('facetValues')) {
+            // We need the facet to determine with the FacetValues are public
+            // when serving via the Shop API.
+            effectiveRelations.push('facetValues.facet');
+        }
         const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
-            relations: this.relations,
+            relations: unique(effectiveRelations),
             where: {
                 deletedAt: null,
             },
@@ -105,9 +118,15 @@ export class ProductService {
         return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
     }
 
-    async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
+    async findByIds(
+        ctx: RequestContext,
+        productIds: ID[],
+        relations?: RelationPaths<Product>,
+    ): Promise<Array<Translated<Product>>> {
         const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+            relations: (relations && false) || this.relations,
+        });
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         return qb
@@ -146,9 +165,15 @@ export class ProductService {
             );
     }
 
-    async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
+    async findOneBySlug(
+        ctx: RequestContext,
+        slug: string,
+        relations?: RelationPaths<Product>,
+    ): Promise<Translated<Product> | undefined> {
         const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+            relations: (relations && false) || this.relations,
+        });
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         const translationQb = this.connection

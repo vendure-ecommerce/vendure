@@ -7,6 +7,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { FindManyOptions, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -33,9 +34,13 @@ export class ProductOptionGroupService {
         private eventBus: EventBus,
     ) {}
 
-    findAll(ctx: RequestContext, filterTerm?: string): Promise<Array<Translated<ProductOptionGroup>>> {
+    findAll(
+        ctx: RequestContext,
+        filterTerm?: string,
+        relations?: RelationPaths<ProductOptionGroup>,
+    ): Promise<Array<Translated<ProductOptionGroup>>> {
         const findOptions: FindManyOptions = {
-            relations: ['options'],
+            relations: relations ?? ['options'],
         };
         if (filterTerm) {
             findOptions.where = {
@@ -48,11 +53,15 @@ export class ProductOptionGroupService {
             .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
     }
 
-    findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOptionGroup> | undefined> {
+    findOne(
+        ctx: RequestContext,
+        id: ID,
+        relations?: RelationPaths<ProductOptionGroup>,
+    ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .findOne(id, {
-                relations: ['options'],
+                relations: relations ?? ['options'],
             })
             .then(group => group && translateDeep(group, ctx.languageCode, ['options']));
     }

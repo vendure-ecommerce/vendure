@@ -17,6 +17,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
 import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
@@ -66,12 +67,16 @@ export class PromotionService {
         this.availableActions = this.configService.promotionOptions.promotionActions || [];
     }
 
-    findAll(ctx: RequestContext, options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<Promotion>,
+        relations: RelationPaths<Promotion> = [],
+    ): Promise<PaginatedList<Promotion>> {
         return this.listQueryBuilder
             .build(Promotion, options, {
                 where: { deletedAt: null },
                 channelId: ctx.channelId,
-                relations: ['channels'],
+                relations,
                 ctx,
             })
             .getManyAndCount()
@@ -81,9 +86,14 @@ export class PromotionService {
             }));
     }
 
-    async findOne(ctx: RequestContext, adjustmentSourceId: ID): Promise<Promotion | undefined> {
+    async findOne(
+        ctx: RequestContext,
+        adjustmentSourceId: ID,
+        relations: RelationPaths<Promotion> = [],
+    ): Promise<Promotion | undefined> {
         return this.connection.findOneInChannel(ctx, Promotion, adjustmentSourceId, ctx.channelId, {
             where: { deletedAt: null },
+            relations,
         });
     }
 

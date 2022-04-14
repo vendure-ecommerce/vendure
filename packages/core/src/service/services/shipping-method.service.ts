@@ -10,6 +10,7 @@ import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -61,10 +62,11 @@ export class ShippingMethodService {
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<ShippingMethod>,
+        relations: RelationPaths<ShippingMethod> = [],
     ): Promise<PaginatedList<ShippingMethod>> {
         return this.listQueryBuilder
             .build(ShippingMethod, options, {
-                relations: ['channels'],
+                relations,
                 where: { deletedAt: null },
                 channelId: ctx.channelId,
                 ctx,
@@ -80,6 +82,7 @@ export class ShippingMethodService {
         ctx: RequestContext,
         shippingMethodId: ID,
         includeDeleted = false,
+        relations: RelationPaths<ShippingMethod> = [],
     ): Promise<ShippingMethod | undefined> {
         const shippingMethod = await this.connection.findOneInChannel(
             ctx,
@@ -87,7 +90,7 @@ export class ShippingMethodService {
             shippingMethodId,
             ctx.channelId,
             {
-                relations: ['channels'],
+                relations,
                 ...(includeDeleted === false ? { where: { deletedAt: null } } : {}),
             },
         );

@@ -118,7 +118,7 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
 export const Relations = createParamDecorator<FieldsDecoratorConfig>((data, ctx: ExecutionContext) => {
     const info = ctx.getArgByIndex(3);
     if (data == null) {
-        throw new InternalServerError(`The @Fields() decorator requires an entity type argument`);
+        throw new InternalServerError(`The @Relations() decorator requires an entity type argument`);
     }
     if (!isGraphQLResolveInfo(info)) {
         return [];
