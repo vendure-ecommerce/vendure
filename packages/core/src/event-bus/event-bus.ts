@@ -110,14 +110,29 @@ export class EventBus implements OnModuleDestroy {
      * * https://github.com/vendure-ecommerce/vendure/issues/1107
      */
     private async awaitActiveTransactions<T extends VendureEvent>(event: T): Promise<T> {
-        const ctx = Object.values(event).find(value => value instanceof RequestContext);
-        if (!ctx) {
+        const entry = Object.entries(event).find(([_, value]) => value instanceof RequestContext);
+
+        if (!entry) {
             return event;
         }
+
+        const [key, ctx]: [string, RequestContext] = entry;
+        
         const transactionManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
         if (!transactionManager?.queryRunner) {
             return event;
         }
-        return this.transactionSubscriber.awaitRelease(transactionManager.queryRunner).then(() => event);
+
+        return this.transactionSubscriber.awaitRelease(transactionManager.queryRunner).then(() => {
+            // Copy context and remove transaction manager
+            // This will prevent queries to released query runner
+            const newContext = ctx.copy();
+            delete (newContext as any)[TRANSACTION_MANAGER_KEY];
+
+            // Reassign new context
+            (event as any)[key] = newContext
+
+            return event;
+        });
     }
 }
