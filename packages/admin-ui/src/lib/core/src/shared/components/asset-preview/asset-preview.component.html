@@ -11,6 +11,7 @@
             <img
                 class="asset-image"
                 [src]="asset | assetPreview: size"
+                [ngClass]="size"
                 #imageElement
                 (load)="onImageLoad()"
             />
