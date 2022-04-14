@@ -18,6 +18,8 @@ export * from './default-config';
 export * from './entity-id-strategy/auto-increment-id-strategy';
 export * from './entity-id-strategy/entity-id-strategy';
 export * from './entity-id-strategy/uuid-id-strategy';
+export * from './entity-metadata/entity-metadata-modifier';
+export * from './entity-metadata/add-foreign-key-indices';
 export * from './fulfillment/custom-fulfillment-process';
 export * from './fulfillment/fulfillment-handler';
 export * from './fulfillment/manual-fulfillment-handler';
