@@ -99,7 +99,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     }
 
     getSourceFileName(): string {
-        const parts = this.asset.source.split('/');
+        const parts = this.asset.source.split(/[\\\/]/g);
         return parts[parts.length - 1];
     }
 
