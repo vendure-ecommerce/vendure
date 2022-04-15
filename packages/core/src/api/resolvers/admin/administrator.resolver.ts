@@ -16,6 +16,7 @@ import { Administrator } from '../../../entity/administrator/administrator.entit
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -28,8 +29,9 @@ export class AdministratorResolver {
     administrators(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryAdministratorsArgs,
+        @Relations(Administrator) relations: RelationPaths<Administrator>,
     ): Promise<PaginatedList<Administrator>> {
-        return this.administratorService.findAll(ctx, args.options || undefined);
+        return this.administratorService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -37,8 +39,9 @@ export class AdministratorResolver {
     administrator(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryAdministratorArgs,
+        @Relations(Administrator) relations: RelationPaths<Administrator>,
     ): Promise<Administrator | undefined> {
-        return this.administratorService.findOne(ctx, args.id);
+        return this.administratorService.findOne(ctx, args.id, relations);
     }
 
     @Query()

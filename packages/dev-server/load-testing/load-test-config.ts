@@ -1,6 +1,7 @@
 /* tslint:disable:no-console */
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import {
+    addForeignKeyIndices,
     defaultConfig,
     DefaultJobQueuePlugin,
     DefaultLogger,
@@ -42,6 +43,10 @@ export function getLoadTestConfig(
     databaseName: string,
     db?: 'postgres' | 'mysql',
 ): Required<VendureConfig> {
+    const connectionOptions =
+        process.env.DB === 'postgres' || db === 'postgres'
+            ? getPostgresConnectionOptions(databaseName)
+            : getMysqlConnectionOptions(databaseName);
     return mergeConfig(defaultConfig, {
         paymentOptions: {
             paymentMethodHandlers: [dummyPaymentHandler],
@@ -50,10 +55,13 @@ export function getLoadTestConfig(
             orderItemsLimit: 99999,
         },
         logger: new DefaultLogger({ level: LogLevel.Info }),
-        dbConnectionOptions:
-            process.env.DB === 'postgres' || db === 'postgres'
-                ? getPostgresConnectionOptions(databaseName)
-                : getMysqlConnectionOptions(databaseName),
+        dbConnectionOptions: {
+            ...connectionOptions,
+            synchronize: true,
+        },
+        entityOptions: {
+            metadataModifiers: [addForeignKeyIndices],
+        },
         authOptions: {
             tokenMethod,
             requireVerification: false,

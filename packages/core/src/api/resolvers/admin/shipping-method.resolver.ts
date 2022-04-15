@@ -18,6 +18,7 @@ import { OrderTestingService } from '../../../service/services/order-testing.ser
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -33,8 +34,9 @@ export class ShippingMethodResolver {
     shippingMethods(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryShippingMethodsArgs,
+        @Relations(ShippingMethod) relations: RelationPaths<ShippingMethod>,
     ): Promise<PaginatedList<ShippingMethod>> {
-        return this.shippingMethodService.findAll(ctx, args.options || undefined);
+        return this.shippingMethodService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -42,8 +44,9 @@ export class ShippingMethodResolver {
     shippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryShippingMethodArgs,
+        @Relations(ShippingMethod) relations: RelationPaths<ShippingMethod>,
     ): Promise<ShippingMethod | undefined> {
-        return this.shippingMethodService.findOne(ctx, args.id);
+        return this.shippingMethodService.findOne(ctx, args.id, false, relations);
     }
 
     @Query()

@@ -4,10 +4,10 @@ import {
     DeletionResult,
     UpdateAdministratorInput,
 } from '@vendure/common/lib/generated-types';
-import { SUPER_ADMIN_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { idsAreEqual } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -58,10 +58,11 @@ export class AdministratorService {
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Administrator>,
+        relations?: RelationPaths<Administrator>,
     ): Promise<PaginatedList<Administrator>> {
         return this.listQueryBuilder
             .build(Administrator, options, {
-                relations: ['user', 'user.roles'],
+                relations: relations ?? ['user', 'user.roles'],
                 where: { deletedAt: null },
                 ctx,
             })
@@ -76,9 +77,13 @@ export class AdministratorService {
      * @description
      * Get an Administrator by id.
      */
-    findOne(ctx: RequestContext, administratorId: ID): Promise<Administrator | undefined> {
+    findOne(
+        ctx: RequestContext,
+        administratorId: ID,
+        relations?: RelationPaths<Administrator>,
+    ): Promise<Administrator | undefined> {
         return this.connection.getRepository(ctx, Administrator).findOne(administratorId, {
-            relations: ['user', 'user.roles'],
+            relations: relations ?? ['user', 'user.roles'],
             where: {
                 deletedAt: null,
             },
@@ -89,8 +94,13 @@ export class AdministratorService {
      * @description
      * Get an Administrator based on the User id.
      */
-    findOneByUserId(ctx: RequestContext, userId: ID): Promise<Administrator | undefined> {
+    findOneByUserId(
+        ctx: RequestContext,
+        userId: ID,
+        relations?: RelationPaths<Administrator>,
+    ): Promise<Administrator | undefined> {
         return this.connection.getRepository(ctx, Administrator).findOne({
+            relations,
             where: {
                 user: { id: userId },
                 deletedAt: null,

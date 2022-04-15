@@ -111,6 +111,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     entityOptions: {
         channelCacheTtl: 30000,
         zoneCacheTtl: 30000,
+        metadataModifiers: [],
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,

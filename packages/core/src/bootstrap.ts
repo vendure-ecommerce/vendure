@@ -13,6 +13,7 @@ import { RuntimeVendureConfig, VendureConfig } from './config/vendure-config';
 import { Administrator } from './entity/administrator/administrator.entity';
 import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
+import { runEntityMetadataModifiers } from './entity/run-entity-metadata-modifiers';
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
@@ -150,6 +151,7 @@ export async function preBootstrapConfig(
     }
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
+    await runEntityMetadataModifiers(config);
     setExposedHeaders(config);
     return config;
 }

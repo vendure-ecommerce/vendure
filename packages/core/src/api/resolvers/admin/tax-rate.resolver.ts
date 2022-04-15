@@ -14,6 +14,7 @@ import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -26,14 +27,19 @@ export class TaxRateResolver {
     async taxRates(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryTaxRatesArgs,
+        @Relations(TaxRate) relations: RelationPaths<TaxRate>,
     ): Promise<PaginatedList<TaxRate>> {
-        return this.taxRateService.findAll(ctx, args.options || undefined);
+        return this.taxRateService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadCatalog, Permission.ReadTaxRate)
-    async taxRate(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRateArgs): Promise<TaxRate | undefined> {
-        return this.taxRateService.findOne(ctx, args.id);
+    async taxRate(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryTaxRateArgs,
+        @Relations(TaxRate) relations: RelationPaths<TaxRate>,
+    ): Promise<TaxRate | undefined> {
+        return this.taxRateService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

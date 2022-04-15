@@ -16,6 +16,7 @@ import { ProductOptionGroupService } from '../../../service/services/product-opt
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -31,6 +32,7 @@ export class ProductOptionResolver {
     productOptionGroups(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductOptionGroupsArgs,
+        @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(ctx, args.filterTerm || undefined);
     }
@@ -40,6 +42,7 @@ export class ProductOptionResolver {
     productOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductOptionGroupArgs,
+        @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.productOptionGroupService.findOne(ctx, args.id);
     }

@@ -40,7 +40,7 @@ export class ZoneService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private eventBus: EventBus,
-    ) { }
+    ) {}
 
     /** @internal */
     async initZones() {
@@ -48,7 +48,7 @@ export class ZoneService {
     }
 
     /**
-     * Creates a zones cache, that can be used to reduce number of zones queries to database 
+     * Creates a zones cache, that can be used to reduce number of zones queries to database
      *
      * @internal
      */
@@ -188,11 +188,11 @@ export class ZoneService {
     }
 
     /**
-    * Ensures zones cache exists. If not, this method creates one.
-    */
+     * Ensures zones cache exists. If not, this method creates one.
+     */
     private async ensureCacheExists() {
         if (this.zones) {
-            return
+            return;
         }
 
         this.zones = await this.createCache();

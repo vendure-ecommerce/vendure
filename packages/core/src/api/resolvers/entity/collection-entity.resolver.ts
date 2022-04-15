@@ -12,6 +12,7 @@ import { ProductVariantService } from '../../../service/services/product-variant
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Collection')
@@ -44,6 +45,7 @@ export class CollectionEntityResolver {
         @Parent() collection: Collection,
         @Args() args: { options: ProductVariantListOptions },
         @Api() apiType: ApiType,
+        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         let options: ListQueryOptions<Product> = args.options;
         if (apiType === 'shop') {
@@ -55,7 +57,7 @@ export class CollectionEntityResolver {
                 },
             };
         }
-        return this.productVariantService.getVariantsByCollectionId(ctx, collection.id, options);
+        return this.productVariantService.getVariantsByCollectionId(ctx, collection.id, options, relations);
     }
 
     @ResolveField()

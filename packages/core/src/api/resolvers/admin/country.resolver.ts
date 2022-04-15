@@ -15,6 +15,7 @@ import { Country } from '../../../entity/country/country.entity';
 import { CountryService } from '../../../service/services/country.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -27,8 +28,9 @@ export class CountryResolver {
     countries(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCountriesArgs,
+        @Relations(Country) relations: RelationPaths<Country>,
     ): Promise<PaginatedList<Translated<Country>>> {
-        return this.countryService.findAll(ctx, args.options || undefined);
+        return this.countryService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -36,8 +38,9 @@ export class CountryResolver {
     async country(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCountryArgs,
+        @Relations(Country) relations: RelationPaths<Country>,
     ): Promise<Translated<Country> | undefined> {
-        return this.countryService.findOne(ctx, args.id);
+        return this.countryService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

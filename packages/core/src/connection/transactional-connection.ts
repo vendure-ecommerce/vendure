@@ -256,6 +256,11 @@ export class TransactionalConnection {
         options: FindOneOptions = {},
     ) {
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
+        if (options.relations) {
+            // Joining custom field relations here does not seem to work well,
+            // so we simply omit them and rely on the custom field relation resolvers.
+            options.relations = options.relations.filter(r => !r.startsWith('customFields.'));
+        }
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
         if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion

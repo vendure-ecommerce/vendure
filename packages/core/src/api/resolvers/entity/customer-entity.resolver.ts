@@ -12,6 +12,7 @@ import { UserService } from '../../../service/services/user.service';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Customer')
@@ -40,12 +41,13 @@ export class CustomerEntityResolver {
         @Parent() customer: Customer,
         @Args() args: QueryOrdersArgs,
         @Api() apiType: ApiType,
+        @Relations(Order) relations: RelationPaths<Order>,
     ): Promise<PaginatedList<Order>> {
         if (apiType === 'shop' && !ctx.activeUserId) {
             // Guest customers should not be able to see this data
             return { items: [], totalItems: 0 };
         }
-        return this.orderService.findByCustomerId(ctx, customer.id, args.options || undefined);
+        return this.orderService.findByCustomerId(ctx, customer.id, args.options || undefined, relations);
     }
 
     @ResolveField()

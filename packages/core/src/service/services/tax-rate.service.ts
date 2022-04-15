@@ -8,6 +8,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { RequestContextCacheService } from '../../cache';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -47,9 +48,13 @@ export class TaxRateService {
         private cacheService: RequestContextCacheService,
     ) {}
 
-    findAll(ctx: RequestContext, options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<TaxRate>,
+        relations?: RelationPaths<TaxRate>,
+    ): Promise<PaginatedList<TaxRate>> {
         return this.listQueryBuilder
-            .build(TaxRate, options, { relations: ['category', 'zone', 'customerGroup'], ctx })
+            .build(TaxRate, options, { relations: relations ?? ['category', 'zone', 'customerGroup'], ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -57,9 +62,13 @@ export class TaxRateService {
             }));
     }
 
-    findOne(ctx: RequestContext, taxRateId: ID): Promise<TaxRate | undefined> {
+    findOne(
+        ctx: RequestContext,
+        taxRateId: ID,
+        relations?: RelationPaths<TaxRate>,
+    ): Promise<TaxRate | undefined> {
         return this.connection.getRepository(ctx, TaxRate).findOne(taxRateId, {
-            relations: ['category', 'zone', 'customerGroup'],
+            relations: relations ?? ['category', 'zone', 'customerGroup'],
         });
     }
 
