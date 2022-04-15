@@ -4,6 +4,8 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';
 
+import { SearchStrategy } from './search-strategy/search-strategy';
+
 /**
  * @description
  * Options which configure the behaviour of the DefaultSearchPlugin
@@ -35,6 +37,90 @@ export interface DefaultSearchPluginInitOptions {
      * @default false
      */
     bufferUpdates?: boolean;
+
+    /**
+     * @description
+     * Set a custom search strategy that implements {@link SearchStrategy} or extends an existing search strategy
+     * such as {@link MysqlSearchStrategy}, {@link PostgresSearchStrategy} or {@link SqliteSearchStrategy}.
+     *
+     * @example
+     * ```Typescript
+     * export class MySearchStrategy implements SearchStrategy {
+     *     private readonly minTermLength = 2;
+     *     private connection: TransactionalConnection;
+     *     private options: DefaultSearchPluginInitOptions;
+     *
+     *     async init(injector: Injector) {
+     *         this.connection = injector.get(TransactionalConnection);
+     *         this.options = injector.get(PLUGIN_INIT_OPTIONS);
+     *     }
+     *
+     *     async getFacetValueIds(
+     *         ctx: RequestContext,
+     *         input: SearchInput,
+     *         enabledOnly: boolean,
+     *     ): Promise<Map<ID, number>> {
+     *         // ...
+     *         return createFacetIdCountMap(facetValuesResult);
+     *     }
+     *
+     *     async getCollectionIds(
+     *         ctx: RequestContext,
+     *         input: SearchInput,
+     *         enabledOnly: boolean,
+     *     ): Promise<Map<ID, number>> {
+     *         // ...
+     *         return createCollectionIdCountMap(collectionsResult);
+     *     }
+     *
+     *     async getSearchResults(
+     *         ctx: RequestContext,
+     *         input: SearchInput,
+     *         enabledOnly: boolean,
+     *     ): Promise<SearchResult[]> {
+     *         const take = input.take || 25;
+     *         const skip = input.skip || 0;
+     *         const sort = input.sort;
+     *         const qb = this.connection
+     *             .getRepository(SearchIndexItem)
+     *             .createQueryBuilder('si')
+     *             .select(this.createMysqlSelect(!!input.groupByProduct));
+     *         // ...
+     *
+     *         return qb
+     *             .take(take)
+     *             .skip(skip)
+     *             .getRawMany()
+     *             .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+     *     }
+     *
+     *     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
+     *         const innerQb = this.applyTermAndFilters(
+     *             ctx,
+     *             this.connection
+     *                 .getRepository(SearchIndexItem)
+     *                 .createQueryBuilder('si')
+     *                 .select(this.createMysqlSelect(!!input.groupByProduct)),
+     *             input,
+     *         );
+     *         if (enabledOnly) {
+     *             innerQb.andWhere('si.enabled = :enabled', { enabled: true });
+     *         }
+     *
+     *         const totalItemsQb = this.connection.rawConnection
+     *             .createQueryBuilder()
+     *             .select('COUNT(*) as total')
+     *             .from(`(${innerQb.getQuery()})`, 'inner')
+     *             .setParameters(innerQb.getParameters());
+     *         return totalItemsQb.getRawOne().then(res => res.total);
+     *     }
+     * }
+     * ```
+     *
+     * @since 1.6.0
+     * @default undefined
+     */
+    searchStategy?: SearchStrategy;
 }
 
 /**

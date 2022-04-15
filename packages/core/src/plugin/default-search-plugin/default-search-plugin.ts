@@ -1,9 +1,11 @@
-import { OnApplicationBootstrap } from '@nestjs/common';
+import { OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 import { Column } from 'typeorm';
 
+import { Injector } from '../../common';
 import { idsAreEqual } from '../../common/utils';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetEvent } from '../../event-bus/events/asset-event';
@@ -89,7 +91,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
     },
     entities: [SearchIndexItem],
 })
-export class DefaultSearchPlugin implements OnApplicationBootstrap {
+export class DefaultSearchPlugin implements OnApplicationBootstrap, OnApplicationShutdown {
     static options: DefaultSearchPluginInitOptions = {};
 
     /** @internal */
@@ -97,6 +99,7 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
         private eventBus: EventBus,
         private searchIndexService: SearchIndexService,
         private jobQueueService: JobQueueService,
+        private moduleRef: ModuleRef,
     ) {}
 
     static init(options: DefaultSearchPluginInitOptions): Type<DefaultSearchPlugin> {
@@ -192,6 +195,29 @@ export class DefaultSearchPlugin implements OnApplicationBootstrap {
                     return this.searchIndexService.reindex(event.ctx);
                 }
             });
+
+        await this.initSearchStrategy();
+    }
+
+    /** @internal */
+    async onApplicationShutdown(signal?: string) {
+        await this.destroySearchStrategy();
+    }
+
+    private async initSearchStrategy(): Promise<void> {
+        const injector = new Injector(this.moduleRef);
+        const searchService = injector.get(FulltextSearchService);
+        if (typeof searchService.searchStrategy.init === 'function') {
+            await searchService.searchStrategy.init(injector);
+        }
+    }
+
+    private async destroySearchStrategy(): Promise<void> {
+        const injector = new Injector(this.moduleRef);
+        const searchService = injector.get(FulltextSearchService);
+        if (typeof searchService.searchStrategy.destroy === 'function') {
+            await searchService.searchStrategy.destroy();
+        }
     }
 
     /**
