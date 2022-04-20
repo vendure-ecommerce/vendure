@@ -43,6 +43,7 @@ export class SlugValidator {
                     t.slug = normalizeString(t.slug, '-');
                     let match: E | undefined;
                     let suffix = 1;
+                    const seen: ID[] = [];
                     const alreadySuffixed = /-\d+$/;
                     do {
                         const qb = this.connection
@@ -52,20 +53,27 @@ export class SlugValidator {
                             .where(`translation.slug = :slug`, { slug: t.slug })
                             .andWhere(`translation.languageCode = :languageCode`, {
                                 languageCode: t.languageCode,
-                            });
+                            })
                         if (input.id) {
                             qb.andWhere(`translation.base != :id`, { id: input.id });
                         }
+                        if (seen.length) {
+                            qb.andWhere(`translation.id NOT IN (:...seen)`, { seen });
+                        }
                         match = await qb.getOne();
-                        if (match && !match.base.deletedAt) {
-                            suffix++;
-                            if (alreadySuffixed.test(t.slug)) {
-                                t.slug = t.slug.replace(alreadySuffixed, `-${suffix}`);
+                        if (match) {
+                            if (!match.base.deletedAt) {
+                                suffix++;
+                                if (alreadySuffixed.test(t.slug)) {
+                                    t.slug = t.slug.replace(alreadySuffixed, `-${suffix}`);
+                                } else {
+                                    t.slug = `${t.slug}-${suffix}`;
+                                }
                             } else {
-                                t.slug = `${t.slug}-${suffix}`;
+                                seen.push(match.id);
                             }
                         }
-                    } while (match && !match.base.deletedAt);
+                    } while (match);
                 }
             }
         }
