@@ -12,10 +12,6 @@
 * **core** Correctly handle slug validation of deleted translations ([61de857](https://github.com/vendure-ecommerce/vendure/commit/61de857)), closes [#1527](https://github.com/vendure-ecommerce/vendure/issues/1527)
 * **core** Correctly resolve prices of deleted ProductVariants in orders ([5061dd9](https://github.com/vendure-ecommerce/vendure/commit/5061dd9)), closes [#1508](https://github.com/vendure-ecommerce/vendure/issues/1508)
 
-
-### breaking change
-
-* was introduced.
 ## <small>1.5.1 (2022-03-31)</small>
 
 
