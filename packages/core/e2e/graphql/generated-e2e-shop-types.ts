@@ -3604,6 +3604,16 @@ export type GetActiveCustomerWithOrdersProductSlugQuery = {
     }>;
 };
 
+export type GetActiveCustomerWithOrdersProductPriceQueryVariables = Exact<{
+    options?: Maybe<OrderListOptions>;
+}>;
+
+export type GetActiveCustomerWithOrdersProductPriceQuery = {
+    activeCustomer?: Maybe<{
+        orders: { items: Array<{ lines: Array<{ productVariant: Pick<ProductVariant, 'price'> }> }> };
+    }>;
+};
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 export namespace TestOrderFragment {
@@ -4267,5 +4277,47 @@ export namespace GetActiveCustomerWithOrdersProductSlug {
                 >[number]
             >['productVariant']
         >['product']
+    >;
+}
+
+export namespace GetActiveCustomerWithOrdersProductPrice {
+    export type Variables = GetActiveCustomerWithOrdersProductPriceQueryVariables;
+    export type Query = GetActiveCustomerWithOrdersProductPriceQuery;
+    export type ActiveCustomer = NonNullable<GetActiveCustomerWithOrdersProductPriceQuery['activeCustomer']>;
+    export type Orders = NonNullable<
+        NonNullable<GetActiveCustomerWithOrdersProductPriceQuery['activeCustomer']>['orders']
+    >;
+    export type Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<GetActiveCustomerWithOrdersProductPriceQuery['activeCustomer']>['orders']
+            >['items']
+        >[number]
+    >;
+    export type Lines = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<GetActiveCustomerWithOrdersProductPriceQuery['activeCustomer']>['orders']
+                    >['items']
+                >[number]
+            >['lines']
+        >[number]
+    >;
+    export type ProductVariant = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<
+                                GetActiveCustomerWithOrdersProductPriceQuery['activeCustomer']
+                            >['orders']
+                        >['items']
+                    >[number]
+                >['lines']
+            >[number]
+        >['productVariant']
     >;
 }

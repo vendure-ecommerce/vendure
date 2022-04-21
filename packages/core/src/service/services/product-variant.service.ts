@@ -251,9 +251,10 @@ export class ProductVariantService {
      */
     async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
         const { productVariant } = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLineId, {
-            relations: ['productVariant'],
+            relations: ['productVariant', 'productVariant.taxCategory'],
+            includeSoftDeleted: true,
         });
-        return translateDeep(productVariant, ctx.languageCode);
+        return translateDeep(await this.applyChannelPriceAndTax(productVariant, ctx), ctx.languageCode);
     }
 
     /**
@@ -589,7 +590,7 @@ export class ProductVariantService {
                             ctx,
                             ProductVariant,
                             variant.id,
-                            { relations: ['productVariantPrices'] },
+                            { relations: ['productVariantPrices'], includeSoftDeleted: true },
                         );
                         variant.productVariantPrices = variantWithPrices.productVariantPrices;
                     }
@@ -598,7 +599,7 @@ export class ProductVariantService {
                             ctx,
                             ProductVariant,
                             variant.id,
-                            { relations: ['taxCategory'] },
+                            { relations: ['taxCategory'], includeSoftDeleted: true },
                         );
                         variant.taxCategory = variantWithTaxCategory.taxCategory;
                     }

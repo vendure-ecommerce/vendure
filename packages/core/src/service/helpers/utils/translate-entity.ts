@@ -60,8 +60,10 @@ export function translateEntity<T extends Translatable & VendureEntity>(
         });
     }
 
-    const translated = { ...(translatable as any) };
-    Object.setPrototypeOf(translated, Object.getPrototypeOf(translatable));
+    const translated = Object.create(
+        Object.getPrototypeOf(translatable),
+        Object.getOwnPropertyDescriptors(translatable),
+    );
 
     for (const [key, value] of Object.entries(translation)) {
         if (key === 'customFields') {

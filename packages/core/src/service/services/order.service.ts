@@ -266,28 +266,13 @@ export class OrderService {
     ): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: [
-                    'lines',
-                    'lines.items',
-                    'lines.productVariant',
-                    'lines.productVariant.options',
-                    'customer',
-                    'channels',
-                    'shippingLines',
-                ],
+                relations: ['lines', 'lines.items', 'customer', 'channels', 'shippingLines'],
                 channelId: ctx.channelId,
                 ctx,
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
-                items.forEach(item => {
-                    item.lines.forEach(line => {
-                        line.productVariant = translateDeep(line.productVariant, ctx.languageCode, [
-                            'options',
-                        ]);
-                    });
-                });
                 return {
                     items,
                     totalItems,
