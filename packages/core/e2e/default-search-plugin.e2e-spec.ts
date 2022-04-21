@@ -89,9 +89,9 @@ interface SearchProductShopVariables extends SearchProductsShop.Variables {
 }
 
 describe('Default search plugin', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(
+    const {server, adminClient, shopClient} = createTestEnvironment(
         mergeConfig(testConfig(), {
-            plugins: [DefaultSearchPlugin.init({ indexStockStatus: true }), DefaultJobQueuePlugin],
+            plugins: [DefaultSearchPlugin.init({indexStockStatus: true}), DefaultJobQueuePlugin],
         }),
     );
 
@@ -280,7 +280,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     groupByProduct: true,
-                    facetValueFilters: [{ and: 'T_1' }, { and: 'T_2' }],
+                    facetValueFilters: [{and: 'T_1'}, {and: 'T_2'}],
                 },
             },
         );
@@ -300,7 +300,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     groupByProduct: true,
-                    facetValueFilters: [{ or: ['T_1', 'T_5'] }],
+                    facetValueFilters: [{or: ['T_1', 'T_5']}],
                 },
             },
         );
@@ -327,7 +327,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     groupByProduct: true,
-                    facetValueFilters: [{ and: 'T_1' }, { or: ['T_2', 'T_3'] }],
+                    facetValueFilters: [{and: 'T_1'}, {or: ['T_2', 'T_3']}],
                 },
             },
         );
@@ -352,7 +352,7 @@ describe('Default search plugin', () => {
                 input: {
                     facetValueIds: ['T_2', 'T_3'],
                     facetValueOperator: LogicalOperator.OR,
-                    facetValueFilters: [{ and: 'T_1' }],
+                    facetValueFilters: [{and: 'T_1'}],
                     groupByProduct: true,
                 },
             },
@@ -377,7 +377,7 @@ describe('Default search plugin', () => {
             {
                 input: {
                     facetValueIds: ['T_1'],
-                    facetValueFilters: [{ and: 'T_3' }],
+                    facetValueFilters: [{and: 'T_3'}],
                     facetValueOperator: LogicalOperator.AND,
                     groupByProduct: true,
                 },
@@ -437,16 +437,16 @@ describe('Default search plugin', () => {
         );
         expect(result.search.items).toEqual([
             {
-                price: { value: 129900 },
-                priceWithTax: { value: 155880 },
+                price: {value: 129900},
+                priceWithTax: {value: 155880},
             },
             {
-                price: { value: 139900 },
-                priceWithTax: { value: 167880 },
+                price: {value: 139900},
+                priceWithTax: {value: 167880},
             },
             {
-                price: { value: 219900 },
-                priceWithTax: { value: 263880 },
+                price: {value: 219900},
+                priceWithTax: {value: 263880},
             },
         ]);
     }
@@ -463,16 +463,16 @@ describe('Default search plugin', () => {
         );
         expect(result.search.items).toEqual([
             {
-                price: { min: 129900, max: 229900 },
-                priceWithTax: { min: 155880, max: 275880 },
+                price: {min: 129900, max: 229900},
+                priceWithTax: {min: 155880, max: 275880},
             },
             {
-                price: { min: 14374, max: 16994 },
-                priceWithTax: { min: 17249, max: 20393 },
+                price: {min: 14374, max: 16994},
+                priceWithTax: {min: 17249, max: 20393},
             },
             {
-                price: { min: 93120, max: 109995 },
-                priceWithTax: { min: 111744, max: 131994 },
+                price: {min: 93120, max: 109995},
+                priceWithTax: {min: 111744, max: 131994},
             },
         ]);
     }
@@ -520,12 +520,12 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.facetValues).toEqual([
-                { count: 21, facetValue: { id: 'T_1', name: 'electronics' } },
-                { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
-                { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
-                { count: 10, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                {count: 21, facetValue: {id: 'T_1', name: 'electronics'}},
+                {count: 17, facetValue: {id: 'T_2', name: 'computers'}},
+                {count: 4, facetValue: {id: 'T_3', name: 'photo'}},
+                {count: 10, facetValue: {id: 'T_4', name: 'sports equipment'}},
+                {count: 3, facetValue: {id: 'T_5', name: 'home & garden'}},
+                {count: 3, facetValue: {id: 'T_6', name: 'plants'}},
             ]);
         });
 
@@ -539,12 +539,12 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.facetValues).toEqual([
-                { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
-                { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
-                { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
-                { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                {count: 10, facetValue: {id: 'T_1', name: 'electronics'}},
+                {count: 6, facetValue: {id: 'T_2', name: 'computers'}},
+                {count: 4, facetValue: {id: 'T_3', name: 'photo'}},
+                {count: 7, facetValue: {id: 'T_4', name: 'sports equipment'}},
+                {count: 3, facetValue: {id: 'T_5', name: 'home & garden'}},
+                {count: 3, facetValue: {id: 'T_6', name: 'plants'}},
             ]);
         });
 
@@ -560,23 +560,23 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.facetValues).toEqual([
-                { count: 4, facetValue: { id: 'T_1', name: 'electronics' } },
-                { count: 4, facetValue: { id: 'T_2', name: 'computers' } },
+                {count: 4, facetValue: {id: 'T_1', name: 'electronics'}},
+                {count: 4, facetValue: {id: 'T_2', name: 'computers'}},
             ]);
         });
 
         it('omits facetValues of private facets', async () => {
-            const { createFacet } = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
+            const {createFacet} = await adminClient.query<CreateFacet.Mutation, CreateFacet.Variables>(
                 CREATE_FACET,
                 {
                     input: {
                         code: 'profit-margin',
                         isPrivate: true,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Profit Margin' }],
+                        translations: [{languageCode: LanguageCode.en, name: 'Profit Margin'}],
                         values: [
                             {
                                 code: 'massive',
-                                translations: [{ languageCode: LanguageCode.en, name: 'massive' }],
+                                translations: [{languageCode: LanguageCode.en, name: 'massive'}],
                             },
                         ],
                     },
@@ -601,12 +601,12 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.facetValues).toEqual([
-                { count: 10, facetValue: { id: 'T_1', name: 'electronics' } },
-                { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
-                { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
-                { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                {count: 10, facetValue: {id: 'T_1', name: 'electronics'}},
+                {count: 6, facetValue: {id: 'T_2', name: 'computers'}},
+                {count: 4, facetValue: {id: 'T_3', name: 'photo'}},
+                {count: 7, facetValue: {id: 'T_4', name: 'sports equipment'}},
+                {count: 3, facetValue: {id: 'T_5', name: 'home & garden'}},
+                {count: 3, facetValue: {id: 'T_6', name: 'plants'}},
             ]);
         });
 
@@ -620,7 +620,7 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+                {collection: {id: 'T_2', name: 'Plants'}, count: 3},
             ]);
         });
 
@@ -634,7 +634,7 @@ describe('Default search plugin', () => {
                 },
             );
             expect(result.search.collections).toEqual([
-                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+                {collection: {id: 'T_2', name: 'Plants'}, count: 3},
             ]);
         });
 
@@ -666,7 +666,7 @@ describe('Default search plugin', () => {
             await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                 UPDATE_PRODUCT_VARIANTS,
                 {
-                    input: [{ id: 'T_3', enabled: false }],
+                    input: [{id: 'T_3', enabled: false}],
                 },
             );
             await awaitRunningJobs(adminClient);
@@ -820,7 +820,7 @@ describe('Default search plugin', () => {
         describe('updating the index', () => {
             it('updates index when ProductVariants are changed', async () => {
                 await awaitRunningJobs(adminClient);
-                const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
+                const {search} = await doAdminSearchQuery({term: 'drive', groupByProduct: false});
                 expect(search.items.map(i => i.sku)).toEqual([
                     'IHD455T1',
                     'IHD455T2',
@@ -840,7 +840,7 @@ describe('Default search plugin', () => {
                 );
 
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const {search: search2} = await doAdminSearchQuery({
                     term: 'drive',
                     groupByProduct: false,
                 });
@@ -856,7 +856,7 @@ describe('Default search plugin', () => {
 
             it('updates index when ProductVariants are deleted', async () => {
                 await awaitRunningJobs(adminClient);
-                const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
+                const {search} = await doAdminSearchQuery({term: 'drive', groupByProduct: false});
 
                 await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
                     DELETE_PRODUCT_VARIANT,
@@ -866,7 +866,7 @@ describe('Default search plugin', () => {
                 );
 
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const {search: search2} = await doAdminSearchQuery({
                     term: 'drive',
                     groupByProduct: false,
                 });
@@ -887,7 +887,7 @@ describe('Default search plugin', () => {
                     },
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
+                const result = await doAdminSearchQuery({facetValueIds: ['T_2'], groupByProduct: true});
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Curvy Monitor',
                     'Gaming PC',
@@ -898,13 +898,13 @@ describe('Default search plugin', () => {
             });
 
             it('updates index when a Product is deleted', async () => {
-                const { search } = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
+                const {search} = await doAdminSearchQuery({facetValueIds: ['T_2'], groupByProduct: true});
                 expect(search.items.map(i => i.productId)).toEqual(['T_2', 'T_3', 'T_4', 'T_5', 'T_6']);
                 await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
                     id: 'T_5',
                 });
                 await awaitRunningJobs(adminClient);
-                const { search: search2 } = await doAdminSearchQuery({
+                const {search: search2} = await doAdminSearchQuery({
                     facetValueIds: ['T_2'],
                     groupByProduct: true,
                 });
@@ -938,7 +938,7 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
-                const result1 = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
+                const result1 = await doAdminSearchQuery({collectionId: 'T_2', groupByProduct: true});
 
                 expect(result1.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
@@ -950,7 +950,7 @@ describe('Default search plugin', () => {
                     'Running Shoe',
                 ]);
 
-                const result2 = await doAdminSearchQuery({ collectionSlug: 'plants', groupByProduct: true });
+                const result2 = await doAdminSearchQuery({collectionSlug: 'plants', groupByProduct: true});
 
                 expect(result2.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
@@ -964,10 +964,8 @@ describe('Default search plugin', () => {
             }, 10000);
 
             it('updates index when a Collection created', async () => {
-                const { createCollection } = await adminClient.query<
-                    CreateCollection.Mutation,
-                    CreateCollection.Variables
-                >(CREATE_COLLECTION, {
+                const {createCollection} = await adminClient.query<CreateCollection.Mutation,
+                    CreateCollection.Variables>(CREATE_COLLECTION, {
                     input: {
                         translations: [
                             {
@@ -1030,8 +1028,8 @@ describe('Default search plugin', () => {
                 );
                 expect(result.search.items).toEqual([
                     {
-                        price: { min: 129900, max: 229900 },
-                        priceWithTax: { min: 194850, max: 344850 },
+                        price: {min: 129900, max: 229900},
+                        priceWithTax: {min: 194850, max: 344850},
                     },
                 ]);
             });
@@ -1050,7 +1048,7 @@ describe('Default search plugin', () => {
                 }
 
                 it('updates index when asset focalPoint is changed', async () => {
-                    const { search: search1 } = await searchForLaptop();
+                    const {search: search1} = await searchForLaptop();
 
                     expect(search1.items[0].productAsset!.id).toBe('T_1');
                     expect(search1.items[0].productAsset!.focalPoint).toBeNull();
@@ -1067,14 +1065,14 @@ describe('Default search plugin', () => {
 
                     await awaitRunningJobs(adminClient);
 
-                    const { search: search2 } = await searchForLaptop();
+                    const {search: search2} = await searchForLaptop();
 
                     expect(search2.items[0].productAsset!.id).toBe('T_1');
-                    expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
+                    expect(search2.items[0].productAsset!.focalPoint).toEqual({x: 0.42, y: 0.42});
                 });
 
                 it('updates index when asset deleted', async () => {
-                    const { search: search1 } = await searchForLaptop();
+                    const {search: search1} = await searchForLaptop();
 
                     const assetId = search1.items[0].productAsset?.id;
                     expect(assetId).toBeTruthy();
@@ -1088,28 +1086,26 @@ describe('Default search plugin', () => {
 
                     await awaitRunningJobs(adminClient);
 
-                    const { search: search2 } = await searchForLaptop();
+                    const {search: search2} = await searchForLaptop();
 
                     expect(search2.items[0].productAsset).toBeNull();
                 });
             });
 
             it('does not include deleted ProductVariants in index', async () => {
-                const { search: s1 } = await doAdminSearchQuery({
+                const {search: s1} = await doAdminSearchQuery({
                     term: 'hard drive',
                     groupByProduct: false,
                 });
 
-                const { deleteProductVariant } = await adminClient.query<
-                    DeleteProductVariant.Mutation,
-                    DeleteProductVariant.Variables
-                >(DELETE_PRODUCT_VARIANT, { id: s1.items[0].productVariantId });
+                const {deleteProductVariant} = await adminClient.query<DeleteProductVariant.Mutation,
+                    DeleteProductVariant.Variables>(DELETE_PRODUCT_VARIANT, {id: s1.items[0].productVariantId});
 
                 await awaitRunningJobs(adminClient);
 
-                const { search } = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+                const {search} = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
                     SEARCH_GET_PRICES,
-                    { input: { term: 'hard drive', groupByProduct: true } },
+                    {input: {term: 'hard drive', groupByProduct: true}},
                 );
                 expect(search.items[0].price).toEqual({
                     min: 7896,
@@ -1118,11 +1114,11 @@ describe('Default search plugin', () => {
             });
 
             it('returns enabled field when not grouped', async () => {
-                const result = await doAdminSearchQuery({ groupByProduct: false, take: 3 });
+                const result = await doAdminSearchQuery({groupByProduct: false, take: 3});
                 expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
-                    { productVariantId: 'T_1', enabled: true },
-                    { productVariantId: 'T_2', enabled: true },
-                    { productVariantId: 'T_3', enabled: false },
+                    {productVariantId: 'T_1', enabled: true},
+                    {productVariantId: 'T_2', enabled: true},
+                    {productVariantId: 'T_3', enabled: false},
                 ]);
             });
 
@@ -1131,17 +1127,17 @@ describe('Default search plugin', () => {
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: [
-                            { id: 'T_1', enabled: false },
-                            { id: 'T_2', enabled: false },
+                            {id: 'T_1', enabled: false},
+                            {id: 'T_2', enabled: false},
                         ],
                     },
                 );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await doAdminSearchQuery({groupByProduct: true, take: 3});
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
-                    { productId: 'T_1', enabled: true },
-                    { productId: 'T_2', enabled: true },
-                    { productId: 'T_3', enabled: true },
+                    {productId: 'T_1', enabled: true},
+                    {productId: 'T_2', enabled: true},
+                    {productId: 'T_3', enabled: true},
                 ]);
             });
 
@@ -1149,15 +1145,15 @@ describe('Default search plugin', () => {
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
-                        input: [{ id: 'T_4', enabled: false }],
+                        input: [{id: 'T_4', enabled: false}],
                     },
                 );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await doAdminSearchQuery({groupByProduct: true, take: 3});
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
-                    { productId: 'T_1', enabled: false },
-                    { productId: 'T_2', enabled: true },
-                    { productId: 'T_3', enabled: true },
+                    {productId: 'T_1', enabled: false},
+                    {productId: 'T_2', enabled: true},
+                    {productId: 'T_3', enabled: true},
                 ]);
             });
 
@@ -1169,11 +1165,11 @@ describe('Default search plugin', () => {
                     },
                 });
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await doAdminSearchQuery({groupByProduct: true, take: 3});
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
-                    { productId: 'T_1', enabled: false },
-                    { productId: 'T_2', enabled: true },
-                    { productId: 'T_3', enabled: false },
+                    {productId: 'T_1', enabled: false},
+                    {productId: 'T_2', enabled: true},
+                    {productId: 'T_3', enabled: false},
                 ]);
             });
 
@@ -1182,11 +1178,55 @@ describe('Default search plugin', () => {
                 await adminClient.query<Reindex.Mutation>(REINDEX);
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                const result = await doAdminSearchQuery({groupByProduct: true, take: 3});
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
-                    { productId: 'T_1', enabled: false },
-                    { productId: 'T_2', enabled: true },
-                    { productId: 'T_3', enabled: false },
+                    {productId: 'T_1', enabled: false},
+                    {productId: 'T_2', enabled: true},
+                    {productId: 'T_3', enabled: false},
+                ]);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1482
+            it('price range omits disabled variant', async () => {
+                const result1 = await shopClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'monitor',
+                            take: 3,
+                        } as SearchInput,
+                    },
+                );
+                expect(result1.search.items).toEqual([
+                    {
+                        price: {min: 14374, max: 16994},
+                        priceWithTax: {min: 21561, max: 25491},
+                    },
+                ]);
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [{id: 'T_5', enabled: false}],
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                const result2 = await shopClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'monitor',
+                            take: 3,
+                        } as SearchInput,
+                    },
+                );
+                expect(result2.search.items).toEqual([
+                    {
+                        price: {min: 16994, max: 16994},
+                        priceWithTax: {min: 25491, max: 25491},
+                    },
                 ]);
             });
 
@@ -1195,14 +1235,12 @@ describe('Default search plugin', () => {
                 // We generate this long string out of random chars because Postgres uses compression
                 // when storing the string value, so e.g. a long series of a single character will not
                 // reproduce the error.
-                const description = Array.from({ length: 220 })
+                const description = Array.from({length: 220})
                     .map(() => Math.random().toString(36))
                     .join(' ');
 
-                const { createProduct } = await adminClient.query<
-                    CreateProduct.Mutation,
-                    CreateProduct.Variables
-                >(CREATE_PRODUCT, {
+                const {createProduct} = await adminClient.query<CreateProduct.Mutation,
+                    CreateProduct.Variables>(CREATE_PRODUCT, {
                     input: {
                         translations: [
                             {
@@ -1223,14 +1261,14 @@ describe('Default search plugin', () => {
                                 sku: 'VLD01',
                                 price: 100,
                                 translations: [
-                                    { languageCode: LanguageCode.en, name: 'Very long description variant' },
+                                    {languageCode: LanguageCode.en, name: 'Very long description variant'},
                                 ],
                             },
                         ],
                     },
                 );
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ term: 'aabbccdd' });
+                const result = await doAdminSearchQuery({term: 'aabbccdd'});
                 expect(result.search.items.map(i => i.productName)).toEqual([
                     'Very long description aabbccdd',
                 ]);
@@ -1245,10 +1283,8 @@ describe('Default search plugin', () => {
             let createdProductId: string;
 
             it('creates synthetic index item for Product with no variants', async () => {
-                const { createProduct } = await adminClient.query<
-                    CreateProduct.Mutation,
-                    CreateProduct.Variables
-                >(CREATE_PRODUCT, {
+                const {createProduct} = await adminClient.query<CreateProduct.Mutation,
+                    CreateProduct.Variables>(CREATE_PRODUCT, {
                     input: {
                         facetValueIds: ['T_1'],
                         translations: [
@@ -1263,7 +1299,7 @@ describe('Default search plugin', () => {
                 });
 
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ groupByProduct: true, term: 'strawberry' });
+                const result = await doAdminSearchQuery({groupByProduct: true, term: 'strawberry'});
                 expect(
                     result.search.items.map(
                         pick([
@@ -1289,26 +1325,24 @@ describe('Default search plugin', () => {
             });
 
             it('removes synthetic index item once a variant is created', async () => {
-                const { createProductVariants } = await adminClient.query<
-                    CreateProductVariants.Mutation,
-                    CreateProductVariants.Variables
-                >(CREATE_PRODUCT_VARIANTS, {
+                const {createProductVariants} = await adminClient.query<CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables>(CREATE_PRODUCT_VARIANTS, {
                     input: [
                         {
                             productId: createdProductId,
                             sku: 'SC01',
                             price: 1399,
                             translations: [
-                                { languageCode: LanguageCode.en, name: 'Strawberry Cheesecake Pie' },
+                                {languageCode: LanguageCode.en, name: 'Strawberry Cheesecake Pie'},
                             ],
                         },
                     ],
                 });
                 await awaitRunningJobs(adminClient);
 
-                const result = await doAdminSearchQuery({ groupByProduct: false, term: 'strawberry' });
+                const result = await doAdminSearchQuery({groupByProduct: false, term: 'strawberry'});
                 expect(result.search.items.map(pick(['productVariantName']))).toEqual([
-                    { productVariantName: 'Strawberry Cheesecake Pie' },
+                    {productVariantName: 'Strawberry Cheesecake Pie'},
                 ]);
             });
         });
@@ -1318,10 +1352,8 @@ describe('Default search plugin', () => {
             let secondChannel: ChannelFragment;
 
             beforeAll(async () => {
-                const { createChannel } = await adminClient.query<
-                    CreateChannel.Mutation,
-                    CreateChannel.Variables
-                >(CREATE_CHANNEL, {
+                const {createChannel} = await adminClient.query<CreateChannel.Mutation,
+                    CreateChannel.Variables>(CREATE_CHANNEL, {
                     input: {
                         code: 'second-channel',
                         token: SECOND_CHANNEL_TOKEN,
@@ -1340,22 +1372,20 @@ describe('Default search plugin', () => {
                 await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
                     ASSIGN_PRODUCT_TO_CHANNEL,
                     {
-                        input: { channelId: secondChannel.id, productIds: ['T_1', 'T_2'] },
+                        input: {channelId: secondChannel.id, productIds: ['T_1', 'T_2']},
                     },
                 );
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                const {search} = await doAdminSearchQuery({groupByProduct: true});
                 expect(search.items.map(i => i.productId)).toEqual(['T_1', 'T_2']);
             }, 10000);
 
             it('removing product from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                const { removeProductsFromChannel } = await adminClient.query<
-                    RemoveProductsFromChannel.Mutation,
-                    RemoveProductsFromChannel.Variables
-                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                const {removeProductsFromChannel} = await adminClient.query<RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables>(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_2'],
                         channelId: secondChannel.id,
@@ -1364,26 +1394,24 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                const {search} = await doAdminSearchQuery({groupByProduct: true});
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
             }, 10000);
 
             it('adding product variant to channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                await adminClient.query<
-                    AssignProductVariantsToChannel.Mutation,
-                    AssignProductVariantsToChannel.Variables
-                >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
-                    input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
+                await adminClient.query<AssignProductVariantsToChannel.Mutation,
+                    AssignProductVariantsToChannel.Variables>(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
+                    input: {channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15']},
                 });
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                const {search: searchGrouped} = await doAdminSearchQuery({groupByProduct: true});
                 expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3', 'T_4']);
 
-                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                const {search: searchUngrouped} = await doAdminSearchQuery({groupByProduct: false});
                 expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
                     'T_1',
                     'T_2',
@@ -1396,20 +1424,18 @@ describe('Default search plugin', () => {
 
             it('removing product variant from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                await adminClient.query<
-                    RemoveProductVariantsFromChannel.Mutation,
-                    RemoveProductVariantsFromChannel.Variables
-                >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
-                    input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
+                await adminClient.query<RemoveProductVariantsFromChannel.Mutation,
+                    RemoveProductVariantsFromChannel.Variables>(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                    input: {channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15']},
                 });
                 await awaitRunningJobs(adminClient);
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                const {search: searchGrouped} = await doAdminSearchQuery({groupByProduct: true});
                 expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3']);
 
-                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                const {search: searchUngrouped} = await doAdminSearchQuery({groupByProduct: false});
                 expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
                     'T_2',
                     'T_3',
@@ -1420,20 +1446,18 @@ describe('Default search plugin', () => {
 
             it('updating product affects current channel', async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                const { updateProduct } = await adminClient.query<
-                    UpdateProduct.Mutation,
-                    UpdateProduct.Variables
-                >(UPDATE_PRODUCT, {
+                const {updateProduct} = await adminClient.query<UpdateProduct.Mutation,
+                    UpdateProduct.Variables>(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_3',
                         enabled: true,
-                        translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
+                        translations: [{languageCode: LanguageCode.en, name: 'xyz'}],
                     },
                 });
 
                 await awaitRunningJobs(adminClient);
 
-                const { search: searchGrouped } = await doAdminSearchQuery({
+                const {search: searchGrouped} = await doAdminSearchQuery({
                     groupByProduct: true,
                     term: 'xyz',
                 });
@@ -1442,7 +1466,7 @@ describe('Default search plugin', () => {
 
             it('updating product affects other channels', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                const { search: searchGrouped } = await doAdminSearchQuery({
+                const {search: searchGrouped} = await doAdminSearchQuery({
                     groupByProduct: true,
                     term: 'xyz',
                 });
@@ -1476,22 +1500,20 @@ describe('Default search plugin', () => {
                 await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
                     ASSIGN_PRODUCT_TO_CHANNEL,
                     {
-                        input: { channelId: secondChannel.id, productIds: ['T_4'] },
+                        input: {channelId: secondChannel.id, productIds: ['T_4']},
                     },
                 );
                 await awaitRunningJobs(adminClient);
 
                 async function searchSecondChannelForDEProduct() {
                     adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-                    const { search } = await adminClient.query<
-                        SearchProductsShop.Query,
-                        SearchProductShopVariables
-                    >(
+                    const {search} = await adminClient.query<SearchProductsShop.Query,
+                        SearchProductShopVariables>(
                         SEARCH_PRODUCTS,
                         {
-                            input: { term: 'product', groupByProduct: true },
+                            input: {term: 'product', groupByProduct: true},
                         },
-                        { languageCode: LanguageCode.de },
+                        {languageCode: LanguageCode.de},
                     );
                     return search;
                 }
@@ -1500,10 +1522,8 @@ describe('Default search plugin', () => {
                 expect(search1.items.map(i => i.productName)).toEqual(['product de']);
 
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-                const { removeProductsFromChannel } = await adminClient.query<
-                    RemoveProductsFromChannel.Mutation,
-                    RemoveProductsFromChannel.Variables
-                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                const {removeProductsFromChannel} = await adminClient.query<RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables>(REMOVE_PRODUCT_FROM_CHANNEL, {
                     input: {
                         productIds: ['T_4'],
                         channelId: secondChannel.id,
@@ -1532,10 +1552,8 @@ describe('Default search plugin', () => {
             }
 
             beforeAll(async () => {
-                const { updateProduct } = await adminClient.query<
-                    UpdateProduct.Mutation,
-                    UpdateProduct.Variables
-                >(UPDATE_PRODUCT, {
+                const {updateProduct} = await adminClient.query<UpdateProduct.Mutation,
+                    UpdateProduct.Variables>(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_1',
                         translations: [
@@ -1576,13 +1594,13 @@ describe('Default search plugin', () => {
             });
 
             it('indexes product-level languages', async () => {
-                const { search: search1 } = await searchInLanguage(LanguageCode.de);
+                const {search: search1} = await searchInLanguage(LanguageCode.de);
 
                 expect(search1.items[0].productName).toBe('laptop name de');
                 expect(search1.items[0].slug).toBe('laptop-slug-de');
                 expect(search1.items[0].description).toBe('laptop description de');
 
-                const { search: search2 } = await searchInLanguage(LanguageCode.zh);
+                const {search: search2} = await searchInLanguage(LanguageCode.zh);
 
                 expect(search2.items[0].productName).toBe('laptop name zh');
                 expect(search2.items[0].slug).toBe('laptop-slug-zh');
@@ -1590,7 +1608,7 @@ describe('Default search plugin', () => {
             });
 
             it('indexes product variant-level languages', async () => {
-                const { search: search1 } = await searchInLanguage(LanguageCode.fr);
+                const {search: search1} = await searchInLanguage(LanguageCode.fr);
 
                 expect(search1.items[0].productName).toBe('Laptop');
                 expect(search1.items[0].productVariantName).toBe('laptop variant fr');
