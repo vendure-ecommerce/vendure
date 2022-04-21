@@ -13,9 +13,10 @@ export function parseChannelParam<T extends VendureEntity>(
     connection: Connection,
     entity: Type<T>,
     channelId: ID,
+    entityAlias?: string,
 ): WhereCondition | undefined {
     const metadata = connection.getMetadata(entity);
-    const alias = metadata.name.toLowerCase();
+    const alias = entityAlias ?? metadata.name.toLowerCase();
     const relations = metadata.relations;
     const channelRelation = relations.find(r => r.propertyName === 'channels');
     if (!channelRelation) {

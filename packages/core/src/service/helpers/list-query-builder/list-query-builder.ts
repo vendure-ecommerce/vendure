@@ -43,6 +43,14 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
     orderBy?: FindOneOptions<T>['order'];
     /**
      * @description
+     * Allows you to specify the alias used for the entity `T` in the generated SQL query.
+     * Defaults to the entity class name lower-cased, i.e. `ProductVariant` -> `'productvariant'`.
+     *
+     * @since 1.6.0
+     */
+    entityAlias?: string;
+    /**
+     * @description
      * When a RequestContext is passed, then the query will be
      * executed as part of any outer transaction.
      */
@@ -59,6 +67,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * not a column in the Order table, it exists on the Customer entity, and Order has a relation to Customer via
      * `Order.customer`. Therefore we can define a customPropertyMap like this:
      *
+     * @example
      * ```GraphQL
      * """
      * Manually extend the filter & sort inputs to include the new
@@ -73,6 +82,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * }
      * ```
      *
+     * @example
      * ```ts
      * const qb = this.listQueryBuilder.build(Order, options, {
      *   relations: ['customer'],
@@ -186,7 +196,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             ? this.connection.getRepository(extendedOptions.ctx, entity)
             : this.connection.getRepository(entity);
 
-        const qb = repo.createQueryBuilder(entity.name.toLowerCase());
+        const qb = repo.createQueryBuilder(extendedOptions.entityAlias || entity.name.toLowerCase());
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: minimumRequiredRelations,
@@ -197,12 +207,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
-        this.applyTranslationConditions(qb, entity, extendedOptions.ctx);
+        this.applyTranslationConditions(qb, entity, extendedOptions.ctx, extendedOptions.entityAlias);
 
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
 
-        const { customPropertyMap } = extendedOptions;
+        const { customPropertyMap, entityAlias } = extendedOptions;
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
@@ -211,8 +221,15 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             entity,
             Object.assign({}, options.sort, extendedOptions.orderBy),
             customPropertyMap,
+            entityAlias,
         );
-        const filter = parseFilterParams(rawConnection, entity, options.filter, customPropertyMap);
+        const filter = parseFilterParams(
+            rawConnection,
+            entity,
+            options.filter,
+            customPropertyMap,
+            entityAlias,
+        );
 
         if (filter.length) {
             const filterOperator = options.filterOperator ?? LogicalOperator.AND;
@@ -232,7 +249,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            const channelFilter = parseChannelParam(rawConnection, entity, extendedOptions.channelId);
+            const channelFilter = parseChannelParam(
+                rawConnection,
+                entity,
+                extendedOptions.channelId,
+                extendedOptions.entityAlias,
+            );
             if (channelFilter) {
                 qb.andWhere(channelFilter.clause, channelFilter.parameters);
             }
@@ -454,13 +476,16 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         qb: SelectQueryBuilder<any>,
         entity: Type<T>,
         ctx?: RequestContext,
+        entityAlias?: string,
     ) {
         const languageCode = ctx?.languageCode || this.configService.defaultLanguageCode;
 
-        const { columns, translationColumns, alias } = getColumnMetadata(
-            this.connection.rawConnection,
-            entity,
-        );
+        const {
+            columns,
+            translationColumns,
+            alias: defaultAlias,
+        } = getColumnMetadata(this.connection.rawConnection, entity);
+        const alias = entityAlias ?? defaultAlias;
 
         if (translationColumns.length) {
             const translationsAlias = qb.connection.namingStrategy.eagerJoinRelationAlias(
