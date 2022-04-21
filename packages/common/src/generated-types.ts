@@ -3725,6 +3725,11 @@ export type PermissionDefinition = {
   assignable: Scalars['Boolean'];
 };
 
+export type PreviewCollectionVariantsInput = {
+  collectionId: Scalars['ID'];
+  filters: Array<ConfigurableOperationInput>;
+};
+
 /** The price range where the result has more than one price */
 export type PriceRange = {
   __typename?: 'PriceRange';
@@ -4076,6 +4081,8 @@ export type Query = {
   /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
   collection?: Maybe<Collection>;
   collectionFilters: Array<ConfigurableOperationDefinition>;
+  /** Used for real-time previews of the contents of a Collection */
+  previewCollectionVariants: ProductVariantList;
   countries: CountryList;
   country?: Maybe<Country>;
   customerGroups: CustomerGroupList;
@@ -4165,6 +4172,12 @@ export type QueryCollectionsArgs = {
 export type QueryCollectionArgs = {
   id?: Maybe<Scalars['ID']>;
   slug?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryPreviewCollectionVariantsArgs = {
+  input: PreviewCollectionVariantsInput;
+  options?: Maybe<ProductVariantListOptions>;
 };
 
 

@@ -91,14 +91,16 @@ export const variantNameCollectionFilter = new CollectionFilter({
     code: 'variant-name-filter',
     description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
     apply: (qb, args) => {
-        const translationAlias = `variant_name_filter_translation`;
+        let translationAlias = `variant_name_filter_translation`;
         const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 6);
         const termName = `term_${nanoid()}`;
-        const hasJoinOnTranslations = !!qb.expressionMap.joinAttributes.find(
+        const translationsJoin = qb.expressionMap.joinAttributes.find(
             ja => ja.entityOrProperty === 'productVariant.translations',
         );
-        if (!hasJoinOnTranslations) {
+        if (!translationsJoin) {
             qb.leftJoin('productVariant.translations', translationAlias);
+        } else {
+            translationAlias = translationsJoin.alias.name;
         }
         const LIKE = qb.connection.options.type === 'postgres' ? 'ILIKE' : 'LIKE';
         switch (args.operator) {

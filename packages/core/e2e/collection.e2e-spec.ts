@@ -38,6 +38,8 @@ import {
     GetProductsWithVariantIds,
     LanguageCode,
     MoveCollection,
+    PreviewCollectionVariantsQuery,
+    PreviewCollectionVariantsQueryVariables,
     SortOrder,
     UpdateCollection,
     UpdateProduct,
@@ -1601,6 +1603,87 @@ describe('Collection resolver', () => {
                 // no "Hat"
             ]);
         });
+
+        describe('previewCollectionVariants', () => {
+            it('returns correct contents', async () => {
+                const { previewCollectionVariants } = await adminClient.query<
+                    PreviewCollectionVariantsQuery,
+                    PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        collectionId: electronicsCollection.id,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('electronics')}","${getFacetValueId(
+                                            'pear',
+                                        )}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Curvy Monitor 24 inch',
+                    'Curvy Monitor 27 inch',
+                    'Gaming PC i7-8700 240GB SSD',
+                    'Instant Camera',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 16GB',
+                    'Laptop 15 inch 8GB',
+                ]);
+            });
+
+            it('works with list options', async () => {
+                const { previewCollectionVariants } = await adminClient.query<
+                    PreviewCollectionVariantsQuery,
+                    PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        collectionId: electronicsCollection.id,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('electronics')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
+                        filter: {
+                            name: {
+                                contains: 'mon',
+                            },
+                        },
+                        take: 5,
+                    },
+                });
+                expect(previewCollectionVariants.items).toEqual([
+                    { id: 'T_5', name: 'Curvy Monitor 24 inch' },
+                    { id: 'T_6', name: 'Curvy Monitor 27 inch' },
+                ]);
+            });
+        });
     });
 
     describe('Product collections property', () => {
@@ -1921,6 +2004,21 @@ const GET_COLLECTION_NESTED_PARENTS = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+const PREVIEW_COLLECTION_VARIANTS = gql`
+    query PreviewCollectionVariants(
+        $input: PreviewCollectionVariantsInput!
+        $options: ProductVariantListOptions
+    ) {
+        previewCollectionVariants(input: $input, options: $options) {
+            items {
+                id
+                name
+            }
+            totalItems
         }
     }
 `;
