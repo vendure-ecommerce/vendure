@@ -1,3 +1,21 @@
+## <small>1.5.2 (2022-04-21)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly size images when using alternate asset servers ([e175f52](https://github.com/vendure-ecommerce/vendure/commit/e175f52)), closes [#1514](https://github.com/vendure-ecommerce/vendure/issues/1514)
+* **admin-ui** Correctly split path when displaying asset source filename ([54519f0](https://github.com/vendure-ecommerce/vendure/commit/54519f0))
+* **admin-ui** Fix disappearing sidenav menu ([2bb7f7c](https://github.com/vendure-ecommerce/vendure/commit/2bb7f7c)), closes [#1521](https://github.com/vendure-ecommerce/vendure/issues/1521)
+* **admin-ui** Fix issue with boolean configurable arg inputs ([a52c4c0](https://github.com/vendure-ecommerce/vendure/commit/a52c4c0)), closes [#1527](https://github.com/vendure-ecommerce/vendure/issues/1527)
+* **asset-server-plugin** Fix svg XSS vulnerability ([69a4486](https://github.com/vendure-ecommerce/vendure/commit/69a4486))
+* **core** Copy context on transaction start. Do not allow to run queries after transaction aborts. (#1481) ([6050279](https://github.com/vendure-ecommerce/vendure/commit/6050279)), closes [#1481](https://github.com/vendure-ecommerce/vendure/issues/1481)
+* **core** Correctly handle slug validation of deleted translations ([61de857](https://github.com/vendure-ecommerce/vendure/commit/61de857)), closes [#1527](https://github.com/vendure-ecommerce/vendure/issues/1527)
+* **core** Correctly resolve prices of deleted ProductVariants in orders ([5061dd9](https://github.com/vendure-ecommerce/vendure/commit/5061dd9)), closes [#1508](https://github.com/vendure-ecommerce/vendure/issues/1508)
+
+
+### breaking change
+
+* was introduced.
 ## <small>1.5.1 (2022-03-31)</small>
 
 
