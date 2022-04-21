@@ -1858,6 +1858,28 @@ describe('Product resolver', () => {
             expect(result.createProduct.slug).toBe(productToDelete.slug);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/1505
+        it('attempting to re-use deleted slug twice is not allowed', async () => {
+            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Product reusing deleted slug',
+                                slug: productToDelete.slug,
+                                description: 'stuff',
+                            },
+                        ],
+                    },
+                },
+            );
+
+            expect(result.createProduct.slug).not.toBe(productToDelete.slug);
+            expect(result.createProduct.slug).toBe('laptop-2');
+        });
+
         // https://github.com/vendure-ecommerce/vendure/issues/800
         it('product can be fetched by slug of a deleted product', async () => {
             const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(

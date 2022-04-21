@@ -5,6 +5,12 @@
     background-color: var(--clr-global-app-background);
 }
 
+.content-area img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
 a:link, a:visited {
     color: var(--clr-btn-link-color);
 }

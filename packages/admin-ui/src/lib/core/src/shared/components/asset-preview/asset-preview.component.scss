@@ -31,6 +31,12 @@
 
     .asset-image {
         width: 100%;
+
+        &.tiny { max-width: 50px; max-height: 50px; }
+        &.thumb { max-width: 150px; max-height: 150px; }
+        &.small { max-width: 300px; max-height: 300px; }
+        &.medium { max-width: 500px; max-height: 500px; }
+        &.large { max-width: 800px; max-height: 800px; }
     }
 
     .focal-point-info {

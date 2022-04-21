@@ -13,6 +13,14 @@ import {
     TRIGGER_ATTEMPTED_UPDATE_EMAIL,
 } from './fixtures/test-plugins/transaction-test-plugin';
 
+type DBType = 'mysql' | 'postgres' | 'sqlite' | 'sqljs';
+
+const itIfDb = (dbs: DBType[]) => {
+    return dbs.includes(process.env.DB as DBType || 'sqljs')
+        ? it
+        : it.skip
+} 
+
 describe('Transaction infrastructure', () => {
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
@@ -67,6 +75,26 @@ describe('Transaction infrastructure', () => {
         expect(verify.users.length).toBe(2);
         expect(!!verify.admins.find((a: any) => a.emailAddress === 'test2')).toBe(false);
         expect(!!verify.users.find((u: any) => u.identifier === 'test2')).toBe(false);
+    });
+
+    it('failing mutation with promise concurrent execution', async () => {
+        try {
+            await adminClient.query(CREATE_N_ADMINS, {
+                emailAddress: 'testN-',
+                failFactor: 0.4,
+                n: 10
+            })
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.message).toContain('Failed!');
+        }
+
+        const { verify } = await adminClient.query(VERIFY_TEST);
+
+        expect(verify.admins.length).toBe(2);
+        expect(verify.users.length).toBe(2);
+        expect(!!verify.admins.find((a: any) => a.emailAddress.includes('testN'))).toBe(false);
+        expect(!!verify.users.find((u: any) => u.identifier.includes('testN'))).toBe(false);
     });
 
     it('failing manual mutation', async () => {
@@ -125,6 +153,27 @@ describe('Transaction infrastructure', () => {
         expect(verify.users.length).toBe(3);
         expect(!!verify.admins.find((a: any) => a.emailAddress === 'test5')).toBe(false);
         expect(!!verify.users.find((u: any) => u.identifier === 'test5')).toBe(false);
+    });
+
+    itIfDb(['postgres', 'mysql'])('failing mutation inside connection.withTransaction() wrapper with context and promise concurrent execution', async () => {
+        try {
+            await adminClient.query(CREATE_N_ADMINS2, {
+                emailAddress: 'testN-',
+                failFactor: 0.4,
+                n: 10
+            })
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.message)
+                .toMatch(/^Failed!|Query runner already released. Cannot run queries anymore.$/);
+        }
+
+        const { verify } = await adminClient.query(VERIFY_TEST);
+
+        expect(verify.admins.length).toBe(2);
+        expect(verify.users.length).toBe(3);
+        expect(!!verify.admins.find((a: any) => a.emailAddress.includes('testN'))).toBe(false);
+        expect(!!verify.users.find((u: any) => u.identifier.includes('testN'))).toBe(false);
     });
 
     it('failing mutation inside connection.withTransaction() wrapper without request context', async () => {
@@ -226,6 +275,18 @@ const CREATE_ADMIN5 = gql`
         }
     }
     ${ADMIN_FRAGMENT}
+`;
+
+const CREATE_N_ADMINS = gql`
+    mutation CreateNTestAdmins($emailAddress: String!, $failFactor: Float!, $n: Int!) {
+        createNTestAdministrators(emailAddress: $emailAddress, failFactor: $failFactor, n: $n)
+    }
+`;
+
+const CREATE_N_ADMINS2 = gql`
+    mutation CreateNTestAdmins2($emailAddress: String!, $failFactor: Float!, $n: Int!) {
+        createNTestAdministrators2(emailAddress: $emailAddress, failFactor: $failFactor, n: $n)
+    }
 `;
 
 const VERIFY_TEST = gql`

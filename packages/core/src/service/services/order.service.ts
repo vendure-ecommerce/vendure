@@ -306,8 +306,6 @@ export class OrderService {
                 relations: relations ?? [
                     'lines',
                     'lines.items',
-                    'lines.productVariant',
-                    'lines.productVariant.options',
                     'customer',
                     'channels',
                     'shippingLines',
