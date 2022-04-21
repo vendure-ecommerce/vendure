@@ -13,6 +13,7 @@ export type LocalStorageTypeMap = {
     orderListLastCustomFilters: any;
     dashboardWidgetLayout: WidgetLayoutDefinition;
     activeTheme: string;
+    livePreviewCollectionContents: boolean;
 };
 
 export type LocalStorageLocationBasedTypeMap = {

@@ -134,3 +134,19 @@ export const GET_COLLECTION_CONTENTS = gql`
         }
     }
 `;
+
+export const PREVIEW_COLLECTION_CONTENTS = gql`
+    query PreviewCollectionContents(
+        $input: PreviewCollectionVariantsInput!
+        $options: ProductVariantListOptions
+    ) {
+        previewCollectionVariants(input: $input, options: $options) {
+            items {
+                id
+                productId
+                name
+            }
+            totalItems
+        }
+    }
+`;

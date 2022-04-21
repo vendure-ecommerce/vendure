@@ -45,7 +45,9 @@
                         [vdrDisabled]="!(updatePermission | hasPermission)"
                     />
                     <label class="visible-toggle">
-                        <ng-container *ngIf="detailForm.value.visible; else private">{{ 'catalog.public' | translate }}</ng-container>
+                        <ng-container *ngIf="detailForm.value.visible; else private">{{
+                            'catalog.public' | translate
+                        }}</ng-container>
                         <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
                     </label>
                 </clr-toggle-wrapper>
@@ -134,13 +136,29 @@
             </div>
         </div>
         <div class="clr-col">
-            <vdr-collection-contents [collectionId]="id" #collectionContents>
+            <vdr-collection-contents
+                [collectionId]="id"
+                [updatedFilters]="updatedFilters$ | async"
+                [previewUpdatedFilters]="livePreview"
+                #collectionContents
+            >
                 <ng-template let-count>
                     <div class="contents-title">
                         {{ 'catalog.collection-contents' | translate }} ({{
                             'common.results-count' | translate: { count: count }
                         }})
                     </div>
+                    <clr-checkbox-wrapper [class.disabled]="detailForm.get('filters')?.pristine">
+                        <input
+                            type="checkbox"
+                            clrCheckbox
+                            [ngModelOptions]="{ standalone: true }"
+                            [disabled]="detailForm.get('filters')?.pristine"
+                            [ngModel]="livePreview"
+                            (ngModelChange)="toggleLivePreview()"
+                        />
+                        <label>{{ 'catalog.live-preview-contents' | translate }}</label>
+                    </clr-checkbox-wrapper>
                 </ng-template>
             </vdr-collection-contents>
         </div>

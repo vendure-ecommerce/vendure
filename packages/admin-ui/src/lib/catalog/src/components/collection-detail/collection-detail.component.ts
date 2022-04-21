@@ -24,6 +24,7 @@ import {
     findTranslation,
     getConfigArgValue,
     LanguageCode,
+    LocalStorageService,
     ModalService,
     NotificationService,
     Permission,
@@ -32,8 +33,8 @@ import {
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { combineLatest } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { debounceTime, map, mergeMap, take, filter } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -52,6 +53,8 @@ export class CollectionDetailComponent
     assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
+    updatedFilters$: Observable<ConfigurableOperationInput[]>;
+    livePreview = false;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
@@ -64,6 +67,7 @@ export class CollectionDetailComponent
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
         private modalService: ModalService,
+        private localStorageService: LocalStorageService,
     ) {
         super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Collection');
@@ -77,6 +81,7 @@ export class CollectionDetailComponent
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
         });
+        this.livePreview = this.localStorageService.get('livePreviewCollectionContents') ?? false;
     }
 
     ngOnInit() {
@@ -84,6 +89,12 @@ export class CollectionDetailComponent
         this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
+        const filtersFormArray = this.detailForm.get('filters') as FormArray;
+        this.updatedFilters$ = filtersFormArray.statusChanges.pipe(
+            debounceTime(200),
+            filter(() => filtersFormArray.touched),
+            map(status => this.mapOperationsToInputs(this.filters, filtersFormArray.value)),
+        );
     }
 
     ngOnDestroy() {
@@ -218,6 +229,11 @@ export class CollectionDetailComponent
 
     canDeactivate(): boolean {
         return super.canDeactivate() && !this.assetChanges.assets && !this.assetChanges.featuredAsset;
+    }
+
+    toggleLivePreview() {
+        this.livePreview = !this.livePreview;
+        this.localStorageService.set('livePreviewCollectionContents', this.livePreview);
     }
 
     /**

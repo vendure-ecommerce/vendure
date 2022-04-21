@@ -11,19 +11,28 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
+    CollectionFilterParameter,
+    ConfigurableOperationInput,
+    DataService,
+    GetCollectionContents,
+    LocalStorageService,
+} from '@vendure/admin-ui/core';
+import { BehaviorSubject, combineLatest, Observable, of, onErrorResumeNext, Subject } from 'rxjs';
+import {
+    catchError,
     debounceTime,
     distinctUntilChanged,
+    filter,
+    finalize,
     map,
+    retry,
+    retryWhen,
     startWith,
     switchMap,
     takeUntil,
     tap,
 } from 'rxjs/operators';
-
-import { GetCollectionContents } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-collection-contents',
@@ -33,6 +42,8 @@ import { DataService } from '@vendure/admin-ui/core';
 })
 export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy {
     @Input() collectionId: string;
+    @Input() updatedFilters: ConfigurableOperationInput[] | undefined;
+    @Input() previewUpdatedFilters = false;
     @ContentChild(TemplateRef, { static: true }) headerTemplate: TemplateRef<any>;
 
     contents$: Observable<GetCollectionContents.Items[]>;
@@ -40,7 +51,9 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     contentsItemsPerPage$: Observable<number>;
     contentsCurrentPage$: Observable<number>;
     filterTermControl = new FormControl('');
+    isLoading = false;
     private collectionIdChange$ = new BehaviorSubject<string>('');
+    private filterChanges$ = new BehaviorSubject<ConfigurableOperationInput[]>([]);
     private refresh$ = new BehaviorSubject<boolean>(true);
     private destroy$ = new Subject<void>();
 
@@ -67,36 +80,72 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
             startWith(''),
         );
 
-        const collection$ = combineLatest(
+        const filterChanges$ = this.filterChanges$.asObservable().pipe(
+            filter(() => this.previewUpdatedFilters),
+            tap(() => this.setContentsPageNumber(1)),
+            startWith([]),
+        );
+
+        const fetchUpdate$ = combineLatest(
             this.collectionIdChange$,
             this.contentsCurrentPage$,
             this.contentsItemsPerPage$,
             filterTerm$,
+            filterChanges$,
             this.refresh$,
-        ).pipe(
+        );
+
+        const collection$ = fetchUpdate$.pipe(
             takeUntil(this.destroy$),
-            switchMap(([id, currentPage, itemsPerPage, filterTerm]) => {
+            tap(() => (this.isLoading = true)),
+            debounceTime(50),
+            switchMap(([id, currentPage, itemsPerPage, filterTerm, filters]) => {
                 const take = itemsPerPage;
                 const skip = (currentPage - 1) * itemsPerPage;
                 if (id) {
-                    return this.dataService.collection
-                        .getCollectionContents(id, take, skip, filterTerm)
-                        .mapSingle(data => data.collection);
+                    if (filters.length && this.previewUpdatedFilters) {
+                        const filterClause = filterTerm
+                            ? ({ name: { contains: filterTerm } } as CollectionFilterParameter)
+                            : undefined;
+                        return this.dataService.collection
+                            .previewCollectionVariants(
+                                {
+                                    collectionId: id,
+                                    filters,
+                                },
+                                {
+                                    take,
+                                    skip,
+                                    filter: filterClause,
+                                },
+                            )
+                            .mapSingle(data => data.previewCollectionVariants)
+                            .pipe(catchError(() => of({ items: [], totalItems: 0 })));
+                    } else {
+                        return this.dataService.collection
+                            .getCollectionContents(id, take, skip, filterTerm)
+                            .mapSingle(data => data.collection?.productVariants);
+                    }
                 } else {
                     return of(null);
                 }
             }),
+            tap(() => (this.isLoading = false)),
+            finalize(() => (this.isLoading = false)),
         );
 
-        this.contents$ = collection$.pipe(map(result => (result ? result.productVariants.items : [])));
-        this.contentsTotalItems$ = collection$.pipe(
-            map(result => (result ? result.productVariants.totalItems : 0)),
-        );
+        this.contents$ = collection$.pipe(map(result => (result ? result.items : [])));
+        this.contentsTotalItems$ = collection$.pipe(map(result => (result ? result.totalItems : 0)));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if ('collectionId' in changes) {
             this.collectionIdChange$.next(changes.collectionId.currentValue);
+        }
+        if ('updatedFilters' in changes) {
+            if (this.updatedFilters) {
+                this.filterChanges$.next(this.updatedFilters);
+            }
         }
     }
 
@@ -121,6 +170,7 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
         this.router.navigate(['./', { ...this.route.snapshot.params, [key]: value }], {
             relativeTo: this.route,
             queryParamsHandling: 'merge',
+            replaceUrl: true,
         });
     }
 }

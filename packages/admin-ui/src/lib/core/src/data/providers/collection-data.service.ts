@@ -13,6 +13,10 @@ import {
     GetCollectionList,
     MoveCollection,
     MoveCollectionInput,
+    PreviewCollectionContentsQuery,
+    PreviewCollectionContentsQueryVariables,
+    PreviewCollectionVariantsInput,
+    ProductVariantListOptions,
     UpdateCollection,
     UpdateCollectionInput,
 } from '../../common/generated-types';
@@ -24,6 +28,7 @@ import {
     GET_COLLECTION_FILTERS,
     GET_COLLECTION_LIST,
     MOVE_COLLECTION,
+    PREVIEW_COLLECTION_CONTENTS,
     UPDATE_COLLECTION,
 } from '../definitions/collection-definitions';
 
@@ -106,6 +111,13 @@ export class CollectionDataService {
                 id,
             },
         );
+    }
+
+    previewCollectionVariants(input: PreviewCollectionVariantsInput, options: ProductVariantListOptions) {
+        return this.baseDataService.query<
+            PreviewCollectionContentsQuery,
+            PreviewCollectionContentsQueryVariables
+        >(PREVIEW_COLLECTION_CONTENTS, { input, options });
     }
 
     getCollectionContents(id: string, take: number = 10, skip: number = 0, filterTerm?: string) {
