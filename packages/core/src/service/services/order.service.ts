@@ -301,30 +301,23 @@ export class OrderService {
         options?: ListQueryOptions<Order>,
         relations?: RelationPaths<Order>,
     ): Promise<PaginatedList<Order>> {
+        const effectiveRelations = (
+            relations ?? ['lines', 'lines.items', 'customer', 'channels', 'shippingLines']
+        ).filter(
+            r =>
+                // Don't join productVariant because it messes with the
+                // price calculation in certain edge-case field resolver scenarios
+                !r.includes('productVariant'),
+        );
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: relations ?? [
-                    'lines',
-                    'lines.items',
-                    'customer',
-                    'channels',
-                    'shippingLines',
-                ],
+                relations: relations ?? ['lines', 'lines.items', 'customer', 'channels', 'shippingLines'],
                 channelId: ctx.channelId,
                 ctx,
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
-                if (relations?.includes('lines.productVariant')) {
-                    items.forEach(item => {
-                        item.lines.forEach(line => {
-                            line.productVariant = translateDeep(line.productVariant, ctx.languageCode, [
-                                'options',
-                            ]);
-                        });
-                    });
-                }
                 return {
                     items,
                     totalItems,
