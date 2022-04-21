@@ -13,6 +13,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { UserInputError } from '../../common/error/errors';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -43,15 +44,23 @@ export class CustomerGroupService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
-    findAll(ctx: RequestContext, options?: CustomerGroupListOptions): Promise<PaginatedList<CustomerGroup>> {
+    findAll(
+        ctx: RequestContext,
+        options?: CustomerGroupListOptions,
+        relations: RelationPaths<CustomerGroup> = [],
+    ): Promise<PaginatedList<CustomerGroup>> {
         return this.listQueryBuilder
-            .build(CustomerGroup, options, { ctx })
+            .build(CustomerGroup, options, { ctx, relations })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    findOne(ctx: RequestContext, customerGroupId: ID): Promise<CustomerGroup | undefined> {
-        return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId);
+    findOne(
+        ctx: RequestContext,
+        customerGroupId: ID,
+        relations: RelationPaths<CustomerGroup> = [],
+    ): Promise<CustomerGroup | undefined> {
+        return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId, { relations });
     }
 
     /**

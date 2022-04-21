@@ -28,7 +28,8 @@ if (require.main === module) {
 
     init.on('exit', code => {
         if (code === 0) {
-            return bootstrap(getLoadTestConfig('cookie'))
+            const databaseName = `vendure-load-testing-${count}`;
+            return bootstrap(getLoadTestConfig('cookie', databaseName))
                 .then(async app => {
                     // await app.get(JobQueueService).start();
                     const summaries: LoadTestSummary[] = [];

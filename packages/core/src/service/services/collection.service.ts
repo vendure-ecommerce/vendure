@@ -15,6 +15,7 @@ import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -22,7 +23,7 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { FacetValue } from '../../entity';
+import { Asset, FacetValue } from '../../entity';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -130,12 +131,11 @@ export class CollectionService implements OnModuleInit {
     async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Collection>,
+        relations?: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        const relations = ['featuredAsset', 'parent', 'channels'];
-
         return this.listQueryBuilder
             .build(Collection, options, {
-                relations,
+                relations: relations ?? ['featuredAsset', 'parent', 'channels'],
                 channelId: ctx.channelId,
                 where: { isRoot: false },
                 orderBy: { position: 'ASC' },
@@ -153,15 +153,18 @@ export class CollectionService implements OnModuleInit {
             });
     }
 
-    async findOne(ctx: RequestContext, collectionId: ID): Promise<Translated<Collection> | undefined> {
-        const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
+    async findOne(
+        ctx: RequestContext,
+        collectionId: ID,
+        relations?: RelationPaths<Collection>,
+    ): Promise<Translated<Collection> | undefined> {
         const collection = await this.connection.findOneInChannel(
             ctx,
             Collection,
             collectionId,
             ctx.channelId,
             {
-                relations,
+                relations: relations ?? ['featuredAsset', 'assets', 'channels', 'parent'],
                 loadEagerRelations: true,
             },
         );
@@ -171,10 +174,13 @@ export class CollectionService implements OnModuleInit {
         return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
-    async findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<Collection>>> {
-        const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
+    async findByIds(
+        ctx: RequestContext,
+        ids: ID[],
+        relations?: RelationPaths<Collection>,
+    ): Promise<Array<Translated<Collection>>> {
         const collections = this.connection.findByIdsInChannel(ctx, Collection, ids, ctx.channelId, {
-            relations,
+            relations: relations ?? ['featuredAsset', 'assets', 'channels', 'parent'],
             loadEagerRelations: true,
         });
         return collections.then(values =>
@@ -182,7 +188,11 @@ export class CollectionService implements OnModuleInit {
         );
     }
 
-    async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {
+    async findOneBySlug(
+        ctx: RequestContext,
+        slug: string,
+        relations?: RelationPaths<Collection>,
+    ): Promise<Translated<Collection> | undefined> {
         const translations = await this.connection.getRepository(ctx, CollectionTranslation).find({
             relations: ['base'],
             where: { slug },
@@ -195,7 +205,7 @@ export class CollectionService implements OnModuleInit {
             translations.find(t => t.languageCode === ctx.languageCode) ??
             translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
             translations[0];
-        return this.findOne(ctx, bestMatch.base.id);
+        return this.findOne(ctx, bestMatch.base.id, relations);
     }
 
     /**

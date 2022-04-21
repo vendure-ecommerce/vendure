@@ -236,6 +236,7 @@ describe('Custom field relations', () => {
         });
 
         it('ProductVariant prices get resolved', async () => {
+            debugger;
             const { product } = await adminClient.query(gql`
                 query {
                     product(id: "${productId}") {

@@ -20,6 +20,7 @@ import { ProductVariantPriceCalculationStrategy } from './catalog/product-varian
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -866,6 +867,17 @@ export interface EntityOptions {
      * @default 30000
      */
     zoneCacheTtl?: number;
+    /**
+     * @description
+     * Allows the metadata of the built-in TypeORM entities to be manipulated. This allows you
+     * to do things like altering data types, adding indices etc. This is an advanced feature
+     * which should be used with some caution as it will result in DB schema changes. For examples
+     * see {@link EntityMetadataModifier}.
+     *
+     * @since 1.6.0
+     * @default []
+     */
+    metadataModifiers?: EntityMetadataModifier[];
 }
 
 /**

@@ -759,3 +759,21 @@ export const GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG = gql`
         }
     }
 `;
+export const GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE = gql`
+    query GetActiveCustomerWithOrdersProductPrice($options: OrderListOptions) {
+        activeCustomer {
+            orders(options: $options) {
+                items {
+                    lines {
+                        linePrice
+                        productVariant {
+                            id
+                            name
+                            price
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;

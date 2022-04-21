@@ -10,8 +10,10 @@ import {
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ForbiddenError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -90,11 +92,7 @@ export class ProductVariantService {
             })
             .getManyAndCount()
             .then(async ([variants, totalItems]) => {
-                const items = await Promise.all(
-                    variants.map(async variant =>
-                        translateDeep(await this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode),
-                    ),
-                );
+                const items = await this.applyPricesAndTranslateVariants(ctx, variants);
                 return {
                     items,
                     totalItems,
@@ -102,11 +100,14 @@ export class ProductVariantService {
             });
     }
 
-    findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
-        const relations = ['product', 'product.featuredAsset', 'taxCategory'];
+    findOne(
+        ctx: RequestContext,
+        productVariantId: ID,
+        relations?: RelationPaths<ProductVariant>,
+    ): Promise<Translated<ProductVariant> | undefined> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, productVariantId, ctx.channelId, {
-                relations,
+                relations: [...(relations || ['product', 'product.featuredAsset']), 'taxCategory'],
                 where: { deletedAt: null },
             })
             .then(async result => {
@@ -130,36 +131,27 @@ export class ProductVariantService {
                     'featuredAsset',
                 ],
             })
-            .then(variants => {
-                return Promise.all(
-                    variants.map(async variant =>
-                        translateDeep(await this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
-                            'options',
-                            'facetValues',
-                            ['facetValues', 'facet'],
-                        ]),
-                    ),
-                );
-            });
+            .then(variants => this.applyPricesAndTranslateVariants(ctx, variants));
     }
 
     getVariantsByProductId(
         ctx: RequestContext,
         productId: ID,
         options: ListQueryOptions<ProductVariant> = {},
+        relations?: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
-        const relations = [
-            'options',
-            'facetValues',
-            'facetValues.facet',
-            'taxCategory',
-            'assets',
-            'featuredAsset',
-        ];
-
         const qb = this.listQueryBuilder
             .build(ProductVariant, options, {
-                relations,
+                relations: [
+                    ...(relations || [
+                        'options',
+                        'facetValues',
+                        'facetValues.facet',
+                        'assets',
+                        'featuredAsset',
+                    ]),
+                    'taxCategory',
+                ],
                 orderBy: { id: 'ASC' },
                 where: { deletedAt: null },
                 ctx,
@@ -176,17 +168,7 @@ export class ProductVariantService {
         }
 
         return qb.getManyAndCount().then(async ([variants, totalItems]) => {
-            const items = await Promise.all(
-                variants.map(async variant => {
-                    const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
-                    return translateDeep(variantWithPrices, ctx.languageCode, [
-                        'options',
-                        'facetValues',
-                        ['facetValues', 'facet'],
-                    ]);
-                }),
-            );
-
+            const items = await this.applyPricesAndTranslateVariants(ctx, variants);
             return {
                 items,
                 totalItems,
@@ -202,10 +184,11 @@ export class ProductVariantService {
         ctx: RequestContext,
         collectionId: ID,
         options: ListQueryOptions<ProductVariant>,
+        relations: RelationPaths<ProductVariant> = [],
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         const qb = this.listQueryBuilder
             .build(ProductVariant, options, {
-                relations: ['taxCategory', 'channels'],
+                relations: unique([...relations, 'taxCategory']),
                 channelId: ctx.channelId,
                 ctx,
             })
@@ -220,12 +203,7 @@ export class ProductVariantService {
         }
 
         return qb.getManyAndCount().then(async ([variants, totalItems]) => {
-            const items = await Promise.all(
-                variants.map(async variant => {
-                    const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
-                    return translateDeep(variantWithPrices, ctx.languageCode);
-                }),
-            );
+            const items = await this.applyPricesAndTranslateVariants(ctx, variants);
             return {
                 items,
                 totalItems,
@@ -251,9 +229,10 @@ export class ProductVariantService {
      */
     async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
         const { productVariant } = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLineId, {
-            relations: ['productVariant'],
+            relations: ['productVariant', 'productVariant.taxCategory'],
+            includeSoftDeleted: true,
         });
-        return translateDeep(productVariant, ctx.languageCode);
+        return translateDeep(await this.applyChannelPriceAndTax(productVariant, ctx), ctx.languageCode);
     }
 
     /**
@@ -589,7 +568,7 @@ export class ProductVariantService {
                             ctx,
                             ProductVariant,
                             variant.id,
-                            { relations: ['productVariantPrices'] },
+                            { relations: ['productVariantPrices'], includeSoftDeleted: true },
                         );
                         variant.productVariantPrices = variantWithPrices.productVariantPrices;
                     }
@@ -598,7 +577,7 @@ export class ProductVariantService {
                             ctx,
                             ProductVariant,
                             variant.id,
-                            { relations: ['taxCategory'] },
+                            { relations: ['taxCategory'], includeSoftDeleted: true },
                         );
                         variant.taxCategory = variantWithTaxCategory.taxCategory;
                     }
@@ -611,6 +590,27 @@ export class ProductVariantService {
         }
         const hydratedVariant = await populatePricesPromise;
         return hydratedVariant[priceField];
+    }
+
+    /**
+     * @description
+     * Given an array of ProductVariants from the database, this method will apply the correct price and tax
+     * and translate each item.
+     */
+    private async applyPricesAndTranslateVariants(
+        ctx: RequestContext,
+        variants: ProductVariant[],
+    ): Promise<Array<Translated<ProductVariant>>> {
+        return await Promise.all(
+            variants.map(async variant => {
+                const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
+                return translateDeep(variantWithPrices, ctx.languageCode, [
+                    'options',
+                    'facetValues',
+                    ['facetValues', 'facet'],
+                ]);
+            }),
+        );
     }
 
     /**

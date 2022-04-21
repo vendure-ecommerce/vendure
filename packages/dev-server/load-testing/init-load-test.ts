@@ -24,12 +24,13 @@ import {
  */
 if (require.main === module) {
     // Running from command line
-    isDatabasePopulated()
+    const count = getProductCount();
+    const databaseName = `vendure-load-testing-${count}`;
+    isDatabasePopulated(databaseName)
         .then(isPopulated => {
             console.log(`isPopulated:`, isPopulated);
             if (!isPopulated) {
-                const count = getProductCount();
-                const config = getLoadTestConfig('bearer');
+                const config = getLoadTestConfig('bearer', databaseName);
                 const csvFile = getProductCsvFilePath();
                 return clearAllTables(config, true)
                     .then(() => {
@@ -69,13 +70,12 @@ if (require.main === module) {
 /**
  * Tests to see whether the load test database is already populated.
  */
-async function isDatabasePopulated(): Promise<boolean> {
+async function isDatabasePopulated(databaseName: string): Promise<boolean> {
     const isPostgres = process.env.DB === 'postgres';
-    const count = getProductCount();
     if (isPostgres) {
         console.log(`Checking whether data is populated (postgres)`);
         const pg = require('pg');
-        const postgresConnectionOptions = getPostgresConnectionOptions(count);
+        const postgresConnectionOptions = getPostgresConnectionOptions(databaseName);
         const client = new pg.Client({
             host: postgresConnectionOptions.host,
             user: postgresConnectionOptions.username,
@@ -96,7 +96,7 @@ async function isDatabasePopulated(): Promise<boolean> {
     } else {
         const mysql = require('mysql');
 
-        const mysqlConnectionOptions = getMysqlConnectionOptions(count);
+        const mysqlConnectionOptions = getMysqlConnectionOptions(databaseName);
         const connection = mysql.createConnection({
             host: mysqlConnectionOptions.host,
             user: mysqlConnectionOptions.username,
@@ -120,7 +120,7 @@ async function isDatabasePopulated(): Promise<boolean> {
                         reject(err);
                         return;
                     }
-                    resolve(results[0].prodCount === count);
+                    resolve(true);
                 });
             });
         });

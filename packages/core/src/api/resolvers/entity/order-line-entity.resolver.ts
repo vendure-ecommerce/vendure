@@ -3,6 +3,7 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Asset, Order, OrderLine, ProductVariant } from '../../../entity';
 import { AssetService, OrderService, ProductVariantService } from '../../../service';
 import { RequestContext } from '../../common/request-context';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('OrderLine')
@@ -37,7 +38,11 @@ export class OrderLineEntityResolver {
     }
 
     @ResolveField()
-    async order(@Ctx() ctx: RequestContext, @Parent() orderLine: OrderLine): Promise<Order | undefined> {
-        return this.orderService.findOneByOrderLineId(ctx, orderLine.id);
+    async order(
+        @Ctx() ctx: RequestContext,
+        @Parent() orderLine: OrderLine,
+        @Relations(Order) relations: RelationPaths<Order>,
+    ): Promise<Order | undefined> {
+        return this.orderService.findOneByOrderLineId(ctx, orderLine.id, relations);
     }
 }

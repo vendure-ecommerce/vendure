@@ -100,5 +100,23 @@ export function configurableOperationValueIsValid(
  * Returns a default value based on the type of the config arg.
  */
 export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
-    return arg.list ? [] : arg.defaultValue ?? null;
+    if (arg.list) {
+        return [];
+    }
+    if (arg.defaultValue) {
+        return arg.defaultValue;
+    }
+    const type = arg.type as ConfigArgType;
+    switch (type) {
+        case 'string':
+        case 'datetime':
+        case 'float':
+        case 'ID':
+        case 'int':
+            return null;
+        case 'boolean':
+            return false;
+        default:
+            assertNever(type);
+    }
 }

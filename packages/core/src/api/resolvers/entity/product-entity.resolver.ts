@@ -21,6 +21,7 @@ import { ProductService } from '../../../service/services/product.service';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Product')
@@ -53,8 +54,14 @@ export class ProductEntityResolver {
     async variants(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
+        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
     ): Promise<Array<Translated<ProductVariant>>> {
-        const { items: variants } = await this.productVariantService.getVariantsByProductId(ctx, product.id);
+        const { items: variants } = await this.productVariantService.getVariantsByProductId(
+            ctx,
+            product.id,
+            {},
+            relations,
+        );
         return variants;
     }
 
@@ -63,8 +70,9 @@ export class ProductEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
         @Args() args: { options: ProductVariantListOptions },
+        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<ProductVariant>> {
-        return this.productVariantService.getVariantsByProductId(ctx, product.id, args.options);
+        return this.productVariantService.getVariantsByProductId(ctx, product.id, args.options, relations);
     }
 
     @ResolveField()

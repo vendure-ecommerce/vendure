@@ -69,6 +69,7 @@ import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
     APPLY_COUPON_CODE,
+    GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE,
     GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_SLUG,
     GET_ACTIVE_ORDER,
     GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS,
@@ -2398,6 +2399,24 @@ describe('Orders resolver', () => {
                 activeCustomer!.orders.items[activeCustomer!.orders.items.length - 1].lines[0].productVariant
                     .product.slug,
             ).toBe('gaming-pc');
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1508
+        it('resolves price of deleted ProductVariant of OrderLine', async () => {
+            const { activeCustomer } = await shopClient.query<
+                CodegenShop.GetActiveCustomerWithOrdersProductPriceQuery,
+                CodegenShop.GetActiveCustomerWithOrdersProductPriceQueryVariables
+            >(GET_ACTIVE_CUSTOMER_WITH_ORDERS_PRODUCT_PRICE, {
+                options: {
+                    sort: {
+                        createdAt: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(
+                activeCustomer!.orders.items[activeCustomer!.orders.items.length - 1].lines[0].productVariant
+                    .price,
+            ).toBe(108720);
         });
     });
 });

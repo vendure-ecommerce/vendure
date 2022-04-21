@@ -73,7 +73,7 @@ export class ShippingMethod
     async apply(ctx: RequestContext, order: Order): Promise<ShippingCalculationResult | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            const response = await calculator.calculate(ctx, order, this.calculator.args);
+            const response = await calculator.calculate(ctx, order, this.calculator.args, this);
             if (response) {
                 const { price, priceIncludesTax, taxRate, metadata } = response;
                 return {
@@ -89,7 +89,7 @@ export class ShippingMethod
     async test(ctx: RequestContext, order: Order): Promise<boolean> {
         const checker = this.allCheckers[this.checker.code];
         if (checker) {
-            return checker.check(ctx, order, this.checker.args);
+            return checker.check(ctx, order, this.checker.args, this);
         } else {
             return false;
         }

@@ -22,6 +22,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { EmailAddressConflictError as EmailAddressConflictAdminError } from '../../common/error/generated-graphql-admin-errors';
@@ -89,8 +90,8 @@ export class CustomerService {
     findAll(
         ctx: RequestContext,
         options: ListQueryOptions<Customer> | undefined,
+        relations: RelationPaths<Customer> = [],
     ): Promise<PaginatedList<Customer>> {
-        const relations = ['channels'];
         const customPropertyMap: { [name: string]: string } = {};
         const hasPostalCodeFilter = !!(options as CustomerListOptions)?.filter?.postalCode;
         if (hasPostalCodeFilter) {
@@ -109,8 +110,13 @@ export class CustomerService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    findOne(ctx: RequestContext, id: ID): Promise<Customer | undefined> {
+    findOne(
+        ctx: RequestContext,
+        id: ID,
+        relations: RelationPaths<Customer> = [],
+    ): Promise<Customer | undefined> {
         return this.connection.findOneInChannel(ctx, Customer, id, ctx.channelId, {
+            relations,
             where: { deletedAt: null },
         });
     }

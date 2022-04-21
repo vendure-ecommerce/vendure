@@ -37,6 +37,7 @@ import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -46,14 +47,22 @@ export class OrderResolver {
 
     @Query()
     @Allow(Permission.ReadOrder)
-    orders(@Ctx() ctx: RequestContext, @Args() args: QueryOrdersArgs): Promise<PaginatedList<Order>> {
-        return this.orderService.findAll(ctx, args.options || undefined);
+    orders(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryOrdersArgs,
+        @Relations(Order) relations: RelationPaths<Order>,
+    ): Promise<PaginatedList<Order>> {
+        return this.orderService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
     @Allow(Permission.ReadOrder)
-    async order(@Ctx() ctx: RequestContext, @Args() args: QueryOrderArgs): Promise<Order | undefined> {
-        return this.orderService.findOne(ctx, args.id);
+    async order(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryOrderArgs,
+        @Relations(Order) relations: RelationPaths<Order>,
+    ): Promise<Order | undefined> {
+        return this.orderService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

@@ -32,6 +32,7 @@ import { ProductVariantService } from '../../../service/services/product-variant
 import { ProductService } from '../../../service/services/product.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -48,8 +49,9 @@ export class ProductResolver {
     async products(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductsArgs,
+        @Relations(Product) relations: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        return this.productService.findAll(ctx, args.options || undefined);
+        return this.productService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -57,15 +59,16 @@ export class ProductResolver {
     async product(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductArgs,
+        @Relations(Product) relations: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
         if (args.id) {
-            const product = await this.productService.findOne(ctx, args.id);
+            const product = await this.productService.findOne(ctx, args.id, relations);
             if (args.slug && product && product.slug !== args.slug) {
                 throw new UserInputError(`error.product-id-slug-mismatch`);
             }
             return product;
         } else if (args.slug) {
-            return this.productService.findOneBySlug(ctx, args.slug);
+            return this.productService.findOneBySlug(ctx, args.slug, relations);
         } else {
             throw new UserInputError(`error.product-id-or-slug-must-be-provided`);
         }
@@ -76,12 +79,14 @@ export class ProductResolver {
     async productVariants(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductVariantsArgs,
+        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         if (args.productId) {
             return this.productVariantService.getVariantsByProductId(
                 ctx,
                 args.productId,
                 args.options || undefined,
+                relations,
             );
         }
 

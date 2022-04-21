@@ -40,6 +40,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
@@ -69,6 +70,7 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { EntityRelationPaths, EntityRelations } from '../../common/index';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -175,11 +177,15 @@ export class OrderService {
         })) as OrderProcessState[];
     }
 
-    findAll(ctx: RequestContext, options?: OrderListOptions): Promise<PaginatedList<Order>> {
+    findAll(
+        ctx: RequestContext,
+        options?: OrderListOptions,
+        relations?: RelationPaths<Order>,
+    ): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
                 ctx,
-                relations: [
+                relations: relations ?? [
                     'lines',
                     'customer',
                     'lines.productVariant',
@@ -201,93 +207,117 @@ export class OrderService {
             });
     }
 
-    async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
-        const qb = this.connection
-            .getRepository(ctx, Order)
-            .createQueryBuilder('order')
-            .leftJoin('order.channels', 'channel')
-            .leftJoinAndSelect('order.customer', 'customer')
-            .leftJoinAndSelect('order.shippingLines', 'shippingLines')
-            .leftJoinAndSelect('order.surcharges', 'surcharges')
-            .leftJoinAndSelect('customer.user', 'user')
-            .leftJoinAndSelect('order.lines', 'lines')
-            .leftJoinAndSelect('lines.productVariant', 'productVariant')
-            .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
-            .leftJoinAndSelect('productVariant.productVariantPrices', 'prices')
-            .leftJoinAndSelect('productVariant.translations', 'translations')
-            .leftJoinAndSelect('lines.featuredAsset', 'featuredAsset')
-            .leftJoinAndSelect('lines.items', 'items')
-            .leftJoinAndSelect('items.fulfillments', 'fulfillments')
-            .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
+    async findOne(
+        ctx: RequestContext,
+        orderId: ID,
+        relations?: RelationPaths<Order>,
+    ): Promise<Order | undefined> {
+        const qb = this.connection.getRepository(ctx, Order).createQueryBuilder('order');
+        const effectiveRelations = relations ?? [
+            'channels',
+            'customer',
+            'customer.user',
+            'lines',
+            'lines.items',
+            'lines.items.fulfillments',
+            'lines.productVariant',
+            'lines.productVariant.taxCategory',
+            'lines.productVariant.productVariantPrices',
+            'lines.productVariant.translations',
+            'lines.featuredAsset',
+            'lines.taxCategory',
+            'shippingLines',
+            'surcharges',
+        ];
+        if (
+            relations &&
+            effectiveRelations.includes('lines.productVariant') &&
+            !effectiveRelations.includes('lines.productVariant.taxCategory')
+        ) {
+            effectiveRelations.push('lines.productVariant.taxCategory');
+        }
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+            relations: effectiveRelations,
+        });
+        qb.leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
-            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
-            .addOrderBy('lines.createdAt', 'ASC')
-            .addOrderBy('items.createdAt', 'ASC');
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
+        if (effectiveRelations.includes('lines') && effectiveRelations.includes('lines.items')) {
+            qb.addOrderBy('order__lines.createdAt', 'ASC').addOrderBy('order__lines__items.createdAt', 'ASC');
+        }
 
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const order = await qb.getOne();
         if (order) {
-            for (const line of order.lines) {
-                line.productVariant = translateDeep(
-                    await this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx, order),
-                    ctx.languageCode,
-                );
+            if (effectiveRelations.includes('lines.productVariant')) {
+                for (const line of order.lines) {
+                    line.productVariant = translateDeep(
+                        await this.productVariantService.applyChannelPriceAndTax(
+                            line.productVariant,
+                            ctx,
+                            order,
+                        ),
+                        ctx.languageCode,
+                    );
+                }
             }
             return order;
         }
     }
 
-    async findOneByCode(ctx: RequestContext, orderCode: string): Promise<Order | undefined> {
+    async findOneByCode(
+        ctx: RequestContext,
+        orderCode: string,
+        relations?: RelationPaths<Order>,
+    ): Promise<Order | undefined> {
         const order = await this.connection.getRepository(ctx, Order).findOne({
             relations: ['customer'],
             where: {
                 code: orderCode,
             },
         });
-        return order ? this.findOne(ctx, order.id) : undefined;
+        return order ? this.findOne(ctx, order.id, relations) : undefined;
     }
 
-    async findOneByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Order | undefined> {
+    async findOneByOrderLineId(
+        ctx: RequestContext,
+        orderLineId: ID,
+        relations?: RelationPaths<Order>,
+    ): Promise<Order | undefined> {
         const order = await this.connection
             .getRepository(ctx, Order)
             .createQueryBuilder('order')
             .innerJoin('order.lines', 'line', 'line.id = :orderLineId', { orderLineId })
             .getOne();
 
-        return order ? this.findOne(ctx, order.id) : undefined;
+        return order ? this.findOne(ctx, order.id, relations) : undefined;
     }
 
     async findByCustomerId(
         ctx: RequestContext,
         customerId: ID,
         options?: ListQueryOptions<Order>,
+        relations?: RelationPaths<Order>,
     ): Promise<PaginatedList<Order>> {
+        const effectiveRelations = (
+            relations ?? ['lines', 'lines.items', 'customer', 'channels', 'shippingLines']
+        ).filter(
+            r =>
+                // Don't join productVariant because it messes with the
+                // price calculation in certain edge-case field resolver scenarios
+                !r.includes('productVariant'),
+        );
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: [
-                    'lines',
-                    'lines.items',
-                    'lines.productVariant',
-                    'lines.productVariant.options',
-                    'customer',
-                    'channels',
-                    'shippingLines',
-                ],
+                relations: relations ?? ['lines', 'lines.items', 'customer', 'channels', 'shippingLines'],
                 channelId: ctx.channelId,
                 ctx,
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
-                items.forEach(item => {
-                    item.lines.forEach(line => {
-                        line.productVariant = translateDeep(line.productVariant, ctx.languageCode, [
-                            'options',
-                        ]);
-                    });
-                });
                 return {
                     items,
                     totalItems,

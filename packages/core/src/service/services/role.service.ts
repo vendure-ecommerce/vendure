@@ -16,6 +16,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
 import { getAllPermissionsMetadata } from '../../common/constants';
 import {
     EntityNotFoundError,
@@ -60,9 +61,13 @@ export class RoleService {
         await this.ensureRolesHaveValidPermissions();
     }
 
-    findAll(ctx: RequestContext, options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<Role>,
+        relations?: RelationPaths<Role>,
+    ): Promise<PaginatedList<Role>> {
         return this.listQueryBuilder
-            .build(Role, options, { relations: ['channels'], ctx })
+            .build(Role, options, { relations: relations ?? ['channels'], ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -70,9 +75,9 @@ export class RoleService {
             }));
     }
 
-    findOne(ctx: RequestContext, roleId: ID): Promise<Role | undefined> {
+    findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
         return this.connection.getRepository(ctx, Role).findOne(roleId, {
-            relations: ['channels'],
+            relations: relations ?? ['channels'],
         });
     }
 

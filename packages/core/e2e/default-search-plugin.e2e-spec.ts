@@ -1194,6 +1194,50 @@ describe('Default search plugin', () => {
                 ]);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/1482
+            it('price range omits disabled variant', async () => {
+                const result1 = await shopClient.query<Codegen.SearchGetPricesQuery, Codegen.SearchGetPricesQueryVariables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'monitor',
+                            take: 3,
+                        } as SearchInput,
+                    },
+                );
+                expect(result1.search.items).toEqual([
+                    {
+                        price: {min: 14374, max: 16994},
+                        priceWithTax: {min: 21561, max: 25491},
+                    },
+                ]);
+                await adminClient.query<Codegen.UpdateProductVariantsMutation, Codegen.UpdateProductVariantsMutationVariables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [{id: 'T_5', enabled: false}],
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                const result2 = await shopClient.query<Codegen.SearchGetPricesQuery, Codegen.SearchGetPricesQueryVariables>(
+                    SEARCH_GET_PRICES,
+                    {
+                        input: {
+                            groupByProduct: true,
+                            term: 'monitor',
+                            take: 3,
+                        } as SearchInput,
+                    },
+                );
+                expect(result2.search.items).toEqual([
+                    {
+                        price: {min: 16994, max: 16994},
+                        priceWithTax: {min: 25491, max: 25491},
+                    },
+                ]);
+            });
+
             // https://github.com/vendure-ecommerce/vendure/issues/745
             it('very long Product descriptions no not cause indexing to fail', async () => {
                 // We generate this long string out of random chars because Postgres uses compression

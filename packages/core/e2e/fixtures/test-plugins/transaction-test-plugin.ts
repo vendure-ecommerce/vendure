@@ -37,7 +37,8 @@ class TestUserService {
                 passwordHash: 'abc',
             }),
         );
-        const user = await this.connection.getRepository(ctx, User).save(
+
+        await this.connection.getRepository(ctx, User).insert(
             new User({
                 authenticationMethods: [authMethod],
                 identifier,
@@ -45,7 +46,10 @@ class TestUserService {
                 verified: true,
             }),
         );
-        return user;
+
+        return this.connection.getRepository(ctx, User).findOne({
+            where: { identifier }
+        });
     }
 }
 
@@ -55,9 +59,11 @@ class TestAdminService {
 
     async createAdministrator(ctx: RequestContext, emailAddress: string, fail: boolean) {
         const user = await this.userService.createUser(ctx, emailAddress);
+
         if (fail) {
             throw new InternalServerError('Failed!');
         }
+
         const admin = await this.connection.getRepository(ctx, Administrator).save(
             new Administrator({
                 emailAddress,
@@ -112,7 +118,7 @@ class TestResolver {
     @Mutation()
     async createTestAdministrator5(@Ctx() ctx: RequestContext, @Args() args: any) {
         if (args.noContext === true) {
-            return this.connection.withTransaction(ctx, async _ctx => {
+            return this.connection.withTransaction(async _ctx => {
                 const admin = await this.testAdminService.createAdministrator(
                     _ctx,
                     args.emailAddress,
@@ -121,7 +127,7 @@ class TestResolver {
                 return admin;
             });
         } else {
-            return this.connection.withTransaction(async _ctx => {
+            return this.connection.withTransaction(ctx, async _ctx => {
                 const admin = await this.testAdminService.createAdministrator(
                     _ctx,
                     args.emailAddress,
@@ -132,6 +138,61 @@ class TestResolver {
         }
     }
 
+    @Mutation()
+    @Transaction()
+    async createNTestAdministrators(@Ctx() ctx: RequestContext, @Args() args: any) {
+        let error: any;
+
+        const promises: Promise<any>[] = []
+        for (let i = 0; i < args.n; i++) {
+            promises.push(
+                new Promise(resolve => setTimeout(resolve, i * 10)).then(() =>
+                    this.testAdminService.createAdministrator(ctx, `${args.emailAddress}${i}`, i < args.n * args.failFactor)
+                )
+            )
+        }
+
+        const result = await Promise.all(promises).catch((e: any) => {
+            error = e;
+        })
+
+        await this.allSettled(promises)
+    
+        if (error) {
+            throw error;
+        }
+
+        return result;
+    }
+
+    @Mutation()
+    async createNTestAdministrators2(@Ctx() ctx: RequestContext, @Args() args: any) {
+        let error: any;
+
+        const promises: Promise<any>[] = []
+        const result = await this.connection.withTransaction(ctx, _ctx => {
+            for (let i = 0; i < args.n; i++) {
+                promises.push(
+                    new Promise(resolve => setTimeout(resolve, i * 10)).then(() =>
+                        this.testAdminService.createAdministrator(_ctx, `${args.emailAddress}${i}`, i < args.n * args.failFactor)
+                    )
+                )
+            }
+
+            return Promise.all(promises);
+        }).catch((e: any) => {
+            error = e;
+        })
+
+        await this.allSettled(promises)
+    
+        if (error) {
+            throw error;
+        }
+
+        return result;
+    }
+
     @Query()
     async verify() {
         const admins = await this.connection.getRepository(Administrator).find();
@@ -140,6 +201,24 @@ class TestResolver {
             admins,
             users,
         };
+    }
+
+    // Promise.allSettled polyfill
+    // Same as Promise.all but waits until all promises will be fulfilled or rejected.
+    private allSettled<T>(promises: Promise<T>[]): Promise<({status: 'fulfilled', value: T} | { status: 'rejected', reason: any})[]> {
+        return Promise.all(
+            promises.map((promise, i) =>
+              promise
+                .then(value => ({
+                  status: "fulfilled" as const,
+                  value,
+                }))
+                .catch(reason => ({
+                  status: "rejected" as const,
+                  reason,
+                }))
+            )
+          );
     }
 }
 
@@ -158,6 +237,8 @@ class TestResolver {
                     fail: Boolean!
                     noContext: Boolean!
                 ): Administrator
+                createNTestAdministrators(emailAddress: String!, failFactor: Float!, n: Int!): JSON
+                createNTestAdministrators2(emailAddress: String!, failFactor: Float!, n: Int!): JSON
             }
             type VerifyResult {
                 admins: [Administrator!]!

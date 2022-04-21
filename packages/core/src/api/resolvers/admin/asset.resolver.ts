@@ -13,9 +13,11 @@ import {
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Asset } from '../../../entity/asset/asset.entity';
+import { Administrator } from '../../../entity/index';
 import { AssetService } from '../../../service/services/asset.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -25,14 +27,22 @@ export class AssetResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog, Permission.ReadAsset)
-    async asset(@Ctx() ctx: RequestContext, @Args() args: QueryAssetArgs): Promise<Asset | undefined> {
-        return this.assetService.findOne(ctx, args.id);
+    async asset(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryAssetArgs,
+        @Relations(Asset) relations: RelationPaths<Asset>,
+    ): Promise<Asset | undefined> {
+        return this.assetService.findOne(ctx, args.id, relations);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog, Permission.ReadAsset)
-    async assets(@Ctx() ctx: RequestContext, @Args() args: QueryAssetsArgs): Promise<PaginatedList<Asset>> {
-        return this.assetService.findAll(ctx, args.options || undefined);
+    async assets(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryAssetsArgs,
+        @Relations(Asset) relations: RelationPaths<Asset>,
+    ): Promise<PaginatedList<Asset>> {
+        return this.assetService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Transaction()

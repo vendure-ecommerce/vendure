@@ -49,7 +49,7 @@ export type PathsToStringProps2<T extends VendureEntity> = T extends string
     : {
           [K in EntityRelationKeys<T>]: T[K] extends VendureEntity[]
               ? [K, PathsToStringProps1<T[K][number]>]
-              : T[K] extends VendureEntity
+              : T[K] extends VendureEntity | undefined
               ? [K, PathsToStringProps1<T[K]>]
               : never;
       }[Extract<EntityRelationKeys<T>, string>];

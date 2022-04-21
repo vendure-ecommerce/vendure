@@ -15,6 +15,7 @@ import { PaymentMethod } from '../../../entity/payment-method/payment-method.ent
 import { PaymentMethodService } from '../../../service/services/payment-method.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -27,8 +28,9 @@ export class PaymentMethodResolver {
     paymentMethods(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPaymentMethodsArgs,
+        @Relations(PaymentMethod) relations: RelationPaths<PaymentMethod>,
     ): Promise<PaginatedList<PaymentMethod>> {
-        return this.paymentMethodService.findAll(ctx, args.options || undefined);
+        return this.paymentMethodService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -36,8 +38,9 @@ export class PaymentMethodResolver {
     paymentMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPaymentMethodArgs,
+        @Relations(PaymentMethod) relations: RelationPaths<PaymentMethod>,
     ): Promise<PaymentMethod | undefined> {
-        return this.paymentMethodService.findOne(ctx, args.id);
+        return this.paymentMethodService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

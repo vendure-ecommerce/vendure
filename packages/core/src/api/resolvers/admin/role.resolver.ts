@@ -14,6 +14,7 @@ import { Role } from '../../../entity/role/role.entity';
 import { RoleService } from '../../../service/services/role.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
@@ -23,14 +24,22 @@ export class RoleResolver {
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    roles(@Ctx() ctx: RequestContext, @Args() args: QueryRolesArgs): Promise<PaginatedList<Role>> {
-        return this.roleService.findAll(ctx, args.options || undefined);
+    roles(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryRolesArgs,
+        @Relations(Role) relations: RelationPaths<Role>,
+    ): Promise<PaginatedList<Role>> {
+        return this.roleService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    role(@Ctx() ctx: RequestContext, @Args() args: QueryRoleArgs): Promise<Role | undefined> {
-        return this.roleService.findOne(ctx, args.id);
+    role(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryRoleArgs,
+        @Relations(Role) relations: RelationPaths<Role>,
+    ): Promise<Role | undefined> {
+        return this.roleService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()
