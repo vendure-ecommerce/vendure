@@ -3791,7 +3791,7 @@ export type PermissionDefinition = {
 };
 
 export type PreviewCollectionVariantsInput = {
-  collectionId: Scalars['ID'];
+  parentId?: Maybe<Scalars['ID']>;
   filters: Array<ConfigurableOperationInput>;
 };
 

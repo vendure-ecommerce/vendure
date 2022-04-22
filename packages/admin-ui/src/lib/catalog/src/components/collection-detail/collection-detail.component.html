@@ -106,9 +106,9 @@
     <div class="clr-row" formArrayName="filters">
         <div class="clr-col">
             <label>{{ 'catalog.filters' | translate }}</label>
-            <ng-container *ngFor="let filter of filters; index as i">
+            <ng-container *ngFor="let filter of filters; index as i; trackBy:trackByFn">
                 <vdr-configurable-input
-                    (remove)="removeFilter($event)"
+                    (remove)="removeFilter(i)"
                     [operation]="filter"
                     [operationDefinition]="getFilterDefinition(filter)"
                     [formControlName]="i"
@@ -138,6 +138,7 @@
         <div class="clr-col">
             <vdr-collection-contents
                 [collectionId]="id"
+                [parentId]="parentId$ | async"
                 [updatedFilters]="updatedFilters$ | async"
                 [previewUpdatedFilters]="livePreview"
                 #collectionContents

@@ -33,8 +33,8 @@ import {
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, filter, map, mergeMap, take } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { debounceTime, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -55,6 +55,7 @@ export class CollectionDetailComponent
     allFilters: ConfigurableOperationDefinition[] = [];
     updatedFilters$: Observable<ConfigurableOperationInput[]>;
     livePreview = false;
+    parentId$: Observable<string | undefined>;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
@@ -95,6 +96,16 @@ export class CollectionDetailComponent
             filter(() => filtersFormArray.touched),
             map(status => this.mapOperationsToInputs(this.filters, filtersFormArray.value)),
         );
+        this.parentId$ = this.route.paramMap.pipe(
+            map(pm => pm.get('parentId') || undefined),
+            switchMap(parentId => {
+                if (parentId) {
+                    return of(parentId);
+                } else {
+                    return this.entity$.pipe(map(collection => collection.parent?.id));
+                }
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -127,31 +138,27 @@ export class CollectionDetailComponent
 
     addFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
-        const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
-        if (index === -1) {
-            const argsHash = collectionFilter.args.reduce(
-                (output, arg) => ({
-                    ...output,
-                    [arg.name]: getConfigArgValue(arg.value),
-                }),
-                {},
-            );
-            filtersArray.push(
-                this.formBuilder.control({
-                    code: collectionFilter.code,
-                    args: argsHash,
-                }),
-            );
-            this.filters.push({
+        const argsHash = collectionFilter.args.reduce(
+            (output, arg) => ({
+                ...output,
+                [arg.name]: getConfigArgValue(arg.value),
+            }),
+            {},
+        );
+        filtersArray.push(
+            this.formBuilder.control({
                 code: collectionFilter.code,
-                args: collectionFilter.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
-            });
-        }
+                args: argsHash,
+            }),
+        );
+        this.filters.push({
+            code: collectionFilter.code,
+            args: collectionFilter.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
+        });
     }
 
-    removeFilter(collectionFilter: ConfigurableOperation) {
+    removeFilter(index: number) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
-        const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
         if (index !== -1) {
             filtersArray.removeAt(index);
             this.filters.splice(index, 1);
@@ -236,6 +243,10 @@ export class CollectionDetailComponent
         this.localStorageService.set('livePreviewCollectionContents', this.livePreview);
     }
 
+    trackByFn(index: number, item: ConfigurableOperation) {
+        return JSON.stringify(item);
+    }
+
     /**
      * Sets the values of the form on changes to the category or current language.
      */
@@ -249,7 +260,12 @@ export class CollectionDetailComponent
             visible: !entity.isPrivate,
         });
 
-        entity.filters.forEach(f => this.addFilter(f));
+        const formArray = this.detailForm.get('filters') as FormArray;
+        if (formArray.length !== entity.filters.length) {
+            formArray.clear();
+            this.filters = [];
+            entity.filters.forEach(f => this.addFilter(f));
+        }
 
         if (this.customFields.length) {
             this.setCustomFieldFormValues(
@@ -301,10 +317,12 @@ export class CollectionDetailComponent
         return operations.map((o, i) => {
             return {
                 code: o.code,
-                arguments: Object.values(formValueOperations[i].args).map((value: any, j) => ({
-                    name: o.args[j].name,
-                    value: encodeConfigArgValue(value),
-                })),
+                arguments: Object.entries(formValueOperations[i].args).map(([name, value], j) => {
+                    return {
+                        name,
+                        value: encodeConfigArgValue(value),
+                    };
+                }),
             };
         });
     }
