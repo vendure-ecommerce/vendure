@@ -9,6 +9,7 @@ import {
     SimpleChanges,
     SkipSelf,
 } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DataService, Permission } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -36,6 +37,8 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
         @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
         private root: CollectionTreeComponent,
         private dataService: DataService,
+        private router: Router,
+        private route: ActivatedRoute,
     ) {
         if (parent) {
             this.depth = parent.depth + 1;
@@ -73,6 +76,23 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
 
     trackByFn(index: number, item: CollectionPartial) {
         return item.id;
+    }
+
+    toggleExpanded(collection: TreeNode<CollectionPartial>) {
+        collection.expanded = !collection.expanded;
+        let expandedIds = this.route.snapshot.queryParamMap.get('expanded')?.split(',') ?? [];
+        if (collection.expanded) {
+            expandedIds.push(collection.id);
+        } else {
+            expandedIds = expandedIds.filter(id => id !== collection.id);
+        }
+        this.router.navigate(['./'], {
+            queryParams: {
+                expanded: expandedIds.filter(id => !!id).join(','),
+            },
+            queryParamsHandling: 'merge',
+            relativeTo: this.route,
+        });
     }
 
     getMoveListItems(collection: CollectionPartial) {

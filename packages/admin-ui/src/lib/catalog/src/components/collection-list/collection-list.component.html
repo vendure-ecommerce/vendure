@@ -11,7 +11,7 @@
                 class="expand-all-toggle ml3"
                 [ngClass]="(availableLanguages$ | async)?.length === 1 ? 'mt3' : 'mt1'"
             >
-                <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" />
+                <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" (change)="toggleExpandAll()"/>
                 <label>{{ 'catalog.expand-all-collections' | translate }}</label>
             </clr-checkbox-wrapper>
             <input
@@ -40,6 +40,7 @@
         [collections]="items$ | async"
         [activeCollectionId]="activeCollectionId$ | async"
         [expandAll]="expandAll"
+        [expandedIds]="expandedIds"
         (rearrange)="onRearrange($event)"
         (deleteCollection)="deleteCollection($event)"
     ></vdr-collection-tree>

@@ -39,6 +39,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     expandAll = false;
+    expandedIds: string[] = [];
     private queryResult: QueryResult<any>;
     private destroy$ = new Subject<void>();
 
@@ -58,6 +59,8 @@ export class CollectionListComponent implements OnInit, OnDestroy {
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
         );
+        this.expandedIds = this.route.snapshot.queryParamMap.get('expanded')?.split(',') ?? [];
+        this.expandAll = this.route.snapshot.queryParamMap.get('expanded') === 'all';
 
         this.activeCollectionTitle$ = combineLatest(this.activeCollectionId$, this.items$).pipe(
             map(([id, collections]) => {
@@ -83,6 +86,16 @@ export class CollectionListComponent implements OnInit, OnDestroy {
         this.queryResult.completed$.next();
         this.destroy$.next(undefined);
         this.destroy$.complete();
+    }
+
+    toggleExpandAll() {
+        this.router.navigate(['./'], {
+            queryParams: {
+                expanded: this.expandAll ? 'all' : undefined,
+            },
+            queryParamsHandling: 'merge',
+            relativeTo: this.route,
+        });
     }
 
     onRearrange(event: RearrangeEvent) {

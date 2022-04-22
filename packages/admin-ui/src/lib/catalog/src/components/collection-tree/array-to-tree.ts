@@ -6,7 +6,11 @@ export type RootNode<T extends HasParent> = { id?: string; children: Array<TreeN
  * Builds a tree from an array of nodes which have a parent.
  * Based on https://stackoverflow.com/a/31247960/772859, modified to preserve ordering.
  */
-export function arrayToTree<T extends HasParent>(nodes: T[], currentState?: RootNode<T>): RootNode<T> {
+export function arrayToTree<T extends HasParent>(
+    nodes: T[],
+    currentState?: RootNode<T>,
+    expandedIds: string[] = [],
+): RootNode<T> {
     const topLevelNodes: Array<TreeNode<T>> = [];
     const mappedArr: { [id: string]: TreeNode<T> } = {};
     const currentStateMap = treeToMap(currentState);
@@ -19,7 +23,7 @@ export function arrayToTree<T extends HasParent>(nodes: T[], currentState?: Root
     for (const id of nodes.map(n => n.id)) {
         if (mappedArr.hasOwnProperty(id)) {
             const mappedElem = mappedArr[id];
-            mappedElem.expanded = currentStateMap.get(id)?.expanded ?? false;
+            mappedElem.expanded = currentStateMap.get(id)?.expanded ?? expandedIds.includes(id);
             const parent = mappedElem.parent;
             if (!parent) {
                 continue;

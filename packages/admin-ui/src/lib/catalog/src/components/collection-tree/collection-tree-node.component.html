@@ -23,7 +23,7 @@
                     class="icon-button folder-button"
                     [disabled]="expandAll"
                     *ngIf="collection.children?.length; else folderSpacer"
-                    (click)="collection.expanded = !collection.expanded"
+                    (click)="toggleExpanded(collection)"
                 >
                     <clr-icon shape="folder" *ngIf="!collection.expanded && !expandAll"></clr-icon>
                     <clr-icon shape="folder-open" *ngIf="collection.expanded || expandAll"></clr-icon>
