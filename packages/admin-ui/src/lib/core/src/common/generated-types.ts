@@ -8858,7 +8858,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'required' | 'defaultValue' | 'list' | 'ui' | 'label'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'required' | 'defaultValue' | 'list' | 'ui' | 'label' | 'description'>
   )> }
 );
 

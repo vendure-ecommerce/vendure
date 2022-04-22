@@ -20,6 +20,7 @@ export const CONFIGURABLE_OPERATION_DEF_FRAGMENT = gql`
             list
             ui
             label
+            description
         }
         code
         description
