@@ -27,6 +27,38 @@ export interface CollectionFilterConfig<T extends ConfigArgs> extends Configurab
  * Creating a CollectionFilter is considered an advanced Vendure topic. For more insight into how
  * they work, study the [default collection filters](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/catalog/default-collection-filters.ts)
  *
+ * Here's a simple example of a custom CollectionFilter:
+ *
+ * @example
+ * ```TypeScript
+ * import { CollectionFilter, LanguageCode } from '\@vendure/core';
+ *
+ * export const skuCollectionFilter = new CollectionFilter({
+ *   args: {
+ *     // The `args` object defines the user-configurable arguments
+ *     // which will get passed to the filter's `apply()` function.
+ *     sku: {
+ *       type: 'string',
+ *       label: [{ languageCode: LanguageCode.en, value: 'SKU' }],
+ *       description: [
+ *         {
+ *           languageCode: LanguageCode.en,
+ *           value: 'Matches any product variants with SKUs containing this value',
+ *         },
+ *       ],
+ *     },
+ *   },
+ *   code: 'variant-sku-filter',
+ *   description: [{ languageCode: LanguageCode.en, value: 'Filter by matching SKU' }],
+ *
+ *   // This is the function that defines the logic of the filter.
+ *   apply: (qb, args) => {
+ *     const LIKE = qb.connection.options.type === 'postgres' ? 'ILIKE' : 'LIKE';
+ *     return qb.andWhere(`productVariant.sku ${LIKE} :sku`, { sku: `%${args.sku}%` });
+ *   },
+ * });
+ * ```
+ *
  * @docsCategory configuration
  */
 export class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
