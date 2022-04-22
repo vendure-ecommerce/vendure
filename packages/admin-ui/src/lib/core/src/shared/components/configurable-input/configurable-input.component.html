@@ -4,8 +4,9 @@
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <div *ngFor="let arg of operation.args; trackBy: trackByName" class="arg-row">
                 <ng-container *ngIf="form.get(arg.name) && getArgDef(arg) as argDef">
-                    <label>{{ argDef.label || (arg.name | sentenceCase) }}</label>
+                    <label class="clr-control-label">{{ argDef.label || (arg.name | sentenceCase) }}</label>
                     <vdr-help-tooltip
+                        class="mr3"
                         *ngIf="argDef.description"
                         [content]="argDef.description"
                     ></vdr-help-tooltip>
