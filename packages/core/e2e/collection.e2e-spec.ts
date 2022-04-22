@@ -1611,7 +1611,7 @@ describe('Collection resolver', () => {
                     PreviewCollectionVariantsQueryVariables
                 >(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
-                        collectionId: electronicsCollection.id,
+                        parentId: electronicsCollection.parent?.id,
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -1649,7 +1649,7 @@ describe('Collection resolver', () => {
                     PreviewCollectionVariantsQueryVariables
                 >(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
-                        collectionId: electronicsCollection.id,
+                        parentId: electronicsCollection.parent?.id,
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -1681,6 +1681,72 @@ describe('Collection resolver', () => {
                 expect(previewCollectionVariants.items).toEqual([
                     { id: 'T_5', name: 'Curvy Monitor 24 inch' },
                     { id: 'T_6', name: 'Curvy Monitor 27 inch' },
+                ]);
+            });
+
+            it('takes parent filters into account', async () => {
+                const { previewCollectionVariants } = await adminClient.query<
+                    PreviewCollectionVariantsQuery,
+                    PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        parentId: electronicsCollection.id,
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'startsWith',
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'h',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Hard Drive 1TB',
+                    'Hard Drive 2TB',
+                    'Hard Drive 3TB',
+                    'Hard Drive 4TB',
+                    'Hard Drive 6TB',
+                ]);
+            });
+
+            it('with no parentId, operates at the root level', async () => {
+                const { previewCollectionVariants } = await adminClient.query<
+                    PreviewCollectionVariantsQuery,
+                    PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'startsWith',
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'h',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Hard Drive 1TB',
+                    'Hard Drive 2TB',
+                    'Hard Drive 3TB',
+                    'Hard Drive 4TB',
+                    'Hard Drive 6TB',
+                    'Hat',
                 ]);
             });
         });

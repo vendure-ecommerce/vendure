@@ -368,14 +368,17 @@ export class CollectionService implements OnModuleInit {
         options?: ListQueryOptions<ProductVariant>,
         relations?: RelationPaths<Collection>,
     ): Promise<PaginatedList<ProductVariant>> {
-        const filters = this.getCollectionFiltersFromInput(input);
-        const ancestorFilters = await this.getAncestors(input.collectionId).then(ancestors =>
-            ancestors.reduce(
-                (_filters, c) => [..._filters, ...(c.filters || [])],
-                [] as ConfigurableOperation[],
-            ),
-        );
-        const applicableFilters = filters.concat(ancestorFilters);
+        const applicableFilters = this.getCollectionFiltersFromInput(input);
+        if (input.parentId) {
+            const parentFilters = (await this.findOne(ctx, input.parentId, []))?.filters ?? [];
+            const ancestorFilters = await this.getAncestors(input.parentId).then(ancestors =>
+                ancestors.reduce(
+                    (_filters, c) => [..._filters, ...(c.filters || [])],
+                    [] as ConfigurableOperation[],
+                ),
+            );
+            applicableFilters.push(...parentFilters, ...ancestorFilters);
+        }
         let qb = this.listQueryBuilder.build(ProductVariant, options, {
             relations: relations ?? ['taxCategory'],
             channelId: ctx.channelId,

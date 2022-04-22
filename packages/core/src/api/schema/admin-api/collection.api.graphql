@@ -55,7 +55,7 @@ input CreateCollectionInput {
 }
 
 input PreviewCollectionVariantsInput {
-    collectionId: ID!
+    parentId: ID
     filters: [ConfigurableOperationInput!]!
 }
 
