@@ -34,7 +34,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, map, mergeMap, take, filter } from 'rxjs/operators';
+import { debounceTime, filter, map, mergeMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -101,8 +101,8 @@ export class CollectionDetailComponent
         this.destroy();
     }
 
-    getFilterDefinition(filter: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
-        return this.allFilters.find(f => f.code === filter.code);
+    getFilterDefinition(_filter: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
+        return this.allFilters.find(f => f.code === _filter.code);
     }
 
     assetsChanged(): boolean {

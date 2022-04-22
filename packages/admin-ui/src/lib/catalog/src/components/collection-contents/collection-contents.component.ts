@@ -60,14 +60,14 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     constructor(private route: ActivatedRoute, private router: Router, private dataService: DataService) {}
 
     ngOnInit() {
-        this.contentsCurrentPage$ = this.route.paramMap.pipe(
+        this.contentsCurrentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('contentsPage')),
             map(page => (!page ? 1 : +page)),
             startWith(1),
             distinctUntilChanged(),
         );
 
-        this.contentsItemsPerPage$ = this.route.paramMap.pipe(
+        this.contentsItemsPerPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('contentsPerPage')),
             map(perPage => (!perPage ? 10 : +perPage)),
             startWith(10),
@@ -167,8 +167,11 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     }
 
     private setParam(key: string, value: any) {
-        this.router.navigate(['./', { ...this.route.snapshot.params, [key]: value }], {
+        this.router.navigate(['./'], {
             relativeTo: this.route,
+            queryParams: {
+                [key]: value,
+            },
             queryParamsHandling: 'merge',
             replaceUrl: true,
         });

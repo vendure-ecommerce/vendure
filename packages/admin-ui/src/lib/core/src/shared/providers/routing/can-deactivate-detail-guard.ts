@@ -17,7 +17,6 @@ export class CanDeactivateDetailGuard implements CanDeactivate<DeactivateAware> 
         currentState: RouterStateSnapshot,
         nextState?: RouterStateSnapshot,
     ): boolean | Observable<boolean> {
-        console.log(currentRoute, currentState, nextState);
         if (!component.canDeactivate()) {
             return this.modalService
                 .dialog({
