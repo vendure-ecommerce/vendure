@@ -5831,7 +5831,7 @@ export type GetCollectionContentsQuery = { collection?: Maybe<(
       & Pick<ProductVariantList, 'totalItems'>
       & { items: Array<(
         { __typename?: 'ProductVariant' }
-        & Pick<ProductVariant, 'id' | 'productId' | 'name'>
+        & Pick<ProductVariant, 'id' | 'productId' | 'name' | 'sku'>
       )> }
     ) }
   )> };
@@ -5847,7 +5847,7 @@ export type PreviewCollectionContentsQuery = { previewCollectionVariants: (
     & Pick<ProductVariantList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'ProductVariant' }
-      & Pick<ProductVariant, 'id' | 'productId' | 'name'>
+      & Pick<ProductVariant, 'id' | 'productId' | 'name' | 'sku'>
     )> }
   ) };
 

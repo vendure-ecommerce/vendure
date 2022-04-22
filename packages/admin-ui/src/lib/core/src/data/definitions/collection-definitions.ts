@@ -128,6 +128,7 @@ export const GET_COLLECTION_CONTENTS = gql`
                     id
                     productId
                     name
+                    sku
                 }
                 totalItems
             }
@@ -145,6 +146,7 @@ export const PREVIEW_COLLECTION_CONTENTS = gql`
                 id
                 productId
                 name
+                sku
             }
             totalItems
         }
