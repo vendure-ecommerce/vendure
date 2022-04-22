@@ -79,7 +79,24 @@ export class CollectionListComponent implements OnInit, OnDestroy {
 
         this.filterTermControl.valueChanges
             .pipe(debounceTime(250), takeUntil(this.destroy$))
+            .subscribe(term => {
+                this.router.navigate(['./'], {
+                    queryParams: {
+                        q: term || undefined,
+                    },
+                    queryParamsHandling: 'merge',
+                    relativeTo: this.route,
+                });
+            });
+
+        this.route.queryParamMap
+            .pipe(
+                map(qpm => qpm.get('q')),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$),
+            )
             .subscribe(() => this.refresh());
+        this.filterTermControl.patchValue(this.route.snapshot.queryParamMap.get('q'));
     }
 
     ngOnDestroy() {
@@ -155,15 +172,16 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     }
 
     private refresh() {
+        const filterTerm = this.route.snapshot.queryParamMap.get('q');
         this.queryResult.ref.refetch({
             options: {
                 skip: 0,
                 take: 1000,
-                ...(this.filterTermControl.value
+                ...(filterTerm
                     ? {
                           filter: {
                               name: {
-                                  contains: this.filterTermControl.value,
+                                  contains: filterTerm,
                               },
                           },
                       }
