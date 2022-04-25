@@ -8,29 +8,29 @@
       const result: PossibleTypesResultData = {
   "possibleTypes": {
     "AddFulfillmentToOrderResult": [
-      "Fulfillment",
+      "CreateFulfillmentError",
       "EmptyOrderLineSelectionError",
-      "ItemsAlreadyFulfilledError",
+      "Fulfillment",
+      "FulfillmentStateTransitionError",
       "InsufficientStockOnHandError",
       "InvalidFulfillmentHandlerError",
-      "FulfillmentStateTransitionError",
-      "CreateFulfillmentError"
+      "ItemsAlreadyFulfilledError"
     ],
     "AddManualPaymentToOrderResult": [
-      "Order",
-      "ManualPaymentStateError"
+      "ManualPaymentStateError",
+      "Order"
     ],
     "AuthenticationResult": [
       "CurrentUser",
       "InvalidCredentialsError"
     ],
     "CancelOrderResult": [
-      "Order",
-      "EmptyOrderLineSelectionError",
-      "QuantityTooGreatError",
-      "MultipleOrderError",
       "CancelActiveOrderError",
-      "OrderStateTransitionError"
+      "EmptyOrderLineSelectionError",
+      "MultipleOrderError",
+      "Order",
+      "OrderStateTransitionError",
+      "QuantityTooGreatError"
     ],
     "CreateAssetResult": [
       "Asset",
@@ -45,8 +45,8 @@
       "EmailAddressConflictError"
     ],
     "CreatePromotionResult": [
-      "Promotion",
-      "MissingConditionsError"
+      "MissingConditionsError",
+      "Promotion"
     ],
     "CustomField": [
       "BooleanCustomFieldConfig",
@@ -59,13 +59,13 @@
       "TextCustomFieldConfig"
     ],
     "CustomFieldConfig": [
-      "StringCustomFieldConfig",
-      "LocaleStringCustomFieldConfig",
-      "IntCustomFieldConfig",
-      "FloatCustomFieldConfig",
       "BooleanCustomFieldConfig",
       "DateTimeCustomFieldConfig",
+      "FloatCustomFieldConfig",
+      "IntCustomFieldConfig",
+      "LocaleStringCustomFieldConfig",
       "RelationCustomFieldConfig",
+      "StringCustomFieldConfig",
       "TextCustomFieldConfig"
     ],
     "ErrorResult": [
@@ -107,17 +107,17 @@
       "SettlePaymentError"
     ],
     "ModifyOrderResult": [
-      "Order",
-      "NoChangesSpecifiedError",
-      "OrderModificationStateError",
-      "PaymentMethodMissingError",
-      "RefundPaymentIdMissingError",
-      "OrderLimitError",
-      "NegativeQuantityError",
-      "InsufficientStockError",
       "CouponCodeExpiredError",
       "CouponCodeInvalidError",
-      "CouponCodeLimitError"
+      "CouponCodeLimitError",
+      "InsufficientStockError",
+      "NegativeQuantityError",
+      "NoChangesSpecifiedError",
+      "Order",
+      "OrderLimitError",
+      "OrderModificationStateError",
+      "PaymentMethodMissingError",
+      "RefundPaymentIdMissingError"
     ],
     "NativeAuthenticationResult": [
       "CurrentUser",
@@ -187,14 +187,14 @@
       "TaxRateList"
     ],
     "RefundOrderResult": [
-      "Refund",
-      "QuantityTooGreatError",
+      "AlreadyRefundedError",
+      "MultipleOrderError",
       "NothingToRefundError",
       "OrderStateTransitionError",
-      "MultipleOrderError",
       "PaymentOrderMismatchError",
+      "QuantityTooGreatError",
+      "Refund",
       "RefundOrderStateError",
-      "AlreadyRefundedError",
       "RefundStateTransitionError"
     ],
     "RemoveOptionGroupFromProductResult": [
@@ -206,10 +206,10 @@
       "SinglePrice"
     ],
     "SettlePaymentResult": [
+      "OrderStateTransitionError",
       "Payment",
-      "SettlePaymentError",
       "PaymentStateTransitionError",
-      "OrderStateTransitionError"
+      "SettlePaymentError"
     ],
     "SettleRefundResult": [
       "Refund",
@@ -224,12 +224,12 @@
       "StockAdjustment"
     ],
     "StockMovementItem": [
-      "StockAdjustment",
       "Allocation",
-      "Sale",
       "Cancellation",
+      "Release",
       "Return",
-      "Release"
+      "Sale",
+      "StockAdjustment"
     ],
     "TransitionFulfillmentToStateResult": [
       "Fulfillment",
@@ -252,12 +252,12 @@
       "EmailAddressConflictError"
     ],
     "UpdateGlobalSettingsResult": [
-      "GlobalSettings",
-      "ChannelDefaultLanguageError"
+      "ChannelDefaultLanguageError",
+      "GlobalSettings"
     ],
     "UpdatePromotionResult": [
-      "Promotion",
-      "MissingConditionsError"
+      "MissingConditionsError",
+      "Promotion"
     ]
   }
 };

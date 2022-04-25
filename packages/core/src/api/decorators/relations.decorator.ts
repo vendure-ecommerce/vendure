@@ -2,12 +2,14 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { getNamedType, GraphQLResolveInfo, GraphQLSchema, isObjectType } from 'graphql';
-import graphqlFields from 'graphql-fields';
 import { getMetadataArgsStorage } from 'typeorm';
 
 import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../../common/calculated-decorator';
 import { EntityRelationPaths, InternalServerError, TtlCache } from '../../common/index';
 import { VendureEntity } from '../../entity/index';
+
+// tslint:disable-next-line:no-var-requires
+const graphqlFields = require('graphql-fields');
 
 export type RelationPaths<T extends VendureEntity> = Array<EntityRelationPaths<T>>;
 
