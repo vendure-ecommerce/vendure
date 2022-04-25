@@ -35,7 +35,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @OneToMany(type => OrderItem, item => item.line)
+    @OneToMany(type => OrderItem, item => item.line, { eager: true })
     items: OrderItem[];
 
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
@@ -48,7 +48,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The price of a single unit, excluding tax and discounts.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get unitPrice(): number {
         return this.firstActiveItemPropOr('unitPrice', 0);
     }
@@ -57,7 +57,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The price of a single unit, including tax but excluding discounts.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get unitPriceWithTax(): number {
         return this.firstActiveItemPropOr('unitPriceWithTax', 0);
     }
@@ -66,7 +66,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * Non-zero if the `unitPrice` has changed since it was initially added to Order.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get unitPriceChangeSinceAdded(): number {
         const firstItem = this.activeItems[0];
         if (!firstItem) {
@@ -83,7 +83,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * Non-zero if the `unitPriceWithTax` has changed since it was initially added to Order.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get unitPriceWithTaxChangeSinceAdded(): number {
         const firstItem = this.activeItems[0];
         if (!firstItem) {
@@ -105,7 +105,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * correct price to display to customers to avoid confusion
      * about the internal handling of distributed Order-level discounts.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get discountedUnitPrice(): number {
         return this.firstActiveItemPropOr('discountedUnitPrice', 0);
     }
@@ -114,7 +114,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The price of a single unit including discounts and tax
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get discountedUnitPriceWithTax(): number {
         return this.firstActiveItemPropOr('discountedUnitPriceWithTax', 0);
     }
@@ -125,7 +125,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get proratedUnitPrice(): number {
         return this.firstActiveItemPropOr('proratedUnitPrice', 0);
     }
@@ -134,17 +134,17 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The `proratedUnitPrice` including tax.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get proratedUnitPriceWithTax(): number {
         return this.firstActiveItemPropOr('proratedUnitPriceWithTax', 0);
     }
 
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get quantity(): number {
         return this.activeItems.length;
     }
 
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get adjustments(): Adjustment[] {
         return this.activeItems.reduce(
             (adjustments, item) => [...adjustments, ...(item.adjustments || [])],
@@ -152,12 +152,12 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         );
     }
 
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get taxLines(): TaxLine[] {
         return this.firstActiveItemPropOr('taxLines', []);
     }
 
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get taxRate(): number {
         return this.firstActiveItemPropOr('taxRate', 0);
     }
@@ -166,7 +166,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The total price of the line excluding tax and discounts.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get linePrice(): number {
         return summate(this.activeItems, 'unitPrice');
     }
@@ -175,7 +175,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The total price of the line including tax but excluding discounts.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get linePriceWithTax(): number {
         return summate(this.activeItems, 'unitPriceWithTax');
     }
@@ -184,7 +184,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The price of the line including discounts, excluding tax.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get discountedLinePrice(): number {
         return summate(this.activeItems, 'discountedUnitPrice');
     }
@@ -193,12 +193,12 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The price of the line including discounts and tax.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get discountedLinePriceWithTax(): number {
         return summate(this.activeItems, 'discountedUnitPriceWithTax');
     }
 
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get discounts(): Discount[] {
         const priceIncludesTax = this.items?.[0]?.listPriceIncludesTax ?? false;
         // Group discounts together, so that it does not list a new
@@ -228,7 +228,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The total tax on this line.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get lineTax(): number {
         return summate(this.activeItems, 'unitTax');
     }
@@ -239,7 +239,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
      * and refund calculations.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get proratedLinePrice(): number {
         return summate(this.activeItems, 'proratedUnitPrice');
     }
@@ -248,12 +248,12 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The `proratedLinePrice` including tax.
      */
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get proratedLinePriceWithTax(): number {
         return summate(this.activeItems, 'proratedUnitPriceWithTax');
     }
 
-    @Calculated()
+    @Calculated({ relations: ['items'] })
     get proratedLineTax(): number {
         return summate(this.activeItems, 'proratedUnitTax');
     }
