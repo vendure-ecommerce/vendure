@@ -1,6 +1,16 @@
 import { Adjustment, OrderAddress } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+    Column,
+    Entity,
+    Index,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    OneToOne,
+} from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
@@ -27,6 +37,7 @@ export class OrderModification extends VendureEntity {
     @Column()
     note: string;
 
+    @Index()
     @ManyToOne(type => Order, order => order.modifications, { onDelete: 'CASCADE' })
     order: Order;
 

@@ -1,6 +1,6 @@
 import { CurrencyCode, GlobalFlag } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
@@ -35,7 +35,8 @@ import { ProductVariantTranslation } from './product-variant-translation.entity'
 @Entity()
 export class ProductVariant
     extends VendureEntity
-    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware
+{
     constructor(input?: DeepPartial<ProductVariant>) {
         super(input);
     }
@@ -95,6 +96,7 @@ export class ProductVariant
      */
     taxRateApplied: TaxRate;
 
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
@@ -103,6 +105,7 @@ export class ProductVariant
     })
     assets: ProductVariantAsset[];
 
+    @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
 
@@ -112,6 +115,7 @@ export class ProductVariant
     @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductVariant>>;
 
+    @Index()
     @ManyToOne(type => Product, product => product.variants)
     product: Product;
 

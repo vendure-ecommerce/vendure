@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -23,11 +23,8 @@ export class CollectionTranslation extends VendureEntity implements Translation<
 
     @Column('text') description: string;
 
-    @ManyToOne(
-        type => Collection,
-        base => base.translations,
-        { onDelete: 'CASCADE' },
-    )
+    @Index()
+    @ManyToOne(type => Collection, base => base.translations, { onDelete: 'CASCADE' })
     base: Collection;
 
     @Column(type => CustomCollectionFieldsTranslation)

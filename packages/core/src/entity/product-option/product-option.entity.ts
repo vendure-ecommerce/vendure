@@ -1,5 +1,5 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
 import { SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -32,6 +32,7 @@ export class ProductOption extends VendureEntity implements Translatable, HasCus
     @OneToMany(type => ProductOptionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductOption>>;
 
+    @Index()
     @ManyToOne(type => ProductOptionGroup, group => group.options)
     group: ProductOptionGroup;
 

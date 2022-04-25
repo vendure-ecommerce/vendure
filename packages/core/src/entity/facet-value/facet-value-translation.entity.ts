@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
 import { VendureEntity } from '../base/base.entity';
@@ -18,6 +18,7 @@ export class FacetValueTranslation extends VendureEntity implements Translation<
 
     @Column() name: string;
 
+    @Index()
     @ManyToOne(type => FacetValue, base => base.translations, { onDelete: 'CASCADE' })
     base: FacetValue;
 

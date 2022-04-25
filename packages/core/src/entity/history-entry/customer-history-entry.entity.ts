@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { ChildEntity, ManyToOne } from 'typeorm';
+import { ChildEntity, Index, ManyToOne } from 'typeorm';
 
 import { Customer } from '../customer/customer.entity';
 
@@ -17,6 +17,7 @@ export class CustomerHistoryEntry extends HistoryEntry {
         super(input);
     }
 
+    @Index()
     @ManyToOne(type => Customer, { onDelete: 'CASCADE' })
     customer: Customer;
 }

@@ -1,7 +1,7 @@
 import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
@@ -26,18 +26,22 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         super(input);
     }
 
+    @Index()
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
+    @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
 
+    @Index()
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
     @OneToMany(type => OrderItem, item => item.line)
     items: OrderItem[];
 
+    @Index()
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
 

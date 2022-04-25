@@ -23,6 +23,7 @@ export class ProductTranslation extends VendureEntity implements Translation<Pro
 
     @Column('text') description: string;
 
+    @Index()
     @ManyToOne(type => Product, base => base.translations)
     base: Product;
 

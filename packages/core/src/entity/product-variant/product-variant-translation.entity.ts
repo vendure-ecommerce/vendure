@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -10,8 +10,10 @@ import { CustomProductVariantFieldsTranslation } from '../custom-entity-fields';
 import { ProductVariant } from './product-variant.entity';
 
 @Entity()
-export class ProductVariantTranslation extends VendureEntity
-    implements Translation<ProductVariant>, HasCustomFields {
+export class ProductVariantTranslation
+    extends VendureEntity
+    implements Translation<ProductVariant>, HasCustomFields
+{
     constructor(input?: DeepPartial<Translation<ProductVariant>>) {
         super(input);
     }
@@ -20,6 +22,7 @@ export class ProductVariantTranslation extends VendureEntity
 
     @Column() name: string;
 
+    @Index()
     @ManyToOne(type => ProductVariant, base => base.translations)
     base: ProductVariant;
 

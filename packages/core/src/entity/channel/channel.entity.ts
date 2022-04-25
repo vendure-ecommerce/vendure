@@ -1,6 +1,6 @@
 import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { CustomChannelFields } from '../custom-entity-fields';
@@ -30,9 +30,11 @@ export class Channel extends VendureEntity {
 
     @Column('varchar') defaultLanguageCode: LanguageCode;
 
+    @Index()
     @ManyToOne(type => Zone)
     defaultTaxZone: Zone;
 
+    @Index()
     @ManyToOne(type => Zone)
     defaultShippingZone: Zone;
 

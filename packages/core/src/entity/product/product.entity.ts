@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -25,7 +25,8 @@ import { ProductTranslation } from './product-translation.entity';
 @Entity()
 export class Product
     extends VendureEntity
-    implements Translatable, HasCustomFields, ChannelAware, SoftDeletable {
+    implements Translatable, HasCustomFields, ChannelAware, SoftDeletable
+{
     constructor(input?: DeepPartial<Product>) {
         super(input);
     }
@@ -42,6 +43,7 @@ export class Product
     @Column({ default: true })
     enabled: boolean;
 
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 

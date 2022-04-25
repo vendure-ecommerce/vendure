@@ -29,12 +29,14 @@ export abstract class Session extends VendureEntity {
     @EntityId({ nullable: true })
     activeOrderId?: ID;
 
+    @Index()
     @ManyToOne(type => Order)
     activeOrder: Order | null;
 
     @EntityId({ nullable: true })
     activeChannelId?: ID;
 
+    @Index()
     @ManyToOne(type => Channel)
     activeChannel: Channel | null;
 }

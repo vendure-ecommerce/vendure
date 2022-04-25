@@ -1,5 +1,5 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, ManyToOne } from 'typeorm';
+import { Column, Index, ManyToOne } from 'typeorm';
 
 import { Orderable } from '../../common/types/common-types';
 import { Asset } from '../asset/asset.entity';
@@ -23,6 +23,7 @@ export abstract class OrderableAsset extends VendureEntity implements Orderable 
     @Column()
     assetId: ID;
 
+    @Index()
     @ManyToOne(type => Asset, { eager: true, onDelete: 'CASCADE' })
     asset: Asset;
 

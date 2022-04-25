@@ -1,5 +1,5 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
@@ -23,6 +23,7 @@ export class ProductVariantPrice extends VendureEntity {
 
     @EntityId() channelId: ID;
 
+    @Index()
     @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices)
     variant: ProductVariant;
 }

@@ -1,5 +1,5 @@
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { Column, Entity, ManyToOne, TableInheritance } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { Administrator } from '../administrator/administrator.entity';
 import { VendureEntity } from '../base/base.entity';
@@ -14,6 +14,7 @@ import { VendureEntity } from '../base/base.entity';
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'discriminator' } })
 export abstract class HistoryEntry extends VendureEntity {
+    @Index()
     @ManyToOne(type => Administrator)
     administrator?: Administrator;
 

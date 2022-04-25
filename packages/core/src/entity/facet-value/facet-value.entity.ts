@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -29,6 +29,7 @@ export class FacetValue extends VendureEntity implements Translatable, HasCustom
     @OneToMany(type => FacetValueTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<FacetValue>>;
 
+    @Index()
     @ManyToOne(type => Facet, group => group.values, { onDelete: 'CASCADE' })
     facet: Facet;
 

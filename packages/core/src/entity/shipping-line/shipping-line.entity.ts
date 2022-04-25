@@ -1,7 +1,7 @@
 import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
@@ -19,10 +19,12 @@ export class ShippingLine extends VendureEntity {
     @EntityId()
     shippingMethodId: ID | null;
 
+    @Index()
     @ManyToOne(type => ShippingMethod)
     shippingMethod: ShippingMethod | null;
 
     // TODO: v2 - Add `{ onDelete: 'CASCADE' }` constraint
+    @Index()
     @ManyToOne(type => Order, order => order.shippingLines)
     order: Order;
 

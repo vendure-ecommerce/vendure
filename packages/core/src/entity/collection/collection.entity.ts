@@ -3,6 +3,7 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import {
     Column,
     Entity,
+    Index,
     JoinTable,
     ManyToMany,
     ManyToOne,
@@ -58,6 +59,7 @@ export class Collection
     @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Collection>>;
 
+    @Index()
     @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 

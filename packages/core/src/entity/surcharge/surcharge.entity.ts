@@ -1,7 +1,7 @@
 import { TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
@@ -37,9 +37,11 @@ export class Surcharge extends VendureEntity {
     @Column('simple-json')
     taxLines: TaxLine[];
 
+    @Index()
     @ManyToOne(type => Order, order => order.surcharges, { onDelete: 'CASCADE' })
     order: Order;
 
+    @Index()
     @ManyToOne(type => OrderModification, orderModification => orderModification.surcharges)
     orderModification: OrderModification;
 

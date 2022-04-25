@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
 import { PaymentMetadata } from '../../common/types/common-types';
 import { PaymentState } from '../../service/helpers/payment-state-machine/payment-state';
@@ -34,6 +34,7 @@ export class Payment extends VendureEntity {
 
     @Column('simple-json') metadata: PaymentMetadata;
 
+    @Index()
     @ManyToOne(type => Order, order => order.payments)
     order: Order;
 

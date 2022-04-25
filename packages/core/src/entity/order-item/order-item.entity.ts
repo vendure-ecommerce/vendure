@@ -1,7 +1,7 @@
 import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
@@ -24,6 +24,7 @@ export class OrderItem extends VendureEntity {
         super(input);
     }
 
+    @Index()
     @ManyToOne(type => OrderLine, line => line.items, { onDelete: 'CASCADE' })
     line: OrderLine;
 
@@ -65,6 +66,7 @@ export class OrderItem extends VendureEntity {
     @JoinTable()
     fulfillments: Fulfillment[];
 
+    @Index()
     @ManyToOne(type => Refund)
     refund: Refund;
 

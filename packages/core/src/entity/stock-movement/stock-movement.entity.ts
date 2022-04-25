@@ -1,5 +1,5 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { Column, Entity, ManyToOne, TableInheritance } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
@@ -19,6 +19,7 @@ export abstract class StockMovement extends VendureEntity {
     @Column({ nullable: false, type: 'varchar' })
     readonly type: StockMovementType;
 
+    @Index()
     @ManyToOne(type => ProductVariant, variant => variant.stockMovements)
     productVariant: ProductVariant;
 
