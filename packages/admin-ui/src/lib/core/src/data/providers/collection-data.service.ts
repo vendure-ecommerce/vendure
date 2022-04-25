@@ -11,6 +11,7 @@ import {
     GET_COLLECTION_FILTERS,
     GET_COLLECTION_LIST,
     MOVE_COLLECTION,
+    PREVIEW_COLLECTION_CONTENTS,
     UPDATE_COLLECTION,
 } from '../definitions/collection-definitions';
 
@@ -98,6 +99,13 @@ export class CollectionDataService {
         >(DELETE_COLLECTION, {
             id,
         });
+    }
+
+    previewCollectionVariants(input: Codegen.PreviewCollectionVariantsInput, options: Codegen.ProductVariantListOptions) {
+        return this.baseDataService.query<
+            Codegen.PreviewCollectionContentsQuery,
+            Codegen.PreviewCollectionContentsQueryVariables
+        >(PREVIEW_COLLECTION_CONTENTS, { input, options });
     }
 
     getCollectionContents(id: string, take: number = 10, skip: number = 0, filterTerm?: string) {

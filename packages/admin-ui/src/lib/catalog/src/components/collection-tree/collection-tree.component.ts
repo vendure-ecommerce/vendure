@@ -24,6 +24,7 @@ export class CollectionTreeComponent implements OnInit, OnChanges {
     @Input() collections: CollectionPartial[];
     @Input() activeCollectionId: string;
     @Input() expandAll = false;
+    @Input() expandedIds: string[] = [];
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
     @Output() deleteCollection = new EventEmitter<string>();
     collectionTree: RootNode<CollectionPartial>;
@@ -32,7 +33,7 @@ export class CollectionTreeComponent implements OnInit, OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if ('collections' in changes && this.collections) {
-            this.collectionTree = arrayToTree(this.collections, this.collectionTree);
+            this.collectionTree = arrayToTree(this.collections, this.collectionTree, this.expandedIds);
             this.collectionTreeService.setCollectionTree(this.collectionTree);
             this.collectionTreeService.resetMoveList();
         }

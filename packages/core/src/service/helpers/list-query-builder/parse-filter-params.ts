@@ -31,11 +31,13 @@ export function parseFilterParams<T extends VendureEntity>(
     entity: Type<T>,
     filterParams?: NullOptionals<FilterParameter<T>> | null,
     customPropertyMap?: { [name: string]: string },
+    entityAlias?: string,
 ): WhereCondition[] {
     if (!filterParams) {
         return [];
     }
-    const { columns, translationColumns, alias } = getColumnMetadata(connection, entity);
+    const { columns, translationColumns, alias: defaultAlias } = getColumnMetadata(connection, entity);
+    const alias = entityAlias ?? defaultAlias;
     const calculatedColumns = getCalculatedColumns(entity);
     const output: WhereCondition[] = [];
     const dbType = connection.options.type;

@@ -6,6 +6,7 @@ import {
     DeletionResponse,
     DeletionResult,
     MoveCollectionInput,
+    PreviewCollectionVariantsInput,
     UpdateCollectionInput,
 } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
@@ -361,6 +362,46 @@ export class CollectionService implements OnModuleInit {
             });
     }
 
+    async previewCollectionVariants(
+        ctx: RequestContext,
+        input: PreviewCollectionVariantsInput,
+        options?: ListQueryOptions<ProductVariant>,
+        relations?: RelationPaths<Collection>,
+    ): Promise<PaginatedList<ProductVariant>> {
+        const applicableFilters = this.getCollectionFiltersFromInput(input);
+        if (input.parentId) {
+            const parentFilters = (await this.findOne(ctx, input.parentId, []))?.filters ?? [];
+            const ancestorFilters = await this.getAncestors(input.parentId).then(ancestors =>
+                ancestors.reduce(
+                    (_filters, c) => [..._filters, ...(c.filters || [])],
+                    [] as ConfigurableOperation[],
+                ),
+            );
+            applicableFilters.push(...parentFilters, ...ancestorFilters);
+        }
+        let qb = this.listQueryBuilder.build(ProductVariant, options, {
+            relations: relations ?? ['taxCategory'],
+            channelId: ctx.channelId,
+            where: { deletedAt: null },
+            ctx,
+            entityAlias: 'productVariant',
+        });
+
+        const { collectionFilters } = this.configService.catalogOptions;
+        for (const filterType of collectionFilters) {
+            const filtersOfType = applicableFilters.filter(f => f.code === filterType.code);
+            if (filtersOfType.length) {
+                for (const filter of filtersOfType) {
+                    qb = filterType.apply(qb, filter.args);
+                }
+            }
+        }
+        return qb.getManyAndCount().then(([items, totalItems]) => ({
+            items,
+            totalItems,
+        }));
+    }
+
     async create(ctx: RequestContext, input: CreateCollectionInput): Promise<Translated<Collection>> {
         await this.slugValidator.validateSlugs(ctx, input, CollectionTranslation);
         const collection = await this.translatableSaver.create({
@@ -480,7 +521,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     private getCollectionFiltersFromInput(
-        input: CreateCollectionInput | UpdateCollectionInput,
+        input: CreateCollectionInput | UpdateCollectionInput | PreviewCollectionVariantsInput,
     ): ConfigurableOperation[] {
         const filters: ConfigurableOperation[] = [];
         if (input.filters) {

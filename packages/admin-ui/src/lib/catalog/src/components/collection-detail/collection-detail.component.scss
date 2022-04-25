@@ -1,3 +1,9 @@
 .visible-toggle {
     margin-top: -3px !important;
 }
+clr-checkbox-wrapper {
+    transition: opacity 0.3s;
+    &.disabled {
+        opacity: 0.5;
+    }
+}

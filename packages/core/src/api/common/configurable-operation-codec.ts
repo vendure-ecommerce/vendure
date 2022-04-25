@@ -37,7 +37,7 @@ export class ConfigurableOperationCodec {
             }
             for (const arg of operationInput.arguments) {
                 const argDef = def.args[arg.name];
-                if (argDef.type === 'ID' && arg.value) {
+                if (argDef && argDef.type === 'ID' && arg.value) {
                     if (argDef.list === true) {
                         const ids = JSON.parse(arg.value) as string[];
                         const decodedIds = ids.map(id => this.idCodecService.decode(id));
@@ -67,7 +67,7 @@ export class ConfigurableOperationCodec {
             }
             for (const arg of operationInput.args) {
                 const argDef = def.args[arg.name];
-                if (argDef.type === 'ID' && arg.value) {
+                if (argDef && argDef.type === 'ID' && arg.value) {
                     if (argDef.list === true) {
                         const ids = JSON.parse(arg.value) as string[];
                         const encodedIds = ids.map(id => this.idCodecService.encode(id));

@@ -1710,6 +1710,145 @@ describe('Collection resolver', () => {
                 expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Boots']);
             });
         });
+
+        describe('previewCollectionVariants', () => {
+            it('returns correct contents', async () => {
+                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        parentId: electronicsCollection.parent?.id,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('electronics')}","${getFacetValueId(
+                                            'pear',
+                                        )}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Curvy Monitor 24 inch',
+                    'Curvy Monitor 27 inch',
+                    'Gaming PC i7-8700 240GB SSD',
+                    'Instant Camera',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 16GB',
+                    'Laptop 15 inch 8GB',
+                ]);
+            });
+
+            it('works with list options', async () => {
+                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        parentId: electronicsCollection.parent?.id,
+                        filters: [
+                            {
+                                code: facetValueCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'facetValueIds',
+                                        value: `["${getFacetValueId('electronics')}"]`,
+                                    },
+                                    {
+                                        name: 'containsAny',
+                                        value: `false`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
+                        filter: {
+                            name: {
+                                contains: 'mon',
+                            },
+                        },
+                        take: 5,
+                    },
+                });
+                expect(previewCollectionVariants.items).toEqual([
+                    {id: 'T_5', name: 'Curvy Monitor 24 inch'},
+                    {id: 'T_6', name: 'Curvy Monitor 27 inch'},
+                ]);
+            });
+
+            it('takes parent filters into account', async () => {
+                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        parentId: electronicsCollection.id,
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'startsWith',
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'h',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Hard Drive 1TB',
+                    'Hard Drive 2TB',
+                    'Hard Drive 3TB',
+                    'Hard Drive 4TB',
+                    'Hard Drive 6TB',
+                ]);
+            });
+
+            it('with no parentId, operates at the root level', async () => {
+                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'startsWith',
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'h',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Hard Drive 1TB',
+                    'Hard Drive 2TB',
+                    'Hard Drive 3TB',
+                    'Hard Drive 4TB',
+                    'Hard Drive 6TB',
+                    'Hat',
+                ]);
+            });
+        });
     });
     describe('Product collections property', () => {
         it('returns all collections to which the Product belongs', async () => {
@@ -2038,6 +2177,21 @@ const GET_COLLECTION_NESTED_PARENTS = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+const PREVIEW_COLLECTION_VARIANTS = gql`
+    query PreviewCollectionVariants(
+        $input: PreviewCollectionVariantsInput!
+        $options: ProductVariantListOptions
+    ) {
+        previewCollectionVariants(input: $input, options: $options) {
+            items {
+                id
+                name
+            }
+            totalItems
         }
     }
 `;

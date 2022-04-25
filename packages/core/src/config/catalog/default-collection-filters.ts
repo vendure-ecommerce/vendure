@@ -17,11 +17,21 @@ export const facetValueCollectionFilter = new CollectionFilter({
             ui: {
                 component: 'facet-value-form-input',
             },
+            label: [{ languageCode: LanguageCode.en, value: 'Facet values' }],
         },
-        containsAny: { type: 'boolean' },
+        containsAny: {
+            type: 'boolean',
+            label: [{ languageCode: LanguageCode.en, value: 'Contains any' }],
+            description: [
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'If checked, product variants must have at least one of the selected facet values. If not checked, the variant must have all selected values.',
+                },
+            ],
+        },
     },
     code: 'facet-value-filter',
-    description: [{ languageCode: LanguageCode.en, value: 'Filter by FacetValues' }],
+    description: [{ languageCode: LanguageCode.en, value: 'Filter by facet values' }],
     apply: (qb, args) => {
         const ids = args.facetValueIds;
 
@@ -89,16 +99,18 @@ export const variantNameCollectionFilter = new CollectionFilter({
         term: { type: 'string' },
     },
     code: 'variant-name-filter',
-    description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
+    description: [{ languageCode: LanguageCode.en, value: 'Filter by product variant name' }],
     apply: (qb, args) => {
-        const translationAlias = `variant_name_filter_translation`;
+        let translationAlias = `variant_name_filter_translation`;
         const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 6);
         const termName = `term_${nanoid()}`;
-        const hasJoinOnTranslations = !!qb.expressionMap.joinAttributes.find(
+        const translationsJoin = qb.expressionMap.joinAttributes.find(
             ja => ja.entityOrProperty === 'productVariant.translations',
         );
-        if (!hasJoinOnTranslations) {
+        if (!translationsJoin) {
             qb.leftJoin('productVariant.translations', translationAlias);
+        } else {
+            translationAlias = translationsJoin.alias.name;
         }
         const LIKE = qb.connection.options.type === 'postgres' ? 'ILIKE' : 'LIKE';
         switch (args.operator) {
@@ -124,4 +136,25 @@ export const variantNameCollectionFilter = new CollectionFilter({
     },
 });
 
-export const defaultCollectionFilters = [facetValueCollectionFilter, variantNameCollectionFilter];
+export const variantIdCollectionFilter = new CollectionFilter({
+    args: {
+        variantIds: {
+            type: 'ID',
+            list: true,
+            ui: {
+                component: 'product-selector-form-input',
+            },
+        },
+    },
+    code: 'variant-id-filter',
+    description: [{ languageCode: LanguageCode.en, value: 'Manually select product variants' }],
+    apply: (qb, args) => {
+        return qb.andWhere('productVariant.id IN (:...variantIds)', { variantIds: args.variantIds });
+    },
+});
+
+export const defaultCollectionFilters = [
+    facetValueCollectionFilter,
+    variantNameCollectionFilter,
+    variantIdCollectionFilter,
+];

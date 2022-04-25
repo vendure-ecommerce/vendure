@@ -9,6 +9,7 @@ import {
     Permission,
     QueryCollectionArgs,
     QueryCollectionsArgs,
+    QueryPreviewCollectionVariantsArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -75,6 +76,17 @@ export class CollectionResolver {
         }
 
         return this.encodeFilters(collection);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadCollection)
+    previewCollectionVariants(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryPreviewCollectionVariantsArgs,
+        @Relations(Collection) relations: RelationPaths<Collection>,
+    ) {
+        this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, args.input.filters);
+        return this.collectionService.previewCollectionVariants(ctx, args.input, args.options || undefined);
     }
 
     @Transaction()

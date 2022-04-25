@@ -9,7 +9,6 @@ import { ServerConfigService } from '../data/server-config';
 import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
 import { TranslationOf } from './utilities/find-translation';
-import { getDefaultUiLanguage } from './utilities/get-default-ui-language';
 
 /**
  * @description

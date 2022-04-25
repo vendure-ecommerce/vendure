@@ -40,6 +40,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     expandAll = false;
+    expandedIds: string[] = [];
     private queryResult: QueryResult<any>;
     private destroy$ = new Subject<void>();
 
@@ -59,6 +60,8 @@ export class CollectionListComponent implements OnInit, OnDestroy {
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
         );
+        this.expandedIds = this.route.snapshot.queryParamMap.get('expanded')?.split(',') ?? [];
+        this.expandAll = this.route.snapshot.queryParamMap.get('expanded') === 'all';
 
         this.activeCollectionTitle$ = combineLatest(this.activeCollectionId$, this.items$).pipe(
             map(([id, collections]) => {
@@ -77,13 +80,40 @@ export class CollectionListComponent implements OnInit, OnDestroy {
 
         this.filterTermControl.valueChanges
             .pipe(debounceTime(250), takeUntil(this.destroy$))
+            .subscribe(term => {
+                this.router.navigate(['./'], {
+                    queryParams: {
+                        q: term || undefined,
+                    },
+                    queryParamsHandling: 'merge',
+                    relativeTo: this.route,
+                });
+            });
+
+        this.route.queryParamMap
+            .pipe(
+                map(qpm => qpm.get('q')),
+                distinctUntilChanged(),
+                takeUntil(this.destroy$),
+            )
             .subscribe(() => this.refresh());
+        this.filterTermControl.patchValue(this.route.snapshot.queryParamMap.get('q'));
     }
 
     ngOnDestroy() {
         this.queryResult.completed$.next();
         this.destroy$.next(undefined);
         this.destroy$.complete();
+    }
+
+    toggleExpandAll() {
+        this.router.navigate(['./'], {
+            queryParams: {
+                expanded: this.expandAll ? 'all' : undefined,
+            },
+            queryParamsHandling: 'merge',
+            relativeTo: this.route,
+        });
     }
 
     onRearrange(event: RearrangeEvent) {
@@ -143,15 +173,16 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     }
 
     private refresh() {
+        const filterTerm = this.route.snapshot.queryParamMap.get('q');
         this.queryResult.ref.refetch({
             options: {
                 skip: 0,
                 take: 1000,
-                ...(this.filterTermControl.value
+                ...(filterTerm
                     ? {
                           filter: {
                               name: {
-                                  contains: this.filterTermControl.value,
+                                  contains: filterTerm,
                               },
                           },
                       }

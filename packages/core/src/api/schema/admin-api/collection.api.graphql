@@ -3,6 +3,8 @@ type Query {
     "Get a Collection either by id or slug. If neither id nor slug is specified, an error will result."
     collection(id: ID, slug: String): Collection
     collectionFilters: [ConfigurableOperationDefinition!]!
+    "Used for real-time previews of the contents of a Collection"
+    previewCollectionVariants(input: PreviewCollectionVariantsInput!, options: ProductVariantListOptions): ProductVariantList!
 }
 
 type Mutation {
@@ -51,6 +53,11 @@ input CreateCollectionInput {
     inheritFilters: Boolean
     filters: [ConfigurableOperationInput!]!
     translations: [CreateCollectionTranslationInput!]!
+}
+
+input PreviewCollectionVariantsInput {
+    parentId: ID
+    filters: [ConfigurableOperationInput!]!
 }
 
 input UpdateCollectionInput {

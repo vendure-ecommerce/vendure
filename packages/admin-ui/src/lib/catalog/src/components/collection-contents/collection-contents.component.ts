@@ -11,11 +11,19 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DataService, GetCollectionContentsQuery } from '@vendure/admin-ui/core';
+import {
+    CollectionFilterParameter,
+    ConfigurableOperationInput,
+    DataService,
+    GetCollectionContentsQuery,
+} from '@vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
+    catchError,
     debounceTime,
     distinctUntilChanged,
+    filter,
+    finalize,
     map,
     startWith,
     switchMap,
@@ -31,6 +39,9 @@ import {
 })
 export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy {
     @Input() collectionId: string;
+    @Input() parentId: string;
+    @Input() updatedFilters: ConfigurableOperationInput[] | undefined;
+    @Input() previewUpdatedFilters = false;
     @ContentChild(TemplateRef, { static: true }) headerTemplate: TemplateRef<any>;
 
     contents$: Observable<NonNullable<GetCollectionContentsQuery['collection']>['productVariants']['items']>;
@@ -38,21 +49,24 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     contentsItemsPerPage$: Observable<number>;
     contentsCurrentPage$: Observable<number>;
     filterTermControl = new FormControl('');
+    isLoading = false;
     private collectionIdChange$ = new BehaviorSubject<string>('');
+    private parentIdChange$ = new BehaviorSubject<string>('');
+    private filterChanges$ = new BehaviorSubject<ConfigurableOperationInput[]>([]);
     private refresh$ = new BehaviorSubject<boolean>(true);
     private destroy$ = new Subject<void>();
 
     constructor(private route: ActivatedRoute, private router: Router, private dataService: DataService) {}
 
     ngOnInit() {
-        this.contentsCurrentPage$ = this.route.paramMap.pipe(
+        this.contentsCurrentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('contentsPage')),
             map(page => (!page ? 1 : +page)),
             startWith(1),
             distinctUntilChanged(),
         );
 
-        this.contentsItemsPerPage$ = this.route.paramMap.pipe(
+        this.contentsItemsPerPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('contentsPerPage')),
             map(perPage => (!perPage ? 10 : +perPage)),
             startWith(10),
@@ -65,36 +79,74 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
             startWith(''),
         );
 
-        const collection$ = combineLatest(
+        const filterChanges$ = this.filterChanges$.asObservable().pipe(
+            filter(() => this.previewUpdatedFilters),
+            tap(() => this.setContentsPageNumber(1)),
+            startWith([]),
+        );
+
+        const fetchUpdate$ = combineLatest(
             this.collectionIdChange$,
+            this.parentIdChange$,
             this.contentsCurrentPage$,
             this.contentsItemsPerPage$,
             filterTerm$,
+            filterChanges$,
             this.refresh$,
-        ).pipe(
+        );
+
+        const collection$ = fetchUpdate$.pipe(
             takeUntil(this.destroy$),
-            switchMap(([id, currentPage, itemsPerPage, filterTerm]) => {
+            tap(() => (this.isLoading = true)),
+            debounceTime(50),
+            switchMap(([id, parentId, currentPage, itemsPerPage, filterTerm, filters]) => {
                 const take = itemsPerPage;
                 const skip = (currentPage - 1) * itemsPerPage;
-                if (id) {
+                if (filters.length && this.previewUpdatedFilters) {
+                    const filterClause = filterTerm
+                        ? ({ name: { contains: filterTerm } } as CollectionFilterParameter)
+                        : undefined;
+                    return this.dataService.collection
+                        .previewCollectionVariants(
+                            {
+                                parentId,
+                                filters,
+                            },
+                            {
+                                take,
+                                skip,
+                                filter: filterClause,
+                            },
+                        )
+                        .mapSingle(data => data.previewCollectionVariants)
+                        .pipe(catchError(() => of({ items: [], totalItems: 0 })));
+                } else if (id) {
                     return this.dataService.collection
                         .getCollectionContents(id, take, skip, filterTerm)
-                        .mapSingle(data => data.collection);
+                        .mapSingle(data => data.collection?.productVariants);
                 } else {
                     return of(null);
                 }
             }),
+            tap(() => (this.isLoading = false)),
+            finalize(() => (this.isLoading = false)),
         );
 
-        this.contents$ = collection$.pipe(map(result => (result ? result.productVariants.items : [])));
-        this.contentsTotalItems$ = collection$.pipe(
-            map(result => (result ? result.productVariants.totalItems : 0)),
-        );
+        this.contents$ = collection$.pipe(map(result => (result ? result.items : [])));
+        this.contentsTotalItems$ = collection$.pipe(map(result => (result ? result.totalItems : 0)));
     }
 
     ngOnChanges(changes: SimpleChanges): void {
         if ('collectionId' in changes) {
             this.collectionIdChange$.next(changes.collectionId.currentValue);
+        }
+        if ('parentId' in changes) {
+            this.parentIdChange$.next(changes.parentId.currentValue);
+        }
+        if ('updatedFilters' in changes) {
+            if (this.updatedFilters) {
+                this.filterChanges$.next(this.updatedFilters);
+            }
         }
     }
 
@@ -116,9 +168,13 @@ export class CollectionContentsComponent implements OnInit, OnChanges, OnDestroy
     }
 
     private setParam(key: string, value: any) {
-        this.router.navigate(['./', { ...this.route.snapshot.params, [key]: value }], {
+        this.router.navigate(['./'], {
             relativeTo: this.route,
+            queryParams: {
+                [key]: value,
+            },
             queryParamsHandling: 'merge',
+            replaceUrl: true,
         });
     }
 }

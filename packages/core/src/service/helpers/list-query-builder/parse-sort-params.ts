@@ -22,11 +22,13 @@ export function parseSortParams<T extends VendureEntity>(
     entity: Type<T>,
     sortParams?: NullOptionals<SortParameter<T>> | null,
     customPropertyMap?: { [name: string]: string },
+    entityAlias?: string,
 ): OrderByCondition {
     if (!sortParams || Object.keys(sortParams).length === 0) {
         return {};
     }
-    const { columns, translationColumns, alias } = getColumnMetadata(connection, entity);
+    const { columns, translationColumns, alias: defaultAlias } = getColumnMetadata(connection, entity);
+    const alias = entityAlias ?? defaultAlias;
     const calculatedColumns = getCalculatedColumns(entity);
     const output: OrderByCondition = {};
     for (const [key, order] of Object.entries(sortParams)) {
