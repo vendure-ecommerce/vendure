@@ -10,17 +10,16 @@
 .toggle {
     @include no-select();
     cursor: pointer;
-    background-color: var(--color-component-bg-100);
-    border: 2px solid var(--color-component-border-300);
-    padding: 0 6px;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     color: var(--color-grey-300);
-    transition: background-color 0.2s, border 0.2s;
+    background-color: var(--color-component-bg-100);
+    border-radius: 50%;
+    top: -12px;
+    left: -12px;
+    transition: opacity 0.2s, color 0.2s;
+
+    &.hide-when-off {
+        opacity: 0;
+    }
 
     &.small {
         width: 24px;
@@ -28,19 +27,16 @@
     }
 
     &:not(.disabled):hover {
-        border-color: var(--color-success-500);
-        background-color: var(--color-success-400);
+        color: var(--color-success-400);
         opacity: 0.9;
     }
 
     &.selected {
-        background-color: var(--color-success-500);
-        border-color: var(--color-success-600);
-        color: white;
+        opacity: 1;
+        color: var(--color-success-500);
 
         &:not(.disabled):hover {
-            background-color: var(--color-success-500);
-            border-color: var(--color-success-400);
+            color: var(--color-success-400);
             opacity: 0.9;
         }
     }
@@ -54,11 +50,13 @@
         cursor: default;
     }
 }
+
 .toggle-label {
     flex: 1;
     margin-left: 6px;
     text-align: left;
     font-size: 12px;
+
     &:not(.disabled) {
         cursor: pointer;
     }

@@ -1,5 +1,6 @@
 <div
     class="toggle"
+    [class.hide-when-off]="hiddenWhenOff"
     [class.disabled]="disabled"
     [class.small]="size === 'small'"
     [attr.tabindex]="disabled ? null : 0"
@@ -8,7 +9,7 @@
     (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"
     (click)="selectedChange.emit(!selected)"
 >
-    <clr-icon shape="check" [attr.size]="size === 'small' ? 16 : 32"></clr-icon>
+    <clr-icon shape="check-circle" [attr.size]="size === 'small' ? 24 : 32"></clr-icon>
 </div>
 <div class="toggle-label" [class.disabled]="disabled" *ngIf="label" (click)="selectedChange.emit(!selected)">
     {{ label }}

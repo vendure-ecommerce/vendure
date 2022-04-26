@@ -28,16 +28,13 @@
     position: relative;
 }
 
-.selected-checkbox {
-    opacity: 0;
+vdr-select-toggle {
     position: absolute;
-    color: var(--color-success-500);
-    background-color: white;
-    border-radius: 50%;
+    ::ng-deep .toggle {
+        box-shadow: 0px 5px 5px -4px rgba(0, 0, 0, 0.75);
+    }
     top: -12px;
     left: -12px;
-    box-shadow: 0px 5px 5px -4px rgba(0, 0, 0, 0.75);
-    transition: opacity 0.1s;
 }
 
 .card.selected {
