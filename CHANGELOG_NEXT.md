@@ -1,3 +1,11 @@
+## 2.0.0-next.4 (2022-04-26)
+
+
+#### Fixes
+
+* **admin-ui** Fix merge error in collection detail component ([09fc5ef](https://github.com/vendure-ecommerce/vendure/commit/09fc5ef))
+* **core** Make OrderLine.items eager-loaded from the DB ([8465d84](https://github.com/vendure-ecommerce/vendure/commit/8465d84))
+
 ## 2.0.0-next.3 (2022-04-25)
 
 
