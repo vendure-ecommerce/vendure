@@ -126,9 +126,9 @@
                 </clr-toggle-wrapper>
             </vdr-form-field>
             <div formArrayName="filters">
-                <ng-container *ngFor="let filter of filters; index as i">
+                <ng-container *ngFor="let filter of filters; index as i; trackBy:trackByFn">
                     <vdr-configurable-input
-                        (remove)="removeFilter($event)"
+                        (remove)="removeFilter(i)"
                         [operation]="filter"
                         [operationDefinition]="getFilterDefinition(filter)"
                         [formControlName]="i"
