@@ -9,7 +9,7 @@ extractTranslations().then(
     () => {
         process.exit(0);
     },
-    (error) => {
+    error => {
         console.log(error);
         process.exit(1);
     },
@@ -19,12 +19,13 @@ extractTranslations().then(
  * Extracts translation tokens into the i18n-messages files found in the MESSAGES_DIR.
  */
 async function extractTranslations() {
-    const locales = fs.readdirSync(MESSAGES_DIR).map((file) => path.basename(file).replace('.json', ''));
+    const locales = fs.readdirSync(MESSAGES_DIR).map(file => path.basename(file).replace('.json', ''));
     const report = {
         generatedOn: new Date().toISOString(),
         lastCommit: await getLastGitCommitHash(),
         translationStatus: {},
     };
+    console.log(`locales`, locales);
     for (const locale of locales) {
         const outputPath = path.join(
             path.relative(path.join(__dirname, '..'), MESSAGES_DIR),
@@ -37,7 +38,6 @@ async function extractTranslations() {
             const { tokenCount, translatedCount, percentage } = getStatsForLocale(locale);
             console.log(`${locale}: ${translatedCount} of ${tokenCount} tokens translated (${percentage}%)`);
             console.log('');
-
             report.translationStatus[locale] = { tokenCount, translatedCount, percentage };
         } catch (e) {
             console.log(e);
@@ -54,11 +54,11 @@ function runExtraction(locale) {
     const args = getNgxTranslateExtractCommand(locale);
     return new Promise((resolve, reject) => {
         try {
-            const child = spawn(`yarnpkg`, args, { stdio: ['pipe', 'pipe', process.stderr] });
-            child.on('close', (x) => {
+            const child = spawn(`yarnpkg`, args, { stdio: ['inherit', 'inherit', 'inherit'] });
+            child.on('close', x => {
                 resolve();
             });
-            child.on('error', (err) => {
+            child.on('error', err => {
                 reject(err);
             });
         } catch (e) {
@@ -74,7 +74,7 @@ function getStatsForLocale(locale) {
     for (const section of Object.keys(content)) {
         const sectionTranslations = Object.values(content[section]);
         tokenCount += sectionTranslations.length;
-        translatedCount += sectionTranslations.filter((val) => val !== '').length;
+        translatedCount += sectionTranslations.filter(val => val !== '').length;
     }
     const percentage = Math.round((translatedCount / tokenCount) * 100);
     return {

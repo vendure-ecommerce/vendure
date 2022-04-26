@@ -143,7 +143,9 @@ export type DefaultFormComponentId =
     | 'rich-text-form-input'
     | 'select-form-input'
     | 'text-form-input'
-    | 'textarea-form-input';
+    | 'textarea-form-input'
+    | 'asset-form-input'
+    | 'product-multi-form-input';
 
 /**
  * @description
@@ -169,6 +171,10 @@ type DefaultFormConfigHash = {
     'text-form-input': { prefix?: string; suffix?: string };
     'textarea-form-input': {
         spellcheck?: boolean;
+    };
+    'asset-form-input': {};
+    'product-multi-form-input': {
+        selectionMode?: 'product' | 'variant';
     };
 };
 

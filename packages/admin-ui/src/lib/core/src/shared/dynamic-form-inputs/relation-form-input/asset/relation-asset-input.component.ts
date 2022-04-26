@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
+import { FormInputComponent } from '../../../../common/component-registry-types';
 import { GetAsset, RelationCustomFieldConfig } from '../../../../common/generated-types';
 import { DataService } from '../../../../data/providers/data.service';
 import { ModalService } from '../../../../providers/modal/modal.service';
@@ -15,17 +17,18 @@ import { AssetPreviewDialogComponent } from '../../../components/asset-preview-d
     styleUrls: ['./relation-asset-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RelationAssetInputComponent implements OnInit {
+export class RelationAssetInputComponent implements FormInputComponent, OnInit {
+    static readonly id: DefaultFormComponentId = 'asset-form-input';
     @Input() readonly: boolean;
-    @Input() parentFormControl: FormControl;
+    @Input('parentFormControl') formControl: FormControl;
     @Input() config: RelationCustomFieldConfig;
     asset$: Observable<GetAsset.Asset | undefined>;
 
     constructor(private modalService: ModalService, private dataService: DataService) {}
 
     ngOnInit() {
-        this.asset$ = this.parentFormControl.valueChanges.pipe(
-            startWith(this.parentFormControl.value),
+        this.asset$ = this.formControl.valueChanges.pipe(
+            startWith(this.formControl.value),
             map(asset => asset?.id),
             distinctUntilChanged(),
             switchMap(id => {
@@ -48,15 +51,15 @@ export class RelationAssetInputComponent implements OnInit {
             })
             .subscribe(result => {
                 if (result && result.length) {
-                    this.parentFormControl.setValue(result[0]);
-                    this.parentFormControl.markAsDirty();
+                    this.formControl.setValue(result[0]);
+                    this.formControl.markAsDirty();
                 }
             });
     }
 
     remove() {
-        this.parentFormControl.setValue(null);
-        this.parentFormControl.markAsDirty();
+        this.formControl.setValue(null);
+        this.formControl.markAsDirty();
     }
 
     previewAsset(asset: GetAsset.Asset) {

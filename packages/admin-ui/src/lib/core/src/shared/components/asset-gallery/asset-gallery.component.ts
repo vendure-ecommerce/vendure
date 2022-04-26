@@ -34,6 +34,7 @@ export class AssetGalleryComponent implements OnChanges {
     selectionManager = new SelectionManager<AssetLike>({
         multiSelect: this.multiSelect,
         itemsAreEqual: (a, b) => a.id === b.id,
+        additiveMode: false,
     });
 
     constructor(private modalService: ModalService) {}

@@ -1,10 +1,16 @@
+export interface SelectionManagerOptions<T> {
+    multiSelect: boolean;
+    itemsAreEqual: (a: T, b: T) => boolean;
+    additiveMode: boolean;
+}
+
 /**
  * @description
  * A helper class used to manage selection of list items. Supports multiple selection via
  * cmd/ctrl/shift key.
  */
 export class SelectionManager<T> {
-    constructor(private options: { multiSelect: boolean; itemsAreEqual: (a: T, b: T) => boolean }) {}
+    constructor(private options: SelectionManagerOptions<T>) {}
 
     get selection(): T[] {
         return this._selection;
@@ -22,7 +28,7 @@ export class SelectionManager<T> {
     }
 
     toggleSelection(item: T, event?: MouseEvent) {
-        const { multiSelect, itemsAreEqual } = this.options;
+        const { multiSelect, itemsAreEqual, additiveMode } = this.options;
         const index = this._selection.findIndex(a => itemsAreEqual(a, item));
         if (multiSelect && event?.shiftKey && 1 <= this._selection.length) {
             const lastSelection = this._selection[this._selection.length - 1];
@@ -34,7 +40,7 @@ export class SelectionManager<T> {
                 ...this.items.slice(start, end).filter(a => !this._selection.find(s => itemsAreEqual(a, s))),
             );
         } else if (index === -1) {
-            if (multiSelect && (event?.ctrlKey || event?.shiftKey)) {
+            if (multiSelect && (event?.ctrlKey || event?.shiftKey || additiveMode)) {
                 this._selection.push(item);
             } else {
                 this._selection = [item];
@@ -42,7 +48,7 @@ export class SelectionManager<T> {
         } else {
             if (multiSelect && event?.ctrlKey) {
                 this._selection.splice(index, 1);
-            } else if (1 < this._selection.length) {
+            } else if (1 < this._selection.length && !additiveMode) {
                 this._selection = [item];
             } else {
                 this._selection.splice(index, 1);

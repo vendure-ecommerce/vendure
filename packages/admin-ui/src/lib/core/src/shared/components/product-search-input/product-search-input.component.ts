@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
-import { SearchProducts, SingleSearchSelectionModelFactory } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+
+import { SearchProducts } from '../../../common/generated-types';
+import { SingleSearchSelectionModelFactory } from '../../../common/single-search-selection-model';
 
 @Component({
     selector: 'vdr-product-search-input',

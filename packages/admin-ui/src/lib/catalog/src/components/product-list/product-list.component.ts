@@ -10,6 +10,7 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
+    ProductSearchInputComponent,
     SearchInput,
     SearchProducts,
     ServerConfigService,
@@ -26,8 +27,6 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-
-import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
 @Component({
     selector: 'vdr-products-list',

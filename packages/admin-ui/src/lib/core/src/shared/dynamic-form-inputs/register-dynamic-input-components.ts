@@ -16,6 +16,7 @@ import { DateFormInputComponent } from './date-form-input/date-form-input.compon
 import { FacetValueFormInputComponent } from './facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './number-form-input/number-form-input.component';
 import { PasswordFormInputComponent } from './password-form-input/password-form-input.component';
+import { ProductMultiSelectorFormInputComponent } from './product-multi-selector-form-input/product-multi-selector-form-input.component';
 import { ProductSelectorFormInputComponent } from './product-selector-form-input/product-selector-form-input.component';
 import { RelationFormInputComponent } from './relation-form-input/relation-form-input.component';
 import { RichTextFormInputComponent } from './rich-text-form-input/rich-text-form-input.component';
@@ -38,6 +39,7 @@ export const defaultFormInputs = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    ProductMultiSelectorFormInputComponent,
 ];
 
 /**

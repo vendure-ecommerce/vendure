@@ -69,6 +69,8 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
+import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
@@ -95,6 +97,7 @@ import { DynamicFormInputComponent } from './dynamic-form-inputs/dynamic-form-in
 import { FacetValueFormInputComponent } from './dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './dynamic-form-inputs/number-form-input/number-form-input.component';
 import { PasswordFormInputComponent } from './dynamic-form-inputs/password-form-input/password-form-input.component';
+import { ProductMultiSelectorFormInputComponent } from './dynamic-form-inputs/product-multi-selector-form-input/product-multi-selector-form-input.component';
 import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
 import { RelationAssetInputComponent } from './dynamic-form-inputs/relation-form-input/asset/relation-asset-input.component';
 import { RelationCustomerInputComponent } from './dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
@@ -234,6 +237,9 @@ const DECLARATIONS = [
     UiExtensionPointComponent,
     CustomDetailComponentHostComponent,
     AssetPreviewLinksComponent,
+    ProductMultiSelectorDialogComponent,
+    ProductMultiSelectorFormInputComponent,
+    ProductSearchInputComponent
 ];
 
 const DYNAMIC_FORM_INPUTS = [
