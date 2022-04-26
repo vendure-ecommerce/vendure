@@ -217,6 +217,38 @@ describe('Orders resolver', () => {
             expect(result.order!.id).toBe('T_2');
         });
 
+        it('order with calculated line properties', async () => {
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(
+                gql`
+                    query GetOrderWithLineCalculatedProps($id: ID!) {
+                        order(id: $id) {
+                            id
+                            lines {
+                                id
+                                linePriceWithTax
+                                quantity
+                            }
+                        }
+                    }
+                `,
+                {
+                    id: 'T_2',
+                },
+            );
+            expect(result.order!.lines).toEqual([
+                {
+                    id: 'T_3',
+                    linePriceWithTax: 167880,
+                    quantity: 1,
+                },
+                {
+                    id: 'T_4',
+                    linePriceWithTax: 791640,
+                    quantity: 3,
+                },
+            ]);
+        });
+
         it('sort by total', async () => {
             const result = await adminClient.query<
                 Codegen.GetOrderListQuery,
