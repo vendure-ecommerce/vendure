@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, Optional } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { ConfigurableInputComponent } from '@vendure/admin-ui/core';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
+import { ConfigurableInputComponent } from '../../components/configurable-input/configurable-input.component';
 
 /**
  * @description
