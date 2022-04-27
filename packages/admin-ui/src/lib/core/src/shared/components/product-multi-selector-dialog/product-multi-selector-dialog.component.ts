@@ -6,7 +6,7 @@ import { map, tap } from 'rxjs/operators';
 import { SearchProductsQuery } from '../../../common/generated-types';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
 import { DataService } from '../../../data/providers/data.service';
-import { Dialog } from '../../../providers/modal/modal.service';
+import { Dialog } from '../../../providers/modal/modal.types';
 
 export type SearchItem = SearchProductsQuery['search']['items'][number];
 
