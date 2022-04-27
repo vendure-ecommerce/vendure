@@ -10,12 +10,14 @@ import {
 
 import { BooleanFormInputComponent } from './boolean-form-input/boolean-form-input.component';
 import { JsonEditorFormInputComponent } from './code-editor-form-input/json-editor-form-input.component';
+import { CombinationModeFormInputComponent } from './combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './date-form-input/date-form-input.component';
 import { FacetValueFormInputComponent } from './facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './number-form-input/number-form-input.component';
 import { PasswordFormInputComponent } from './password-form-input/password-form-input.component';
+import { ProductMultiSelectorFormInputComponent } from './product-multi-selector-form-input/product-multi-selector-form-input.component';
 import { ProductSelectorFormInputComponent } from './product-selector-form-input/product-selector-form-input.component';
 import { RelationFormInputComponent } from './relation-form-input/relation-form-input.component';
 import { RichTextFormInputComponent } from './rich-text-form-input/rich-text-form-input.component';
@@ -38,6 +40,8 @@ export const defaultFormInputs = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    ProductMultiSelectorFormInputComponent,
+    CombinationModeFormInputComponent,
 ];
 
 /**

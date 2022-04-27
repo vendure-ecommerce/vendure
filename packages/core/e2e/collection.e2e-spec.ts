@@ -12,6 +12,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { pick } from '../../common/lib/pick';
+import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/index';
 
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
@@ -1445,6 +1446,92 @@ describe('Collection resolver', () => {
             });
         });
 
+        describe('variantId filter', () => {
+            it('contains expects variants', async () => {
+                const { createCollection } = await adminClient.query<
+                    CreateCollection.Mutation,
+                    CreateCollection.Variables
+                >(CREATE_COLLECTION, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: `variantId filter test`,
+                                description: '',
+                                slug: `variantId-filter-test`,
+                            },
+                        ],
+                        filters: [
+                            {
+                                code: variantIdCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'variantIds',
+                                        value: `["T_1", "T_4"]`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                await awaitRunningJobs(adminClient, 5000);
+
+                const result = await adminClient.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: createCollection.id,
+                });
+                expect(result.collection!.productVariants.items.map(i => i.id).sort()).toEqual([
+                    'T_1',
+                    'T_4',
+                ]);
+            });
+        });
+
+        describe('productId filter', () => {
+            it('contains expects variants', async () => {
+                const { createCollection } = await adminClient.query<
+                    CreateCollection.Mutation,
+                    CreateCollection.Variables
+                >(CREATE_COLLECTION, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: `productId filter test`,
+                                description: '',
+                                slug: `productId-filter-test`,
+                            },
+                        ],
+                        filters: [
+                            {
+                                code: productIdCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'productIds',
+                                        value: `["T_2"]`,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                await awaitRunningJobs(adminClient, 5000);
+
+                const result = await adminClient.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: createCollection.id,
+                });
+                expect(result.collection!.productVariants.items.map(i => i.id).sort()).toEqual([
+                    'T_5',
+                    'T_6',
+                ]);
+            });
+        });
+
         describe('re-evaluation of contents on changes', () => {
             let products: GetProductsWithVariantIdsQuery['products']['items'];
 
@@ -1886,7 +1973,7 @@ describe('Collection resolver', () => {
                     name: 'endsWith camera',
                 },
                 {
-                    id: 'T_23',
+                    id: 'T_25',
                     name: 'pear electronics',
                 },
             ]);

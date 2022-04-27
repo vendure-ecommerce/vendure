@@ -6,7 +6,11 @@
         [class.selected]="isSelected(asset)"
     >
         <div class="card-img">
-            <div class="selected-checkbox"><clr-icon shape="check-circle" size="32"></clr-icon></div>
+            <vdr-select-toggle
+                [selected]="isSelected(asset)"
+                [disabled]="true"
+                [hiddenWhenOff]="true"
+            ></vdr-select-toggle>
             <img [src]="asset | assetPreview: 'thumb'" />
         </div>
         <div class="detail">
@@ -22,21 +26,21 @@
 <div class="info-bar">
     <div class="card">
         <div class="card-img">
-            <div class="placeholder" *ngIf="selection.length === 0">
+            <div class="placeholder" *ngIf="selectionManager.selection.length === 0">
                 <clr-icon shape="image" size="128"></clr-icon>
                 <div>{{ 'catalog.no-selection' | translate }}</div>
             </div>
             <img
                 class="preview"
-                *ngIf="selection.length >= 1"
+                *ngIf="selectionManager.selection.length >= 1"
                 [src]="lastSelected().preview + '?preset=medium'"
             />
         </div>
-        <div class="card-block details" *ngIf="selection.length >= 1">
+        <div class="card-block details" *ngIf="selectionManager.selection.length >= 1">
             <div class="name">{{ lastSelected().name }}</div>
             <div>{{ 'asset.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}</div>
 
-            <ng-container *ngIf="selection.length === 1">
+            <ng-container *ngIf="selectionManager.selection.length === 1">
                 <vdr-chip *ngFor="let tag of lastSelected().tags" [colorFrom]="tag.value"
                     ><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip
                 >
@@ -55,17 +59,17 @@
                 </div>
             </ng-container>
             <div *ngIf="canDelete">
-                <button (click)="deleteAssets.emit(selection)" class="btn btn-link">
+                <button (click)="deleteAssets.emit(selectionManager.selection)" class="btn btn-link">
                     <clr-icon shape="trash" class="is-danger"></clr-icon> {{ 'common.delete' | translate }}
                 </button>
             </div>
         </div>
     </div>
-    <div class="card stack" [class.visible]="selection.length > 1"></div>
-    <div class="selection-count" [class.visible]="selection.length > 1">
-        {{ 'asset.assets-selected-count' | translate: { count: selection.length } }}
+    <div class="card stack" [class.visible]="selectionManager.selection.length > 1"></div>
+    <div class="selection-count" [class.visible]="selectionManager.selection.length > 1">
+        {{ 'asset.assets-selected-count' | translate: { count: selectionManager.selection.length } }}
         <ul>
-            <li *ngFor="let asset of selection">{{ asset.name }}</li>
+            <li *ngFor="let asset of selectionManager.selection">{{ asset.name }}</li>
         </ul>
     </div>
 </div>

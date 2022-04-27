@@ -25,6 +25,7 @@ async function extractTranslations() {
         lastCommit: await getLastGitCommitHash(),
         translationStatus: {},
     };
+    console.log(`locales`, locales);
     for (const locale of locales) {
         const outputPath = path.join(
             path.relative(path.join(__dirname, '..'), MESSAGES_DIR),
@@ -37,7 +38,6 @@ async function extractTranslations() {
             const { tokenCount, translatedCount, percentage } = getStatsForLocale(locale);
             console.log(`${locale}: ${translatedCount} of ${tokenCount} tokens translated (${percentage}%)`);
             console.log('');
-
             report.translationStatus[locale] = { tokenCount, translatedCount, percentage };
         } catch (e) {
             console.log(e);
@@ -54,7 +54,7 @@ function runExtraction(locale) {
     const args = getNgxTranslateExtractCommand(locale);
     return new Promise((resolve, reject) => {
         try {
-            const child = spawn(`yarnpkg`, args, { stdio: ['pipe', 'pipe', process.stderr] });
+            const child = spawn(`yarnpkg`, args, { stdio: ['inherit', 'inherit', 'inherit'] });
             child.on('close', x => {
                 resolve();
             });

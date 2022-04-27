@@ -69,6 +69,8 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
+import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductVariantSelectorComponent } from './components/product-variant-selector/product-variant-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
@@ -88,6 +90,7 @@ import { IfMultichannelDirective } from './directives/if-multichannel.directive'
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
 import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
+import { CombinationModeFormInputComponent } from './dynamic-form-inputs/combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/date-form-input.component';
@@ -95,6 +98,7 @@ import { DynamicFormInputComponent } from './dynamic-form-inputs/dynamic-form-in
 import { FacetValueFormInputComponent } from './dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './dynamic-form-inputs/number-form-input/number-form-input.component';
 import { PasswordFormInputComponent } from './dynamic-form-inputs/password-form-input/password-form-input.component';
+import { ProductMultiSelectorFormInputComponent } from './dynamic-form-inputs/product-multi-selector-form-input/product-multi-selector-form-input.component';
 import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
 import { RelationAssetInputComponent } from './dynamic-form-inputs/relation-form-input/asset/relation-asset-input.component';
 import { RelationCustomerInputComponent } from './dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
@@ -234,6 +238,8 @@ const DECLARATIONS = [
     UiExtensionPointComponent,
     CustomDetailComponentHostComponent,
     AssetPreviewLinksComponent,
+    ProductMultiSelectorDialogComponent,
+    ProductSearchInputComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -258,6 +264,8 @@ const DYNAMIC_FORM_INPUTS = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    ProductMultiSelectorFormInputComponent,
+    CombinationModeFormInputComponent,
 ];
 
 @NgModule({

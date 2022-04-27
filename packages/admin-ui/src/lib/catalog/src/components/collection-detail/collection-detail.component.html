@@ -103,7 +103,7 @@
             ></vdr-assets>
         </div>
     </div>
-    <div class="clr-row">
+    <div class="clr-row" formArrayName="filters">
         <div class="clr-col">
             <label>{{ 'catalog.filters' | translate }}</label>
             <vdr-form-field [label]="'catalog.filter-inheritance' | translate" for="inheritFilters">
@@ -129,6 +129,7 @@
                 <ng-container *ngFor="let filter of filters; index as i; trackBy:trackByFn">
                     <vdr-configurable-input
                         (remove)="removeFilter(i)"
+                        [position]="i"
                         [operation]="filter"
                         [operationDefinition]="getFilterDefinition(filter)"
                         [formControlName]="i"

@@ -1,10 +1,41 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { customAlphabet } from 'nanoid';
 
+import { ConfigArgDef } from '../../common/configurable-operation';
 import { UserInputError } from '../../common/error/errors';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
 import { CollectionFilter } from './collection-filter';
+
+/**
+ * @description
+ * Used to created unique key names for DB query parameters, to avoid conflicts if the
+ * same filter is applied multiple times.
+ */
+export function randomSuffix(prefix: string) {
+    const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 6);
+    return `${prefix}_${nanoid()}`;
+}
+
+/**
+ * @description
+ * Add this to your CollectionFilter `args` object to display the standard UI component
+ * for selecting the combination mode when working with multiple filters.
+ */
+export const combineWithAndArg: ConfigArgDef<'boolean'> = {
+    type: 'boolean',
+    label: [{ languageCode: LanguageCode.en, value: 'Combination mode' }],
+    description: [
+        {
+            languageCode: LanguageCode.en,
+            value: 'If this filter is being combined with other filters, do all conditions need to be satisfied (AND), or just one or the other (OR)?',
+        },
+    ],
+    defaultValue: true,
+    ui: {
+        component: 'combination-mode-form-input',
+    },
+};
 
 /**
  * Filters for ProductVariants having the given facetValueIds (including parent Product)
@@ -29,6 +60,7 @@ export const facetValueCollectionFilter = new CollectionFilter({
                 },
             ],
         },
+        combineWithAnd: combineWithAndArg,
     },
     code: 'facet-value-filter',
     description: [{ languageCode: LanguageCode.en, value: 'Filter by facet values' }],
@@ -70,13 +102,21 @@ export const facetValueCollectionFilter = new CollectionFilter({
                 .select('variant_ids_table.variant_id')
                 .from(`(${union.getQuery()})`, 'variant_ids_table');
 
-            qb.andWhere(`productVariant.id IN (${variantIds.getQuery()})`).setParameters({
+            const clause = `productVariant.id IN (${variantIds.getQuery()})`;
+            const params = {
                 [idsName]: ids,
                 [countName]: args.containsAny ? 1 : ids.length,
-            });
+            };
+            if (args.combineWithAnd !== false) {
+                qb.andWhere(clause).setParameters(params);
+            } else {
+                qb.orWhere(clause).setParameters(params);
+            }
         } else {
             // If no facetValueIds are specified, no ProductVariants will be matched.
-            qb.andWhere('1 = 0');
+            if (args.combineWithAnd !== false) {
+                qb.andWhere('1 = 0');
+            }
         }
         return qb;
     },
@@ -97,13 +137,13 @@ export const variantNameCollectionFilter = new CollectionFilter({
             },
         },
         term: { type: 'string' },
+        combineWithAnd: combineWithAndArg,
     },
     code: 'variant-name-filter',
     description: [{ languageCode: LanguageCode.en, value: 'Filter by product variant name' }],
     apply: (qb, args) => {
         let translationAlias = `variant_name_filter_translation`;
-        const nanoid = customAlphabet('123456789abcdefghijklmnopqrstuvwxyz', 6);
-        const termName = `term_${nanoid()}`;
+        const termName = randomSuffix(`term`);
         const translationsJoin = qb.expressionMap.joinAttributes.find(
             ja => ja.entityOrProperty === 'productVariant.translations',
         );
@@ -113,25 +153,40 @@ export const variantNameCollectionFilter = new CollectionFilter({
             translationAlias = translationsJoin.alias.name;
         }
         const LIKE = qb.connection.options.type === 'postgres' ? 'ILIKE' : 'LIKE';
+        let clause: string;
+        let params: Record<string, string>;
         switch (args.operator) {
             case 'contains':
-                return qb.andWhere(`${translationAlias}.name ${LIKE} :${termName}`, {
+                clause = `${translationAlias}.name ${LIKE} :${termName}`;
+                params = {
                     [termName]: `%${args.term}%`,
-                });
+                };
+                break;
             case 'doesNotContain':
-                return qb.andWhere(`${translationAlias}.name NOT ${LIKE} :${termName}`, {
+                clause = `${translationAlias}.name NOT ${LIKE} :${termName}`;
+                params = {
                     [termName]: `%${args.term}%`,
-                });
+                };
+                break;
             case 'startsWith':
-                return qb.andWhere(`${translationAlias}.name ${LIKE} :${termName}`, {
+                clause = `${translationAlias}.name ${LIKE} :${termName}`;
+                params = {
                     [termName]: `${args.term}%`,
-                });
+                };
+                break;
             case 'endsWith':
-                return qb.andWhere(`${translationAlias}.name ${LIKE} :${termName}`, {
+                clause = `${translationAlias}.name ${LIKE} :${termName}`;
+                params = {
                     [termName]: `%${args.term}`,
-                });
+                };
+                break;
             default:
                 throw new UserInputError(`${args.operator} is not a valid operator`);
+        }
+        if (args.combineWithAnd === false) {
+            return qb.orWhere(clause, params);
+        } else {
+            return qb.andWhere(clause, params);
         }
     },
 });
@@ -141,15 +196,58 @@ export const variantIdCollectionFilter = new CollectionFilter({
         variantIds: {
             type: 'ID',
             list: true,
+            label: [{ languageCode: LanguageCode.en, value: 'Product variants' }],
             ui: {
-                component: 'product-selector-form-input',
+                component: 'product-multi-form-input',
+                selectionMode: 'variant',
             },
         },
+        combineWithAnd: combineWithAndArg,
     },
     code: 'variant-id-filter',
     description: [{ languageCode: LanguageCode.en, value: 'Manually select product variants' }],
     apply: (qb, args) => {
-        return qb.andWhere('productVariant.id IN (:...variantIds)', { variantIds: args.variantIds });
+        if (args.variantIds.length === 0) {
+            return qb;
+        }
+        const variantIdsKey = randomSuffix(`variantIds`);
+        const clause = `productVariant.id IN (:...${variantIdsKey})`;
+        const params = { [variantIdsKey]: args.variantIds };
+        if (args.combineWithAnd === false) {
+            return qb.orWhere(clause, params);
+        } else {
+            return qb.andWhere(clause, params);
+        }
+    },
+});
+
+export const productIdCollectionFilter = new CollectionFilter({
+    args: {
+        productIds: {
+            type: 'ID',
+            list: true,
+            label: [{ languageCode: LanguageCode.en, value: 'Products' }],
+            ui: {
+                component: 'product-multi-form-input',
+                selectionMode: 'product',
+            },
+        },
+        combineWithAnd: combineWithAndArg,
+    },
+    code: 'product-id-filter',
+    description: [{ languageCode: LanguageCode.en, value: 'Manually select products' }],
+    apply: (qb, args) => {
+        if (args.productIds.length === 0) {
+            return qb;
+        }
+        const productIdsKey = randomSuffix(`productIds`);
+        const clause = `productVariant.productId IN (:...${productIdsKey})`;
+        const params = { [productIdsKey]: args.productIds };
+        if (args.combineWithAnd === false) {
+            return qb.orWhere(clause, params);
+        } else {
+            return qb.andWhere(clause, params);
+        }
     },
 });
 
@@ -157,4 +255,5 @@ export const defaultCollectionFilters = [
     facetValueCollectionFilter,
     variantNameCollectionFilter,
     variantIdCollectionFilter,
+    productIdCollectionFilter,
 ];

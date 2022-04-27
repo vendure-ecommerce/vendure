@@ -11,6 +11,7 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
+    ProductSearchInputComponent,
     SearchInput,
     SearchProductsQuery,
     SearchProductsQueryVariables,
@@ -18,8 +19,6 @@ import {
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
-
-import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
 
 @Component({
     selector: 'vdr-products-list',
