@@ -863,23 +863,26 @@ export class OrderService {
      * * Shipping or billing address changes
      *
      * Setting the `dryRun` input property to `true` will apply all changes, including updating the price of the
-     * Order, but will not actually persist any of those changes to the database.
+     * Order, except history entry and additional payment actions. 
+     * 
+     * __Using dryRun option, you must wrap function call in transaction manually.__
+     * 
      */
     async modifyOrder(
         ctx: RequestContext,
         input: ModifyOrderInput,
     ): Promise<ErrorResultUnion<ModifyOrderResult, Order>> {
-        await this.connection.startTransaction(ctx);
         const order = await this.getOrderOrThrow(ctx, input.orderId);
         const result = await this.orderModifier.modifyOrder(ctx, input, order);
-        if (input.dryRun) {
-            await this.connection.rollBackTransaction(ctx);
-            return isGraphQlErrorResult(result) ? result : result.order;
-        }
+
         if (isGraphQlErrorResult(result)) {
-            await this.connection.rollBackTransaction(ctx);
             return result;
         }
+
+        if (input.dryRun) {
+            return result.order;
+        }
+
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId: input.orderId,
@@ -888,7 +891,6 @@ export class OrderService {
                 modificationId: result.modification.id,
             },
         });
-        await this.connection.commitOpenTransaction(ctx);
         return this.getOrderOrThrow(ctx, input.orderId);
     }
 
