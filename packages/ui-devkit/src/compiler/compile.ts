@@ -66,7 +66,7 @@ function runCompileMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const commandArgs = ['run', 'build', `--outputPath=${distPath}`, `--base-href=${baseHref}`, ...buildProcessArguments(args)];
+            const commandArgs = ['run', 'build', `--outputPath="${distPath}"`, `--base-href=${baseHref}`, ...buildProcessArguments(args)];
             if (!usingYarn) {
                 // npm requires `--` before any command line args being passed to a script
                 commandArgs.splice(2, 0, '--');
