@@ -94,7 +94,18 @@ export class CollectionDetailComponent
         this.updatedFilters$ = filtersFormArray.statusChanges.pipe(
             debounceTime(200),
             filter(() => filtersFormArray.touched),
-            map(status => this.mapOperationsToInputs(this.filters, filtersFormArray.value)),
+            map(status =>
+                this.mapOperationsToInputs(this.filters, filtersFormArray.value).filter(filter => {
+                    // ensure all the arguments have valid values. E.g. a newly-added
+                    // filter will not yet have valid values
+                    for (const arg of filter.arguments) {
+                        if (arg.value === '') {
+                            return false;
+                        }
+                    }
+                    return true;
+                }),
+            ),
         );
         this.parentId$ = this.route.paramMap.pipe(
             map(pm => pm.get('parentId') || undefined),

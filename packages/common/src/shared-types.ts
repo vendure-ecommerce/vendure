@@ -145,7 +145,8 @@ export type DefaultFormComponentId =
     | 'text-form-input'
     | 'textarea-form-input'
     | 'asset-form-input'
-    | 'product-multi-form-input';
+    | 'product-multi-form-input'
+    | 'combination-mode-form-input';
 
 /**
  * @description
@@ -176,6 +177,7 @@ type DefaultFormConfigHash = {
     'product-multi-form-input': {
         selectionMode?: 'product' | 'variant';
     };
+    'combination-mode-form-input': {};
 };
 
 export type DefaultFormComponentUiConfig<T extends DefaultFormComponentId | string> =

@@ -90,6 +90,7 @@ import { IfMultichannelDirective } from './directives/if-multichannel.directive'
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
 import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
+import { CombinationModeFormInputComponent } from './dynamic-form-inputs/combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/date-form-input.component';
@@ -238,8 +239,7 @@ const DECLARATIONS = [
     CustomDetailComponentHostComponent,
     AssetPreviewLinksComponent,
     ProductMultiSelectorDialogComponent,
-    ProductMultiSelectorFormInputComponent,
-    ProductSearchInputComponent
+    ProductSearchInputComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -264,6 +264,8 @@ const DYNAMIC_FORM_INPUTS = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    ProductMultiSelectorFormInputComponent,
+    CombinationModeFormInputComponent,
 ];
 
 @NgModule({

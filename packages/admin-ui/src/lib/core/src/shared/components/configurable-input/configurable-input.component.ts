@@ -6,6 +6,7 @@ import {
     Input,
     OnChanges,
     OnDestroy,
+    OnInit,
     Output,
     SimpleChanges,
 } from '@angular/core';
@@ -22,7 +23,7 @@ import {
 } from '@angular/forms';
 import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 
 import { InputComponentConfig } from '../../../common/component-registry-types';
 import {
@@ -55,16 +56,21 @@ import { interpolateDescription } from '../../../common/utilities/interpolate-de
         },
     ],
 })
-export class ConfigurableInputComponent implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
+export class ConfigurableInputComponent
+    implements OnInit, OnChanges, OnDestroy, ControlValueAccessor, Validator
+{
     @Input() operation?: ConfigurableOperation;
     @Input() operationDefinition?: ConfigurableOperationDefinition;
     @Input() readonly = false;
     @Input() removable = true;
+    @Input() position = 0;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;
     onTouch: () => void;
     form = new FormGroup({});
+    positionChange$: Observable<number>;
+    private positionChangeSubject = new BehaviorSubject<number>(0);
     private subscription: Subscription;
 
     interpolateDescription(): string {
@@ -75,9 +81,16 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         }
     }
 
+    ngOnInit() {
+        this.positionChange$ = this.positionChangeSubject.asObservable();
+    }
+
     ngOnChanges(changes: SimpleChanges) {
         if ('operation' in changes || 'operationDefinition' in changes) {
             this.createForm();
+        }
+        if ('position' in changes) {
+            this.positionChangeSubject.next(this.position);
         }
     }
 
