@@ -56,6 +56,7 @@ export * from './shipping-method/default-shipping-calculator';
 export * from './shipping-method/default-shipping-eligibility-checker';
 export * from './shipping-method/shipping-calculator';
 export * from './shipping-method/shipping-eligibility-checker';
+export * from './system/health-check-strategy';
 export * from './tax/default-tax-line-calculation-strategy';
 export * from './tax/default-tax-zone-strategy';
 export * from './tax/tax-line-calculation-strategy';

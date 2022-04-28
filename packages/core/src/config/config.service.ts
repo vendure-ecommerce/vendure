@@ -19,6 +19,7 @@ import {
     PromotionOptions,
     RuntimeVendureConfig,
     ShippingOptions,
+    SystemOptions,
     TaxOptions,
     VendureConfig,
 } from './vendure-config';
@@ -109,5 +110,9 @@ export class ConfigService implements VendureConfig {
 
     get jobQueueOptions(): Required<JobQueueOptions> {
         return this.activeConfig.jobQueueOptions;
+    }
+
+    get systemOptions(): Required<SystemOptions> {
+        return this.activeConfig.systemOptions;
     }
 }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TerminusModule, TypeOrmHealthIndicator } from '@nestjs/terminus';
+import { TerminusModule } from '@nestjs/terminus';
 
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
@@ -20,11 +20,14 @@ export class HealthCheckModule {
     constructor(
         private configService: ConfigService,
         private healthCheckRegistryService: HealthCheckRegistryService,
-        private typeOrm: TypeOrmHealthIndicator,
         private worker: WorkerHealthIndicator,
     ) {
-        // Register the default health checks for database and worker
-        this.healthCheckRegistryService.registerIndicatorFunction([() => this.typeOrm.pingCheck('database')]);
+        // Register all configured health checks
+        for (const strategy of this.configService.systemOptions.healthChecks) {
+            this.healthCheckRegistryService.registerIndicatorFunction(strategy.getHealthIndicator());
+        }
+
+        // TODO: Remove in v2
         const { enableWorkerHealthCheck, jobQueueStrategy } = this.configService.jobQueueOptions;
         if (enableWorkerHealthCheck && isInspectableJobQueueStrategy(jobQueueStrategy)) {
             this.healthCheckRegistryService.registerIndicatorFunction([() => this.worker.isHealthy()]);
