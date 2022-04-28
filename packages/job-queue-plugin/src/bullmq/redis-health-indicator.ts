@@ -54,7 +54,7 @@ export class RedisHealthIndicator extends HealthIndicator {
 
         const result = this.getStatus(key, pingResult === 'PONG');
 
-        if (pingResult) {
+        if (pingResult === 'PONG') {
             return result;
         }
         throw new HealthCheckError('Redis failed', result);
