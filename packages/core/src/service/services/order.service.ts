@@ -1661,9 +1661,11 @@ export class OrderService {
     }
 
     /**
-     * Applies promotions, taxes and shipping to the Order.
+     * @description
+     * Applies promotions, taxes and shipping to the Order. If the `updatedOrderLines` argument is passed in,
+     * then all of those OrderLines will have their prices re-calculated using the configured {@link OrderItemPriceCalculationStrategy}.
      */
-    private async applyPriceAdjustments(
+    async applyPriceAdjustments(
         ctx: RequestContext,
         order: Order,
         updatedOrderLines?: OrderLine[],
