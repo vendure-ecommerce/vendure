@@ -5,6 +5,7 @@ import {
     ColumnOptions,
     ColumnType,
     ConnectionOptions,
+    Index,
     JoinColumn,
     JoinTable,
     ManyToMany,
@@ -89,6 +90,7 @@ function registerCustomFieldsForEntity(
                         default: getDefault(customField, dbEngine),
                         name,
                         nullable: nullable === false ? false : true,
+                        unique: customField.unique ?? false,
                     };
                     if ((customField.type === 'string' || customField.type === 'localeString') && !list) {
                         const length = customField.length || 255;
@@ -114,6 +116,12 @@ function registerCustomFieldsForEntity(
                         options.precision = 6;
                     }
                     Column(options)(instance, name);
+                    if ((dbEngine === 'mysql' || dbEngine === 'mariadb') && customField.unique === true) {
+                        // The MySQL driver seems to work differently and will only apply a unique
+                        // constraint if an index is defined on the column. For postgres/sqlite it is
+                        // sufficient to add the `unique: true` property to the column options.
+                        Index({ unique: true })(instance, name);
+                    }
                 }
             };
 

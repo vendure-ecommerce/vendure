@@ -41,6 +41,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
      */
     public?: boolean;
     nullable?: boolean;
+    unique?: boolean;
     ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 
@@ -127,6 +128,8 @@ export type CustomFieldConfig =
  * * `internal?: boolean`: Whether or not the custom field is exposed at all via the GraphQL APIs. Defaults to `false`.
  * * `defaultValue?: any`: The default value when an Entity is created with this field.
  * * `nullable?: boolean`: Whether the field is nullable in the database. If set to `false`, then a `defaultValue` should be provided.
+ * * `unique?: boolean`: Whether the value of the field should be unique. When set to `true`, a UNIQUE constraint is added to the column. Defaults
+ *     to `false`.
  * * `validate?: (value: any) => string | LocalizedString[] | void`: A custom validation function. If the value is valid, then
  *     the function should not return a value. If a string or LocalizedString array is returned, this is interpreted as an error message.
  *

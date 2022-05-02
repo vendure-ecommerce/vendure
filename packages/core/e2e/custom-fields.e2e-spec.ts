@@ -1,6 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Asset, CustomFields, mergeConfig, TransactionalConnection } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -161,6 +162,11 @@ const customConfig = mergeConfig(testConfig(), {
                     }
                 },
             },
+            {
+                name: 'uniqueString',
+                type: 'string',
+                unique: true,
+            },
         ],
         Facet: [
             {
@@ -244,6 +250,7 @@ describe('Custom fields', () => {
                 { name: 'localeStringList', type: 'localeString', list: true },
                 { name: 'stringListWithDefault', type: 'string', list: true },
                 { name: 'intListWithValidation', type: 'int', list: true },
+                { name: 'uniqueString', type: 'string', list: false },
                 // The internal type should not be exposed at all
                 // { name: 'internalString', type: 'string' },
             ],
@@ -831,5 +838,60 @@ describe('Custom fields', () => {
                 `);
             }, `Field "internalString" is not defined by type "ProductFilterParameter"`),
         );
+    });
+
+    describe('unique constraint', () => {
+        it('setting unique value works', async () => {
+            const result = await adminClient.query(
+                gql`
+                    mutation {
+                        updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
+                            id
+                            customFields {
+                                uniqueString
+                            }
+                        }
+                    }
+                `,
+            );
+
+            expect(result.updateProduct.customFields.uniqueString).toBe('foo');
+        });
+
+        it('setting conflicting value fails', async () => {
+            try {
+                await adminClient.query(gql`
+                    mutation {
+                        createProduct(
+                            input: {
+                                translations: [
+                                    { languageCode: en, name: "test 2", slug: "test-2", description: "" }
+                                ]
+                                customFields: { uniqueString: "foo" }
+                            }
+                        ) {
+                            id
+                        }
+                    }
+                `);
+                fail('Should have thrown');
+            } catch (e: any) {
+                let duplicateKeyErrMessage = 'unassigned';
+                switch (customConfig.dbConnectionOptions.type) {
+                    case 'mariadb':
+                    case 'mysql':
+                        duplicateKeyErrMessage = `ER_DUP_ENTRY: Duplicate entry 'foo' for key`;
+                        break;
+                    case 'postgres':
+                        duplicateKeyErrMessage = `duplicate key value violates unique constraint`;
+                        break;
+                    case 'sqlite':
+                    case 'sqljs':
+                        duplicateKeyErrMessage = `UNIQUE constraint failed: product.customFieldsUniquestring`;
+                        break;
+                }
+                expect(e.message).toContain(duplicateKeyErrMessage);
+            }
+        });
     });
 });
