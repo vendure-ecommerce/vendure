@@ -128,12 +128,12 @@ import { BraintreePluginOptions } from './types';
  *   });
  * }
  *
- * async function generateClientToken(orderId: string) {
+ * async function generateClientToken() {
  *   const { generateBraintreeClientToken } = await graphQlClient.query(gql`
- *     query GenerateBraintreeClientToken($orderId: ID!) {
- *       generateBraintreeClientToken(orderId: $orderId)
+ *     query GenerateBraintreeClientToken {
+ *       generateBraintreeClientToken
  *     }
- *   `, { orderId });
+ *   `);
  *   return generateBraintreeClientToken;
  * }
  *
@@ -215,7 +215,7 @@ import { BraintreePluginOptions } from './types';
     shopApiExtensions: {
         schema: gql`
             extend type Query {
-                generateBraintreeClientToken(orderId: ID!): String!
+                generateBraintreeClientToken(orderId: ID): String!
             }
         `,
         resolvers: [BraintreeResolver],

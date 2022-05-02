@@ -41,6 +41,7 @@ import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
+import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
@@ -882,6 +883,25 @@ export interface EntityOptions {
 
 /**
  * @description
+ * Options relating to system functions.
+ *
+ * @since 1.6.0
+ * @docsCategory configuration
+ */
+export interface SystemOptions {
+    /**
+     * @description
+     * Defines an array of {@link HealthCheckStrategy} instances which are used by the `/health` endpoint to verify
+     * that any critical systems which the Vendure server depends on are also healthy.
+     *
+     * @default [TypeORMHealthCheckStrategy]
+     * @since 1.6.0
+     */
+    healthChecks?: HealthCheckStrategy[];
+}
+
+/**
+ * @description
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
@@ -1001,6 +1021,13 @@ export interface VendureConfig {
      * Configures how the job queue is persisted and processed.
      */
     jobQueueOptions?: JobQueueOptions;
+    /**
+     * @description
+     * Configures system options
+     *
+     * @since 1.6.0
+     */
+    systemOptions?: SystemOptions;
 }
 
 /**
@@ -1023,6 +1050,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;
     taxOptions: Required<TaxOptions>;
+    systemOptions: Required<SystemOptions>;
 }
 
 type DeepPartialSimple<T> = {

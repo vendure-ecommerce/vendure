@@ -47,6 +47,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     plugins = [];
     logger = {} as any;
     jobQueueOptions = {};
+    systemOptions = {};
 }
 
 export const ENCODED = 'encoded';

@@ -25,7 +25,8 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { ErrorResultUnion } from '../../../common/error/error-result';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
+import { TransactionalConnection } from '../../../connection';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
@@ -34,7 +35,6 @@ import { FulfillmentState } from '../../../service/helpers/fulfillment-state-mac
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { PaymentState } from '../../../service/helpers/payment-state-machine/payment-state';
 import { OrderService } from '../../../service/services/order.service';
-import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
@@ -43,7 +43,7 @@ import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class OrderResolver {
-    constructor(private orderService: OrderService, private shippingMethodService: ShippingMethodService) {}
+    constructor(private orderService: OrderService, private connection: TransactionalConnection) {}
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -174,7 +174,16 @@ export class OrderResolver {
     @Mutation()
     @Allow(Permission.UpdateOrder)
     async modifyOrder(@Ctx() ctx: RequestContext, @Args() args: MutationModifyOrderArgs) {
-        return this.orderService.modifyOrder(ctx, args.input);
+        await this.connection.startTransaction(ctx);
+        const result = await this.orderService.modifyOrder(ctx, args.input);
+
+        if (args.input.dryRun || isGraphQlErrorResult(result)) {
+            await this.connection.rollBackTransaction(ctx);
+        } else {
+            await this.connection.commitOpenTransaction(ctx);
+        }
+
+        return result;
     }
 
     @Transaction()

@@ -14,7 +14,13 @@ import { HealthIndicatorFunction } from '@nestjs/terminus';
  * Plugins which rely on external services (web services, databases etc.) can make use of this
  * service to add a check for that dependency to the Vendure health check.
  *
- * To use it in your plugin, you'll need to import the {@link PluginCommonModule}:
+ *
+ * Since v1.6.0, the preferred way to implement a custom health check is by creating a new
+ * {@link HealthCheckStrategy} and then passing it to the `systemOptions.healthChecks` array.
+ * See the {@link HealthCheckStrategy} docs for an example configuration.
+ *
+ * The alternative way to register a health check is by injecting this service directly into your
+ * plugin module. To use it in your plugin, you'll need to import the {@link PluginCommonModule}:
  *
  * @example
  * ```TypeScript

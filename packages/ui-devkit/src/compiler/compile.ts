@@ -75,7 +75,7 @@ function runCompileMode(
             const commandArgs = [
                 'run',
                 'build',
-                `--outputPath=${distPath}`,
+                `--outputPath="${distPath}"`,
                 `--base-href=${baseHref}`,
                 ...buildProcessArguments(args),
             ];

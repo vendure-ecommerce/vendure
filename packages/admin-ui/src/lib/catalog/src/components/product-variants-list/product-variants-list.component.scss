@@ -20,9 +20,11 @@
 .variant-container {
     transition: background-color 0.2s;
     min-height: 330px;
+
     &.disabled {
         background-color: var(--color-component-bg-200);
     }
+
     .header-row {
         display: flex;
         align-items: center;
@@ -46,10 +48,13 @@
             flex-direction: row;
             height: 36px;
         }
+
         .name {
             flex: 1;
+
             ::ng-deep .clr-control-container {
                 width: 100%;
+
                 input.clr-input {
                     min-width: 100%;
                 }
@@ -113,6 +118,7 @@
 
     .pricing {
         display: flex;
+
         > div {
             margin-right: 12px;
         }
@@ -138,6 +144,10 @@
 
 .channel-assignment {
     justify-content: flex-end;
+    flex-wrap: wrap;
+    max-height: 110px;
+    overflow-y: auto;
+
     .btn {
         margin: 6px 12px 6px 0;
     }
@@ -146,6 +156,7 @@
 .out-of-stock-threshold-wrapper {
     display: flex;
     flex-direction: column;
+
     clr-toggle-wrapper {
         margin-left: 24px;
     }

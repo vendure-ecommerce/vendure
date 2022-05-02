@@ -5,6 +5,7 @@ import {
     SUPER_ADMIN_USER_PASSWORD,
 } from '@vendure/common/lib/shared-constants';
 
+import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 
@@ -183,4 +184,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         Zone: [],
     },
     plugins: [],
+    systemOptions: {
+        healthChecks: [new TypeORMHealthCheckStrategy()],
+    },
 };

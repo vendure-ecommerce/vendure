@@ -1,7 +1,8 @@
-import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { BullMQJobQueueStrategy } from './bullmq-job-queue-strategy';
 import { BULLMQ_PLUGIN_OPTIONS } from './constants';
+import { RedisHealthCheckStrategy } from './redis-health-check-strategy';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { RedisJobBufferStorageStrategy } from './redis-job-buffer-storage-strategy';
 import { BullMQPluginOptions } from './types';
@@ -101,6 +102,7 @@ import { BullMQPluginOptions } from './types';
     configuration: config => {
         config.jobQueueOptions.jobQueueStrategy = new BullMQJobQueueStrategy();
         config.jobQueueOptions.jobBufferStorageStrategy = new RedisJobBufferStorageStrategy();
+        config.systemOptions.healthChecks.push(new RedisHealthCheckStrategy());
         return config;
     },
     providers: [
@@ -118,9 +120,5 @@ export class BullMQJobQueuePlugin {
     static init(options: BullMQPluginOptions) {
         this.options = options;
         return this;
-    }
-
-    constructor(private registry: HealthCheckRegistryService, private redis: RedisHealthIndicator) {
-        registry.registerIndicatorFunction(() => this.redis.isHealthy('redis (job queue)'));
     }
 }

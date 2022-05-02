@@ -19,7 +19,7 @@ const config = {
       { name: 'shortName', type: 'localeString' },
     ],
     User: [
-      { name: 'socialLoginToken', type: 'string' },
+      { name: 'socialLoginToken', type: 'string', unique: true },
     ],
   },
 }

@@ -133,7 +133,7 @@ export class OrderModifier {
             new OrderLine({
                 productVariant,
                 taxCategory: productVariant.taxCategory,
-                featuredAsset: productVariant.product.featuredAsset,
+                featuredAsset: productVariant.featuredAsset ?? productVariant.product.featuredAsset,
                 customFields,
             }),
         );

@@ -89,7 +89,11 @@ export class CollectionService implements OnModuleInit {
         merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
             .subscribe(async event => {
-                const collections = await this.connection.getRepository(Collection).find();
+                const collections = await this.connection
+                    .getRepository(Collection)
+                    .createQueryBuilder('collection')
+                    .select('collection.id', 'id')
+                    .getRawMany();
                 await this.applyFiltersQueue.add({
                     ctx: event.ctx.serialize(),
                     collectionIds: collections.map(c => c.id),
