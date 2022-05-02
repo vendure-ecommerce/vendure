@@ -54,6 +54,8 @@ vdr-action-bar clr-toggle-wrapper {
 
 .channel-assignment {
     flex-wrap: wrap;
+    max-height: 144px;
+    overflow-y: auto;
 }
 
 .auto-rename-wrapper {
