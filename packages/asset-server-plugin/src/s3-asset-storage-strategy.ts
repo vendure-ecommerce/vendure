@@ -66,6 +66,11 @@ export interface S3Config {
  *
  * @example
  * ```TypeScript
+ * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
+ * import { DefaultAssetNamingStrategy } from '\@vendure/core';
+ *
+ * // ...
+ *
  * plugins: [
  *   AssetServerPlugin.init({
  *     route: 'assets',
@@ -88,6 +93,11 @@ export interface S3Config {
  *
  * @example
  * ```TypeScript
+ * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
+ * import { DefaultAssetNamingStrategy } from '\@vendure/core';
+ *
+ * // ...
+ *
  * plugins: [
  *   AssetServerPlugin.init({
  *     route: 'assets',
