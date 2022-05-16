@@ -256,7 +256,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         res.send(imageBuffer);
                         return;
                     } catch (e) {
-                        Logger.error(e, 'AssetServerPlugin', e.stack);
+                        Logger.error(e, loggerCtx, e.stack);
                         res.status(500).send(e.message);
                         return;
                     }

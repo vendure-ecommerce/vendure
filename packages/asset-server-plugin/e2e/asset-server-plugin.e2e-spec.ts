@@ -22,7 +22,7 @@ describe('AssetServerPlugin', () => {
 
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger({ level: LogLevel.Info }),
+            // logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 AssetServerPlugin.init({
                     assetUploadDir: path.join(__dirname, TEST_ASSET_DIR),
@@ -256,6 +256,21 @@ describe('AssetServerPlugin', () => {
         it('webp', async () => {
             await testMimeTypeOfAssetWithExt('webp', 'image/webp');
         });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1563
+    it('falls back to binary preview if image file cannot be processed', async () => {
+        const filesToUpload = [path.join(__dirname, `fixtures/assets/bad-image.jpg`)];
+        const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+            mutation: CREATE_ASSETS,
+            filePaths: filesToUpload,
+            mapVariables: filePaths => ({
+                input: filePaths.map(p => ({ file: null })),
+            }),
+        });
+
+        expect(createAssets.length).toBe(1);
+        expect(createAssets[0].name).toBe('bad-image.jpg');
     });
 });
 
