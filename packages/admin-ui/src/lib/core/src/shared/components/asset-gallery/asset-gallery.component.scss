@@ -28,6 +28,10 @@
     position: relative;
 }
 
+img.asset-thumb {
+    aspect-ratio: 1;
+}
+
 .selected-checkbox {
     opacity: 0;
     position: absolute;
