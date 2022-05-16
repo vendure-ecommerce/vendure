@@ -21,13 +21,13 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
             const width = metadata.width || 0;
             const height = metadata.height || 0;
             if (maxWidth < width || maxHeight < height) {
-                return image.resize(maxWidth, maxHeight, { fit: 'inside' }).toBuffer();
+                return image.rotate().resize(maxWidth, maxHeight, { fit: 'inside' }).toBuffer();
             } else {
                 if (mimeType === 'image/svg+xml') {
                     // Convert the SVG to a raster for the preview
                     return image.toBuffer();
                 } else {
-                    return data;
+                    return image.rotate().toBuffer();
                 }
             }
         } else {
