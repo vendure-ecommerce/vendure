@@ -345,8 +345,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             qb.andWhere(
                 new Brackets(qb1 => {
                     qb1.where(`${translationsAlias}.languageCode = :languageCode`, { languageCode });
-
-                    if (languageCode !== this.configService.defaultLanguageCode) {
+                    const defaultLanguageCode =
+                        ctx?.channel.defaultLanguageCode ?? this.configService.defaultLanguageCode;
+                    if (languageCode !== defaultLanguageCode) {
                         // If the current languageCode is not the default, then we create a more
                         // complex WHERE clause to allow us to use the non-default translations and
                         // fall back to the default language if no translation exists.
