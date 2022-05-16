@@ -29,7 +29,7 @@ export const examplePaymentHandler = new PaymentMethodHandler({
         automaticCapture: { type: 'boolean', required: false },
         apiKey: { type: 'string', required: false },
     },
-    createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
+    createPayment: async (ctx, order, amount, args, metadata, method): Promise<CreatePaymentResult> => {
         try {
             const result = await gripeSDK.charges.create({
                 apiKey: args.apiKey,
@@ -52,7 +52,7 @@ export const examplePaymentHandler = new PaymentMethodHandler({
             };
         }
     },
-    settlePayment: async (ctx, order, payment, args) => {
+    settlePayment: async (ctx, order, payment, args, method) => {
         const result = await gripeSDK.charges.capture(payment.transactionId);
         return {
             success: result,

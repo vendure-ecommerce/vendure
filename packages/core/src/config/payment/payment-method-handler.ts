@@ -9,8 +9,7 @@ import {
 } from '../../common/configurable-operation';
 import { OnTransitionStartFn, StateMachineConfig } from '../../common/finite-state-machine/types';
 import { PaymentMetadata } from '../../common/types/common-types';
-import { Order } from '../../entity/order/order.entity';
-import { Payment } from '../../entity/payment/payment.entity';
+import { Order, Payment, PaymentMethod } from '../../entity';
 import {
     PaymentState,
     PaymentTransitionData,
@@ -158,6 +157,7 @@ export type CreatePaymentFn<T extends ConfigArgs> = (
     amount: number,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
+    method: PaymentMethod,
 ) => CreatePaymentResult | CreatePaymentErrorResult | Promise<CreatePaymentResult | CreatePaymentErrorResult>;
 
 /**
@@ -172,6 +172,7 @@ export type SettlePaymentFn<T extends ConfigArgs> = (
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
+    method: PaymentMethod,
 ) => SettlePaymentResult | SettlePaymentErrorResult | Promise<SettlePaymentResult | SettlePaymentErrorResult>;
 
 /**
@@ -188,6 +189,7 @@ export type CreateRefundFn<T extends ConfigArgs> = (
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
+    method: PaymentMethod,
 ) => CreateRefundResult | Promise<CreateRefundResult>;
 
 /**
@@ -311,6 +313,7 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
         amount: number,
         args: ConfigArg[],
         metadata: PaymentMetadata,
+        method: PaymentMethod,
     ) {
         const paymentConfig = await this.createPaymentFn(
             ctx,
@@ -318,6 +321,7 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
             amount,
             this.argsArrayToHash(args),
             metadata,
+            method,
         );
         return {
             method: this.code,
@@ -332,8 +336,14 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
      *
      * @internal
      */
-    async settlePayment(ctx: RequestContext, order: Order, payment: Payment, args: ConfigArg[]) {
-        return this.settlePaymentFn(ctx, order, payment, this.argsArrayToHash(args));
+    async settlePayment(
+        ctx: RequestContext, 
+        order: Order, 
+        payment: Payment, 
+        args: ConfigArg[],
+        method: PaymentMethod,
+    ) {
+        return this.settlePaymentFn(ctx, order, payment, this.argsArrayToHash(args), method);
     }
 
     /**
@@ -349,9 +359,10 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
         order: Order,
         payment: Payment,
         args: ConfigArg[],
+        method: PaymentMethod,
     ) {
         return this.createRefundFn
-            ? this.createRefundFn(ctx, input, amount, order, payment, this.argsArrayToHash(args))
+            ? this.createRefundFn(ctx, input, amount, order, payment, this.argsArrayToHash(args), method)
             : false;
     }
 

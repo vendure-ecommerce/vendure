@@ -7,7 +7,7 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { Order } from '../../entity/order/order.entity';
+import { PaymentMethod, Order } from '../../entity';
 
 /**
  * @description
@@ -60,8 +60,8 @@ export class PaymentMethodEligibilityChecker<
      *
      * @internal
      */
-    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<boolean | string> {
-        return this.checkFn(ctx, order, this.argsArrayToHash(args));
+    async check(ctx: RequestContext, order: Order, args: ConfigArg[], method: PaymentMethod): Promise<boolean | string> {
+        return this.checkFn(ctx, order, this.argsArrayToHash(args), method);
     }
 }
 
@@ -79,4 +79,5 @@ export type CheckPaymentMethodEligibilityCheckerFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
+    method: PaymentMethod
 ) => boolean | string | Promise<boolean | string>;
