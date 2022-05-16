@@ -13,6 +13,7 @@ import {
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 
+import { loggerCtx } from '../constants';
 import { UpdateIndexQueueJobData } from '../types';
 
 import { ElasticsearchIndexerController, ReindexMessageResponse } from './indexer.controller';
@@ -161,7 +162,7 @@ export class ElasticsearchIndexService implements OnApplicationBootstrap {
                     });
                 },
                 error: (err: any) => {
-                    Logger.error(JSON.stringify(err));
+                    Logger.error(err.message || JSON.stringify(err), loggerCtx, err.stack);
                     reject(err);
                 },
             });

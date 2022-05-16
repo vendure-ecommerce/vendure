@@ -28,6 +28,11 @@
     position: relative;
 }
 
+
+img.asset-thumb {
+    aspect-ratio: 1;
+}
+
 vdr-select-toggle {
     position: absolute;
     ::ng-deep .toggle {
