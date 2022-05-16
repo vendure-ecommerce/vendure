@@ -178,7 +178,6 @@ export * from './shared/directives/if-multichannel.directive';
 export * from './shared/directives/if-permissions.directive';
 export * from './shared/dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
 export * from './shared/dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
-export * from './shared/dynamic-form-inputs/combination-mode-form-input/combination-mode-form-input.component';
 export * from './shared/dynamic-form-inputs/currency-form-input/currency-form-input.component';
 export * from './shared/dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
 export * from './shared/dynamic-form-inputs/date-form-input/date-form-input.component';
