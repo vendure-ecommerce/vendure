@@ -17,6 +17,11 @@
     background: var(--color-component-bg-200);
     padding: 6px;
     cursor: pointer;
+    border-radius: var(--border-radius-img);
+
+    img {
+        border-radius: var(--border-radius-img);
+    }
 
     &.compact {
         width: 100%;
@@ -46,15 +51,18 @@
         margin: 3px;
         padding: 0;
         border: 2px solid var(--color-component-border-100);
+        border-radius: var(--border-radius-img);
         cursor: pointer;
 
         img {
             width: 50px;
             height: 50px;
+            border-radius: var(--border-radius-img);
         }
 
         &.featured {
             border-color: var(--color-primary-500);
+            border-radius: calc(var(--border-radius-img) + 2px);
         }
     }
 

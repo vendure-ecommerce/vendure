@@ -21,6 +21,7 @@ export class AppShellComponent implements OnInit {
     userName$: Observable<string>;
     uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
     availableLanguages: LanguageCode[] = [];
+    hideVendureBranding = getAppConfig().hideVendureBranding;
 
     constructor(
         private authService: AuthService,

@@ -1,5 +1,11 @@
 @import 'variables';
 
+:host {
+    display: block;
+    max-width: 1200px;
+    margin: auto;
+}
+
 .widget-header {
     display: flex;
     justify-content: flex-end;
