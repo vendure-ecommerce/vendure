@@ -33,7 +33,7 @@ import {
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { combineLatest, Observable, of } from 'rxjs';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { debounceTime, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
@@ -57,6 +57,7 @@ export class CollectionDetailComponent
     livePreview = false;
     parentId$: Observable<string | undefined>;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
+    private filterRemoved$ = new Subject<void>();
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
@@ -91,14 +92,14 @@ export class CollectionDetailComponent
             this.allFilters = res.collectionFilters;
         });
         const filtersFormArray = this.detailForm.get('filters') as FormArray;
-        this.updatedFilters$ = filtersFormArray.statusChanges.pipe(
+        this.updatedFilters$ = merge(filtersFormArray.statusChanges, this.filterRemoved$).pipe(
             debounceTime(200),
             filter(() => filtersFormArray.touched),
-            map(status =>
-                this.mapOperationsToInputs(this.filters, filtersFormArray.value).filter(filter => {
+            map(() =>
+                this.mapOperationsToInputs(this.filters, filtersFormArray.value).filter(_filter => {
                     // ensure all the arguments have valid values. E.g. a newly-added
                     // filter will not yet have valid values
-                    for (const arg of filter.arguments) {
+                    for (const arg of _filter.arguments) {
                         if (arg.value === '') {
                             return false;
                         }
@@ -172,7 +173,10 @@ export class CollectionDetailComponent
         const filtersArray = this.detailForm.get('filters') as FormArray;
         if (index !== -1) {
             filtersArray.removeAt(index);
+            filtersArray.markAsDirty();
+            filtersArray.markAsTouched();
             this.filters.splice(index, 1);
+            this.filterRemoved$.next();
         }
     }
 
