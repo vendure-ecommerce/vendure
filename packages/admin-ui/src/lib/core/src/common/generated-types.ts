@@ -6250,7 +6250,7 @@ export type OrderAddressFragment = (
 
 export type OrderFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'orderPlacedAt' | 'code' | 'state' | 'nextStates' | 'total' | 'currencyCode'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'orderPlacedAt' | 'code' | 'state' | 'nextStates' | 'total' | 'totalWithTax' | 'currencyCode'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
