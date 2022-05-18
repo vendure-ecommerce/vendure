@@ -1,3 +1,60 @@
+## 1.6.0 (2022-05-18)
+
+
+#### Fixes
+
+* **admin-ui** Display total with tax in order list ([92661da](https://github.com/vendure-ecommerce/vendure/commit/92661da))
+* **admin-ui** Fix form change detection in collection filters ([0938be0](https://github.com/vendure-ecommerce/vendure/commit/0938be0))
+* **admin-ui** Improve display of many channels on Product detail ([87b8a53](https://github.com/vendure-ecommerce/vendure/commit/87b8a53)), closes [#1431](https://github.com/vendure-ecommerce/vendure/issues/1431)
+* **admin-ui** Prevent route change on collection contents list change ([5589628](https://github.com/vendure-ecommerce/vendure/commit/5589628)), closes [#1530](https://github.com/vendure-ecommerce/vendure/issues/1530)
+* **admin-ui** Styling improvements to image display ([7b308c1](https://github.com/vendure-ecommerce/vendure/commit/7b308c1)), closes [#1514](https://github.com/vendure-ecommerce/vendure/issues/1514)
+* **asset-server-plugin** Gracefully handle unsupported image previews ([91b69f0](https://github.com/vendure-ecommerce/vendure/commit/91b69f0)), closes [#1563](https://github.com/vendure-ecommerce/vendure/issues/1563)
+* **asset-server-plugin** Use EXIF data to correctly orient images ([aa9bd03](https://github.com/vendure-ecommerce/vendure/commit/aa9bd03)), closes [#1548](https://github.com/vendure-ecommerce/vendure/issues/1548)
+* **core** Fix error in configurable operation codec when arg not found ([9ba44f4](https://github.com/vendure-ecommerce/vendure/commit/9ba44f4))
+* **core** Fix variants not being returned in some language configs ([6a4e0d4](https://github.com/vendure-ecommerce/vendure/commit/6a4e0d4)), closes [#1539](https://github.com/vendure-ecommerce/vendure/issues/1539)
+* **core** Improve error logging when search indexing fails ([bf75171](https://github.com/vendure-ecommerce/vendure/commit/bf75171)), closes [#1556](https://github.com/vendure-ecommerce/vendure/issues/1556)
+* **core** Job update doesn't emit if progress didn't change (#1550) ([2ce444f](https://github.com/vendure-ecommerce/vendure/commit/2ce444f)), closes [#1550](https://github.com/vendure-ecommerce/vendure/issues/1550)
+* **core** Make OrderLine.items eager-loaded from the DB ([8465d84](https://github.com/vendure-ecommerce/vendure/commit/8465d84))
+* **core** Manage transactions outside of orderService.modifyOrder function. (#1533) ([e707274](https://github.com/vendure-ecommerce/vendure/commit/e707274)), closes [#1533](https://github.com/vendure-ecommerce/vendure/issues/1533)
+* **elasticsearch-plugin** Improve error log when search indexing fails ([7dcad6e](https://github.com/vendure-ecommerce/vendure/commit/7dcad6e)), closes [#1556](https://github.com/vendure-ecommerce/vendure/issues/1556)
+* **job-queue-plugin** Fix Redis health indicator error reporting ([48a30fb](https://github.com/vendure-ecommerce/vendure/commit/48a30fb))
+* **ui-devkit** Wrap output path in quotes. (#1519) ([755d2e2](https://github.com/vendure-ecommerce/vendure/commit/755d2e2)), closes [#1519](https://github.com/vendure-ecommerce/vendure/issues/1519)
+
+#### Features
+
+* **admin-ui** Add live preview of Collection filter changes ([ba6c64a](https://github.com/vendure-ecommerce/vendure/commit/ba6c64a)), closes [#1530](https://github.com/vendure-ecommerce/vendure/issues/1530)
+* **admin-ui** Add sku to Collection contents table ([8c2263c](https://github.com/vendure-ecommerce/vendure/commit/8c2263c))
+* **admin-ui** Display description tooltip for configurable args ([837e1f2](https://github.com/vendure-ecommerce/vendure/commit/837e1f2))
+* **admin-ui** Implement combination mode toggle for Collection filters ([cb1e137](https://github.com/vendure-ecommerce/vendure/commit/cb1e137))
+* **admin-ui** Implement content preview when creating collection ([1e4f072](https://github.com/vendure-ecommerce/vendure/commit/1e4f072)), closes [#1530](https://github.com/vendure-ecommerce/vendure/issues/1530)
+* **admin-ui** Implement FormInput for multi product/variant selection ([47c9b0e](https://github.com/vendure-ecommerce/vendure/commit/47c9b0e))
+* **admin-ui** Improve styling of configurable arg inputs ([d20a1dc](https://github.com/vendure-ecommerce/vendure/commit/d20a1dc))
+* **admin-ui** Persist Collection list expanded states to the url ([d67187e](https://github.com/vendure-ecommerce/vendure/commit/d67187e)), closes [#1532](https://github.com/vendure-ecommerce/vendure/issues/1532)
+* **admin-ui** Persist Collection list filter term to the url ([dcdd05b](https://github.com/vendure-ecommerce/vendure/commit/dcdd05b)), closes [#1532](https://github.com/vendure-ecommerce/vendure/issues/1532)
+* **admin-ui** Various styling improvements ([c76aba0](https://github.com/vendure-ecommerce/vendure/commit/c76aba0))
+* **core** Add `metadataModifiers` for low-level DB entity config ([16e52f2](https://github.com/vendure-ecommerce/vendure/commit/16e52f2)), closes [#1506](https://github.com/vendure-ecommerce/vendure/issues/1506) [#1502](https://github.com/vendure-ecommerce/vendure/issues/1502)
+* **core** Add boolean combination support on default CollectionFilters ([8889ac2](https://github.com/vendure-ecommerce/vendure/commit/8889ac2))
+* **core** Add new variantIdCollectionFilter default CollectionFilter ([449c584](https://github.com/vendure-ecommerce/vendure/commit/449c584))
+* **core** Allow entity alias to be specified in ListQueryBuilder ([f221940](https://github.com/vendure-ecommerce/vendure/commit/f221940))
+* **core** Create Relations decorator ([063b5fe](https://github.com/vendure-ecommerce/vendure/commit/063b5fe)), closes [#1506](https://github.com/vendure-ecommerce/vendure/issues/1506)
+* **core** Expose Importer.importProducts method ([bbe09aa](https://github.com/vendure-ecommerce/vendure/commit/bbe09aa))
+* **core** Implement `previewCollectionVariants` query in Admin API ([1c3b38c](https://github.com/vendure-ecommerce/vendure/commit/1c3b38c)), closes [#1530](https://github.com/vendure-ecommerce/vendure/issues/1530)
+* **core** Implement unique constraint for custom fields ([07e1601](https://github.com/vendure-ecommerce/vendure/commit/07e1601)), closes [#1476](https://github.com/vendure-ecommerce/vendure/issues/1476)
+* **core** Make all health checks configurable ([f3d2d59](https://github.com/vendure-ecommerce/vendure/commit/f3d2d59)), closes [#1494](https://github.com/vendure-ecommerce/vendure/issues/1494)
+* **core** Make OrderService.applyPriceAdjustments() public ([826fd55](https://github.com/vendure-ecommerce/vendure/commit/826fd55)), closes [#1522](https://github.com/vendure-ecommerce/vendure/issues/1522)
+* **core** Make search strategy configurable via plugin options (#1504) ([b31694f](https://github.com/vendure-ecommerce/vendure/commit/b31694f)), closes [#1504](https://github.com/vendure-ecommerce/vendure/issues/1504)
+* **core** Pass payment method to handler and eligibility checker (#1564) ([4e63180](https://github.com/vendure-ecommerce/vendure/commit/4e63180)), closes [#1564](https://github.com/vendure-ecommerce/vendure/issues/1564)
+* **core** Pass shipping method to calculator and eligibility checker (#1509) ([826aa4a](https://github.com/vendure-ecommerce/vendure/commit/826aa4a)), closes [#1509](https://github.com/vendure-ecommerce/vendure/issues/1509)
+* **core** Use query relations data to optimize DB joins ([0421285](https://github.com/vendure-ecommerce/vendure/commit/0421285)), closes [#1506](https://github.com/vendure-ecommerce/vendure/issues/1506) [#1407](https://github.com/vendure-ecommerce/vendure/issues/1407)
+* **core** Use variant featuredAsset in OrderLine if available ([0c308e2](https://github.com/vendure-ecommerce/vendure/commit/0c308e2)), closes [#1488](https://github.com/vendure-ecommerce/vendure/issues/1488)
+* **payments-plugin** Deprecate orderId when generating Braintree token ([8ba76f2](https://github.com/vendure-ecommerce/vendure/commit/8ba76f2)), closes [#1517](https://github.com/vendure-ecommerce/vendure/issues/1517)
+
+#### Perf
+
+* **core** Further optimizations to ListQueryBuilder ([d9577f8](https://github.com/vendure-ecommerce/vendure/commit/d9577f8)), closes [#1506](https://github.com/vendure-ecommerce/vendure/issues/1506) [#1503](https://github.com/vendure-ecommerce/vendure/issues/1503)
+* **core** Optimize ListQueryBuilder performance ([8d87f05](https://github.com/vendure-ecommerce/vendure/commit/8d87f05)), closes [#1503](https://github.com/vendure-ecommerce/vendure/issues/1503) [#1506](https://github.com/vendure-ecommerce/vendure/issues/1506) [1#L122](https://github.com/1/issues/L122)
+* **core** Optimize query to fetch all collection ids on changes ([a362fb4](https://github.com/vendure-ecommerce/vendure/commit/a362fb4))
+
 ## <small>1.5.2 (2022-04-21)</small>
 
 
