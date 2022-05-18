@@ -9,7 +9,7 @@ type RoleInputTypes = CreateRoleInput | UpdateRoleInput | ID;
 
 /**
  * @description
- * This event is fired whenever one {@link Role} is  is added, updated or deleted.
+ * This event is fired whenever one {@link Role} is added, updated or deleted.
  *
  * @docsCategory events
  * @docsPage Event Types
