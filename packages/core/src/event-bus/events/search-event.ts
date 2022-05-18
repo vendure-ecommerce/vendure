@@ -13,7 +13,7 @@ type ExtendedSearchInput = SearchInput & {
  *
  * @docsCategory events
  * @docsPage Event Types
- * @since 1.5.3
+ * @since 1.6.0
  */
 export class SearchEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public input: ExtendedSearchInput) {
