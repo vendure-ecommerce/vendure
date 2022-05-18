@@ -20,7 +20,7 @@
                     vdrDropdownTrigger
                 >
                     <clr-icon shape="cog"></clr-icon>
-                    <vdr-status-badge *ngIf="pendingSearchIndexUpdates" type="warning"> </vdr-status-badge>
+                    <vdr-status-badge *ngIf="pendingSearchIndexUpdates" type="warning"></vdr-status-badge>
                 </button>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
                     <h4 class="dropdown-header">{{ 'catalog.search-index-controls' | translate }}</h4>
@@ -32,10 +32,10 @@
                             (click)="runPendingSearchIndexUpdates()"
                             [disabled]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                         >
-                            <vdr-status-badge type="warning"> </vdr-status-badge>
+                            <vdr-status-badge type="warning"></vdr-status-badge>
                             {{
-                                'catalog.run-pending-search-index-updates'
-                                    | translate: { count: pendingSearchIndexUpdates }
+                            'catalog.run-pending-search-index-updates'
+                                | translate: {count: pendingSearchIndexUpdates}
                             }}
                         </button>
                         <div class="dropdown-divider"></div>
@@ -53,7 +53,7 @@
         </div>
         <div class="flex wrap">
             <clr-checkbox-wrapper class="mt2">
-                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
+                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" (ngModelChange)="refresh()"/>
                 <label>{{ 'catalog.group-by-product' | translate }}</label>
             </clr-checkbox-wrapper>
             <vdr-language-selector
@@ -85,7 +85,7 @@
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
     <ng-template let-result="item">
-        <td class="left align-middle" [class.disabled]="!result.enabled">
+        <td class="left align-middle image-col" [class.disabled]="!result.enabled">
             <div class="image-placeholder">
                 <img
                     *ngIf="
@@ -111,12 +111,11 @@
         </td>
         <td class="right align-middle" [class.disabled]="!result.enabled">
             <vdr-table-row-action
+                class="edit-button"
                 iconShape="edit"
                 [label]="'common.edit' | translate"
                 [linkTo]="['./', result.productId]"
             ></vdr-table-row-action>
-        </td>
-        <td class="right align-middle" [class.disabled]="!result.enabled">
             <vdr-dropdown>
                 <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
                     {{ 'common.actions' | translate }}

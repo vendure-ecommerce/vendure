@@ -1,13 +1,50 @@
 @import 'variables';
 
 .login-wrapper {
-    background: var(--login-page-bg);
+    background-image: linear-gradient(135deg, var(--color-login-gradient-top), var(--color-login-gradient-bottom)),
+    var(--login-page-bg);
+    background-blend-mode: screen;
+    background-repeat: repeat;
     background-size: auto;
+    background-position: initial;
     justify-content: center;
 }
 
+@media screen and (max-width: $breakpoint-small) {
+    .login-wrapper {
+        justify-content: center;
+        background-color: transparent;
+        .login {
+            margin: 20px;
+            padding: 24px;
+        }
+    }
+}
+
+.login {
+    margin: 5vh 0;
+    border-radius: 6px;
+    min-height: calc(100vh - 10vh);
+    max-height: 800px;
+}
+
 .title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    margin-top: 8vh;
+
+    img {
+        max-width: 100%;
+        width: 150px;
+    }
+    span {
+        padding-top: 12px;
+        font-weight: bold;
+        color: var(--color-primary-500);
+        font-size: 38px;
+    }
 }
 
 .version {
@@ -25,6 +62,7 @@
 .login-error {
     max-height: 0;
     overflow: hidden;
+
     &.visible {
         max-height: 46px;
         transition: max-height 0.2s;

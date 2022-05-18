@@ -7,6 +7,7 @@ import { InternalServerError } from '../../common/error/errors';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Collection, FacetValue } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { SearchEvent } from '../../event-bus/events/search-event';
 import { Job } from '../../job-queue/job';
 import { CollectionService } from '../../service/services/collection.service';
 import { FacetValueService } from '../../service/services/facet-value.service';
@@ -54,6 +55,8 @@ export class FulltextSearchService {
     ): Promise<Omit<Omit<SearchResponse, 'facetValues'>, 'collections'>> {
         const items = await this._searchStrategy.getSearchResults(ctx, input, enabledOnly);
         const totalItems = await this._searchStrategy.getTotalCount(ctx, input, enabledOnly);
+        this.eventBus.publish(new SearchEvent(ctx, input));
+
         return {
             items,
             totalItems,

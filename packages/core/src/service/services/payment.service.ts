@@ -117,7 +117,7 @@ export class PaymentService {
             method,
         );
         if (paymentMethod.checker && checker) {
-            const eligible = await checker.check(ctx, order, paymentMethod.checker.args);
+            const eligible = await checker.check(ctx, order, paymentMethod.checker.args, paymentMethod);
             if (eligible === false || typeof eligible === 'string') {
                 return new IneligiblePaymentMethodError({
                     eligibilityCheckerMessage: typeof eligible === 'string' ? eligible : undefined,
@@ -130,6 +130,7 @@ export class PaymentService {
             amount,
             paymentMethod.handler.args,
             metadata || {},
+            paymentMethod,
         );
         const initialState = 'Created';
         const payment = await this.connection
@@ -164,6 +165,7 @@ export class PaymentService {
             payment.order,
             payment,
             paymentMethod.handler.args,
+            paymentMethod,
         );
         const fromState = payment.state;
         let toState: PaymentState;
@@ -290,6 +292,7 @@ export class PaymentService {
                 order,
                 paymentToRefund,
                 paymentMethod.handler.args,
+                paymentMethod,
             );
             if (createRefundResult) {
                 refund.transactionId = createRefundResult.transactionId || '';

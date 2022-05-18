@@ -159,7 +159,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
                     });
                 },
                 error: (err: any) => {
-                    Logger.error(JSON.stringify(err));
+                    Logger.error(err.message || JSON.stringify(err), undefined, err.stack);
                     reject(err);
                 },
             });

@@ -47,6 +47,7 @@ export * from './events/promotion-event';
 export * from './events/refund-state-transition-event';
 export * from './events/role-change-event';
 export * from './events/role-event';
+export * from './events/search-event';
 export * from './events/shipping-method-event';
 export * from './events/stock-movement-event';
 export * from './events/tax-category-event';

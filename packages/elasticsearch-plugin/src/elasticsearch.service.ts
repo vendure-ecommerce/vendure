@@ -6,12 +6,14 @@ import {
     CollectionService,
     ConfigService,
     DeepRequired,
+    EventBus,
     FacetValue,
     FacetValueService,
     InternalServerError,
     Job,
     Logger,
     RequestContext,
+    SearchEvent,
     SearchService,
 } from '@vendure/core';
 import equal from 'fast-deep-equal/es6';
@@ -46,6 +48,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         private configService: ConfigService,
         private facetValueService: FacetValueService,
         private collectionService: CollectionService,
+        private eventBus: EventBus,
     ) {
         searchService.adopt(this);
     }
@@ -191,6 +194,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     body: elasticSearchBody,
                 });
                 const totalItems = await this.totalHits(ctx, input, groupByProduct);
+                this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                     totalItems,
@@ -215,6 +219,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     index: indexPrefix + VARIANT_INDEX_NAME,
                     body: elasticSearchBody,
                 });
+                this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
                     items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                     totalItems: body.hits.total ? body.hits.total.value : 0,

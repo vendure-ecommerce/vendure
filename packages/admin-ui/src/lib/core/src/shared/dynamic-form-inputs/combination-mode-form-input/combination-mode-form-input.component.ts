@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Optional } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Optional } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable, of } from 'rxjs';
@@ -20,22 +20,23 @@ import { ConfigurableInputComponent } from '../../components/configurable-input/
     styleUrls: ['./combination-mode-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CombinationModeFormInputComponent implements FormInputComponent {
+export class CombinationModeFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'combination-mode-form-input';
     readonly: boolean;
     formControl: FormControl;
     config: DefaultFormComponentConfig<'combination-mode-form-input'>;
     selectable$: Observable<boolean>;
 
-    constructor(@Optional() private configurableInputComponent: ConfigurableInputComponent) {
-        const selectable$ = configurableInputComponent
-            ? configurableInputComponent.positionChange$.pipe(map(position => 0 < position))
-            : of(true);
+    constructor(@Optional() private configurableInputComponent: ConfigurableInputComponent) {}
 
+    ngOnInit() {
+        const selectable$ = this.configurableInputComponent
+            ? this.configurableInputComponent.positionChange$.pipe(map(position => 0 < position))
+            : of(true);
         this.selectable$ = selectable$.pipe(
             tap(selectable => {
                 if (!selectable) {
-                    this.setCombinationModeAnd();
+                    this.formControl.setValue(true, { emitEvent: false });
                 }
             }),
         );

@@ -177,7 +177,7 @@ export class PaymentMethodService {
                     'PaymentMethodEligibilityChecker',
                     method.checker.code,
                 );
-                const eligible = await checker.check(ctx, order, method.checker.args);
+                const eligible = await checker.check(ctx, order, method.checker.args, method);
                 if (eligible === false || typeof eligible === 'string') {
                     isEligible = false;
                     eligibilityMessage = typeof eligible === 'string' ? eligible : undefined;
