@@ -17,12 +17,8 @@ import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/ind
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
     CollectionFragment,
-    CreateCollectionInput,
-    CreateCollectionMutation,
     DeletionResult,
     FacetValueFragment,
-    GetAssetListQuery,
-    GetProductsWithVariantIdsQuery,
     LanguageCode,
     SortOrder,
 } from './graphql/generated-e2e-admin-types';
@@ -47,7 +43,7 @@ describe('Collection resolver', () => {
         plugins: [DefaultJobQueuePlugin],
     });
 
-    let assets: GetAssetListQuery['assets']['items'];
+    let assets: Codegen.GetAssetListQuery['assets']['items'];
     let facetValues: FacetValueFragment[];
     let electronicsCollection: CollectionFragment;
     let computersCollection: CollectionFragment;
@@ -874,8 +870,8 @@ describe('Collection resolver', () => {
     });
 
     describe('deleteCollection', () => {
-        let collectionToDeleteParent: CreateCollectionMutation['createCollection'];
-        let collectionToDeleteChild: CreateCollectionMutation['createCollection'];
+        let collectionToDeleteParent: Codegen.CreateCollectionMutation['createCollection'];
+        let collectionToDeleteChild: Codegen.CreateCollectionMutation['createCollection'];
         let laptopProductId: string;
 
         beforeAll(async () => {
@@ -1075,7 +1071,7 @@ describe('Collection resolver', () => {
                         { languageCode: LanguageCode.en, name: 'Empty', description: '', slug: 'empty' },
                     ],
                     filters: [],
-                } as CreateCollectionInput,
+                } as Codegen.CreateCollectionInput,
             });
             expect(result.createCollection.productVariants.totalItems).toBe(0);
         });
@@ -1172,7 +1168,7 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as CreateCollectionInput,
+                    } as Codegen.CreateCollectionInput,
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
@@ -1217,7 +1213,7 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as CreateCollectionInput,
+                    } as Codegen.CreateCollectionInput,
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
@@ -1271,7 +1267,7 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as CreateCollectionInput,
+                    } as Codegen.CreateCollectionInput,
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
@@ -1449,8 +1445,8 @@ describe('Collection resolver', () => {
         describe('variantId filter', () => {
             it('contains expects variants', async () => {
                 const { createCollection } = await adminClient.query<
-                    CreateCollection.Mutation,
-                    CreateCollection.Variables
+                    Codegen.CreateCollectionMutation,
+                    Codegen.CreateCollectionMutationVariables
                 >(CREATE_COLLECTION, {
                     input: {
                         translations: [
@@ -1477,8 +1473,8 @@ describe('Collection resolver', () => {
                 await awaitRunningJobs(adminClient, 5000);
 
                 const result = await adminClient.query<
-                    GetCollectionProducts.Query,
-                    GetCollectionProducts.Variables
+                    Codegen.GetCollectionProductsQuery,
+                    Codegen.GetCollectionProductsQueryVariables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: createCollection.id,
                 });
@@ -1492,8 +1488,8 @@ describe('Collection resolver', () => {
         describe('productId filter', () => {
             it('contains expects variants', async () => {
                 const { createCollection } = await adminClient.query<
-                    CreateCollection.Mutation,
-                    CreateCollection.Variables
+                    Codegen.CreateCollectionMutation,
+                    Codegen.CreateCollectionMutationVariables
                 >(CREATE_COLLECTION, {
                     input: {
                         translations: [
@@ -1520,8 +1516,8 @@ describe('Collection resolver', () => {
                 await awaitRunningJobs(adminClient, 5000);
 
                 const result = await adminClient.query<
-                    GetCollectionProducts.Query,
-                    GetCollectionProducts.Variables
+                    Codegen.GetCollectionProductsQuery,
+                    Codegen.GetCollectionProductsQueryVariables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: createCollection.id,
                 });
@@ -1533,7 +1529,7 @@ describe('Collection resolver', () => {
         });
 
         describe('re-evaluation of contents on changes', () => {
-            let products: GetProductsWithVariantIdsQuery['products']['items'];
+            let products: Codegen.GetProductsWithVariantIdsQuery['products']['items'];
 
             beforeAll(async () => {
                 const result = await adminClient.query<Codegen.GetProductsWithVariantIdsQuery>(gql`
@@ -1687,7 +1683,7 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as CreateCollectionInput,
+                    } as Codegen.CreateCollectionInput,
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
@@ -1740,7 +1736,7 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as CreateCollectionInput,
+                    } as Codegen.CreateCollectionInput,
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
@@ -1785,7 +1781,7 @@ describe('Collection resolver', () => {
                                 ],
                             },
                         ],
-                    } as CreateCollectionInput,
+                    } as Codegen.CreateCollectionInput,
                 });
 
                 await awaitRunningJobs(adminClient, 5000);
@@ -1800,10 +1796,13 @@ describe('Collection resolver', () => {
 
         describe('previewCollectionVariants', () => {
             it('returns correct contents', async () => {
-                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query<
+                    Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.parent?.id,
+                        inheritFilters: true,
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -1836,10 +1835,13 @@ describe('Collection resolver', () => {
             });
 
             it('works with list options', async () => {
-                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query<
+                    Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.parent?.id,
+                        inheritFilters: true,
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -1869,16 +1871,19 @@ describe('Collection resolver', () => {
                     },
                 });
                 expect(previewCollectionVariants.items).toEqual([
-                    {id: 'T_5', name: 'Curvy Monitor 24 inch'},
-                    {id: 'T_6', name: 'Curvy Monitor 27 inch'},
+                    { id: 'T_5', name: 'Curvy Monitor 24 inch' },
+                    { id: 'T_6', name: 'Curvy Monitor 27 inch' },
                 ]);
             });
 
             it('takes parent filters into account', async () => {
-                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+                const { previewCollectionVariants } = await adminClient.query<
+                    Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
                         parentId: electronicsCollection.id,
+                        inheritFilters: true,
                         filters: [
                             {
                                 code: variantNameCollectionFilter.code,
@@ -1905,10 +1910,48 @@ describe('Collection resolver', () => {
                 ]);
             });
 
-            it('with no parentId, operates at the root level', async () => {
-                const {previewCollectionVariants} = await adminClient.query<Codegen.PreviewCollectionVariantsQuery,
-                    Codegen.PreviewCollectionVariantsQueryVariables>(PREVIEW_COLLECTION_VARIANTS, {
+            it('ignores parent filters id inheritFilters set to false', async () => {
+                const { previewCollectionVariants } = await adminClient.query<
+                    Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
                     input: {
+                        parentId: electronicsCollection.id,
+                        inheritFilters: false,
+                        filters: [
+                            {
+                                code: variantNameCollectionFilter.code,
+                                arguments: [
+                                    {
+                                        name: 'operator',
+                                        value: 'startsWith',
+                                    },
+                                    {
+                                        name: 'term',
+                                        value: 'h',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                expect(previewCollectionVariants.items.map(i => i.name).sort()).toEqual([
+                    'Hard Drive 1TB',
+                    'Hard Drive 2TB',
+                    'Hard Drive 3TB',
+                    'Hard Drive 4TB',
+                    'Hard Drive 6TB',
+                    'Hat',
+                ]);
+            });
+
+            it('with no parentId, operates at the root level', async () => {
+                const { previewCollectionVariants } = await adminClient.query<
+                    Codegen.PreviewCollectionVariantsQuery,
+                    Codegen.PreviewCollectionVariantsQueryVariables
+                >(PREVIEW_COLLECTION_VARIANTS, {
+                    input: {
+                        inheritFilters: true,
                         filters: [
                             {
                                 code: variantNameCollectionFilter.code,

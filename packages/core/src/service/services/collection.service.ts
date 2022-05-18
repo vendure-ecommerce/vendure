@@ -373,7 +373,7 @@ export class CollectionService implements OnModuleInit {
         relations?: RelationPaths<Collection>,
     ): Promise<PaginatedList<ProductVariant>> {
         const applicableFilters = this.getCollectionFiltersFromInput(input);
-        if (input.parentId) {
+        if (input.parentId && input.inheritFilters) {
             const parentFilters = (await this.findOne(ctx, input.parentId, []))?.filters ?? [];
             const ancestorFilters = await this.getAncestors(input.parentId).then(ancestors =>
                 ancestors.reduce(
