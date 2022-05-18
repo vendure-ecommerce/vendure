@@ -6,7 +6,7 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -35,7 +35,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
-import { debounceTime, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -55,6 +55,7 @@ export class CollectionDetailComponent
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
     updatedFilters$: Observable<ConfigurableOperationInput[]>;
+    inheritFilters$: Observable<boolean>;
     livePreview = false;
     parentId$: Observable<string | undefined>;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
@@ -94,6 +95,8 @@ export class CollectionDetailComponent
             this.allFilters = res.collectionFilters;
         });
         const filtersFormArray = this.detailForm.get('filters') as FormArray;
+        const inheritFiltersControl = this.detailForm.get('inheritFilters') as FormControl;
+        this.inheritFilters$ = inheritFiltersControl.valueChanges.pipe(distinctUntilChanged());
         this.updatedFilters$ = merge(filtersFormArray.statusChanges, this.filterRemoved$).pipe(
             debounceTime(200),
             filter(() => filtersFormArray.touched),

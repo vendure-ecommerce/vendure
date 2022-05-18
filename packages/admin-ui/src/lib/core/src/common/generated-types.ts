@@ -3793,6 +3793,7 @@ export type PermissionDefinition = {
 
 export type PreviewCollectionVariantsInput = {
   filters: Array<ConfigurableOperationInput>;
+  inheritFilters: Scalars['Boolean'];
   parentId?: InputMaybe<Scalars['ID']>;
 };
 
