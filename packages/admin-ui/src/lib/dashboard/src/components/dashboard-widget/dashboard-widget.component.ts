@@ -39,7 +39,7 @@ export class DashboardWidgetComponent implements AfterViewInit, OnDestroy {
         this.componentRef = this.portal.createComponent(
             this.componentFactoryResolver.resolveComponentFactory(componentType),
         );
-        this.componentRef.changeDetectorRef.markForCheck();
+        this.componentRef.changeDetectorRef.detectChanges();
     }
 
     ngOnDestroy() {
