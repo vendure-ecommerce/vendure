@@ -108,7 +108,7 @@ export class OrderStateMachine {
                 return `message.cannot-transition-from-arranging-additional-payment`;
             }
         }
-        if (fromState === 'AddingItems') {
+        if (fromState === 'AddingItems' && toState !== 'Cancelled') {
             const variantIds = unique(data.order.lines.map(l => l.productVariant.id));
             const qb = this.connection
                 .getRepository(data.ctx, ProductVariant)
