@@ -70,7 +70,7 @@ export function toConfigurableOperationInput(
         code: operation.code,
         arguments: Object.values<any>(formValueOperations.args || {}).map((value, j) => ({
             name: operation.args[j].name,
-            value: value.hasOwnProperty('value')
+            value: value?.hasOwnProperty('value')
                 ? encodeConfigArgValue((value as any).value)
                 : encodeConfigArgValue(value),
         })),
