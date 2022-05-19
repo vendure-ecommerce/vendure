@@ -1,3 +1,14 @@
+## <small>1.6.1 (2022-05-19)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix dashboard widget change detection logic (#1573) ([48bd8bd](https://github.com/vendure-ecommerce/vendure/commit/48bd8bd)), closes [#1573](https://github.com/vendure-ecommerce/vendure/issues/1573)
+* **admin-ui** Fix issue saving null configurable args ([df92320](https://github.com/vendure-ecommerce/vendure/commit/df92320)), closes [#1546](https://github.com/vendure-ecommerce/vendure/issues/1546)
+* **core** Allow cancelling an Order that has deleted ProductVariants ([79c36b5](https://github.com/vendure-ecommerce/vendure/commit/79c36b5)), closes [#1567](https://github.com/vendure-ecommerce/vendure/issues/1567)
+* **core** Correctly use ProductVariant featuredAsset for OrderLine ([7a81110](https://github.com/vendure-ecommerce/vendure/commit/7a81110)), closes [#1570](https://github.com/vendure-ecommerce/vendure/issues/1570)
+* **core** Fix list query builder error when using entityPrefix ([0353a3f](https://github.com/vendure-ecommerce/vendure/commit/0353a3f)), closes [#1569](https://github.com/vendure-ecommerce/vendure/issues/1569)
+
 ## 1.6.0 (2022-05-18)
 
 
