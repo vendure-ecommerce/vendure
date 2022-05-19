@@ -107,7 +107,10 @@ export class ProductVariantService {
     ): Promise<Translated<ProductVariant> | undefined> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, productVariantId, ctx.channelId, {
-                relations: [...(relations || ['product', 'product.featuredAsset']), 'taxCategory'],
+                relations: [
+                    ...(relations || ['product', 'featuredAsset', 'product.featuredAsset']),
+                    'taxCategory',
+                ],
                 where: { deletedAt: null },
             })
             .then(async result => {
