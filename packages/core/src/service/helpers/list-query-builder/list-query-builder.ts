@@ -310,7 +310,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 }
                 const tableNameLower = path.split('.')[0];
                 const entityMetadata = repository.manager.connection.entityMetadatas.find(
-                    em => em.tableName === tableNameLower,
+                    em => em.tableNameWithoutPrefix === tableNameLower,
                 );
                 if (entityMetadata) {
                     const relationMetadata = metadata.relations.find(r => r.type === entityMetadata.target);
