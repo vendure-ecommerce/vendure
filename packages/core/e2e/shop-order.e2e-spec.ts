@@ -22,6 +22,9 @@ import {
 import { countryCodeShippingEligibilityChecker } from './fixtures/test-shipping-eligibility-checkers';
 import {
     AttemptLogin,
+    CanceledOrderFragment,
+    CancelOrderMutation,
+    CancelOrderMutationVariables,
     CreateAddressInput,
     CreateShippingMethod,
     CreateShippingMethodInput,
@@ -65,6 +68,7 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
+    CANCEL_ORDER,
     CREATE_SHIPPING_METHOD,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -138,6 +142,7 @@ describe('Shop orders', () => {
         | UpdatedOrderFragment
         | TestOrderFragmentFragment
         | TestOrderWithPaymentsFragment
+        | CanceledOrderFragment
         | ActiveOrderCustomerFragment;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
@@ -1831,6 +1836,7 @@ describe('Shop orders', () => {
             }, `No ProductVariant with the id '34' could be found`),
         );
 
+        let orderWithDeletedProductVariantId: string;
         it('errors when transitioning to ArrangingPayment with deleted variant', async () => {
             const orchidProductId = 'T_19';
             const orchidVariantId = 'T_33';
@@ -1845,6 +1851,7 @@ describe('Shop orders', () => {
             });
 
             orderResultGuard.assertSuccess(addItemToOrder);
+            orderWithDeletedProductVariantId = addItemToOrder.id;
 
             await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
                 id: orchidProductId,
@@ -1862,6 +1869,22 @@ describe('Shop orders', () => {
                 `Cannot transition to "ArrangingPayment" because the Order contains ProductVariants which are no longer available`,
             );
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1567
+        it('allows transitioning to Cancelled with deleted variant', async () => {
+            const { cancelOrder } = await adminClient.query<
+                CancelOrderMutation,
+                CancelOrderMutationVariables
+            >(CANCEL_ORDER, {
+                input: {
+                    orderId: orderWithDeletedProductVariantId,
+                },
+            });
+
+            orderResultGuard.assertSuccess(cancelOrder);
+
+            expect(cancelOrder.state).toBe('Cancelled');
         });
     });
 
