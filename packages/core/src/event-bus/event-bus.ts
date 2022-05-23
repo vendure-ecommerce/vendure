@@ -123,7 +123,7 @@ export class EventBus implements OnModuleDestroy {
             return event;
         }
 
-        return this.transactionSubscriber.awaitRelease(transactionManager.queryRunner).then(() => {
+        return this.transactionSubscriber.awaitCommit(transactionManager.queryRunner).then(() => {
             // Copy context and remove transaction manager
             // This will prevent queries to released query runner
             const newContext = ctx.copy();

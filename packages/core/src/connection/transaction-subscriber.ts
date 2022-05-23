@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { merge, Subject } from 'rxjs';
+import { merge, ObservableInput, Subject } from 'rxjs';
 import { delay, filter, map, take } from 'rxjs/operators';
 import { Connection, EntitySubscriberInterface } from 'typeorm';
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
@@ -51,9 +51,21 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
         this.rollback$.next(event);
     }
 
+    awaitCommit(queryRunner: QueryRunner): Promise<QueryRunner> {
+        return this.awaitQueryRunnerSignals(queryRunner, [this.commit$]);
+    }
+
+    awaitRollback(queryRunner: QueryRunner): Promise<QueryRunner> {
+        return this.awaitQueryRunnerSignals(queryRunner, [this.rollback$]);
+    }
+
     awaitRelease(queryRunner: QueryRunner): Promise<QueryRunner> {
+        return this.awaitQueryRunnerSignals(queryRunner, [this.commit$, this.rollback$]);
+    }
+
+    private awaitQueryRunnerSignals(queryRunner: QueryRunner, signals: ObservableInput<TransactionSubscriberEvent>[]): Promise<QueryRunner> {
         if (queryRunner.isTransactionActive) {
-            return merge(this.commit$, this.rollback$)
+            return merge(...signals)
                 .pipe(
                     filter(event => event.queryRunner === queryRunner),
                     take(1),

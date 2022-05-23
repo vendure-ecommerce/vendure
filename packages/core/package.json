@@ -76,7 +76,7 @@
     "progress": "^2.0.3",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.6.3",
-    "typeorm": "0.2.41"
+    "typeorm": "0.2.45"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
