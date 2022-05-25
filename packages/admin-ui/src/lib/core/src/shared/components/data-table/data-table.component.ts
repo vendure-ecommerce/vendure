@@ -97,7 +97,6 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges {
     currentStart: number;
     currentEnd: number;
 
-
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
     }
