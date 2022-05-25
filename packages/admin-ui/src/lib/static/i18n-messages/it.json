@@ -256,6 +256,7 @@
     "theme": "Tema",
     "there-are-unsaved-changes": "Ci sono modifiche non salvate. Lasciando questa pagina le modifiche andranno perse.",
     "toggle-all": "Cambia tutti",
+    "total-items": "{currentStart} - {currentEnd} di {totalItems}",
     "update": "Aggiorna",
     "updated-at": "Aggiornare a",
     "username": "Username",

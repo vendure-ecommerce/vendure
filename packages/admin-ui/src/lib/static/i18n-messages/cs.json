@@ -256,6 +256,7 @@
     "theme": "Motiv",
     "there-are-unsaved-changes": "Provedené změny nebyly uloženy. Přechod na jinou stránku způsobí ztrátu těchto změn.",
     "toggle-all": "Přepnout vše",
+    "total-items": "{currentStart} - {currentEnd} z {totalItems}",
     "update": "Aktualizovat",
     "updated-at": "Aktualizováno",
     "username": "Uživatelské jméno",

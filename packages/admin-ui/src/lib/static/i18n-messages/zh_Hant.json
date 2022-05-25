@@ -256,6 +256,7 @@
     "theme": "",
     "there-are-unsaved-changes": "變更尚未被儲存，離開會失去所有變更",
     "toggle-all": "",
+    "total-items": "{currentStart} - {currentEnd} 的 {totalItems}",
     "update": "確認修改",
     "updated-at": "修改時間",
     "username": "用户名",

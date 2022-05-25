@@ -2,12 +2,11 @@ import {
     AfterContentInit,
     ChangeDetectionStrategy,
     Component,
-    ContentChild,
     ContentChildren,
     EventEmitter,
-    Input,
+    Input, OnChanges,
     Output,
-    QueryList,
+    QueryList, SimpleChanges,
     TemplateRef,
 } from '@angular/core';
 import { PaginationService } from 'ngx-pagination';
@@ -80,7 +79,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
 })
-export class DataTableComponent<T> implements AfterContentInit {
+export class DataTableComponent<T> implements AfterContentInit, OnChanges {
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -95,6 +94,9 @@ export class DataTableComponent<T> implements AfterContentInit {
     @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
     rowTemplate: TemplateRef<any>;
+    currentStart: number;
+    currentEnd: number;
+
 
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
@@ -105,6 +107,13 @@ export class DataTableComponent<T> implements AfterContentInit {
             return (item as any).id;
         } else {
             return index;
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.items) {
+            this.currentStart = this.itemsPerPage * (this.currentPage - 1);
+            this.currentEnd = this.currentStart + changes.items.currentValue?.length;
         }
     }
 }

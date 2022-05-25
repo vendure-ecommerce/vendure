@@ -256,6 +256,7 @@
     "theme": "Theme",
     "there-are-unsaved-changes": "There are unsaved changes. Navigating away will cause these changes to be lost.",
     "toggle-all": "Toggle all",
+    "total-items": "{currentStart} - {currentEnd} of {totalItems}",
     "update": "Update",
     "updated-at": "Updated at",
     "username": "Username",

@@ -49,6 +49,9 @@
             [itemsPerPage]="itemsPerPage"
             (itemsPerPageChange)="itemsPerPageChange.emit($event)"
         ></vdr-items-per-page-controls>
+        <div>
+            {{ 'common.total-items' | translate: { currentStart, currentEnd, totalItems } }}
+        </div>
 
         <vdr-pagination-controls
             *ngIf="totalItems"
