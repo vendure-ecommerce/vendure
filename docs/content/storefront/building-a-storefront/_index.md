@@ -8,34 +8,25 @@ showtoc: true
 
 The storefront is the application which customers use to buy things from your store.
 
-As a headless server, Vendure provides a GraphQL API and Admin UI app, but no storefront. The key advantage of the headless model is that the storefront (or indeed, any number of client applications) can be developed completely independently of the server. This flexibility comes at the cost of having to build and maintain your own storefront.
+One of the benefits of Vendure's headless architecture is that you can build your storefront using any technology you like, and in the future you can update your storefront without requiring any changes to the Vendure server itself!
 
-Luckily there are some projects that can help you get your storefront up-and-running quickly:
+## Storefront starters
 
+To get you up-and-running with your storefront implementation, we offer a number of integrations with popular front-end frameworks such as Next.js, Vue Storefront, Remix & Angular. See all of our [storefront integrations]({{< relref "integration" >}}).
 
-## Vue Storefront
+## Custom-building
 
-{{< figure src="./vue-storefront-logo.png" >}}
+If you'd prefer to build your storefront from scratch, here are the main points you'll need to cover at a minimum:
 
-[Vue Storefront](https://www.vuestorefront.io/) is a popular backend-agnostic storefront PWA solution and they offer an official [Vue Storefront Vendure integration](https://docs.vuestorefront.io/vendure/).
+- Displaying navigation based on Collections using the `collections` query.
+- Listing products. Use the `search` query for this - it will let you filter by collection and also implements faceted filtering.
+- Product detail view with variant selection & add to cart functionality.
+- A cart view which allows items to be removed or quantity to be modified.
+- A checkout flow including shipping address and payment.
+- Login page with forgotten password flow & account creation flow
+- Customer account dashboard
+- Customer order history
+- Customer password reset flow
+- Customer email address change flow
 
-For step-by-step instructions see our [Vue Storefront integration blog post]({{< relref "/blog/2021-10-11-vendure-vue-storefront/index.md" >}}).
-
-## Next.js Commerce
- 
-{{< figure src="./vercel-commerce-screenshot.webp" >}}
-
-[Next.js](https://nextjs.org/) is a popular React-based framework which many Vendure developers have chosen as the basis of their storefront application. The team behind Next.js have created an e-commerce-specific solution, [Next.js Commerce](https://nextjs.org/commerce), and it includes an official [Vendure integration](https://github.com/vercel/commerce/tree/main/packages/vendure)
-
-[Next.js Commerce Vendure integration demo](https://vendure.vercel.store/)
-
-
-## Angular Demo Storefront
-
-{{< figure src="./vendure-storefront-screenshot-01.jpg" >}}
-
-This is an example storefront PWA application built with Angular. If you have Angular experience you may wish to use this as the basis of your own storefront implementation.
-
-A live demo can be found here: [demo.vendure.io/storefront/](https://demo.vendure.io/storefront/)
-
-Keep up with development here: [github.com/vendure-ecommerce/storefront](https://github.com/vendure-ecommerce/storefront)
+Some of these aspects are covered in more detail in this section, but we plan to create guides for each of these.
