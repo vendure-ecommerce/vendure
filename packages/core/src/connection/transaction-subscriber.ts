@@ -67,7 +67,7 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
         if (queryRunner.isTransactionActive) {
             return merge(...signals)
                 .pipe(
-                    filter(event => event.queryRunner === queryRunner),
+                    filter(event => !event.queryRunner.isTransactionActive && event.queryRunner === queryRunner),
                     take(1),
                     map(event => event.queryRunner),
                     // This `delay(0)` call appears to be necessary with the upgrade to TypeORM
