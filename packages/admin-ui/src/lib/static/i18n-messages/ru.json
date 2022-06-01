@@ -256,6 +256,7 @@
     "theme": "Тема",
     "there-are-unsaved-changes": "Есть несохраненные изменения. Если вы выйдете, эти изменения будут потеряны.",
     "toggle-all": "Переключить все",
+    "total-items": "{currentStart} - {currentEnd} из {totalItems}",
     "update": "Обновить",
     "updated-at": "Обновлено в",
     "username": "Имя пользователя",

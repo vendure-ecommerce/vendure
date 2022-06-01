@@ -256,6 +256,7 @@
     "theme": "Thème",
     "there-are-unsaved-changes": "Il y a des changements non enregistrés. Naviguer ailleurs fera perdre ces changements.",
     "toggle-all": "Cocher/décocher Tout",
+    "total-items": "{currentStart} - {currentEnd} de {totalItems}",
     "update": "Mettre à jour",
     "updated-at": "Mis à jour à",
     "username": "Nom d'utilisateur",

@@ -256,6 +256,7 @@
     "theme": "主题",
     "there-are-unsaved-changes": "修改尚未被保存，现在离开会导致您的修改会被删除",
     "toggle-all": "全部切换",
+    "total-items": "{currentStart} - {currentEnd} 的 {totalItems}",
     "update": "确认修改",
     "updated-at": "修改时间",
     "username": "用户名",
