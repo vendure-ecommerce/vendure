@@ -272,6 +272,7 @@
     "add-customers-to-group-with-name": "Ajouter les clients à \"{ groupName }\"",
     "addresses": "Adresses",
     "city": "Ville",
+    "company": "",
     "confirm-delete-customer-group": "Supprimer le groupe de clients ?",
     "confirm-remove-customer-from-group": "Retirer le client du groupe ?",
     "country": "Pays",

@@ -272,6 +272,7 @@
     "add-customers-to-group-with-name": "添加客户到\"{ groupName }\"分组",
     "addresses": "地址",
     "city": "市",
+    "company": "",
     "confirm-delete-customer-group": "确认删除客户分组?",
     "confirm-remove-customer-from-group": "确认从分组移除客户?",
     "country": "国家",

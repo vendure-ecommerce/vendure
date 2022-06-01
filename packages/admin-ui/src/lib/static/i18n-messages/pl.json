@@ -272,6 +272,7 @@
     "add-customers-to-group-with-name": "",
     "addresses": "Adres",
     "city": "Miasto",
+    "company": "",
     "confirm-delete-customer-group": "",
     "confirm-remove-customer-from-group": "",
     "country": "Kraj",

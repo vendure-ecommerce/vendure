@@ -272,6 +272,7 @@
     "add-customers-to-group-with-name": "Clientes adicionados ao grupo \"{ groupName }\"",
     "addresses": "Moradas",
     "city": "Cidade",
+    "company": "",
     "confirm-delete-customer-group": "Eliminar grupo de cliente?",
     "confirm-remove-customer-from-group": "Eliminar cliente do grupo?",
     "country": "País",
