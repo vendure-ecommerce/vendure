@@ -767,10 +767,35 @@ describe('Custom fields', () => {
             expect(products.totalItems).toBe(1);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/1581
+        it('can sort by localeString custom fields', async () => {
+            const { products } = await adminClient.query(gql`
+                query {
+                    products(options: { sort: { localeStringWithDefault: ASC } }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(products.totalItems).toBe(1);
+        });
+
         it('can filter by custom fields', async () => {
             const { products } = await adminClient.query(gql`
                 query {
                     products(options: { filter: { stringWithDefault: { contains: "hello" } } }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(products.totalItems).toBe(1);
+        });
+
+        it('can filter by localeString custom fields', async () => {
+            const { products } = await adminClient.query(gql`
+                query {
+                    products(options: { filter: { localeStringWithDefault: { contains: "hola" } } }) {
                         totalItems
                     }
                 }

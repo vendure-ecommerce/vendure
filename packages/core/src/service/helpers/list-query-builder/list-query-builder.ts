@@ -19,6 +19,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { FilterParameter, ListQueryOptions, SortParameter } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
+import { CustomFields } from '../../../config/index';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
@@ -216,12 +217,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
+        const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sort = parseSortParams(
             rawConnection,
             entity,
             Object.assign({}, options.sort, extendedOptions.orderBy),
             customPropertyMap,
             entityAlias,
+            customFieldsForType,
         );
         const filter = parseFilterParams(
             rawConnection,
