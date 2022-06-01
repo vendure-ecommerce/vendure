@@ -48,7 +48,8 @@ export class CollectionResolver {
     async collections(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
-        @Relations(Collection) relations: RelationPaths<Collection>,
+        @Relations({ entity: Collection, omit: ['productVariants', 'assets'] })
+        relations: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
         return this.collectionService.findAll(ctx, args.options || undefined, relations).then(res => {
             res.items.forEach(this.encodeFilters);
@@ -61,7 +62,8 @@ export class CollectionResolver {
     async collection(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionArgs,
-        @Relations(Collection) relations: RelationPaths<Collection>,
+        @Relations({ entity: Collection, omit: ['productVariants', 'assets'] })
+        relations: RelationPaths<Collection>,
     ): Promise<Translated<Collection> | undefined> {
         let collection: Translated<Collection> | undefined;
         if (args.id) {
@@ -80,11 +82,7 @@ export class CollectionResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog, Permission.ReadCollection)
-    previewCollectionVariants(
-        @Ctx() ctx: RequestContext,
-        @Args() args: QueryPreviewCollectionVariantsArgs,
-        @Relations(Collection) relations: RelationPaths<Collection>,
-    ) {
+    previewCollectionVariants(@Ctx() ctx: RequestContext, @Args() args: QueryPreviewCollectionVariantsArgs) {
         this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, args.input.filters);
         return this.collectionService.previewCollectionVariants(ctx, args.input, args.options || undefined);
     }

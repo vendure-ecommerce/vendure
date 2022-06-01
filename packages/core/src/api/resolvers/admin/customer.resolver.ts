@@ -39,7 +39,7 @@ export class CustomerResolver {
     async customers(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomersArgs,
-        @Relations(Customer) relations: RelationPaths<Customer>,
+        @Relations({ entity: Customer, omit: ['orders'] }) relations: RelationPaths<Customer>,
     ): Promise<PaginatedList<Customer>> {
         return this.customerService.findAll(ctx, args.options || undefined, relations);
     }
@@ -49,7 +49,7 @@ export class CustomerResolver {
     async customer(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerArgs,
-        @Relations(Customer) relations: RelationPaths<Customer>,
+        @Relations({ entity: Customer, omit: ['orders'] }) relations: RelationPaths<Customer>,
     ): Promise<Customer | undefined> {
         return this.customerService.findOne(ctx, args.id, relations);
     }

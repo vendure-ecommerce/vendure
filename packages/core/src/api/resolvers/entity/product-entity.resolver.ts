@@ -54,7 +54,7 @@ export class ProductEntityResolver {
     async variants(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
-        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
+        @Relations({ entity: ProductVariant, omit: ['assets'] }) relations: RelationPaths<ProductVariant>,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { items: variants } = await this.productVariantService.getVariantsByProductId(
             ctx,
@@ -70,7 +70,7 @@ export class ProductEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
         @Args() args: { options: ProductVariantListOptions },
-        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
+        @Relations({ entity: ProductVariant, omit: ['assets'] }) relations: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<ProductVariant>> {
         return this.productVariantService.getVariantsByProductId(ctx, product.id, args.options, relations);
     }
