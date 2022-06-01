@@ -5637,7 +5637,7 @@ export type CollectionFragment = Pick<
     filters: Array<ConfigurableOperationFragment>;
     translations: Array<Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>>;
     parent?: Maybe<Pick<Collection, 'id' | 'name'>>;
-    children?: Maybe<Array<Pick<Collection, 'id' | 'name'>>>;
+    children?: Maybe<Array<Pick<Collection, 'id' | 'name' | 'position'>>>;
 };
 
 export type FacetValueFragment = Pick<FacetValue, 'id' | 'languageCode' | 'code' | 'name'> & {

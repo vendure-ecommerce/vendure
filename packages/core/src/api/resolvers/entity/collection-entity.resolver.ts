@@ -91,7 +91,7 @@ export class CollectionEntityResolver {
     ): Promise<Collection[]> {
         let children: Collection[] = [];
         if (collection.children) {
-            children = collection.children;
+            children = collection.children.sort((a, b) => a.position - b.position);
         } else {
             children = (await this.collectionService.getChildren(ctx, collection.id)) as any;
         }
