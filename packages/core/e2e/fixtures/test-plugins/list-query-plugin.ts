@@ -134,6 +134,21 @@ export class ListQueryResolver {
                 };
             });
     }
+
+    @Query()
+    testEntitiesGetMany(@Ctx() ctx: RequestContext, @Args() args: any) {
+        return this.listQueryBuilder
+            .build(TestEntity, args.options, { ctx, relations: ['prices'] })
+            .getMany()
+            .then(items => {
+                for (const item of items) {
+                    if (item.prices && item.prices.length) {
+                        item.activePrice = item.prices[0].price;
+                    }
+                }
+                return items.map(i => translateDeep(i, ctx.languageCode));
+            });
+    }
 }
 
 const apiExtensions = gql`
@@ -159,6 +174,7 @@ const apiExtensions = gql`
 
     extend type Query {
         testEntities(options: TestEntityListOptions): TestEntityList!
+        testEntitiesGetMany(options: TestEntityListOptions): [TestEntity!]!
     }
 
     input TestEntityListOptions

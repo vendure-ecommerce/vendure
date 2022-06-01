@@ -954,6 +954,14 @@ describe('ListQueryBuilder', () => {
             expect(testEntities.items.map((x: any) => x.name)).toEqual(['egg', 'fahrrad']);
         });
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1586
+    it('using the getMany() of the resulting QueryBuilder', async () => {
+        const { testEntitiesGetMany } = await adminClient.query(GET_ARRAY_LIST, {});
+        expect(testEntitiesGetMany.sort((a: any, b: any) => a.id - b.id).map((x: any) => x.price)).toEqual([
+            11, 9, 22, 14, 13, 33,
+        ]);
+    });
 });
 
 const GET_LIST = gql`
@@ -966,6 +974,18 @@ const GET_LIST = gql`
                 name
                 date
             }
+        }
+    }
+`;
+
+const GET_ARRAY_LIST = gql`
+    query GetTestEntitiesArray($options: TestEntityListOptions) {
+        testEntitiesGetMany(options: $options) {
+            id
+            label
+            name
+            date
+            price
         }
     }
 `;
