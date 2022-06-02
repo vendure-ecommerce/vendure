@@ -119,6 +119,7 @@ export class UserService {
             authenticationMethod.passwordHash = '';
         }
         authenticationMethod.identifier = identifier;
+        authenticationMethod.user = user;
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(authenticationMethod);
         user.authenticationMethods = [...(user.authenticationMethods ?? []), authenticationMethod];
         return user;
