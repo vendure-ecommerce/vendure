@@ -7117,6 +7117,12 @@ export type TransitionFulfillmentToStateMutation = {
         | Pick<FulfillmentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
 };
 
+export type UpdateOrderCustomFieldsMutationVariables = Exact<{
+    input: UpdateOrderInput;
+}>;
+
+export type UpdateOrderCustomFieldsMutation = { setOrderCustomFields?: Maybe<Pick<Order, 'id'>> };
+
 export type GetTagListQueryVariables = Exact<{
     options?: Maybe<TagListOptions>;
 }>;
@@ -9579,6 +9585,12 @@ export namespace TransitionFulfillmentToState {
         NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>,
         { __typename?: 'FulfillmentStateTransitionError' }
     >;
+}
+
+export namespace UpdateOrderCustomFields {
+    export type Variables = UpdateOrderCustomFieldsMutationVariables;
+    export type Mutation = UpdateOrderCustomFieldsMutation;
+    export type SetOrderCustomFields = NonNullable<UpdateOrderCustomFieldsMutation['setOrderCustomFields']>;
 }
 
 export namespace GetTagList {

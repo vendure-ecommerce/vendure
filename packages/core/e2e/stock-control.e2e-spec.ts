@@ -1,5 +1,13 @@
 /* tslint:disable:no-non-null-assertion */
-import { manualFulfillmentHandler, mergeConfig, OrderState } from '@vendure/core';
+import {
+    DefaultOrderPlacedStrategy,
+    manualFulfillmentHandler,
+    mergeConfig,
+    Order,
+    OrderPlacedStrategy,
+    OrderState,
+    RequestContext,
+} from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -67,13 +75,43 @@ import {
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
+class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
+    shouldSetAsPlaced(
+        ctx: RequestContext,
+        fromState: OrderState,
+        toState: OrderState,
+        order: Order,
+    ): boolean {
+        if ((order.customFields as any).test1557 === true) {
+            // This branch is used in testing https://github.com/vendure-ecommerce/vendure/issues/1557
+            // i.e. it will cause the Order to be set to `active: false` but without creating any
+            // Allocations for the OrderLines.
+            if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
+                return true;
+            }
+            return false;
+        }
+        return super.shouldSetAsPlaced(ctx, fromState, toState, order);
+    }
+}
+
 describe('Stock control', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod, twoStagePaymentMethod],
             },
+            orderOptions: {
+                orderPlacedStrategy: new TestOrderPlacedStrategy(),
+            },
             customFields: {
+                Order: [
+                    {
+                        name: 'test1557',
+                        type: 'boolean',
+                        defaultValue: false,
+                    },
+                ],
                 OrderLine: [{ name: 'customization', type: 'string', nullable: true }],
             },
         }),
@@ -1171,6 +1209,72 @@ describe('Stock control', () => {
                 const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
                 expect(activeOrder!.lines.length).toBe(0);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1557
+            it('cancelling an Order only creates Releases for OrderItems that have actually been allocated', async () => {
+                const product = await getProductWithStockMovement('T_2');
+                const variant6 = product!.variants.find(v => v.id === variant6Id)!;
+                expect(variant6.stockOnHand).toBe(3);
+                expect(variant6.stockAllocated).toBe(0);
+
+                await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+                const { addItemToOrder: add1 } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: variant6.id,
+                    quantity: 1,
+                });
+                orderGuard.assertSuccess(add1);
+
+                // Set this flag so that our custom OrderPlacedStrategy uses the special logic
+                // designed to test this scenario.
+                const res = await shopClient.query(UPDATE_ORDER_CUSTOM_FIELDS, {
+                    input: { customFields: { test1557: true } },
+                });
+
+                await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                    SET_SHIPPING_ADDRESS,
+                    {
+                        input: {
+                            streetLine1: '1 Test Street',
+                            countryCode: 'GB',
+                        } as CreateAddressInput,
+                    },
+                );
+                await setFirstEligibleShippingMethod();
+                const { transitionOrderToState } = await shopClient.query<
+                    TransitionToState.Mutation,
+                    TransitionToState.Variables
+                >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+                orderGuard.assertSuccess(transitionOrderToState);
+                expect(transitionOrderToState.state).toBe('ArrangingPayment');
+
+                const product2 = await getProductWithStockMovement('T_2');
+                const variant6_2 = product2!.variants.find(v => v.id === variant6Id)!;
+                expect(variant6_2.stockOnHand).toBe(3);
+                expect(variant6_2.stockAllocated).toBe(0);
+
+                const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(
+                    CANCEL_ORDER,
+                    {
+                        input: {
+                            orderId: transitionOrderToState.id,
+                            lines: transitionOrderToState.lines.map(l => ({
+                                orderLineId: l.id,
+                                quantity: l.quantity,
+                            })),
+                            reason: 'Cancelled by test',
+                        },
+                    },
+                );
+                orderGuard.assertSuccess(cancelOrder);
+
+                const product3 = await getProductWithStockMovement('T_2');
+                const variant6_3 = product3!.variants.find(v => v.id === variant6Id)!;
+                expect(variant6_3.stockOnHand).toBe(3);
+                expect(variant6_3.stockAllocated).toBe(0);
+            });
         });
     });
 
@@ -1324,6 +1428,20 @@ export const TRANSITION_FULFILLMENT_TO_STATE = gql`
             }
             ... on FulfillmentStateTransitionError {
                 transitionError
+            }
+        }
+    }
+`;
+
+export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
+    mutation UpdateOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            ... on Order {
+                id
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }
