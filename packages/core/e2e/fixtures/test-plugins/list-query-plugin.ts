@@ -104,7 +104,8 @@ export class TestEntityPrice extends VendureEntity {
         super(input);
     }
 
-    @EntityId() channelId: ID;
+    @Column()
+    channelId: number;
 
     @Column()
     price: number;
@@ -125,7 +126,8 @@ export class ListQueryResolver {
             .then(([items, totalItems]) => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        item.activePrice = item.prices[0].price;
+                        // tslint:disable-next-line:no-non-null-assertion
+                        item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
                 return {
@@ -143,7 +145,8 @@ export class ListQueryResolver {
             .then(items => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        item.activePrice = item.prices[0].price;
+                        // tslint:disable-next-line:no-non-null-assertion
+                        item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
                 return items.map(i => translateDeep(i, ctx.languageCode));
