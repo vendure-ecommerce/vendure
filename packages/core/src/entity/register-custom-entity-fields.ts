@@ -110,7 +110,7 @@ function registerCustomFieldsForEntity(
                         // unless you specify the precision.
                         const defaultValueDecimalPlaces = customField.defaultValue.toString().split('.')[1];
                         if (defaultValueDecimalPlaces) {
-                            options.precision = defaultValueDecimalPlaces.length;
+                            options.scale = defaultValueDecimalPlaces.length;
                         }
                     }
                     if (
