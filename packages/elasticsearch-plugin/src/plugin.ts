@@ -214,7 +214,27 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
         },
     ],
     adminApiExtensions: {
-        resolvers: [AdminElasticSearchResolver, EntityElasticSearchResolver],
+        resolvers: () => {
+            const { options } = ElasticsearchPlugin;
+            const requiresUnionResolver =
+                0 < Object.keys(options.customProductMappings || {}).length &&
+                0 < Object.keys(options.customProductVariantMappings || {}).length;
+            const requiresUnionScriptResolver =
+                0 <
+                    Object.values(options.searchConfig.scriptFields || {}).filter(
+                        field => field.context !== 'product',
+                    ).length &&
+                0 <
+                    Object.values(options.searchConfig.scriptFields || {}).filter(
+                        field => field.context !== 'variant',
+                    ).length;
+            return [
+                AdminElasticSearchResolver,
+                EntityElasticSearchResolver,
+                ...(requiresUnionResolver ? [CustomMappingsResolver] : []),
+                ...(requiresUnionScriptResolver ? [CustomScriptFieldsResolver] : []),
+            ];
+        },
         schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
     },
     shopApiExtensions: {
