@@ -194,6 +194,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     save() {
+        this.optionGroups = this.optionGroups.filter(g => g.values.length);
         const newOptionGroups = this.optionGroups
             .filter(og => og.isNew)
             .map(og => ({
