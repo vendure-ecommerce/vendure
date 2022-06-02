@@ -45,7 +45,7 @@ export class CollectionEntityResolver {
         @Parent() collection: Collection,
         @Args() args: { options: ProductVariantListOptions },
         @Api() apiType: ApiType,
-        @Relations(ProductVariant) relations: RelationPaths<ProductVariant>,
+        @Relations({ entity: ProductVariant, omit: ['assets'] }) relations: RelationPaths<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         let options: ListQueryOptions<Product> = args.options;
         if (apiType === 'shop') {
@@ -91,7 +91,7 @@ export class CollectionEntityResolver {
     ): Promise<Collection[]> {
         let children: Collection[] = [];
         if (collection.children) {
-            children = collection.children;
+            children = collection.children.sort((a, b) => a.position - b.position);
         } else {
             children = (await this.collectionService.getChildren(ctx, collection.id)) as any;
         }

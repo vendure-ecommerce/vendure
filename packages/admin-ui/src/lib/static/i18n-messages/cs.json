@@ -273,6 +273,7 @@
     "add-customers-to-group-with-name": "Add customers to \"{ groupName }\"",
     "addresses": "Adresy",
     "city": "Město",
+    "company": "",
     "confirm-delete-customer-group": "Delete customer group?",
     "confirm-remove-customer-from-group": "Remove customer from group?",
     "country": "Země",

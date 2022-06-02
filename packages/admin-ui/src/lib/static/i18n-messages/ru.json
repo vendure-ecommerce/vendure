@@ -273,6 +273,7 @@
     "add-customers-to-group-with-name": "Добавить клиентов в \"{ groupName }\"",
     "addresses": "Адреса",
     "city": "Город",
+    "company": "",
     "confirm-delete-customer-group": "Удалить группу клиентов?",
     "confirm-remove-customer-from-group": "Удалить клиента из группы?",
     "country": "Страна",

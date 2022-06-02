@@ -564,6 +564,9 @@ export interface SearchConfig {
      * Allows extending the `sort` input of the elasticsearch body as covered in
      * [Elasticsearch sort docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/sort-search-results.html)
      *
+     * The `sort` input parameter contains the ElasticSearchSortInput generated for the default sort parameters "name" and "price".
+     * If neither of those are applied it will be empty.
+     *
      * @example
      * ```TS
      * mapSort: (sort, input) => {

@@ -273,6 +273,7 @@
     "add-customers-to-group-with-name": "Adicionado clientes para \"{ groupName }\"",
     "addresses": "Endereços",
     "city": "Cidade",
+    "company": "",
     "confirm-delete-customer-group": "Excluir grupo de cliente?",
     "confirm-remove-customer-from-group": "Excluir cliente do grupo?",
     "country": "País",

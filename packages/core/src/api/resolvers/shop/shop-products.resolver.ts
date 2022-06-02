@@ -39,7 +39,7 @@ export class ShopProductsResolver {
     async products(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductsArgs,
-        @Relations(Product) relations: RelationPaths<Product>,
+        @Relations({ entity: Product, omit: ['variants', 'assets'] }) relations: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
         const options: ListQueryOptions<Product> = {
             ...args.options,
@@ -55,7 +55,7 @@ export class ShopProductsResolver {
     async product(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductArgs,
-        @Relations(Product) relations: RelationPaths<Product>,
+        @Relations({ entity: Product, omit: ['variants', 'assets'] }) relations: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
         let result: Translated<Product> | undefined;
         if (args.id) {
@@ -79,7 +79,8 @@ export class ShopProductsResolver {
     async collections(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
-        @Relations(Collection) relations: RelationPaths<Collection>,
+        @Relations({ entity: Collection, omit: ['productVariants', 'assets'] })
+        relations: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
         const options: ListQueryOptions<Collection> = {
             ...args.options,
@@ -95,7 +96,8 @@ export class ShopProductsResolver {
     async collection(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionArgs,
-        @Relations(Collection) relations: RelationPaths<Collection>,
+        @Relations({ entity: Collection, omit: ['productVariants', 'assets'] })
+        relations: RelationPaths<Collection>,
     ): Promise<Translated<Collection> | undefined> {
         let collection: Translated<Collection> | undefined;
         if (args.id) {

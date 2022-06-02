@@ -11,11 +11,12 @@ import { VendureEntity } from '../../entity/index';
 
 export type RelationPaths<T extends VendureEntity> = Array<EntityRelationPaths<T>>;
 
-export type FieldsDecoratorConfig =
-    | Type<VendureEntity>
+export type FieldsDecoratorConfig<T extends VendureEntity> =
+    | Type<T>
     | {
-          entity: Type<VendureEntity>;
-          depth: number;
+          entity: Type<T>;
+          depth?: number;
+          omit?: RelationPaths<T>;
       };
 
 const DEFAULT_DEPTH = 3;
@@ -111,32 +112,50 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * \@Relations({ entity: Order, depth: 2 }) relations: RelationPaths<Order>,
  * ```
  *
+ * ## Omit
+ *
+ * The `omit` option is used to explicitly omit certain relations from the calculated relations array. This is useful in certain
+ * cases where we know for sure that we need to run the field resolver _anyway_. A good example is the `Collection.productVariants` relation.
+ * When a GraphQL query comes in for a Collection and also requests its `productVariants` field, there is no point using a lookahead to eagerly
+ * join that relation, because we will throw that data away anyway when the `productVariants` field resolver executes, since it returns a
+ * PaginatedList query rather than a simple array.
+ *
+ * @example
+ * ```TypeScript
+ * \@Relations({ entity: Collection, omit: ['productVariant'] }) relations: RelationPaths<Collection>,
+ * ```
+ *
  * @docsCategory request
  * @docsPage Api Decorator
  * @since 1.6.0
  */
-export const Relations = createParamDecorator<FieldsDecoratorConfig>((data, ctx: ExecutionContext) => {
-    const info = ctx.getArgByIndex(3);
-    if (data == null) {
-        throw new InternalServerError(`The @Relations() decorator requires an entity type argument`);
-    }
-    if (!isGraphQLResolveInfo(info)) {
-        return [];
-    }
-    const cacheKey = info.fieldName + '__' + ctx.getArgByIndex(2).req.body.query;
-    const cachedResult = cache.get(cacheKey);
-    if (cachedResult) {
-        return cachedResult;
-    }
-    const fields = graphqlFields(info);
-    const targetFields = isPaginatedListQuery(info) ? fields.items ?? {} : fields;
-    const entity = typeof data === 'function' ? data : data.entity;
-    const maxDepth = typeof data === 'function' ? DEFAULT_DEPTH : data.depth;
-    const relationFields = getRelationPaths(targetFields, entity, maxDepth);
-    const result = unique(relationFields);
-    cache.set(cacheKey, result);
-    return result;
-});
+export const Relations: <T extends VendureEntity>(data: FieldsDecoratorConfig<T>) => ParameterDecorator =
+    createParamDecorator<FieldsDecoratorConfig<any>>((data, ctx: ExecutionContext) => {
+        const info = ctx.getArgByIndex(3);
+        if (data == null) {
+            throw new InternalServerError(`The @Relations() decorator requires an entity type argument`);
+        }
+        if (!isGraphQLResolveInfo(info)) {
+            return [];
+        }
+        const cacheKey = info.fieldName + '__' + ctx.getArgByIndex(2).req.body.query;
+        const cachedResult = cache.get(cacheKey);
+        if (cachedResult) {
+            return cachedResult;
+        }
+        const fields = graphqlFields(info);
+        const targetFields = isPaginatedListQuery(info) ? fields.items ?? {} : fields;
+        const entity = typeof data === 'function' ? data : data.entity;
+        const maxDepth = typeof data === 'function' ? DEFAULT_DEPTH : data.depth ?? DEFAULT_DEPTH;
+        const omit = typeof data === 'function' ? [] : data.omit ?? [];
+        const relationFields = getRelationPaths(targetFields, entity, maxDepth);
+        let result = unique(relationFields);
+        for (const omitPath of omit) {
+            result = result.filter(resultPath => !resultPath.startsWith(omitPath as string));
+        }
+        cache.set(cacheKey, result);
+        return result;
+    });
 
 function getRelationPaths(
     fields: Record<string, Record<string, any>>,

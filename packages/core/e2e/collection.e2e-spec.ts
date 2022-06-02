@@ -856,6 +856,28 @@ describe('Collection resolver', () => {
             ),
         );
 
+        // https://github.com/vendure-ecommerce/vendure/issues/1595
+        it('children correctly ordered', async () => {
+            await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
+                input: {
+                    collectionId: computersCollection.id,
+                    parentId: 'T_1',
+                    index: 4,
+                },
+            });
+            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: 'T_1',
+                },
+            );
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.children?.map(c => (c as any).position)).toEqual([0, 1, 2, 3, 4, 5]);
+        });
+
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
             const result = await adminClient.query<GetCollections.Query>(GET_COLLECTIONS);
             return result.collections.items.filter(i => i.parent!.id === parentId);

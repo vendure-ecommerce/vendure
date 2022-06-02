@@ -41,6 +41,17 @@ export class GeneratedVariant {
     }
 }
 
+interface OptionGroupUiModel {
+    id?: string;
+    isNew: boolean;
+    name: string;
+    values: Array<{
+        id?: string;
+        name: string;
+        locked: boolean;
+    }>;
+}
+
 @Component({
     selector: 'vdr-product-variants-editor',
     templateUrl: './product-variants-editor.component.html',
@@ -50,16 +61,7 @@ export class GeneratedVariant {
 export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     formValueChanged = false;
     generatedVariants: GeneratedVariant[] = [];
-    optionGroups: Array<{
-        id?: string;
-        isNew: boolean;
-        name: string;
-        values: Array<{
-            id?: string;
-            name: string;
-            locked: boolean;
-        }>;
-    }>;
+    optionGroups: OptionGroupUiModel[];
     product: GetProductVariantOptions.Product;
     currencyCode: CurrencyCode;
     private languageCode: LanguageCode;
@@ -106,6 +108,11 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             name: '',
             values: [],
         });
+    }
+
+    removeOption(optionGroup: OptionGroupUiModel) {
+        this.optionGroups = this.optionGroups.filter(og => og !== optionGroup);
+        this.generateVariants();
     }
 
     generateVariants() {
@@ -194,6 +201,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     save() {
+        this.optionGroups = this.optionGroups.filter(g => g.values.length);
         const newOptionGroups = this.optionGroups
             .filter(og => og.isNew)
             .map(og => ({

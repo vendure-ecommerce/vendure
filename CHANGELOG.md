@@ -1,3 +1,28 @@
+## <small>1.6.2 (2022-06-02)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add missing "company" field to address components ([e218932](https://github.com/vendure-ecommerce/vendure/commit/e218932)), closes [#1591](https://github.com/vendure-ecommerce/vendure/issues/1591)
+* **admin-ui** Allow new option groups to be deleted in variant editor ([99ebf68](https://github.com/vendure-ecommerce/vendure/commit/99ebf68)), closes [#1577](https://github.com/vendure-ecommerce/vendure/issues/1577)
+* **admin-ui** Do not add empty option groups to a product ([a39bf70](https://github.com/vendure-ecommerce/vendure/commit/a39bf70)), closes [#1577](https://github.com/vendure-ecommerce/vendure/issues/1577)
+* **admin-ui** Fix NavMenuItem.onClick callback not being triggered (#1592) ([714d07c](https://github.com/vendure-ecommerce/vendure/commit/714d07c)), closes [#1592](https://github.com/vendure-ecommerce/vendure/issues/1592)
+* **core** Correct ordering of Collection.children ([476fb5e](https://github.com/vendure-ecommerce/vendure/commit/476fb5e)), closes [#1595](https://github.com/vendure-ecommerce/vendure/issues/1595)
+* **core** Fix `getMany()` method with ListQueryBuilder ([6be93b8](https://github.com/vendure-ecommerce/vendure/commit/6be93b8)), closes [#1586](https://github.com/vendure-ecommerce/vendure/issues/1586)
+* **core** Fix broken JSON encoding edge-case ([64765f3](https://github.com/vendure-ecommerce/vendure/commit/64765f3)), closes [#1596](https://github.com/vendure-ecommerce/vendure/issues/1596)
+* **core** Fix bug in importing Facets ([84ce87f](https://github.com/vendure-ecommerce/vendure/commit/84ce87f))
+* **core** Fix float custom field handling ([e94730b](https://github.com/vendure-ecommerce/vendure/commit/e94730b)), closes [#1561](https://github.com/vendure-ecommerce/vendure/issues/1561)
+* **core** Fix sorting by localeString custom fields ([e096001](https://github.com/vendure-ecommerce/vendure/commit/e096001)), closes [#1581](https://github.com/vendure-ecommerce/vendure/issues/1581)
+* **core** Further fix on custom field float default ([b8fdbd8](https://github.com/vendure-ecommerce/vendure/commit/b8fdbd8))
+* **core** Save relation custom fields on PaymentMethods ([711de06](https://github.com/vendure-ecommerce/vendure/commit/711de06)), closes [#1600](https://github.com/vendure-ecommerce/vendure/issues/1600)
+* **core** UserService.addNativeAuthenticationMethod persists userId ([ae1e24d](https://github.com/vendure-ecommerce/vendure/commit/ae1e24d)), closes [#1423](https://github.com/vendure-ecommerce/vendure/issues/1423)
+* **elasticsearch-plugin** Fix permissions for pendingSearchIndexUpdates query (#1585) ([88ec4a2](https://github.com/vendure-ecommerce/vendure/commit/88ec4a2)), closes [#1585](https://github.com/vendure-ecommerce/vendure/issues/1585)
+* **elasticsearch-plugin** Missing CustomMappingsResolver in Admin API (#1599) ([267c429](https://github.com/vendure-ecommerce/vendure/commit/267c429)), closes [#1599](https://github.com/vendure-ecommerce/vendure/issues/1599)
+
+#### Perf
+
+* **core** Fix perf regression from lookahead on certain fields ([9e65753](https://github.com/vendure-ecommerce/vendure/commit/9e65753)), closes [#1578](https://github.com/vendure-ecommerce/vendure/issues/1578)
+
 ## <small>1.6.1 (2022-05-19)</small>
 
 

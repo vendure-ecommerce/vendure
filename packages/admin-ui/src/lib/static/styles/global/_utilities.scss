@@ -7,6 +7,7 @@ $space-1: math.div($space-unit, 2);
 $space-2: $space-unit;
 $space-3: $space-unit * 2;
 $space-4: $space-unit * 3;
+$space-5: $space-unit * 4;
 
 /////////////// layout ///////////////
 .flex {
@@ -65,6 +66,14 @@ $space-4: $space-unit * 3;
 .ml4 { margin-left:   $space-4 }
 .mx4 { margin-left:   $space-4; margin-right:  $space-4 }
 .my4 { margin-top:    $space-4; margin-bottom: $space-4 }
+
+.m5  { margin:        $space-5 }
+.mt5 { margin-top:    $space-5 }
+.mr5 { margin-right:  $space-5 }
+.mb5 { margin-bottom: $space-5 }
+.ml5 { margin-left:   $space-5 }
+.mx5 { margin-left:   $space-5; margin-right:  $space-5 }
+.my5 { margin-top:    $space-5; margin-bottom: $space-5 }
 
 .mxn1 { margin-left: -$space-1; margin-right: -$space-1; }
 .mxn2 { margin-left: -$space-2; margin-right: -$space-2; }

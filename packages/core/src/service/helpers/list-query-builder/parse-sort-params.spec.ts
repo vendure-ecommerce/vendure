@@ -4,6 +4,7 @@ import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
 import { SortParameter } from '../../../common/types/common-types';
+import { CustomFieldConfig } from '../../../config/index';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { I18nError } from '../../../i18n/i18n-error';
@@ -98,10 +99,18 @@ describe('parseSortParams()', () => {
         const sortParams: SortParameter<Product & { shortName: any }> = {
             shortName: 'ASC',
         };
+        const productCustomFields: CustomFieldConfig[] = [{ name: 'shortName', type: 'localeString' }];
 
-        const result = parseSortParams(connection as any, Product, sortParams);
+        const result = parseSortParams(
+            connection as any,
+            Product,
+            sortParams,
+            {},
+            undefined,
+            productCustomFields,
+        );
         expect(result).toEqual({
-            'product_translations.shortName': 'ASC',
+            'product_translations.customFields.shortName': 'ASC',
         });
     });
 

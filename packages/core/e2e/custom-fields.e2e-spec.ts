@@ -28,7 +28,7 @@ const customConfig = mergeConfig(testConfig(), {
             { name: 'stringWithDefault', type: 'string', defaultValue: 'hello' },
             { name: 'localeStringWithDefault', type: 'localeString', defaultValue: 'hola' },
             { name: 'intWithDefault', type: 'int', defaultValue: 5 },
-            { name: 'floatWithDefault', type: 'float', defaultValue: 5.5 },
+            { name: 'floatWithDefault', type: 'float', defaultValue: 5.5678 },
             { name: 'booleanWithDefault', type: 'boolean', defaultValue: true },
             {
                 name: 'dateTimeWithDefault',
@@ -324,7 +324,7 @@ describe('Custom fields', () => {
             stringWithDefault: 'hello',
             localeStringWithDefault: 'hola',
             intWithDefault: 5,
-            floatWithDefault: 5.5,
+            floatWithDefault: 5.5678,
             booleanWithDefault: true,
             dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
             // MySQL does not support defaults on TEXT fields, which is what "simple-json" uses
@@ -767,10 +767,35 @@ describe('Custom fields', () => {
             expect(products.totalItems).toBe(1);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/1581
+        it('can sort by localeString custom fields', async () => {
+            const { products } = await adminClient.query(gql`
+                query {
+                    products(options: { sort: { localeStringWithDefault: ASC } }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(products.totalItems).toBe(1);
+        });
+
         it('can filter by custom fields', async () => {
             const { products } = await adminClient.query(gql`
                 query {
                     products(options: { filter: { stringWithDefault: { contains: "hello" } } }) {
+                        totalItems
+                    }
+                }
+            `);
+
+            expect(products.totalItems).toBe(1);
+        });
+
+        it('can filter by localeString custom fields', async () => {
+            const { products } = await adminClient.query(gql`
+                query {
+                    products(options: { filter: { localeStringWithDefault: { contains: "hola" } } }) {
                         totalItems
                     }
                 }

@@ -70,7 +70,7 @@ export class AdminElasticSearchResolver implements Pick<SearchResolver, 'search'
     }
 
     @Query()
-    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
     async pendingSearchIndexUpdates(...args: any[]): Promise<any> {
         return this.searchJobBufferService.getPendingSearchUpdates();
     }

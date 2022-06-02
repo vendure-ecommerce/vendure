@@ -101,8 +101,17 @@ function registerCustomFieldsForEntity(
                         }
                         options.length = length;
                     }
-                    if (customField.type === 'float') {
-                        options.scale = 2;
+                    if (
+                        customField.type === 'float' &&
+                        typeof customField.defaultValue === 'number' &&
+                        (dbEngine === 'mariadb' || dbEngine === 'mysql')
+                    ) {
+                        // In the MySQL driver, a default float value will get rounded to the nearest integer.
+                        // unless you specify the precision.
+                        const defaultValueDecimalPlaces = customField.defaultValue.toString().split('.')[1];
+                        if (defaultValueDecimalPlaces) {
+                            options.scale = defaultValueDecimalPlaces.length;
+                        }
                     }
                     if (
                         customField.type === 'datetime' &&
