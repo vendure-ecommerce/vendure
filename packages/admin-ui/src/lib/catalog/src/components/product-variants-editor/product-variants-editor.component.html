@@ -25,6 +25,11 @@
             [disabled]="group.name === ''"
         ></vdr-option-value-input>
     </div>
+    <div>
+        <button *ngIf="group.isNew" class="btn btn-icon btn-danger-outline mt5" (click)="removeOption(group)">
+            <clr-icon shape="trash"></clr-icon>
+        </button>
+    </div>
 </div>
 <button
     class="btn btn-primary-outline btn-sm"

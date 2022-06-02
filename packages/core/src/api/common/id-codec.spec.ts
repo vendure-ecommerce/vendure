@@ -115,10 +115,16 @@ describe('IdCodecService', () => {
         });
 
         it('works with list of simple entities', () => {
-            const input = [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }];
+            const input = [
+                { id: 'id', name: 'foo' },
+                { id: 'id', name: 'bar' },
+            ];
 
             const result = idCodec.encode(input);
-            expect(result).toEqual([{ id: ENCODED, name: 'foo' }, { id: ENCODED, name: 'bar' }]);
+            expect(result).toEqual([
+                { id: ENCODED, name: 'foo' },
+                { id: ENCODED, name: 'bar' },
+            ]);
         });
 
         it('does not throw with an empty list', () => {
@@ -130,12 +136,18 @@ describe('IdCodecService', () => {
 
         it('works with nested list of simple entities', () => {
             const input = {
-                items: [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }],
+                items: [
+                    { id: 'id', name: 'foo' },
+                    { id: 'id', name: 'bar' },
+                ],
             };
 
             const result = idCodec.encode(input);
             expect(result).toEqual({
-                items: [{ id: ENCODED, name: 'foo' }, { id: ENCODED, name: 'bar' }],
+                items: [
+                    { id: ENCODED, name: 'foo' },
+                    { id: ENCODED, name: 'bar' },
+                ],
             });
         });
 
@@ -159,10 +171,7 @@ describe('IdCodecService', () => {
 
         it('works with lists with a nullable object property', () => {
             const input = {
-                items: [
-                    { user: null },
-                    { user: { id: 'id' }},
-                ],
+                items: [{ user: null }, { user: { id: 'id' } }],
             };
 
             const result = idCodec.encode(input);
@@ -260,29 +269,38 @@ describe('IdCodecService', () => {
         });
 
         it('works with list of simple entities', () => {
-            const input = [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }];
+            const input = [
+                { id: 'id', name: 'foo' },
+                { id: 'id', name: 'bar' },
+            ];
 
             const result = idCodec.decode(input);
-            expect(result).toEqual([{ id: DECODED, name: 'foo' }, { id: DECODED, name: 'bar' }]);
+            expect(result).toEqual([
+                { id: DECODED, name: 'foo' },
+                { id: DECODED, name: 'bar' },
+            ]);
         });
 
         it('works with nested list of simple entities', () => {
             const input = {
-                items: [{ id: 'id', name: 'foo' }, { id: 'id', name: 'bar' }],
+                items: [
+                    { id: 'id', name: 'foo' },
+                    { id: 'id', name: 'bar' },
+                ],
             };
 
             const result = idCodec.decode(input);
             expect(result).toEqual({
-                items: [{ id: DECODED, name: 'foo' }, { id: DECODED, name: 'bar' }],
+                items: [
+                    { id: DECODED, name: 'foo' },
+                    { id: DECODED, name: 'bar' },
+                ],
             });
         });
 
         it('works with lists with a nullable object property', () => {
             const input = {
-                items: [
-                    { user: null },
-                    { user: { id: 'id' }},
-                ],
+                items: [{ user: null }, { user: { id: 'id' } }],
             };
 
             const result = idCodec.decode(input);
@@ -408,6 +426,27 @@ describe('IdCodecService', () => {
                     foo: 'bar',
                 },
             });
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1596
+        it('works with heterogeneous array', () => {
+            const input1 = { value: [null, 'foo'] };
+            const input2 = { value: [false, 'foo'] };
+            const input3 = { value: [{}, 'foo'] };
+            const input4 = { value: [[], 'foo'] };
+            const input5 = { value: [0, 'foo'] };
+
+            const result1 = idCodec.decode(input1);
+            const result2 = idCodec.decode(input2);
+            const result3 = idCodec.decode(input3);
+            const result4 = idCodec.decode(input4);
+            const result5 = idCodec.decode(input5);
+
+            expect(result1).toEqual(input1);
+            expect(result2).toEqual(input2);
+            expect(result3).toEqual(input3);
+            expect(result4).toEqual(input4);
+            expect(result5).toEqual(input5);
         });
     });
 });

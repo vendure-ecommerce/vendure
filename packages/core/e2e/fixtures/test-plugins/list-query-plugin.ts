@@ -104,7 +104,8 @@ export class TestEntityPrice extends VendureEntity {
         super(input);
     }
 
-    @EntityId() channelId: ID;
+    @Column()
+    channelId: number;
 
     @Column()
     price: number;
@@ -125,13 +126,30 @@ export class ListQueryResolver {
             .then(([items, totalItems]) => {
                 for (const item of items) {
                     if (item.prices && item.prices.length) {
-                        item.activePrice = item.prices[0].price;
+                        // tslint:disable-next-line:no-non-null-assertion
+                        item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
                 return {
                     items: items.map(i => translateDeep(i, ctx.languageCode)),
                     totalItems,
                 };
+            });
+    }
+
+    @Query()
+    testEntitiesGetMany(@Ctx() ctx: RequestContext, @Args() args: any) {
+        return this.listQueryBuilder
+            .build(TestEntity, args.options, { ctx, relations: ['prices'] })
+            .getMany()
+            .then(items => {
+                for (const item of items) {
+                    if (item.prices && item.prices.length) {
+                        // tslint:disable-next-line:no-non-null-assertion
+                        item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
+                    }
+                }
+                return items.map(i => translateDeep(i, ctx.languageCode));
             });
     }
 }
@@ -159,6 +177,7 @@ const apiExtensions = gql`
 
     extend type Query {
         testEntities(options: TestEntityListOptions): TestEntityList!
+        testEntitiesGetMany(options: TestEntityListOptions): [TestEntity!]!
     }
 
     input TestEntityListOptions

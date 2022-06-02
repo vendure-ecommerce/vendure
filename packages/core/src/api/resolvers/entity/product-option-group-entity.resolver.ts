@@ -29,7 +29,7 @@ export class ProductOptionGroupEntityResolver {
         @Parent() optionGroup: Translated<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOption>>> {
         if (optionGroup.options) {
-            return Promise.resolve(optionGroup.options);
+            return optionGroup.options;
         }
         const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id);
         return group ? group.options : [];

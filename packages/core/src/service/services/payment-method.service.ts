@@ -25,6 +25,7 @@ import { PaymentMethod } from '../../entity/payment-method/payment-method.entity
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentMethodEvent } from '../../event-bus/events/payment-method-event';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -45,6 +46,7 @@ export class PaymentMethodService {
         private eventBus: EventBus,
         private configArgService: ConfigArgService,
         private channelService: ChannelService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     findAll(
@@ -84,6 +86,7 @@ export class PaymentMethodService {
         const savedPaymentMethod = await this.connection
             .getRepository(ctx, PaymentMethod)
             .save(paymentMethod);
+        await this.customFieldRelationService.updateRelations(ctx, PaymentMethod, input, savedPaymentMethod);
         this.eventBus.publish(new PaymentMethodEvent(ctx, savedPaymentMethod, 'created', input));
         return savedPaymentMethod;
     }
@@ -103,7 +106,13 @@ export class PaymentMethodService {
         if (input.handler) {
             paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
         }
-        this.eventBus.publish(new PaymentMethodEvent(ctx, paymentMethod, 'updated', input));
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            PaymentMethod,
+            input,
+            updatedPaymentMethod,
+        );
+        this.eventBus.publish(new PaymentMethodEvent(ctx, updatedPaymentMethod, 'updated', input));
         return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
     }
 

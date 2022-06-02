@@ -24,6 +24,7 @@
                                     [attr.data-item-id]="section.id"
                                     [routerLink]="getRouterLink(item)"
                                     routerLinkActive="active"
+                                    (click)="item.onClick && item.onClick($event)"
                                 >
                                     <ng-container *ngIf="item.statusBadge | async as itemBadge">
                                         <vdr-status-badge

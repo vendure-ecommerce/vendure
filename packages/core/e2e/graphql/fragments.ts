@@ -191,6 +191,7 @@ export const COLLECTION_FRAGMENT = gql`
         children {
             id
             name
+            position
         }
     }
     ${ASSET_FRAGMENT}

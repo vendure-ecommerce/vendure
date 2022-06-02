@@ -19,6 +19,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
 import { FilterParameter, ListQueryOptions, SortParameter } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
+import { CustomFields } from '../../../config/index';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
@@ -216,12 +217,14 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
+        const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sort = parseSortParams(
             rawConnection,
             entity,
             Object.assign({}, options.sort, extendedOptions.orderBy),
             customPropertyMap,
             entityAlias,
+            customFieldsForType,
         );
         const filter = parseFilterParams(
             rawConnection,
@@ -262,6 +265,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         qb.orderBy(sort);
         this.optimizeGetManyAndCountMethod(qb, repo, extendedOptions, minimumRequiredRelations);
+        this.optimizeGetManyMethod(qb, repo, extendedOptions, minimumRequiredRelations);
         return qb;
     }
 
@@ -277,7 +281,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const rawConnection = this.connection.rawConnection;
         const skip = Math.max(options.skip ?? 0, 0);
         // `take` must not be negative, and must not be greater than takeLimit
-        let take = Math.min(Math.max(options.take ?? 0, 0), takeLimit) || takeLimit;
+        let take = options.take == null ? takeLimit : Math.min(Math.max(options.take, 0), takeLimit);
         if (options.skip !== undefined && options.take === undefined) {
             take = takeLimit;
         }
@@ -351,49 +355,86 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 // return the regular result.
                 return [entities, count];
             }
-            const entityMap = new Map(entities.map(e => [e.id, e]));
-            const entitiesIds = entities.map(({ id }) => id);
-
-            const splitRelations = relations.map(r => r.split('.'));
-            const groupedRelationsMap = new Map<string, string[]>();
-            for (const relationParts of splitRelations) {
-                const group = groupedRelationsMap.get(relationParts[0]);
-                if (group) {
-                    group.push(relationParts.join('.'));
-                } else {
-                    groupedRelationsMap.set(relationParts[0], [relationParts.join('.')]);
-                }
-            }
-
-            // If the extendedOptions includes relations that were already joined, then
-            // we ignore those now so as not to do the work of joining twice.
-            for (const tableName of alreadyJoined) {
-                if (groupedRelationsMap.get(tableName)?.length === 1) {
-                    groupedRelationsMap.delete(tableName);
-                }
-            }
-
-            const entitiesIdsWithRelations = await Promise.all(
-                Array.from(groupedRelationsMap.values())?.map(relationPaths => {
-                    return repo
-                        .findByIds(entitiesIds, {
-                            select: ['id'],
-                            relations: relationPaths,
-                            loadEagerRelations: false,
-                        })
-                        .then(results =>
-                            results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),
-                        );
-                }),
-            ).then(all => all.flat());
-            for (const entry of entitiesIdsWithRelations) {
-                const finalEntity = entityMap.get(entry.entity.id);
-                if (finalEntity) {
-                    finalEntity[entry.relation] = entry.entity[entry.relation];
-                }
-            }
-            return [Array.from(entityMap.values()), count];
+            const result = await this.parallelLoadRelations(entities, relations, alreadyJoined, repo);
+            return [result, count];
         };
+    }
+    /**
+     * @description
+     * This will monkey-patch the `getMany()` method in order to implement a more efficient
+     * parallel-query based approach to joining multiple relations. This is loosely based on the
+     * solution outlined here: https://github.com/typeorm/typeorm/issues/3857#issuecomment-633006643
+     *
+     * TODO: When upgrading to TypeORM v0.3+, this will likely become redundant due to the new
+     * `relationLoadStrategy` feature.
+     */
+    private optimizeGetManyMethod<T extends VendureEntity>(
+        qb: SelectQueryBuilder<T>,
+        repo: Repository<T>,
+        extendedOptions: ExtendedListQueryOptions<T>,
+        alreadyJoined: string[],
+    ) {
+        const originalGetMany = qb.getMany.bind(qb);
+        qb.getMany = async () => {
+            const relations = unique(extendedOptions.relations ?? []);
+            const entities = await originalGetMany();
+            if (relations == null || alreadyJoined.sort().join() === relations?.sort().join()) {
+                // No further relations need to be joined, so we just
+                // return the regular result.
+                return entities;
+            }
+            return this.parallelLoadRelations(entities, relations, alreadyJoined, repo);
+        };
+    }
+
+    private async parallelLoadRelations<T extends VendureEntity>(
+        entities: T[],
+        relations: string[],
+        alreadyJoined: string[],
+        repo: Repository<T>,
+    ): Promise<T[]> {
+        const entityMap = new Map(entities.map(e => [e.id, e]));
+        const entitiesIds = entities.map(({ id }) => id);
+
+        const splitRelations = relations.map(r => r.split('.'));
+        const groupedRelationsMap = new Map<string, string[]>();
+        for (const relationParts of splitRelations) {
+            const group = groupedRelationsMap.get(relationParts[0]);
+            if (group) {
+                group.push(relationParts.join('.'));
+            } else {
+                groupedRelationsMap.set(relationParts[0], [relationParts.join('.')]);
+            }
+        }
+
+        // If the extendedOptions includes relations that were already joined, then
+        // we ignore those now so as not to do the work of joining twice.
+        for (const tableName of alreadyJoined) {
+            if (groupedRelationsMap.get(tableName)?.length === 1) {
+                groupedRelationsMap.delete(tableName);
+            }
+        }
+
+        const entitiesIdsWithRelations = await Promise.all(
+            Array.from(groupedRelationsMap.values())?.map(relationPaths => {
+                return repo
+                    .findByIds(entitiesIds, {
+                        select: ['id'],
+                        relations: relationPaths,
+                        loadEagerRelations: false,
+                    })
+                    .then(results =>
+                        results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),
+                    );
+            }),
+        ).then(all => all.flat());
+        for (const entry of entitiesIdsWithRelations) {
+            const finalEntity = entityMap.get(entry.entity.id);
+            if (finalEntity) {
+                finalEntity[entry.relation] = entry.entity[entry.relation];
+            }
+        }
+        return Array.from(entityMap.values());
     }
 
     /**

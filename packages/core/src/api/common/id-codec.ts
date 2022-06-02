@@ -66,7 +66,13 @@ export class IdCodec {
 
         if (Array.isArray(target)) {
             (target as any) = target.slice(0);
-            if (target.length === 0 || typeof target[0] === 'string' || typeof target[0] === 'number') {
+            if (
+                target.length === 0 ||
+                typeof target[0] === 'string' ||
+                typeof target[0] === 'number' ||
+                typeof target[0] === 'boolean' ||
+                target[0] == null
+            ) {
                 return target;
             }
             const isSimpleObject = this.isSimpleObject(target[0]);
@@ -97,7 +103,7 @@ export class IdCodec {
     }
 
     private transform<T>(target: T, transformFn: (input: any) => ID, transformKeys?: string[]): T {
-        if (target == null) {
+        if (target == null || !this.isObject(target) || Array.isArray(target)) {
             return target;
         }
         const clone = Object.assign({}, target);

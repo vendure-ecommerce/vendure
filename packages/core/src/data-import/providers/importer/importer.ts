@@ -313,7 +313,10 @@ export class Importer {
             if (cachedFacet) {
                 facetEntity = cachedFacet;
             } else {
-                const existing = await this.facetService.findByCode(normalizeString(facetName), languageCode);
+                const existing = await this.facetService.findByCode(
+                    normalizeString(facetName, '-'),
+                    languageCode,
+                );
                 if (existing) {
                     facetEntity = existing;
                 } else {
