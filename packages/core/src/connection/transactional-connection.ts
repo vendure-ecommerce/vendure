@@ -7,7 +7,6 @@ import {
     EntitySchema,
     FindOneOptions,
     FindOptionsUtils,
-    getRepository,
     ObjectType,
     Repository,
 } from 'typeorm';
@@ -55,6 +54,8 @@ export class TransactionalConnection {
      * Returns a TypeORM repository. Note that when no RequestContext is supplied, the repository will not
      * be aware of any existing transaction. Therefore calling this method without supplying a RequestContext
      * is discouraged without a deliberate reason.
+     * 
+     * @deprecated since 1.6.3: Use {@link TransactionalConnection.getOuterRepository getOuterRepository()} function instead.
      */
     getRepository<Entity>(target: ObjectType<Entity> | EntitySchema<Entity> | string): Repository<Entity>;
     /**
@@ -78,12 +79,26 @@ export class TransactionalConnection {
                 return transactionManager.getRepository(maybeTarget!);
             } else {
                 // tslint:disable-next-line:no-non-null-assertion
-                return getRepository(maybeTarget!);
+                return this.getOuterRepository(maybeTarget!);
             }
         } else {
             // tslint:disable-next-line:no-non-null-assertion
-            return getRepository(ctxOrTarget ?? maybeTarget!);
+            return this.getOuterRepository(ctxOrTarget ?? maybeTarget!);
         }
+    }
+
+    /**
+     * @description
+     * Returns a TypeORM repository, which is not aware of any existing transaction. 
+     * Therefore calling this method is discouraged without a deliberate reason.
+     * It's recommended to use {@link TransactionalConnection.getRepository getRepository(ctx, Entity)} instead.
+     * 
+     * @since 1.6.3
+     */
+    getOuterRepository<Entity>(
+        target: ObjectType<Entity> | EntitySchema<Entity> | string
+    ): Repository<Entity> {
+        return this.rawConnection.getRepository(target);
     }
 
     /**
