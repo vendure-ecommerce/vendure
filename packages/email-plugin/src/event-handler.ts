@@ -37,11 +37,17 @@ import {
  * This example creates a handler which listens for the `OrderStateTransitionEvent` and if the Order has
  * transitioned to the `'PaymentSettled'` state, it will generate and send an email.
  *
+ * The string argument passed into the `EmailEventListener` constructor is used to identify the handler, and
+ * also to locate the directory of the email template files. So in the example above, there should be a directory
+ * `<app root>/static/email/templates/order-confirmation` which contains a Handlebars template named `body.hbs`.
+ *
  * ## Handling other languages
  *
  * By default, the handler will respond to all events on all channels and use the same subject ("Order confirmation for #12345" above)
  * and body template. Where the server is intended to support multiple languages, the `.addTemplate()` method may be used
- * to defined the subject and body template for specific language and channel combinations.
+ * to define the subject and body template for specific language and channel combinations.
+ *
+ * The language is determined by looking at the `languageCode` property of the event's `ctx` ({@link RequestContext}) object.
  *
  * @example
  * ```ts
@@ -52,6 +58,72 @@ import {
  *     templateFile: 'body.de.hbs',
  *     subject: 'Bestellbestätigung für #{{ order.code }}',
  *   })
+ * ```
+ *
+ * ## Defining a custom handler
+ *
+ * Let's say you have a plugin which defines a new event type, `QuoteRequestedEvent`. In your plugin you have defined a mutation
+ * which is executed when the customer requests a quote in your storefront, and in your resolver, you use the {@link EventBus} to publish a
+ * new `QuoteRequestedEvent`.
+ *
+ * You now want to email the customer with their quote. Here are the steps you would take to set this up:
+ *
+ * ### 1. Create a new handler
+ *
+ * ```TypeScript
+ * import { EmailEventListener } from `\@vendure/email-plugin`;
+ * import { QuoteRequestedEvent } from `./events`;
+ *
+ * const quoteRequestedHandler = new EmailEventListener('quote-requested')
+ *   .on(QuoteRequestedEvent)
+ *   .setRecipient(event => event.customer.emailAddress)
+ *   .setSubject(`Here's the quote you requested`)
+ *   .setTemplateVars(event => ({ details: event.details }));
+ * ```
+ *
+ * ### 2. Create the email template
+ *
+ * Next you need to make sure there is a template defined at `<app root>/static/email/templates/quote-requested/body.hbs`. The template
+ * would look something like this:
+ *
+ * ```handlebars
+ * {{> header title="Here's the quote you requested" }}
+ *
+ * <mj-section background-color="#fafafa">
+ *     <mj-column>
+ *         <mj-text color="#525252">
+ *             Thank you for your interest in our products! Here's the details
+ *             of the quote you recently requested:
+ *         </mj-text>
+ *
+ *         <--! your custom email layout goes here -->
+ *     </mj-column>
+ * </mj-section>
+ *
+ *
+ * {{> footer }}
+ * ```
+ *
+ * You can find pre-made templates on the [MJML website](https://mjml.io/templates/).
+ *
+ * ### 3. Register the handler
+ *
+ * Finally, you need to register the handler with the EmailPlugin:
+ *
+ * ```TypeScript {hl_lines=[8]}
+ * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { quoteRequestedHandler } from './plugins/quote-plugin';
+ *
+ * const config: VendureConfig = {
+ *   // Add an instance of the plugin to the plugins array
+ *   plugins: [
+ *     EmailPlugin.init({
+ *       handlers: [...defaultEmailHandlers, quoteRequestedHandler],
+ *       templatePath: path.join(__dirname, 'vendure/email/templates'),
+ *       // ... etc
+ *     }),
+ *   ],
+ * };
  * ```
  *
  * @docsCategory EmailPlugin
@@ -348,7 +420,7 @@ export class EmailEventHandlerWithAsyncData<
     Data,
     T extends string = string,
     InputEvent extends EventWithContext = EventWithContext,
-    Event extends EventWithAsyncData<InputEvent, Data> = EventWithAsyncData<InputEvent, Data>
+    Event extends EventWithAsyncData<InputEvent, Data> = EventWithAsyncData<InputEvent, Data>,
 > extends EmailEventHandler<T, Event> {
     constructor(
         public _loadDataFn: LoadDataFn<InputEvent, Data>,
