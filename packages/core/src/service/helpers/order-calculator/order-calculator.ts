@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { filterAsync } from '@vendure/common/lib/filter-async';
-import { AdjustmentType } from '@vendure/common/lib/generated-types';
+import { AdjustmentType, CreateAddressInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -8,14 +8,17 @@ import { InternalServerError } from '../../../common/error/errors';
 import { netPriceOf } from '../../../common/tax-utils';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
+import { OrderItem, OrderLine, ProductVariant, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
+import { CustomerService } from '../../services/customer.service';
+import { OrderService } from '../../services/order.service';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
+import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 
 import { prorate } from './prorate';
@@ -29,6 +32,9 @@ export class OrderCalculator {
         private shippingMethodService: ShippingMethodService,
         private shippingCalculator: ShippingCalculator,
         private requestContextCache: RequestContextCacheService,
+        private orderService: OrderService,
+        private customerService: CustomerService,
+        private productPriceApplicator: ProductPriceApplicator,
     ) {}
 
     /**
@@ -451,5 +457,107 @@ export class OrderCalculator {
 
         order.shipping = shippingPrice;
         order.shippingWithTax = shippingPriceWithTax;
+    }
+
+    /**
+     * @description adds the variant to a new order based on `initialOrder` and applies all `promotions`,
+     *
+     * if no `initialOrder` is supplied, it is based on the users active order
+     */
+    public async applyVariantPromotions(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        promotions: Promotion[],
+        quantity = 1,
+        initialOrder?: Order,
+    ) {
+        const customerId = initialOrder?.customer?.id ?? ctx.activeUserId;
+        if (!customerId)
+            // FIXME use the appropriate Error type, instead of generic Error
+            throw new Error('no active user or order customer');
+
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
+        if (!orderItemPriceCalculationStrategy)
+            // FIXME use correct Error type
+            throw new Error('no item price calculation strategy found');
+
+        let order: Order;
+        if (initialOrder) {
+            order = new Order(initialOrder);
+        } else if (ctx.session?.activeOrderId) {
+            const found = await this.orderService.findOne(ctx, ctx.session?.activeOrderId);
+            order = new Order(found);
+        } else {
+            order = new Order();
+        }
+        order.lines ??= [];
+        order.surcharges ??= [];
+        order.modifications ??= [];
+
+        if (!order.customer) {
+            order.customer = await this.customerService.findOne(ctx, customerId);
+        }
+
+        if (!order.shippingAddress) {
+            const addrs = await this.customerService.findAddressesByCustomerId(ctx, customerId);
+            // FIXME use correct Error type
+            if (addrs.length === 0) throw new Error(`no Address for Customer ${customerId} found`);
+
+            const shippingAddress = addrs.find(x => x.defaultShippingAddress) ?? addrs[0];
+            const billingAddress = addrs.find(x => x.defaultBillingAddress) ?? addrs[0];
+
+            order.shippingAddress = {
+                ...shippingAddress,
+                countryCode: shippingAddress.country.code,
+            } as CreateAddressInput;
+            order.billingAddress = {
+                ...billingAddress,
+                countryCode: billingAddress.country.code,
+            } as CreateAddressInput;
+        }
+
+        const adjustedVariant = await this.productPriceApplicator.applyChannelPriceAndTax(
+            variant,
+            ctx,
+            order,
+        );
+        const orderLine = new OrderLine({
+            productVariant: variant,
+            items: [],
+            taxCategory: variant.taxCategory,
+        });
+
+        const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+            ctx,
+            adjustedVariant,
+            {},
+        );
+        const taxRate = adjustedVariant.taxRateApplied;
+        const unitPrice = priceIncludesTax ? taxRate.netPriceOf(price) : price;
+
+        for (let i = 0; i < quantity; i++) {
+            const orderItem = new OrderItem({
+                id: adjustedVariant.id,
+                listPrice: price,
+                listPriceIncludesTax: priceIncludesTax,
+                adjustments: [],
+                taxLines: [],
+            });
+            orderLine.items.push(orderItem);
+        }
+
+        order.shippingLines = [
+            new ShippingLine({
+                listPrice: 0,
+                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                taxLines: [],
+                adjustments: [],
+            }),
+        ];
+
+        order.lines.push(orderLine);
+        const adjustedItems = await this.applyPriceAdjustments(ctx, order, promotions);
+        const item = adjustedItems[0];
+        return item.discountedUnitPrice;
     }
 }
