@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { filterAsync } from '@vendure/common/lib/filter-async';
-import { AdjustmentType, CreateAddressInput } from '@vendure/common/lib/generated-types';
+import { AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -8,17 +8,14 @@ import { InternalServerError } from '../../../common/error/errors';
 import { netPriceOf } from '../../../common/tax-utils';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderItem, OrderLine, ProductVariant, TaxCategory, TaxRate } from '../../../entity';
+import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
-import { CustomerService } from '../../services/customer.service';
-import { OrderService } from '../../services/order.service';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
-import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 
 import { prorate } from './prorate';
