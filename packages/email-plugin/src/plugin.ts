@@ -27,8 +27,21 @@ import {
 
 /**
  * @description
- * The EmailPlugin creates and sends transactional emails based on Vendure events. By default it uses an [MJML](https://mjml.io/)-based
+ * The EmailPlugin creates and sends transactional emails based on Vendure events. By default, it uses an [MJML](https://mjml.io/)-based
  * email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
+ *
+ * ## High-level description
+ * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events. The EmailPlugin is configured with
+ * {@link EmailEventHandler}s that listen for a specific event and when it is published, the handler defines which template to use to generate
+ * the resulting email.
+ *
+ * The plugin comes with a set of default handlers for the following events:
+ * - Order confirmation
+ * - New customer email address verification
+ * - Password reset request
+ * - Email address change request
+ *
+ * You can also create your own handlers and register them with the plugin - see the {@link EmailEventHandler} docs for more details.
  *
  * ## Installation
  *
@@ -47,7 +60,7 @@ import {
  *   plugins: [
  *     EmailPlugin.init({
  *       handlers: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'vendure/email/templates'),
+ *       templatePath: path.join(__dirname, 'static/email/templates'),
  *       transport: {
  *         type: 'smtp',
  *         host: 'smtp.example.com',
@@ -64,7 +77,7 @@ import {
  *
  * ## Email templates
  *
- * In the example above, the plugin has been configured to look in `<app-root>/vendure/email/templates`
+ * In the example above, the plugin has been configured to look in `<app-root>/static/email/templates`
  * for the email template files. If you used `\@vendure/create` to create your application, the templates will have
  * been copied to that location during setup.
  *

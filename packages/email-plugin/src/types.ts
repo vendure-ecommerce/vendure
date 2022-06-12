@@ -50,7 +50,7 @@ export interface EmailPluginOptions {
      * An array of {@link EmailEventHandler}s which define which Vendure events will trigger
      * emails, and how those emails are generated.
      */
-    handlers: EmailEventHandler[];
+    handlers: Array<EmailEventHandler<string, any>>;
     /**
      * @description
      * An object containing variables which are made available to all templates. For example,
