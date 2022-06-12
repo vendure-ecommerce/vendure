@@ -44,7 +44,7 @@ export class DevMailbox {
                     await this.handleMockEventFn(handler, {
                         ...handler.mockEvent,
                         ctx: this.createRequestContext(languageCode as LanguageCode),
-                    });
+                    } as EventWithContext);
                     res.send({ success: true });
                 } catch (e) {
                     res.statusCode = 500;
