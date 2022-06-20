@@ -3,10 +3,11 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { Observable, Subject } from 'rxjs';
 import { filter, mergeMap, takeUntil } from 'rxjs/operators';
 import { EntityManager } from 'typeorm';
+import { notNullOrUndefined } from '../../../common/lib/shared-utils';
 
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
-import { TransactionSubscriber } from '../connection/transaction-subscriber';
+import { TransactionSubscriber, TransactionSubscriberError } from '../connection/transaction-subscriber';
 
 import { VendureEvent } from './vendure-event';
 
@@ -82,6 +83,7 @@ export class EventBus implements OnModuleDestroy {
             takeUntil(this.destroy$),
             filter(e => (e as any).constructor === type),
             mergeMap(event => this.awaitActiveTransactions(event)),
+            filter(notNullOrUndefined)
         ) as Observable<T>;
     }
 
@@ -109,7 +111,7 @@ export class EventBus implements OnModuleDestroy {
      * * https://github.com/vendure-ecommerce/vendure/issues/520
      * * https://github.com/vendure-ecommerce/vendure/issues/1107
      */
-    private async awaitActiveTransactions<T extends VendureEvent>(event: T): Promise<T> {
+    private async awaitActiveTransactions<T extends VendureEvent>(event: T): Promise<T | undefined> {
         const entry = Object.entries(event).find(([_, value]) => value instanceof RequestContext);
 
         if (!entry) {
@@ -123,7 +125,9 @@ export class EventBus implements OnModuleDestroy {
             return event;
         }
 
-        return this.transactionSubscriber.awaitCommit(transactionManager.queryRunner).then(() => {
+        try {
+            await this.transactionSubscriber.awaitCommit(transactionManager.queryRunner);
+
             // Copy context and remove transaction manager
             // This will prevent queries to released query runner
             const newContext = ctx.copy();
@@ -133,6 +137,15 @@ export class EventBus implements OnModuleDestroy {
             (event as any)[key] = newContext
 
             return event;
-        });
+        } catch (e: any) {
+            if (e instanceof TransactionSubscriberError) {
+                // Expected commit, but rollback or something else happened.
+                // This is still reliable behavior, return undefined
+                // as event should not be exposed from this transaction
+                return;
+            }
+
+            throw e;
+        }
     }
 }
