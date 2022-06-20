@@ -1,14 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { merge, Subject } from 'rxjs';
-import { delay, filter, map, take } from 'rxjs/operators';
+import { merge, ObservableInput, Subject } from 'rxjs';
+import { delay, filter, map, take, tap } from 'rxjs/operators';
 import { Connection, EntitySubscriberInterface } from 'typeorm';
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
 import { QueryRunner } from 'typeorm/query-runner/QueryRunner';
 import { TransactionCommitEvent } from 'typeorm/subscriber/event/TransactionCommitEvent';
 import { TransactionRollbackEvent } from 'typeorm/subscriber/event/TransactionRollbackEvent';
 
+/**
+ * This error should be thrown by an event subscription if types do not match
+ * 
+ * @internal
+ */
+export class TransactionSubscriberError extends Error {}
+
+export type TransactionSubscriberEventType = 'commit' | 'rollback';
+
 export interface TransactionSubscriberEvent {
+    /**
+     * Event type. Either commit or rollback.
+     */
+    type: TransactionSubscriberEventType;
+
     /**
      * Connection used in the event.
      */
@@ -34,8 +48,7 @@ export interface TransactionSubscriberEvent {
  */
 @Injectable()
 export class TransactionSubscriber implements EntitySubscriberInterface {
-    private commit$ = new Subject<TransactionSubscriberEvent>();
-    private rollback$ = new Subject<TransactionSubscriberEvent>();
+    private subject$ = new Subject<TransactionSubscriberEvent>();
 
     constructor(@InjectConnection() private connection: Connection) {
         if (!connection.subscribers.find(subscriber => subscriber.constructor === TransactionSubscriber)) {
@@ -44,19 +57,47 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
     }
 
     afterTransactionCommit(event: TransactionCommitEvent) {
-        this.commit$.next(event);
+        this.subject$.next({
+            type: 'commit',
+            ...event,
+        });
     }
 
     afterTransactionRollback(event: TransactionRollbackEvent) {
-        this.rollback$.next(event);
+        this.subject$.next({
+            type: 'rollback',
+            ...event,
+        });
+    }
+
+    awaitCommit(queryRunner: QueryRunner): Promise<QueryRunner> {
+        return this.awaitTransactionEvent(queryRunner, 'commit');
+    }
+
+    awaitRollback(queryRunner: QueryRunner): Promise<QueryRunner> {
+        return this.awaitTransactionEvent(queryRunner, 'rollback');
     }
 
     awaitRelease(queryRunner: QueryRunner): Promise<QueryRunner> {
+        return this.awaitTransactionEvent(queryRunner);
+    }
+
+    private awaitTransactionEvent(
+        queryRunner: QueryRunner,
+        type?: TransactionSubscriberEventType,
+    ): Promise<QueryRunner> {
         if (queryRunner.isTransactionActive) {
-            return merge(this.commit$, this.rollback$)
+            return this.subject$
                 .pipe(
-                    filter(event => event.queryRunner === queryRunner),
+                    filter(
+                        event => !event.queryRunner.isTransactionActive && event.queryRunner === queryRunner,
+                    ),
                     take(1),
+                    tap(event => {
+                        if (type && event.type !== type) {
+                            throw new TransactionSubscriberError(`Unexpected event type: ${event.type}. Expected ${type}.`);
+                        }
+                    }),
                     map(event => event.queryRunner),
                     // This `delay(0)` call appears to be necessary with the upgrade to TypeORM
                     // v0.2.41, otherwise an active queryRunner can still get picked up in an event
