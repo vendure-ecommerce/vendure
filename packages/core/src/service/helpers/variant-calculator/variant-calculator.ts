@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateAddressInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api';
+import { InternalServerError } from '../../../common';
 import { ConfigService } from '../../../config';
 import { Order, OrderItem, OrderLine, ProductVariant, Promotion, ShippingLine } from '../../../entity';
 import { CustomerService } from '../../services/customer.service';
@@ -32,21 +33,20 @@ export class VariantCalculator {
         initialOrder?: Order,
     ) {
         const customerId = initialOrder?.customer?.id ?? ctx.activeUserId;
-        if (!customerId)
-            // FIXME use the appropriate Error type, instead of generic Error
-            throw new Error('no active user or order customer');
+        if (!customerId) {
+            throw new InternalServerError('no active user or order customer');
+        }
 
         const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
-        if (!orderItemPriceCalculationStrategy)
-            // FIXME use correct Error type
-            throw new Error('no item price calculation strategy found');
+        if (!orderItemPriceCalculationStrategy) {
+            throw new InternalServerError('no item price calculation strategy found');
+        }
 
         let order: Order;
         if (initialOrder) {
             order = new Order(initialOrder);
         } else if (ctx.session?.activeOrderId) {
-            const found = await this.orderService.findOne(ctx, ctx.session?.activeOrderId);
-            order = new Order(found);
+            order = (await this.orderService.findOne(ctx, ctx.session?.activeOrderId)) ?? new Order();
         } else {
             order = new Order();
         }
