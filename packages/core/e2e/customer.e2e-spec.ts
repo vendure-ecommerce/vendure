@@ -237,7 +237,7 @@ describe('Customer resolver', () => {
             expect(result1.updateCustomerAddress.defaultShippingAddress).toBe(true);
             expect(result1.updateCustomerAddress.defaultBillingAddress).toBe(true);
 
-            // assert the first customer's other addresse is not default
+            // assert the first customer's other address is not default
             const result2 = await adminClient.query<
                 Codegen.GetCustomerQuery,
                 Codegen.GetCustomerQueryVariables
@@ -307,10 +307,16 @@ describe('Customer resolver', () => {
             >(GET_CUSTOMER, {
                 id: firstCustomer.id,
             });
-            expect(result7.customer!.addresses![0].defaultShippingAddress).toBe(true);
-            expect(result7.customer!.addresses![0].defaultBillingAddress).toBe(true);
-            expect(result7.customer!.addresses![1].defaultShippingAddress).toBe(false);
-            expect(result7.customer!.addresses![1].defaultBillingAddress).toBe(false);
+            const firstCustomerFirstAddress = result7.customer!.addresses!.find(
+                a => a.id === firstCustomerAddressIds[0],
+            )!;
+            const firstCustomerSecondAddress = result7.customer!.addresses!.find(
+                a => a.id === firstCustomerAddressIds[1],
+            )!;
+            expect(firstCustomerFirstAddress.defaultShippingAddress).toBe(true);
+            expect(firstCustomerFirstAddress.defaultBillingAddress).toBe(true);
+            expect(firstCustomerSecondAddress.defaultShippingAddress).toBe(false);
+            expect(firstCustomerSecondAddress.defaultBillingAddress).toBe(false);
         });
 
         it('createCustomerAddress with true defaults unsets existing defaults', async () => {
