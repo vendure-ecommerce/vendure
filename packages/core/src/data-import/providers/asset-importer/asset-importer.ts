@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import fs from 'fs-extra';
 import path from 'path';
 
 import { RequestContext } from '../../../api/index';
+import { isGraphQlErrorResult } from '../../../common/index';
 import { ConfigService } from '../../../config/config.service';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { AssetService } from '../../../service/services/asset.service';
@@ -33,32 +33,26 @@ export class AssetImporter {
     ): Promise<{ assets: Asset[]; errors: string[] }> {
         const assets: Asset[] = [];
         const errors: string[] = [];
-        const { importAssetsDir } = this.configService.importExportOptions;
+        const { assetImportStrategy } = this.configService.importExportOptions;
         const uniqueAssetPaths = new Set(assetPaths);
         for (const assetPath of uniqueAssetPaths.values()) {
             const cachedAsset = this.assetMap.get(assetPath);
             if (cachedAsset) {
                 assets.push(cachedAsset);
             } else {
-                const filename = path.join(importAssetsDir, assetPath);
-
-                if (fs.existsSync(filename)) {
-                    const fileStat = fs.statSync(filename);
-                    if (fileStat.isFile()) {
-                        try {
-                            const stream = fs.createReadStream(filename);
-                            const asset = (await this.assetService.createFromFileStream(
-                                stream,
-                                ctx,
-                            )) as Asset;
-                            this.assetMap.set(assetPath, asset);
-                            assets.push(asset);
-                        } catch (err: any) {
-                            errors.push(err.toString());
+                try {
+                    const stream = await assetImportStrategy.getStreamFromPath(assetPath);
+                    if (stream) {
+                        const asset = await this.assetService.createFromFileStream(stream, assetPath, ctx);
+                        if (isGraphQlErrorResult(asset)) {
+                            errors.push(asset.message);
+                        } else {
+                            this.assetMap.set(assetPath, asset as Asset);
+                            assets.push(asset as Asset);
                         }
                     }
-                } else {
-                    errors.push(`File "${filename}" does not exist`);
+                } catch (e: any) {
+                    errors.push(e.message);
                 }
             }
         }

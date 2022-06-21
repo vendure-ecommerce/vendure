@@ -23,6 +23,7 @@ export class TestEvent extends VendureEvent {
     }
 }
 
+export const TRIGGER_NO_OPERATION = 'trigger-no-operation';
 export const TRIGGER_ATTEMPTED_UPDATE_EMAIL = 'trigger-attempted-update-email';
 export const TRIGGER_ATTEMPTED_READ_EMAIL = 'trigger-attempted-read-email';
 
@@ -48,7 +49,7 @@ class TestUserService {
         );
 
         return this.connection.getRepository(ctx, User).findOne({
-            where: { identifier }
+            where: { identifier },
         });
     }
 }
@@ -143,21 +144,30 @@ class TestResolver {
     async createNTestAdministrators(@Ctx() ctx: RequestContext, @Args() args: any) {
         let error: any;
 
-        const promises: Promise<any>[] = []
+        const promises: Promise<any>[] = [];
         for (let i = 0; i < args.n; i++) {
             promises.push(
-                new Promise(resolve => setTimeout(resolve, i * 10)).then(() =>
-                    this.testAdminService.createAdministrator(ctx, `${args.emailAddress}${i}`, i < args.n * args.failFactor)
-                )
-            )
+                new Promise(resolve => setTimeout(resolve, i * 10))
+                    .then(() =>
+                        this.testAdminService.createAdministrator(
+                            ctx,
+                            `${args.emailAddress}${i}`,
+                            i < args.n * args.failFactor,
+                        ),
+                    )
+                    .then(admin => {
+                        this.eventBus.publish(new TestEvent(ctx, admin));
+                        return admin;
+                    }),
+            );
         }
 
         const result = await Promise.all(promises).catch((e: any) => {
             error = e;
-        })
+        });
 
-        await this.allSettled(promises)
-    
+        await this.allSettled(promises);
+
         if (error) {
             throw error;
         }
@@ -169,25 +179,63 @@ class TestResolver {
     async createNTestAdministrators2(@Ctx() ctx: RequestContext, @Args() args: any) {
         let error: any;
 
-        const promises: Promise<any>[] = []
-        const result = await this.connection.withTransaction(ctx, _ctx => {
-            for (let i = 0; i < args.n; i++) {
-                promises.push(
-                    new Promise(resolve => setTimeout(resolve, i * 10)).then(() =>
-                        this.testAdminService.createAdministrator(_ctx, `${args.emailAddress}${i}`, i < args.n * args.failFactor)
-                    )
-                )
-            }
+        const promises: Promise<any>[] = [];
+        const result = await this.connection
+            .withTransaction(ctx, _ctx => {
+                for (let i = 0; i < args.n; i++) {
+                    promises.push(
+                        new Promise(resolve => setTimeout(resolve, i * 10)).then(() =>
+                            this.testAdminService.createAdministrator(
+                                _ctx,
+                                `${args.emailAddress}${i}`,
+                                i < args.n * args.failFactor,
+                            ),
+                        ),
+                    );
+                }
 
-            return Promise.all(promises);
-        }).catch((e: any) => {
-            error = e;
-        })
+                return Promise.all(promises);
+            })
+            .catch((e: any) => {
+                error = e;
+            });
 
-        await this.allSettled(promises)
-    
+        await this.allSettled(promises);
+
         if (error) {
             throw error;
+        }
+
+        return result;
+    }
+
+    @Mutation()
+    @Transaction()
+    async createNTestAdministrators3(@Ctx() ctx: RequestContext, @Args() args: any) {
+        const result: any[] = [];
+
+        const admin = await this.testAdminService.createAdministrator(
+            ctx,
+            `${args.emailAddress}${args.n}`,
+            args.failFactor >= 1,
+        );
+
+        result.push(admin);
+
+        if (args.n > 0) {
+            try {
+                const admins = await this.connection.withTransaction(ctx, _ctx =>
+                    this.createNTestAdministrators3(_ctx, {
+                        ...args,
+                        n: args.n - 1,
+                        failFactor: (args.n * args.failFactor) / (args.n - 1),
+                    }),
+                );
+
+                result.push(...admins);
+            } catch (e) {
+                /* */
+            }
         }
 
         return result;
@@ -205,20 +253,22 @@ class TestResolver {
 
     // Promise.allSettled polyfill
     // Same as Promise.all but waits until all promises will be fulfilled or rejected.
-    private allSettled<T>(promises: Promise<T>[]): Promise<({status: 'fulfilled', value: T} | { status: 'rejected', reason: any})[]> {
+    private allSettled<T>(
+        promises: Promise<T>[],
+    ): Promise<({ status: 'fulfilled'; value: T } | { status: 'rejected'; reason: any })[]> {
         return Promise.all(
             promises.map((promise, i) =>
-              promise
-                .then(value => ({
-                  status: "fulfilled" as const,
-                  value,
-                }))
-                .catch(reason => ({
-                  status: "rejected" as const,
-                  reason,
-                }))
-            )
-          );
+                promise
+                    .then(value => ({
+                        status: 'fulfilled' as const,
+                        value,
+                    }))
+                    .catch(reason => ({
+                        status: 'rejected' as const,
+                        reason,
+                    })),
+            ),
+        );
     }
 }
 
@@ -239,6 +289,7 @@ class TestResolver {
                 ): Administrator
                 createNTestAdministrators(emailAddress: String!, failFactor: Float!, n: Int!): JSON
                 createNTestAdministrators2(emailAddress: String!, failFactor: Float!, n: Int!): JSON
+                createNTestAdministrators3(emailAddress: String!, failFactor: Float!, n: Int!): JSON
             }
             type VerifyResult {
                 admins: [Administrator!]!
@@ -253,6 +304,7 @@ class TestResolver {
 })
 export class TransactionTestPlugin implements OnApplicationBootstrap {
     private subscription: Subscription;
+    static callHandler = jest.fn();
     static errorHandler = jest.fn();
     static eventHandlerComplete$ = new ReplaySubject(1);
 
@@ -260,6 +312,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
 
     static reset() {
         this.eventHandlerComplete$ = new ReplaySubject(1);
+        this.callHandler.mockClear();
         this.errorHandler.mockClear();
     }
 
@@ -268,7 +321,13 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
         // when used in an Event subscription
         this.subscription = this.eventBus.ofType(TestEvent).subscribe(async event => {
             const { ctx, administrator } = event;
-            if (administrator.emailAddress === TRIGGER_ATTEMPTED_UPDATE_EMAIL) {
+
+            if (administrator.emailAddress?.includes(TRIGGER_NO_OPERATION)) {
+                TransactionTestPlugin.callHandler();
+                TransactionTestPlugin.eventHandlerComplete$.complete();
+            }
+            if (administrator.emailAddress?.includes(TRIGGER_ATTEMPTED_UPDATE_EMAIL)) {
+                TransactionTestPlugin.callHandler();
                 const adminRepository = this.connection.getRepository(ctx, Administrator);
                 await new Promise(resolve => setTimeout(resolve, 50));
                 administrator.lastName = 'modified';
@@ -280,7 +339,8 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
                     TransactionTestPlugin.eventHandlerComplete$.complete();
                 }
             }
-            if (administrator.emailAddress === TRIGGER_ATTEMPTED_READ_EMAIL) {
+            if (administrator.emailAddress?.includes(TRIGGER_ATTEMPTED_READ_EMAIL)) {
+                TransactionTestPlugin.callHandler();
                 // note the ctx is not passed here, so we are not inside the ongoing transaction
                 const adminRepository = this.connection.getRepository(Administrator);
                 try {

@@ -9,6 +9,7 @@ import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 
+import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
@@ -148,6 +149,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     importExportOptions: {
         importAssetsDir: __dirname,
+        assetImportStrategy: new DefaultAssetImportStrategy(),
     },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),

@@ -1,6 +1,6 @@
 import { from, lastValueFrom, Observable, of } from 'rxjs';
 import { retryWhen, take, tap } from 'rxjs/operators';
-import { Connection, QueryRunner } from 'typeorm';
+import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
 
 import { RequestContext } from '../api/common/request-context';
@@ -32,14 +32,9 @@ export class TransactionWrapper {
         // Copy to make sure original context will remain valid after transaction completes
         const ctx = originalCtx.copy();
 
-        const queryRunnerExists = !!(ctx as any)[TRANSACTION_MANAGER_KEY];
-        if (queryRunnerExists) {
-            // If a QueryRunner already exists on the RequestContext, there must be an existing
-            // outer transaction in progress. In that case, we just execute the work function
-            // as usual without needing to further wrap in a transaction.
-            return lastValueFrom(from(work(ctx)));
-        }
-        const queryRunner = connection.createQueryRunner();
+        const entityManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
+        const queryRunner = entityManager?.queryRunner || connection.createQueryRunner();
+
         if (mode === 'auto') {
             await this.startTransaction(queryRunner);
         }
@@ -71,7 +66,11 @@ export class TransactionWrapper {
             }
             throw error;
         } finally {
-            if (queryRunner?.isReleased === false) {
+            if (!queryRunner.isTransactionActive
+                && queryRunner.isReleased === false) {
+                // There is a check for an active transaction
+                // because this could be a nested transaction (savepoint).
+
                 await queryRunner.release();
             }
         }

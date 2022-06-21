@@ -35,7 +35,7 @@ Here's an explanation of each column:
 * `name`: The name of the product. Rows with an empty "name" are interpreted as variants of the preceeding product row.
 * `slug`: The product's slug. Can be omitted, in which case will be generated from the name.
 * `description`: The product description.
-* `assets`: One or more asset file names separated by the pipe (`|`) character. The files must be located on the local file system, and the path is interpreted as being relative to the [`importAssetsDir`]({{< relref "/docs/typescript-api/import-export/import-export-options" >}}#importassetsdir) as defined in the VendureConfig. The first asset will be set as the featuredAsset.
+* `assets`: One or more asset file names separated by the pipe (`|`) character. The files can be located on the local file system, in which case the path is interpreted as being relative to the [`importAssetsDir`]({{< relref "/docs/typescript-api/import-export/import-export-options" >}}#importassetsdir) as defined in the VendureConfig. Files can also be urls which will be fetched from a remote http/https url. If you need more control over how assets are imported, you can implement a custom [AssetImportStrategy]({{< relref "asset-import-strategy" >}}). The first asset will be set as the featuredAsset.
 * `facets`: One or more facets to apply to the product separated by the pipe (`|`) character. A facet has the format `<facet-name>:<facet-value>`.
 * `optionGroups`: OptionGroups define what variants make up the product. Applies only to products with more than one variant. 
 * `optionValues`: For each optionGroup defined, a corresponding value must be specified for each variant. Applies only to products with more than one variant.

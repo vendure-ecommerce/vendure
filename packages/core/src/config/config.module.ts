@@ -83,6 +83,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
         const { healthChecks } = this.configService.systemOptions;
+        const { assetImportStrategy } = this.configService.importExportOptions;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
@@ -109,6 +110,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockAllocationStrategy,
             stockDisplayStrategy,
             ...healthChecks,
+            assetImportStrategy,
         ];
     }
 

@@ -11,15 +11,14 @@ import {
     TransactionTestPlugin,
     TRIGGER_ATTEMPTED_READ_EMAIL,
     TRIGGER_ATTEMPTED_UPDATE_EMAIL,
+    TRIGGER_NO_OPERATION,
 } from './fixtures/test-plugins/transaction-test-plugin';
 
 type DBType = 'mysql' | 'postgres' | 'sqlite' | 'sqljs';
 
 const itIfDb = (dbs: DBType[]) => {
-    return dbs.includes(process.env.DB as DBType || 'sqljs')
-        ? it
-        : it.skip
-} 
+    return dbs.includes((process.env.DB as DBType) || 'sqljs') ? it : it.skip;
+};
 
 describe('Transaction infrastructure', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -82,8 +81,8 @@ describe('Transaction infrastructure', () => {
             await adminClient.query(CREATE_N_ADMINS, {
                 emailAddress: 'testN-',
                 failFactor: 0.4,
-                n: 10
-            })
+                n: 10,
+            });
             fail('Should have thrown');
         } catch (e) {
             expect(e.message).toContain('Failed!');
@@ -155,26 +154,30 @@ describe('Transaction infrastructure', () => {
         expect(!!verify.users.find((u: any) => u.identifier === 'test5')).toBe(false);
     });
 
-    itIfDb(['postgres', 'mysql'])('failing mutation inside connection.withTransaction() wrapper with context and promise concurrent execution', async () => {
-        try {
-            await adminClient.query(CREATE_N_ADMINS2, {
-                emailAddress: 'testN-',
-                failFactor: 0.4,
-                n: 10
-            })
-            fail('Should have thrown');
-        } catch (e) {
-            expect(e.message)
-                .toMatch(/^Failed!|Query runner already released. Cannot run queries anymore.$/);
-        }
+    itIfDb(['postgres', 'mysql'])(
+        'failing mutation inside connection.withTransaction() wrapper with context and promise concurrent execution',
+        async () => {
+            try {
+                await adminClient.query(CREATE_N_ADMINS2, {
+                    emailAddress: 'testN-',
+                    failFactor: 0.4,
+                    n: 10,
+                });
+                fail('Should have thrown');
+            } catch (e) {
+                expect(e.message).toMatch(
+                    /^Failed!|Query runner already released. Cannot run queries anymore.$/,
+                );
+            }
 
-        const { verify } = await adminClient.query(VERIFY_TEST);
+            const { verify } = await adminClient.query(VERIFY_TEST);
 
-        expect(verify.admins.length).toBe(2);
-        expect(verify.users.length).toBe(3);
-        expect(!!verify.admins.find((a: any) => a.emailAddress.includes('testN'))).toBe(false);
-        expect(!!verify.users.find((u: any) => u.identifier.includes('testN'))).toBe(false);
-    });
+            expect(verify.admins.length).toBe(2);
+            expect(verify.users.length).toBe(3);
+            expect(!!verify.admins.find((a: any) => a.emailAddress.includes('testN'))).toBe(false);
+            expect(!!verify.users.find((u: any) => u.identifier.includes('testN'))).toBe(false);
+        },
+    );
 
     it('failing mutation inside connection.withTransaction() wrapper without request context', async () => {
         try {
@@ -194,6 +197,45 @@ describe('Transaction infrastructure', () => {
         expect(verify.users.length).toBe(3);
         expect(!!verify.admins.find((a: any) => a.emailAddress === 'test5')).toBe(false);
         expect(!!verify.users.find((u: any) => u.identifier === 'test5')).toBe(false);
+    });
+
+    it('non-failing mutation inside connection.withTransaction() wrapper with failing nested transactions and request context', async () => {
+        await adminClient.query(CREATE_N_ADMINS3, {
+            emailAddress: 'testNestedTransactionsN-',
+            failFactor: 0.5,
+            n: 2,
+        });
+
+        const { verify } = await adminClient.query(VERIFY_TEST);
+
+        expect(verify.admins.length).toBe(3);
+        expect(verify.users.length).toBe(4);
+        expect(
+            verify.admins.filter((a: any) => a.emailAddress.includes('testNestedTransactionsN')),
+        ).toHaveLength(1);
+        expect(
+            verify.users.filter((u: any) => u.identifier.includes('testNestedTransactionsN')),
+        ).toHaveLength(1);
+    });
+
+    it('event do not publish after transaction rollback', async () => {
+        TransactionTestPlugin.reset();
+        try {
+            await adminClient.query(CREATE_N_ADMINS, {
+                emailAddress: TRIGGER_NO_OPERATION,
+                failFactor: 0.5,
+                n: 2,
+            });
+            fail('Should have thrown');
+        } catch (e) {
+            expect(e.message).toContain('Failed!');
+        }
+
+        // Wait a bit to see an events in handlers
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        expect(TransactionTestPlugin.callHandler).not.toHaveBeenCalled();
+        expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
     });
 
     // Testing https://github.com/vendure-ecommerce/vendure/issues/520
@@ -286,6 +328,12 @@ const CREATE_N_ADMINS = gql`
 const CREATE_N_ADMINS2 = gql`
     mutation CreateNTestAdmins2($emailAddress: String!, $failFactor: Float!, $n: Int!) {
         createNTestAdministrators2(emailAddress: $emailAddress, failFactor: $failFactor, n: $n)
+    }
+`;
+
+const CREATE_N_ADMINS3 = gql`
+    mutation CreateNTestAdmins3($emailAddress: String!, $failFactor: Float!, $n: Int!) {
+        createNTestAdministrators3(emailAddress: $emailAddress, failFactor: $failFactor, n: $n)
     }
 `;
 
