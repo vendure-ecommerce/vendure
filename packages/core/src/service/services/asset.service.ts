@@ -17,6 +17,7 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { ReadStream as FSReadStream } from 'fs';
 import { ReadStream } from 'fs-extra';
+import { IncomingMessage } from 'http';
 import mime from 'mime-types';
 import path from 'path';
 import { Readable, Stream } from 'stream';
@@ -433,24 +434,44 @@ export class AssetService {
      * Create an Asset from a file stream, for example to create an Asset during data import.
      */
     async createFromFileStream(stream: ReadStream, ctx?: RequestContext): Promise<CreateAssetResult>;
-    async createFromFileStream(stream: Readable, filePath: string): Promise<CreateAssetResult>;
+    async createFromFileStream(
+        stream: Readable,
+        filePath: string,
+        ctx?: RequestContext,
+    ): Promise<CreateAssetResult>;
     async createFromFileStream(
         stream: ReadStream | Readable,
         maybeFilePathOrCtx?: string | RequestContext,
+        maybeCtx?: RequestContext,
     ): Promise<CreateAssetResult> {
+        const { assetImportStrategy } = this.configService.importExportOptions;
         const filePathFromArgs =
             maybeFilePathOrCtx instanceof RequestContext ? undefined : maybeFilePathOrCtx;
         const filePath =
             stream instanceof ReadStream || stream instanceof FSReadStream ? stream.path : filePathFromArgs;
         if (typeof filePath === 'string') {
-            const filename = path.basename(filePath);
-            const mimetype = mime.lookup(filename) || 'application/octet-stream';
+            const filename = path.basename(filePath).split('?')[0];
+            const mimetype = this.getMimeType(stream, filename);
             const ctx =
-                maybeFilePathOrCtx instanceof RequestContext ? maybeFilePathOrCtx : RequestContext.empty();
+                maybeFilePathOrCtx instanceof RequestContext
+                    ? maybeFilePathOrCtx
+                    : maybeCtx instanceof RequestContext
+                    ? maybeCtx
+                    : RequestContext.empty();
             return this.createAssetInternal(ctx, stream, filename, mimetype);
         } else {
             throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
         }
+    }
+
+    private getMimeType(stream: Readable, filename: string): string {
+        if (stream instanceof IncomingMessage) {
+            const contentType = stream.headers['content-type'];
+            if (contentType) {
+                return contentType;
+            }
+        }
+        return mime.lookup(filename) || 'application/octet-stream';
     }
 
     /**
