@@ -6,7 +6,7 @@ import { VendureEvent } from '../vendure-event';
  *
  * @docsCategory events
  * @docsPage Event Types
- * @since 1.6.3
+ * @since 1.7.0
  */
 export class InitializerEvent extends VendureEvent {
     constructor() {
