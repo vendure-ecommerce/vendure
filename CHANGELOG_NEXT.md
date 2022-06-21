@@ -1,3 +1,19 @@
+## 2.0.0-next.9 (2022-06-21)
+
+
+#### Features
+
+* **core** Implement AssetImportStrategy, enable asset import from urls ([75653ae](https://github.com/vendure-ecommerce/vendure/commit/75653ae))
+* **core** Support save points (nested transactions) (#1579) ([9813d11](https://github.com/vendure-ecommerce/vendure/commit/9813d11)), closes [#1579](https://github.com/vendure-ecommerce/vendure/issues/1579)
+
+#### Fixes
+
+* **core** Introduced errorOnFail flag for job.updates() method (#1627) ([464924c](https://github.com/vendure-ecommerce/vendure/commit/464924c)), closes [#1627](https://github.com/vendure-ecommerce/vendure/issues/1627) [#1551](https://github.com/vendure-ecommerce/vendure/issues/1551)
+
+
+### BREAKING CHANGE
+
+* (TypeORM): Due to an update of the TypeORM version, there is a potential breaking change if you make use of TypeORM's soft-remove feature in combination with listeners/subscribers. Namely, update listeners and subscriber no longer triggered by soft-remove and recover (https://github.com/typeorm/typeorm/blob/master/CHANGELOG.md#0242-2022-02-16). This is not used in Vendure core and is a relatively obscure edge-case.
 ## 2.0.0-next.8 (2022-06-12)
 
 Includes all fixes from v1.6.2
