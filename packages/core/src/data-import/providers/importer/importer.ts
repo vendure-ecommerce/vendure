@@ -344,19 +344,15 @@ export class Importer {
                 if (existing) {
                     facetValueEntity = existing;
                 } else {
-                    facetValueEntity = await this.facetValueService.create(
-                        RequestContext.empty(),
-                        facetEntity,
-                        {
-                            code: normalizeString(valueName, '-'),
-                            translations: item.translations.map(translation => {
-                                return {
-                                    languageCode: translation.languageCode,
-                                    name: translation.value,
-                                };
-                            }),
-                        },
-                    );
+                    facetValueEntity = await this.facetValueService.create(ctx, facetEntity, {
+                        code: normalizeString(valueName, '-'),
+                        translations: item.translations.map(translation => {
+                            return {
+                                languageCode: translation.languageCode,
+                                name: translation.value,
+                            };
+                        }),
+                    });
                 }
                 this.facetValueMap.set(facetValueMapKey, facetValueEntity);
             }
