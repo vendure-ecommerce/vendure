@@ -66,7 +66,7 @@ export class FastImporterService {
                   channelOrToken: channel,
               })
             : RequestContext.empty();
-        this.defaultChannel = await this.channelService.getDefaultChannel();
+        this.defaultChannel = await this.channelService.getDefaultChannel(this.importCtx);
     }
 
     async createProduct(input: CreateProductInput): Promise<ID> {

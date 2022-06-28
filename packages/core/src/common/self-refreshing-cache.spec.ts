@@ -36,8 +36,8 @@ describe('SelfRefreshingCache', () => {
 
     it('automatically refresh after ttl expires', async () => {
         currentTime = 1001;
-        const result = await testCache.value();
-        expect(result).toBe(7);
+        const result = await testCache.value('custom');
+        expect(result).toBe(6);
         expect(fetchFn.mock.calls.length).toBe(2);
     });
 
