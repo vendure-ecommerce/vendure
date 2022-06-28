@@ -38,7 +38,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         enabledOnly: boolean,
     ): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(['MIN(productId)', 'MIN(productVariantId)'])
             .addSelect('GROUP_CONCAT(facetValueIds)', 'facetValues');
@@ -60,7 +60,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         enabledOnly: boolean,
     ): Promise<Map<ID, number>> {
         const collectionsQb = this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(['MIN(productId)', 'MIN(productVariantId)'])
             .addSelect('GROUP_CONCAT(collectionIds)', 'collections');
@@ -85,7 +85,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         const skip = input.skip || 0;
         const sort = input.sort;
         const qb = this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(this.createMysqlSelect(!!input.groupByProduct));
         if (input.groupByProduct) {
@@ -122,7 +122,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         const innerQb = this.applyTermAndFilters(
             ctx,
             this.connection
-                .getRepository(SearchIndexItem)
+                .getRepository(ctx, SearchIndexItem)
                 .createQueryBuilder('si')
                 .select(this.createMysqlSelect(!!input.groupByProduct)),
             input,
@@ -149,7 +149,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
 
         if (term && term.length > this.minTermLength) {
             const termScoreQuery = this.connection
-                .getRepository(SearchIndexItem)
+                .getRepository(ctx, SearchIndexItem)
                 .createQueryBuilder('si_inner')
                 .select('si_inner.productId', 'inner_productId')
                 .addSelect('si_inner.productVariantId', 'inner_productVariantId')

@@ -314,6 +314,7 @@ export class Importer {
                 facetEntity = cachedFacet;
             } else {
                 const existing = await this.facetService.findByCode(
+                    ctx,
                     normalizeString(facetName, '-'),
                     languageCode,
                 );

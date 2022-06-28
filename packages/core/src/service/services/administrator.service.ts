@@ -158,7 +158,7 @@ export class AdministratorService {
         if (input.roleIds) {
             const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
             if (isSoleSuperAdmin) {
-                const superAdminRole = await this.roleService.getSuperAdminRole();
+                const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
                 if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
                     throw new InternalServerError('error.superadmin-must-have-superadmin-role');
                 }
@@ -234,7 +234,7 @@ export class AdministratorService {
      * with SuperAdmin permissions.
      */
     private async isSoleSuperadmin(ctx: RequestContext, id: ID) {
-        const superAdminRole = await this.roleService.getSuperAdminRole();
+        const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
         const allAdmins = await this.connection.getRepository(ctx, Administrator).find({
             relations: ['user', 'user.roles'],
         });
@@ -258,7 +258,7 @@ export class AdministratorService {
     private async ensureSuperAdminExists() {
         const { superadminCredentials } = this.configService.authOptions;
 
-        const superAdminUser = await this.connection.getRepository(User).findOne({
+        const superAdminUser = await this.connection.rawConnection.getRepository(User).findOne({
             where: {
                 identifier: superadminCredentials.identifier,
             },
@@ -274,7 +274,7 @@ export class AdministratorService {
                 roleIds: [superAdminRole.id],
             });
         } else {
-            const superAdministrator = await this.connection.getRepository(Administrator).findOne({
+            const superAdministrator = await this.connection.rawConnection.getRepository(Administrator).findOne({
                 where: {
                     user: superAdminUser,
                 },
@@ -286,18 +286,19 @@ export class AdministratorService {
                     lastName: 'Admin',
                 });
                 const createdAdministrator = await this.connection
+                    .rawConnection
                     .getRepository(Administrator)
                     .save(administrator);
                 createdAdministrator.user = superAdminUser;
-                await this.connection.getRepository(Administrator).save(createdAdministrator);
+                await this.connection.rawConnection.getRepository(Administrator).save(createdAdministrator);
             } else if (superAdministrator.deletedAt != null) {
                 superAdministrator.deletedAt = null;
-                await this.connection.getRepository(Administrator).save(superAdministrator);
+                await this.connection.rawConnection.getRepository(Administrator).save(superAdministrator);
             }
 
             if (superAdminUser.deletedAt != null) {
                 superAdminUser.deletedAt = null;
-                await this.connection.getRepository(User).save(superAdminUser);
+                await this.connection.rawConnection.getRepository(User).save(superAdminUser);
             }
         }
     }

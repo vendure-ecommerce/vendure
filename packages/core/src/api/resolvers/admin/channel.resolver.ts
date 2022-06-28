@@ -52,8 +52,8 @@ export class ChannelResolver {
         if (isGraphQlErrorResult(result)) {
             return result;
         }
-        const superAdminRole = await this.roleService.getSuperAdminRole();
-        const customerRole = await this.roleService.getCustomerRole();
+        const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
+        const customerRole = await this.roleService.getCustomerRole(ctx);
         await this.roleService.assignRoleToChannel(ctx, superAdminRole.id, result.id);
         await this.roleService.assignRoleToChannel(ctx, customerRole.id, result.id);
         return result;

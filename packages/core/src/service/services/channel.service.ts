@@ -289,7 +289,7 @@ export class ChannelService {
      */
     private async ensureDefaultChannelExists() {
         const { defaultChannelToken } = this.configService;
-        const defaultChannel = await this.connection.getRepository(Channel).findOne({
+        const defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
             where: {
                 code: DEFAULT_CHANNEL_CODE,
             },
@@ -303,10 +303,10 @@ export class ChannelService {
                 currencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
-            await this.connection.getRepository(Channel).save(newDefaultChannel, { reload: false });
+            await this.connection.rawConnection.getRepository(Channel).save(newDefaultChannel, { reload: false });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
-            await this.connection.getRepository(Channel).save(defaultChannel, { reload: false });
+            await this.connection.rawConnection.getRepository(Channel).save(defaultChannel, { reload: false });
         }
     }
 

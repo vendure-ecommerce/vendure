@@ -110,7 +110,7 @@ export class Populator {
     async populateCollections(data: InitialData, channel?: Channel) {
         const ctx = await this.createRequestContext(data, channel);
 
-        const allFacetValues = await this.facetValueService.findAll(ctx.languageCode);
+        const allFacetValues = await this.facetValueService.findAll(ctx, ctx.languageCode);
         const collectionMap = new Map<string, Collection>();
         for (const collectionDef of data.collections) {
             const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
