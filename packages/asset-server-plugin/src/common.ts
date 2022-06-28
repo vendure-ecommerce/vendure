@@ -6,8 +6,10 @@ import { AssetServerOptions } from './types';
 export function getAssetUrlPrefixFn(options: AssetServerOptions) {
     const { assetUrlPrefix, route } = options;
     if (assetUrlPrefix == null) {
-        return (request: Request, identifier: string) =>
-            `${request.protocol}://${request.get('host')}/${route}/`;
+        return (request: Request, identifier: string) => {
+            const protocol = request.headers['x-forwarded-proto'] ?? request.protocol;
+            return `${protocol}://${request.get('host')}/${route}/`;
+        };
     }
     if (typeof assetUrlPrefix === 'string') {
         return (...args: any[]) => assetUrlPrefix;
