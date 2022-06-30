@@ -130,6 +130,7 @@ describe('Shop orders', () => {
                     { name: 'notes', type: 'string' },
                     { name: 'privateField', type: 'string', public: false },
                     { name: 'lineImage', type: 'relation', entity: Asset },
+                    { name: 'dropShip', type: 'boolean', defaultValue: false },
                 ],
             },
             orderOptions: {

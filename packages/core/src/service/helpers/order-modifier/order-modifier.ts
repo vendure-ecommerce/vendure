@@ -574,12 +574,20 @@ export class OrderModifier {
         inputCustomFields: { [key: string]: any } | null | undefined,
         existingCustomFields?: { [key: string]: any },
     ): Promise<boolean> {
+        const customFieldDefs = this.configService.customFields.OrderLine;
         if (inputCustomFields == null && typeof existingCustomFields === 'object') {
             // A null value for an OrderLine customFields input is the equivalent
-            // of every property of an existing customFields object being null.
-            return Object.values(existingCustomFields).every(v => v === null);
+            // of every property of an existing customFields object being null
+            // or equal to the defaultValue
+            for (const def of customFieldDefs) {
+                const key = def.name;
+                const existingValue = existingCustomFields?.[key];
+                if (existingValue !== null && def.defaultValue && existingValue !== def.defaultValue) {
+                    return false;
+                }
+            }
+            return true;
         }
-        const customFieldDefs = this.configService.customFields.OrderLine;
 
         const customFieldRelations = customFieldDefs.filter(d => d.type === 'relation');
         let lineWithCustomFieldRelations: OrderLine | undefined;
@@ -600,7 +608,9 @@ export class OrderModifier {
                 const valuesMatch =
                     JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(existingValue);
                 const undefinedMatchesNull = existingValue === null && inputCustomFields?.[key] === undefined;
-                if (!valuesMatch && !undefinedMatchesNull) {
+                const defaultValueMatch =
+                    inputCustomFields?.[key] === undefined && def.defaultValue === existingValue;
+                if (!valuesMatch && !undefinedMatchesNull && !defaultValueMatch) {
                     return false;
                 }
             } else if (def.type === 'relation') {
