@@ -22,6 +22,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
@@ -85,6 +86,9 @@ customFieldConfig.Product?.push(
 );
 
 const customConfig = mergeConfig(testConfig(), {
+    paymentOptions: {
+        paymentMethodHandlers: [testSuccessfulPaymentMethod],
+    },
     dbConnectionOptions: {
         timezone: 'Z',
     },
@@ -255,7 +259,7 @@ describe('Custom field relations', () => {
                             }
                         }
                     }
-            }`);
+                }`);
 
             expect(product.customFields.cfProductVariant).toEqual({
                 price: 129900,
@@ -270,6 +274,7 @@ describe('Custom field relations', () => {
             expect(customFields.single).toEqual({ id: single });
             expect(customFields.multi.sort(sortById)).toEqual(multi.map(id => ({ id })));
         }
+
         const customFieldsSelection = `
             customFields {
                 single {
@@ -283,20 +288,20 @@ describe('Custom field relations', () => {
         describe('Address entity', () => {
             it('admin createCustomerAddress', async () => {
                 const { createCustomerAddress } = await adminClient.query(gql`
-                        mutation {
-                            createCustomerAddress(
-                                customerId: "T_1"
-                                input: {
-                                    countryCode: "GB"
-                                    streetLine1: "Test Street"
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createCustomerAddress(
+                            customerId: "T_1"
+                            input: {
+                                countryCode: "GB"
+                                streetLine1: "Test Street"
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createCustomerAddress.customFields, 'T_1', ['T_1', 'T_2']);
             });
@@ -304,49 +309,49 @@ describe('Custom field relations', () => {
             it('shop createCustomerAddress', async () => {
                 await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
                 const { createCustomerAddress } = await shopClient.query(gql`
-                        mutation {
-                            createCustomerAddress(
-                                input: {
-                                    countryCode: "GB"
-                                    streetLine1: "Test Street"
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createCustomerAddress(
+                            input: {
+                                countryCode: "GB"
+                                streetLine1: "Test Street"
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createCustomerAddress.customFields, 'T_1', ['T_1', 'T_2']);
             });
 
             it('admin updateCustomerAddress', async () => {
                 const { updateCustomerAddress } = await adminClient.query(gql`
-                        mutation {
-                            updateCustomerAddress(
-                                input: { id: "T_1", customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] } }
-                            ) {
-                                id
-                                ${customFieldsSelection}
-                            }
+                    mutation {
+                        updateCustomerAddress(
+                            input: { id: "T_1", customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] } }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(updateCustomerAddress.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
             it('shop updateCustomerAddress', async () => {
                 const { updateCustomerAddress } = await shopClient.query(gql`
-                        mutation {
-                            updateCustomerAddress(
-                                input: { id: "T_1", customFields: { singleId: "T_3", multiIds: ["T_4", "T_2"] } }
-                            ) {
-                                id
-                                ${customFieldsSelection}
-                            }
+                    mutation {
+                        updateCustomerAddress(
+                            input: { id: "T_1", customFields: { singleId: "T_3", multiIds: ["T_4", "T_2"] } }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(updateCustomerAddress.customFields, 'T_3', ['T_2', 'T_4']);
             });
@@ -356,39 +361,39 @@ describe('Custom field relations', () => {
             let collectionId: string;
             it('admin createCollection', async () => {
                 const { createCollection } = await adminClient.query(gql`
-                        mutation {
-                            createCollection(
-                                input: {
-                                    translations: [
-                                        { languageCode: en, name: "Test", description: "test", slug: "test" }
-                                    ]
-                                    filters: []
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createCollection(
+                            input: {
+                                translations: [
+                                    { languageCode: en, name: "Test", description: "test", slug: "test" }
+                                ]
+                                filters: []
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(createCollection.customFields, 'T_1', ['T_1', 'T_2']);
                 collectionId = createCollection.id;
             });
 
             it('admin updateCollection', async () => {
                 const { updateCollection } = await adminClient.query(gql`
-                        mutation {
-                            updateCollection(
-                                input: {
-                                    id: "${collectionId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateCollection(
+                            input: {
+                                id: "${collectionId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(updateCollection.customFields, 'T_2', ['T_3', 'T_4']);
             });
@@ -398,22 +403,22 @@ describe('Custom field relations', () => {
             let customerId: string;
             it('admin createCustomer', async () => {
                 const { createCustomer } = await adminClient.query(gql`
-                        mutation {
-                            createCustomer(
-                                input: {
-                                    emailAddress: "test@test.com"
-                                    firstName: "Test"
-                                    lastName: "Person"
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                ... on Customer {
-                                    id
-                                    ${customFieldsSelection}
-                                }
+                    mutation {
+                        createCustomer(
+                            input: {
+                                emailAddress: "test@test.com"
+                                firstName: "Test"
+                                lastName: "Person"
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                            }
+                        ) {
+                            ... on Customer {
+                                id
+                                ${customFieldsSelection}
                             }
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createCustomer.customFields, 'T_1', ['T_1', 'T_2']);
                 customerId = createCustomer.id;
@@ -421,32 +426,32 @@ describe('Custom field relations', () => {
 
             it('admin updateCustomer', async () => {
                 const { updateCustomer } = await adminClient.query(gql`
-                        mutation {
-                            updateCustomer(
-                                input: {
-                                    id: "${customerId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                ...on Customer {
-                                    id
-                                    ${customFieldsSelection}
-                                }
+                    mutation {
+                        updateCustomer(
+                            input: {
+                                id: "${customerId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                            }
+                        ) {
+                            ...on Customer {
+                                id
+                                ${customFieldsSelection}
                             }
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateCustomer.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
             it('shop updateCustomer', async () => {
                 const { updateCustomer } = await shopClient.query(gql`
-                        mutation {
-                            updateCustomer(input: { customFields: { singleId: "T_4", multiIds: ["T_2", "T_4"] } }) {
-                                id
-                                ${customFieldsSelection}
-                            }
+                    mutation {
+                        updateCustomer(input: { customFields: { singleId: "T_4", multiIds: ["T_2", "T_4"] } }) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateCustomer.customFields, 'T_4', ['T_2', 'T_4']);
             });
         });
@@ -455,20 +460,20 @@ describe('Custom field relations', () => {
             let facetId: string;
             it('admin createFacet', async () => {
                 const { createFacet } = await adminClient.query(gql`
-                        mutation {
-                            createFacet(
-                                input: {
-                                    code: "test"
-                                    isPrivate: false
-                                    translations: [{ languageCode: en, name: "test" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createFacet(
+                            input: {
+                                code: "test"
+                                isPrivate: false
+                                translations: [{ languageCode: en, name: "test" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createFacet.customFields, 'T_1', ['T_1', 'T_2']);
                 facetId = createFacet.id;
@@ -476,18 +481,18 @@ describe('Custom field relations', () => {
 
             it('admin updateFacet', async () => {
                 const { updateFacet } = await adminClient.query(gql`
-                        mutation {
-                            updateFacet(
-                                input: {
-                                    id: "${facetId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateFacet(
+                            input: {
+                                id: "${facetId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateFacet.customFields, 'T_2', ['T_3', 'T_4']);
             });
         });
@@ -496,20 +501,20 @@ describe('Custom field relations', () => {
             let facetValueId: string;
             it('admin createFacetValues', async () => {
                 const { createFacetValues } = await adminClient.query(gql`
-                        mutation {
-                            createFacetValues(
-                                input: {
-                                    code: "test"
-                                    facetId: "T_1"
-                                    translations: [{ languageCode: en, name: "test" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createFacetValues(
+                            input: {
+                                code: "test"
+                                facetId: "T_1"
+                                translations: [{ languageCode: en, name: "test" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createFacetValues[0].customFields, 'T_1', ['T_1', 'T_2']);
                 facetValueId = createFacetValues[0].id;
@@ -517,18 +522,18 @@ describe('Custom field relations', () => {
 
             it('admin updateFacetValues', async () => {
                 const { updateFacetValues } = await adminClient.query(gql`
-                        mutation {
-                            updateFacetValues(
-                                input: {
-                                    id: "${facetValueId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateFacetValues(
+                            input: {
+                                id: "${facetValueId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateFacetValues[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
         });
@@ -540,19 +545,19 @@ describe('Custom field relations', () => {
         describe('GlobalSettings entity', () => {
             it('admin updateGlobalSettings', async () => {
                 const { updateGlobalSettings } = await adminClient.query(gql`
-                        mutation {
-                            updateGlobalSettings(
-                                input: {
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                ... on GlobalSettings {
-                                    id
-                                    ${customFieldsSelection}
-                                }
+                    mutation {
+                        updateGlobalSettings(
+                            input: {
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                            }
+                        ) {
+                            ... on GlobalSettings {
+                                id
+                                ${customFieldsSelection}
                             }
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateGlobalSettings.customFields, 'T_2', ['T_3', 'T_4']);
             });
         });
@@ -574,39 +579,39 @@ describe('Custom field relations', () => {
 
             it('shop setOrderCustomFields', async () => {
                 const { setOrderCustomFields } = await shopClient.query(gql`
-                        mutation {
-                            setOrderCustomFields(
-                                input: {
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                ... on Order {
-                                    id
-                                    ${customFieldsSelection}
-                                }
+                    mutation {
+                        setOrderCustomFields(
+                            input: {
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                            }
+                        ) {
+                            ... on Order {
+                                id
+                                ${customFieldsSelection}
                             }
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(setOrderCustomFields.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
             it('admin setOrderCustomFields', async () => {
                 const { setOrderCustomFields } = await adminClient.query(gql`
-                        mutation {
-                            setOrderCustomFields(
-                                input: {
-                                    id: "${orderId}"
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                ... on Order {
-                                    id
-                                    ${customFieldsSelection}
-                                }
+                    mutation {
+                        setOrderCustomFields(
+                            input: {
+                                id: "${orderId}"
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                            }
+                        ) {
+                            ... on Order {
+                                id
+                                ${customFieldsSelection}
                             }
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(setOrderCustomFields.customFields, 'T_1', ['T_1', 'T_2']);
             });
@@ -616,13 +621,13 @@ describe('Custom field relations', () => {
             it('shop addItemToOrder', async () => {
                 const { addItemToOrder } = await shopClient.query(
                     gql`mutation {
-                            addItemToOrder(productVariantId: "T_1", quantity: 1, customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }) {
-                                ... on Order {
-                                    id
-                                    ${customFieldsSelection}
-                                }
+                        addItemToOrder(productVariantId: "T_1", quantity: 1, customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }) {
+                            ... on Order {
+                                id
+                                ${customFieldsSelection}
                             }
-                        }`,
+                        }
+                    }`,
                 );
 
                 assertCustomFieldIds(addItemToOrder.customFields, 'T_1', ['T_1', 'T_2']);
@@ -633,18 +638,18 @@ describe('Custom field relations', () => {
             let productId: string;
             it('admin createProduct', async () => {
                 const { createProduct } = await adminClient.query(gql`
-                        mutation {
-                            createProduct(
-                                input: {
-                                    translations: [{ languageCode: en, name: "test" slug: "test" description: "test" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createProduct(
+                            input: {
+                                translations: [{ languageCode: en, name: "test" slug: "test" description: "test" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createProduct.customFields, 'T_1', ['T_1', 'T_2']);
                 productId = createProduct.id;
@@ -652,38 +657,38 @@ describe('Custom field relations', () => {
 
             it('admin updateProduct', async () => {
                 const { updateProduct } = await adminClient.query(gql`
-                        mutation {
-                            updateProduct(
-                                input: {
-                                    id: "${productId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateProduct(
+                            input: {
+                                id: "${productId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateProduct.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
             let productVariantId: string;
             it('admin createProductVariant', async () => {
                 const { createProductVariants } = await adminClient.query(gql`
-                        mutation {
-                            createProductVariants(
-                                input: [{
-                                    sku: "TEST01"
-                                    productId: "${productId}"
-                                    translations: [{ languageCode: en, name: "test" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }]
-                            ) {
-                                id
-                                ${customFieldsSelection}
-                            }
+                    mutation {
+                        createProductVariants(
+                            input: [{
+                                sku: "TEST01"
+                                productId: "${productId}"
+                                translations: [{ languageCode: en, name: "test" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                            }]
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createProductVariants[0].customFields, 'T_1', ['T_1', 'T_2']);
                 productVariantId = createProductVariants[0].id;
@@ -691,18 +696,18 @@ describe('Custom field relations', () => {
 
             it('admin updateProductVariant', async () => {
                 const { updateProductVariants } = await adminClient.query(gql`
-                        mutation {
-                            updateProductVariants(
-                                input: [{
-                                    id: "${productVariantId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }]
-                            ) {
-                                id
-                                ${customFieldsSelection}
-                            }
+                    mutation {
+                        updateProductVariants(
+                            input: [{
+                                id: "${productVariantId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                            }]
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateProductVariants[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
         });
@@ -711,20 +716,20 @@ describe('Custom field relations', () => {
             let productOptionGroupId: string;
             it('admin createProductOptionGroup', async () => {
                 const { createProductOptionGroup } = await adminClient.query(gql`
-                        mutation {
-                            createProductOptionGroup(
-                                input: {
-                                    code: "test"
-                                    options: []
-                                    translations: [{ languageCode: en, name: "test" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createProductOptionGroup(
+                            input: {
+                                code: "test"
+                                options: []
+                                translations: [{ languageCode: en, name: "test" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createProductOptionGroup.customFields, 'T_1', ['T_1', 'T_2']);
                 productOptionGroupId = createProductOptionGroup.id;
@@ -732,38 +737,38 @@ describe('Custom field relations', () => {
 
             it('admin updateProductOptionGroup', async () => {
                 const { updateProductOptionGroup } = await adminClient.query(gql`
-                        mutation {
-                            updateProductOptionGroup(
-                                input: {
-                                    id: "${productOptionGroupId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateProductOptionGroup(
+                            input: {
+                                id: "${productOptionGroupId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateProductOptionGroup.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
             let productOptionId: string;
             it('admin createProductOption', async () => {
                 const { createProductOption } = await adminClient.query(gql`
-                        mutation {
-                            createProductOption(
-                                input: {
-                                    productOptionGroupId: "${productOptionGroupId}"
-                                    code: "test-option"
-                                    translations: [{ languageCode: en, name: "test-option" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        createProductOption(
+                            input: {
+                                productOptionGroupId: "${productOptionGroupId}"
+                                code: "test-option"
+                                translations: [{ languageCode: en, name: "test-option" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createProductOption.customFields, 'T_1', ['T_1', 'T_2']);
                 productOptionId = createProductOption.id;
@@ -771,18 +776,18 @@ describe('Custom field relations', () => {
 
             it('admin updateProductOption', async () => {
                 const { updateProductOption } = await adminClient.query(gql`
-                        mutation {
-                            updateProductOption(
-                                input: {
-                                    id: "${productOptionId}"
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateProductOption(
+                            input: {
+                                id: "${productOptionId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateProductOption.customFields, 'T_2', ['T_3', 'T_4']);
             });
         });
@@ -795,34 +800,34 @@ describe('Custom field relations', () => {
             let shippingMethodId: string;
             it('admin createShippingMethod', async () => {
                 const { createShippingMethod } = await adminClient.query(gql`
-                        mutation {
-                            createShippingMethod(
-                                input: {
-                                    code: "test"
-                                    calculator: {
-                                        code: "${defaultShippingCalculator.code}"
-                                        arguments: [
-                                            { name: "rate" value: "10"},
-                                            { name: "includesTax" value: "true"},
-                                            { name: "taxRate" value: "10"},
-                                        ]
-                                    }
-                                    checker: {
-                                        code: "${defaultShippingEligibilityChecker.code}"
-                                        arguments: [
-                                            { name: "orderMinimum" value: "0"},
-                                        ]
-                                    }
-                                    fulfillmentHandler: "${manualFulfillmentHandler.code}"
-                                    translations: [{ languageCode: en, name: "test" description: "test" }]
-                                    customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                    mutation {
+                        createShippingMethod(
+                            input: {
+                                code: "test"
+                                calculator: {
+                                    code: "${defaultShippingCalculator.code}"
+                                    arguments: [
+                                        { name: "rate" value: "10"},
+                                        { name: "includesTax" value: "true"},
+                                        { name: "taxRate" value: "10"},
+                                    ]
                                 }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                                checker: {
+                                    code: "${defaultShippingEligibilityChecker.code}"
+                                    arguments: [
+                                        { name: "orderMinimum" value: "0"},
+                                    ]
+                                }
+                                fulfillmentHandler: "${manualFulfillmentHandler.code}"
+                                translations: [{ languageCode: en, name: "test" description: "test" }]
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
 
                 assertCustomFieldIds(createShippingMethod.customFields, 'T_1', ['T_1', 'T_2']);
                 shippingMethodId = createShippingMethod.id;
@@ -830,20 +835,97 @@ describe('Custom field relations', () => {
 
             it('admin updateShippingMethod', async () => {
                 const { updateShippingMethod } = await adminClient.query(gql`
-                        mutation {
-                            updateShippingMethod(
-                                input: {
-                                    id: "${shippingMethodId}"
-                                    translations: []
-                                    customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
-                                }
-                            ) {
-                                id
-                                ${customFieldsSelection}
+                    mutation {
+                        updateShippingMethod(
+                            input: {
+                                id: "${shippingMethodId}"
+                                translations: []
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
                             }
+                        ) {
+                            id
+                            ${customFieldsSelection}
                         }
-                    `);
+                    }
+                `);
                 assertCustomFieldIds(updateShippingMethod.customFields, 'T_2', ['T_3', 'T_4']);
+            });
+
+            it('shop eligibleShippingMethods (ShippingMethodQuote)', async () => {
+                const { eligibleShippingMethods } = await shopClient.query(gql`
+                    query {
+                        eligibleShippingMethods {
+                            id
+                            name
+                            code
+                            description
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                const testShippingMethodQuote = eligibleShippingMethods.find(
+                    (quote: any) => quote.code === 'test',
+                );
+                assertCustomFieldIds(testShippingMethodQuote.customFields, 'T_2', ['T_3', 'T_4']);
+            });
+        });
+
+        describe('PaymentMethod entity', () => {
+            let paymentMethodId: string;
+            it('admin createShippingMethod', async () => {
+                const { createPaymentMethod } = await adminClient.query(gql`
+                    mutation {
+                        createPaymentMethod(
+                            input: {
+                                name: "test"
+                                code: "test"
+                                enabled: true
+                                handler: {
+                                    code: "${testSuccessfulPaymentMethod.code}"
+                                    arguments: []
+                                }
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+
+                assertCustomFieldIds(createPaymentMethod.customFields, 'T_1', ['T_1', 'T_2']);
+                paymentMethodId = createPaymentMethod.id;
+            });
+
+            it('admin updatePaymentMethod', async () => {
+                const { updatePaymentMethod } = await adminClient.query(gql`
+                    mutation {
+                        updatePaymentMethod(
+                            input: {
+                                id: "${paymentMethodId}"
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                assertCustomFieldIds(updatePaymentMethod.customFields, 'T_2', ['T_3', 'T_4']);
+            });
+
+            it('shop eligiblePaymentMethods (PaymentMethodQuote)', async () => {
+                const { eligiblePaymentMethods } = await shopClient.query(gql`
+                    query {
+                        eligiblePaymentMethods {
+                            id
+                            name
+                            description
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                assertCustomFieldIds(eligiblePaymentMethods[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
         });
     });
