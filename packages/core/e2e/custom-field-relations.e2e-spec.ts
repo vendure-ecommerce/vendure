@@ -42,19 +42,26 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'Asset',
     'Channel',
     'Collection',
+    'Country',
     'Customer',
+    'CustomerGroup',
     'Facet',
     'FacetValue',
     'Fulfillment',
     'GlobalSettings',
     'Order',
     'OrderLine',
+    'PaymentMethod',
     'Product',
     'ProductOption',
     'ProductOptionGroup',
     'ProductVariant',
-    'User',
+    'Promotion',
     'ShippingMethod',
+    'TaxCategory',
+    'TaxRate',
+    'User',
+    'Zone',
 );
 
 const customFieldConfig: CustomFields = {};
@@ -236,7 +243,6 @@ describe('Custom field relations', () => {
         });
 
         it('ProductVariant prices get resolved', async () => {
-            debugger;
             const { product } = await adminClient.query(gql`
                 query {
                     product(id: "${productId}") {
