@@ -38,7 +38,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         enabledOnly: boolean,
     ): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(['productId', 'productVariantId'])
             .addSelect('GROUP_CONCAT(si.facetValueIds)', 'facetValues');
@@ -60,7 +60,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         enabledOnly: boolean,
     ): Promise<Map<ID, number>> {
         const collectionsQb = this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
             .select(['productId', 'productVariantId'])
             .addSelect('GROUP_CONCAT(si.collectionIds)', 'collections');
@@ -84,7 +84,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const sort = input.sort;
-        const qb = this.connection.getRepository(SearchIndexItem).createQueryBuilder('si');
+        const qb = this.connection.getRepository(ctx, SearchIndexItem).createQueryBuilder('si');
         if (input.groupByProduct) {
             qb.addSelect('MIN(price)', 'minPrice').addSelect('MAX(price)', 'maxPrice');
             qb.addSelect('MIN(priceWithTax)', 'minPriceWithTax').addSelect(
@@ -120,7 +120,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
         const innerQb = this.applyTermAndFilters(
             ctx,
-            this.connection.getRepository(SearchIndexItem).createQueryBuilder('si'),
+            this.connection.getRepository(ctx, SearchIndexItem).createQueryBuilder('si'),
             input,
         );
 

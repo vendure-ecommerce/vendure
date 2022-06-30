@@ -195,7 +195,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
-            : this.connection.getRepository(entity);
+            : this.connection.rawConnection.getRepository(entity);
 
         const qb = repo.createQueryBuilder(extendedOptions.entityAlias || entity.name.toLowerCase());
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);

@@ -66,7 +66,7 @@ export class FastImporterService {
                   channelOrToken: channel,
               })
             : RequestContext.empty();
-        this.defaultChannel = await this.channelService.getDefaultChannel();
+        this.defaultChannel = await this.channelService.getDefaultChannel(this.importCtx);
     }
 
     async createProduct(input: CreateProductInput): Promise<ID> {
@@ -95,7 +95,7 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(ProductAsset).save(productAssets, { reload: false });
+            await this.connection.getRepository(this.importCtx, ProductAsset).save(productAssets, { reload: false });
         }
         return product.id;
     }
@@ -126,7 +126,7 @@ export class FastImporterService {
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID) {
         this.ensureInitialized();
         await this.connection
-            .getRepository(Product)
+            .getRepository(this.importCtx, Product)
             .createQueryBuilder()
             .relation('optionGroups')
             .of(productId)
@@ -177,7 +177,7 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(ProductVariantAsset).save(variantAssets, { reload: false });
+            await this.connection.getRepository(this.importCtx, ProductVariantAsset).save(variantAssets, { reload: false });
         }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
@@ -194,7 +194,7 @@ export class FastImporterService {
                 channelId,
             });
             variantPrice.variant = createdVariant;
-            await this.connection.getRepository(ProductVariantPrice).save(variantPrice, { reload: false });
+            await this.connection.getRepository(this.importCtx, ProductVariantPrice).save(variantPrice, { reload: false });
         }
 
         return createdVariant.id;

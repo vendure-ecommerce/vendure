@@ -90,6 +90,7 @@ export class CollectionService implements OnModuleInit {
             .pipe(debounceTime(50))
             .subscribe(async event => {
                 const collections = await this.connection
+                    .rawConnection
                     .getRepository(Collection)
                     .createQueryBuilder('collection')
                     .select('collection.id', 'id')
@@ -352,7 +353,7 @@ export class CollectionService implements OnModuleInit {
         const ancestors = await getParent(collectionId);
 
         return this.connection
-            .getRepository(Collection)
+            .getRepository(ctx, Collection)
             .findByIds(ancestors.map(c => c.id))
             .then(categories => {
                 const resultCategories: Array<Collection | Translated<Collection>> = [];
@@ -562,6 +563,7 @@ export class CollectionService implements OnModuleInit {
         const postIds = collection.productVariants.map(v => v.id);
         try {
             await this.connection
+                .rawConnection
                 .getRepository(Collection)
                 // Only update the exact changed properties, to avoid VERY hard-to-debug
                 // non-deterministic race conditions e.g. when the "position" is changed
@@ -592,7 +594,9 @@ export class CollectionService implements OnModuleInit {
             return [];
         }
         const { collectionFilters } = this.configService.catalogOptions;
-        let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
+        let qb = this.connection.rawConnection
+            .getRepository(ProductVariant)
+            .createQueryBuilder('productVariant');
 
         for (const filterType of collectionFilters) {
             const filtersOfType = filters.filter(f => f.code === filterType.code);
@@ -680,7 +684,7 @@ export class CollectionService implements OnModuleInit {
         // We purposefully do not use the ctx in saving the new root Collection
         // so that even if the outer transaction fails, the root collection will still
         // get persisted.
-        const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
+        const rootTranslation = await this.connection.rawConnection.getRepository(CollectionTranslation).save(
             new CollectionTranslation({
                 languageCode: this.configService.defaultLanguageCode,
                 name: ROOT_COLLECTION_NAME,
@@ -689,7 +693,7 @@ export class CollectionService implements OnModuleInit {
             }),
         );
 
-        const newRoot = await this.connection.getRepository(Collection).save(
+        const newRoot = await this.connection.rawConnection.getRepository(Collection).save(
             new Collection({
                 isRoot: true,
                 position: 0,

@@ -57,7 +57,7 @@ export class InitializerService {
         const delayMs = 100;
         for (let attempt = 0; attempt < retries; attempt++) {
             try {
-                const result = await this.connection.getRepository(Administrator).find();
+                const result = await this.connection.rawConnection.getRepository(Administrator).find();
                 return;
             } catch (e) {
                 if (attempt < retries - 1) {

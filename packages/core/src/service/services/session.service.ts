@@ -113,7 +113,7 @@ export class SessionService implements EntitySubscriberInterface {
             invalidated: false,
         });
         // save the new session
-        const newSession = await this.connection.getRepository(AnonymousSession).save(session);
+        const newSession = await this.connection.rawConnection.getRepository(AnonymousSession).save(session);
         const serializedSession = this.serializeSession(newSession);
         await this.sessionCacheStrategy.set(serializedSession);
         return serializedSession;
@@ -172,7 +172,7 @@ export class SessionService implements EntitySubscriberInterface {
      * Looks for a valid session with the given token and returns one if found.
      */
     private async findSessionByToken(token: string): Promise<Session | undefined> {
-        const session = await this.connection
+        const session = await this.connection.rawConnection
             .getRepository(Session)
             .createQueryBuilder('session')
             .leftJoinAndSelect('session.user', 'user')
@@ -198,7 +198,7 @@ export class SessionService implements EntitySubscriberInterface {
         order: Order,
     ): Promise<CachedSession> {
         const session = await this.connection
-            .getRepository(Session)
+            .getRepository(ctx, Session)
             .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
         if (session) {
             session.activeOrder = order;
@@ -217,7 +217,7 @@ export class SessionService implements EntitySubscriberInterface {
     async unsetActiveOrder(ctx: RequestContext, serializedSession: CachedSession): Promise<CachedSession> {
         if (serializedSession.activeOrderId) {
             const session = await this.connection
-                .getRepository(Session)
+                .getRepository(ctx, Session)
                 .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
             if (session) {
                 session.activeOrder = null;
@@ -235,12 +235,12 @@ export class SessionService implements EntitySubscriberInterface {
      * Sets the `activeChannel` on the given cached session object and updates the cache.
      */
     async setActiveChannel(serializedSession: CachedSession, channel: Channel): Promise<CachedSession> {
-        const session = await this.connection
+        const session = await this.connection.rawConnection
             .getRepository(Session)
             .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
         if (session) {
             session.activeChannel = channel;
-            await this.connection.getRepository(Session).save(session, { reload: false });
+            await this.connection.rawConnection.getRepository(Session).save(session, { reload: false });
             const updatedSerializedSession = this.serializeSession(session);
             await this.sessionCacheStrategy.set(updatedSerializedSession);
             return updatedSerializedSession;
@@ -285,7 +285,7 @@ export class SessionService implements EntitySubscriberInterface {
         if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
             const newExpiryDate = this.getExpiryDate(this.sessionDurationInMs);
             session.expires = newExpiryDate;
-            await this.connection
+            await this.connection.rawConnection
                 .getRepository(Session)
                 .update({ id: session.id }, { expires: newExpiryDate });
         }
