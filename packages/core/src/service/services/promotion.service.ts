@@ -230,7 +230,7 @@ export class PromotionService {
                 deletedAt: null,
             },
         });
-        if (!promotion) {
+        if (!promotion || promotion.couponCode !== couponCode) {
             return new CouponCodeInvalidError(couponCode);
         }
         if (promotion.endsAt && +promotion.endsAt < +new Date()) {
