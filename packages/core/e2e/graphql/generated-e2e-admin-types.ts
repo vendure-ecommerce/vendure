@@ -9591,6 +9591,10 @@ export namespace UpdateOrderCustomFields {
     export type Variables = UpdateOrderCustomFieldsMutationVariables;
     export type Mutation = UpdateOrderCustomFieldsMutation;
     export type SetOrderCustomFields = NonNullable<UpdateOrderCustomFieldsMutation['setOrderCustomFields']>;
+    export type OrderInlineFragment = { __typename: 'Order' } & Pick<
+        NonNullable<UpdateOrderCustomFieldsMutation['setOrderCustomFields']>,
+        'id'
+    >;
 }
 
 export namespace GetTagList {

@@ -962,6 +962,50 @@ describe('ListQueryBuilder', () => {
             11, 9, 22, 14, 13, 33,
         ]);
     });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1611
+    xdescribe('translations handling', () => {
+        const allTranslations = [
+            [
+                { languageCode: LanguageCode.en, name: 'apple' },
+                { languageCode: LanguageCode.de, name: 'apfel' },
+            ],
+            [
+                { languageCode: LanguageCode.en, name: 'bike' },
+                { languageCode: LanguageCode.de, name: 'fahrrad' },
+            ],
+        ];
+        it('returns all translations with default languageCode', async () => {
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_TRANSLATIONS, {
+                options: {
+                    take: 2,
+                    sort: {
+                        order: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(testEntities.items.map((e: any) => e.name)).toEqual(['apple', 'bike']);
+            expect(testEntities.items.map((e: any) => e.translations)).toEqual(allTranslations);
+        });
+        it('returns all translations with non-default languageCode', async () => {
+            const { testEntities } = await shopClient.query(
+                GET_LIST_WITH_TRANSLATIONS,
+                {
+                    options: {
+                        take: 2,
+                        sort: {
+                            order: SortOrder.ASC,
+                        },
+                    },
+                },
+                { languageCode: LanguageCode.de },
+            );
+
+            expect(testEntities.items.map((e: any) => e.name)).toEqual(['apfel', 'fahrrad']);
+            expect(testEntities.items.map((e: any) => e.translations)).toEqual(allTranslations);
+        });
+    });
 });
 
 const GET_LIST = gql`
@@ -973,6 +1017,24 @@ const GET_LIST = gql`
                 label
                 name
                 date
+            }
+        }
+    }
+`;
+
+const GET_LIST_WITH_TRANSLATIONS = gql`
+    query GetTestEntitiesWithTranslations($options: TestEntityListOptions) {
+        testEntities(options: $options) {
+            totalItems
+            items {
+                id
+                label
+                name
+                date
+                translations {
+                    languageCode
+                    name
+                }
             }
         }
     }
