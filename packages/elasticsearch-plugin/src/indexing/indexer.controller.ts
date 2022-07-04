@@ -11,6 +11,7 @@ import {
     EntityRelationPaths,
     FacetValue,
     ID,
+    InternalServerError,
     LanguageCode,
     Logger,
     Product,
@@ -96,11 +97,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
     onModuleInit(): any {
         this.client = getClient(this.options);
-        this.productRelations = this.getReindexRelationsRelations(
+        this.productRelations = this.getReindexRelations(
             defaultProductRelations,
             this.options.hydrateProductRelations,
         );
-        this.variantRelations = this.getReindexRelationsRelations(
+        this.variantRelations = this.getReindexRelations(
             defaultVariantRelations,
             this.options.hydrateProductVariantRelations,
         );
@@ -633,13 +634,24 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
      * throw an error trying to join a 2nd-level deep relation without the first level also
      * being joined.
      */
-    private getReindexRelationsRelations<T extends Product | ProductVariant>(
+    private getReindexRelations<T extends Product | ProductVariant>(
         defaultRelations: Array<EntityRelationPaths<T>>,
         hydratedRelations: Array<EntityRelationPaths<T>>,
     ): Array<EntityRelationPaths<T>> {
         const uniqueRelations = unique([...defaultRelations, ...hydratedRelations]);
         for (const relation of hydratedRelations) {
-            const path = relation.split('.');
+            let path = relation.split('.');
+            if (path[0] === 'customFields') {
+                if (2 < path.length) {
+                    throw new InternalServerError(
+                        [
+                            `hydrateProductRelations / hydrateProductVariantRelations does not currently support nested custom field relations`,
+                            `Received: "${relation}"`,
+                        ].join('\n'),
+                    );
+                }
+                path = [path.join('.')];
+            }
             const pathToPart: string[] = [];
             for (const part of path) {
                 pathToPart.push(part);
