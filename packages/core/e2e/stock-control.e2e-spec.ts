@@ -82,7 +82,7 @@ class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
         toState: OrderState,
         order: Order,
     ): boolean {
-        if ((order.customFields as any).test1557 === true) {
+        if ((order.customFields as any).test1557) {
             // This branch is used in testing https://github.com/vendure-ecommerce/vendure/issues/1557
             // i.e. it will cause the Order to be set to `active: false` but without creating any
             // Allocations for the OrderLines.
@@ -1249,6 +1249,7 @@ describe('Stock control', () => {
                 >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
                 orderGuard.assertSuccess(transitionOrderToState);
                 expect(transitionOrderToState.state).toBe('ArrangingPayment');
+                expect(transitionOrderToState.active).toBe(false);
 
                 const product2 = await getProductWithStockMovement('T_2');
                 const variant6_2 = product2!.variants.find(v => v.id === variant6Id)!;
