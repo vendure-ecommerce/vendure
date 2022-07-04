@@ -65,7 +65,7 @@ export class ChannelService {
     }
 
     /**
-     * Creates a channels cache, that can be used to reduce number of channel queries to database 
+     * Creates a channels cache, that can be used to reduce number of channel queries to database
      *
      * @internal
      */
@@ -154,9 +154,9 @@ export class ChannelService {
     async getChannelFromToken(token: string): Promise<Channel>;
     async getChannelFromToken(ctx: RequestContext, token: string): Promise<Channel>;
     async getChannelFromToken(ctxOrToken: RequestContext | string, token?: string): Promise<Channel> {
-        const [ctx, channelToken] = ctxOrToken instanceof RequestContext 
-            ? [ctxOrToken, token!]
-            : [undefined, ctxOrToken]
+        const [ctx, channelToken] =
+            // tslint:disable-next-line:no-non-null-assertion
+            ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
         const allChannels = await this.allChannels.value(ctx);
 
@@ -292,7 +292,7 @@ export class ChannelService {
      */
     private async ensureCacheExists() {
         if (this.allChannels) {
-            return
+            return;
         }
 
         this.allChannels = await this.createCache();
@@ -318,10 +318,14 @@ export class ChannelService {
                 currencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
-            await this.connection.rawConnection.getRepository(Channel).save(newDefaultChannel, { reload: false });
+            await this.connection.rawConnection
+                .getRepository(Channel)
+                .save(newDefaultChannel, { reload: false });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
-            await this.connection.rawConnection.getRepository(Channel).save(defaultChannel, { reload: false });
+            await this.connection.rawConnection
+                .getRepository(Channel)
+                .save(defaultChannel, { reload: false });
         }
     }
 
