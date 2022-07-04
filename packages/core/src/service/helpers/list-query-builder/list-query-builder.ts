@@ -539,13 +539,13 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     qb1.where(`${translationsAlias}.languageCode = :languageCode`, { languageCode });
                     const defaultLanguageCode =
                         ctx?.channel.defaultLanguageCode ?? this.configService.defaultLanguageCode;
+                    const translationEntity = translationColumns[0].entityMetadata.target;
                     if (languageCode !== defaultLanguageCode) {
                         // If the current languageCode is not the default, then we create a more
                         // complex WHERE clause to allow us to use the non-default translations and
                         // fall back to the default language if no translation exists.
                         qb1.orWhere(
                             new Brackets(qb2 => {
-                                const translationEntity = translationColumns[0].entityMetadata.target;
                                 const subQb1 = this.connection.rawConnection
                                     .createQueryBuilder(translationEntity, 'translation')
                                     .where(`translation.base = ${alias}.id`)
@@ -563,7 +563,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     } else {
                         qb1.orWhere(
                             new Brackets(qb2 => {
-                                const translationEntity = translationColumns[0].entityMetadata.target;
                                 const subQb1 = this.connection.rawConnection
                                     .createQueryBuilder(translationEntity, 'translation')
                                     .where(`translation.base = ${alias}.id`)
