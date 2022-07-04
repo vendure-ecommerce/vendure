@@ -1,7 +1,10 @@
+import { Args, Query, Resolver } from '@nestjs/graphql';
+import { ID } from '@vendure/common/lib/shared-types';
 import {
     Asset,
     Collection,
     Country,
+    Ctx,
     CustomFields,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
@@ -9,11 +12,15 @@ import {
     FacetValue,
     manualFulfillmentHandler,
     mergeConfig,
+    PluginCommonModule,
     Product,
     ProductOption,
     ProductOptionGroup,
     ProductVariant,
+    RequestContext,
     ShippingMethod,
+    TransactionalConnection,
+    VendurePlugin,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -85,6 +92,34 @@ customFieldConfig.Product?.push(
     { name: 'cfInternalAsset', type: 'relation', entity: Asset, list: false, internal: true },
 );
 
+const testResolverSpy = jest.fn();
+@Resolver()
+class TestResolver1636 {
+    constructor(private connection: TransactionalConnection) {}
+
+    @Query()
+    async getAssetTest(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const asset = await this.connection.findOneInChannel(ctx, Asset, args.id, ctx.channelId, {
+            relations: ['customFields.single', 'customFields.multi'],
+        });
+        testResolverSpy(asset);
+        return true;
+    }
+}
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    shopApiExtensions: {
+        schema: gql`
+            extend type Query {
+                getAssetTest(id: ID!): Boolean!
+            }
+        `,
+        resolvers: [TestResolver1636],
+    },
+})
+class TestPlugin1636 {}
+
 const customConfig = mergeConfig(testConfig(), {
     paymentOptions: {
         paymentMethodHandlers: [testSuccessfulPaymentMethod],
@@ -93,6 +128,7 @@ const customConfig = mergeConfig(testConfig(), {
         timezone: 'Z',
     },
     customFields: customFieldConfig,
+    plugins: [TestPlugin1636],
 });
 
 describe('Custom field relations', () => {
@@ -926,6 +962,52 @@ describe('Custom field relations', () => {
                     }
                 `);
                 assertCustomFieldIds(eligiblePaymentMethods[0].customFields, 'T_2', ['T_3', 'T_4']);
+            });
+        });
+
+        describe('Asset entity', () => {
+            it('set custom field relations on Asset', async () => {
+                const { updateAsset } = await adminClient.query(gql`
+                    mutation {
+                        updateAsset(
+                            input: {
+                                id: "T_1",
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                            `);
+
+                assertCustomFieldIds(updateAsset.customFields, 'T_2', ['T_3', 'T_4']);
+            });
+
+            it('findOne on Asset', async () => {
+                const { asset } = await adminClient.query(gql`
+                    query {
+                        asset(id: "T_1") {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(asset.customFields.single.id).toBe('T_2');
+                expect(asset.customFields.multi.length).toEqual(2);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1636
+            it('calling TransactionalConnection.findOneInChannel() returns custom field relations', async () => {
+                testResolverSpy.mockReset();
+                await shopClient.query(gql`
+                    query {
+                        getAssetTest(id: "T_1")
+                    }
+                `);
+                const args = testResolverSpy.mock.calls[0];
+                expect(args[0].customFields.single.id).toEqual(2);
+                expect(args[0].customFields.multi.length).toEqual(2);
             });
         });
     });
