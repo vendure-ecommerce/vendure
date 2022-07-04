@@ -1439,10 +1439,6 @@ export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
             ... on Order {
                 id
             }
-            ... on ErrorResult {
-                errorCode
-                message
-            }
         }
     }
 `;
