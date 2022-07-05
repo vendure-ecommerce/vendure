@@ -89,6 +89,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
+import { Allocation } from '../../entity/stock-movement/allocation.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -908,10 +909,10 @@ export class OrderService {
      * * Shipping or billing address changes
      *
      * Setting the `dryRun` input property to `true` will apply all changes, including updating the price of the
-     * Order, except history entry and additional payment actions. 
-     * 
+     * Order, except history entry and additional payment actions.
+     *
      * __Using dryRun option, you must wrap function call in transaction manually.__
-     * 
+     *
      */
     async modifyOrder(
         ctx: RequestContext,
@@ -1320,7 +1321,7 @@ export class OrderService {
         const fullOrder = await this.findOne(ctx, order.id);
 
         const soldItems = items.filter(i => !!i.fulfillment);
-        const allocatedItems = items.filter(i => !i.fulfillment);
+        const allocatedItems = await this.getAllocatedItems(ctx, items);
         await this.stockMovementService.createCancellationsForOrderItems(ctx, soldItems);
         await this.stockMovementService.createReleasesForOrderItems(ctx, allocatedItems);
         items.forEach(i => (i.cancelled = true));
@@ -1356,6 +1357,26 @@ export class OrderService {
         });
 
         return orderItemsAreAllCancelled(orderWithItems);
+    }
+
+    private async getAllocatedItems(ctx: RequestContext, items: OrderItem[]): Promise<OrderItem[]> {
+        const allocatedItems: OrderItem[] = [];
+        const allocationMap = new Map<ID, Allocation | false>();
+        for (const item of items) {
+            let allocation = allocationMap.get(item.lineId);
+            if (!allocation) {
+                allocation = await this.connection
+                    .getRepository(ctx, Allocation)
+                    .createQueryBuilder('allocation')
+                    .where('allocation.orderLine = :lineId', { lineId: item.lineId })
+                    .getOne();
+                allocationMap.set(item.lineId, allocation || false);
+            }
+            if (allocation && !item.fulfillment) {
+                allocatedItems.push(item);
+            }
+        }
+        return allocatedItems;
     }
 
     /**

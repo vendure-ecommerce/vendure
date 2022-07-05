@@ -26,7 +26,7 @@ export const discountOnItemWithFacets = new PromotionItemAction({
         facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
     },
     async execute(ctx, orderItem, orderLine, args) {
-        if (await facetValueChecker.hasFacetValues(orderLine, args.facets)) {
+        if (await facetValueChecker.hasFacetValues(orderLine, args.facets, ctx)) {
             const unitPrice = ctx.channel.pricesIncludeTax ? orderLine.unitPriceWithTax : orderLine.unitPrice;
             return -unitPrice * (args.discount / 100);
         }

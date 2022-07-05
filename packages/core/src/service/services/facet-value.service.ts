@@ -43,13 +43,21 @@ export class FacetValueService {
         private eventBus: EventBus,
     ) {}
 
-    findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
-        return this.connection
-            .getRepository(FacetValue)
+    /**
+     * @deprecated Use {@link FacetValueService.findAll findAll(ctx, lang)} instead
+     */
+    findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
+    findAll(ctx: RequestContext, lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
+    findAll(ctxOrLang: RequestContext | LanguageCode, lang?: LanguageCode): Promise<Array<Translated<FacetValue>>> {
+        const [repository, languageCode] = ctxOrLang instanceof RequestContext 
+            ? [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
+            : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
+
+        return repository
             .find({
                 relations: ['facet'],
             })
-            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, lang, ['facet'])));
+            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, languageCode, ['facet'])));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<FacetValue> | undefined> {

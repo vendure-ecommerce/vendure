@@ -85,10 +85,10 @@ export class OrderCalculator {
                 // altered the unit prices, which in turn will alter the tax payable.
                 await this.applyTaxes(ctx, order, activeTaxZone);
             }
-            if (options?.recalculateShipping !== false) {
-                await this.applyShipping(ctx, order);
-                await this.applyShippingPromotions(ctx, order, promotions);
-            }
+        }
+        if (options?.recalculateShipping !== false) {
+            await this.applyShipping(ctx, order);
+            await this.applyShippingPromotions(ctx, order, promotions);
         }
         this.calculateOrderTotals(order);
         return taxZoneChanged ? order.getOrderItems() : Array.from(updatedOrderItems);

@@ -89,8 +89,8 @@ export class RoleService {
      * @description
      * Returns the special SuperAdmin Role, which always exists in Vendure.
      */
-    getSuperAdminRole(): Promise<Role> {
-        return this.getRoleByCode(SUPER_ADMIN_ROLE_CODE).then(role => {
+    getSuperAdminRole(ctx?: RequestContext): Promise<Role> {
+        return this.getRoleByCode(ctx, SUPER_ADMIN_ROLE_CODE).then(role => {
             if (!role) {
                 throw new InternalServerError(`error.super-admin-role-not-found`);
             }
@@ -102,8 +102,8 @@ export class RoleService {
      * @description
      * Returns the special Customer Role, which always exists in Vendure.
      */
-    getCustomerRole(): Promise<Role> {
-        return this.getRoleByCode(CUSTOMER_ROLE_CODE).then(role => {
+    getCustomerRole(ctx?: RequestContext): Promise<Role> {
+        return this.getRoleByCode(ctx, CUSTOMER_ROLE_CODE).then(role => {
             if (!role) {
                 throw new InternalServerError(`error.customer-role-not-found`);
             }
@@ -228,8 +228,12 @@ export class RoleService {
         }
     }
 
-    private getRoleByCode(code: string): Promise<Role | undefined> {
-        return this.connection.getRepository(Role).findOne({
+    private getRoleByCode(ctx: RequestContext | undefined, code: string) {
+        const repository = ctx 
+            ? this.connection.getRepository(ctx, Role) 
+            : this.connection.rawConnection.getRepository(Role);
+
+        return repository.findOne({
             where: { code },
         });
     }
@@ -242,7 +246,7 @@ export class RoleService {
         try {
             const superAdminRole = await this.getSuperAdminRole();
             superAdminRole.permissions = assignablePermissions;
-            await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
+            await this.connection.rawConnection.getRepository(Role).save(superAdminRole, { reload: false });
         } catch (err) {
             const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
@@ -284,13 +288,13 @@ export class RoleService {
      * permissions are removed from those Roles.
      */
     private async ensureRolesHaveValidPermissions() {
-        const roles = await this.connection.getRepository(Role).find();
+        const roles = await this.connection.rawConnection.getRepository(Role).find();
         const assignablePermissions = this.getAllAssignablePermissions();
         for (const role of roles) {
             const invalidPermissions = role.permissions.filter(p => !assignablePermissions.includes(p));
             if (invalidPermissions.length) {
                 role.permissions = role.permissions.filter(p => assignablePermissions.includes(p));
-                await this.connection.getRepository(Role).save(role);
+                await this.connection.rawConnection.getRepository(Role).save(role);
             }
         }
     }

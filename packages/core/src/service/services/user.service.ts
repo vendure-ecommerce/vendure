@@ -69,7 +69,7 @@ export class UserService {
     ): Promise<User | PasswordValidationError> {
         const user = new User();
         user.identifier = identifier;
-        const customerRole = await this.roleService.getCustomerRole();
+        const customerRole = await this.roleService.getCustomerRole(ctx);
         user.roles = [customerRole];
         const addNativeAuthResult = await this.addNativeAuthenticationMethod(ctx, user, identifier, password);
         if (isGraphQlErrorResult(addNativeAuthResult)) {

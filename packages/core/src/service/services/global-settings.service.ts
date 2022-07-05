@@ -32,20 +32,20 @@ export class GlobalSettingsService {
      */
     async initGlobalSettings() {
         try {
-            const result = await this.connection.getRepository(GlobalSettings).find();
+            const result = await this.connection.rawConnection.getRepository(GlobalSettings).find();
             if (result.length === 0) {
                 throw new Error('No global settings');
             }
             if (1 < result.length) {
                 // Strange edge case, see https://github.com/vendure-ecommerce/vendure/issues/987
                 const toDelete = result.slice(1);
-                await this.connection.getRepository(GlobalSettings).remove(toDelete);
+                await this.connection.rawConnection.getRepository(GlobalSettings).remove(toDelete);
             }
         } catch (err) {
             const settings = new GlobalSettings({
                 availableLanguages: [this.configService.defaultLanguageCode],
             });
-            await this.connection.getRepository(GlobalSettings).save(settings, { reload: false });
+            await this.connection.rawConnection.getRepository(GlobalSettings).save(settings, { reload: false });
         }
     }
 

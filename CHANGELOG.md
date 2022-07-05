@@ -1,3 +1,25 @@
+## <small>1.6.3 (2022-07-05)</small>
+
+
+#### Fixes
+
+* **asset-server-plugin** Detect protocol for assetUrlPrefix when behind a proxy (#1641) ([a39c592](https://github.com/vendure-ecommerce/vendure/commit/a39c592)), closes [#1641](https://github.com/vendure-ecommerce/vendure/issues/1641) [#1640](https://github.com/vendure-ecommerce/vendure/issues/1640)
+* **core** Consistently apply coupon code checks on MySQL DBs ([bfaee82](https://github.com/vendure-ecommerce/vendure/commit/bfaee82)), closes [#1604](https://github.com/vendure-ecommerce/vendure/issues/1604)
+* **core** Correctly join custom field relations in findOneInChannel ([9834225](https://github.com/vendure-ecommerce/vendure/commit/9834225)), closes [#1636](https://github.com/vendure-ecommerce/vendure/issues/1636)
+* **core** Do no de-allocate OrderItems that were not allocated ([11b69c7](https://github.com/vendure-ecommerce/vendure/commit/11b69c7)), closes [#1557](https://github.com/vendure-ecommerce/vendure/issues/1557)
+* **core** Fix edge case for custom field comparison on MySQL ([f08f62c](https://github.com/vendure-ecommerce/vendure/commit/f08f62c)), closes [#1612](https://github.com/vendure-ecommerce/vendure/issues/1612)
+* **core** Fix error when calling assignToChannels on an Order ([5dbca2d](https://github.com/vendure-ecommerce/vendure/commit/5dbca2d)), closes [#1391](https://github.com/vendure-ecommerce/vendure/issues/1391)
+* **core** Fix OrderLine deduplication with customField default values ([9522f34](https://github.com/vendure-ecommerce/vendure/commit/9522f34)), closes [#1612](https://github.com/vendure-ecommerce/vendure/issues/1612)
+* **core** Introduced errorOnFail flag for job.updates() method (#1627) ([464924c](https://github.com/vendure-ecommerce/vendure/commit/464924c)), closes [#1627](https://github.com/vendure-ecommerce/vendure/issues/1627) [#1551](https://github.com/vendure-ecommerce/vendure/issues/1551)
+* **core** Re-evaluate shipping when all OrderLines removed ([19a554d](https://github.com/vendure-ecommerce/vendure/commit/19a554d)), closes [#1441](https://github.com/vendure-ecommerce/vendure/issues/1441)
+* **core** Resolve customField relations on related types ([3e81821](https://github.com/vendure-ecommerce/vendure/commit/3e81821)), closes [#1610](https://github.com/vendure-ecommerce/vendure/issues/1610)
+* **core** Use correct ctx when importing FacetValues ([fcaff4e](https://github.com/vendure-ecommerce/vendure/commit/fcaff4e))
+* **core** Use RequestContext where available in all DB operations (#1639) ([a683ef5](https://github.com/vendure-ecommerce/vendure/commit/a683ef5)), closes [#1639](https://github.com/vendure-ecommerce/vendure/issues/1639)
+* **elasticsearch-plugin** Support hydration of custom field relations ([a75390e](https://github.com/vendure-ecommerce/vendure/commit/a75390e)), closes [#1638](https://github.com/vendure-ecommerce/vendure/issues/1638)
+* **email-plugin** Relax typings of `handlers` config option ([0dfa9d0](https://github.com/vendure-ecommerce/vendure/commit/0dfa9d0))
+* **payments-plugin** Attach incoming req to `ctx` in Stripe webhook ([cb13e99](https://github.com/vendure-ecommerce/vendure/commit/cb13e99)), closes [#1643](https://github.com/vendure-ecommerce/vendure/issues/1643)
+* **payments-plugin** Stripe - send correct amount for JPY ([cd0a48f](https://github.com/vendure-ecommerce/vendure/commit/cd0a48f)), closes [#1630](https://github.com/vendure-ecommerce/vendure/issues/1630)
+
 ## <small>1.6.2 (2022-06-02)</small>
 
 

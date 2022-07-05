@@ -26,6 +26,7 @@ export class TestEntity extends VendureEntity implements Translatable {
     constructor(input: Partial<TestEntity>) {
         super(input);
     }
+
     @Column()
     label: string;
 
@@ -155,6 +156,14 @@ export class ListQueryResolver {
 }
 
 const apiExtensions = gql`
+    type TestEntityTranslation implements Node {
+        id: ID!
+        createdAt: DateTime!
+        updatedAt: DateTime!
+        languageCode: LanguageCode!
+        name: String!
+    }
+
     type TestEntity implements Node {
         id: ID!
         createdAt: DateTime!
@@ -168,6 +177,7 @@ const apiExtensions = gql`
         descriptionLength: Int!
         price: Int!
         ownerId: ID!
+        translations: [TestEntityTranslation!]!
     }
 
     type TestEntityList implements PaginatedList {

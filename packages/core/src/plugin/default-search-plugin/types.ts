@@ -15,7 +15,7 @@ import { SearchStrategy } from './search-strategy/search-strategy';
 export interface DefaultSearchPluginInitOptions {
     /**
      * @description
-     * If set to `true`, the stock status of a ProductVariant (isStock: Boolean) will
+     * If set to `true`, the stock status of a ProductVariant (inStock: Boolean) will
      * be exposed in the `search` query results. Enabling this option on an existing
      * Vendure installation will require a DB migration/synchronization.
      *

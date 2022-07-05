@@ -1,5 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { RequestContext } from '../../../api';
 
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
@@ -55,11 +56,11 @@ export class FacetValueChecker {
      * `true` if the associated {@link ProductVariant} & {@link Product} together
      * have *all* the specified {@link FacetValue}s.
      */
-    async hasFacetValues(orderLine: OrderLine, facetValueIds: ID[]): Promise<boolean> {
+    async hasFacetValues(orderLine: OrderLine, facetValueIds: ID[], ctx?: RequestContext): Promise<boolean> {
         let variant = this.variantCache.get(orderLine.productVariant.id);
         if (!variant) {
             variant = await this.connection
-                .getRepository(ProductVariant)
+                .getRepository(ctx, ProductVariant)
                 .findOne(orderLine.productVariant.id, {
                     relations: ['product', 'product.facetValues', 'facetValues'],
                 });

@@ -13,6 +13,7 @@ export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
      * the fresh value will be returned.
      */
     value(): Promise<V>;
+    value(...refreshArgs: RefreshArgs | [undefined]): Promise<V>;
 
     /**
      * @description
@@ -40,6 +41,9 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
     ttl: number;
     refresh: {
         fn: (...args: RefreshArgs) => Promise<V>;
+        /**
+         * Default arguments, passed to refresh function
+         */
         defaultArgs: RefreshArgs;
     };
     /**
@@ -61,10 +65,11 @@ export interface SelfRefreshingCacheConfig<V, RefreshArgs extends any[]> {
  */
 export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
     config: SelfRefreshingCacheConfig<V, RefreshArgs>,
+    refreshArgs?: RefreshArgs
 ): Promise<SelfRefreshingCache<V, RefreshArgs>> {
     const { ttl, name, refresh, getTimeFn } = config;
     const getTimeNow = getTimeFn ?? (() => new Date().getTime());
-    const initialValue = await refresh.fn(...refresh.defaultArgs);
+    const initialValue = await refresh.fn(...(refreshArgs ?? refresh.defaultArgs));
     let value = initialValue;
     let expires = getTimeNow() + ttl;
     const memoCache = new Map<string, { expires: number; value: any }>();
@@ -114,7 +119,7 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
         return result;
     };
     return {
-        value: getValue,
+        value: (...args) => getValue(!args.length || args.length === 1 && args[0] === undefined ? undefined : args as RefreshArgs),
         refresh: (...args) => refreshValue(true, args),
         memoize,
     };
