@@ -1,4 +1,5 @@
 import '@vendure/core/dist/entity/custom-entity-fields';
+import { Request } from 'express';
 import { IncomingMessage } from 'http';
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Braintree
@@ -39,6 +40,6 @@ export interface StripePluginOptions {
     storeCustomersInStripe?: boolean;
 }
 
-export interface IncomingMessageWithRawBody extends IncomingMessage {
+export interface RequestWithRawBody extends Request {
     rawBody: Buffer;
 }
