@@ -12,6 +12,7 @@ export const TEST_ORDER_FRAGMENT = gql`
         shippingWithTax
         total
         totalWithTax
+        currencyCode
         couponCodes
         discounts {
             adjustmentSource
@@ -191,6 +192,15 @@ export const ADD_ITEM_TO_ORDER = gql`
 export const GET_ORDER_BY_CODE = gql`
     query GetOrderByCode($code: String!) {
         orderByCode(code: $code) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+export const GET_ACTIVE_ORDER = gql`
+    query GetActiveOrder {
+        activeOrder {
             ...TestOrderFragment
         }
     }

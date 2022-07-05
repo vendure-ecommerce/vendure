@@ -65,13 +65,13 @@ export class IndexerController {
         const ctx = MutableRequestContext.deserialize(rawContext);
         return asyncObservable(async observer => {
             const timeStart = Date.now();
-            const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
+            const qb = this.getSearchIndexQueryBuilder(ctx, ctx.channelId);
             const count = await qb.getCount();
             Logger.verbose(`Reindexing ${count} variants for channel ${ctx.channel.code}`, workerLoggerCtx);
             const batches = Math.ceil(count / BATCH_SIZE);
 
             await this.connection
-                .getRepository(SearchIndexItem)
+                .getRepository(ctx, SearchIndexItem)
                 .delete({ languageCode: ctx.languageCode, channelId: ctx.channelId });
             Logger.verbose('Deleted existing index items', workerLoggerCtx);
 
@@ -116,10 +116,12 @@ export class IndexerController {
                     const end = begin + BATCH_SIZE;
                     Logger.verbose(`Updating ids from index ${begin} to ${end}`);
                     const batchIds = ids.slice(begin, end);
-                    const batch = await this.connection.getRepository(ProductVariant).findByIds(batchIds, {
-                        relations: variantRelations,
-                        where: { deletedAt: null },
-                    });
+                    const batch = await this.connection
+                        .getRepository(ctx, ProductVariant)
+                        .findByIds(batchIds, {
+                            relations: variantRelations,
+                            where: { deletedAt: null },
+                        });
                     await this.saveVariants(ctx, batch);
                     observer.next({
                         total: ids.length,
@@ -154,7 +156,7 @@ export class IndexerController {
 
     async deleteVariant(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
+        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(data.variantIds);
         if (variants.length) {
             const languageVariants = unique([
                 ...variants
@@ -162,6 +164,7 @@ export class IndexerController {
                     .map(t => t.languageCode),
             ]);
             await this.removeSearchIndexItems(
+                ctx,
                 ctx.channelId,
                 variants.map(v => v.id),
                 languageVariants,
@@ -187,14 +190,17 @@ export class IndexerController {
 
     async removeVariantFromChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        const variant = await this.connection.getRepository(ProductVariant).findOne(data.productVariantId);
+        const variant = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .findOne(data.productVariantId);
         const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
-        await this.removeSearchIndexItems(data.channelId, [data.productVariantId], languageVariants);
+        await this.removeSearchIndexItems(ctx, data.channelId, [data.productVariantId], languageVariants);
         return true;
     }
 
     async updateAsset(data: UpdateAssetMessageData): Promise<boolean> {
         const id = data.asset.id;
+        const ctx = MutableRequestContext.deserialize(data.ctx);
 
         function getFocalPoint(point?: { x: number; y: number }) {
             return point && point.x && point.y ? point : null;
@@ -202,21 +208,23 @@ export class IndexerController {
 
         const focalPoint = getFocalPoint(data.asset.focalPoint);
         await this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .update({ productAssetId: id }, { productPreviewFocalPoint: focalPoint });
         await this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .update({ productVariantAssetId: id }, { productVariantPreviewFocalPoint: focalPoint });
         return true;
     }
 
     async deleteAsset(data: UpdateAssetMessageData): Promise<boolean> {
         const id = data.asset.id;
+        const ctx = MutableRequestContext.deserialize(data.ctx);
+
         await this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .update({ productAssetId: id }, { productAssetId: null });
         await this.connection
-            .getRepository(SearchIndexItem)
+            .getRepository(ctx, SearchIndexItem)
             .update({ productVariantAssetId: id }, { productVariantAssetId: null });
         return true;
     }
@@ -226,11 +234,11 @@ export class IndexerController {
         productId: ID,
         channelId: ID,
     ): Promise<boolean> {
-        const product = await this.connection.getRepository(Product).findOne(productId, {
+        const product = await this.connection.getRepository(ctx, Product).findOne(productId, {
             relations: ['variants'],
         });
         if (product) {
-            const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
+            const updatedVariants = await this.connection.getRepository(ctx, ProductVariant).findByIds(
                 product.variants.map(v => v.id),
                 {
                     relations: variantRelations,
@@ -260,7 +268,7 @@ export class IndexerController {
         variantIds: ID[],
         channelId: ID,
     ): Promise<boolean> {
-        const variants = await this.connection.getRepository(ProductVariant).findByIds(variantIds, {
+        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(variantIds, {
             relations: variantRelations,
             where: { deletedAt: null },
         });
@@ -276,7 +284,7 @@ export class IndexerController {
         productId: ID,
         channelId: ID,
     ): Promise<boolean> {
-        const product = await this.connection.getRepository(Product).findOne(productId, {
+        const product = await this.connection.getRepository(ctx, Product).findOne(productId, {
             relations: ['variants'],
         });
         if (product) {
@@ -289,14 +297,14 @@ export class IndexerController {
 
             const removedVariantIds = product.variants.map(v => v.id);
             if (removedVariantIds.length) {
-                await this.removeSearchIndexItems(channelId, removedVariantIds, languageVariants);
+                await this.removeSearchIndexItems(ctx, channelId, removedVariantIds, languageVariants);
             }
         }
         return true;
     }
 
-    private getSearchIndexQueryBuilder(channelId: ID) {
-        const qb = this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
+    private getSearchIndexQueryBuilder(ctx: RequestContext, channelId: ID) {
+        const qb = this.connection.getRepository(ctx, ProductVariant).createQueryBuilder('variants');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: variantRelations,
         });
@@ -316,7 +324,7 @@ export class IndexerController {
     private async saveVariants(ctx: MutableRequestContext, variants: ProductVariant[]) {
         const items: SearchIndexItem[] = [];
 
-        await this.removeSyntheticVariants(variants);
+        await this.removeSyntheticVariants(ctx, variants);
         const productMap = new Map<ID, Product>();
 
         for (const variant of variants) {
@@ -403,7 +411,7 @@ export class IndexerController {
         }
 
         await this.queue.push(() =>
-            this.connection.getRepository(SearchIndexItem).save(items, { chunk: 2500 }),
+            this.connection.getRepository(ctx, SearchIndexItem).save(items, { chunk: 2500 }),
         );
     }
 
@@ -438,17 +446,17 @@ export class IndexerController {
             collectionIds: [],
             collectionSlugs: [],
         });
-        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(item));
+        await this.queue.push(() => this.connection.getRepository(ctx, SearchIndexItem).save(item));
     }
 
     /**
      * Removes any synthetic variants for the given product
      */
-    private async removeSyntheticVariants(variants: ProductVariant[]) {
+    private async removeSyntheticVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const prodIds = unique(variants.map(v => v.productId));
         for (const productId of prodIds) {
             await this.queue.push(() =>
-                this.connection.getRepository(SearchIndexItem).delete({
+                this.connection.getRepository(ctx, SearchIndexItem).delete({
                     productId,
                     sku: '',
                     price: 0,
@@ -483,7 +491,12 @@ export class IndexerController {
     /**
      * Remove items from the search index
      */
-    private async removeSearchIndexItems(channelId: ID, variantIds: ID[], languageCodes: LanguageCode[]) {
+    private async removeSearchIndexItems(
+        ctx: RequestContext,
+        channelId: ID,
+        variantIds: ID[],
+        languageCodes: LanguageCode[],
+    ) {
         const keys: Array<Partial<SearchIndexItem>> = [];
         for (const productVariantId of variantIds) {
             for (const languageCode of languageCodes) {
@@ -494,7 +507,7 @@ export class IndexerController {
                 });
             }
         }
-        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(keys as any));
+        await this.queue.push(() => this.connection.getRepository(ctx, SearchIndexItem).delete(keys as any));
     }
 
     /**

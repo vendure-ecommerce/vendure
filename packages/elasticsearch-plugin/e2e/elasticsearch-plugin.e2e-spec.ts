@@ -1,7 +1,15 @@
 /* tslint:disable:no-non-null-assertion no-console */
 import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { DefaultJobQueuePlugin, facetValueCollectionFilter, LanguageCode, mergeConfig } from '@vendure/core';
+import {
+    DefaultJobQueuePlugin,
+    DefaultLogger,
+    FacetValue,
+    facetValueCollectionFilter,
+    LanguageCode,
+    LogLevel,
+    mergeConfig,
+} from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
@@ -86,16 +94,39 @@ const INDEX_PREFIX = 'e2e-tests';
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
+            customFields: {
+                ProductVariant: [
+                    {
+                        name: 'material',
+                        type: 'relation',
+                        entity: FacetValue,
+                    },
+                ],
+            },
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: INDEX_PREFIX,
                     port: elasticsearchPort,
                     host: elasticsearchHost,
+                    hydrateProductVariantRelations: ['customFields.material'],
                     customProductVariantMappings: {
                         inStock: {
                             graphQlType: 'Boolean!',
                             valueFn: variant => {
                                 return variant.stockOnHand > 0;
+                            },
+                        },
+                        materialCode: {
+                            graphQlType: 'String!',
+                            valueFn: variant => {
+                                const materialFacetValue: FacetValue | undefined = (
+                                    variant.customFields as any
+                                ).material;
+                                let result = '';
+                                if (materialFacetValue) {
+                                    result = `${materialFacetValue.code}`;
+                                }
+                                return result;
                             },
                         },
                     },
@@ -1343,6 +1374,43 @@ describe('Elasticsearch plugin', () => {
                     inStock: false,
                 },
             });
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1638
+        it('hydrates variant custom field relation', async () => {
+            const { updateProductVariants } = await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: 'T_20',
+                        customFields: {
+                            materialId: 'T_1',
+                        },
+                    },
+                ],
+            });
+            expect(updateProductVariants[0]!.id).toBe('T_20');
+
+            await adminClient.query<Codegen.ReindexMutation>(REINDEX);
+            await awaitRunningJobs(adminClient);
+            const query = `{
+            search(input: { groupByProduct: false, term: "tripod" }) {
+                items {
+                  productVariantName
+                  productVariantId
+                  customMappings {
+                    ...on CustomProductVariantMappings {
+                      materialCode
+                    }
+                  }
+                }
+              }
+            }`;
+            const { search } = await shopClient.query(gql(query));
+
+            expect(search.items.map((i: any) => i.customMappings)).toEqual([{ materialCode: 'electronics' }]);
         });
 
         it('product mappings', async () => {

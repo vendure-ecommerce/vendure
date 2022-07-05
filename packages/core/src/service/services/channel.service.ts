@@ -23,6 +23,7 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
+import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
@@ -85,7 +86,7 @@ export class ChannelService {
         entity: T,
         ctx: RequestContext,
     ): Promise<T> {
-        const defaultChannel = await this.getDefaultChannel();
+        const defaultChannel = await this.getDefaultChannel(ctx);
         const channelIds = unique([ctx.channelId, defaultChannel.id]);
         entity.channels = channelIds.map(id => ({ id })) as any;
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, [ctx.channelId], 'assigned'));
@@ -102,8 +103,16 @@ export class ChannelService {
         entityId: ID,
         channelIds: ID[],
     ): Promise<T> {
+        const relations = ['channels'];
+        // This is a work-around for https://github.com/vendure-ecommerce/vendure/issues/1391
+        // A better API would be to allow the consumer of this method to supply an entity instance
+        // so that this join could be done prior to invoking this method.
+        // TODO: overload the assignToChannels method to allow it to take an entity instance
+        if (entityType === (Order as any)) {
+            relations.push('lines', 'shippingLines');
+        }
         const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
-            relations: ['channels'],
+            relations,
         });
         for (const id of channelIds) {
             const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
@@ -137,21 +146,27 @@ export class ChannelService {
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
         return entity;
     }
-
     /**
      * @description
      * Given a channel token, returns the corresponding Channel if it exists, else will throw
      * a {@link ChannelNotFoundError}.
      */
-    async getChannelFromToken(token: string): Promise<Channel> {
-        const allChannels = await this.allChannels.value();
-        if (allChannels.length === 1 || token === '') {
+    async getChannelFromToken(token: string): Promise<Channel>;
+    async getChannelFromToken(ctx: RequestContext, token: string): Promise<Channel>;
+    async getChannelFromToken(ctxOrToken: RequestContext | string, token?: string): Promise<Channel> {
+        const [ctx, channelToken] =
+            // tslint:disable-next-line:no-non-null-assertion
+            ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
+
+        const allChannels = await this.allChannels.value(ctx);
+
+        if (allChannels.length === 1 || channelToken === '') {
             // there is only the default channel, so return it
-            return this.getDefaultChannel();
+            return this.getDefaultChannel(ctx);
         }
-        const channel = allChannels.find(c => c.token === token);
+        const channel = allChannels.find(c => c.token === channelToken);
         if (!channel) {
-            throw new ChannelNotFoundError(token);
+            throw new ChannelNotFoundError(channelToken);
         }
         return channel;
     }
@@ -160,8 +175,8 @@ export class ChannelService {
      * @description
      * Returns the default Channel.
      */
-    async getDefaultChannel(): Promise<Channel> {
-        const allChannels = await this.allChannels.value();
+    async getDefaultChannel(ctx?: RequestContext): Promise<Channel> {
+        const allChannels = await this.allChannels.value(ctx);
         const defaultChannel = allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
 
         if (!defaultChannel) {
@@ -289,7 +304,7 @@ export class ChannelService {
      */
     private async ensureDefaultChannelExists() {
         const { defaultChannelToken } = this.configService;
-        const defaultChannel = await this.connection.getRepository(Channel).findOne({
+        const defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
             where: {
                 code: DEFAULT_CHANNEL_CODE,
             },
@@ -303,10 +318,14 @@ export class ChannelService {
                 currencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
-            await this.connection.getRepository(Channel).save(newDefaultChannel, { reload: false });
+            await this.connection.rawConnection
+                .getRepository(Channel)
+                .save(newDefaultChannel, { reload: false });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
-            await this.connection.getRepository(Channel).save(defaultChannel, { reload: false });
+            await this.connection.rawConnection
+                .getRepository(Channel)
+                .save(defaultChannel, { reload: false });
         }
     }
 

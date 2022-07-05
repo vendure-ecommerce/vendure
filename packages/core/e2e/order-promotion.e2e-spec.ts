@@ -170,6 +170,20 @@ describe('Promotions applied to Orders', () => {
             expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_EXPIRED_ERROR);
         });
 
+        it('coupon code application is case-sensitive', async () => {
+            const { applyCouponCode } = await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, {
+                couponCode: TEST_COUPON_CODE.toLowerCase(),
+            });
+            orderResultGuard.assertErrorResult(applyCouponCode);
+            expect(applyCouponCode.message).toBe(
+                `Coupon code "${TEST_COUPON_CODE.toLowerCase()}" is not valid`,
+            );
+            expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_INVALID_ERROR);
+        });
+
         it('applies a valid coupon code', async () => {
             const { applyCouponCode } = await shopClient.query<
                 CodegenShop.ApplyCouponCodeMutation,

@@ -157,13 +157,18 @@ function generateCustomFieldRelationResolvers(
                 [ENTITY_ID_KEY]: source.id,
             };
         };
-        adminResolvers[entityName] = {
+        const resolverObject = {
             customFields: customFieldResolver,
         };
+        adminResolvers[entityName] = resolverObject;
         if (!excludeFromShopApi) {
-            shopResolvers[entityName] = {
-                customFields: customFieldResolver,
-            };
+            shopResolvers[entityName] = resolverObject;
+            if (entityName === 'ShippingMethod') {
+                shopResolvers.ShippingMethodQuote = resolverObject;
+            }
+            if (entityName === 'PaymentMethod') {
+                shopResolvers.PaymentMethodQuote = resolverObject;
+            }
         }
         for (const fieldDef of relationCustomFields) {
             if (fieldDef.internal === true) {

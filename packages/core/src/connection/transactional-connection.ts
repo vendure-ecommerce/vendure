@@ -54,7 +54,7 @@ export class TransactionalConnection {
      * Returns a TypeORM repository. Note that when no RequestContext is supplied, the repository will not
      * be aware of any existing transaction. Therefore calling this method without supplying a RequestContext
      * is discouraged without a deliberate reason.
-     * 
+     *
      * @deprecated since 1.7.0: Use {@link TransactionalConnection.rawConnection rawConnection.getRepository()} function instead.
      */
     getRepository<Entity>(target: ObjectType<Entity> | EntitySchema<Entity> | string): Repository<Entity>;
@@ -112,7 +112,7 @@ export class TransactionalConnection {
      * private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amount: number) {
      *   await this.connection.withTransaction(outerCtx, ctx => {
      *     await this.giftCardService.updateCustomerCredit(fromId, -amount);
-     * 
+     *
      *     // Note you must not use outerCtx here, instead use ctx. Otherwise this query
      *     // will be executed outside of transaction
      *     await this.connection.getRepository(ctx, GiftCard).update(fromId, { transferred: true })
@@ -262,11 +262,6 @@ export class TransactionalConnection {
         options: FindOneOptions = {},
     ) {
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        if (options.relations) {
-            // Joining custom field relations here does not seem to work well,
-            // so we simply omit them and rely on the custom field relation resolvers.
-            options.relations = options.relations.filter(r => !r.startsWith('customFields.'));
-        }
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
         if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion

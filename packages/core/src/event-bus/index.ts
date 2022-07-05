@@ -26,6 +26,7 @@ export * from './events/global-settings-event';
 export * from './events/history-entry-event';
 export * from './events/identifier-change-event';
 export * from './events/identifier-change-request-event';
+export * from './events/initializer-event';
 export * from './events/login-event';
 export * from './events/logout-event';
 export * from './events/order-event';

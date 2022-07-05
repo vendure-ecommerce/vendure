@@ -1,3 +1,4 @@
+import { CHANNEL_FRAGMENT } from '@vendure/core/e2e/graphql/fragments';
 import gql from 'graphql-tag';
 
 export const PAYMENT_METHOD_FRAGMENT = gql`
@@ -90,6 +91,23 @@ export const GET_ORDER_PAYMENTS = gql`
                 state
                 errorMessage
                 metadata
+            }
+        }
+    }
+`;
+
+export const CREATE_CHANNEL = gql`
+    mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+            ... on Channel {
+                id
+                code
+                token
+                currencyCode
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }

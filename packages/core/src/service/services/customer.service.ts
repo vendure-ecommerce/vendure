@@ -235,7 +235,7 @@ export class CustomerService {
             // Customer already exists, bring to this Channel
             const updatedCustomer = patchEntity(existingCustomer, input);
             updatedCustomer.channels.push(ctx.channel);
-            return this.connection.getRepository(Customer).save(updatedCustomer);
+            return this.connection.getRepository(ctx, Customer).save(updatedCustomer);
         } else if (existingCustomer || existingUser) {
             // Not sure when this situation would occur
             return new EmailAddressConflictAdminError();

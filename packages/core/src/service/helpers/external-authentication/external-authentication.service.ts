@@ -98,7 +98,7 @@ export class ExternalAuthenticationService {
         if (existingUser) {
             user = existingUser;
         } else {
-            const customerRole = await this.roleService.getCustomerRole();
+            const customerRole = await this.roleService.getCustomerRole(ctx);
             user = new User({
                 identifier: config.emailAddress,
                 roles: [customerRole],

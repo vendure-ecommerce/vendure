@@ -81,17 +81,39 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, ctx.languageCode, ['values', ['values', 'facet']]));
     }
 
-    findByCode(facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
+    /**
+     * @deprecated Use {@link FacetService.findByCode findByCode(ctx, facetCode, lang)} instead
+     */
+    findByCode(facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined>;
+    findByCode(
+        ctx: RequestContext,
+        facetCode: string,
+        lang: LanguageCode,
+    ): Promise<Translated<Facet> | undefined>;
+    findByCode(
+        ctxOrFacetCode: RequestContext | string,
+        facetCodeOrLang: string | LanguageCode,
+        lang?: LanguageCode,
+    ): Promise<Translated<Facet> | undefined> {
         const relations = ['values', 'values.facet'];
-        return this.connection
-            .getRepository(Facet)
+        const [repository, facetCode, languageCode] =
+            ctxOrFacetCode instanceof RequestContext
+                ? // tslint:disable-next-line:no-non-null-assertion
+                  [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
+                : [
+                      this.connection.rawConnection.getRepository(Facet),
+                      ctxOrFacetCode,
+                      facetCodeOrLang as LanguageCode,
+                  ];
+
+        return repository
             .findOne({
                 where: {
                     code: facetCode,
                 },
                 relations,
             })
-            .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
+            .then(facet => facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']]));
     }
 
     /**

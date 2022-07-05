@@ -275,7 +275,7 @@ export interface ElasticsearchOptions {
      *       graphQlType: '[String!]',
      *       // Here we can be sure that the `product.assets` array is populated
      *       // with an Asset object
-     *       valueFn: (product) => product.assets.map(asset => asset.preview),
+     *       valueFn: (product) => product.assets.map(a => a.asset.preview),
      *     }
      *   }
      * }

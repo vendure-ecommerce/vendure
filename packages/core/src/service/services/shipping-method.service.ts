@@ -212,7 +212,7 @@ export class ShippingMethodService {
      * Ensures that all ShippingMethods have a valid fulfillmentHandlerCode
      */
     private async verifyShippingMethods() {
-        const activeShippingMethods = await this.connection.getRepository(ShippingMethod).find({
+        const activeShippingMethods = await this.connection.rawConnection.getRepository(ShippingMethod).find({
             where: { deletedAt: null },
         });
         for (const method of activeShippingMethods) {
@@ -220,7 +220,7 @@ export class ShippingMethodService {
             const verifiedHandlerCode = this.ensureValidFulfillmentHandlerCode(method.code, handlerCode);
             if (handlerCode !== verifiedHandlerCode) {
                 method.fulfillmentHandlerCode = verifiedHandlerCode;
-                await this.connection.getRepository(ShippingMethod).save(method);
+                await this.connection.rawConnection.getRepository(ShippingMethod).save(method);
             }
         }
     }
