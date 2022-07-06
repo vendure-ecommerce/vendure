@@ -11,7 +11,7 @@ import {
 } from '@vendure/core';
 import { BraintreeGateway } from 'braintree';
 
-import { extractMetadataFromTransaction, getGateway } from './braintree-common';
+import { defaultExtractMetadataFn, getGateway } from './braintree-common';
 import { BRAINTREE_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { BraintreePluginOptions } from './types';
 
@@ -44,7 +44,7 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
             if (options.storeCustomersInBraintree && ctx.activeUserId && customer) {
                 customerId = await getBraintreeCustomerId(ctx, gateway, customer);
             }
-            return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId);
+            return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options);
         } catch (e) {
             Logger.error(e, loggerCtx);
             return {
@@ -88,6 +88,7 @@ async function processPayment(
     amount: number,
     paymentMethodNonce: any,
     customerId: string | undefined,
+    pluginOptions: BraintreePluginOptions,
 ) {
     const response = await gateway.transaction.sale({
         customerId,
@@ -99,20 +100,22 @@ async function processPayment(
             storeInVaultOnSuccess: !!customerId,
         },
     });
+    const extractMetadataFn = pluginOptions.extractMetadata ?? defaultExtractMetadataFn;
+    const metadata = extractMetadataFn(response.transaction);
     if (!response.success) {
         return {
             amount,
             state: 'Declined' as const,
             transactionId: response.transaction.id,
             errorMessage: response.message,
-            metadata: extractMetadataFromTransaction(response.transaction),
+            metadata,
         };
     }
     return {
         amount,
         state: 'Settled' as const,
         transactionId: response.transaction.id,
-        metadata: extractMetadataFromTransaction(response.transaction),
+        metadata,
     };
 }
 

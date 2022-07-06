@@ -12,9 +12,11 @@ export function getGateway(args: PaymentMethodArgsHash, options: BraintreePlugin
 }
 
 /**
- * Returns a subset of the Transaction object of interest to the Administrator.
+ * @description
+ * Returns a subset of the Transaction object of interest to the Administrator, plus some
+ * public data which may be useful to display in the storefront account area.
  */
-export function extractMetadataFromTransaction(transaction: Transaction): { [key: string]: any } {
+export function defaultExtractMetadataFn(transaction: Transaction): { [key: string]: any } {
     const metadata: { [key: string]: any } = {
         status: transaction.status,
         currencyIsoCode: transaction.currencyIsoCode,
@@ -25,13 +27,16 @@ export function extractMetadataFromTransaction(transaction: Transaction): { [key
         processorAuthorizationCode: transaction.processorAuthorizationCode,
         processorResponseText: transaction.processorResponseText,
         paymentMethod: transaction.paymentInstrumentType,
+        public: {},
     };
     if (transaction.creditCard && transaction.creditCard.cardType) {
-        metadata.cardData = {
+        const cardData = {
             cardType: transaction.creditCard.cardType,
             last4: transaction.creditCard.last4,
             expirationDate: transaction.creditCard.expirationDate,
         };
+        metadata.cardData = cardData;
+        metadata.public.cardData = cardData;
     }
     if (transaction.paypalAccount && transaction.paypalAccount.authorizationId) {
         metadata.paypalData = {
@@ -42,6 +47,7 @@ export function extractMetadataFromTransaction(transaction: Transaction): { [key
             sellerProtectionStatus: transaction.paypalAccount.sellerProtectionStatus,
             transactionFeeAmount: transaction.paypalAccount.transactionFeeAmount,
         };
+        metadata.public.paypalData = { authorizationId: transaction.paypalAccount.authorizationId };
     }
     return metadata;
 }
