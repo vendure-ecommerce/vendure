@@ -69,7 +69,7 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
         if (!response.success) {
             return {
                 state: 'Failed' as const,
-                transactionId: response.transaction.id,
+                transactionId: response.transaction?.id,
                 metadata: response,
             };
         }
