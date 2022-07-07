@@ -1,6 +1,6 @@
 {
   "name": "@vendure/admin-ui",
-  "version": "2.0.0-next.9",
+  "version": "2.0.0-next.10",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -39,7 +39,7 @@
     "@ng-select/ng-select": "^8.1.1",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
-    "@vendure/common": "^2.0.0-next.9",
+    "@vendure/common": "^2.0.0-next.10",
     "@webcomponents/custom-elements": "^1.4.3",
     "apollo-angular": "^3.0.0",
     "apollo-upload-client": "^17.0.0",
