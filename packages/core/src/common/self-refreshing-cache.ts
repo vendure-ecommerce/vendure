@@ -12,7 +12,7 @@ export interface SelfRefreshingCache<V, RefreshArgs extends any[] = []> {
      * The current value of the cache. If the value is stale, the data will be refreshed and then
      * the fresh value will be returned.
      */
-    value(...refreshArgs: RefreshArgs | [undefined]): Promise<V>;
+    value(...refreshArgs: RefreshArgs | [undefined] | []): Promise<V>;
 
     /**
      * @description
