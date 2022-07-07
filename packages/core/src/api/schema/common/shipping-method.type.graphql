@@ -2,6 +2,7 @@ type ShippingMethod implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    languageCode: LanguageCode!
     code: String!
     name: String!
     description: String!

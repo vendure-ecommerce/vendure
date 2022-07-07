@@ -2804,6 +2804,7 @@ export type ShippingMethod = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
     code: Scalars['String'];
     name: Scalars['String'];
     description: Scalars['String'];

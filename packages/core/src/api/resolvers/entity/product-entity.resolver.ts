@@ -51,6 +51,11 @@ export class ProductEntityResolver {
     }
 
     @ResolveField()
+    languageCode(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, product, 'languageCode');
+    }
+
+    @ResolveField()
     async variants(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,

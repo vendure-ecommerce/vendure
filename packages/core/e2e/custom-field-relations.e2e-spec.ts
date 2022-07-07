@@ -93,6 +93,7 @@ customFieldConfig.Product?.push(
 );
 
 const testResolverSpy = jest.fn();
+
 @Resolver()
 class TestResolver1636 {
     constructor(private connection: TransactionalConnection) {}
@@ -185,6 +186,76 @@ describe('Custom field relations', () => {
 
     describe('special data resolution', () => {
         let productId: string;
+        const productCustomFieldRelationsSelection = `
+        id
+        customFields {
+            cfCollection {
+                languageCode
+                name
+            }
+            cfCountry {
+                languageCode
+                name
+            }
+            cfFacetValue {
+                languageCode
+                name
+            }
+            cfFacet {
+                languageCode
+                name
+            }
+            cfProductOptionGroup {
+                languageCode
+                name
+            }
+            cfProductOption {
+                languageCode
+                name
+            }
+            cfProductVariant {
+                languageCode
+                name
+            }
+            cfProduct {
+                languageCode
+                name
+            }
+            cfShippingMethod {
+                languageCode
+                name
+            }
+        }`;
+
+        function assertTranslatableCustomFieldValues(product: { customFields: any }) {
+            expect(product.customFields.cfCollection).toEqual({
+                languageCode: 'en',
+                name: '__root_collection__',
+            });
+            expect(product.customFields.cfCountry).toEqual({ languageCode: 'en', name: 'Australia' });
+            expect(product.customFields.cfFacetValue).toEqual({
+                languageCode: 'en',
+                name: 'electronics',
+            });
+            expect(product.customFields.cfFacet).toEqual({ languageCode: 'en', name: 'category' });
+            expect(product.customFields.cfProductOptionGroup).toEqual({
+                languageCode: 'en',
+                name: 'screen size',
+            });
+            expect(product.customFields.cfProductOption).toEqual({
+                languageCode: 'en',
+                name: '13 inch',
+            });
+            expect(product.customFields.cfProductVariant).toEqual({
+                languageCode: 'en',
+                name: 'Laptop 13 inch 8GB',
+            });
+            expect(product.customFields.cfProduct).toEqual({ languageCode: 'en', name: 'Laptop' });
+            expect(product.customFields.cfShippingMethod).toEqual({
+                languageCode: 'en',
+                name: 'Standard Shipping',
+            });
+        }
 
         it('translatable entities get translated', async () => {
             const { createProduct } = await adminClient.query(gql`
@@ -211,75 +282,22 @@ describe('Custom field relations', () => {
                                 cfShippingMethodId: "T_1"
                             }
                         }
-                    ) {
-                        id
-                        customFields {
-                            cfCollection {
-                                languageCode
-                                name
-                            }
-                            cfCountry {
-                                languageCode
-                                name
-                            }
-                            cfFacetValue {
-                                languageCode
-                                name
-                            }
-                            cfFacet {
-                                languageCode
-                                name
-                            }
-                            cfProductOptionGroup {
-                                languageCode
-                                name
-                            }
-                            cfProductOption {
-                                languageCode
-                                name
-                            }
-                            cfProductVariant {
-                                languageCode
-                                name
-                            }
-                            cfProduct {
-                                languageCode
-                                name
-                            }
-                            cfShippingMethod {
-                                name
-                            }
-                        }
-                    }
+                    ) { ${productCustomFieldRelationsSelection} }
                 }
             `);
 
             productId = createProduct.id;
+            assertTranslatableCustomFieldValues(createProduct);
+        });
 
-            expect(createProduct.customFields.cfCollection).toEqual({
-                languageCode: 'en',
-                name: '__root_collection__',
-            });
-            expect(createProduct.customFields.cfCountry).toEqual({ languageCode: 'en', name: 'Australia' });
-            expect(createProduct.customFields.cfFacetValue).toEqual({
-                languageCode: 'en',
-                name: 'electronics',
-            });
-            expect(createProduct.customFields.cfFacet).toEqual({ languageCode: 'en', name: 'category' });
-            expect(createProduct.customFields.cfProductOptionGroup).toEqual({
-                languageCode: 'en',
-                name: 'screen size',
-            });
-            expect(createProduct.customFields.cfProductOption).toEqual({
-                languageCode: 'en',
-                name: '13 inch',
-            });
-            expect(createProduct.customFields.cfProductVariant).toEqual({
-                languageCode: 'en',
-                name: 'Laptop 13 inch 8GB',
-            });
-            expect(createProduct.customFields.cfProduct).toEqual({ languageCode: 'en', name: 'Laptop' });
-            expect(createProduct.customFields.cfShippingMethod).toEqual({ name: 'Standard Shipping' });
+        it('translatable entities get translated on findOneInChannel', async () => {
+            const { product } = await adminClient.query(gql`
+                query {
+                    product(id: "${productId}") { ${productCustomFieldRelationsSelection} }
+                }
+            `);
+
+            assertTranslatableCustomFieldValues(product);
         });
 
         it('ProductVariant prices get resolved', async () => {
@@ -979,7 +997,7 @@ describe('Custom field relations', () => {
                             ${customFieldsSelection}
                         }
                     }
-                            `);
+                `);
 
                 assertCustomFieldIds(updateAsset.customFields, 'T_2', ['T_3', 'T_4']);
             });

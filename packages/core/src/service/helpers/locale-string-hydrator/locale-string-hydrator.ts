@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -19,10 +20,10 @@ export class LocaleStringHydrator {
         private requestCache: RequestContextCacheService,
     ) {}
 
-    async hydrateLocaleStringField<T extends VendureEntity & Translatable>(
+    async hydrateLocaleStringField<T extends VendureEntity & Translatable & { languageCode?: LanguageCode }>(
         ctx: RequestContext,
         entity: T,
-        fieldName: TranslatableKeys<T>,
+        fieldName: TranslatableKeys<T> | 'languageCode',
     ): Promise<string> {
         if (entity[fieldName]) {
             // Already hydrated, so return the value
@@ -61,7 +62,12 @@ export class LocaleStringHydrator {
         if (entity.translations.length) {
             const translated = translateDeep(entity, ctx.languageCode);
             for (const localeStringProp of Object.keys(entity.translations[0])) {
-                if (localeStringProp === 'base' || localeStringProp === 'languageCode') {
+                if (
+                    localeStringProp === 'base' ||
+                    localeStringProp === 'id' ||
+                    localeStringProp === 'createdAt' ||
+                    localeStringProp === 'updatedAt'
+                ) {
                     continue;
                 }
                 if (localeStringProp === 'customFields') {

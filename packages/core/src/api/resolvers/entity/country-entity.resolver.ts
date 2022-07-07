@@ -13,4 +13,9 @@ export class CountryEntityResolver {
     name(@Ctx() ctx: RequestContext, @Parent() country: Country): Promise<string> {
         return this.localeStringHydrator.hydrateLocaleStringField(ctx, country, 'name');
     }
+
+    @ResolveField()
+    languageCode(@Ctx() ctx: RequestContext, @Parent() country: Country): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, country, 'languageCode');
+    }
 }

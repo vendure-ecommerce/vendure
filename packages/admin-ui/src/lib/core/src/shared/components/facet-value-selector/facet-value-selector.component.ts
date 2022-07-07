@@ -60,6 +60,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
     @Output() selectedValuesChange = new EventEmitter<FacetValue.Fragment[]>();
     @Input() facets: FacetWithValues.Fragment[];
     @Input() readonly = false;
+    @Input() transformControlValueAccessorValue: (value: FacetValueSeletorItem[]) => any[] = value => value;
 
     @ViewChild(NgSelectComponent) private ngSelect: NgSelectComponent;
 
@@ -67,7 +68,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
     onChangeFn: (val: any) => void;
     onTouchFn: () => void;
     disabled = false;
-    value: string[];
+    value: Array<string | FacetValue.Fragment>;
     constructor(private dataService: DataService) {}
 
     ngOnInit() {
@@ -80,7 +81,8 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
         }
         this.selectedValuesChange.emit(selected.map(s => s.value));
         if (this.onChangeFn) {
-            this.onChangeFn(JSON.stringify(selected.map(s => s.id)));
+            const transformedValue = this.transformControlValueAccessorValue(selected);
+            this.onChangeFn(transformedValue);
         }
     }
 

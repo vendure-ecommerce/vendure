@@ -7,6 +7,7 @@ import { shareReplay } from 'rxjs/operators';
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 import { FacetWithValues } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
+import { FacetValueSeletorItem } from '../../components/facet-value-selector/facet-value-selector.component';
 
 /**
  * @description
@@ -37,4 +38,13 @@ export class FacetValueFormInputComponent implements FormInputComponent, OnInit 
             .mapSingle(data => data.facets.items)
             .pipe(shareReplay(1));
     }
+
+    valueTransformFn = (values: FacetValueSeletorItem[]) => {
+        const isUsedInConfigArg = this.config.__typename === 'ConfigArgDefinition';
+        if (isUsedInConfigArg) {
+            return JSON.stringify(values.map(s => s.id));
+        } else {
+            return values;
+        }
+    };
 }
