@@ -222,6 +222,7 @@ describe('Custom field relations', () => {
                 name
             }
             cfShippingMethod {
+                languageCode
                 name
             }
         }`;
@@ -250,7 +251,10 @@ describe('Custom field relations', () => {
                 name: 'Laptop 13 inch 8GB',
             });
             expect(product.customFields.cfProduct).toEqual({ languageCode: 'en', name: 'Laptop' });
-            expect(product.customFields.cfShippingMethod).toEqual({ name: 'Standard Shipping' });
+            expect(product.customFields.cfShippingMethod).toEqual({
+                languageCode: 'en',
+                name: 'Standard Shipping',
+            });
         }
 
         it('translatable entities get translated', async () => {

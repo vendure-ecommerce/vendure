@@ -18,4 +18,9 @@ export class ShippingMethodEntityResolver {
     description(@Ctx() ctx: RequestContext, @Parent() shippingMethod: ShippingMethod): Promise<string> {
         return this.localeStringHydrator.hydrateLocaleStringField(ctx, shippingMethod, 'description');
     }
+
+    @ResolveField()
+    languageCode(@Ctx() ctx: RequestContext, @Parent() shippingMethod: ShippingMethod): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, shippingMethod, 'languageCode');
+    }
 }
