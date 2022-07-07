@@ -62,7 +62,7 @@ import { BraintreePluginOptions } from './types';
  * 2. Use this client token to instantiate the Braintree Dropin UI.
  * 3. Listen for the `"paymentMethodRequestable"` event which emitted by the Dropin.
  * 4. Use the Dropin's `requestPaymentMethod()` method to get the required payment metadata.
- * 5. Pass that metadata to the `addPaymentToOrder` mutation.
+ * 5. Pass that metadata to the `addPaymentToOrder` mutation. The metadata should be an object of type `{ nonce: string; }`
  *
  * Here is an example of how your storefront code will look. Note that this example is attempting to
  * be framework-agnostic, so you'll need to adapt it to fit to your framework of choice.
@@ -186,7 +186,49 @@ import { BraintreePluginOptions } from './types';
  *         dropin.clearSelectedPaymentMethod();
  *   }
  * }
+ *
+ * ## Storing cards in the vault
+ *
+ * Braintree has a "vault" mechanism which allows it to store the credit card information for a Customer, so that on the next purchase
+ * the stored details do not need to be re-entered.
+ *
+ * To enable this feature, you need to ensure that the {@link BraintreePluginOptions} `storeCustomersInBraintree` option is set to
+ * `true`. This will allow Braintree to associate a unique ID to each of your Customers.
+ *
+ * From v1.7.0, you can then specify on a per-payment basis whether a card should be stored in the vault. By default, all cards will
+ * be automatically stored in the vault. But you can opt out of this behavior by specifying the `storeCardInVault` property in the `metadata` object
+ * supplied to the `addPaymentToOrder` mutation:
+ *
+ * @example
+ * ```TypeScript {hl_lines=[21]}
+ * const { addPaymentToOrder } = await graphQlClient.query(gql`
+ *   mutation AddPayment($input: PaymentInput!) {
+ *     addPaymentToOrder(input: $input) {
+ *       ... on Order {
+ *         id
+ *         payments {
+ *           id
+ *           # ... etc
+ *         }
+ *       }
+ *       ... on ErrorResult {
+ *         errorCode
+ *         message
+ *       }
+ *     }
+ *   }`, {
+ *     input: {
+ *       method: 'braintree',
+ *       metadata: {
+ *         nonce: paymentResult.nonce,
+ *         storeCardInVault: false,
+ *       },
+ *     },
+ *   },
+ * );
  * ```
+ *
+ *
  * @docsCategory payments-plugin
  * @docsPage BraintreePlugin
  */
