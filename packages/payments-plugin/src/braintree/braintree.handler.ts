@@ -38,27 +38,17 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
     async createPayment(ctx, order, amount, args, metadata) {
         const gateway = getGateway(args, options);
         let customerId: string | undefined;
-        const { nonce, storeCardInVault } = metadata;
-        if (!nonce) {
-            return {
-                amount,
-                state: 'Error' as const,
-                transactionId: '',
-                errorMessage: `No "nonce" value was specified in the metadata`,
-                metadata,
-            };
-        }
         try {
             await entityHydrator.hydrate(ctx, order, { relations: ['customer'] });
             const customer = order.customer;
             if (options.storeCustomersInBraintree && ctx.activeUserId && customer) {
                 customerId = await getBraintreeCustomerId(ctx, gateway, customer);
             }
-            return processPayment(ctx, gateway, order, amount, nonce, customerId, options, storeCardInVault);
+            return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options);
         } catch (e) {
             Logger.error(e, loggerCtx);
             return {
-                amount,
+                amount: order.total,
                 state: 'Error' as const,
                 transactionId: '',
                 errorMessage: e.toString(),
@@ -99,7 +89,6 @@ async function processPayment(
     paymentMethodNonce: any,
     customerId: string | undefined,
     pluginOptions: BraintreePluginOptions,
-    storeCardInVault = true,
 ) {
     const response = await gateway.transaction.sale({
         customerId,
@@ -108,7 +97,7 @@ async function processPayment(
         paymentMethodNonce,
         options: {
             submitForSettlement: true,
-            storeInVaultOnSuccess: !!customerId && storeCardInVault,
+            storeInVaultOnSuccess: !!customerId,
         },
     });
     const extractMetadataFn = pluginOptions.extractMetadata ?? defaultExtractMetadataFn;
