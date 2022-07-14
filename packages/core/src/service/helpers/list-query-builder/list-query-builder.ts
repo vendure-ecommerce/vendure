@@ -66,7 +66,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      *
      * Example: we want to allow sort/filter by and Order's `customerLastName`. The actual lastName property is
      * not a column in the Order table, it exists on the Customer entity, and Order has a relation to Customer via
-     * `Order.customer`. Therefore we can define a customPropertyMap like this:
+     * `Order.customer`. Therefore, we can define a customPropertyMap like this:
      *
      * @example
      * ```GraphQL
@@ -90,7 +90,11 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      *   customPropertyMap: {
      *     // Tell TypeORM how to map that custom
      *     // sort/filter field to the property on a
-     *     // related entity
+     *     // related entity. Note that the `customer`
+     *     // part needs to match the *table name* of the
+     *     // related entity. So, e.g. if you are mapping to
+     *     // a `FacetValue` relation's `id` property, the value
+     *     // would be `facet_value.id`.
      *     customerLastName: 'customer.lastName',
      *   },
      * };
