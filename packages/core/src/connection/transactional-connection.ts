@@ -111,7 +111,7 @@ export class TransactionalConnection {
      * private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amount: number) {
      *   await this.connection.withTransaction(outerCtx, ctx => {
      *     await this.giftCardService.updateCustomerCredit(fromId, -amount);
-     * 
+     *
      *     // Note you must not use outerCtx here, instead use ctx. Otherwise this query
      *     // will be executed outside of transaction
      *     await this.connection.getRepository(ctx, GiftCard).update(fromId, { transferred: true })
@@ -261,11 +261,6 @@ export class TransactionalConnection {
         options: FindOneOptions = {},
     ) {
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        if (options.relations) {
-            // Joining custom field relations here does not seem to work well,
-            // so we simply omit them and rely on the custom field relation resolvers.
-            options.relations = options.relations.filter(r => !r.startsWith('customFields.'));
-        }
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
         if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion

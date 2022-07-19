@@ -29,6 +29,8 @@ import {
     GetCustomer,
     GetCustomerHistory,
     GetCustomerList,
+    GetCustomerListQuery,
+    GetCustomerListQueryVariables,
     HistoryEntryType,
     Permission,
 } from './graphql/generated-e2e-admin-types';
@@ -73,6 +75,7 @@ let sendEmailFn: jest.Mock;
 })
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
+
     onModuleInit() {
         this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
             sendEmailFn(event);
@@ -613,6 +616,92 @@ describe('Shop auth & accounts', () => {
                     data: {},
                 },
             ]);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1659
+    describe('password reset before verification', () => {
+        const password = 'password';
+        const emailAddress = 'test3@test.com';
+        let verificationToken: string;
+        let passwordResetToken: string;
+        let newCustomerId: string;
+
+        beforeEach(() => {
+            sendEmailFn = jest.fn();
+        });
+
+        it('register a new account without password', async () => {
+            const verificationTokenPromise = getVerificationTokenPromise();
+            const input: RegisterCustomerInput = {
+                firstName: 'Bobby',
+                lastName: 'Tester',
+                phoneNumber: '123456',
+                emailAddress,
+            };
+            const { registerCustomerAccount } = await shopClient.query<Register.Mutation, Register.Variables>(
+                REGISTER_ACCOUNT,
+                { input },
+            );
+            successErrorGuard.assertSuccess(registerCustomerAccount);
+            verificationToken = await verificationTokenPromise;
+
+            const { customers } = await adminClient.query<
+                GetCustomerListQuery,
+                GetCustomerListQueryVariables
+            >(GET_CUSTOMER_LIST, {
+                options: {
+                    filter: {
+                        emailAddress: { eq: emailAddress },
+                    },
+                },
+            });
+
+            expect(customers.items[0].user?.verified).toBe(false);
+            newCustomerId = customers.items[0].id;
+        });
+
+        it('requestPasswordReset', async () => {
+            const passwordResetTokenPromise = getPasswordResetTokenPromise();
+            const { requestPasswordReset } = await shopClient.query<
+                RequestPasswordReset.Mutation,
+                RequestPasswordReset.Variables
+            >(REQUEST_PASSWORD_RESET, {
+                identifier: emailAddress,
+            });
+            successErrorGuard.assertSuccess(requestPasswordReset);
+
+            await waitForSendEmailFn();
+            passwordResetToken = await passwordResetTokenPromise;
+            expect(requestPasswordReset.success).toBe(true);
+            expect(sendEmailFn).toHaveBeenCalled();
+            expect(passwordResetToken).toBeDefined();
+        });
+
+        it('resetPassword also performs verification', async () => {
+            const { resetPassword } = await shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(
+                RESET_PASSWORD,
+                {
+                    token: passwordResetToken,
+                    password: 'newPassword',
+                },
+            );
+            currentUserErrorGuard.assertSuccess(resetPassword);
+
+            expect(resetPassword.identifier).toBe(emailAddress);
+            const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
+                GET_CUSTOMER,
+                {
+                    id: newCustomerId,
+                },
+            );
+
+            expect(customer?.user?.verified).toBe(true);
+        });
+
+        it('can log in with new password', async () => {
+            const loginResult = await shopClient.asUserWithCredentials(emailAddress, 'newPassword');
+            expect(loginResult.identifier).toBe(emailAddress);
         });
     });
 

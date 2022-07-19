@@ -40,6 +40,11 @@ export class CollectionEntityResolver {
     }
 
     @ResolveField()
+    languageCode(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, collection, 'languageCode');
+    }
+
+    @ResolveField()
     async productVariants(
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,

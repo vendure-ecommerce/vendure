@@ -72,6 +72,7 @@ import {
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { RoleEntityResolver } from './resolvers/entity/role-entity.resolver';
 import { ShippingLineEntityResolver } from './resolvers/entity/shipping-line-entity.resolver';
+import { ShippingMethodEntityResolver } from './resolvers/entity/shipping-method-entity.resolver';
 import { TaxRateEntityResolver } from './resolvers/entity/tax-rate-entity.resolver';
 import { UserEntityResolver } from './resolvers/entity/user-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
@@ -136,6 +137,7 @@ export const entityResolvers = [
     ShippingLineEntityResolver,
     UserEntityResolver,
     TaxRateEntityResolver,
+    ShippingMethodEntityResolver,
 ];
 
 export const adminEntityResolvers = [

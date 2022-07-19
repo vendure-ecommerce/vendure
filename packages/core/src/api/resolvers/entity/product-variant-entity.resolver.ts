@@ -33,6 +33,14 @@ export class ProductVariantEntityResolver {
     }
 
     @ResolveField()
+    async languageCode(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, productVariant, 'languageCode');
+    }
+
+    @ResolveField()
     async price(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<number> {
         return this.productVariantService.hydratePriceFields(ctx, productVariant, 'price');
     }

@@ -22,7 +22,7 @@ export const hasFacetValues = new PromotionCondition({
     async check(ctx, order, args) {
         let matches = 0;
         for (const line of order.lines) {
-            if (await facetValueChecker.hasFacetValues(line, args.facets)) {
+            if (await facetValueChecker.hasFacetValues(line, args.facets, ctx)) {
                 matches += line.quantity;
             }
         }

@@ -22,6 +22,11 @@ export class FacetEntityResolver {
     }
 
     @ResolveField()
+    languageCode(@Ctx() ctx: RequestContext, @Parent() facetValue: FacetValue): Promise<string> {
+        return this.localeStringHydrator.hydrateLocaleStringField(ctx, facetValue, 'languageCode');
+    }
+
+    @ResolveField()
     async values(@Ctx() ctx: RequestContext, @Parent() facet: Facet): Promise<FacetValue[]> {
         if (facet.values) {
             return facet.values;

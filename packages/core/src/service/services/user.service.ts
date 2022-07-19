@@ -69,7 +69,7 @@ export class UserService {
     ): Promise<User | PasswordValidationError> {
         const user = new User();
         user.identifier = identifier;
-        const customerRole = await this.roleService.getCustomerRole();
+        const customerRole = await this.roleService.getCustomerRole(ctx);
         user.roles = [customerRole];
         const addNativeAuthResult = await this.addNativeAuthenticationMethod(ctx, user, identifier, password);
         if (isGraphQlErrorResult(addNativeAuthResult)) {
@@ -260,6 +260,14 @@ export class UserService {
             nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
             nativeAuthMethod.passwordResetToken = null;
             await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
+            if (user.verified === false && this.configService.authOptions.requireVerification) {
+                // This code path represents an edge-case in which the Customer creates an account,
+                // but prior to verifying their email address, they start the password reset flow.
+                // Since the password reset flow makes the exact same guarantee as the email verification
+                // flow (i.e. the person controls the specified email account), we can also consider it
+                // a verification.
+                user.verified = true;
+            }
             return this.connection.getRepository(ctx, User).save(user);
         } else {
             return new PasswordResetTokenExpiredError();

@@ -4400,6 +4400,7 @@ export type ShippingMethod = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
     code: Scalars['String'];
     name: Scalars['String'];
     description: Scalars['String'];
@@ -4414,6 +4415,7 @@ export type ShippingMethodFilterParameter = {
     id?: Maybe<IdOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
+    languageCode?: Maybe<StringOperators>;
     code?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
@@ -7117,6 +7119,12 @@ export type TransitionFulfillmentToStateMutation = {
         | Pick<FulfillmentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
 };
 
+export type UpdateOrderCustomFieldsMutationVariables = Exact<{
+    input: UpdateOrderInput;
+}>;
+
+export type UpdateOrderCustomFieldsMutation = { setOrderCustomFields?: Maybe<Pick<Order, 'id'>> };
+
 export type GetTagListQueryVariables = Exact<{
     options?: Maybe<TagListOptions>;
 }>;
@@ -9578,6 +9586,16 @@ export namespace TransitionFulfillmentToState {
     export type FulfillmentStateTransitionErrorInlineFragment = DiscriminateUnion<
         NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>,
         { __typename?: 'FulfillmentStateTransitionError' }
+    >;
+}
+
+export namespace UpdateOrderCustomFields {
+    export type Variables = UpdateOrderCustomFieldsMutationVariables;
+    export type Mutation = UpdateOrderCustomFieldsMutation;
+    export type SetOrderCustomFields = NonNullable<UpdateOrderCustomFieldsMutation['setOrderCustomFields']>;
+    export type OrderInlineFragment = { __typename: 'Order' } & Pick<
+        NonNullable<UpdateOrderCustomFieldsMutation['setOrderCustomFields']>,
+        'id'
     >;
 }
 

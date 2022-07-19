@@ -18,7 +18,7 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async add(bufferId: string, job: Job): Promise<Job> {
-        await this.connection.getRepository(JobRecordBuffer).save(
+        await this.connection.rawConnection.getRepository(JobRecordBuffer).save(
             new JobRecordBuffer({
                 bufferId,
                 job: this.toJobConfig(job),
@@ -30,6 +30,7 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
 
     async bufferSize(bufferIds?: string[]): Promise<{ [bufferId: string]: number }> {
         const qb = await this.connection
+            .rawConnection
             .getRepository(JobRecordBuffer)
             .createQueryBuilder('record')
             .select(`COUNT(*)`, 'count')
@@ -49,7 +50,9 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async flush(bufferIds?: string[]): Promise<{ [bufferId: string]: Job[] }> {
-        const selectQb = this.connection.getRepository(JobRecordBuffer).createQueryBuilder('record');
+        const selectQb = this.connection.rawConnection
+            .getRepository(JobRecordBuffer)
+            .createQueryBuilder('record');
         if (bufferIds?.length) {
             selectQb.where(`record.bufferId IN (:...bufferIds)`, { bufferIds });
         }

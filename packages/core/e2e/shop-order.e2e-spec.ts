@@ -130,6 +130,7 @@ describe('Shop orders', () => {
                     { name: 'notes', type: 'string' },
                     { name: 'privateField', type: 'string', public: false },
                     { name: 'lineImage', type: 'relation', entity: Asset },
+                    { name: 'dropShip', type: 'boolean', defaultValue: false },
                 ],
             },
             orderOptions: {
@@ -2011,6 +2012,52 @@ describe('Shop orders', () => {
 
             const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
             expect(result.activeOrder?.shippingLines).toEqual([]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1441
+        it('shipping methods are re-evaluated when all OrderLines are removed', async () => {
+            const { createShippingMethod } = await adminClient.query<
+                CreateShippingMethod.Mutation,
+                CreateShippingMethod.Variables
+            >(CREATE_SHIPPING_METHOD, {
+                input: {
+                    code: `min-price-shipping`,
+                    translations: [
+                        { languageCode: LanguageCode.en, name: `min price shipping`, description: '' },
+                    ],
+                    fulfillmentHandler: manualFulfillmentHandler.code,
+                    checker: {
+                        code: defaultShippingEligibilityChecker.code,
+                        arguments: [{ name: 'orderMinimum', value: '100' }],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '1000' },
+                            { name: 'taxRate', value: '0' },
+                            { name: 'includesTax', value: 'auto' },
+                        ],
+                    },
+                },
+            });
+            const minPriceShippingMethodId = createShippingMethod.id;
+
+            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
+                SET_SHIPPING_METHOD,
+                {
+                    id: minPriceShippingMethodId,
+                },
+            );
+            const result1 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(result1.activeOrder?.shippingLines[0].shippingMethod.id).toBe(minPriceShippingMethodId);
+
+            const { removeAllOrderLines } = await shopClient.query<
+                RemoveAllOrderLines.Mutation,
+                RemoveAllOrderLines.Variables
+            >(REMOVE_ALL_ORDER_LINES);
+            orderResultGuard.assertSuccess(removeAllOrderLines);
+            expect(removeAllOrderLines.shippingLines.length).toBe(0);
+            expect(removeAllOrderLines.shippingWithTax).toBe(0);
         });
     });
 });

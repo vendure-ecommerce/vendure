@@ -95,7 +95,7 @@ import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order
 describe('Promotions applied to Orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
-        logger: new DefaultLogger({ level: LogLevel.Info }),
+        // logger: new DefaultLogger({ level: LogLevel.Info }),
         paymentOptions: {
             paymentMethodHandlers: [testSuccessfulPaymentMethod],
         },
@@ -201,6 +201,20 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertErrorResult(applyCouponCode);
             expect(applyCouponCode.message).toBe(`Coupon code "${EXPIRED_COUPON_CODE}" has expired`);
             expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_EXPIRED_ERROR);
+        });
+
+        it('coupon code application is case-sensitive', async () => {
+            const { applyCouponCode } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: TEST_COUPON_CODE.toLowerCase(),
+            });
+            orderResultGuard.assertErrorResult(applyCouponCode);
+            expect(applyCouponCode.message).toBe(
+                `Coupon code "${TEST_COUPON_CODE.toLowerCase()}" is not valid`,
+            );
+            expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_INVALID_ERROR);
         });
 
         it('applies a valid coupon code', async () => {

@@ -5,6 +5,7 @@
     "lib": ["es2015"],
     "skipLibCheck": true,
     "inlineSourceMap": false,
+    "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "allowJs": false,
