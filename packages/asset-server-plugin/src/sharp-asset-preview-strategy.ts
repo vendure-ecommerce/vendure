@@ -5,17 +5,56 @@ import sharp from 'sharp';
 
 import { loggerCtx } from './constants';
 
+/**
+ * @description
+ * This {@link AssetPreviewStrategy} uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
+ * preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
+ * overlay will be generated.
+ *
+ * @docsCategory AssetServerPlugin
+ * @docsPage SharpAssetPreviewStrategy
+ */
+interface SharpAssetPreviewConfig {
+    /**
+     * @description
+     * The max height in pixels of a generated preview image.
+     *
+     * @default 1600
+     */
+    maxHeight?: number;
+    /**
+     * @description
+     * The max width in pixels of a generated preview image.
+     *
+     * @default 1600
+     */
+    maxWidth?: number;
+}
+
+/**
+ * @description
+ * This {@link AssetPreviewStrategy} uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
+ * preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
+ * overlay will be generated.
+ *
+ * @docsCategory AssetServerPlugin
+ * @docsPage SharpAssetPreviewStrategy
+ * @docsWeight 0
+ */
 export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
-    constructor(
-        private config: {
-            maxHeight: number;
-            maxWidth: number;
-        },
-    ) {}
+    constructor(private config: SharpAssetPreviewConfig) {}
+    private readonly defaultConfig: Required<SharpAssetPreviewConfig> = {
+        maxHeight: 1600,
+        maxWidth: 1600,
+    };
 
     async generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer> {
         const assetType = getAssetType(mimeType);
-        const { maxWidth, maxHeight } = this.config;
+        const config = {
+            ...this.defaultConfig,
+            ...this.config,
+        };
+        const { maxWidth, maxHeight } = config;
 
         if (assetType === AssetType.IMAGE) {
             try {

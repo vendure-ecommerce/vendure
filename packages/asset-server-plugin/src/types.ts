@@ -1,4 +1,9 @@
-import { AssetNamingStrategy, AssetStorageStrategy, RequestContext } from '@vendure/core';
+import {
+    AssetNamingStrategy,
+    AssetPreviewStrategy,
+    AssetStorageStrategy,
+    RequestContext,
+} from '@vendure/core';
 
 /**
  * @description
@@ -70,6 +75,7 @@ export interface AssetServerOptions {
      * The max width in pixels of a generated preview image.
      *
      * @default 1600
+     * @deprecated Use `previewStrategy: new SharpAssetPreviewStrategy({ maxWidth })` instead
      */
     previewMaxWidth?: number;
     /**
@@ -77,6 +83,7 @@ export interface AssetServerOptions {
      * The max height in pixels of a generated preview image.
      *
      * @default 1600
+     * @deprecated Use `previewStrategy: new SharpAssetPreviewStrategy({ maxHeight })` instead
      */
     previewMaxHeight?: number;
     /**
@@ -91,6 +98,14 @@ export interface AssetServerOptions {
      * @default HashedAssetNamingStrategy
      */
     namingStrategy?: AssetNamingStrategy;
+    /**
+     * @description
+     * Defines how previews are generated for a given Asset binary. By default, this uses
+     * the {@link SharpAssetPreviewStrategy}
+     *
+     * @since 1.7.0
+     */
+    previewStrategy?: AssetPreviewStrategy;
     /**
      * @description
      * A function which can be used to configure an {@link AssetStorageStrategy}. This is useful e.g. if you wish to store your assets

@@ -149,10 +149,12 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         const storageStrategyFactory =
             this.options.storageStrategyFactory || defaultAssetStorageStrategyFactory;
         this.assetStorage = await storageStrategyFactory(this.options);
-        config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
-            maxWidth: this.options.previewMaxWidth || 1600,
-            maxHeight: this.options.previewMaxHeight || 1600,
-        });
+        config.assetOptions.assetPreviewStrategy =
+            this.options.previewStrategy ??
+            new SharpAssetPreviewStrategy({
+                maxWidth: this.options.previewMaxWidth,
+                maxHeight: this.options.previewMaxHeight,
+            });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.assetOptions.assetNamingStrategy =
             this.options.namingStrategy || new HashedAssetNamingStrategy();
