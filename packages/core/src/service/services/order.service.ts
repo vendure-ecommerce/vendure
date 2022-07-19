@@ -1797,9 +1797,17 @@ export class OrderService {
             if (matchingItems.length < inputLine.quantity) {
                 return false;
             }
-            matchingItems.slice(0, inputLine.quantity).forEach(item => {
-                items.set(item.id, item);
-            });
+            matchingItems
+                .slice(0)
+                .sort((a, b) =>
+                    // sort the OrderItems so that those without Fulfillments come first, as
+                    // it makes sense to cancel these prior to cancelling fulfilled items.
+                    !a.fulfillment && b.fulfillment ? -1 : a.fulfillment && !b.fulfillment ? 1 : 0,
+                )
+                .slice(0, inputLine.quantity)
+                .forEach(item => {
+                    items.set(item.id, item);
+                });
         }
         return {
             orders: Array.from(orders.values()),
