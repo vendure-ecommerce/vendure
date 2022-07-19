@@ -61,7 +61,6 @@ export class ProductResolver {
         @Args() args: QueryProductArgs,
         @Relations({ entity: Product, omit: ['variants', 'assets'] }) relations: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
-        // just for triggering test
         if (args.id) {
             const product = await this.productService.findOne(ctx, args.id, relations);
             if (args.slug && product && product.slug !== args.slug) {
