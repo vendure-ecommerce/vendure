@@ -15,7 +15,7 @@ import {
  */
 export function getConfigArgValue(value: any) {
     try {
-        return value ? JSON.parse(value) : undefined;
+        return value != null ? JSON.parse(value) : undefined;
     } catch (e) {
         return value;
     }
@@ -103,7 +103,7 @@ export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
     if (arg.list) {
         return [];
     }
-    if (arg.defaultValue) {
+    if (arg.defaultValue != null) {
         return arg.defaultValue;
     }
     const type = arg.type as ConfigArgType;

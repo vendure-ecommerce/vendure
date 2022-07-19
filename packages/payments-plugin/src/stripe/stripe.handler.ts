@@ -8,6 +8,7 @@ import {
 } from '@vendure/core';
 import Stripe from 'stripe';
 
+import { getAmountFromStripeMinorUnits, getAmountInStripeMinorUnits } from './stripe-utils';
 import { StripeService } from './stripe.service';
 
 const { StripeError } = Stripe.errors;
@@ -28,14 +29,15 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
         stripeService = injector.get(StripeService);
     },
 
-    async createPayment(ctx, _, amount, ___, metadata): Promise<CreatePaymentResult> {
+    async createPayment(ctx, order, amount, ___, metadata): Promise<CreatePaymentResult> {
         // Payment is already settled in Stripe by the time the webhook in stripe.controller.ts
         // adds the payment to the order
         if (ctx.apiType !== 'admin') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
+        const amountInMinorUnits = getAmountFromStripeMinorUnits(order, metadata.paymentIntentAmountReceived);
         return {
-            amount,
+            amount: amountInMinorUnits,
             state: 'Settled' as const,
             transactionId: metadata.paymentIntentId,
         };
