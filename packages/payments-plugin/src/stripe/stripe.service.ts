@@ -1,15 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-    CurrencyCode,
-    Customer,
-    Logger,
-    Order,
-    RequestContext,
-    TransactionalConnection,
-} from '@vendure/core';
+import { Customer, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { getAmountInStripeMinorUnits } from './stripe-utils';
 import { StripePluginOptions } from './types';
 
 @Injectable()
@@ -121,15 +115,5 @@ export class StripeService {
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
 
         return stripeCustomerId;
-    }
-
-    private currencyHasFractionPart(currencyCode: CurrencyCode): boolean {
-        const parts = new Intl.NumberFormat(undefined, {
-            style: 'currency',
-            currency: currencyCode,
-            currencyDisplay: 'symbol',
-        }).formatToParts(123.45);
-        const hasFractionPart = !!parts.find(p => p.type === 'fraction');
-        return hasFractionPart;
     }
 }
