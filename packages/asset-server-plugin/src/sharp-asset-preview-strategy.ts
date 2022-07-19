@@ -57,6 +57,13 @@ interface SharpAssetPreviewConfig {
      * @since 1.7.0
      */
     gifOptions?: sharp.GifOptions;
+    /**
+     * @description
+     * Set Sharp's options for encoding avif files: https://sharp.pixelplumbing.com/api-output#avif
+     *
+     * @since 1.7.0
+     */
+    avifOptions?: sharp.AvifOptions;
 }
 
 /**
@@ -93,6 +100,7 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
         pngOptions: {},
         webpOptions: {},
         gifOptions: {},
+        avifOptions: {},
     };
     private readonly config: Required<SharpAssetPreviewConfig>;
 
@@ -131,6 +139,8 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
                             return image.webp(this.config.webpOptions).toBuffer();
                         case 'gif':
                             return image.gif(this.config.jpegOptions).toBuffer();
+                        case 'avif':
+                            return image.avif(this.config.avifOptions).toBuffer();
                         default:
                             return image.toBuffer();
                     }
