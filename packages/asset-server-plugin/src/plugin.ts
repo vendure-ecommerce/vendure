@@ -15,6 +15,7 @@ import { fromBuffer } from 'file-type';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { getValidFormat } from './common';
 import { loggerCtx } from './constants';
 import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
 import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
@@ -78,6 +79,22 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * image. The following query would crop it to a square with the house centered:
  *
  * `http://localhost:3000/assets/landscape.jpg?w=150&h=150&mode=crop&fpx=0.2&fpy=0.7`
+ *
+ * ### Format
+ *
+ * Since v1.7.0, the image format can be specified by adding the `format` query parameter:
+ *
+ * `http://localhost:3000/assets/some-asset.jpg?format=webp`
+ *
+ * This means that, no matter the format of your original asset files, you can use more modern formats in your storefront if the browser
+ * supports them. Supported values for `format` are:
+ *
+ * * `jpeg` or `jpg`
+ * * `png`
+ * * `webp`
+ * * `avif`
+ *
+ * The `format` parameter can also be combined with presets (see below).
  *
  * ### Transform presets
  *
@@ -245,15 +262,19 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     const image = await transformImage(file, req.query as any, this.presets || []);
                     try {
                         const imageBuffer = await image.toBuffer();
+                        const cachedFileName = this.getFileNameFromRequest(req);
                         if (!req.query.cache || req.query.cache === 'true') {
-                            const cachedFileName = this.getFileNameFromRequest(req);
                             await AssetServerPlugin.assetStorage.writeFileFromBuffer(
                                 cachedFileName,
                                 imageBuffer,
                             );
                             Logger.debug(`Saved cached asset: ${cachedFileName}`, loggerCtx);
                         }
-                        res.set('Content-Type', `image/${(await image.metadata()).format}`);
+                        let mimeType = this.getMimeType(cachedFileName);
+                        if (!mimeType) {
+                            mimeType = (await fromBuffer(imageBuffer))?.mime || 'image/jpeg';
+                        }
+                        res.set('Content-Type', mimeType);
                         res.setHeader('content-security-policy', `default-src 'self'`);
                         res.send(imageBuffer);
                         return;
@@ -269,22 +290,23 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     }
 
     private getFileNameFromRequest(req: Request): string {
-        const { w, h, mode, preset, fpx, fpy } = req.query;
+        const { w, h, mode, preset, fpx, fpy, format } = req.query;
         const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
+        const imageFormat = getValidFormat(format);
         let imageParamHash: string | null = null;
         if (w || h) {
             const width = w || '';
             const height = h || '';
-            imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}`);
+            imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}${imageFormat}`);
         } else if (preset) {
             if (this.presets && !!this.presets.find(p => p.name === preset)) {
-                imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}`);
+                imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}${imageFormat}`);
             }
         }
 
         const decodedReqPath = decodeURIComponent(req.path);
         if (imageParamHash) {
-            return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash));
+            return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash, imageFormat));
         } else {
             return decodedReqPath;
         }
@@ -294,11 +316,12 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         return createHash('md5').update(input).digest('hex');
     }
 
-    private addSuffix(fileName: string, suffix: string): string {
-        const ext = path.extname(fileName);
-        const baseName = path.basename(fileName, ext);
+    private addSuffix(fileName: string, suffix: string, ext?: string): string {
+        const originalExt = path.extname(fileName);
+        const effectiveExt = ext ? `.${ext}` : originalExt;
+        const baseName = path.basename(fileName, originalExt);
         const dirName = path.dirname(fileName);
-        return path.join(dirName, `${baseName}${suffix}${ext}`);
+        return path.join(dirName, `${baseName}${suffix}${effectiveExt}`);
     }
 
     /**

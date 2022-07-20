@@ -5,6 +5,8 @@ import {
     RequestContext,
 } from '@vendure/core';
 
+export type ImageTransformFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif';
+
 /**
  * @description
  * Specifies the way in which an asset preview image will be resized to fit in the
@@ -16,7 +18,6 @@ import {
  *
  * @docsCategory AssetServerPlugin
  */
-
 export type ImageTransformMode = 'crop' | 'resize';
 
 /**
