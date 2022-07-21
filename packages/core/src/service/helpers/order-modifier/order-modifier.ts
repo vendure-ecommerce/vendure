@@ -582,8 +582,14 @@ export class OrderModifier {
             for (const def of customFieldDefs) {
                 const key = def.name;
                 const existingValue = existingCustomFields?.[key];
-                if (existingValue !== null && def.defaultValue && existingValue !== def.defaultValue) {
-                    return false;
+                if (existingValue != null) {
+                    if (def.defaultValue != null) {
+                        if (existingValue !== def.defaultValue) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
                 }
             }
             return true;

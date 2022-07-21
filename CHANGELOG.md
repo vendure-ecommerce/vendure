@@ -1,3 +1,23 @@
+## <small>1.6.4 (2022-07-21)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly handle falsy configArg default values ([1d8c30e](https://github.com/vendure-ecommerce/vendure/commit/1d8c30e)), closes [#1663](https://github.com/vendure-ecommerce/vendure/issues/1663)
+* **admin-ui** Display multiple shipping methods in order detail ([b45464e](https://github.com/vendure-ecommerce/vendure/commit/b45464e)), closes [#1665](https://github.com/vendure-ecommerce/vendure/issues/1665)
+* **admin-ui** Fix facet-value-form-input when used with custom fields ([0ae36a9](https://github.com/vendure-ecommerce/vendure/commit/0ae36a9))
+* **admin-ui** Improved handling of failed cancellations ([2c79cf0](https://github.com/vendure-ecommerce/vendure/commit/2c79cf0))
+* **core** Add missing `languageCode` field on ShippingMethod type ([4fab7cf](https://github.com/vendure-ecommerce/vendure/commit/4fab7cf))
+* **core** Correctly resolve translatable custom field relations ([354932c](https://github.com/vendure-ecommerce/vendure/commit/354932c))
+* **core** Fix issue with cancellation of fulfilled OrderItems ([13b0cf9](https://github.com/vendure-ecommerce/vendure/commit/13b0cf9)), closes [#1558](https://github.com/vendure-ecommerce/vendure/issues/1558)
+* **core** Fix order line custom field comparison logic ([dc3ea9c](https://github.com/vendure-ecommerce/vendure/commit/dc3ea9c)), closes [#1670](https://github.com/vendure-ecommerce/vendure/issues/1670)
+* **core** Fix regression when querying custom field relations ([b279d25](https://github.com/vendure-ecommerce/vendure/commit/b279d25)), closes [#1664](https://github.com/vendure-ecommerce/vendure/issues/1664) [#1636](https://github.com/vendure-ecommerce/vendure/issues/1636) [#1636](https://github.com/vendure-ecommerce/vendure/issues/1636)
+* **core** Handle user verification edge case ([1640ea7](https://github.com/vendure-ecommerce/vendure/commit/1640ea7)), closes [#1659](https://github.com/vendure-ecommerce/vendure/issues/1659)
+* **job-queue-plugin** Partially fix BullMQ shutdown error ([3835f8b](https://github.com/vendure-ecommerce/vendure/commit/3835f8b))
+* **payments-plugin** Fix error on Braintree refund failure ([0b79eb5](https://github.com/vendure-ecommerce/vendure/commit/0b79eb5))
+* **payments-plugin** Use idempotency key for Stripe API calls ([9b77d5c](https://github.com/vendure-ecommerce/vendure/commit/9b77d5c))
+* **payments-plugin** Verify Stripe payment intent amount ([b72ae18](https://github.com/vendure-ecommerce/vendure/commit/b72ae18))
+
 ## <small>1.6.3 (2022-07-05)</small>
 
 

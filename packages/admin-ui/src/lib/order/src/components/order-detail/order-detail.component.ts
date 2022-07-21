@@ -21,6 +21,7 @@ import {
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
+import { pick } from '@vendure/common/lib/pick';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
@@ -525,33 +526,45 @@ export class OrderDetailComponent
                         return of(undefined);
                     }
 
-                    const operations: Array<
-                        Observable<RefundOrderMutation['refundOrder'] | CancelOrderMutation['cancelOrder']>
-                    > = [];
-                    if (input.refund.lines.length) {
-                        operations.push(
-                            this.dataService.order
-                                .refundOrder(input.refund)
-                                .pipe(map(res => res.refundOrder)),
-                        );
-                    }
                     if (input.cancel.lines?.length) {
-                        operations.push(
-                            this.dataService.order
-                                .cancelOrder(input.cancel)
-                                .pipe(map(res => res.cancelOrder)),
+                        return this.dataService.order.cancelOrder(input.cancel).pipe(
+                            map(res => {
+                                const result = res.cancelOrder;
+                                switch (result.__typename) {
+                                    case 'Order':
+                                        this.refetchOrder(result).subscribe();
+                                        this.notificationService.success(_('order.cancelled-order-success'));
+                                        return input;
+                                    case 'CancelActiveOrderError':
+                                    case 'QuantityTooGreatError':
+                                    case 'MultipleOrderError':
+                                    case 'OrderStateTransitionError':
+                                    case 'EmptyOrderLineSelectionError':
+                                        this.notificationService.error(result.message);
+                                        return undefined;
+                                }
+                            }),
                         );
+                    } else {
+                        return [input];
                     }
-                    return merge(...operations);
+                }),
+                switchMap(input => {
+                    if (!input) {
+                        return of(undefined);
+                    }
+                    if (input.refund.lines.length) {
+                        return this.dataService.order
+                            .refundOrder(input.refund)
+                            .pipe(map(res => res.refundOrder));
+                    } else {
+                        return [undefined];
+                    }
                 }),
             )
             .subscribe(result => {
                 if (result) {
                     switch (result.__typename) {
-                        case 'Order':
-                            this.refetchOrder(result).subscribe();
-                            this.notificationService.success(_('order.cancelled-order-success'));
-                            break;
                         case 'Refund':
                             this.refetchOrder(result).subscribe();
                             if (result.state === 'Failed') {
@@ -560,11 +573,6 @@ export class OrderDetailComponent
                                 this.notificationService.success(_('order.refund-order-success'));
                             }
                             break;
-                        case 'QuantityTooGreatError':
-                        case 'MultipleOrderError':
-                        case 'OrderStateTransitionError':
-                        case 'CancelActiveOrderError':
-                        case 'EmptyOrderLineSelectionError':
                         case 'AlreadyRefundedError':
                         case 'NothingToRefundError':
                         case 'PaymentOrderMismatchError':

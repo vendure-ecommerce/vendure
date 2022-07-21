@@ -354,6 +354,74 @@ describe('Shop orders', () => {
                 });
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/1670
+            it('adding a second item after adjusting custom field adds new OrderLine', async () => {
+                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                    },
+                );
+                orderResultGuard.assertSuccess(add1);
+                expect(add1!.lines.length).toBe(2);
+                expect(add1!.lines[1].quantity).toBe(1);
+
+                const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS, {
+                    orderLineId: add1.lines[1].id,
+                    quantity: 1,
+                    customFields: {
+                        notes: 'updated notes',
+                    },
+                });
+                expect(adjustOrderLine.lines[1].customFields).toEqual({
+                    lineImage: null,
+                    notes: 'updated notes',
+                });
+                const { activeOrder: ao1 } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+                expect(ao1.lines[1].customFields).toEqual({
+                    lineImage: null,
+                    notes: 'updated notes',
+                });
+                const updatedNotesLineId = ao1.lines[1].id;
+
+                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                    },
+                );
+                orderResultGuard.assertSuccess(add2);
+                expect(add2!.lines.length).toBe(3);
+                expect(add2!.lines[1].quantity).toBe(1);
+                expect(add2!.lines[2].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+                expect(activeOrder.lines.find((l: any) => l.id === updatedNotesLineId)?.customFields).toEqual(
+                    {
+                        lineImage: null,
+                        notes: 'updated notes',
+                    },
+                );
+
+                // clean up
+                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
+                    REMOVE_ITEM_FROM_ORDER,
+                    {
+                        orderLineId: add2!.lines[1].id,
+                    },
+                );
+                const { removeOrderLine } = await shopClient.query<
+                    RemoveItemFromOrder.Mutation,
+                    RemoveItemFromOrder.Variables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: add2!.lines[2].id,
+                });
+                orderResultGuard.assertSuccess(removeOrderLine);
+                expect(removeOrderLine.lines.length).toBe(1);
+            });
+
             it('addItemToOrder with relation customField', async () => {
                 const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
@@ -419,28 +487,6 @@ describe('Shop orders', () => {
 
             it('adjustOrderLine updates relation reference', async () => {
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
-
-                const ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS = gql`
-                    mutation ($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
-                        adjustOrderLine(
-                            orderLineId: $orderLineId
-                            quantity: $quantity
-                            customFields: $customFields
-                        ) {
-                            ... on Order {
-                                lines {
-                                    id
-                                    customFields {
-                                        notes
-                                        lineImage {
-                                            id
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `;
                 const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS, {
                     orderLineId: activeOrder.lines[2].id,
                     quantity: 1,
@@ -538,7 +584,7 @@ describe('Shop orders', () => {
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: 'T_8',
+                orderLineId: 'T_10',
                 quantity: 101,
             });
             orderResultGuard.assertErrorResult(adjustOrderLine);
@@ -554,7 +600,7 @@ describe('Shop orders', () => {
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: 'T_8',
+                orderLineId: 'T_10',
                 quantity: 0,
             });
             orderResultGuard.assertSuccess(adjustLine2);
@@ -2157,4 +2203,22 @@ export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
         }
     }
     ${UPDATED_ORDER_FRAGMENT}
+`;
+
+const ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS = gql`
+    mutation ($orderLineId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
+        adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
+            ... on Order {
+                lines {
+                    id
+                    customFields {
+                        notes
+                        lineImage {
+                            id
+                        }
+                    }
+                }
+            }
+        }
+    }
 `;

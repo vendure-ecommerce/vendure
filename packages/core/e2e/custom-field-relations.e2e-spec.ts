@@ -20,14 +20,16 @@ import {
     RequestContext,
     ShippingMethod,
     TransactionalConnection,
+    VendureEntity,
     VendurePlugin,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { AddItemToOrderMutation } from './graphql/generated-e2e-shop-types';
@@ -72,6 +74,16 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'Zone',
 );
 
+@Entity()
+class Vendor extends VendureEntity {
+    constructor() {
+        super();
+    }
+    @OneToOne(type => Product, { eager: true })
+    @JoinColumn()
+    featuredProduct: Product;
+}
+
 const customFieldConfig: CustomFields = {};
 for (const entity of entitiesWithCustomFields) {
     customFieldConfig[entity] = [
@@ -90,6 +102,15 @@ customFieldConfig.Product?.push(
     { name: 'cfProduct', type: 'relation', entity: Product, list: false },
     { name: 'cfShippingMethod', type: 'relation', entity: ShippingMethod, list: false },
     { name: 'cfInternalAsset', type: 'relation', entity: Asset, list: false, internal: true },
+    {
+        name: 'cfVendor',
+        type: 'relation',
+        entity: Vendor,
+        graphQLType: 'Vendor',
+        list: false,
+        internal: false,
+        public: true,
+    },
 );
 
 const testResolverSpy = jest.fn();
@@ -110,13 +131,25 @@ class TestResolver1636 {
 
 @VendurePlugin({
     imports: [PluginCommonModule],
+    entities: [Vendor],
     shopApiExtensions: {
         schema: gql`
             extend type Query {
                 getAssetTest(id: ID!): Boolean!
             }
+            type Vendor {
+                featuredProduct: Product
+            }
         `,
         resolvers: [TestResolver1636],
+    },
+    adminApiExtensions: {
+        schema: gql`
+            type Vendor {
+                featuredProduct: Product
+            }
+        `,
+        resolvers: [],
     },
 })
 class TestPlugin1636 {}
@@ -125,6 +158,7 @@ const customConfig = mergeConfig(testConfig(), {
     paymentOptions: {
         paymentMethodHandlers: [testSuccessfulPaymentMethod],
     },
+    // logger: new DefaultLogger({ level: LogLevel.Debug }),
     dbConnectionOptions: {
         timezone: 'Z',
     },
@@ -763,6 +797,26 @@ describe('Custom field relations', () => {
                     }
                 `);
                 assertCustomFieldIds(updateProductVariants[0].customFields, 'T_2', ['T_3', 'T_4']);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1664
+            it('successfully gets product with eager-loading custom field relation', async () => {
+                const { product } = await shopClient.query(gql`
+                    query {
+                        product(id: "T_1") {
+                            id
+                            customFields {
+                                cfVendor {
+                                    featuredProduct {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(product).toBeDefined();
             });
         });
 

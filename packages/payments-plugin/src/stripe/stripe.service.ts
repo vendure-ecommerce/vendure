@@ -1,15 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-    CurrencyCode,
-    Customer,
-    Logger,
-    Order,
-    RequestContext,
-    TransactionalConnection,
-} from '@vendure/core';
+import { Customer, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { getAmountInStripeMinorUnits } from './stripe-utils';
 import { StripePluginOptions } from './types';
 
 @Injectable()
@@ -31,32 +25,23 @@ export class StripeService {
         if (this.options.storeCustomersInStripe && ctx.activeUserId) {
             customerId = await this.getStripeCustomerId(ctx, order);
         }
-
-        // From the [Stripe docs](https://stripe.com/docs/currencies#zero-decimal):
-        // > All API requests expect amounts to be provided in a currency’s smallest unit.
-        // > For example, to charge 10 USD, provide an amount value of 1000 (that is, 1000 cents).
-        // > For zero-decimal currencies, still provide amounts as an integer but without multiplying by 100.
-        // > For example, to charge ¥500, provide an amount value of 500.
-        //
-        // Therefore, for a fractionless currency like JPY, we need to divide the amount by 100 (since Vendure always
-        // stores money amounts multiplied by 100). See https://github.com/vendure-ecommerce/vendure/issues/1630
-        const amountInMinorUnits = this.currencyHasFractionPart(order.currencyCode)
-            ? order.totalWithTax
-            : Math.round(order.totalWithTax / 100);
-
-        const { client_secret } = await this.stripe.paymentIntents.create({
-            amount: amountInMinorUnits,
-            currency: order.currencyCode.toLowerCase(),
-            customer: customerId,
-            automatic_payment_methods: {
-                enabled: true,
+        const amountInMinorUnits = getAmountInStripeMinorUnits(order);
+        const { client_secret } = await this.stripe.paymentIntents.create(
+            {
+                amount: amountInMinorUnits,
+                currency: order.currencyCode.toLowerCase(),
+                customer: customerId,
+                automatic_payment_methods: {
+                    enabled: true,
+                },
+                metadata: {
+                    channelToken: ctx.channel.token,
+                    orderId: order.id,
+                    orderCode: order.code,
+                },
             },
-            metadata: {
-                channelToken: ctx.channel.token,
-                orderId: order.id,
-                orderCode: order.code,
-            },
-        });
+            { idempotencyKey: `${order.code}_${amountInMinorUnits}` },
+        );
 
         if (!client_secret) {
             // This should never happen
@@ -130,15 +115,5 @@ export class StripeService {
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
 
         return stripeCustomerId;
-    }
-
-    private currencyHasFractionPart(currencyCode: CurrencyCode): boolean {
-        const parts = new Intl.NumberFormat(undefined, {
-            style: 'currency',
-            currency: currencyCode,
-            currencyDisplay: 'symbol',
-        }).formatToParts(123.45);
-        const hasFractionPart = !!parts.find(p => p.type === 'fraction');
-        return hasFractionPart;
     }
 }

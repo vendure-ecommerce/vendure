@@ -44,7 +44,7 @@ export class DefaultAssetNamingStrategy implements AssetNamingStrategy {
      * See http://sharp.pixelplumbing.com/en/stable/api-output/#tobuffer
      */
     private isSupportedImageFormat(fileName: string): boolean {
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.tiff'];
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.tiff', '.avif', '.gif'];
         const ext = path.extname(fileName);
         return imageExtensions.includes(ext);
     }

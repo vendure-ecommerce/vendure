@@ -72,4 +72,12 @@ export class OrderTableComponent implements OnInit {
             return promotion.couponCode || undefined;
         }
     }
+
+    getShippingNames(order: OrderDetail.Fragment) {
+        if (order.shippingLines.length) {
+            return order.shippingLines.map(shippingLine => shippingLine.shippingMethod.name).join(', ');
+        } else {
+            return '';
+        }
+    }
 }
