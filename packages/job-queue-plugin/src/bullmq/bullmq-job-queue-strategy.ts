@@ -10,7 +10,15 @@ import {
     Logger,
     PaginatedList,
 } from '@vendure/core';
-import Bull, { JobType, ConnectionOptions, Processor, Queue, QueueScheduler, Worker, WorkerOptions } from 'bullmq';
+import Bull, {
+    ConnectionOptions,
+    JobType,
+    Processor,
+    Queue,
+    QueueScheduler,
+    Worker,
+    WorkerOptions,
+} from 'bullmq';
 import { EventEmitter } from 'events';
 import Redis, { RedisOptions } from 'ioredis';
 

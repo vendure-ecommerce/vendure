@@ -73,7 +73,7 @@ export class OrderTableComponent implements OnInit {
         }
     }
 
-    getShippingNames(order: OrderDetail.Fragment) {
+    getShippingNames(order: OrderDetailFragment) {
         if (order.shippingLines.length) {
             return order.shippingLines.map(shippingLine => shippingLine.shippingMethod.name).join(', ');
         } else {

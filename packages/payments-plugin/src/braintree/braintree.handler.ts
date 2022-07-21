@@ -45,7 +45,7 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
                 customerId = await getBraintreeCustomerId(ctx, gateway, customer);
             }
             return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e, loggerCtx);
             return {
                 amount,
