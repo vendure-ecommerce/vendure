@@ -224,3 +224,43 @@ This resolver is then passed in to your plugin metadata like any other resolver:
 })
 export class MyPlugin {}
 ```
+
+## Defining custom scalars
+
+By default, Vendure bundles `DateTime` and a `JSON` custom scalars (from the [graphql-scalars library](https://github.com/Urigo/graphql-scalars)). From v1.7.0, you can also define your own custom scalars for use in your schema extensions:
+
+```TypeScript
+import { GraphQLScalarType} from 'graphql';
+import { GraphQLEmailAddress } from 'graphql-scalars';
+
+// Scalars can be custom-built as like this one,
+// or imported from a pre-made scalar library like
+// the GraphQLEmailAddress example.
+const FooScalar = new GraphQLScalarType({
+  name: 'Foo',
+  description: 'A test scalar',
+  serialize(value) {
+    // ...
+  },
+  parseValue(value) {
+    // ...
+  },
+});
+
+@VendurePlugin({
+  imports: [PluginCommonModule],
+  shopApiExtensions: {
+    schema: gql`
+      scalar Foo
+      scalar EmailAddress
+    `,
+    scalars: { 
+      // The key must match the scalar name
+      // given in the schema  
+      Foo: FooScalar,
+      EmailAddress: GraphQLEmailAddress,
+    },
+  },
+})
+export class CustomScalarsPlugin {}
+```

@@ -68,6 +68,22 @@ describe('Plugins', () => {
         expect(result.baz).toEqual(['quux']);
     });
 
+    it('custom scalar', async () => {
+        const result = await adminClient.query(gql`
+            query {
+                barList(options: { skip: 0, take: 1 }) {
+                    items {
+                        id
+                        pizzaType
+                    }
+                }
+            }
+        `);
+        expect(result.barList).toEqual({
+            items: [{ id: 'T_1', pizzaType: 'Cheese pizza!' }],
+        });
+    });
+
     it('allows lazy evaluation of API extension', async () => {
         const result = await shopClient.query(gql`
             query {

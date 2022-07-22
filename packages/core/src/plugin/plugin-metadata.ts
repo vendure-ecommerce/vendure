@@ -67,7 +67,7 @@ export function graphQLResolversFor(
     return apiExtensions
         ? typeof apiExtensions.resolvers === 'function'
             ? apiExtensions.resolvers()
-            : apiExtensions.resolvers
+            : apiExtensions.resolvers ?? []
         : [];
 }
 
