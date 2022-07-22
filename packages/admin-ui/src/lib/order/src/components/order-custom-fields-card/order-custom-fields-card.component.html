@@ -4,15 +4,13 @@
     </div>
     <div class="card-block">
         <div class="card-text custom-field-form" [class.editable]="editable">
-            <ng-container *ngFor="let customField of customFieldsConfig">
-                <vdr-custom-field-control
-                    entityName="Order"
-                    [customFieldsFormGroup]="customFieldForm"
-                    [compact]="true"
-                    [readonly]="customField.readonly || !editable"
-                    [customField]="customField"
-                ></vdr-custom-field-control>
-            </ng-container>
+            <vdr-tabbed-custom-fields
+                entityName="Order"
+                [customFields]="customFieldsConfig"
+                [customFieldsFormGroup]="customFieldForm"
+                [readonly]="!editable"
+                [compact]="true"
+            ></vdr-tabbed-custom-fields>
         </div>
     </div>
     <div class="card-footer">
@@ -28,6 +26,14 @@
         >
             <clr-icon shape="check"></clr-icon>
             {{ 'common.update' | translate }}
+        </button>
+        <button
+            class="btn btn-sm btn-secondary"
+            (click)="onCancelClick()"
+            *ngIf="editable"
+        >
+            <clr-icon shape="times"></clr-icon>
+            {{ 'common.cancel' | translate }}
         </button>
     </div>
 </div>
