@@ -49,7 +49,7 @@
             [itemsPerPage]="itemsPerPage"
             (itemsPerPageChange)="itemsPerPageChange.emit($event)"
         ></vdr-items-per-page-controls>
-        <div>
+        <div *ngIf="totalItems" class="p5">
             {{ 'common.total-items' | translate: { currentStart, currentEnd, totalItems } }}
         </div>
 

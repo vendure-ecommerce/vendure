@@ -323,6 +323,7 @@
     "registered": "已注册",
     "remove-customers-from-group-success": "成功从分组\"{ groupName }\"中移除{customerCount}个客户",
     "remove-from-group": "从分组中移除",
+    "search-by-group-name": "输入搜索条目",
     "search-customers-by-email": "输入要搜索的客户邮件地址",
     "search-customers-by-email-last-name-postal-code": "",
     "select-customer": "选择客户",

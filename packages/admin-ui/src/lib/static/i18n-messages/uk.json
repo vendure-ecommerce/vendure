@@ -323,6 +323,7 @@
     "registered": "Зареєстровано",
     "remove-customers-from-group-success": "Видалено {customerCount, plural, one {1 клієнт} other {{customerCount} клієнтів}} из \"{ groupName }\"",
     "remove-from-group": "Вилучити з цієї групи",
+    "search-by-group-name": "Шукати по фразі",
     "search-customers-by-email": "Пошук за адресою електронної пошти",
     "search-customers-by-email-last-name-postal-code": "",
     "select-customer": "Виберіть клієнта",

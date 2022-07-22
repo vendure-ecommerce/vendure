@@ -1,17 +1,31 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    BaseListComponent,
     DataService,
     DeletionResult,
     GetCustomerGroups,
+    GetCustomerGroupsQuery,
     GetCustomerGroupWithCustomers,
     GetZones,
+    LogicalOperator,
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
+import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from 'rxjs';
-import { distinctUntilChanged, map, mapTo, switchMap, tap } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    mapTo,
+    switchMap,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 
 import { AddCustomerToGroupDialogComponent } from '../add-customer-to-group-dialog/add-customer-to-group-dialog.component';
 import { CustomerGroupDetailDialogComponent } from '../customer-group-detail-dialog/customer-group-detail-dialog.component';
@@ -23,9 +37,16 @@ import { CustomerGroupMemberFetchParams } from '../customer-group-member-list/cu
     styleUrls: ['./customer-group-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CustomerGroupListComponent implements OnInit {
+export class CustomerGroupListComponent
+    extends BaseListComponent<
+        GetCustomerGroupsQuery,
+        GetCustomerGroupsQuery['customerGroups']['items'][number]
+    >
+    implements OnInit
+{
+    searchTerm = new FormControl('');
     activeGroup$: Observable<GetCustomerGroups.Items | undefined>;
-    groups$: Observable<GetCustomerGroups.Items[]>;
+    activeGroupId: string | undefined;
     listIsEmpty$: Observable<boolean>;
     members$: Observable<GetCustomerGroupWithCustomers.Items[]>;
     membersTotal$: Observable<number>;
@@ -42,25 +63,47 @@ export class CustomerGroupListComponent implements OnInit {
         private notificationService: NotificationService,
         private modalService: ModalService,
         public route: ActivatedRoute,
-        private router: Router,
-    ) {}
+        protected router: Router,
+    ) {
+        super(router, route);
+        super.setQueryFn(
+            (...args: any[]) =>
+                this.dataService.customer.getCustomerGroupList(...args).refetchOnChannelChange(),
+            data => data.customerGroups,
+            (skip, take) => ({
+                options: {
+                    skip,
+                    take,
+                    filter: {
+                        name: { contains: this.searchTerm.value },
+                    },
+                },
+            }),
+        );
+    }
 
     ngOnInit(): void {
-        this.groups$ = this.dataService.customer
-            .getCustomerGroupList()
-            .mapStream(data => data.customerGroups.items);
+        super.ngOnInit();
+        this.searchTerm.valueChanges
+            .pipe(
+                filter(value => 2 < value.length || value.length === 0),
+                debounceTime(250),
+                takeUntil(this.destroy$),
+            )
+            .subscribe(() => this.refresh());
         const activeGroupId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
             tap(() => (this.selectedCustomerIds = [])),
         );
-        this.listIsEmpty$ = this.groups$.pipe(map(groups => groups.length === 0));
-        this.activeGroup$ = combineLatest(this.groups$, activeGroupId$).pipe(
+        this.listIsEmpty$ = this.items$.pipe(map(groups => groups.length === 0));
+        this.activeGroup$ = combineLatest(this.items$, activeGroupId$).pipe(
             map(([groups, activeGroupId]) => {
                 if (activeGroupId) {
                     return groups.find(g => g.id === activeGroupId);
                 }
             }),
+            tap(val => (this.activeGroupId = val?.id)),
         );
         const membersResult$ = combineLatest(
             this.activeGroup$,

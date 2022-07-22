@@ -323,6 +323,7 @@
     "registered": "Registado",
     "remove-customers-from-group-success": "{customerCount, plural, one {1 cliente eliminado} other {{customerCount} clientes eliminados}} do grupo \"{ groupName }\"",
     "remove-from-group": "Eliminar deste grupo",
+    "search-by-group-name": "Pesquisar termo",
     "search-customers-by-email": "Pesquisar por email",
     "search-customers-by-email-last-name-postal-code": "Pesquisar pelo apelido / email / código postal",
     "select-customer": "Seleccione o cliente",

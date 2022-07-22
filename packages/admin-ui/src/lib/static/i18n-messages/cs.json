@@ -323,6 +323,7 @@
     "registered": "Registrován",
     "remove-customers-from-group-success": "Odebrán: {customerCount, plural, one {1 zákazník} other {{customerCount} zákazníci/zákazníků}} z \"{ groupName }\"",
     "remove-from-group": "Odebrat ze skupiny",
+    "search-by-group-name": "Hledat výraz",
     "search-customers-by-email": "Hledat podle e-mailové adresy",
     "search-customers-by-email-last-name-postal-code": "",
     "select-customer": "",
