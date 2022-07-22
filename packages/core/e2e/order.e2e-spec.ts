@@ -572,6 +572,23 @@ describe('Orders resolver', () => {
                 },
             ]);
         });
+
+        it('filter by transactionId', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            transactionId: {
+                                eq: '12345-' + firstOrderCode,
+                            },
+                        },
+                    },
+                },
+            );
+            expect(result.orders.totalItems).toEqual(1);
+            expect(result.orders.items[0].code).toBe(firstOrderCode);
+        });
     });
 
     describe('fulfillment', () => {

@@ -31,7 +31,7 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
         return {
             amount,
             state: 'Authorized',
-            transactionId: '12345',
+            transactionId: '12345-' + order.code,
             metadata: { public: metadata },
         };
     },
@@ -143,7 +143,7 @@ export const failsToSettlePaymentMethod = new PaymentMethodHandler({
         return {
             amount,
             state: 'Authorized',
-            transactionId: '12345',
+            transactionId: '12345-' + order.code,
             metadata: {
                 privateCreatePaymentData: 'secret',
                 public: {

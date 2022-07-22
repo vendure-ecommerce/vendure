@@ -193,10 +193,12 @@ export class OrderService {
                     'lines.items',
                     'channels',
                     'shippingLines',
+                    'payments',
                 ],
                 channelId: ctx.channelId,
                 customPropertyMap: {
                     customerLastName: 'customer.lastName',
+                    transactionId: 'payment.transactionId',
                 },
             })
             .getManyAndCount()
