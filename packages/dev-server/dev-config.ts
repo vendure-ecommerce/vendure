@@ -67,7 +67,7 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
         BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin.init(),
+        // DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
