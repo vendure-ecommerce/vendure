@@ -498,7 +498,7 @@ describe('Import resolver', () => {
 
             expect(productResult.products.items.length).toBe(1);
             expect(productResult.products.items[0].featuredAsset.preview).toBe(
-                'test-url/test-assets/guitar__preview.png',
+                'test-url/test-assets/guitar__preview.jpg',
             );
         });
     });
