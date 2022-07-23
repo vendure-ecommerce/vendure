@@ -6,6 +6,7 @@ import {
 } from '../../common/finite-state-machine/types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import {
+    CustomPaymentStates,
     PaymentState,
     PaymentTransitionData,
 } from '../../service/helpers/payment-state-machine/payment-state';
@@ -18,7 +19,7 @@ import {
  *
  * @docsCategory fulfillment
  */
-export interface CustomPaymentProcess<State extends string> extends InjectableStrategy {
+export interface CustomPaymentProcess<State extends keyof CustomPaymentStates | string> extends InjectableStrategy {
     transitions?: Transitions<State, State | PaymentState> & Partial<Transitions<PaymentState | State>>;
     onTransitionStart?: OnTransitionStartFn<State | PaymentState, PaymentTransitionData>;
     onTransitionEnd?: OnTransitionEndFn<State | PaymentState, PaymentTransitionData>;

@@ -6,7 +6,7 @@ import {
     Transitions,
 } from '../../common/finite-state-machine/types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
-import { OrderState, OrderTransitionData } from '../../service/helpers/order-state-machine/order-state';
+import { CustomOrderStates, OrderState, OrderTransitionData } from '../../service/helpers/order-state-machine/order-state';
 
 /**
  * @description
@@ -16,7 +16,7 @@ import { OrderState, OrderTransitionData } from '../../service/helpers/order-sta
  *
  * @docsCategory orders
  */
-export interface CustomOrderProcess<State extends string> extends InjectableStrategy {
+export interface CustomOrderProcess<State extends keyof CustomOrderStates | string> extends InjectableStrategy {
     transitions?: Transitions<State, State | OrderState> & Partial<Transitions<OrderState | State>>;
     onTransitionStart?: OnTransitionStartFn<State | OrderState, OrderTransitionData>;
     onTransitionEnd?: OnTransitionEndFn<State | OrderState, OrderTransitionData>;

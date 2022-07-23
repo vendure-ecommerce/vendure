@@ -6,6 +6,7 @@ import {
 } from '../../common/finite-state-machine/types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import {
+    CustomFulfillmentStates,
     FulfillmentState,
     FulfillmentTransitionData,
 } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
@@ -18,7 +19,7 @@ import {
  *
  * @docsCategory fulfillment
  */
-export interface CustomFulfillmentProcess<State extends string> extends InjectableStrategy {
+export interface CustomFulfillmentProcess<State extends keyof CustomFulfillmentStates | string> extends InjectableStrategy {
     transitions?: Transitions<State, State | FulfillmentState> &
         Partial<Transitions<FulfillmentState | State>>;
     onTransitionStart?: OnTransitionStartFn<State | FulfillmentState, FulfillmentTransitionData>;

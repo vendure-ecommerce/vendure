@@ -5,11 +5,19 @@ import { Order } from '../../../entity/order/order.entity';
 
 /**
  * @description
+ * An interface to extend standard {@link FulfillmentState}.
+ * 
+ * @docsCategory fulfillment
+ */
+export interface CustomFulfillmentStates {}
+
+/**
+ * @description
  * These are the default states of the fulfillment process.
  *
  * @docsCategory fulfillment
  */
-export type FulfillmentState = 'Created' | 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+export type FulfillmentState = 'Created' | 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled' | keyof CustomFulfillmentStates;
 
 export const fulfillmentStateTransitions: Transitions<FulfillmentState> = {
     Created: {
