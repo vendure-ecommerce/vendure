@@ -6,7 +6,7 @@ import {
     RefundOrderInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { summate } from '@vendure/common/lib/shared-utils';
+import { getGraphQlInputName, summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
@@ -27,7 +27,9 @@ import {
 import { AdjustmentSource } from '../../../common/types/adjustment-source';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
+import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { VendureEntity } from '../../../entity/base/base.entity';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
@@ -138,6 +140,9 @@ export class OrderModifier {
             }),
         );
         await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
+        const customFieldRelations = this.configService.customFields.OrderLine.filter(
+            field => field.type === 'relation',
+        ).map(field => `customFields.${field.name}`);
         const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
             relations: [
                 'items',
@@ -145,6 +150,7 @@ export class OrderModifier {
                 'productVariant',
                 'productVariant.productVariantPrices',
                 'productVariant.taxCategory',
+                ...customFieldRelations,
             ],
         });
         lineWithRelations.productVariant = translateDeep(
@@ -626,12 +632,19 @@ export class OrderModifier {
                     return false;
                 }
             } else if (def.type === 'relation') {
-                const inputId = `${key}Id`;
+                const inputId = getGraphQlInputName(def);
                 const inputValue = inputCustomFields?.[inputId];
                 // tslint:disable-next-line:no-non-null-assertion
                 const existingRelation = (lineWithCustomFieldRelations!.customFields as any)[key];
-                if (inputValue && inputValue !== existingRelation?.id) {
-                    return false;
+                if (inputValue) {
+                    const customFieldEqual = def.list
+                        ? inputValue.every((id: ID) =>
+                              existingRelation?.find((relation: VendureEntity) => relation.id === id),
+                          )
+                        : inputValue === existingRelation?.id;
+                    if (!customFieldEqual) {
+                        return false;
+                    }
                 }
             }
         }
