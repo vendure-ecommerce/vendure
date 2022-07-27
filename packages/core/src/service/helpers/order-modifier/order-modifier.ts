@@ -588,7 +588,7 @@ export class OrderModifier {
             for (const def of customFieldDefs) {
                 const key = def.name;
                 const existingValue = existingCustomFields?.[key];
-                if (existingValue != null) {
+                if (existingValue != null && (!def.list || existingValue?.length !== 0)) {
                     if (def.defaultValue != null) {
                         if (existingValue !== def.defaultValue) {
                             return false;
@@ -622,7 +622,7 @@ export class OrderModifier {
                 def.type === 'boolean' && typeof existingCustomFields?.[key] === 'number'
                     ? !!existingCustomFields?.[key]
                     : existingCustomFields?.[key];
-            if (existingValue !== undefined) {
+            if (def.type !== 'relation' && existingValue !== undefined) {
                 const valuesMatch =
                     JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(existingValue);
                 const undefinedMatchesNull = existingValue === null && inputCustomFields?.[key] === undefined;
@@ -637,12 +637,13 @@ export class OrderModifier {
                 // tslint:disable-next-line:no-non-null-assertion
                 const existingRelation = (lineWithCustomFieldRelations!.customFields as any)[key];
                 if (inputValue) {
-                    const customFieldEqual = def.list
-                        ? inputValue.every((id: ID) =>
-                              existingRelation?.find((relation: VendureEntity) => relation.id === id),
+                    const customFieldNotEqual = def.list
+                        ? JSON.stringify((inputValue as ID[]).sort()) !==
+                          JSON.stringify(
+                              existingRelation?.map((relation: VendureEntity) => relation.id).sort(),
                           )
-                        : inputValue === existingRelation?.id;
-                    if (!customFieldEqual) {
+                        : inputValue !== existingRelation?.id;
+                    if (customFieldNotEqual) {
                         return false;
                     }
                 }
