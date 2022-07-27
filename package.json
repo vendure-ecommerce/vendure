@@ -25,8 +25,8 @@
     "check-core-type-defs": "ts-node scripts/check-core-type-defs.ts",
     "check-angular-versions": "ts-node scripts/check-angular-versions.ts",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
-    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push --force-publish",
-    "publish-prerelease": "lerna publish -m \"chore: Pre-release %s\" prerelease --no-push --force-publish --preid beta --dist-tag next",
+    "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push --force-publish --exact",
+    "publish-prerelease": "lerna publish -m \"chore: Pre-release %s\" prerelease --no-push --force-publish --preid beta --dist-tag next --exact",
     "publish-local": "lerna version --no-git-tag-version && cd scripts && ./publish-to-verdaccio.sh"
   },
   "devDependencies": {
