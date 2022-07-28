@@ -564,7 +564,9 @@ describe('Shop orders', () => {
                 expect(addItemToOrder!.lines[1].quantity).toBe(1);
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
-                expect(activeOrder.lines[1].customFields.lineImages).toEqual([{ id: 'T_1' }, { id: 'T_2' }]);
+                expect(activeOrder.lines[1].customFields.lineImages.length).toBe(2);
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_1' });
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_2' });
             });
 
             it('addItemToOrder with equal list relation customField adds to quantity', async () => {
@@ -585,7 +587,9 @@ describe('Shop orders', () => {
 
                 const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
 
-                expect(activeOrder.lines[1].customFields.lineImages).toEqual([{ id: 'T_1' }, { id: 'T_2' }]);
+                expect(activeOrder.lines[1].customFields.lineImages.length).toBe(2);
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_1' });
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_2' });
             });
 
             it('addItemToOrder with different list relation customField adds new line', async () => {
