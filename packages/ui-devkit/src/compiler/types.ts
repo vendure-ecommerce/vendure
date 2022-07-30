@@ -79,7 +79,7 @@ export interface SassVariableOverridesExtension {
      * Specifies a path to a Sass style file containing variable declarations, which will take precedence over
      * default values defined in Clarity.
      */
-    variableStyles: string;
+    sassVariableOverrides: string;
 }
 
 /**

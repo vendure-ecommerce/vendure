@@ -109,5 +109,5 @@ export function isGlobalStylesExtension(input: Extension): input is GlobalStyles
 }
 
 export function isSassVariableOverridesExtension(input: Extension): input is SassVariableOverridesExtension {
-    return input.hasOwnProperty('variableStyles');
+    return input.hasOwnProperty('sassVariableOverrides');
 }

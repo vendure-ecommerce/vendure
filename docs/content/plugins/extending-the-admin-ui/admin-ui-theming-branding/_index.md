@@ -109,7 +109,7 @@ Some customizable styles in [Clarity](https://clarity.design/), Admin UI's Desig
     /* my-variables.scss */
     $clr-header-height: 4rem;
     ```
-3. Set this as a variableOverrides extension:
+3. Set this as a sassVariableOverrides extension:
     ```TypeScript
     import path from 'path';
     import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
@@ -123,7 +123,7 @@ Some customizable styles in [Clarity](https://clarity.design/), Admin UI's Desig
           app: compileUiExtensions({
             outputPath: path.join(__dirname, 'admin-ui'),
             extensions: [{
-              variableOverrides: path.join(__dirname, 'my-variables.scss')
+              sassVariableOverrides: path.join(__dirname, 'my-variables.scss')
             }],
           }),
         }),
@@ -131,4 +131,4 @@ Some customizable styles in [Clarity](https://clarity.design/), Admin UI's Desig
     }
     ```
 
-globalStyles and variableOverrides extensions can be used in conjunction or separately.
+globalStyles and sassVariableOverrides extensions can be used in conjunction or separately.

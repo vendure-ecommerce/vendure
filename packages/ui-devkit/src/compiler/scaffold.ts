@@ -118,7 +118,7 @@ async function addGlobalStyles(
 
     let overridesImport = '';
     if (sassVariableOverridesExtension) {
-        const overridesFile = sassVariableOverridesExtension.variableStyles;
+        const overridesFile = sassVariableOverridesExtension.sassVariableOverrides;
         await copyGlobalStyleFile(outputPath, overridesFile);
         overridesImport = `@import "./${GLOBAL_STYLES_OUTPUT_DIR}/${path.basename(
             overridesFile,
