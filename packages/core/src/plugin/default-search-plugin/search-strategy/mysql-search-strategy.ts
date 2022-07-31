@@ -170,7 +170,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
                             .orWhere('MATCH (si_inner.description) AGAINST (:term IN BOOLEAN MODE)');
                     }),
                 )
-                .andWhere('si.channelId = :channelId')
+                .andWhere('si_inner.channelId = :channelId')
                 .setParameters({ term: `${term}*`, like_term: `%${term}%`, channelId: ctx.channelId });
 
             qb.innerJoin(`(${termScoreQuery.getQuery()})`, 'term_result', 'inner_productId = si.productId')
