@@ -154,20 +154,20 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 .createQueryBuilder('si_inner')
                 .select('si_inner.productId', 'inner_productId')
                 .addSelect('si_inner.productVariantId', 'inner_productVariantId')
-                .addSelect(`IF (si.sku LIKE :like_term, 10, 0)`, 'sku_score')
+                .addSelect(`IF (si_inner.sku LIKE :like_term, 10, 0)`, 'sku_score')
                 .addSelect(
                     `(SELECT sku_score) +
-                     MATCH (si.productName) AGAINST (:term IN BOOLEAN MODE) * 2 +
-                     MATCH (si.productVariantName) AGAINST (:term IN BOOLEAN MODE) * 1.5 +
-                     MATCH (si.description) AGAINST (:term IN BOOLEAN MODE) * 1`,
+                     MATCH (si_inner.productName) AGAINST (:term IN BOOLEAN MODE) * 2 +
+                     MATCH (si_inner.productVariantName) AGAINST (:term IN BOOLEAN MODE) * 1.5 +
+                     MATCH (si_inner.description) AGAINST (:term IN BOOLEAN MODE) * 1`,
                     'score',
                 )
                 .where(
                     new Brackets(qb1 => {
-                        qb1.where('si.sku LIKE :like_term')
-                            .orWhere('MATCH (si.productName) AGAINST (:term IN BOOLEAN MODE)')
-                            .orWhere('MATCH (si.productVariantName) AGAINST (:term IN BOOLEAN MODE)')
-                            .orWhere('MATCH (si.description) AGAINST (:term IN BOOLEAN MODE)');
+                        qb1.where('si_inner.sku LIKE :like_term')
+                            .orWhere('MATCH (si_inner.productName) AGAINST (:term IN BOOLEAN MODE)')
+                            .orWhere('MATCH (si_inner.productVariantName) AGAINST (:term IN BOOLEAN MODE)')
+                            .orWhere('MATCH (si_inner.description) AGAINST (:term IN BOOLEAN MODE)');
                     }),
                 )
                 .andWhere('si.channelId = :channelId')
@@ -238,7 +238,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         if (collectionSlug) {
             qb.andWhere(`FIND_IN_SET (:collectionSlug, si.collectionSlugs)`, { collectionSlug });
         }
-        
+
         applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
