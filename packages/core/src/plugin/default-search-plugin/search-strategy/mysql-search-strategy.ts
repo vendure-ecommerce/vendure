@@ -13,6 +13,7 @@ import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 import { SearchStrategy } from './search-strategy';
 import { getFieldsToSelect } from './search-strategy-common';
 import {
+    applyLanguageConstraints,
     createCollectionIdCountMap,
     createFacetIdCountMap,
     createPlaceholderFromId,
@@ -40,8 +41,8 @@ export class MysqlSearchStrategy implements SearchStrategy {
         const facetValuesQb = this.connection
             .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
-            .select(['MIN(productId)', 'MIN(productVariantId)'])
-            .addSelect('GROUP_CONCAT(facetValueIds)', 'facetValues');
+            .select(['MIN(si.productId)', 'MIN(productVariantId)'])
+            .addSelect('GROUP_CONCAT(si.facetValueIds)', 'facetValues');
 
         this.applyTermAndFilters(ctx, facetValuesQb, { ...input, groupByProduct: true });
         if (!input.groupByProduct) {
@@ -62,12 +63,12 @@ export class MysqlSearchStrategy implements SearchStrategy {
         const collectionsQb = this.connection
             .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
-            .select(['MIN(productId)', 'MIN(productVariantId)'])
-            .addSelect('GROUP_CONCAT(collectionIds)', 'collections');
+            .select(['MIN(si.productId)', 'MIN(si.productVariantId)'])
+            .addSelect('GROUP_CONCAT(si.collectionIds)', 'collections');
 
         this.applyTermAndFilters(ctx, collectionsQb, input);
         if (!input.groupByProduct) {
-            collectionsQb.groupBy('productVariantId');
+            collectionsQb.groupBy('si.productVariantId');
         }
         if (enabledOnly) {
             collectionsQb.andWhere('si.enabled = :enabled', { enabled: true });
@@ -89,18 +90,18 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select(this.createMysqlSelect(!!input.groupByProduct));
         if (input.groupByProduct) {
-            qb.addSelect('MIN(price)', 'minPrice')
-                .addSelect('MAX(price)', 'maxPrice')
-                .addSelect('MIN(priceWithTax)', 'minPriceWithTax')
-                .addSelect('MAX(priceWithTax)', 'maxPriceWithTax');
+            qb.addSelect('MIN(si.price)', 'minPrice')
+                .addSelect('MAX(si.price)', 'maxPrice')
+                .addSelect('MIN(si.priceWithTax)', 'minPriceWithTax')
+                .addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
         this.applyTermAndFilters(ctx, qb, input);
         if (sort) {
             if (sort.name) {
-                qb.addOrderBy(input.groupByProduct ? 'MIN(productName)' : 'productName', sort.name);
+                qb.addOrderBy(input.groupByProduct ? 'MIN(si.productName)' : 'productName', sort.name);
             }
             if (sort.price) {
-                qb.addOrderBy(input.groupByProduct ? 'MIN(price)' : 'price', sort.price);
+                qb.addOrderBy(input.groupByProduct ? 'MIN(si.price)' : 'price', sort.price);
             }
         } else {
             if (input.term && input.term.length > this.minTermLength) {
@@ -153,23 +154,23 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 .createQueryBuilder('si_inner')
                 .select('si_inner.productId', 'inner_productId')
                 .addSelect('si_inner.productVariantId', 'inner_productVariantId')
-                .addSelect(`IF (sku LIKE :like_term, 10, 0)`, 'sku_score')
+                .addSelect(`IF (si.sku LIKE :like_term, 10, 0)`, 'sku_score')
                 .addSelect(
                     `(SELECT sku_score) +
-                     MATCH (productName) AGAINST (:term IN BOOLEAN MODE) * 2 +
-                     MATCH (productVariantName) AGAINST (:term IN BOOLEAN MODE) * 1.5 +
-                     MATCH (description) AGAINST (:term IN BOOLEAN MODE) * 1`,
+                     MATCH (si.productName) AGAINST (:term IN BOOLEAN MODE) * 2 +
+                     MATCH (si.productVariantName) AGAINST (:term IN BOOLEAN MODE) * 1.5 +
+                     MATCH (si.description) AGAINST (:term IN BOOLEAN MODE) * 1`,
                     'score',
                 )
                 .where(
                     new Brackets(qb1 => {
-                        qb1.where('sku LIKE :like_term')
-                            .orWhere('MATCH (productName) AGAINST (:term IN BOOLEAN MODE)')
-                            .orWhere('MATCH (productVariantName) AGAINST (:term IN BOOLEAN MODE)')
-                            .orWhere('MATCH (description) AGAINST (:term IN BOOLEAN MODE)');
+                        qb1.where('si.sku LIKE :like_term')
+                            .orWhere('MATCH (si.productName) AGAINST (:term IN BOOLEAN MODE)')
+                            .orWhere('MATCH (si.productVariantName) AGAINST (:term IN BOOLEAN MODE)')
+                            .orWhere('MATCH (si.description) AGAINST (:term IN BOOLEAN MODE)');
                     }),
                 )
-                .andWhere('channelId = :channelId')
+                .andWhere('si.channelId = :channelId')
                 .setParameters({ term: `${term}*`, like_term: `%${term}%`, channelId: ctx.channelId });
 
             qb.innerJoin(`(${termScoreQuery.getQuery()})`, 'term_result', 'inner_productId = si.productId')
@@ -181,9 +182,9 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
         if (input.inStock != null) {
             if (input.groupByProduct) {
-                qb.andWhere('productInStock = :inStock', { inStock: input.inStock });
+                qb.andWhere('si.productInStock = :inStock', { inStock: input.inStock });
             } else {
-                qb.andWhere('inStock = :inStock', { inStock: input.inStock });
+                qb.andWhere('si.inStock = :inStock', { inStock: input.inStock });
             }
         }
         if (facetValueIds?.length) {
@@ -191,7 +192,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 new Brackets(qb1 => {
                     for (const id of facetValueIds) {
                         const placeholder = createPlaceholderFromId(id);
-                        const clause = `FIND_IN_SET(:${placeholder}, facetValueIds)`;
+                        const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
                         const params = { [placeholder]: id };
                         if (facetValueOperator === LogicalOperator.AND) {
                             qb1.andWhere(clause, params);
@@ -213,14 +214,14 @@ export class MysqlSearchStrategy implements SearchStrategy {
                                 }
                                 if (facetValueFilter.and) {
                                     const placeholder = createPlaceholderFromId(facetValueFilter.and);
-                                    const clause = `FIND_IN_SET(:${placeholder}, facetValueIds)`;
+                                    const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
                                     const params = { [placeholder]: facetValueFilter.and };
                                     qb2.where(clause, params);
                                 }
                                 if (facetValueFilter.or?.length) {
                                     for (const id of facetValueFilter.or) {
                                         const placeholder = createPlaceholderFromId(id);
-                                        const clause = `FIND_IN_SET(:${placeholder}, facetValueIds)`;
+                                        const clause = `FIND_IN_SET(:${placeholder}, si.facetValueIds)`;
                                         const params = { [placeholder]: id };
                                         qb2.orWhere(clause, params);
                                     }
@@ -232,16 +233,17 @@ export class MysqlSearchStrategy implements SearchStrategy {
             );
         }
         if (collectionId) {
-            qb.andWhere(`FIND_IN_SET (:collectionId, collectionIds)`, { collectionId });
+            qb.andWhere(`FIND_IN_SET (:collectionId, si.collectionIds)`, { collectionId });
         }
         if (collectionSlug) {
-            qb.andWhere(`FIND_IN_SET (:collectionSlug, collectionSlugs)`, { collectionSlug });
+            qb.andWhere(`FIND_IN_SET (:collectionSlug, si.collectionSlugs)`, { collectionSlug });
         }
-        qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
-        qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
+        
+        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
+        qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
-            qb.groupBy('productId');
-            qb.addSelect('BIT_OR(enabled)', 'productEnabled');
+            qb.groupBy('si.productId');
+            qb.addSelect('BIT_OR(si.enabled)', 'productEnabled');
         }
         return qb;
     }
