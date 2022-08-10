@@ -178,22 +178,25 @@ export class ProductService {
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         const translationQb = this.connection
             .getRepository(ctx, ProductTranslation)
-            .createQueryBuilder('product_translation')
-            .select('product_translation.baseId')
-            .andWhere('product_translation.slug = :slug', { slug });
+            .createQueryBuilder('_product_translation')
+            .select('_product_translation.baseId')
+            .andWhere('_product_translation.slug = :slug', { slug });
 
-        return qb
-            .leftJoin('product.channels', 'channel')
+        const translationsAlias = relations?.includes('translations' as any)
+            ? 'product__translations'
+            : 'product_translations';
+        qb.leftJoin('product.channels', 'channel')
             .andWhere('product.id IN (' + translationQb.getQuery() + ')')
             .setParameters(translationQb.getParameters())
             .andWhere('product.deletedAt IS NULL')
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addSelect(
                 // tslint:disable-next-line:max-line-length
-                `CASE product_translations.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
+                `CASE ${translationsAlias}.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
                 'sort_order',
             )
-            .orderBy('sort_order', 'DESC')
+            .orderBy('sort_order', 'DESC');
+        return qb
             .getOne()
             .then(product =>
                 product
