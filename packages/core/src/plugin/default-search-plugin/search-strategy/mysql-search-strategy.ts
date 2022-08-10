@@ -41,7 +41,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         const facetValuesQb = this.connection
             .getRepository(ctx, SearchIndexItem)
             .createQueryBuilder('si')
-            .select(['MIN(si.productId)', 'MIN(productVariantId)'])
+            .select(['MIN(si.productId)', 'MIN(si.productVariantId)'])
             .addSelect('GROUP_CONCAT(si.facetValueIds)', 'facetValues');
 
         this.applyTermAndFilters(ctx, facetValuesQb, { ...input, groupByProduct: true });
