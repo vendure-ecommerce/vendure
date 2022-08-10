@@ -13,7 +13,30 @@ import { ZoneService } from '../../services/zone.service';
 /**
  * @description
  * This helper is used to apply the correct price to a ProductVariant based on the current context
- * including active Channel, any current Order, etc.
+ * including active Channel, any current Order, etc. If you use the {@link TransactionalConnection} to
+ * directly query ProductVariants, you will find that the `price` and `priceWithTax` properties will
+ * always be `0` until you use the `applyChannelPriceAndTax()` method:
+ *
+ * @example
+ * ```TypeScript
+ * export class MyCustomService {
+ *   constructor(private connection: TransactionalConnection,
+ *               private productPriceApplicator: ProductPriceApplicator) {}
+ *
+ *   getVariant(ctx: RequestContext, id: ID) {
+ *     const productVariant = await this.connection
+ *       .getRepository(ctx, ProductVariant)
+ *       .findOne(id);
+ *
+ *     await this.productPriceApplicator
+ *       .applyChannelPriceAndTax(productVariant, ctx);
+ *
+ *     return productVariant;
+ *   }
+ * }
+ * ```
+ *
+ * @docsCategory service-helpers
  */
 @Injectable()
 export class ProductPriceApplicator {
