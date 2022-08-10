@@ -1,6 +1,7 @@
 // This file is used to compile the theme.min.css file which can be used
 // by ui extensions to get the same styles as the main app.
 
+@import "global/sass-overrides";
 // Clarity Component SCSS
 @import "~@clr/ui/src/main";
 @import "global/overrides";

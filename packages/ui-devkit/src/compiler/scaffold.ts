@@ -17,6 +17,7 @@ import {
     AdminUiExtensionSharedModule,
     Extension,
     GlobalStylesExtension,
+    SassVariableOverridesExtension,
     StaticAssetExtension,
 } from './types';
 import {
@@ -24,6 +25,7 @@ import {
     copyUiDevkit,
     isAdminUiExtension,
     isGlobalStylesExtension,
+    isSassVariableOverridesExtension,
     isStaticAssetExtension,
     isTranslationExtension,
     logger,
@@ -43,7 +45,8 @@ export async function setupScaffold(outputPath: string, extensions: Extension[])
     await copyStaticAssets(outputPath, staticAssetExtensions);
 
     const globalStyleExtensions = extensions.filter(isGlobalStylesExtension);
-    await addGlobalStyles(outputPath, globalStyleExtensions);
+    const sassVariableOverridesExtension = extensions.find(isSassVariableOverridesExtension);
+    await addGlobalStyles(outputPath, globalStyleExtensions, sassVariableOverridesExtension);
 
     const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
     await mergeExtensionTranslations(outputPath, allTranslationFiles);
@@ -93,12 +96,17 @@ async function copyStaticAssets(outputPath: string, extensions: Array<Partial<St
     }
 }
 
-async function addGlobalStyles(outputPath: string, extensions: GlobalStylesExtension[]) {
+async function addGlobalStyles(
+    outputPath: string,
+    globalStylesExtensions: GlobalStylesExtension[],
+    sassVariableOverridesExtension?: SassVariableOverridesExtension,
+) {
     const globalStylesDir = path.join(outputPath, 'src', GLOBAL_STYLES_OUTPUT_DIR);
     await fs.remove(globalStylesDir);
     await fs.ensureDir(globalStylesDir);
+
     const imports: string[] = [];
-    for (const extension of extensions) {
+    for (const extension of globalStylesExtensions) {
         const styleFiles = Array.isArray(extension.globalStyles)
             ? extension.globalStyles
             : [extension.globalStyles];
@@ -107,7 +115,19 @@ async function addGlobalStyles(outputPath: string, extensions: GlobalStylesExten
             imports.push(path.basename(styleFile, path.extname(styleFile)));
         }
     }
+
+    let overridesImport = '';
+    if (sassVariableOverridesExtension) {
+        const overridesFile = sassVariableOverridesExtension.sassVariableOverrides;
+        await copyGlobalStyleFile(outputPath, overridesFile);
+        overridesImport = `@import "./${GLOBAL_STYLES_OUTPUT_DIR}/${path.basename(
+            overridesFile,
+            path.extname(overridesFile),
+        )}";\n`;
+    }
+
     const globalStylesSource =
+        overridesImport +
         `@import "./styles/styles";\n` +
         imports.map(file => `@import "./${GLOBAL_STYLES_OUTPUT_DIR}/${file}";`).join('\n');
 
