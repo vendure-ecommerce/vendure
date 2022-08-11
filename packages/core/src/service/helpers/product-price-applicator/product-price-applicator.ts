@@ -26,7 +26,7 @@ import { ZoneService } from '../../services/zone.service';
  *   getVariant(ctx: RequestContext, id: ID) {
  *     const productVariant = await this.connection
  *       .getRepository(ctx, ProductVariant)
- *       .findOne(id);
+ *       .findOne(id, { relations: ['taxCategory'] });
  *
  *     await this.productPriceApplicator
  *       .applyChannelPriceAndTax(productVariant, ctx);
@@ -49,7 +49,8 @@ export class ProductPriceApplicator {
 
     /**
      * @description
-     * Populates the `price` field with the price for the specified channel.
+     * Populates the `price` field with the price for the specified channel. Make sure that
+     * the ProductVariant being passed in has its `taxCategory` relation joined.
      */
     async applyChannelPriceAndTax(
         variant: ProductVariant,
