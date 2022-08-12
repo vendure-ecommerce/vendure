@@ -49,6 +49,7 @@ export const customerValidationProcess: CustomOrderProcess<'ValidatingCustomer'>
   },
 };
 ```
+
 This object means:
 
 * the `AddingItems` state may _only_ transition to the `ValidatingCustomer` state (`mergeStrategy: 'replace'` tells Vendure to discard any existing transition targets and replace with this one). 
@@ -121,6 +122,23 @@ const customerValidationProcess: CustomOrderProcess<'ValidatingCustomer'> = {
 };
 
 ```
+
+## TypeScript Typings
+
+To make your custom states compatible with standard services you should declare your new states in the following way:
+
+```TypeScript
+// types.ts
+import { CustomOrderStates } from '@vendure/core';
+
+declare module '@vendure/core' {
+  interface CustomOrderStates {
+    ValidatingCustomer: never;
+  }
+}
+```
+
+This technique uses advanced TypeScript features - [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces) and  [ambient modules](https://www.typescriptlang.org/docs/handbook/modules.html#ambient-modules).
 
 ## Controlling custom states in the Admin UI
 

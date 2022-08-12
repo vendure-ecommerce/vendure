@@ -5,11 +5,19 @@ import { Payment } from '../../../entity/payment/payment.entity';
 
 /**
  * @description
+ * An interface to extend standard {@link PaymentState}.
+ * 
+ * @docsCategory payment
+ */
+ export interface CustomPaymentStates {}
+
+/**
+ * @description
  * These are the default states of the payment process.
  *
  * @docsCategory payment
  */
-export type PaymentState = 'Created' | 'Authorized' | 'Settled' | 'Declined' | 'Error' | 'Cancelled';
+export type PaymentState = 'Created' | 'Authorized' | 'Settled' | 'Declined' | 'Error' | 'Cancelled' | keyof CustomPaymentStates;
 
 export const paymentStateTransitions: Transitions<PaymentState> = {
     Created: {

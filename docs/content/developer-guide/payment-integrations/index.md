@@ -151,6 +151,18 @@ If you need to support an entirely different payment flow than the above, it is 
 Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [CustomOrderProcess]({{< relref "custom-order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
 
 ```TypeScript
+// types.ts
+import { CustomOrderStates } from '@vendure/core';
+
+/**
+ * Declare your custom state in special interface to make it type-safe
+ */
+declare module '@vendure/core' {
+  interface CustomPaymentStates {
+    Validating: never;
+  }
+}
+
 /**
  * Define a new "Validating" Payment state, and set up the
  * permitted transitions to/from it.
