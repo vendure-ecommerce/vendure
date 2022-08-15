@@ -8,6 +8,7 @@ import {
     GetOrderListQuery,
     ItemOf,
     LocalStorageService,
+    LogicalOperator,
     OrderListOptions,
     ServerConfigService,
     SortOrder,
@@ -37,6 +38,7 @@ export class OrderListComponent
     extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
     implements OnInit
 {
+    searchControl = new FormControl('');
     searchOrderCodeControl = new FormControl('');
     searchLastNameControl = new FormControl('');
     customFilterForm: FormGroup;
@@ -95,8 +97,7 @@ export class OrderListComponent
                 this.createQueryOptions(
                     skip,
                     take,
-                    this.searchOrderCodeControl.value,
-                    this.searchLastNameControl.value,
+                    this.searchControl.value,
                     this.route.snapshot.queryParamMap.get('filter') || 'open',
                 ),
         );
@@ -112,10 +113,7 @@ export class OrderListComponent
             map(qpm => qpm.get('filter') || 'open'),
             distinctUntilChanged(),
         );
-        const searchTerms$ = merge(
-            this.searchOrderCodeControl.valueChanges,
-            this.searchLastNameControl.valueChanges,
-        ).pipe(
+        const searchTerms$ = merge(this.searchControl.valueChanges).pipe(
             filter(value => 2 < value.length || value.length === 0),
             debounceTime(250),
         );
@@ -166,13 +164,13 @@ export class OrderListComponent
         // tslint:disable-next-line:no-shadowed-variable
         skip: number,
         take: number,
-        orderCodeSearchTerm: string,
-        customerNameSearchTerm: string,
+        searchTerm: string,
         activeFilterPreset?: string,
     ): { options: OrderListOptions } {
         const filterConfig = this.filterPresets.find(p => p.name === activeFilterPreset);
         // tslint:disable-next-line:no-shadowed-variable
-        const filter: any = {};
+        let filter: any = {};
+        let filterOperator: LogicalOperator = LogicalOperator.AND;
         if (filterConfig) {
             if (filterConfig.config.active != null) {
                 filter.active = {
@@ -211,15 +209,19 @@ export class OrderListComponent
                 };
             }
         }
-        if (customerNameSearchTerm) {
-            filter.customerLastName = {
-                contains: customerNameSearchTerm,
+        if (searchTerm) {
+            filter = {
+                customerLastName: {
+                    contains: searchTerm,
+                },
+                transactionId: {
+                    contains: searchTerm,
+                },
+                code: {
+                    contains: searchTerm,
+                },
             };
-        }
-        if (orderCodeSearchTerm) {
-            filter.code = {
-                contains: orderCodeSearchTerm,
-            };
+            filterOperator = LogicalOperator.OR;
         }
         return {
             options: {
@@ -231,6 +233,7 @@ export class OrderListComponent
                 sort: {
                     updatedAt: SortOrder.DESC,
                 },
+                filterOperator,
             },
         };
     }

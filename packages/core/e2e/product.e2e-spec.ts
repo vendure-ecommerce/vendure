@@ -21,6 +21,8 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_CHANNEL,
+    UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -29,10 +31,16 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 // tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig(),
+    });
 
     const removeOptionGuard: ErrorResultGuard<Codegen.ProductWithOptionsFragment> = createErrorResultGuard(
         input => !!input.optionGroups,
+    );
+
+    const updateChannelGuard: ErrorResultGuard<Codegen.ChannelFragment> = createErrorResultGuard(
+        input => !!input.id,
     );
 
     beforeAll(async () => {
@@ -1705,6 +1713,135 @@ describe('Product resolver', () => {
 
                 expect(product?.variants.length).toBe(1);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1631
+            describe('changing the Channel default language', () => {
+                let productId: string;
+
+                function getProductWithVariantsInLanguage(
+                    id: string,
+                    languageCode: LanguageCode,
+                    variantListOptions?: Codegen.ProductVariantListOptions,
+                ) {
+                    return adminClient.query<
+                        Codegen.GetProductWithVariantListQuery,
+                        Codegen.GetProductWithVariantListQueryVariables
+                    >(GET_PRODUCT_WITH_VARIANT_LIST, { id, variantListOptions }, { languageCode });
+                }
+
+                beforeAll(async () => {
+                    await adminClient.query<
+                        Codegen.UpdateGlobalSettingsMutation,
+                        Codegen.UpdateGlobalSettingsMutationVariables
+                    >(UPDATE_GLOBAL_SETTINGS, {
+                        input: {
+                            availableLanguages: [LanguageCode.en, LanguageCode.de],
+                        },
+                    });
+                    const { createProduct } = await adminClient.query<
+                        Codegen.CreateProductMutation,
+                        Codegen.CreateProductMutationVariables
+                    >(CREATE_PRODUCT, {
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'Bottle',
+                                    slug: 'bottle',
+                                    description: 'A container for liquids',
+                                },
+                            ],
+                        },
+                    });
+
+                    productId = createProduct.id;
+                    await adminClient.query<
+                        Codegen.CreateProductVariantsMutation,
+                        Codegen.CreateProductVariantsMutationVariables
+                    >(CREATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                productId,
+                                sku: 'BOTTLE111',
+                                optionIds: [],
+                                translations: [{ languageCode: LanguageCode.en, name: 'Bottle' }],
+                            },
+                        ],
+                    });
+                });
+
+                afterAll(async () => {
+                    // Restore the default language to English for the subsequent tests
+                    await adminClient.query<
+                        Codegen.UpdateChannelMutation,
+                        Codegen.UpdateChannelMutationVariables
+                    >(UPDATE_CHANNEL, {
+                        input: {
+                            id: 'T_1',
+                            defaultLanguageCode: LanguageCode.en,
+                        },
+                    });
+                });
+
+                it('returns all variants', async () => {
+                    const { product: product1 } = await adminClient.query<
+                        Codegen.GetProductWithVariantsQuery,
+                        Codegen.GetProductWithVariantsQueryVariables
+                    >(
+                        GET_PRODUCT_WITH_VARIANTS,
+                        {
+                            id: productId,
+                        },
+                        { languageCode: LanguageCode.en },
+                    );
+                    expect(product1?.variants.length).toBe(1);
+
+                    // Change the default language of the channel to "de"
+                    const { updateChannel } = await adminClient.query<
+                        Codegen.UpdateChannelMutation,
+                        Codegen.UpdateChannelMutationVariables
+                    >(UPDATE_CHANNEL, {
+                        input: {
+                            id: 'T_1',
+                            defaultLanguageCode: LanguageCode.de,
+                        },
+                    });
+                    updateChannelGuard.assertSuccess(updateChannel);
+                    expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.de);
+
+                    // Fetch the product in en, it should still return 1 variant
+                    const { product: product2 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.en,
+                    );
+                    expect(product2?.variantList.items.length).toBe(1);
+
+                    // Fetch the product in de, it should still return 1 variant
+                    const { product: product3 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.de,
+                    );
+                    expect(product3?.variantList.items.length).toBe(1);
+                });
+
+                it('returns all variants when sorting on variant name', async () => {
+                    // Fetch the product in en, it should still return 1 variant
+                    const { product: product1 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.en,
+                        { sort: { name: SortOrder.ASC } },
+                    );
+                    expect(product1?.variantList.items.length).toBe(1);
+
+                    // Fetch the product in de, it should still return 1 variant
+                    const { product: product2 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.de,
+                        { sort: { name: SortOrder.ASC } },
+                    );
+                    expect(product2?.variantList.items.length).toBe(1);
+                });
+            });
         });
     });
 
@@ -1844,21 +1981,21 @@ describe('Product resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1505
         it('attempting to re-use deleted slug twice is not allowed', async () => {
-            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
-                CREATE_PRODUCT,
-                {
-                    input: {
-                        translations: [
-                            {
-                                languageCode: LanguageCode.en,
-                                name: 'Product reusing deleted slug',
-                                slug: productToDelete.slug,
-                                description: 'stuff',
-                            },
-                        ],
-                    },
+            const result = await adminClient.query<
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
+            >(CREATE_PRODUCT, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Product reusing deleted slug',
+                            slug: productToDelete.slug,
+                            description: 'stuff',
+                        },
+                    ],
                 },
-            );
+            });
 
             expect(result.createProduct.slug).not.toBe(productToDelete.slug);
             expect(result.createProduct.slug).toBe('laptop-2');

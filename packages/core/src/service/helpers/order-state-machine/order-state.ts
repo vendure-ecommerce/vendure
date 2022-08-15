@@ -4,6 +4,14 @@ import { Order } from '../../../entity/order/order.entity';
 
 /**
  * @description
+ * An interface to extend standard {@link OrderState}.
+ *
+ * @docsCategory orders
+ */
+export interface CustomOrderStates {}
+
+/**
+ * @description
  * These are the default states of the Order process. They can be augmented and
  * modified by using the {@link OrderOptions} `process` property.
  *
@@ -21,7 +29,8 @@ export type OrderState =
     | 'Delivered'
     | 'Modifying'
     | 'ArrangingAdditionalPayment'
-    | 'Cancelled';
+    | 'Cancelled'
+    | keyof CustomOrderStates;
 
 export const orderStateTransitions: Transitions<OrderState> = {
     Created: {

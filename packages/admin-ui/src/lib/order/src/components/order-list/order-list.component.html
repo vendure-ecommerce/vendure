@@ -19,19 +19,11 @@
                     <clr-icon shape="angle down"></clr-icon>
                 </button>
             </div>
-
             <input
                 type="text"
                 name="searchTerm"
-                [formControl]="searchOrderCodeControl"
-                [placeholder]="'order.search-by-order-code' | translate"
-                class="search-input"
-            />
-            <input
-                type="text"
-                name="searchTerm"
-                [formControl]="searchLastNameControl"
-                [placeholder]="'order.search-by-customer-last-name' | translate"
+                [formControl]="searchControl"
+                [placeholder]="'order.search-by-order-filters' | translate"
                 class="search-input"
             />
         </div>

@@ -9,14 +9,17 @@
         overflow: auto;
         margin-top: 0;
 
-        tr.active {
-            background-color: var(--color-component-bg-200);
+        .active {
+            background-color: var(--clr-global-selection-color);
         }
         &.expanded {
             // Fix for Firefox layout https://github.com/vendure-ecommerce/vendure/issues/531
             width: calc(100% - 40vw);
         }
     }
+}
+vdr-data-table ::ng-deep table {
+    margin-top: 0;
 }
 .group-members {
     height: 100%;

@@ -4,7 +4,8 @@ export type Extension =
     | AdminUiExtension
     | TranslationExtension
     | StaticAssetExtension
-    | GlobalStylesExtension;
+    | GlobalStylesExtension
+    | SassVariableOverridesExtension;
 
 /**
  * @description
@@ -63,6 +64,22 @@ export interface GlobalStylesExtension {
      * incorporated into the Admin UI app global stylesheet.
      */
     globalStyles: string[] | string;
+}
+
+/**
+ * @description
+ * Defines an extension which allows overriding Clarity Design System's Sass variables used in styles on the Admin UI.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
+ */
+export interface SassVariableOverridesExtension {
+    /**
+     * @description
+     * Specifies a path to a Sass style file containing variable declarations, which will take precedence over
+     * default values defined in Clarity.
+     */
+    sassVariableOverrides: string;
 }
 
 /**

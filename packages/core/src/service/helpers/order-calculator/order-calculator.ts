@@ -20,6 +20,17 @@ import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 
 import { prorate } from './prorate';
 
+/**
+ * @description
+ * This helper is used when making changes to an Order, to apply all applicable price adjustments to that Order,
+ * including:
+ *
+ * - Promotions
+ * - Taxes
+ * - Shipping
+ *
+ * @docsCategory service-helpers
+ */
 @Injectable()
 export class OrderCalculator {
     constructor(
@@ -32,6 +43,7 @@ export class OrderCalculator {
     ) {}
 
     /**
+     * @description
      * Applies taxes and promotions to an Order. Mutates the order object.
      * Returns an array of any OrderItems which had new adjustments
      * applied, either tax or promotions.
@@ -95,6 +107,7 @@ export class OrderCalculator {
     }
 
     /**
+     * @description
      * Applies the correct TaxRate to each OrderItem in the order.
      */
     private async applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
@@ -106,6 +119,7 @@ export class OrderCalculator {
     }
 
     /**
+     * @description
      * Applies the correct TaxRate to an OrderLine
      */
     private async applyTaxesToOrderLine(
@@ -129,6 +143,7 @@ export class OrderCalculator {
     }
 
     /**
+     * @description
      * Returns a memoized function for performing an efficient
      * lookup of the correct TaxRate for a given TaxCategory.
      */
@@ -150,6 +165,7 @@ export class OrderCalculator {
     }
 
     /**
+     * @description
      * Applies any eligible promotions to each OrderItem in the order. Returns an array of
      * any OrderItems which had their Adjustments modified.
      */
@@ -168,6 +184,7 @@ export class OrderCalculator {
     }
 
     /**
+     * @description
      * Applies promotions to OrderItems. This is a quite complex function, due to the inherent complexity
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
@@ -253,6 +270,7 @@ export class OrderCalculator {
     }
 
     /**
+     * @description
      * An OrderLine may have promotion adjustments from Promotions which are no longer applicable.
      * For example, a coupon code might have caused a discount to be applied, and now that code has
      * been removed from the order. The adjustment will still be there on each OrderItem it was applied

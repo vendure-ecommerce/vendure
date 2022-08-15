@@ -1,2 +1,2 @@
-name  ,slug  ,description,assets                          ,facets,optionGroups,optionValues,sku    ,price ,taxCategory,stockOnHand,trackInventory,variantAssets,variantFacets,product:pageType,variant:weight,product:owner,product:keywords,product:localName
-Guitar,guitar,A guitar.  ,http://localhost:3456/guitar.png,      ,            ,            ,GUIT001,133.99,standard   ,0          ,false         ,             ,             ,default         ,100           ,             ,music|instrument,
+name  ,slug  ,description  ,assets                          ,facets,optionGroups,optionValues,sku     ,price,taxCategory,stockOnHand,trackInventory,variantAssets,variantFacets
+Guitar,guitar,A nice guitar,http://localhost:3456/guitar.jpg,      ,            ,            ,GUIT0001,8999 ,standard   ,25         ,true          ,             ,

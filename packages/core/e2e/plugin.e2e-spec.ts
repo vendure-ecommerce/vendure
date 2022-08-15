@@ -48,6 +48,7 @@ describe('Plugins', () => {
         const configService = server.app.get(ConfigService);
         expect(configService instanceof ConfigService).toBe(true);
         expect(configService.defaultLanguageCode).toBe(LanguageCode.zh);
+        expect(TestPluginWithConfig.configSpy).toHaveBeenCalledTimes(1);
     });
 
     it('extends the admin API', async () => {
@@ -66,6 +67,22 @@ describe('Plugins', () => {
             }
         `);
         expect(result.baz).toEqual(['quux']);
+    });
+
+    it('custom scalar', async () => {
+        const result = await adminClient.query(gql`
+            query {
+                barList(options: { skip: 0, take: 1 }) {
+                    items {
+                        id
+                        pizzaType
+                    }
+                }
+            }
+        `);
+        expect(result.barList).toEqual({
+            items: [{ id: 'T_1', pizzaType: 'Cheese pizza!' }],
+        });
     });
 
     it('allows lazy evaluation of API extension', async () => {
@@ -135,5 +152,26 @@ describe('Plugins', () => {
             const result = await response.json();
             expect(result.message).toContain('uh oh!');
         });
+    });
+});
+
+describe('Multiple bootstraps in same process', () => {
+    const activeConfig = testConfig();
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...activeConfig,
+        plugins: [TestPluginWithConfig.setup()],
+    });
+
+    beforeAll(async () => {
+        await server.init({
+            initialData,
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+            customerCount: 1,
+        });
+        await adminClient.asSuperAdmin();
+    }, TEST_SETUP_TIMEOUT_MS);
+
+    it('plugin `configure` function called only once', async () => {
+        expect(TestPluginWithConfig.configSpy).toHaveBeenCalledTimes(1);
     });
 });

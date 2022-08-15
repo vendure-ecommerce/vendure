@@ -2,7 +2,8 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
-import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../../../common/calculated-decorator';
+import { Translation } from '../../../common/index';
+import { VendureEntity } from '../../../entity/index';
 
 /**
  * @description
@@ -16,9 +17,17 @@ export function getColumnMetadata<T>(connection: Connection, entity: Type<T>) {
 
     const translationRelation = relations.find(r => r.propertyName === 'translations');
     if (translationRelation) {
+        const commonFields: Array<keyof (Translation<T> & VendureEntity)> = [
+            'id',
+            'createdAt',
+            'updatedAt',
+            'languageCode',
+        ];
         const translationMetadata = connection.getMetadata(translationRelation.type);
         translationColumns = translationColumns.concat(
-            translationMetadata.columns.filter(c => !c.relationMetadata),
+            translationMetadata.columns.filter(
+                c => !c.relationMetadata && !commonFields.includes(c.propertyName as any),
+            ),
         );
     }
     const alias = metadata.name.toLowerCase();
