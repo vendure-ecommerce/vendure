@@ -214,10 +214,6 @@ export class OrderService {
         relations?: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         const qb = this.connection.getRepository(ctx, Order).createQueryBuilder('order');
-        const orderLineCustomFieldRelations = this.configService.customFields.OrderLine.filter(
-            field => field.type === 'relation',
-        ).map(field => `lines.customFields.${field.name}`);
-
         const effectiveRelations = relations ?? [
             'channels',
             'customer',
@@ -231,7 +227,6 @@ export class OrderService {
             'lines.productVariant.translations',
             'lines.featuredAsset',
             'lines.taxCategory',
-            ...orderLineCustomFieldRelations,
             'shippingLines',
             'surcharges',
         ];

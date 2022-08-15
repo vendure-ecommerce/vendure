@@ -140,9 +140,6 @@ export class OrderModifier {
             }),
         );
         await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
-        const customFieldRelations = this.configService.customFields.OrderLine.filter(
-            field => field.type === 'relation',
-        ).map(field => `customFields.${field.name}`);
         const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
             relations: [
                 'items',
@@ -150,7 +147,6 @@ export class OrderModifier {
                 'productVariant',
                 'productVariant.productVariantPrices',
                 'productVariant.taxCategory',
-                ...customFieldRelations,
             ],
         });
         lineWithRelations.productVariant = translateDeep(
