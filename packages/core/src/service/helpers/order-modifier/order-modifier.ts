@@ -27,7 +27,7 @@ import {
 import { AdjustmentSource } from '../../../common/types/adjustment-source';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { CustomFields } from '../../../config/custom-field/custom-field-types';
+import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
@@ -587,13 +587,7 @@ export class OrderModifier {
             // or equal to the defaultValue
             for (const def of customFieldDefs) {
                 const key = def.name;
-                // This ternary is there because with the MySQL driver, boolean customFields with a default
-                // of `false` were being rep-resented as `0`, thus causing the equality check to fail.
-                // So if it's a boolean, we'll explicitly coerce the value to a boolean.
-                const existingValue =
-                    def.type === 'boolean' && typeof existingCustomFields?.[key] === 'number'
-                        ? !!existingCustomFields?.[key]
-                        : existingCustomFields?.[key];
+                const existingValue = this.coerceValue(def, existingCustomFields);
                 if (existingValue != null && (!def.list || existingValue?.length !== 0)) {
                     if (def.defaultValue != null) {
                         if (existingValue !== def.defaultValue) {
@@ -621,13 +615,7 @@ export class OrderModifier {
 
         for (const def of customFieldDefs) {
             const key = def.name;
-            // This ternary is there because with the MySQL driver, boolean customFields with a default
-            // of `false` were being rep-resented as `0`, thus causing the equality check to fail.
-            // So if it's a boolean, we'll explicitly coerce the value to a boolean.
-            const existingValue =
-                def.type === 'boolean' && typeof existingCustomFields?.[key] === 'number'
-                    ? !!existingCustomFields?.[key]
-                    : existingCustomFields?.[key];
+            const existingValue = this.coerceValue(def, existingCustomFields);
             if (def.type !== 'relation' && existingValue !== undefined) {
                 const valuesMatch =
                     JSON.stringify(inputCustomFields?.[key]) === JSON.stringify(existingValue);
@@ -656,6 +644,18 @@ export class OrderModifier {
             }
         }
         return true;
+    }
+
+    /**
+     * This function is required because with the MySQL driver, boolean customFields with a default
+     * of `false` were being represented as `0`, thus causing the equality check to fail.
+     * So if it's a boolean, we'll explicitly coerce the value to a boolean.
+     */
+    private coerceValue(def: CustomFieldConfig, existingCustomFields: { [p: string]: any } | undefined) {
+        const key = def.name;
+        return def.type === 'boolean' && typeof existingCustomFields?.[key] === 'number'
+            ? !!existingCustomFields?.[key]
+            : existingCustomFields?.[key];
     }
 
     private async getProductVariantOrThrow(
