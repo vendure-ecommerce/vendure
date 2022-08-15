@@ -229,8 +229,13 @@ export class PromotionService {
                 enabled: true,
                 deletedAt: null,
             },
+            relations: ['channels'],
         });
-        if (!promotion || promotion.couponCode !== couponCode) {
+        if (
+            !promotion ||
+            promotion.couponCode !== couponCode ||
+            !promotion.channels.find(c => idsAreEqual(c.id, ctx.channelId))
+        ) {
             return new CouponCodeInvalidError(couponCode);
         }
         if (promotion.endsAt && +promotion.endsAt < +new Date()) {
