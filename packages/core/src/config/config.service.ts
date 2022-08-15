@@ -1,8 +1,8 @@
-import { DynamicModule, Injectable, OnApplicationShutdown, Type } from '@nestjs/common';
+import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ConnectionOptions } from 'typeorm';
 
-import { getConfig, resetConfig } from './config-helpers';
+import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
@@ -25,7 +25,7 @@ import {
 } from './vendure-config';
 
 @Injectable()
-export class ConfigService implements VendureConfig, OnApplicationShutdown {
+export class ConfigService implements VendureConfig {
     private activeConfig: RuntimeVendureConfig;
 
     constructor() {
@@ -34,17 +34,6 @@ export class ConfigService implements VendureConfig, OnApplicationShutdown {
             // tslint:disable-next-line
             Logger.warn('Auth has been disabled. This should never be the case for a production system!');
         }
-    }
-
-    /**
-     * When the application shuts down, we reset the activeConfig to the default. Usually this is
-     * redundant, as the app shutdown would normally coincide with the process ending. However, in some
-     * circumstances, such as when running migrations immediately followed by app bootstrap, the activeConfig
-     * will persist between these two applications and mutations e.g. to the CustomFields will result in
-     * hard-to-debug errors. So resetting is a precaution against this scenario.
-     */
-    onApplicationShutdown(signal?: string): any {
-        resetConfig();
     }
 
     get apiOptions(): Required<ApiOptions> {
