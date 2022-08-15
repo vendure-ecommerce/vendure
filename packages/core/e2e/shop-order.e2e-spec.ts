@@ -92,6 +92,7 @@ describe('Shop orders', () => {
                     { name: 'notes', type: 'string' },
                     { name: 'privateField', type: 'string', public: false },
                     { name: 'lineImage', type: 'relation', entity: Asset },
+                    { name: 'lineImages', type: 'relation', list: true, entity: Asset },
                     { name: 'dropShip', type: 'boolean', defaultValue: false },
                 ],
             },
@@ -250,6 +251,9 @@ describe('Shop orders', () => {
                                 lineImage {
                                     id
                                 }
+                                lineImages {
+                                    id
+                                }
                             }
                         }
                     }
@@ -376,11 +380,13 @@ describe('Shop orders', () => {
                 });
                 expect(adjustOrderLine.lines[1].customFields).toEqual({
                     lineImage: null,
+                    lineImages: [],
                     notes: 'updated notes',
                 });
                 const { activeOrder: ao1 } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
                 expect(ao1.lines[1].customFields).toEqual({
                     lineImage: null,
+                    lineImages: [],
                     notes: 'updated notes',
                 });
                 const updatedNotesLineId = ao1.lines[1].id;
@@ -401,20 +407,21 @@ describe('Shop orders', () => {
                 expect(activeOrder.lines.find((l: any) => l.id === updatedNotesLineId)?.customFields).toEqual(
                     {
                         lineImage: null,
+                        lineImages: [],
                         notes: 'updated notes',
                     },
                 );
 
                 // clean up
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: add2!.lines[1].id,
-                    },
-                );
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: add2!.lines[1].id,
+                });
                 const { removeOrderLine } = await shopClient.query<
-                    RemoveItemFromOrder.Mutation,
-                    RemoveItemFromOrder.Variables
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: add2!.lines[2].id,
                 });
@@ -503,12 +510,95 @@ describe('Shop orders', () => {
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: activeOrder!.lines[2].id,
                 });
-                await shopClient.query<
+                const { removeOrderLine } = await shopClient.query<
                     CodegenShop.RemoveItemFromOrderMutation,
                     CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: activeOrder!.lines[1].id,
                 });
+                orderResultGuard.assertSuccess(removeOrderLine);
+                expect(removeOrderLine.lines.length).toBe(1);
+            });
+
+            it('addItemToOrder with list relation customField', async () => {
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImagesIds: ['T_1', 'T_2'],
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(2);
+                expect(addItemToOrder!.lines[1].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+                expect(activeOrder.lines[1].customFields.lineImages.length).toBe(2);
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_1' });
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_2' });
+            });
+
+            it('addItemToOrder with equal list relation customField adds to quantity', async () => {
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImagesIds: ['T_1', 'T_2'],
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(2);
+                expect(addItemToOrder!.lines[1].quantity).toBe(2);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[1].customFields.lineImages.length).toBe(2);
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_1' });
+                expect(activeOrder.lines[1].customFields.lineImages).toContainEqual({ id: 'T_2' });
+            });
+
+            it('addItemToOrder with different list relation customField adds new line', async () => {
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
+                    ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                    {
+                        productVariantId: 'T_3',
+                        quantity: 1,
+                        customFields: {
+                            lineImagesIds: ['T_1'],
+                        },
+                    },
+                );
+
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.lines.length).toBe(3);
+                expect(addItemToOrder!.lines[2].quantity).toBe(1);
+
+                const { activeOrder } = await shopClient.query(GET_ORDER_WITH_ORDER_LINE_CUSTOM_FIELDS);
+
+                expect(activeOrder.lines[2].customFields.lineImages).toEqual([{ id: 'T_1' }]);
+
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: activeOrder!.lines[2].id,
+                });
+                const { removeOrderLine } = await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: activeOrder!.lines[1].id,
+                });
+                orderResultGuard.assertSuccess(removeOrderLine);
+                expect(removeOrderLine.lines.length).toBe(1);
             });
         });
 
@@ -584,7 +674,7 @@ describe('Shop orders', () => {
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: 'T_10',
+                orderLineId: addItemToOrder!.order.lines[1].id,
                 quantity: 101,
             });
             orderResultGuard.assertErrorResult(adjustOrderLine);
@@ -600,7 +690,7 @@ describe('Shop orders', () => {
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: 'T_10',
+                orderLineId: addItemToOrder!.order.lines[1].id,
                 quantity: 0,
             });
             orderResultGuard.assertSuccess(adjustLine2);
@@ -2214,6 +2304,9 @@ const ADJUST_ORDER_LINE_WITH_CUSTOM_FIELDS = gql`
                     customFields {
                         notes
                         lineImage {
+                            id
+                        }
+                        lineImages {
                             id
                         }
                     }

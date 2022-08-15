@@ -5,9 +5,9 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 
 /**
  * @description
- * The OrderItemPriceCalculationStrategy defines the price of an OrderItem. By default the 
+ * The OrderItemPriceCalculationStrategy defines the price of an OrderItem. By default the
  * {@link DefaultOrderItemPriceCalculationStrategy} is used.
- * 
+ *
  * ### When is the strategy invoked ?
  * * addItemToOrder (only on the new order line)
  * * adjustOrderLine  (only on the adjusted order line)
@@ -48,6 +48,9 @@ export interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
      * @description
      * Receives the ProductVariant to be added to the Order as well as any OrderLine custom fields and returns
      * the price for a single unit.
+     *
+     * Note: if you have any `relation` type custom fields defined on the OrderLine entity, they will only be
+     * passed in to this method if they are set to `eager: true`.
      */
     calculateUnitPrice(
         ctx: RequestContext,
