@@ -964,7 +964,7 @@ describe('ListQueryBuilder', () => {
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/1611
-    xdescribe('translations handling', () => {
+    describe('translations handling', () => {
         const allTranslations = [
             [
                 { languageCode: LanguageCode.en, name: 'apple' },

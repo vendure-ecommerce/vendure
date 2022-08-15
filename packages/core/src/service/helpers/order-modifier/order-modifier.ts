@@ -61,6 +61,8 @@ import { translateDeep } from '../utils/translate-entity';
  * So this helper was mainly extracted to isolate the huge `modifyOrder` method since the
  * OrderService was just growing too large. Future refactoring could improve the organization
  * of these Order-related methods into a more clearly-delineated set of classes.
+ *
+ * @docsCategory service-helpers
  */
 @Injectable()
 export class OrderModifier {
@@ -80,6 +82,7 @@ export class OrderModifier {
     ) {}
 
     /**
+     * @description
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
      */
@@ -97,6 +100,11 @@ export class OrderModifier {
         return correctedQuantity;
     }
 
+    /**
+     * @description
+     * Given a ProductVariant ID and optional custom fields, this method will return an existing OrderLine that
+     * matches, or `undefined` if no match is found.
+     */
     async getExistingOrderLine(
         ctx: RequestContext,
         order: Order,
@@ -114,6 +122,7 @@ export class OrderModifier {
     }
 
     /**
+     * @description
      * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
      * if no existing line is found.
      */
@@ -162,6 +171,7 @@ export class OrderModifier {
     }
 
     /**
+     * @description
      * Updates the quantity of an OrderLine, taking into account the available saleable stock level.
      * Returns the actual quantity that the OrderLine was updated to (which may be less than the
      * `quantity` argument if insufficient stock was available.

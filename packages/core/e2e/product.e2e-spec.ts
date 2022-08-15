@@ -11,6 +11,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { PRODUCT_VARIANT_FRAGMENT, PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
 import {
     AddOptionGroupToProduct,
+    ChannelFragment,
     CreateProduct,
     CreateProductVariants,
     DeleteProduct,
@@ -27,10 +28,13 @@ import {
     GetProductWithVariants,
     LanguageCode,
     ProductVariantFragment,
+    ProductVariantListOptions,
     ProductWithOptionsFragment,
     ProductWithVariants,
     RemoveOptionGroupFromProduct,
     SortOrder,
+    UpdateChannel,
+    UpdateGlobalSettings,
     UpdateProduct,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
@@ -44,6 +48,8 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_CHANNEL,
+    UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -52,11 +58,15 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 // tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig(),
+    });
 
     const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
         input => !!input.optionGroups,
     );
+
+    const updateChannelGuard: ErrorResultGuard<ChannelFragment> = createErrorResultGuard(input => !!input.id);
 
     beforeAll(async () => {
         await server.init({
@@ -1723,6 +1733,132 @@ describe('Product resolver', () => {
                 );
 
                 expect(product?.variants.length).toBe(1);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1631
+            describe('changing the Channel default language', () => {
+                let productId: string;
+
+                function getProductWithVariantsInLanguage(
+                    id: string,
+                    languageCode: LanguageCode,
+                    variantListOptions?: ProductVariantListOptions,
+                ) {
+                    return adminClient.query<
+                        GetProductWithVariantList.Query,
+                        GetProductWithVariantList.Variables
+                    >(GET_PRODUCT_WITH_VARIANT_LIST, { id, variantListOptions }, { languageCode });
+                }
+
+                beforeAll(async () => {
+                    await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+                        UPDATE_GLOBAL_SETTINGS,
+                        {
+                            input: {
+                                availableLanguages: [LanguageCode.en, LanguageCode.de],
+                            },
+                        },
+                    );
+                    const { createProduct } = await adminClient.query<
+                        CreateProduct.Mutation,
+                        CreateProduct.Variables
+                    >(CREATE_PRODUCT, {
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'Bottle',
+                                    slug: 'bottle',
+                                    description: 'A container for liquids',
+                                },
+                            ],
+                        },
+                    });
+
+                    productId = createProduct.id;
+                    await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId,
+                                    sku: 'BOTTLE111',
+                                    optionIds: [],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Bottle' }],
+                                },
+                            ],
+                        },
+                    );
+                });
+
+                afterAll(async () => {
+                    // Restore the default language to English for the subsequent tests
+                    await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                        input: {
+                            id: 'T_1',
+                            defaultLanguageCode: LanguageCode.en,
+                        },
+                    });
+                });
+
+                it('returns all variants', async () => {
+                    const { product: product1 } = await adminClient.query<
+                        GetProductWithVariants.Query,
+                        GetProductWithVariants.Variables
+                    >(
+                        GET_PRODUCT_WITH_VARIANTS,
+                        {
+                            id: productId,
+                        },
+                        { languageCode: LanguageCode.en },
+                    );
+                    expect(product1?.variants.length).toBe(1);
+
+                    // Change the default language of the channel to "de"
+                    const { updateChannel } = await adminClient.query<
+                        UpdateChannel.Mutation,
+                        UpdateChannel.Variables
+                    >(UPDATE_CHANNEL, {
+                        input: {
+                            id: 'T_1',
+                            defaultLanguageCode: LanguageCode.de,
+                        },
+                    });
+                    updateChannelGuard.assertSuccess(updateChannel);
+                    expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.de);
+
+                    // Fetch the product in en, it should still return 1 variant
+                    const { product: product2 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.en,
+                    );
+                    expect(product2?.variantList.items.length).toBe(1);
+
+                    // Fetch the product in de, it should still return 1 variant
+                    const { product: product3 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.de,
+                    );
+                    expect(product3?.variantList.items.length).toBe(1);
+                });
+
+                it('returns all variants when sorting on variant name', async () => {
+                    // Fetch the product in en, it should still return 1 variant
+                    const { product: product1 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.en,
+                        { sort: { name: SortOrder.ASC } },
+                    );
+                    expect(product1?.variantList.items.length).toBe(1);
+
+                    // Fetch the product in de, it should still return 1 variant
+                    const { product: product2 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.de,
+                        { sort: { name: SortOrder.ASC } },
+                    );
+                    expect(product2?.variantList.items.length).toBe(1);
+                });
             });
         });
     });
