@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { Observable } from 'rxjs';
 
-import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
-import { CustomFieldConfigFragment } from '../../../common/generated-types';
+import { FormInputComponent } from '../../../common/component-registry-types';
+import { CustomFieldConfigFragment, LanguageCode } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 
 /**
  * @description
@@ -19,13 +21,24 @@ import { CustomFieldConfigFragment } from '../../../common/generated-types';
     styleUrls: ['./select-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectFormInputComponent implements FormInputComponent {
+export class SelectFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'select-form-input';
     @Input() readonly: boolean;
     formControl: FormControl;
     config: DefaultFormComponentConfig<'select-form-input'> & CustomFieldConfigFragment;
+    uiLanguage$: Observable<LanguageCode>;
 
     get options() {
         return this.config.ui?.options || this.config.options;
+    }
+
+    constructor(private dataService: DataService) {}
+
+    ngOnInit() {
+        this.uiLanguage$ = this.dataService.client.uiState().mapStream(({ uiState }) => uiState.language);
+    }
+
+    trackByFn(index: number, item: any) {
+        return item.value;
     }
 }
