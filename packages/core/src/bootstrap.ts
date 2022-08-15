@@ -154,13 +154,6 @@ export async function preBootstrapConfig(
     return config;
 }
 
-// This is here to prevent a plugin's `configure` function from executing more than once in the
-// same process. Running more than once can occur e.g. if a script runs the `runMigrations()` function
-// followed by the `bootstrap()` function, and will lead to very hard-to-debug errors caused by
-// mutating the config object twice, e.g. plugins pushing custom fields again resulting in duplicate
-// custom field definitions.
-const pluginConfigDidRun = new WeakSet<RuntimeVendureConfig['plugins'][number]>();
-
 /**
  * Initialize any configured plugins.
  */
@@ -168,12 +161,7 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {
-            const configAlreadyRan = pluginConfigDidRun.has(plugin);
-            if (configAlreadyRan) {
-                continue;
-            }
             config = await configFn(config);
-            pluginConfigDidRun.add(plugin);
         }
     }
     return config;

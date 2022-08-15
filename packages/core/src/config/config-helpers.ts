@@ -5,6 +5,13 @@ import { PartialVendureConfig, RuntimeVendureConfig } from './vendure-config';
 let activeConfig = defaultConfig;
 
 /**
+ * Reset the activeConfig object back to the initial default state.
+ */
+export function resetConfig() {
+    activeConfig = defaultConfig;
+}
+
+/**
  * Override the default config by merging in the supplied values. Should only be used prior to
  * bootstrapping the app.
  */

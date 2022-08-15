@@ -1,16 +1,10 @@
-import {
-    AfterViewInit,
-    Component,
-    ComponentFactory,
-    Input,
-    OnInit,
-    ViewChild,
-    ViewContainerRef,
-} from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { Component, ComponentFactory, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { InputComponentConfig } from '../../../common/component-registry-types';
-import { CustomFieldConfig, CustomFieldsFragment } from '../../../common/generated-types';
+import { CustomFieldConfig, CustomFieldsFragment, LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import {
     CustomFieldComponentService,
@@ -27,7 +21,7 @@ import {
     templateUrl: './custom-field-control.component.html',
     styleUrls: ['./custom-field-control.component.scss'],
 })
-export class CustomFieldControlComponent {
+export class CustomFieldControlComponent implements OnInit {
     @Input() entityName: CustomFieldEntityName;
     @Input('customFieldsFormGroup') formGroup: FormGroup;
     @Input() customField: CustomFieldsFragment;
@@ -37,12 +31,20 @@ export class CustomFieldControlComponent {
     hasCustomControl = false;
     @ViewChild('customComponentPlaceholder', { read: ViewContainerRef })
     private customComponentPlaceholder: ViewContainerRef;
+
     private customComponentFactory: ComponentFactory<CustomFieldControl> | undefined;
+    uiLanguage$: Observable<LanguageCode>;
 
     constructor(
         private dataService: DataService,
         private customFieldComponentService: CustomFieldComponentService,
     ) {}
+
+    ngOnInit() {
+        this.uiLanguage$ = this.dataService.client
+            .uiState()
+            .stream$.pipe(map(({ uiState }) => uiState.language));
+    }
 
     getFieldDefinition(): CustomFieldConfig & { ui?: InputComponentConfig } {
         const config: CustomFieldsFragment & { ui?: InputComponentConfig } = {
