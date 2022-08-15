@@ -1,3 +1,19 @@
+## <small>1.6.5 (2022-08-15)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly display translatable custom field labels ([43b7766](https://github.com/vendure-ecommerce/vendure/commit/43b7766))
+* **core** Ensure plugin `configure` functions run only once ([044a968](https://github.com/vendure-ecommerce/vendure/commit/044a968))
+* **core** Fix failing tests ([a87dd3c](https://github.com/vendure-ecommerce/vendure/commit/a87dd3c))
+* **core** Fix find product by slug with relations (#1709) ([9aac2f5](https://github.com/vendure-ecommerce/vendure/commit/9aac2f5)), closes [#1709](https://github.com/vendure-ecommerce/vendure/issues/1709)
+* **core** Fix ListQueryBuilder language handling logic ([86ac107](https://github.com/vendure-ecommerce/vendure/commit/86ac107)), closes [#1631](https://github.com/vendure-ecommerce/vendure/issues/1631) [#1611](https://github.com/vendure-ecommerce/vendure/issues/1611)
+* **core** Fix orderLine customField equality ([214281e](https://github.com/vendure-ecommerce/vendure/commit/214281e))
+* **core** Fix OrderLine relation customfields ([b3cb9f2](https://github.com/vendure-ecommerce/vendure/commit/b3cb9f2))
+* **core** Reset activeConfig on app shutdown ([8b8e310](https://github.com/vendure-ecommerce/vendure/commit/8b8e310))
+* **core** Revert eager joining of OrderLine customField relations ([b6220db](https://github.com/vendure-ecommerce/vendure/commit/b6220db))
+* **core** Take channels into account when validating coupon codes ([4ff8dff](https://github.com/vendure-ecommerce/vendure/commit/4ff8dff)), closes [#1692](https://github.com/vendure-ecommerce/vendure/issues/1692)
+
 ## <small>1.6.4 (2022-07-21)</small>
 
 
