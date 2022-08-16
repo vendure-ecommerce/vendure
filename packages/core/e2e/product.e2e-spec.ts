@@ -26,6 +26,8 @@ import {
     GetProductVariantList,
     GetProductWithVariantList,
     GetProductWithVariants,
+    GetProductWithVariantsQuery,
+    GetProductWithVariantsQueryVariables,
     LanguageCode,
     ProductVariantFragment,
     ProductVariantListOptions,
@@ -1302,6 +1304,33 @@ describe('Product resolver', () => {
             expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
             expect(removeOptionGroupFromProduct.productVariantCount).toBe(2);
+        });
+
+        it('removeOptionGroupFromProduct succeeds if all related ProductVariants are also deleted', async () => {
+            const { product } = await adminClient.query<
+                GetProductWithVariantsQuery,
+                GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, { id: 'T_2' });
+
+            // Delete all variants for that product
+            for (const variant of product!.variants) {
+                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
+                    DELETE_PRODUCT_VARIANT,
+                    {
+                        id: variant.id,
+                    },
+                );
+            }
+
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: product!.optionGroups[0].id,
+                productId: product!.id,
+            });
+
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
         });
 
         it(
