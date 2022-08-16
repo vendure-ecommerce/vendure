@@ -7,6 +7,7 @@ import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { preBootstrapConfig } from './bootstrap';
+import { resetConfig } from './config/config-helpers';
 import { VendureConfig } from './config/vendure-config';
 
 /**
@@ -52,6 +53,7 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
         process.exitCode = 1;
     } finally {
         await connection.close();
+        resetConfig();
     }
 }
 
@@ -75,6 +77,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
         process.exitCode = 1;
     } finally {
         await connection.close();
+        resetConfig();
     }
 }
 
@@ -156,6 +159,7 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
         console.log(chalk.yellow(`No changes in database schema were found - cannot generate a migration.`));
     }
     await connection.close();
+    resetConfig();
 }
 
 function createConnectionOptions(userConfig: Partial<VendureConfig>): ConnectionOptions {
