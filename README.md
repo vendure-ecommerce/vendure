@@ -82,11 +82,26 @@ DB=<mysql|postgres|sqlite> yarn dev-server:start
 ```
 If you do not specify the `DB` argument, it will default to "mysql".
 
-### 6. Launch the admin ui
+### 6. Testing your changes locally
+This example tests the changes of the `core` package locally, but it will also work for other packages.
+Open 2 terminal windows: 
+- Terminal 1 for watching and compiling the changes of the package you are developing
+- Terminal 2 for running the dev-server 
+```
+# Terminal 1
+cd packages/core
+yarn watch
+```
+After the changes in your package are compiled you have to stop and restart the dev-server:
+```
+# Terminal 2
+cd packages/dev-server
+DB=sqlite yarn start
+```
+The dev-server will now have your local changes from the `core` package.
 
-1. `cd packages/admin-ui`
-2. `yarn start`
-3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
+
+Lerna links to the `dist` folder of the packages, so you **don't** need to rerun 'yarn bootstrap'
 
 ### Code generation
 
