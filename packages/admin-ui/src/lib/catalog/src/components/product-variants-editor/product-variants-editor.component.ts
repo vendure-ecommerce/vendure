@@ -102,7 +102,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             : variant.options.map(o => o.name).join(' ');
     }
 
-    addOption() {
+    addOptionGroup() {
         this.optionGroups.push({
             isNew: true,
             name: '',
@@ -110,9 +110,22 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         });
     }
 
-    removeOption(optionGroup: OptionGroupUiModel) {
+    removeOptionGroup(optionGroup: OptionGroupUiModel) {
         this.optionGroups = this.optionGroups.filter(og => og !== optionGroup);
         this.generateVariants();
+    }
+
+    addOption(groupId: string, optionName: string) {
+        this.optionGroups.find(g => g.id === groupId)?.values.push({ name: optionName, locked: false });
+        this.generateVariants();
+    }
+
+    removeOption(groupId: string, optionId: string) {
+        const optionGroup = this.optionGroups.find(g => g.id === groupId);
+        if (optionGroup) {
+            optionGroup.values = optionGroup.values.filter(v => v.id !== optionId);
+            this.generateVariants();
+        }
     }
 
     generateVariants() {
@@ -403,7 +416,10 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                         values: og.options.map(o => ({
                             id: o.id,
                             name: o.name,
-                            locked: true,
+                            locked: p.variants
+                                .map(v => v.options.map(option => option.id))
+                                .flat()
+                                .includes(o.id),
                         })),
                     };
                 });

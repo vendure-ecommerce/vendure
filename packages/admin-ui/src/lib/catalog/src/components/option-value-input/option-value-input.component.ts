@@ -3,9 +3,14 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
+    EventEmitter,
     forwardRef,
     Input,
+    OnChanges,
+    OnInit,
+    Output,
     Provider,
+    SimpleChanges,
     ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -17,6 +22,12 @@ export const OPTION_VALUE_INPUT_VALUE_ACCESSOR: Provider = {
     multi: true,
 };
 
+interface Option {
+    id?: string;
+    name: string;
+    locked: boolean;
+}
+
 @Component({
     selector: 'vdr-option-value-input',
     templateUrl: './option-value-input.component.html',
@@ -27,13 +38,20 @@ export const OPTION_VALUE_INPUT_VALUE_ACCESSOR: Provider = {
 export class OptionValueInputComponent implements ControlValueAccessor {
     @Input() groupName = '';
     @ViewChild('textArea', { static: true }) textArea: ElementRef<HTMLTextAreaElement>;
-    options: Array<{ name: string; locked: boolean }>;
-    disabled = false;
+    @Input() options: Option[];
+    @Output() add = new EventEmitter<Option>();
+    @Output() remove = new EventEmitter<Option>();
+    @Input() disabled = false;
     input = '';
     isFocussed = false;
     lastSelected = false;
+    formValue: Option[];
     onChangeFn: (value: any) => void;
     onTouchFn: (value: any) => void;
+
+    get optionValues(): Option[] {
+        return this.formValue ?? this.options ?? [];
+    }
 
     constructor(private changeDetector: ChangeDetectorRef) {}
 
@@ -51,17 +69,21 @@ export class OptionValueInputComponent implements ControlValueAccessor {
     }
 
     writeValue(obj: any): void {
-        this.options = obj || [];
+        this.formValue = obj || [];
     }
 
     focus() {
         this.textArea.nativeElement.focus();
     }
 
-    removeOption(option: { name: string; locked: boolean }) {
+    removeOption(option: Option) {
         if (!option.locked) {
-            this.options = this.options.filter(o => o.name !== option.name);
-            this.onChangeFn(this.options);
+            if (this.formValue) {
+                this.formValue = this.formValue?.filter(o => o.name !== option.name);
+                this.onChangeFn(this.formValue);
+            } else {
+                this.remove.emit(option);
+            }
         }
     }
 
@@ -91,12 +113,19 @@ export class OptionValueInputComponent implements ControlValueAccessor {
     }
 
     private addOptionValue() {
-        this.options = unique([...this.options, ...this.parseInputIntoOptions(this.input)]);
+        const options = this.parseInputIntoOptions(this.input);
+        if (!this.formValue && this.options) {
+            for (const option of options) {
+                this.add.emit(option);
+            }
+        } else {
+            this.formValue = unique([...this.formValue, ...options]);
+            this.onChangeFn(this.formValue);
+        }
         this.input = '';
-        this.onChangeFn(this.options);
     }
 
-    private parseInputIntoOptions(input: string): Array<{ name: string; locked: boolean }> {
+    private parseInputIntoOptions(input: string): Option[] {
         return input
             .split(/[,\n]/)
             .map(s => s.trim())
@@ -105,8 +134,9 @@ export class OptionValueInputComponent implements ControlValueAccessor {
     }
 
     private removeLastOption() {
-        if (!this.options[this.options.length - 1].locked) {
-            this.options = this.options.slice(0, this.options.length - 1);
+        if (this.optionValues.length) {
+            const option = this.optionValues[this.optionValues.length - 1];
+            this.removeOption(option);
         }
     }
 }

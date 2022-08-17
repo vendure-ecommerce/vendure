@@ -1,7 +1,7 @@
 <div class="input-wrapper" [class.focus]="isFocussed" (click)="textArea.focus()">
-    <div class="chips" *ngIf="0 < options.length">
+    <div class="chips" *ngIf="0 < optionValues.length">
         <vdr-chip
-            *ngFor="let option of options; last as isLast"
+            *ngFor="let option of optionValues; last as isLast"
             [icon]="option.locked ? 'lock' : 'times'"
             [class.selected]="isLast && lastSelected"
             [class.locked]="option.locked"
