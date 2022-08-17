@@ -1,8 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 
-import { CurrencyCode } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { OptionValueInputComponent } from '../option-value-input/option-value-input.component';
 
 const DEFAULT_VARIANT_CODE = '__DEFAULT_VARIANT__';

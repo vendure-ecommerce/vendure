@@ -10,8 +10,10 @@ import {
     OnInit,
     Output,
     Provider,
+    QueryList,
     SimpleChanges,
     ViewChild,
+    ViewChildren,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { unique } from '@vendure/common/lib/unique';
@@ -38,14 +40,17 @@ interface Option {
 export class OptionValueInputComponent implements ControlValueAccessor {
     @Input() groupName = '';
     @ViewChild('textArea', { static: true }) textArea: ElementRef<HTMLTextAreaElement>;
+    @ViewChildren('editNameInput', { read: ElementRef }) nameInputs: QueryList<ElementRef>;
     @Input() options: Option[];
     @Output() add = new EventEmitter<Option>();
     @Output() remove = new EventEmitter<Option>();
+    @Output() edit = new EventEmitter<{ index: number; option: Option }>();
     @Input() disabled = false;
     input = '';
     isFocussed = false;
     lastSelected = false;
     formValue: Option[];
+    editingIndex = -1;
     onChangeFn: (value: any) => void;
     onTouchFn: (value: any) => void;
 
@@ -74,6 +79,28 @@ export class OptionValueInputComponent implements ControlValueAccessor {
 
     focus() {
         this.textArea.nativeElement.focus();
+    }
+
+    editName(index: number, event: MouseEvent) {
+        const optionValue = this.optionValues[index];
+        if (!optionValue.locked && !optionValue.id) {
+            event.cancelBubble = true;
+            this.editingIndex = index;
+            const input = this.nameInputs.get(index)?.nativeElement;
+            setTimeout(() => input?.focus());
+        }
+    }
+
+    updateOption(index: number, event: InputEvent) {
+        const optionValue = this.optionValues[index];
+        const newName = (event.target as HTMLInputElement).value;
+        if (optionValue) {
+            if (newName) {
+                optionValue.name = newName;
+                this.edit.emit({ index, option: optionValue });
+            }
+            this.editingIndex = -1;
+        }
     }
 
     removeOption(option: Option) {
