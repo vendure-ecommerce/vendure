@@ -66,8 +66,8 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
-        BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin.init(),
+        // BullMQJobQueuePlugin.init({}),
+        DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -110,7 +110,7 @@ function getDbConfig(): ConnectionOptions {
         case 'sqlite':
             console.log('Using sqlite connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'better-sqlite3',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
