@@ -83,8 +83,8 @@ DB=<mysql|postgres|sqlite> yarn dev-server:start
 If you do not specify the `DB` argument, it will default to "mysql".
 
 ### 6. Testing your changes locally
-This example tests the changes of the `core` package locally, but it will also work for other packages.
-Open 2 terminal windows: 
+This example shows how to test changes to the `core` package locally, but it will also work for other packages.
+1. Open 2 terminal windows: 
 - Terminal 1 for watching and compiling the changes of the package you are developing
 - Terminal 2 for running the dev-server 
 ```
@@ -92,13 +92,13 @@ Open 2 terminal windows:
 cd packages/core
 yarn watch
 ```
-After the changes in your package are compiled you have to stop and restart the dev-server:
+2. After the changes in your package are compiled you have to stop and restart the dev-server:
 ```
 # Terminal 2
 cd packages/dev-server
 DB=sqlite yarn start
 ```
-The dev-server will now have your local changes from the `core` package.
+3. The dev-server will now have your local changes from the `core` package.
 
 
 Lerna links to the `dist` folder of the packages, so you **don't** need to rerun 'yarn bootstrap'
