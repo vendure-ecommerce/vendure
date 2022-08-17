@@ -7170,6 +7170,16 @@ export type UpdateProductOptionMutation = { updateProductOption: (
     & ProductOptionFragment
   ) };
 
+export type DeleteProductOptionMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteProductOptionMutation = { deleteProductOption: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) };
+
 export type DeleteProductVariantMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -10041,6 +10051,12 @@ export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
   export type UpdateProductOption = (NonNullable<UpdateProductOptionMutation['updateProductOption']>);
+}
+
+export namespace DeleteProductOption {
+  export type Variables = DeleteProductOptionMutationVariables;
+  export type Mutation = DeleteProductOptionMutation;
+  export type DeleteProductOption = (NonNullable<DeleteProductOptionMutation['deleteProductOption']>);
 }
 
 export namespace DeleteProductVariant {

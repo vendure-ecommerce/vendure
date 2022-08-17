@@ -23,7 +23,7 @@
             [groupName]="group.name"
             [disabled]="group.name === ''"
             (add)="addOption(group.id, $event.name)"
-            (remove)="removeOption(group.id, $event.id)"
+            (remove)="removeOption(group.id, $event)"
         ></vdr-option-value-input>
     </div>
     <div>
@@ -120,7 +120,7 @@
                         <button
                             type="button"
                             class="delete-button"
-                            (click)="deleteVariant(productVariantId)"
+                            (click)="deleteVariant(productVariantId, variant.options)"
                             vdrDropdownItem
                         >
                             <clr-icon shape="trash" class="is-danger"></clr-icon>

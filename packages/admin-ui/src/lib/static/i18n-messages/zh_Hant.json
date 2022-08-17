@@ -77,6 +77,7 @@
     "confirm-delete-facet": "確認移除此特徵?",
     "confirm-delete-facet-value": "確認移除特徵值?",
     "confirm-delete-product": "確認移除商品?",
+    "confirm-delete-product-option": "",
     "confirm-delete-product-variant": "確認移除商品規格?",
     "confirm-delete-promotion": "確認移除優惠券?",
     "confirm-delete-shipping-method": "確認移除此郵寄方式?",

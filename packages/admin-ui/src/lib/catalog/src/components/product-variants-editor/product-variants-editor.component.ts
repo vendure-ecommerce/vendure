@@ -7,6 +7,7 @@ import {
     CurrencyCode,
     DataService,
     DeactivateAware,
+    DeletionResult,
     getDefaultUiLanguage,
     GetProductVariantOptions,
     LanguageCode,
@@ -120,11 +121,43 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         this.generateVariants();
     }
 
-    removeOption(groupId: string, optionId: string) {
+    removeOption(groupId: string, { id, name }: { id?: string; name: string }) {
         const optionGroup = this.optionGroups.find(g => g.id === groupId);
         if (optionGroup) {
-            optionGroup.values = optionGroup.values.filter(v => v.id !== optionId);
-            this.generateVariants();
+            if (!id) {
+                optionGroup.values = optionGroup.values.filter(v => v.name !== name);
+                this.generateVariants();
+            } else {
+                this.modalService
+                    .dialog({
+                        title: _('catalog.confirm-delete-product-option'),
+                        translationVars: { name },
+                        buttons: [
+                            { type: 'secondary', label: _('common.cancel') },
+                            { type: 'danger', label: _('common.delete'), returnValue: true },
+                        ],
+                    })
+                    .pipe(
+                        switchMap(val => {
+                            if (val) {
+                                return this.dataService.product.deleteProductOption(id);
+                            } else {
+                                return EMPTY;
+                            }
+                        }),
+                    )
+                    .subscribe(({ deleteProductOption }) => {
+                        if (deleteProductOption.result === DeletionResult.DELETED) {
+                            this.notificationService.success(_('common.notify-delete-success'), {
+                                entity: 'ProductOption',
+                            });
+                            optionGroup.values = optionGroup.values.filter(v => v.id !== id);
+                            this.generateVariants();
+                        } else {
+                            this.notificationService.error(deleteProductOption.message ?? '');
+                        }
+                    });
+            }
         }
     }
 
@@ -183,10 +216,11 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         };
     }
 
-    deleteVariant(id: string) {
+    deleteVariant(id: string, options: GeneratedVariant['options']) {
         this.modalService
             .dialog({
                 title: _('catalog.confirm-delete-product-variant'),
+                translationVars: { name: options.map(o => o.name).join(' ') },
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },

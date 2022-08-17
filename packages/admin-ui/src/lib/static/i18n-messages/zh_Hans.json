@@ -77,6 +77,7 @@
     "confirm-delete-facet": "确认删除特征?",
     "confirm-delete-facet-value": "确认删除特征值?",
     "confirm-delete-product": "确认删除商品?",
+    "confirm-delete-product-option": "",
     "confirm-delete-product-variant": "确认删除商品规格?",
     "confirm-delete-promotion": "确认删除优惠券?",
     "confirm-delete-shipping-method": "确认删除邮寄方式?",

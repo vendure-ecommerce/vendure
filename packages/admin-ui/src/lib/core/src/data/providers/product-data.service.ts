@@ -19,6 +19,7 @@ import {
     CreateTagInput,
     DeleteAssets,
     DeleteProduct,
+    DeleteProductOption,
     DeleteProductVariant,
     DeleteTag,
     GetAsset,
@@ -73,6 +74,7 @@ import {
     CREATE_TAG,
     DELETE_ASSETS,
     DELETE_PRODUCT,
+    DELETE_PRODUCT_OPTION,
     DELETE_PRODUCT_VARIANT,
     DELETE_TAG,
     GET_ASSET,
@@ -319,6 +321,13 @@ export class ProductDataService {
         return this.baseDataService.mutate<AddOptionToGroup.Mutation, AddOptionToGroup.Variables>(
             ADD_OPTION_TO_GROUP,
             { input },
+        );
+    }
+
+    deleteProductOption(id: string) {
+        return this.baseDataService.mutate<DeleteProductOption.Mutation, DeleteProductOption.Variables>(
+            DELETE_PRODUCT_OPTION,
+            { id },
         );
     }
 

@@ -77,6 +77,7 @@
     "confirm-delete-facet": "Eliminar etiqueta?",
     "confirm-delete-facet-value": "Eliminar valor da etiqueta?",
     "confirm-delete-product": "Eliminar produto?",
+    "confirm-delete-product-option": "",
     "confirm-delete-product-variant": "Eliminar variante do produto?",
     "confirm-delete-promotion": "Eliminar promoção?",
     "confirm-delete-shipping-method": "Eliminar método de envio?",
