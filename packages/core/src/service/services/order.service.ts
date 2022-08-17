@@ -1728,10 +1728,17 @@ export class OrderService {
                 }
             }
         }
-        const { items: promotions } = await this.promotionService.findAll(ctx, {
-            filter: { enabled: { eq: true } },
-            sort: { priorityScore: 'ASC' },
-        });
+
+        const promotions = await this.connection
+            .getRepository(ctx, Promotion)
+            .createQueryBuilder('promotion')
+            .leftJoin('promotion.channels', 'channel')
+            .where('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('promotion.deletedAt IS NULL')
+            .andWhere('promotion.enabled = :enabled', { enabled: true })
+            .orderBy('promotion.priorityScore', 'ASC')
+            .getMany();
+
         const updatedItems = await this.orderCalculator.applyPriceAdjustments(
             ctx,
             order,

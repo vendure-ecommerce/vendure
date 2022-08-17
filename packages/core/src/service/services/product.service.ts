@@ -370,7 +370,12 @@ export class ProductService {
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-        if (product.variants.length) {
+        const optionIsInUse = product.variants.some(
+            variant =>
+                variant.deletedAt == null &&
+                variant.options.some(option => idsAreEqual(option.groupId, optionGroupId)),
+        );
+        if (optionIsInUse) {
             return new ProductOptionInUseError(optionGroup.code, product.variants.length);
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);

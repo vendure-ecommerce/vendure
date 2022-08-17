@@ -462,10 +462,15 @@ export class OrderModifier {
         }
 
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
-        const promotions = await this.connection.getRepository(ctx, Promotion).find({
-            where: { enabled: true, deletedAt: null },
-            order: { priorityScore: 'ASC' },
-        });
+        const promotions = await this.connection
+            .getRepository(ctx, Promotion)
+            .createQueryBuilder('promotion')
+            .leftJoin('promotion.channels', 'channel')
+            .where('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('promotion.deletedAt IS NULL')
+            .andWhere('promotion.enabled = :enabled', { enabled: true })
+            .orderBy('promotion.priorityScore', 'ASC')
+            .getMany();
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
