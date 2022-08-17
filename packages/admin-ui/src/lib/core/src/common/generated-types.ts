@@ -2410,6 +2410,8 @@ export type Mutation = {
   deletePaymentMethod: DeletionResponse;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
+  /** Delete a ProductOption */
+  deleteProductOption: DeletionResponse;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
   deletePromotion: DeletionResponse;
@@ -2788,6 +2790,11 @@ export type MutationDeletePaymentMethodArgs = {
 
 
 export type MutationDeleteProductArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteProductOptionArgs = {
   id: Scalars['ID'];
 };
 
@@ -3250,6 +3257,7 @@ export type OrderAddress = {
 
 export type OrderFilterParameter = {
   customerLastName?: Maybe<StringOperators>;
+  transactionId?: Maybe<StringOperators>;
   id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -3426,6 +3434,7 @@ export type OrderProcessState = {
 
 export type OrderSortParameter = {
   customerLastName?: Maybe<SortOrder>;
+  transactionId?: Maybe<SortOrder>;
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;

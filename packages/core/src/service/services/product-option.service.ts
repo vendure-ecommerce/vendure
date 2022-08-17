@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
     CreateGroupOptionInput,
     CreateProductOptionInput,
+    DeletionResponse,
+    DeletionResult,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -10,6 +12,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ProductVariant } from '../../entity/index';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
@@ -88,5 +91,33 @@ export class ProductOptionService {
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
         this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
         return assertFound(this.findOne(ctx, option.id));
+    }
+
+    async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id);
+        const consumingVariants = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .leftJoin('variant.options', 'option')
+            .where('variant.deletedAt IS NULL')
+            .andWhere('option.id = :id', { id })
+            .getMany();
+        if (consumingVariants.length) {
+            const message = ctx.translate('message.product-option-used', {
+                code: productOption.code,
+                count: consumingVariants.length,
+            });
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message,
+            };
+        } else {
+            productOption.deletedAt = new Date();
+            await this.connection.getRepository(ctx, ProductOption).save(productOption, { reload: false });
+            this.eventBus.publish(new ProductOptionEvent(ctx, productOption, 'deleted', id));
+            return {
+                result: DeletionResult.DELETED,
+            };
+        }
     }
 }

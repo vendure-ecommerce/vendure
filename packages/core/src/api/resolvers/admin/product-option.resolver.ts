@@ -1,7 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
+    DeletionResult,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
+    MutationDeleteProductOptionArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
     Permission,
@@ -97,5 +100,15 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOption>> {
         const { input } = args;
         return this.productOptionService.update(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductOption(
+        @Ctx() ctx: RequestContext,
+        @Args() { id }: MutationDeleteProductOptionArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionService.softDelete(ctx, id);
     }
 }

@@ -2381,6 +2381,8 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
+    /** Delete a ProductOption */
+    deleteProductOption: DeletionResponse;
     reindex: Job;
     runPendingSearchIndexUpdates: Success;
     /** Create a new Product */
@@ -2743,6 +2745,10 @@ export type MutationUpdateProductOptionArgs = {
     input: UpdateProductOptionInput;
 };
 
+export type MutationDeleteProductOptionArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationCreateProductArgs = {
     input: CreateProductInput;
 };
@@ -3028,6 +3034,7 @@ export type OrderAddress = {
 
 export type OrderFilterParameter = {
     customerLastName?: Maybe<StringOperators>;
+    transactionId?: Maybe<StringOperators>;
     id?: Maybe<IdOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -3197,6 +3204,7 @@ export type OrderProcessState = {
 
 export type OrderSortParameter = {
     customerLastName?: Maybe<SortOrder>;
+    transactionId?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
@@ -6836,6 +6844,18 @@ export type AddManualPayment2Mutation = {
     addManualPaymentToOrder: OrderWithLinesFragment | Pick<ManualPaymentStateError, 'errorCode' | 'message'>;
 };
 
+export type GetProductOptionGroupQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetProductOptionGroupQuery = {
+    productOptionGroup?: Maybe<
+        Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
+            options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
+        }
+    >;
+};
+
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -6858,6 +6878,14 @@ export type UpdateProductOptionMutationVariables = Exact<{
 
 export type UpdateProductOptionMutation = {
     updateProductOption: Pick<ProductOption, 'id' | 'code' | 'name' | 'groupId'>;
+};
+
+export type DeleteProductOptionMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type DeleteProductOptionMutation = {
+    deleteProductOption: Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
@@ -9255,6 +9283,15 @@ export namespace AddManualPayment2 {
     >;
 }
 
+export namespace GetProductOptionGroup {
+    export type Variables = GetProductOptionGroupQueryVariables;
+    export type Query = GetProductOptionGroupQuery;
+    export type ProductOptionGroup = NonNullable<GetProductOptionGroupQuery['productOptionGroup']>;
+    export type Options = NonNullable<
+        NonNullable<NonNullable<GetProductOptionGroupQuery['productOptionGroup']>['options']>[number]
+    >;
+}
+
 export namespace UpdateProductOptionGroup {
     export type Variables = UpdateProductOptionGroupMutationVariables;
     export type Mutation = UpdateProductOptionGroupMutation;
@@ -9276,6 +9313,12 @@ export namespace UpdateProductOption {
     export type Variables = UpdateProductOptionMutationVariables;
     export type Mutation = UpdateProductOptionMutation;
     export type UpdateProductOption = NonNullable<UpdateProductOptionMutation['updateProductOption']>;
+}
+
+export namespace DeleteProductOption {
+    export type Variables = DeleteProductOptionMutationVariables;
+    export type Mutation = DeleteProductOptionMutation;
+    export type DeleteProductOption = NonNullable<DeleteProductOptionMutation['deleteProductOption']>;
 }
 
 export namespace RemoveOptionGroupFromProduct {

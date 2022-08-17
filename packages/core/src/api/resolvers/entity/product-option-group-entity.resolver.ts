@@ -33,10 +33,13 @@ export class ProductOptionGroupEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() optionGroup: Translated<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOption>>> {
+        let options: Array<Translated<ProductOption>>;
         if (optionGroup.options) {
-            return optionGroup.options;
+            options = optionGroup.options;
+        } else {
+            const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id);
+            options = group?.options ?? [];
         }
-        const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id);
-        return group ? group.options : [];
+        return options.filter(o => !o.deletedAt);
     }
 }

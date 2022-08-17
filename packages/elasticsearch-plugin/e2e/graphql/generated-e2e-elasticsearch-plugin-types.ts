@@ -2381,6 +2381,8 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
+    /** Delete a ProductOption */
+    deleteProductOption: DeletionResponse;
     reindex: Job;
     runPendingSearchIndexUpdates: Success;
     /** Create a new Product */
@@ -2743,6 +2745,10 @@ export type MutationUpdateProductOptionArgs = {
     input: UpdateProductOptionInput;
 };
 
+export type MutationDeleteProductOptionArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationCreateProductArgs = {
     input: CreateProductInput;
 };
@@ -3028,6 +3034,7 @@ export type OrderAddress = {
 
 export type OrderFilterParameter = {
     customerLastName?: Maybe<StringOperators>;
+    transactionId?: Maybe<StringOperators>;
     id?: Maybe<IdOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -3197,6 +3204,7 @@ export type OrderProcessState = {
 
 export type OrderSortParameter = {
     customerLastName?: Maybe<SortOrder>;
+    transactionId?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
