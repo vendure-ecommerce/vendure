@@ -3,7 +3,7 @@
         <button
             class="btn btn-primary"
             (click)="save()"
-            [disabled]="!formValueChanged || getVariantsToAdd().length === 0"
+            [disabled]="(!formValueChanged && !optionsChanged) || getVariantsToAdd().length === 0"
         >
             {{ 'common.add-new-variants' | translate: { count: getVariantsToAdd().length } }}
         </button>
@@ -27,7 +27,9 @@
         ></vdr-option-value-input>
     </div>
     <div>
-        <button *ngIf="group.isNew" class="btn btn-icon btn-danger-outline mt5" (click)="removeOptionGroup(group)">
+        <button
+            [disabled]="group.locked"
+            class="btn btn-icon btn-danger-outline mt5" (click)="removeOptionGroup(group)">
             <clr-icon shape="trash"></clr-icon>
         </button>
     </div>

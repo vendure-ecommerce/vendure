@@ -20,7 +20,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
+import { defaultIfEmpty, filter, map, mergeMap, switchMap } from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ConfirmVariantDeletionDialogComponent } from '../confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
@@ -46,6 +46,7 @@ interface OptionGroupUiModel {
     id?: string;
     isNew: boolean;
     name: string;
+    locked: boolean;
     values: Array<{
         id?: string;
         name: string;
@@ -61,6 +62,7 @@ interface OptionGroupUiModel {
 })
 export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     formValueChanged = false;
+    optionsChanged = false;
     generatedVariants: GeneratedVariant[] = [];
     optionGroups: OptionGroupUiModel[];
     product: GetProductVariantOptions.Product;
@@ -106,19 +108,59 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     addOptionGroup() {
         this.optionGroups.push({
             isNew: true,
+            locked: false,
             name: '',
             values: [],
         });
+        this.optionsChanged = true;
     }
 
     removeOptionGroup(optionGroup: OptionGroupUiModel) {
-        this.optionGroups = this.optionGroups.filter(og => og !== optionGroup);
-        this.generateVariants();
+        const id = optionGroup.id;
+        if (optionGroup.isNew) {
+            this.optionGroups = this.optionGroups.filter(og => og !== optionGroup);
+            this.generateVariants();
+            this.optionsChanged = true;
+        } else if (id) {
+            this.modalService
+                .dialog({
+                    title: _('catalog.confirm-delete-product-option-group'),
+                    translationVars: { name: optionGroup.name },
+                    buttons: [
+                        { type: 'secondary', label: _('common.cancel') },
+                        { type: 'danger', label: _('common.delete'), returnValue: true },
+                    ],
+                })
+                .pipe(
+                    switchMap(val => {
+                        if (val) {
+                            return this.dataService.product.removeOptionGroupFromProduct({
+                                optionGroupId: id,
+                                productId: this.product.id,
+                            });
+                        } else {
+                            return EMPTY;
+                        }
+                    }),
+                )
+                .subscribe(({ removeOptionGroupFromProduct }) => {
+                    if (removeOptionGroupFromProduct.__typename === 'Product') {
+                        this.notificationService.success(_('common.notify-delete-success'), {
+                            entity: 'ProductOptionGroup',
+                        });
+                        this.initOptionsAndVariants();
+                        this.optionsChanged = true;
+                    } else if (removeOptionGroupFromProduct.__typename === 'ProductOptionInUseError') {
+                        this.notificationService.error(removeOptionGroupFromProduct.message ?? '');
+                    }
+                });
+        }
     }
 
     addOption(groupId: string, optionName: string) {
         this.optionGroups.find(g => g.id === groupId)?.values.push({ name: optionName, locked: false });
         this.generateVariants();
+        this.optionsChanged = true;
     }
 
     removeOption(groupId: string, { id, name }: { id?: string; name: string }) {
@@ -153,6 +195,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                             });
                             optionGroup.values = optionGroup.values.filter(v => v.id !== id);
                             this.generateVariants();
+                            this.optionsChanged = true;
                         } else {
                             this.notificationService.error(deleteProductOption.message ?? '');
                         }
@@ -276,13 +319,17 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                         count: variants.length,
                     });
                     this.initOptionsAndVariants();
+                    this.optionsChanged = false;
                 },
             });
     }
 
     private checkUniqueSkus() {
         const withDuplicateSkus = this.generatedVariants.filter((variant, index) => {
-            return this.generatedVariants.find(gv => gv.sku.trim() === variant.sku.trim() && gv !== variant);
+            return (
+                variant.enabled &&
+                this.generatedVariants.find(gv => gv.sku.trim() === variant.sku.trim() && gv !== variant)
+            );
         });
         if (withDuplicateSkus.length) {
             return this.modalService
@@ -385,7 +432,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     .mapSingle(data => data.productOptionGroup)
                     .pipe(filter(notNullOrUndefined)),
             ),
-        );
+        ).pipe(defaultIfEmpty([] as ProductOptionGroupWithOptionsFragment[]));
     }
 
     private createNewProductVariants(groups: ProductOptionGroupWithOptionsFragment[]) {
@@ -442,18 +489,20 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             .mapSingle(({ product }) => product!)
             .subscribe(p => {
                 this.product = p;
+                const allUsedOptionIds = p.variants.map(v => v.options.map(option => option.id)).flat();
+                const allUsedOptionGroupIds = p.variants
+                    .map(v => v.options.map(option => option.groupId))
+                    .flat();
                 this.optionGroups = p.optionGroups.map(og => {
                     return {
                         id: og.id,
                         isNew: false,
                         name: og.name,
+                        locked: allUsedOptionGroupIds.includes(og.id),
                         values: og.options.map(o => ({
                             id: o.id,
                             name: o.name,
-                            locked: p.variants
-                                .map(v => v.options.map(option => option.id))
-                                .flat()
-                                .includes(o.id),
+                            locked: allUsedOptionIds.includes(o.id),
                         })),
                     };
                 });
