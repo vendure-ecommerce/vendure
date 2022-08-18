@@ -88,7 +88,7 @@ export const config: VendureConfig = {
     AdminUiPlugin.init({
       port: 5001,
       app: compileUiExtensions({
-        outputPath: path.join(__dirname, 'admin-ui'),
+        outputPath: path.join(__dirname, '../admin-ui'),
         extensions: [{
           extensionPath: path.join(__dirname, 'ui-extensions'),
           ngModules: [{
