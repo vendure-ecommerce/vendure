@@ -13,6 +13,9 @@ import {
     AddOptionGroupToProduct,
     ChannelFragment,
     CreateProduct,
+    CreateProductOptionGroup,
+    CreateProductOptionGroupMutation,
+    CreateProductOptionGroupMutationVariables,
     CreateProductVariants,
     DeleteProduct,
     DeleteProductVariant,
@@ -43,6 +46,7 @@ import {
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
+    CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -1224,15 +1228,26 @@ describe('Product resolver', () => {
         );
 
         it('addOptionGroupToProduct adds an option group', async () => {
+            const optionGroup = await createOptionGroup('Quark-type', ['Charm', 'Strange']);
             const result = await adminClient.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_2',
+                optionGroupId: optionGroup.id,
                 productId: newProduct.id,
             });
             expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
-            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_2');
+            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe(optionGroup.id);
+
+            // not really testing this, but just cleaning up for later tests
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: optionGroup.id,
+                productId: newProduct.id,
+            });
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
         });
 
         it(
@@ -1243,10 +1258,25 @@ describe('Product resolver', () => {
                         ADD_OPTION_GROUP_TO_PRODUCT,
                         {
                             optionGroupId: 'T_1',
-                            productId: '999',
+                            productId: 'T_999',
                         },
                     ),
                 `No Product with the id '999' could be found`,
+            ),
+        );
+
+        it(
+            'addOptionGroupToProduct errors if the OptionGroup is already assigned to another Product',
+            assertThrowsWithMessage(
+                () =>
+                    adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                        ADD_OPTION_GROUP_TO_PRODUCT,
+                        {
+                            optionGroupId: 'T_1',
+                            productId: 'T_2',
+                        },
+                    ),
+                `The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"`,
             ),
         );
 
@@ -1266,20 +1296,20 @@ describe('Product resolver', () => {
         );
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
+            const optionGroup = await createOptionGroup('Length', ['Short', 'Long']);
             const { addOptionGroupToProduct } = await adminClient.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             expect(addOptionGroupToProduct.optionGroups.length).toBe(1);
-
             const { removeOptionGroupFromProduct } = await adminClient.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
@@ -1369,23 +1399,22 @@ describe('Product resolver', () => {
             let optionGroup3: GetOptionGroup.ProductOptionGroup;
 
             beforeAll(async () => {
+                optionGroup2 = await createOptionGroup('group-2', ['group2-option-1', 'group2-option-2']);
+                optionGroup3 = await createOptionGroup('group-3', ['group3-option-1', 'group3-option-2']);
                 await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
                     ADD_OPTION_GROUP_TO_PRODUCT,
                     {
-                        optionGroupId: 'T_3',
+                        optionGroupId: optionGroup2.id,
                         productId: newProduct.id,
                     },
                 );
-                const result1 = await adminClient.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
-                    GET_OPTION_GROUP,
-                    { id: 'T_2' },
+                await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                    ADD_OPTION_GROUP_TO_PRODUCT,
+                    {
+                        optionGroupId: optionGroup3.id,
+                        productId: newProduct.id,
+                    },
                 );
-                const result2 = await adminClient.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
-                    GET_OPTION_GROUP,
-                    { id: 'T_3' },
-                );
-                optionGroup2 = result1.productOptionGroup!;
-                optionGroup3 = result2.productOptionGroup!;
             });
 
             it(
@@ -1404,7 +1433,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it(
@@ -1423,7 +1452,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it('createProductVariants works', async () => {
@@ -2059,6 +2088,23 @@ describe('Product resolver', () => {
             expect(product.slug).toBe(productToDelete.slug);
         });
     });
+
+    async function createOptionGroup(name: string, options: string[]) {
+        const { createProductOptionGroup } = await adminClient.query<
+            CreateProductOptionGroupMutation,
+            CreateProductOptionGroupMutationVariables
+        >(CREATE_PRODUCT_OPTION_GROUP, {
+            input: {
+                code: name.toLowerCase(),
+                translations: [{ languageCode: LanguageCode.en, name }],
+                options: options.map(option => ({
+                    code: option.toLowerCase(),
+                    translations: [{ languageCode: LanguageCode.en, name: option }],
+                })),
+            },
+        });
+        return createProductOptionGroup;
+    }
 });
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`

@@ -15,7 +15,7 @@ import { FindOptionsUtils } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -23,7 +23,6 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { Order } from '../../entity/index';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -41,6 +40,7 @@ import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
+import { ProductOptionGroupService } from './product-option-group.service';
 import { ProductVariantService } from './product-variant.service';
 import { RoleService } from './role.service';
 import { TaxRateService } from './tax-rate.service';
@@ -69,6 +69,7 @@ export class ProductService {
         private eventBus: EventBus,
         private slugValidator: SlugValidator,
         private customFieldRelationService: CustomFieldRelationService,
+        private productOptionGroupService: ProductOptionGroupService,
     ) {}
 
     async findAll(
@@ -259,15 +260,31 @@ export class ProductService {
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             channelId: ctx.channelId,
-            relations: ['variants'],
+            relations: ['variants', 'optionGroups'],
         });
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted', productId));
-        await this.productVariantService.softDelete(
+
+        const variantResult = await this.productVariantService.softDelete(
             ctx,
             product.variants.map(v => v.id),
         );
+        if (variantResult.result === DeletionResult.NOT_DELETED) {
+            await this.connection.rollBackTransaction(ctx);
+            return variantResult;
+        }
+        for (const optionGroup of product.optionGroups) {
+            const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
+                ctx,
+                optionGroup.id,
+                productId,
+            );
+            if (groupResult.result === DeletionResult.NOT_DELETED) {
+                await this.connection.rollBackTransaction(ctx);
+                return groupResult;
+            }
+        }
         return {
             result: DeletionResult.DELETED,
         };
@@ -344,9 +361,16 @@ export class ProductService {
         const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = await this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .findOne(optionGroupId);
+            .findOne(optionGroupId, { relations: ['product'] });
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
+        }
+        if (optionGroup.product) {
+            const translated = translateDeep(optionGroup.product, ctx.languageCode);
+            throw new UserInputError(`error.product-option-group-already-assigned`, {
+                groupCode: optionGroup.code,
+                productName: translated.name,
+            });
         }
 
         if (Array.isArray(product.optionGroups)) {
@@ -378,9 +402,17 @@ export class ProductService {
         if (optionIsInUse) {
             return new ProductOptionInUseError(optionGroup.code, product.variants.length);
         }
+        const result = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
+            ctx,
+            optionGroupId,
+            productId,
+        );
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
-
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
+        if (result.result === DeletionResult.NOT_DELETED) {
+            // tslint:disable-next-line:no-non-null-assertion
+            throw new InternalServerError(result.message!);
+        }
         this.eventBus.publish(new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'));
         return assertFound(this.findOne(ctx, productId));
     }

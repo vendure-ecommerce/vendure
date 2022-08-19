@@ -25,7 +25,7 @@ export class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(
         ctx: RequestContext,
         entity: ProductOptionGroup,
-        type: 'created' | 'updated',
+        type: 'created' | 'updated' | 'deleted',
         input?: ProductOptionGroupInputTypes,
     ) {
         super(entity, type, ctx, input);

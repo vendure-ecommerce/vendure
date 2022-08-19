@@ -109,6 +109,6 @@ export class ProductOptionResolver {
         @Ctx() ctx: RequestContext,
         @Args() { id }: MutationDeleteProductOptionArgs,
     ): Promise<DeletionResponse> {
-        return this.productOptionService.softDelete(ctx, id);
+        return this.productOptionService.delete(ctx, id);
     }
 }
