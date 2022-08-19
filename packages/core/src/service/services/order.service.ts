@@ -15,6 +15,7 @@ import {
     AdjustmentType,
     CancelOrderInput,
     CancelOrderResult,
+    CancelPaymentResult,
     CreateAddressInput,
     DeletionResponse,
     DeletionResult,
@@ -47,6 +48,7 @@ import { EntityNotFoundError, InternalServerError, UserInputError } from '../../
 import {
     AlreadyRefundedError,
     CancelActiveOrderError,
+    CancelPaymentError,
     EmptyOrderLineSelectionError,
     FulfillmentStateTransitionError,
     InsufficientStockOnHandError,
@@ -1133,6 +1135,24 @@ export class OrderService {
                 if (isGraphQlErrorResult(orderTransitionResult)) {
                     return orderTransitionResult;
                 }
+            }
+        }
+        return payment;
+    }
+
+    /**
+     * @description
+     * Cancels a payment by invoking the {@link PaymentMethodHandler}'s `cancelPayment()` method (if defined), and transitions the Payment to
+     * the `Cancelled` state.
+     */
+    async cancelPayment(
+        ctx: RequestContext,
+        paymentId: ID,
+    ): Promise<ErrorResultUnion<CancelPaymentResult, Payment>> {
+        const payment = await this.paymentService.cancelPayment(ctx, paymentId);
+        if (!isGraphQlErrorResult(payment)) {
+            if (payment.state !== 'Cancelled') {
+                return new CancelPaymentError(payment.errorMessage || '');
             }
         }
         return payment;

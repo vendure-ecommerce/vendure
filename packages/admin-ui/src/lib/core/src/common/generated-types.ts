@@ -307,6 +307,16 @@ export type CancelOrderInput = {
 
 export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
 
+/** Returned if the Payment cancellation fails */
+export type CancelPaymentError = ErrorResult & {
+  __typename?: 'CancelPaymentError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  paymentErrorMessage: Scalars['String'];
+};
+
+export type CancelPaymentResult = Payment | CancelPaymentError | PaymentStateTransitionError;
+
 export type Cancellation = Node & StockMovement & {
   __typename?: 'Cancellation';
   id: Scalars['ID'];
@@ -1416,6 +1426,7 @@ export enum ErrorCode {
   LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
   CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+  CANCEL_PAYMENT_ERROR = 'CANCEL_PAYMENT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
   INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
@@ -2339,6 +2350,7 @@ export type Mutation = {
   authenticate: AuthenticationResult;
   cancelJob: Job;
   cancelOrder: CancelOrderResult;
+  cancelPayment: CancelPaymentResult;
   /** Create a new Administrator */
   createAdministrator: Administrator;
   /** Create a new Asset */
@@ -2601,6 +2613,11 @@ export type MutationCancelJobArgs = {
 
 export type MutationCancelOrderArgs = {
   input: CancelOrderInput;
+};
+
+
+export type MutationCancelPaymentArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -8893,6 +8910,11 @@ type ErrorResult_CancelActiveOrderError_Fragment = (
   & Pick<CancelActiveOrderError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_CancelPaymentError_Fragment = (
+  { __typename?: 'CancelPaymentError' }
+  & Pick<CancelPaymentError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_ChannelDefaultLanguageError_Fragment = (
   { __typename?: 'ChannelDefaultLanguageError' }
   & Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>
@@ -9063,7 +9085,7 @@ type ErrorResult_SettlePaymentError_Fragment = (
   & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }

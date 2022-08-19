@@ -20,18 +20,22 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
+    failsToCancelPaymentMethod,
     failsToSettlePaymentMethod,
+    onCancelPaymentSpy,
     onTransitionSpy,
     partialPaymentMethod,
     singleStageRefundablePaymentMethod,
     singleStageRefundFailingPaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
-import { FULFILLMENT_FRAGMENT } from './graphql/fragments';
+import { FULFILLMENT_FRAGMENT, PAYMENT_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToOrder,
     CanceledOrderFragment,
     CancelOrder,
+    CancelPaymentMutation,
+    CancelPaymentMutationVariables,
     CreateFulfillment,
     CreateShippingMethod,
     DeleteOrderNote,
@@ -47,6 +51,8 @@ import {
     GetOrderList,
     GetOrderListFulfillments,
     GetOrderListWithQty,
+    GetOrderQuery,
+    GetOrderQueryVariables,
     GetOrderWithPayments,
     GetProductWithVariants,
     GetStockMovement,
@@ -62,6 +68,8 @@ import {
     SortOrder,
     StockMovementType,
     TransitFulfillment,
+    TransitionPaymentToStateMutation,
+    TransitionPaymentToStateMutationVariables,
     UpdateOrderNote,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
@@ -95,6 +103,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
+    TRANSITION_PAYMENT_TO_STATE,
     TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -123,6 +132,7 @@ describe('Orders resolver', () => {
                     singleStageRefundablePaymentMethod,
                     partialPaymentMethod,
                     singleStageRefundFailingPaymentMethod,
+                    failsToCancelPaymentMethod,
                 ],
             },
         }),
@@ -151,6 +161,10 @@ describe('Orders resolver', () => {
                     {
                         name: failsToSettlePaymentMethod.code,
                         handler: { code: failsToSettlePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: failsToCancelPaymentMethod.code,
+                        handler: { code: failsToCancelPaymentMethod.code, arguments: [] },
                     },
                     {
                         name: singleStageRefundablePaymentMethod.code,
@@ -1803,6 +1817,60 @@ describe('Orders resolver', () => {
         });
     });
 
+    describe('payment cancellation', () => {
+        it("cancelling payment calls the method's cancelPayment handler", async () => {
+            await createTestOrder(adminClient, shopClient, customers[0].emailAddress, password);
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentAuthorized');
+            const paymentId = order.payments![0].id;
+
+            expect(onCancelPaymentSpy).not.toHaveBeenCalled();
+
+            const { cancelPayment } = await adminClient.query<
+                CancelPaymentMutation,
+                CancelPaymentMutationVariables
+            >(CANCEL_PAYMENT, {
+                paymentId,
+            });
+
+            paymentGuard.assertSuccess(cancelPayment);
+            expect(cancelPayment.state).toBe('Cancelled');
+            expect(cancelPayment.metadata.cancellationCode).toBe('12345');
+            expect(onCancelPaymentSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('cancellation failure', async () => {
+            await createTestOrder(adminClient, shopClient, customers[0].emailAddress, password);
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, failsToCancelPaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentAuthorized');
+            const paymentId = order.payments![0].id;
+
+            const { cancelPayment } = await adminClient.query<
+                CancelPaymentMutation,
+                CancelPaymentMutationVariables
+            >(CANCEL_PAYMENT, {
+                paymentId,
+            });
+
+            paymentGuard.assertErrorResult(cancelPayment);
+            expect(cancelPayment.message).toBe('Cancelling the payment failed');
+            const { order: checkorder } = await adminClient.query<GetOrderQuery, GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
+            expect(checkorder!.payments![0].state).toBe('Authorized');
+            expect(checkorder!.payments![0].metadata).toEqual({ cancellationData: 'foo' });
+        });
+    });
+
     describe('order notes', () => {
         let orderId: string;
         let firstNoteId: string;
@@ -2608,4 +2676,23 @@ const GET_ORDERS_LIST_WITH_QUANTITIES = gql`
             }
         }
     }
+`;
+
+const CANCEL_PAYMENT = gql`
+    mutation CancelPayment($paymentId: ID!) {
+        cancelPayment(id: $paymentId) {
+            ...Payment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on PaymentStateTransitionError {
+                transitionError
+            }
+            ... on CancelPaymentError {
+                paymentErrorMessage
+            }
+        }
+    }
+    ${PAYMENT_FRAGMENT}
 `;

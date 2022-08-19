@@ -52,6 +52,7 @@
     "ALREADY_LOGGED_IN_ERROR": "Cannot set a Customer for the Order when already logged in",
     "ALREADY_REFUNDED_ERROR": "Cannot refund an OrderItem which has already been refunded",
     "CANCEL_ACTIVE_ORDER_ERROR": "Cannot cancel OrderLines from an Order in the \"{ orderState }\" state",
+    "CANCEL_PAYMENT_ERROR": "Cancelling the payment failed",
     "CHANNEL_DEFAULT_LANGUAGE_ERROR": "Cannot make language \"{ language }\" unavailable as it is used as the defaultLanguage by the channel \"{ channelCode }\"",
     "COUPON_CODE_EXPIRED_ERROR": "Coupon code \"{ couponCode }\" has expired",
     "COUPON_CODE_INVALID_ERROR": "Coupon code \"{ couponCode }\" is not valid",

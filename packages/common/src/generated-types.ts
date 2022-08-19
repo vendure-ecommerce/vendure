@@ -306,6 +306,16 @@ export type CancelOrderInput = {
 
 export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
 
+/** Returned if the Payment cancellation fails */
+export type CancelPaymentError = ErrorResult & {
+  __typename?: 'CancelPaymentError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  paymentErrorMessage: Scalars['String'];
+};
+
+export type CancelPaymentResult = Payment | CancelPaymentError | PaymentStateTransitionError;
+
 export type Cancellation = Node & StockMovement & {
   __typename?: 'Cancellation';
   id: Scalars['ID'];
@@ -1408,6 +1418,7 @@ export enum ErrorCode {
   LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
   CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+  CANCEL_PAYMENT_ERROR = 'CANCEL_PAYMENT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
   INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
@@ -2387,6 +2398,7 @@ export type Mutation = {
   cancelJob: Job;
   flushBufferedJobs: Success;
   settlePayment: SettlePaymentResult;
+  cancelPayment: CancelPaymentResult;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
   cancelOrder: CancelOrderResult;
   refundOrder: RefundOrderResult;
@@ -2752,6 +2764,11 @@ export type MutationFlushBufferedJobsArgs = {
 
 
 export type MutationSettlePaymentArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationCancelPaymentArgs = {
   id: Scalars['ID'];
 };
 

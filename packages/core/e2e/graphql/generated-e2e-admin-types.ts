@@ -309,6 +309,15 @@ export type CancelOrderResult =
     | CancelActiveOrderError
     | OrderStateTransitionError;
 
+/** Returned if the Payment cancellation fails */
+export type CancelPaymentError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    paymentErrorMessage: Scalars['String'];
+};
+
+export type CancelPaymentResult = Payment | CancelPaymentError | PaymentStateTransitionError;
+
 export type Cancellation = Node &
     StockMovement & {
         id: Scalars['ID'];
@@ -1383,6 +1392,7 @@ export enum ErrorCode {
     LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
     CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
     SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+    CANCEL_PAYMENT_ERROR = 'CANCEL_PAYMENT_ERROR',
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
     INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
@@ -2341,6 +2351,7 @@ export type Mutation = {
     cancelJob: Job;
     flushBufferedJobs: Success;
     settlePayment: SettlePaymentResult;
+    cancelPayment: CancelPaymentResult;
     addFulfillmentToOrder: AddFulfillmentToOrderResult;
     cancelOrder: CancelOrderResult;
     refundOrder: RefundOrderResult;
@@ -2658,6 +2669,10 @@ export type MutationFlushBufferedJobsArgs = {
 };
 
 export type MutationSettlePaymentArgs = {
+    id: Scalars['ID'];
+};
+
+export type MutationCancelPaymentArgs = {
     id: Scalars['ID'];
 };
 
@@ -6524,6 +6539,17 @@ export type GetCollectionsQuery = {
     };
 };
 
+export type TransitionPaymentToStateMutationVariables = Exact<{
+    id: Scalars['ID'];
+    state: Scalars['String'];
+}>;
+
+export type TransitionPaymentToStateMutation = {
+    transitionPaymentToState:
+        | PaymentFragment
+        | Pick<PaymentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
+};
+
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -6762,6 +6788,17 @@ export type GetOrderListWithQtyQuery = {
     };
 };
 
+export type CancelPaymentMutationVariables = Exact<{
+    paymentId: Scalars['ID'];
+}>;
+
+export type CancelPaymentMutation = {
+    cancelPayment:
+        | PaymentFragment
+        | Pick<CancelPaymentError, 'errorCode' | 'message' | 'paymentErrorMessage'>
+        | Pick<PaymentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
+};
+
 export type PaymentMethodFragment = Pick<
     PaymentMethod,
     'id' | 'code' | 'name' | 'description' | 'enabled'
@@ -6823,17 +6860,6 @@ export type DeletePaymentMethodMutationVariables = Exact<{
 
 export type DeletePaymentMethodMutation = {
     deletePaymentMethod: Pick<DeletionResponse, 'message' | 'result'>;
-};
-
-export type TransitionPaymentToStateMutationVariables = Exact<{
-    id: Scalars['ID'];
-    state: Scalars['String'];
-}>;
-
-export type TransitionPaymentToStateMutation = {
-    transitionPaymentToState:
-        | PaymentFragment
-        | Pick<PaymentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
 };
 
 export type AddManualPayment2MutationVariables = Exact<{
@@ -8956,6 +8982,22 @@ export namespace GetCollections {
     >;
 }
 
+export namespace TransitionPaymentToState {
+    export type Variables = TransitionPaymentToStateMutationVariables;
+    export type Mutation = TransitionPaymentToStateMutation;
+    export type TransitionPaymentToState = NonNullable<
+        TransitionPaymentToStateMutation['transitionPaymentToState']
+    >;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>,
+        { __typename?: 'ErrorResult' }
+    >;
+    export type PaymentStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>,
+        { __typename?: 'PaymentStateTransitionError' }
+    >;
+}
+
 export namespace CancelJob {
     export type Variables = CancelJobMutationVariables;
     export type Mutation = CancelJobMutation;
@@ -9184,6 +9226,24 @@ export namespace GetOrderListWithQty {
     >;
 }
 
+export namespace CancelPayment {
+    export type Variables = CancelPaymentMutationVariables;
+    export type Mutation = CancelPaymentMutation;
+    export type CancelPayment = NonNullable<CancelPaymentMutation['cancelPayment']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CancelPaymentMutation['cancelPayment']>,
+        { __typename?: 'ErrorResult' }
+    >;
+    export type PaymentStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<CancelPaymentMutation['cancelPayment']>,
+        { __typename?: 'PaymentStateTransitionError' }
+    >;
+    export type CancelPaymentErrorInlineFragment = DiscriminateUnion<
+        NonNullable<CancelPaymentMutation['cancelPayment']>,
+        { __typename?: 'CancelPaymentError' }
+    >;
+}
+
 export namespace PaymentMethod {
     export type Fragment = PaymentMethodFragment;
     export type Checker = NonNullable<PaymentMethodFragment['checker']>;
@@ -9255,22 +9315,6 @@ export namespace DeletePaymentMethod {
     export type Variables = DeletePaymentMethodMutationVariables;
     export type Mutation = DeletePaymentMethodMutation;
     export type DeletePaymentMethod = NonNullable<DeletePaymentMethodMutation['deletePaymentMethod']>;
-}
-
-export namespace TransitionPaymentToState {
-    export type Variables = TransitionPaymentToStateMutationVariables;
-    export type Mutation = TransitionPaymentToStateMutation;
-    export type TransitionPaymentToState = NonNullable<
-        TransitionPaymentToStateMutation['transitionPaymentToState']
-    >;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>,
-        { __typename?: 'ErrorResult' }
-    >;
-    export type PaymentStateTransitionErrorInlineFragment = DiscriminateUnion<
-        NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>,
-        { __typename?: 'PaymentStateTransitionError' }
-    >;
 }
 
 export namespace AddManualPayment2 {
