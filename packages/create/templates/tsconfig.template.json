@@ -8,8 +8,12 @@
     "target": "es2017",
     "strict": true,
     "sourceMap": false,
+    "skipLibCheck": true,
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "exclude": ["node_modules", "migration.ts"]
+  "exclude": ["node_modules", "migration.ts"],
+  "ts-node": {
+    "files": true
+  }
 }

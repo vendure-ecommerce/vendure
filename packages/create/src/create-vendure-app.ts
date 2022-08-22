@@ -88,6 +88,8 @@ async function createApp(
     const {
         dbType,
         configSource,
+        envSource,
+        envDtsSource,
         indexSource,
         indexWorkerSource,
         migrationSource,
@@ -173,6 +175,8 @@ async function createApp(
                         ctx.configFile = srcPathScript('vendure-config');
 
                         fs.writeFile(ctx.configFile, configSource)
+                            .then(() => fs.writeFile(path.join(root, '.env'), envSource))
+                            .then(() => fs.writeFile(srcPathScript('environment.d'), envDtsSource))
                             .then(() => fs.writeFile(srcPathScript('index'), indexSource))
                             .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
                             .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))

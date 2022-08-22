@@ -7,52 +7,54 @@ import {
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import 'dotenv/config';
 import path from 'path';
+
+const IS_DEV = process.env.APP_ENV === 'dev';
 
 export const config: VendureConfig = {
     apiOptions: {
         port: 3000,
         adminApiPath: 'admin-api',
-        adminApiPlayground: {
-            settings: {
-                'request.credentials': 'include',
-            } as any,
-        },// turn this off for production
-        adminApiDebug: true, // turn this off for production
         shopApiPath: 'shop-api',
-        shopApiPlayground: {
-            settings: {
-                'request.credentials': 'include',
-            } as any,
-        },// turn this off for production
-        shopApiDebug: true,// turn this off for production
+        ...(IS_DEV ? {
+            adminApiPlayground: {
+                settings: { 'request.credentials': 'include' } as any,
+            },
+            adminApiDebug: true,
+            shopApiPlayground: {
+                settings: { 'request.credentials': 'include' } as any,
+            },
+            shopApiDebug: true,
+        } : {}),
     },
     authOptions: {
+        tokenMethod: ['bearer', 'cookie'],
         superadminCredentials: {
-            identifier: '{{{ escapeSingle superadminIdentifier }}}',
-            password: '{{{ escapeSingle superadminPassword }}}',
+            identifier: process.env.SUPERADMIN_USERNAME,
+            password: process.env.SUPERADMIN_PASSWORD,
         },
         cookieOptions: {
-          secret: process.env.COOKIE_SECRET || 'cookie-secret',
+          secret: process.env.COOKIE_SECRET,
         },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
         synchronize: true, // turn this off for production
         logging: false,
-        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{{ escapeSingle dbName }}}'{{/if}},
+        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}process.env.DB_NAME{{/if}},
         {{#if dbSchema}}
-        schema: '{{ dbSchema }}',
+        schema: process.env.DB_SCHEMA,
         {{/if}}
         {{#if isSQLjs}}
         location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,
         {{/if}}
         {{#if requiresConnection}}
-        host: '{{ dbHost }}',
-        port: {{ dbPort }},
-        username: '{{{ escapeSingle dbUserName }}}',
-        password: '{{{ escapeSingle dbPassword }}}',
+        host: process.env.DB_HOST,
+        port: +process.env.DB_PORT,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
         {{/if}}
         migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
@@ -74,7 +76,8 @@ export const config: VendureConfig = {
             handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../static/email/templates'),
             globalTemplateVars: {
-                // The following variables will change depending on your storefront implementation
+                // The following variables will change depending on your storefront implementation.
+                // Here we are assuming a storefront running at http://localhost:8080.
                 fromAddress: '"example" <noreply@example.com>',
                 verifyEmailAddressUrl: 'http://localhost:8080/verify',
                 passwordResetUrl: 'http://localhost:8080/password-reset',

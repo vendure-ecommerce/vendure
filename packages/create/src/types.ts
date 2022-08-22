@@ -6,6 +6,8 @@ export interface UserResponses {
     indexSource: string;
     indexWorkerSource: string;
     configSource: string;
+    envSource: string;
+    envDtsSource: string;
     migrationSource: string;
     readmeSource: string;
     superadminIdentifier: string;

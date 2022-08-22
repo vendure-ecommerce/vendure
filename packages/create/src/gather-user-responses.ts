@@ -104,14 +104,8 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
         },
     });
 
-    const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
-        await generateSources(root, answers);
     return {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        migrationSource,
-        readmeSource,
+        ...(await generateSources(root, answers)),
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
         superadminIdentifier: answers.superadminIdentifier,
@@ -134,14 +128,9 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
     };
-    const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
-        await generateSources(root, ciAnswers);
+
     return {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        migrationSource,
-        readmeSource,
+        ...(await generateSources(root, ciAnswers)),
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
@@ -159,6 +148,8 @@ async function generateSources(
     indexSource: string;
     indexWorkerSource: string;
     configSource: string;
+    envSource: string;
+    envDtsSource: string;
     migrationSource: string;
     readmeSource: string;
 }> {
@@ -180,9 +171,14 @@ async function generateSources(
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
+        cookieSecret: Math.random().toString(36).substr(2),
     };
     const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
     const configSource = Handlebars.compile(configTemplate, { noEscape: true })(templateContext);
+    const envTemplate = await fs.readFile(assetPath('.env.hbs'), 'utf-8');
+    const envSource = Handlebars.compile(envTemplate, { noEscape: true })(templateContext);
+    const envDtsTemplate = await fs.readFile(assetPath('environment.d.hbs'), 'utf-8');
+    const envDtsSource = Handlebars.compile(envDtsTemplate, { noEscape: true })(templateContext);
     const indexTemplate = await fs.readFile(assetPath('index.hbs'), 'utf-8');
     const indexSource = Handlebars.compile(indexTemplate)(templateContext);
     const indexWorkerTemplate = await fs.readFile(assetPath('index-worker.hbs'), 'utf-8');
@@ -191,7 +187,15 @@ async function generateSources(
     const migrationSource = Handlebars.compile(migrationTemplate)(templateContext);
     const readmeTemplate = await fs.readFile(assetPath('readme.hbs'), 'utf-8');
     const readmeSource = Handlebars.compile(readmeTemplate)(templateContext);
-    return { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource };
+    return {
+        indexSource,
+        indexWorkerSource,
+        configSource,
+        envSource,
+        envDtsSource,
+        migrationSource,
+        readmeSource,
+    };
 }
 
 function defaultDBPort(dbType: DbType): number {

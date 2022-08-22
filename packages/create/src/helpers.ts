@@ -250,7 +250,7 @@ export function getDependencies(
         dbDriverPackage(dbType),
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently', 'ts-node'];
+    const devDependencies = ['concurrently', 'dotenv', 'ts-node'];
     return { dependencies, devDependencies };
 }
 
