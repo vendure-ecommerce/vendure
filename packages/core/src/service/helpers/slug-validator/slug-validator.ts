@@ -30,7 +30,7 @@ export type TranslationEntity = VendureEntity & {
     id: ID;
     languageCode: LanguageCode;
     slug: string;
-    base: Collection | Product;
+    base: any;
 };
 
 /**
@@ -81,7 +81,7 @@ export class SlugValidator {
                         }
                         match = await qb.getOne();
                         if (match) {
-                            if (!(match.base as Product).deletedAt) {
+                            if (!match.base.deletedAt) {
                                 suffix++;
                                 if (alreadySuffixed.test(t.slug)) {
                                     t.slug = t.slug.replace(alreadySuffixed, `-${suffix}`);
