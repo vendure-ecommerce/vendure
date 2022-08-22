@@ -87,7 +87,6 @@ async function createApp(
     }
     const {
         dbType,
-        usingTs,
         configSource,
         indexSource,
         indexWorkerSource,
@@ -108,13 +107,13 @@ async function createApp(
         version: '0.1.0',
         private: true,
         scripts: {
-            'run:server': usingTs ? 'ts-node ./src/index.ts' : 'node ./src/index.js',
-            'run:worker': usingTs ? 'ts-node ./src/index-worker.ts' : 'node ./src/index-worker.js',
+            'run:server': 'ts-node ./src/index.ts',
+            'run:worker': 'ts-node ./src/index-worker.ts',
             start: useYarn ? 'concurrently yarn:run:*' : 'concurrently npm:run:*',
-            ...(usingTs ? { build: 'tsc' } : undefined),
-            'migration:generate': usingTs ? 'ts-node migration generate' : 'node migration generate',
-            'migration:run': usingTs ? 'ts-node migration run' : 'node migration run',
-            'migration:revert': usingTs ? 'ts-node migration revert' : 'node migration revert',
+            build: 'tsc',
+            'migration:generate': 'ts-node migration generate',
+            'migration:run': 'ts-node migration run',
+            'migration:revert': 'ts-node migration revert',
         },
     };
 
@@ -123,10 +122,8 @@ async function createApp(
     console.log('This may take a few minutes...');
     console.log();
 
-    const rootPathScript = (fileName: string): string =>
-        path.join(root, `${fileName}.${usingTs ? 'ts' : 'js'}`);
-    const srcPathScript = (fileName: string): string =>
-        path.join(root, 'src', `${fileName}.${usingTs !== false ? 'ts' : 'js'}`);
+    const rootPathScript = (fileName: string): string => path.join(root, `${fileName}.ts`);
+    const srcPathScript = (fileName: string): string => path.join(root, 'src', `${fileName}.ts`);
 
     const listrTasks: Listr.ListrTask[] = [];
     if (scaffoldExists) {
@@ -143,7 +140,6 @@ async function createApp(
                             JSON.stringify(packageJsonContents, null, 2) + os.EOL,
                         );
                         const { dependencies, devDependencies } = getDependencies(
-                            usingTs,
                             dbType,
                             isCi ? `@${packageJson.version}` : '',
                         );
@@ -186,12 +182,10 @@ async function createApp(
                             )
                             .then(() => {
                                 subscriber.next(`Created files`);
-                                if (usingTs) {
-                                    return fs.copyFile(
-                                        assetPath('tsconfig.template.json'),
-                                        path.join(root, 'tsconfig.json'),
-                                    );
-                                }
+                                return fs.copyFile(
+                                    assetPath('tsconfig.template.json'),
+                                    path.join(root, 'tsconfig.json'),
+                                );
                             })
                             .then(() => createDirectoryStructure(root))
                             .then(() => {
@@ -212,10 +206,8 @@ async function createApp(
         title: 'Initializing server',
         task: async ctx => {
             try {
-                if (usingTs) {
-                    // register ts-node so that the config file can be loaded
-                    require(path.join(root, 'node_modules/ts-node')).register();
-                }
+                // register ts-node so that the config file can be loaded
+                require(path.join(root, 'node_modules/ts-node')).register();
                 const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
                 const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
                     path.join(root, 'node_modules/@vendure/core/dist/index')

@@ -88,16 +88,6 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
 
     const initPrompts: Array<prompts.PromptObject<any>> = [
         {
-            type: 'select',
-            name: 'language',
-            message: 'Which programming language will you be using?',
-            choices: [
-                { title: 'TypeScript', value: 'ts' },
-                { title: 'JavaScript', value: 'js' },
-            ],
-            initial: 0 as any,
-        },
-        {
             type: 'toggle',
             name: 'populateProducts',
             message: 'Populate with some sample product data?',
@@ -114,11 +104,6 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
         },
     });
 
-    if (!answers.language) {
-        console.log('Setup aborted. No changes made');
-        process.exit(0);
-    }
-
     const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
         await generateSources(root, answers);
     return {
@@ -127,7 +112,6 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
         configSource,
         migrationSource,
         readmeSource,
-        usingTs: answers.language !== 'js',
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
         superadminIdentifier: answers.superadminIdentifier,
@@ -146,7 +130,6 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         dbName: 'vendure',
         dbUserName: '',
         dbPassword: '',
-        language: 'ts',
         populateProducts: true,
         superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
@@ -159,7 +142,6 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         configSource,
         migrationSource,
         readmeSource,
-        usingTs: ciAnswers.language === 'ts',
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
@@ -195,7 +177,6 @@ async function generateSources(
         ...answers,
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
-        isTs: answers.language === 'ts',
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',

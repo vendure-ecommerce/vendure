@@ -239,7 +239,6 @@ export function installPackages(
 }
 
 export function getDependencies(
-    usingTs: boolean,
     dbType: DbType,
     vendurePkgVersion = '',
 ): { dependencies: string[]; devDependencies: string[] } {
@@ -249,13 +248,9 @@ export function getDependencies(
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         dbDriverPackage(dbType),
+        `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently'];
-    if (usingTs) {
-        devDependencies.push('ts-node');
-        dependencies.push(`typescript@${TYPESCRIPT_VERSION}`);
-    }
-
+    const devDependencies = ['concurrently', 'ts-node'];
     return { dependencies, devDependencies };
 }
 

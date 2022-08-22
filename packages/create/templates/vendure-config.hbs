@@ -1,45 +1,29 @@
-{{#if isTs }}import{{ else }}const{{/if}} {
+import {
     dummyPaymentHandler,
     DefaultJobQueuePlugin,
-    DefaultSearchPlugin,{{#if isTs}}
-    VendureConfig,{{/if}}
-} {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
-{{#if isTs }}
+    DefaultSearchPlugin,
+    VendureConfig,
+} from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
-{{ else }}
-const { defaultEmailHandlers, EmailPlugin } = require('@vendure/email-plugin');
-{{/if}}
-{{#if isTs }}
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
-{{ else }}
-const { AssetServerPlugin } = require('@vendure/asset-server-plugin');
-{{/if}}
-{{#if isTs }}
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-{{ else }}
-const { AdminUiPlugin } = require('@vendure/admin-ui-plugin');
-{{/if}}
-{{#if isTs }}
 import path from 'path';
-{{ else }}
-const path = require('path');
-{{/if}}
 
-{{#if isTs}}export {{/if}}const config{{#if isTs}}: VendureConfig{{/if}} = {
+export const config: VendureConfig = {
     apiOptions: {
         port: 3000,
         adminApiPath: 'admin-api',
         adminApiPlayground: {
             settings: {
                 'request.credentials': 'include',
-            }{{#if isTs}} as any{{/if}},
+            } as any,
         },// turn this off for production
         adminApiDebug: true, // turn this off for production
         shopApiPath: 'shop-api',
         shopApiPlayground: {
             settings: {
                 'request.credentials': 'include',
-            }{{#if isTs}} as any{{/if}},
+            } as any,
         },// turn this off for production
         shopApiDebug: true,// turn this off for production
     },
@@ -103,8 +87,3 @@ const path = require('path');
         }),
     ],
 };
-{{#if isTs}}
-{{else}}
-
-module.exports = { config };
-{{/if}}
