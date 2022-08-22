@@ -12,6 +12,17 @@ export const DISCOUNT_FRAGMENT = gql`
     }
 `;
 
+export const PAYMENT_FRAGMENT = gql`
+    fragment Payment on Payment {
+        id
+        transactionId
+        amount
+        method
+        state
+        metadata
+    }
+`;
+
 export const REFUND_FRAGMENT = gql`
     fragment Refund on Refund {
         id
@@ -263,14 +274,7 @@ export const GET_ORDER = gql`
 export const SETTLE_PAYMENT = gql`
     mutation SettlePayment($id: ID!) {
         settlePayment(id: $id) {
-            ... on Payment {
-                id
-                transactionId
-                amount
-                method
-                state
-                metadata
-            }
+            ...Payment
             ...ErrorResult
             ... on SettlePaymentError {
                 paymentErrorMessage
@@ -284,25 +288,37 @@ export const SETTLE_PAYMENT = gql`
         }
     }
     ${ERROR_RESULT_FRAGMENT}
+    ${PAYMENT_FRAGMENT}
+`;
+
+export const CANCEL_PAYMENT = gql`
+    mutation CancelPayment($id: ID!) {
+        cancelPayment(id: $id) {
+            ...Payment
+            ...ErrorResult
+            ... on CancelPaymentError {
+                paymentErrorMessage
+            }
+            ... on PaymentStateTransitionError {
+                transitionError
+            }
+        }
+    }
+    ${ERROR_RESULT_FRAGMENT}
+    ${PAYMENT_FRAGMENT}
 `;
 
 export const TRANSITION_PAYMENT_TO_STATE = gql`
     mutation TransitionPaymentToState($id: ID!, $state: String!) {
         transitionPaymentToState(id: $id, state: $state) {
-            ... on Payment {
-                id
-                transactionId
-                amount
-                method
-                state
-                metadata
-            }
+            ...Payment
             ...ErrorResult
             ... on PaymentStateTransitionError {
                 transitionError
             }
         }
     }
+    ${PAYMENT_FRAGMENT}
     ${ERROR_RESULT_FRAGMENT}
 `;
 
