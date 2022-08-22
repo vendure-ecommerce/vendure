@@ -133,7 +133,7 @@ describe('Payment process', () => {
 
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
+            // logger: new DefaultLogger(),
             orderOptions: {
                 process: [customOrderProcess as any],
                 orderPlacedStrategy: new TestOrderPlacedStrategy(),

@@ -10,10 +10,10 @@ import { FindManyOptions, Like } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Product, ProductOptionTranslation, ProductVariant } from '../../entity/index';
+import { Product, ProductOption, ProductOptionTranslation, ProductVariant } from '../../entity/index';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { EventBus } from '../../event-bus';
@@ -132,12 +132,7 @@ export class ProductOptionGroupService {
         const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
             relations: ['options', 'product'],
         });
-        const inUseByActiveProducts = await this.isInUseByOtherProducts(
-            ctx,
-            optionGroup,
-            productId,
-            'active',
-        );
+        const inUseByActiveProducts = await this.isInUseByOtherProducts(ctx, optionGroup, productId);
         if (0 < inUseByActiveProducts) {
             return {
                 result: DeletionResult.NOT_DELETED,
@@ -155,24 +150,29 @@ export class ProductOptionGroupService {
                 return { result, message };
             }
         }
-        const isInUseBySoftDeletedVariants = await this.isInUseByOtherProducts(
-            ctx,
-            optionGroup,
-            productId,
-            'soft-deleted',
-        );
-        if (0 < isInUseBySoftDeletedVariants) {
+        const hasOptionsWhichAreInUse = await this.groupOptionsAreInUse(ctx, optionGroup);
+        if (0 < hasOptionsWhichAreInUse) {
             // soft delete
             optionGroup.deletedAt = new Date();
             await this.connection.getRepository(ctx, ProductOptionGroup).save(optionGroup, { reload: false });
         } else {
             // hard delete
+
+            const product = await this.connection
+                .getRepository(ctx, Product)
+                .findOne(productId, { relations: ['optionGroups'] });
+            if (product) {
+                product.optionGroups = product.optionGroups.filter(og => !idsAreEqual(og.id, id));
+                await this.connection.getRepository(ctx, Product).save(product, { reload: false });
+            }
+
             // TODO: V2 rely on onDelete: CASCADE rather than this manual loop
             for (const translation of optionGroup.translations) {
                 await this.connection
                     .getRepository(ctx, ProductOptionGroupTranslation)
                     .remove(translation as ProductOptionGroupTranslation);
             }
+
             try {
                 await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
             } catch (e) {
@@ -189,17 +189,23 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         productOptionGroup: ProductOptionGroup,
         targetProductId: ID,
-        productState: 'active' | 'soft-deleted',
     ): Promise<number> {
-        const [products, count] = await this.connection
+        return this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
             .leftJoin('product.optionGroups', 'optionGroup')
-            .where(productState === 'active' ? 'product.deletedAt IS NULL' : 'product.deletedAt IS NOT NULL')
+            .where('product.deletedAt IS NULL')
             .andWhere('optionGroup.id = :id', { id: productOptionGroup.id })
             .andWhere('product.id != :productId', { productId: targetProductId })
-            .getManyAndCount();
+            .getCount();
+    }
 
-        return count;
+    private async groupOptionsAreInUse(ctx: RequestContext, productOptionGroup: ProductOptionGroup) {
+        return this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .leftJoin('variant.options', 'option')
+            .where('option.groupId = :groupId', { groupId: productOptionGroup.id })
+            .getCount();
     }
 }

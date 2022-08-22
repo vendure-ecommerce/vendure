@@ -145,13 +145,12 @@ export class ProductOptionService {
         productOption: ProductOption,
         variantState: 'active' | 'soft-deleted',
     ): Promise<number> {
-        const [variants, count] = await this.connection
+        return this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variant')
             .leftJoin('variant.options', 'option')
             .where(variantState === 'active' ? 'variant.deletedAt IS NULL' : 'variant.deletedAt IS NOT NULL')
             .andWhere('option.id = :id', { id: productOption.id })
-            .getManyAndCount();
-        return count;
+            .getCount();
     }
 }

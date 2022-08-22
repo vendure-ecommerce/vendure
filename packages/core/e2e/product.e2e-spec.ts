@@ -1,6 +1,7 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { DefaultLogger } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -66,6 +67,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
+        // logger: new DefaultLogger(),
     });
 
     const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
