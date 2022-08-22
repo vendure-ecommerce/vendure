@@ -57,6 +57,9 @@ const path = require('path');
         synchronize: true, // turn this off for production
         logging: false,
         database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{{ escapeSingle dbName }}}'{{/if}},
+        {{#if dbSchema}}
+        schema: '{{ dbSchema }}',
+        {{/if}}
         {{#if isSQLjs}}
         location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,

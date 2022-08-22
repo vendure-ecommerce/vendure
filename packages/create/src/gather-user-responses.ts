@@ -11,7 +11,7 @@ import { DbType, UserResponses } from './types';
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
  */
-export async function gatherUserResponses(root: string): Promise<UserResponses> {
+export async function gatherUserResponses(root: string, alreadyRanScaffold: boolean): Promise<UserResponses> {
     function onSubmit(prompt: PromptObject, answer: any) {
         if (prompt.name === 'dbType') {
             dbType = answer;
@@ -20,91 +20,99 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
 
     let dbType: DbType;
 
-    const answers = await prompts(
-        [
-            {
-                type: 'select',
-                name: 'dbType',
-                message: 'Which database are you using?',
-                choices: [
-                    { title: 'MySQL', value: 'mysql' },
-                    { title: 'MariaDB', value: 'mariadb' },
-                    { title: 'Postgres', value: 'postgres' },
-                    { title: 'SQLite', value: 'sqlite' },
-                    { title: 'SQL.js', value: 'sqljs' },
-                    // Don't show these until they have been tested.
-                    // { title: 'MS SQL Server', value: 'mssql' },
-                    // { title: 'Oracle', value: 'oracle' },
-                ],
-                initial: 0 as any,
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbHost',
-                message: `What's the database host address?`,
-                initial: 'localhost',
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbPort',
-                message: `What port is the database listening on?`,
-                initial: (() => defaultDBPort(dbType)) as any,
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbName',
-                message: `What's the name of the database?`,
-                initial: 'vendure',
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbUserName',
-                message: `What's the database user name?`,
-                initial: 'root',
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'password')) as any,
-                name: 'dbPassword',
-                message: `What's the database password?`,
-            },
-            {
-                type: 'select',
-                name: 'language',
-                message: 'Which programming language will you be using?',
-                choices: [
-                    { title: 'TypeScript', value: 'ts' },
-                    { title: 'JavaScript', value: 'js' },
-                ],
-                initial: 0 as any,
-            },
-            {
-                type: 'toggle',
-                name: 'populateProducts',
-                message: 'Populate with some sample product data?',
-                initial: true,
-                active: 'yes',
-                inactive: 'no',
-            },
-            {
-                type: 'text',
-                name: 'superadminIdentifier',
-                message: 'What identifier do you want to use for the superadmin user?',
-                initial: SUPER_ADMIN_USER_IDENTIFIER,
-            },
-            {
-                type: 'text',
-                name: 'superadminPassword',
-                message: 'What password do you want to use for the superadmin user?',
-                initial: SUPER_ADMIN_USER_PASSWORD,
-            },
-        ],
+    const scaffoldPrompts: Array<prompts.PromptObject<any>> = [
         {
-            onSubmit,
-            onCancel() {
-                /* */
-            },
+            type: 'select',
+            name: 'dbType',
+            message: 'Which database are you using?',
+            choices: [
+                { title: 'MySQL', value: 'mysql' },
+                { title: 'MariaDB', value: 'mariadb' },
+                { title: 'Postgres', value: 'postgres' },
+                { title: 'SQLite', value: 'sqlite' },
+                { title: 'SQL.js', value: 'sqljs' },
+                // Don't show these until they have been tested.
+                // { title: 'MS SQL Server', value: 'mssql' },
+                // { title: 'Oracle', value: 'oracle' },
+            ],
+            initial: 0 as any,
         },
-    );
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbHost',
+            message: `What's the database host address?`,
+            initial: 'localhost',
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbPort',
+            message: `What port is the database listening on?`,
+            initial: (() => defaultDBPort(dbType)) as any,
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbName',
+            message: `What's the name of the database?`,
+            initial: 'vendure',
+        },
+        {
+            type: (() => (dbType === 'postgres' ? 'text' : null)) as any,
+            name: 'dbSchema',
+            message: `What's the schema name we should use?`,
+            initial: 'public',
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbUserName',
+            message: `What's the database user name?`,
+            initial: 'root',
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'password')) as any,
+            name: 'dbPassword',
+            message: `What's the database password?`,
+        },
+        {
+            type: 'text',
+            name: 'superadminIdentifier',
+            message: 'What identifier do you want to use for the superadmin user?',
+            initial: SUPER_ADMIN_USER_IDENTIFIER,
+        },
+        {
+            type: 'text',
+            name: 'superadminPassword',
+            message: 'What password do you want to use for the superadmin user?',
+            initial: SUPER_ADMIN_USER_PASSWORD,
+        },
+    ];
+
+    const initPrompts: Array<prompts.PromptObject<any>> = [
+        {
+            type: 'select',
+            name: 'language',
+            message: 'Which programming language will you be using?',
+            choices: [
+                { title: 'TypeScript', value: 'ts' },
+                { title: 'JavaScript', value: 'js' },
+            ],
+            initial: 0 as any,
+        },
+        {
+            type: 'toggle',
+            name: 'populateProducts',
+            message: 'Populate with some sample product data?',
+            initial: true,
+            active: 'yes',
+            inactive: 'no',
+        },
+    ];
+
+    const answers = await prompts(alreadyRanScaffold ? initPrompts : [...scaffoldPrompts, ...initPrompts], {
+        onSubmit,
+        onCancel() {
+            /* */
+        },
+    });
 
     if (!answers.language) {
         console.log('Setup aborted. No changes made');
@@ -119,7 +127,7 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
         configSource,
         migrationSource,
         readmeSource,
-        usingTs: answers.language === 'ts',
+        usingTs: answers.language !== 'js',
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
         superadminIdentifier: answers.superadminIdentifier,

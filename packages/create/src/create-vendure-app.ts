@@ -18,6 +18,7 @@ import {
     installPackages,
     isSafeToCreateProjectIn,
     isServerPortInUse,
+    scaffoldAlreadyExists,
     shouldUseYarn,
 } from './helpers';
 import { CliLogLevel } from './types';
@@ -75,6 +76,15 @@ async function createApp(
 
     const root = path.resolve(name);
     const appName = path.basename(root);
+    const scaffoldExists = scaffoldAlreadyExists(root, name);
+    if (scaffoldExists) {
+        console.log(
+            chalk.green(
+                `It appears that a new Vendure project scaffold already exists. Re-using the existing files...`,
+            ),
+        );
+        console.log();
+    }
     const {
         dbType,
         usingTs,
@@ -84,7 +94,7 @@ async function createApp(
         migrationSource,
         readmeSource,
         populateProducts,
-    } = isCi ? await gatherCiUserResponses(root) : await gatherUserResponses(root);
+    } = isCi ? await gatherCiUserResponses(root) : await gatherUserResponses(root, scaffoldExists);
 
     const useYarn = useNpm ? false : shouldUseYarn();
     const originalDirectory = process.cwd();
@@ -113,153 +123,169 @@ async function createApp(
     console.log('This may take a few minutes...');
     console.log();
 
-    const tasks = new Listr([
-        {
-            title: 'Installing dependencies',
-            task: (() => {
-                return new Observable(subscriber => {
-                    subscriber.next('Creating package.json');
-                    fs.writeFileSync(
-                        path.join(root, 'package.json'),
-                        JSON.stringify(packageJsonContents, null, 2) + os.EOL,
-                    );
-                    const { dependencies, devDependencies } = getDependencies(
-                        usingTs,
-                        dbType,
-                        isCi ? `@${packageJson.version}` : '',
-                    );
+    const rootPathScript = (fileName: string): string =>
+        path.join(root, `${fileName}.${usingTs ? 'ts' : 'js'}`);
+    const srcPathScript = (fileName: string): string =>
+        path.join(root, 'src', `${fileName}.${usingTs !== false ? 'ts' : 'js'}`);
 
-                    subscriber.next(`Installing ${dependencies.join(', ')}`);
-                    installPackages(root, useYarn, dependencies, false, logLevel, isCi)
-                        .then(() => {
-                            if (devDependencies.length) {
-                                subscriber.next(`Installing ${devDependencies.join(', ')}`);
-                                return installPackages(root, useYarn, devDependencies, true, logLevel, isCi);
-                            }
-                        })
-                        .then(() => subscriber.complete())
-                        .catch(err => subscriber.error(err));
-                });
-            }) as any,
-        },
-        {
-            title: 'Generating app scaffold',
-            task: ctx => {
-                return new Observable(subscriber => {
-                    fs.ensureDirSync(path.join(root, 'src'));
-                    const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
-                    const srcPathScript = (fileName: string): string =>
-                        path.join(root, 'src', `${fileName}.${usingTs ? 'ts' : 'js'}`);
-                    const rootPathScript = (fileName: string): string =>
-                        path.join(root, `${fileName}.${usingTs ? 'ts' : 'js'}`);
-                    ctx.configFile = srcPathScript('vendure-config');
+    const listrTasks: Listr.ListrTask[] = [];
+    if (scaffoldExists) {
+        // ...
+    } else {
+        listrTasks.push(
+            {
+                title: 'Installing dependencies',
+                task: (() => {
+                    return new Observable(subscriber => {
+                        subscriber.next('Creating package.json');
+                        fs.writeFileSync(
+                            path.join(root, 'package.json'),
+                            JSON.stringify(packageJsonContents, null, 2) + os.EOL,
+                        );
+                        const { dependencies, devDependencies } = getDependencies(
+                            usingTs,
+                            dbType,
+                            isCi ? `@${packageJson.version}` : '',
+                        );
 
-                    fs.writeFile(ctx.configFile, configSource)
-                        .then(() => fs.writeFile(srcPathScript('index'), indexSource))
-                        .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
-                        .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
-                        .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
-                        .then(() =>
-                            fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')),
-                        )
-                        .then(() => {
-                            subscriber.next(`Created files`);
-                            if (usingTs) {
-                                return fs.copyFile(
-                                    assetPath('tsconfig.template.json'),
-                                    path.join(root, 'tsconfig.json'),
-                                );
-                            }
-                        })
-                        .then(() => createDirectoryStructure(root))
-                        .then(() => {
-                            subscriber.next(`Created directory structure`);
-                            return copyEmailTemplates(root);
-                        })
-                        .then(() => {
-                            subscriber.next(`Copied email templates`);
-                            subscriber.complete();
-                        })
-                        .catch(err => subscriber.error(err));
-                });
+                        subscriber.next(`Installing ${dependencies.join(', ')}`);
+                        installPackages(root, useYarn, dependencies, false, logLevel, isCi)
+                            .then(() => {
+                                if (devDependencies.length) {
+                                    subscriber.next(`Installing ${devDependencies.join(', ')}`);
+                                    return installPackages(
+                                        root,
+                                        useYarn,
+                                        devDependencies,
+                                        true,
+                                        logLevel,
+                                        isCi,
+                                    );
+                                }
+                            })
+                            .then(() => subscriber.complete())
+                            .catch(err => subscriber.error(err));
+                    });
+                }) as any,
             },
-        },
-        {
-            title: 'Initializing server',
-            task: async ctx => {
-                try {
-                    if (usingTs) {
-                        // register ts-node so that the config file can be loaded
-                        require(path.join(root, 'node_modules/ts-node')).register();
-                    }
-                    const { populate } = await import(
-                        path.join(root, 'node_modules/@vendure/core/cli/populate')
-                    );
-                    const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
-                        path.join(root, 'node_modules/@vendure/core/dist/index')
-                    );
-                    const { config } = await import(ctx.configFile);
-                    const assetsDir = path.join(__dirname, '../assets');
+            {
+                title: 'Generating app scaffold',
+                task: ctx => {
+                    return new Observable(subscriber => {
+                        fs.ensureDirSync(path.join(root, 'src'));
+                        const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
+                        ctx.configFile = srcPathScript('vendure-config');
 
-                    const initialDataPath = path.join(assetsDir, 'initial-data.json');
-                    const port = await detectPort(3000);
-                    const vendureLogLevel =
-                        logLevel === 'silent'
-                            ? LogLevel.Error
-                            : logLevel === 'verbose'
-                            ? LogLevel.Verbose
-                            : LogLevel.Info;
-
-                    const bootstrapFn = async () => {
-                        await checkDbConnection(config.dbConnectionOptions, root);
-                        const _app = await bootstrap({
-                            ...config,
-                            apiOptions: {
-                                ...(config.apiOptions ?? {}),
-                                port,
-                            },
-                            silent: logLevel === 'silent',
-                            dbConnectionOptions: {
-                                ...config.dbConnectionOptions,
-                                synchronize: true,
-                            },
-                            logger: new DefaultLogger({ level: vendureLogLevel }),
-                            importExportOptions: {
-                                importAssetsDir: path.join(assetsDir, 'images'),
-                            },
-                        });
-                        await _app.get(JobQueueService).start();
-                        return _app;
-                    };
-
-                    const app = await populate(
-                        bootstrapFn,
-                        initialDataPath,
-                        populateProducts ? path.join(assetsDir, 'products.csv') : undefined,
-                    );
-
-                    // Pause to ensure the worker jobs have time to complete.
-                    if (isCi) {
-                        console.log('[CI] Pausing before close...');
-                    }
-                    await new Promise(resolve => setTimeout(resolve, isCi ? 30000 : 2000));
-                    await app.close();
-                    if (isCi) {
-                        console.log('[CI] Pausing after close...');
-                        await new Promise(resolve => setTimeout(resolve, 10000));
-                    }
-                } catch (e) {
-                    console.log(e);
-                    throw e;
+                        fs.writeFile(ctx.configFile, configSource)
+                            .then(() => fs.writeFile(srcPathScript('index'), indexSource))
+                            .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
+                            .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
+                            .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
+                            .then(() =>
+                                fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')),
+                            )
+                            .then(() => {
+                                subscriber.next(`Created files`);
+                                if (usingTs) {
+                                    return fs.copyFile(
+                                        assetPath('tsconfig.template.json'),
+                                        path.join(root, 'tsconfig.json'),
+                                    );
+                                }
+                            })
+                            .then(() => createDirectoryStructure(root))
+                            .then(() => {
+                                subscriber.next(`Created directory structure`);
+                                return copyEmailTemplates(root);
+                            })
+                            .then(() => {
+                                subscriber.next(`Copied email templates`);
+                                subscriber.complete();
+                            })
+                            .catch(err => subscriber.error(err));
+                    });
+                },
+            },
+        );
+    }
+    listrTasks.push({
+        title: 'Initializing server',
+        task: async ctx => {
+            try {
+                if (usingTs) {
+                    // register ts-node so that the config file can be loaded
+                    require(path.join(root, 'node_modules/ts-node')).register();
                 }
-            },
+                const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
+                const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
+                    path.join(root, 'node_modules/@vendure/core/dist/index')
+                );
+                const configFile = srcPathScript('vendure-config');
+                const { config } = await import(configFile);
+                const assetsDir = path.join(__dirname, '../assets');
+
+                const initialDataPath = path.join(assetsDir, 'initial-data.json');
+                const port = await detectPort(3000);
+                const vendureLogLevel =
+                    logLevel === 'silent'
+                        ? LogLevel.Error
+                        : logLevel === 'verbose'
+                        ? LogLevel.Verbose
+                        : LogLevel.Info;
+
+                const bootstrapFn = async () => {
+                    await checkDbConnection(config.dbConnectionOptions, root);
+                    const _app = await bootstrap({
+                        ...config,
+                        apiOptions: {
+                            ...(config.apiOptions ?? {}),
+                            port,
+                        },
+                        silent: logLevel === 'silent',
+                        dbConnectionOptions: {
+                            ...config.dbConnectionOptions,
+                            synchronize: true,
+                        },
+                        logger: new DefaultLogger({ level: vendureLogLevel }),
+                        importExportOptions: {
+                            importAssetsDir: path.join(assetsDir, 'images'),
+                        },
+                    });
+                    await _app.get(JobQueueService).start();
+                    return _app;
+                };
+
+                const app = await populate(
+                    bootstrapFn,
+                    initialDataPath,
+                    populateProducts ? path.join(assetsDir, 'products.csv') : undefined,
+                );
+
+                // Pause to ensure the worker jobs have time to complete.
+                if (isCi) {
+                    console.log('[CI] Pausing before close...');
+                }
+                await new Promise(resolve => setTimeout(resolve, isCi ? 30000 : 2000));
+                await app.close();
+                if (isCi) {
+                    console.log('[CI] Pausing after close...');
+                    await new Promise(resolve => setTimeout(resolve, 10000));
+                }
+            } catch (e) {
+                console.log();
+                console.error(chalk.red(e.message));
+                console.log();
+                console.log(e);
+                throw e;
+            }
         },
-    ]);
+    });
+
+    const tasks = new Listr(listrTasks);
 
     try {
         await tasks.run();
     } catch (e) {
-        console.error(chalk.red(JSON.stringify(e)));
         process.exit(1);
     }
     const startCommand = useYarn ? 'yarn start' : 'npm run start';

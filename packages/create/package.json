@@ -1,6 +1,6 @@
 {
   "name": "@vendure/create",
-  "version": "1.6.5",
+  "version": "1.6.7",
   "license": "MIT",
   "bin": {
     "create": "./index.js"
