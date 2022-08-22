@@ -89,4 +89,12 @@ export const dummyPaymentHandler = new PaymentMethodHandler({
             success: true,
         };
     },
+    cancelPayment: (ctx, order, payment) => {
+        return {
+            success: true,
+            metadata: {
+                cancellationDate: new Date().toISOString(),
+            },
+        };
+    },
 });
