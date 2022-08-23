@@ -52,8 +52,23 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
         console.log(e.message);
         process.exitCode = 1;
     } finally {
+        await checkMigrationStatus(connection);
         await connection.close();
         resetConfig();
+    }
+}
+
+async function checkMigrationStatus(connection: Connection) {
+    const builderLog = await connection.driver.createSchemaBuilder().log();
+    if (builderLog.upQueries.length) {
+        console.log(
+            chalk.yellow(
+                `Your database schema does not match your current configuration. Generate a new migration for the following changes:`,
+            ),
+        );
+        for (const query of builderLog.upQueries) {
+            console.log(' - ' + chalk.yellow(query.query));
+        }
     }
 }
 
