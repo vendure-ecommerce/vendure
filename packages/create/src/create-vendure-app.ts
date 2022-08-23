@@ -69,7 +69,7 @@ async function createApp(
         process.exit(1);
     }
 
-    console.log(`Welcome to @vendure/create v${packageJson.version}!`);
+    console.log(chalk.cyan(`Welcome to @vendure/create v${packageJson.version}!`));
     console.log();
     console.log(`Let's configure a new Vendure project. First a few questions:`);
     console.log();

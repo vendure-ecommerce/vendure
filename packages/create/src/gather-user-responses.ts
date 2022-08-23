@@ -101,6 +101,8 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
         onSubmit,
         onCancel() {
             /* */
+            console.log(`Setup cancelled`);
+            process.exit(1);
         },
     });
 
