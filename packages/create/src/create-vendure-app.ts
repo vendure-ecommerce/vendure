@@ -77,6 +77,7 @@ async function createApp(
     const root = path.resolve(name);
     const appName = path.basename(root);
     const scaffoldExists = scaffoldAlreadyExists(root, name);
+    const useYarn = useNpm ? false : shouldUseYarn();
     if (scaffoldExists) {
         console.log(
             chalk.green(
@@ -94,10 +95,12 @@ async function createApp(
         indexWorkerSource,
         migrationSource,
         readmeSource,
+        dockerfileSource,
+        dockerComposeSource,
         populateProducts,
-    } = isCi ? await gatherCiUserResponses(root) : await gatherUserResponses(root, scaffoldExists);
-
-    const useYarn = useNpm ? false : shouldUseYarn();
+    } = isCi
+        ? await gatherCiUserResponses(root, useYarn)
+        : await gatherUserResponses(root, scaffoldExists, useYarn);
     const originalDirectory = process.cwd();
     process.chdir(root);
     if (!useYarn && !checkThatNpmCanReadCwd()) {
@@ -184,6 +187,10 @@ async function createApp(
                             .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
                             .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
                             .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
+                            .then(() => fs.writeFile(path.join(root, 'Dockerfile'), dockerfileSource))
+                            .then(() =>
+                                fs.writeFile(path.join(root, 'docker-compose.yml'), dockerComposeSource),
+                            )
                             .then(() => fs.mkdir(path.join(root, 'src/plugins')))
                             .then(() =>
                                 fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')),

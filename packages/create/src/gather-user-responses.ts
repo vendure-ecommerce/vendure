@@ -4,14 +4,18 @@ import Handlebars from 'handlebars';
 import path from 'path';
 import prompts, { PromptObject } from 'prompts';
 
-import { DbType, UserResponses } from './types';
+import { DbType, FileSources, UserResponses } from './types';
 
 // tslint:disable:no-console
 
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
  */
-export async function gatherUserResponses(root: string, alreadyRanScaffold: boolean): Promise<UserResponses> {
+export async function gatherUserResponses(
+    root: string,
+    alreadyRanScaffold: boolean,
+    useYarn: boolean,
+): Promise<UserResponses> {
     function onSubmit(prompt: PromptObject, answer: any) {
         if (prompt.name === 'dbType') {
             dbType = answer;
@@ -107,7 +111,7 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
     });
 
     return {
-        ...(await generateSources(root, answers)),
+        ...(await generateSources(root, answers, useYarn)),
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
         superadminIdentifier: answers.superadminIdentifier,
@@ -118,7 +122,7 @@ export async function gatherUserResponses(root: string, alreadyRanScaffold: bool
 /**
  * Returns mock "user response" without prompting, for use in CI
  */
-export async function gatherCiUserResponses(root: string): Promise<UserResponses> {
+export async function gatherCiUserResponses(root: string, useYarn: boolean): Promise<UserResponses> {
     const ciAnswers = {
         dbType: 'sqlite' as const,
         dbHost: '',
@@ -132,7 +136,7 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
     };
 
     return {
-        ...(await generateSources(root, ciAnswers)),
+        ...(await generateSources(root, ciAnswers, useYarn)),
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
@@ -143,18 +147,7 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
 /**
  * Create the server index, worker and config source code based on the options specified by the CLI prompts.
  */
-async function generateSources(
-    root: string,
-    answers: any,
-): Promise<{
-    indexSource: string;
-    indexWorkerSource: string;
-    configSource: string;
-    envSource: string;
-    envDtsSource: string;
-    migrationSource: string;
-    readmeSource: string;
-}> {
+async function generateSources(root: string, answers: any, useYarn: boolean): Promise<FileSources> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     /**
@@ -168,6 +161,7 @@ async function generateSources(
 
     const templateContext = {
         ...answers,
+        useYarn,
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
         isSQLite: answers.dbType === 'sqlite',
@@ -175,28 +169,21 @@ async function generateSources(
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
         cookieSecret: Math.random().toString(36).substr(2),
     };
-    const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
-    const configSource = Handlebars.compile(configTemplate, { noEscape: true })(templateContext);
-    const envTemplate = await fs.readFile(assetPath('.env.hbs'), 'utf-8');
-    const envSource = Handlebars.compile(envTemplate, { noEscape: true })(templateContext);
-    const envDtsTemplate = await fs.readFile(assetPath('environment.d.hbs'), 'utf-8');
-    const envDtsSource = Handlebars.compile(envDtsTemplate, { noEscape: true })(templateContext);
-    const indexTemplate = await fs.readFile(assetPath('index.hbs'), 'utf-8');
-    const indexSource = Handlebars.compile(indexTemplate)(templateContext);
-    const indexWorkerTemplate = await fs.readFile(assetPath('index-worker.hbs'), 'utf-8');
-    const indexWorkerSource = Handlebars.compile(indexWorkerTemplate)(templateContext);
-    const migrationTemplate = await fs.readFile(assetPath('migration.hbs'), 'utf-8');
-    const migrationSource = Handlebars.compile(migrationTemplate)(templateContext);
-    const readmeTemplate = await fs.readFile(assetPath('readme.hbs'), 'utf-8');
-    const readmeSource = Handlebars.compile(readmeTemplate)(templateContext);
+
+    async function createSourceFile(filename: string, noEscape = false): Promise<string> {
+        const template = await fs.readFile(assetPath(filename), 'utf-8');
+        return Handlebars.compile(template, { noEscape })(templateContext);
+    }
     return {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        envSource,
-        envDtsSource,
-        migrationSource,
-        readmeSource,
+        indexSource: await createSourceFile('index.hbs'),
+        indexWorkerSource: await createSourceFile('index-worker.hbs'),
+        configSource: await createSourceFile('vendure-config.hbs', true),
+        envSource: await createSourceFile('.env.hbs', true),
+        envDtsSource: await createSourceFile('environment.d.hbs', true),
+        migrationSource: await createSourceFile('migration.hbs'),
+        readmeSource: await createSourceFile('readme.hbs'),
+        dockerfileSource: await createSourceFile('Dockerfile.hbs'),
+        dockerComposeSource: await createSourceFile('docker-compose.hbs'),
     };
 }
 

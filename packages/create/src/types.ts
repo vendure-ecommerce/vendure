@@ -1,8 +1,6 @@
 export type DbType = 'mysql' | 'mariadb' | 'postgres' | 'sqlite' | 'sqljs' | 'mssql' | 'oracle';
 
-export interface UserResponses {
-    dbType: DbType;
-    populateProducts: boolean;
+export interface FileSources {
     indexSource: string;
     indexWorkerSource: string;
     configSource: string;
@@ -10,6 +8,13 @@ export interface UserResponses {
     envDtsSource: string;
     migrationSource: string;
     readmeSource: string;
+    dockerfileSource: string;
+    dockerComposeSource: string;
+}
+
+export interface UserResponses extends FileSources {
+    dbType: DbType;
+    populateProducts: boolean;
     superadminIdentifier: string;
     superadminPassword: string;
 }
