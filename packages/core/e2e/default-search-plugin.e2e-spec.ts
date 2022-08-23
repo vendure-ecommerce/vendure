@@ -1541,7 +1541,7 @@ describe('Default search plugin', () => {
                     SEARCH_PRODUCTS,
                     {
                         input: {
-                            take: 1,
+                            take: 100,
                         },
                     },
                     {
@@ -1592,25 +1592,34 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
             });
 
+            it('fallbacks to default language', async () => {
+                const { search } = await searchInLanguage(LanguageCode.af)
+                // No records for AF language, but we expect > 0
+                // because of fallback to default language (EN)
+                expect(search.totalItems).toBeGreaterThan(0);
+            })
+
             it('indexes product-level languages', async () => {
                 const {search: search1} = await searchInLanguage(LanguageCode.de);
 
-                expect(search1.items[0].productName).toBe('laptop name de');
-                expect(search1.items[0].slug).toBe('laptop-slug-de');
-                expect(search1.items[0].description).toBe('laptop description de');
+                expect(search1.items.map(i => i.productName)).toContain('laptop name de');
+                expect(search1.items.map(i => i.productName)).not.toContain('laptop name zh')
+                expect(search1.items.map(i => i.slug)).toContain('laptop-slug-de');
+                expect(search1.items.map(i => i.description)).toContain('laptop description de');
 
                 const {search: search2} = await searchInLanguage(LanguageCode.zh);
 
-                expect(search2.items[0].productName).toBe('laptop name zh');
-                expect(search2.items[0].slug).toBe('laptop-slug-zh');
-                expect(search2.items[0].description).toBe('laptop description zh');
+                expect(search2.items.map(i => i.productName)).toContain('laptop name zh');
+                expect(search2.items.map(i => i.productName)).not.toContain('laptop name de');
+                expect(search2.items.map(i => i.slug)).toContain('laptop-slug-zh');
+                expect(search2.items.map(i => i.description)).toContain('laptop description zh');
             });
 
             it('indexes product variant-level languages', async () => {
                 const {search: search1} = await searchInLanguage(LanguageCode.fr);
 
-                expect(search1.items[0].productName).toBe('Laptop');
-                expect(search1.items[0].productVariantName).toBe('laptop variant fr');
+                expect(search1.items.map(i => i.productName)).toContain('Laptop');
+                expect(search1.items.map(i => i.productVariantName)).toContain('laptop variant fr');
             });
         });
     });
