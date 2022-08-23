@@ -2,6 +2,13 @@
 
 This project was generated with [`@vendure/create`](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create).
 
+Useful links:
+
+- [Vendure docs](https://www.vendure.io/docs)
+- [Vendure Slack community](https://join.slack.com/t/vendure-ecommerce/shared_invite/enQtNzA1NTcyMDY3NTg0LTMzZGQzNDczOWJiMTU2YjAyNWJlMzdmZGE3ZDY5Y2RjMGYxZWNlYTI4NmU4Y2Q1MDNlYzE4MzQ5ODcyYTdmMGU)
+- [Vendure on GitHub](https://github.com/vendure-ecommerce/vendure)
+- [Vendure plugin template](https://github.com/vendure-ecommerce/plugin-template)
+
 ## Directory structure
 
 * `/src` contains the source code of your Vendure server. All your custom code and plugins should reside here.
@@ -10,9 +17,9 @@ This project was generated with [`@vendure/create`](https://github.com/vendure-e
 ## Development
 
 ```
-yarn start
+yarn dev
 # or
-npm run start
+npm run dev
 ```
 
 will start the Vendure server and [worker](https://www.vendure.io/docs/developer-guide/vendure-worker/) processes from
@@ -28,9 +35,15 @@ npm run build
 
 will compile the TypeScript sources into the `/dist` directory.
 
+## Plugins
+
+In Vendure, your custom functionality will live in [plugins](https://www.vendure.io/docs/plugins/).
+These should be located in the `./src/plugins` directory.
+
 ## Migrations
 
-[Migrations](https://www.vendure.io/docs/developer-guide/migrations/) allow safe updates to the database schema.
+[Migrations](https://www.vendure.io/docs/developer-guide/migrations/) allow safe updates to the database schema. Migrations
+will be required whenever you make changes to the `customFields` config or define new entities in a plugin.
 
 The following npm scripts can be used to generate migrations:
 
@@ -40,7 +53,18 @@ yarn migration:generate [name]
 npm run migration:generate [name]
 ```
 
-run any pending migrations that have been generated:
+The generated migration file will be found in the `./src/migrations/` directory, and should be committed to source control.
+Next time you start the server, and outstanding migrations found in that directory will be run by the `runMigrations()`
+function in the [index.ts file](./src/index.ts).
+
+If, during initial development, you do not wish to manually generate a migration on each change to customFields etc, you
+can set `dbConnectionOptions.synchronize` to `true`. This will cause the database schema to get automatically updated
+on each start, removing the need for migration files. Note that this is **not** recommended once you have production
+data that you cannot lose.
+
+---
+
+You can also run any pending migrations manually, without starting the server by running:
 
 ```
 yarn migration:run
@@ -48,7 +72,7 @@ yarn migration:run
 npm run migration:run
 ```
 
-and revert the most recently-applied migration:
+You can revert the most recently-applied migration with:
 
 ```
 yarn migration:revert

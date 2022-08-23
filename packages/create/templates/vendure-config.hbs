@@ -17,6 +17,9 @@ export const config: VendureConfig = {
         port: 3000,
         adminApiPath: 'admin-api',
         shopApiPath: 'shop-api',
+        // The following options are useful in development mode,
+        // but are best turned off for production for security
+        // reasons.
         ...(IS_DEV ? {
             adminApiPlayground: {
                 settings: { 'request.credentials': 'include' } as any,
@@ -40,7 +43,10 @@ export const config: VendureConfig = {
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
-        synchronize: true, // turn this off for production
+        // See the README.md "Migrations" section for an explanation of
+        // the `synchronize` and `migrations` options.
+        synchronize: false,
+        migrations: [path.join(__dirname, '../migrations/*.ts')],
         logging: false,
         database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}process.env.DB_NAME{{/if}},
         {{#if dbSchema}}
@@ -56,11 +62,12 @@ export const config: VendureConfig = {
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         {{/if}}
-        migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
+    // When adding or altering custom field definitions, the database will
+    // need to be updated. See the "Migrations" section in README.md.
     customFields: {},
     plugins: [
         AssetServerPlugin.init({

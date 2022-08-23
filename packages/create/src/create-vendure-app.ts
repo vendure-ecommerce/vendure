@@ -109,10 +109,13 @@ async function createApp(
         version: '0.1.0',
         private: true,
         scripts: {
-            'run:server': 'ts-node ./src/index.ts',
-            'run:worker': 'ts-node ./src/index-worker.ts',
-            start: useYarn ? 'concurrently yarn:run:*' : 'concurrently npm:run:*',
+            'dev:server': 'ts-node ./src/index.ts',
+            'dev:worker': 'ts-node ./src/index-worker.ts',
+            dev: useYarn ? 'concurrently yarn:dev:*' : 'concurrently npm:dev:*',
             build: 'tsc',
+            'start:server': 'node ./dist/index.js',
+            'start:worker': 'node ./dist/index-worker.js',
+            start: useYarn ? 'concurrently yarn:start:*' : 'concurrently npm:start:*',
             'migration:generate': 'ts-node migration generate',
             'migration:run': 'ts-node migration run',
             'migration:revert': 'ts-node migration revert',
@@ -181,6 +184,7 @@ async function createApp(
                             .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
                             .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
                             .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
+                            .then(() => fs.mkdir(path.join(root, 'src/plugins')))
                             .then(() =>
                                 fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')),
                             )
@@ -284,7 +288,7 @@ async function createApp(
     } catch (e) {
         process.exit(1);
     }
-    const startCommand = useYarn ? 'yarn start' : 'npm run start';
+    const startCommand = useYarn ? 'yarn dev' : 'npm run dev';
     console.log();
     console.log(chalk.green(`Success! Created a new Vendure server at ${root}`));
     console.log();
