@@ -34,6 +34,7 @@ export function createRequestContext(options: { pricesIncludeTax: boolean }): Re
     const channel = new Channel({
         defaultTaxZone: zoneDefault,
         pricesIncludeTax: options.pricesIncludeTax,
+        id: 1,
     });
     const ctx = new RequestContext({
         apiType: 'admin',

@@ -1,6 +1,6 @@
 import {
-    CalculatedPrice,
     OrderItemPriceCalculationStrategy,
+    PriceCalculationResult,
     ProductVariant,
     RequestContext,
 } from '@vendure/core';
@@ -13,7 +13,7 @@ export class TestOrderItemPriceCalculationStrategy implements OrderItemPriceCalc
         ctx: RequestContext,
         productVariant: ProductVariant,
         orderLineCustomFields: { [p: string]: any },
-    ): CalculatedPrice | Promise<CalculatedPrice> {
+    ): PriceCalculationResult | Promise<PriceCalculationResult> {
         let price = productVariant.price;
         if (orderLineCustomFields.giftWrap) {
             price += 500;
