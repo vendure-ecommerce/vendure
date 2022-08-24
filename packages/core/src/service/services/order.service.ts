@@ -1243,23 +1243,23 @@ export class OrderService {
      * Returns an array of all Fulfillments associated with the Order.
      */
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
-        let lines: OrderLine[];
-        if (order.lines?.[0]?.items?.[0]?.fulfillments !== undefined) {
-            lines = order.lines;
-        } else {
-            lines = await this.connection.getRepository(ctx, OrderLine).find({
-                where: {
-                    order: order.id,
-                },
-                relations: ['items', 'items.fulfillments'],
-            });
-        }
-        const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
-        const fulfillments = items.reduce(
-            (acc, i) => [...acc, ...(i.fulfillments || [])],
-            [] as Fulfillment[],
-        );
-        return unique(fulfillments, 'id');
+        const itemIdsQb = await this.connection
+            .getRepository(ctx, OrderItem)
+            .createQueryBuilder('item')
+            .select('item.id', 'id')
+            .leftJoin('item.line', 'line')
+            .leftJoin('line.order', 'order')
+            .where('order.id = :orderId', { orderId: order.id });
+
+        const fulfillments = await this.connection
+            .getRepository(ctx, Fulfillment)
+            .createQueryBuilder('fulfillment')
+            .leftJoinAndSelect('fulfillment.orderItems', 'item')
+            .where(`item.id IN (${itemIdsQb.getQuery()})`)
+            .setParameters(itemIdsQb.getParameters())
+            .getMany();
+
+        return fulfillments;
     }
 
     /**

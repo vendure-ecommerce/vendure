@@ -154,19 +154,16 @@ export class StockMovementService {
     async createSalesForOrder(ctx: RequestContext, orderItems: OrderItem[]): Promise<Sale[]> {
         const sales: Sale[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        const orderItemsWithVariants = await this.connection.getRepository(ctx, OrderItem).findByIds(
-            orderItems.map(i => i.id),
-            {
-                relations: ['line', 'line.productVariant'],
-            },
-        );
         const orderLinesMap = new Map<ID, { line: OrderLine; items: OrderItem[] }>();
 
-        for (const orderItem of orderItemsWithVariants) {
-            let value = orderLinesMap.get(orderItem.line.id);
+        for (const orderItem of orderItems) {
+            let value = orderLinesMap.get(orderItem.lineId);
             if (!value) {
-                value = { line: orderItem.line, items: [] };
-                orderLinesMap.set(orderItem.line.id, value);
+                const line = await this.connection.getEntityOrThrow(ctx, OrderLine, orderItem.lineId, {
+                    relations: ['productVariant'],
+                });
+                value = { line, items: [] };
+                orderLinesMap.set(orderItem.lineId, value);
             }
             value.items.push(orderItem);
         }
