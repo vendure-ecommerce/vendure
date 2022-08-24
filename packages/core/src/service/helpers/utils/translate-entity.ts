@@ -9,20 +9,20 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {
     [K in keyof T]: T[K] extends string ? never :
-    T[K] extends number ? never :
-    T[K] extends boolean ? never :
-    T[K] extends undefined ? never :
-    T[K] extends string[] ? never :
-    T[K] extends number[] ? never :
-    T[K] extends boolean[] ? never :
-    K extends 'translations' ? never :
-    K extends 'customFields' ? never : K
+        T[K] extends number ? never :
+            T[K] extends boolean ? never :
+                T[K] extends undefined ? never :
+                    T[K] extends string[] ? never :
+                        T[K] extends number[] ? never :
+                            T[K] extends boolean[] ? never :
+                                K extends 'translations' ? never :
+                                    K extends 'customFields' ? never : K
 }[keyof T];
 
 // prettier-ignore
 export type NestedTranslatableRelations<T> = {
     [K in TranslatableRelationsKeys<T>]: T[K] extends any[] ?
-        [K, TranslatableRelationsKeys<UnwrappedArray<T[K]>>]:
+        [K, TranslatableRelationsKeys<UnwrappedArray<T[K]>>] :
         [K, TranslatableRelationsKeys<T[K]>]
 };
 
@@ -39,10 +39,15 @@ export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | 
 export function translateEntity<T extends Translatable & VendureEntity>(
     translatable: T,
     languageCode: LanguageCode,
+    channelLanguageCode: LanguageCode,
 ): Translated<T> {
     let translation: Translation<VendureEntity> | undefined;
     if (translatable.translations) {
         translation = translatable.translations.find(t => t.languageCode === languageCode);
+        if (!translation && languageCode !== channelLanguageCode) {
+            translation = translatable.translations.find(t => t.languageCode === channelLanguageCode);
+        }
+        // ToDo: Use defaultLanguageCode from config
         if (!translation && languageCode !== DEFAULT_LANGUAGE_CODE) {
             translation = translatable.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
         }
@@ -84,11 +89,12 @@ export function translateEntity<T extends Translatable & VendureEntity>(
 export function translateDeep<T extends Translatable & VendureEntity>(
     translatable: T,
     languageCode: LanguageCode,
+    channelLanguageCode: LanguageCode,
     translatableRelations: DeepTranslatableRelations<T> = [],
 ): Translated<T> {
     let translatedEntity: Translated<T>;
     try {
-        translatedEntity = translateEntity(translatable, languageCode);
+        translatedEntity = translateEntity(translatable, languageCode,channelLanguageCode);
     } catch (e) {
         translatedEntity = translatable as any;
     }
@@ -106,19 +112,19 @@ export function translateDeep<T extends Translatable & VendureEntity>(
                 valueLevel0.forEach((nested1, index) => {
                     object = (translatedEntity as any)[path0][index];
                     property = path1;
-                    object[property] = translateLeaf(object, property, languageCode);
+                    object[property] = translateLeaf(object, property, languageCode,channelLanguageCode);
                 });
                 property = '';
                 object = null;
             } else {
                 object = (translatedEntity as any)[path0];
                 property = path1;
-                value = translateLeaf(object, property, languageCode);
+                value = translateLeaf(object, property, languageCode,channelLanguageCode);
             }
         } else {
             object = translatedEntity;
             property = path as any;
-            value = translateLeaf(object, property, languageCode);
+            value = translateLeaf(object, property, languageCode,channelLanguageCode);
         }
 
         if (object && property) {
@@ -133,12 +139,13 @@ function translateLeaf(
     object: { [key: string]: any } | undefined,
     property: string,
     languageCode: LanguageCode,
+    channelLanguageCode: LanguageCode,
 ): any {
     if (object && object[property]) {
         if (Array.isArray(object[property])) {
-            return object[property].map((nested2: any) => translateEntity(nested2, languageCode));
+            return object[property].map((nested2: any) => translateEntity(nested2, languageCode, channelLanguageCode));
         } else if (object[property]) {
-            return translateEntity(object[property], languageCode);
+            return translateEntity(object[property], languageCode, channelLanguageCode);
         }
     }
 }
@@ -151,9 +158,10 @@ export type TreeNode = { children: TreeNode[] } & Translatable & VendureEntity;
 export function translateTree<T extends TreeNode>(
     node: T,
     languageCode: LanguageCode,
+    channelLanguageCode: LanguageCode,
     translatableRelations: DeepTranslatableRelations<T> = [],
 ): Translated<T> {
-    const output = translateDeep(node, languageCode, translatableRelations);
+    const output = translateDeep(node, languageCode, channelLanguageCode,translatableRelations);
     if (Array.isArray(output.children)) {
         output.children = output.children.map(child =>
             translateTree(child, languageCode, translatableRelations as any),

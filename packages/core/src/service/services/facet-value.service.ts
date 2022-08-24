@@ -49,15 +49,15 @@ export class FacetValueService {
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
     findAll(ctx: RequestContext, lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
     findAll(ctxOrLang: RequestContext | LanguageCode, lang?: LanguageCode): Promise<Array<Translated<FacetValue>>> {
-        const [repository, languageCode] = ctxOrLang instanceof RequestContext 
+        const [repository, languageCode] = ctxOrLang instanceof RequestContext
             ? [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
             : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
-
+        // ToDo Implement usage of channelLanguageCode
         return repository
             .find({
                 relations: ['facet'],
             })
-            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, languageCode, ['facet'])));
+            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, languageCode, languageCode,['facet'])));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<FacetValue> | undefined> {
@@ -66,7 +66,7 @@ export class FacetValueService {
             .findOne(id, {
                 relations: ['facet'],
             })
-            .then(facetValue => facetValue && translateDeep(facetValue, ctx.languageCode, ['facet']));
+            .then(facetValue => facetValue && translateDeep(facetValue, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facet']));
     }
 
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {
@@ -74,7 +74,7 @@ export class FacetValueService {
             relations: ['facet'],
         });
         return facetValues.then(values =>
-            values.map(facetValue => translateDeep(facetValue, ctx.languageCode, ['facet'])),
+            values.map(facetValue => translateDeep(facetValue, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facet'])),
         );
     }
 
@@ -90,7 +90,7 @@ export class FacetValueService {
                     facet: { id },
                 },
             })
-            .then(values => values.map(facetValue => translateDeep(facetValue, ctx.languageCode)));
+            .then(values => values.map(facetValue => translateDeep(facetValue, ctx.languageCode, ctx.channel.defaultLanguageCode)));
     }
 
     async create(

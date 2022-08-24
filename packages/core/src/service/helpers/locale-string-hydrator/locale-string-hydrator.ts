@@ -18,7 +18,8 @@ export class LocaleStringHydrator {
     constructor(
         private connection: TransactionalConnection,
         private requestCache: RequestContextCacheService,
-    ) {}
+    ) {
+    }
 
     async hydrateLocaleStringField<T extends VendureEntity & Translatable & { languageCode?: LanguageCode }>(
         ctx: RequestContext,
@@ -60,7 +61,7 @@ export class LocaleStringHydrator {
             });
         }
         if (entity.translations.length) {
-            const translated = translateDeep(entity, ctx.languageCode);
+            const translated = translateDeep(entity, ctx.languageCode, ctx.channel.defaultLanguageCode);
             for (const localeStringProp of Object.keys(entity.translations[0])) {
                 if (
                     localeStringProp === 'base' ||

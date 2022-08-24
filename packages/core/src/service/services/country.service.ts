@@ -36,7 +36,8 @@ export class CountryService {
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
-    ) {}
+    ) {
+    }
 
     findAll(
         ctx: RequestContext,
@@ -47,7 +48,7 @@ export class CountryService {
             .build(Country, options, { ctx, relations })
             .getManyAndCount()
             .then(([countries, totalItems]) => {
-                const items = countries.map(country => translateDeep(country, ctx.languageCode));
+                const items = countries.map(country => translateDeep(country, ctx.languageCode, ctx.channel.defaultLanguageCode));
                 return {
                     items,
                     totalItems,
@@ -63,7 +64,7 @@ export class CountryService {
         return this.connection
             .getRepository(ctx, Country)
             .findOne(countryId, { relations })
-            .then(country => country && translateDeep(country, ctx.languageCode));
+            .then(country => country && translateDeep(country, ctx.languageCode, ctx.channel.defaultLanguageCode));
     }
 
     /**
@@ -74,7 +75,7 @@ export class CountryService {
         return this.connection
             .getRepository(ctx, Country)
             .find({ where: { enabled: true } })
-            .then(items => items.map(country => translateDeep(country, ctx.languageCode)));
+            .then(items => items.map(country => translateDeep(country, ctx.languageCode, ctx.channel.defaultLanguageCode)));
     }
 
     /**
@@ -90,7 +91,7 @@ export class CountryService {
         if (!country) {
             throw new UserInputError('error.country-code-not-valid', { countryCode });
         }
-        return translateDeep(country, ctx.languageCode);
+        return translateDeep(country, ctx.languageCode, ctx.channel.defaultLanguageCode);
     }
 
     async create(ctx: RequestContext, input: CreateCountryInput): Promise<Translated<Country>> {

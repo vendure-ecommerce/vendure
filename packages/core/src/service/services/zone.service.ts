@@ -67,10 +67,10 @@ export class ZoneService {
     }
 
     async findAll(ctx: RequestContext): Promise<Zone[]> {
-        return this.zones.memoize([ctx.languageCode], [ctx], (zones, languageCode) => {
+        return this.zones.memoize([ctx.languageCode, ctx.channel.defaultLanguageCode], [ctx], (zones, languageCode, channelLanguageCode) => {
             return zones.map((zone, i) => {
                 const cloneZone = { ...zone };
-                cloneZone.members = zone.members.map(country => translateDeep(country, languageCode));
+                cloneZone.members = zone.members.map(country => translateDeep(country, languageCode, channelLanguageCode));
                 return cloneZone;
             });
         });
@@ -84,7 +84,7 @@ export class ZoneService {
             })
             .then(zone => {
                 if (zone) {
-                    zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode));
+                    zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode, ctx.channel.defaultLanguageCode));
                     return zone;
                 }
             });

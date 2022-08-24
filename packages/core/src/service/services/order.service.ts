@@ -261,6 +261,7 @@ export class OrderService {
                             order,
                         ),
                         ctx.languageCode,
+                        ctx.channel.defaultLanguageCode,
                     );
                 }
             }
@@ -1206,7 +1207,7 @@ export class OrderService {
                 line.productVariant,
             );
             if (fulfillableStockLevel < lineInput.quantity) {
-                const productVariant = translateDeep(line.productVariant, ctx.languageCode);
+                const productVariant = translateDeep(line.productVariant, ctx.languageCode, ctx.channel.defaultLanguageCode);
                 return new InsufficientStockOnHandError(
                     productVariant.id as string,
                     productVariant.name,

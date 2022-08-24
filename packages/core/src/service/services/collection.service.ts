@@ -77,7 +77,8 @@ export class CollectionService implements OnModuleInit {
         private slugValidator: SlugValidator,
         private configArgService: ConfigArgService,
         private customFieldRelationService: CustomFieldRelationService,
-    ) {}
+    ) {
+    }
 
     /**
      * @internal
@@ -150,7 +151,7 @@ export class CollectionService implements OnModuleInit {
             .getManyAndCount()
             .then(async ([collections, totalItems]) => {
                 const items = collections.map(collection =>
-                    translateDeep(collection, ctx.languageCode, ['parent']),
+                    translateDeep(collection, ctx.languageCode, ctx.channel.defaultLanguageCode, ['parent']),
                 );
                 return {
                     items,
@@ -177,7 +178,7 @@ export class CollectionService implements OnModuleInit {
         if (!collection) {
             return;
         }
-        return translateDeep(collection, ctx.languageCode, ['parent']);
+        return translateDeep(collection, ctx.languageCode, ctx.channel.defaultLanguageCode, ['parent']);
     }
 
     async findByIds(
@@ -190,7 +191,7 @@ export class CollectionService implements OnModuleInit {
             loadEagerRelations: true,
         });
         return collections.then(values =>
-            values.map(collection => translateDeep(collection, ctx.languageCode, ['parent'])),
+            values.map(collection => translateDeep(collection, ctx.languageCode, ctx.channel.defaultLanguageCode, ['parent'])),
         );
     }
 
@@ -242,7 +243,7 @@ export class CollectionService implements OnModuleInit {
             )
             .getOne();
 
-        return parent && translateDeep(parent, ctx.languageCode);
+        return parent && translateDeep(parent, ctx.languageCode, ctx.channel.defaultLanguageCode);
     }
 
     /**
@@ -294,7 +295,7 @@ export class CollectionService implements OnModuleInit {
         }
         const result = await qb.getMany();
 
-        return result.map(collection => translateDeep(collection, ctx.languageCode));
+        return result.map(collection => translateDeep(collection, ctx.languageCode, ctx.channel.defaultLanguageCode));
     }
 
     /**
@@ -321,7 +322,7 @@ export class CollectionService implements OnModuleInit {
         };
 
         const descendants = await getChildren(rootId);
-        return descendants.map(c => translateDeep(c, ctx.languageCode));
+        return descendants.map(c => translateDeep(c, ctx.languageCode, ctx.channel.defaultLanguageCode));
     }
 
     /**
@@ -360,7 +361,7 @@ export class CollectionService implements OnModuleInit {
                 ancestors.forEach(a => {
                     const category = categories.find(c => c.id === a.id);
                     if (category) {
-                        resultCategories.push(ctx ? translateDeep(category, ctx.languageCode) : category);
+                        resultCategories.push(ctx ? translateDeep(category, ctx.languageCode, ctx.channel.defaultLanguageCode) : category);
                     }
                 });
                 return resultCategories;
@@ -677,7 +678,7 @@ export class CollectionService implements OnModuleInit {
             .getOne();
 
         if (existingRoot) {
-            this.rootCollection = translateDeep(existingRoot, ctx.languageCode);
+            this.rootCollection = translateDeep(existingRoot, ctx.languageCode, ctx.channel.defaultLanguageCode);
             return this.rootCollection;
         }
 
@@ -702,7 +703,7 @@ export class CollectionService implements OnModuleInit {
                 filters: [],
             }),
         );
-        this.rootCollection = translateDeep(newRoot, ctx.languageCode);
+        this.rootCollection = translateDeep(newRoot, ctx.languageCode, ctx.channel.defaultLanguageCode);
         return this.rootCollection;
     }
 }

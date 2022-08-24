@@ -155,7 +155,7 @@ export class CustomerService {
             .getMany()
             .then(addresses => {
                 addresses.forEach(address => {
-                    address.country = translateDeep(address.country, ctx.languageCode);
+                    address.country = translateDeep(address.country, ctx.languageCode, ctx.channel.defaultLanguageCode);
                 });
                 return addresses;
             });
@@ -724,7 +724,7 @@ export class CustomerService {
         if (input.countryCode && input.countryCode !== address.country.code) {
             address.country = await this.countryService.findOneByCode(ctx, input.countryCode);
         } else {
-            address.country = translateDeep(address.country, ctx.languageCode);
+            address.country = translateDeep(address.country, ctx.languageCode, ctx.channel.defaultLanguageCode);
         }
         let updatedAddress = patchEntity(address, input);
         updatedAddress = await this.connection.getRepository(ctx, Address).save(updatedAddress);
@@ -758,7 +758,7 @@ export class CustomerService {
         if (!customer) {
             throw new EntityNotFoundError('Address', id);
         }
-        address.country = translateDeep(address.country, ctx.languageCode);
+        address.country = translateDeep(address.country, ctx.languageCode, ctx.channel.defaultLanguageCode);
         await this.reassignDefaultsForDeletedAddress(ctx, address);
         await this.historyService.createHistoryEntryForCustomer({
             customerId: address.customer.id,

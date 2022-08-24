@@ -50,7 +50,7 @@ export class ProductOptionGroupService {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .find(findOptions)
-            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ctx.channel.defaultLanguageCode, ['options'])));
     }
 
     findOne(
@@ -63,7 +63,7 @@ export class ProductOptionGroupService {
             .findOne(id, {
                 relations: relations ?? ['options'],
             })
-            .then(group => group && translateDeep(group, ctx.languageCode, ['options']));
+            .then(group => group && translateDeep(group, ctx.languageCode, ctx.channel.defaultLanguageCode, ['options']));
     }
 
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
@@ -78,7 +78,7 @@ export class ProductOptionGroupService {
                     id: 'ASC',
                 },
             })
-            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ctx.channel.defaultLanguageCode, ['options'])));
     }
 
     async create(

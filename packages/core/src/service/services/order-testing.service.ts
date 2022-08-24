@@ -87,7 +87,7 @@ export class OrderTestingService {
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, mockOrder);
         return eligibleMethods
             .map(result => {
-                translateDeep(result.method, ctx.languageCode);
+                translateDeep(result.method, ctx.languageCode, ctx.channel.defaultLanguageCode);
                 return result;
             })
             .map(result => {

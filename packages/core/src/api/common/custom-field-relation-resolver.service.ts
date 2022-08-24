@@ -26,7 +26,9 @@ export class CustomFieldRelationResolverService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private productPriceApplicator: ProductPriceApplicator,
-    ) {}
+    ) {
+    }
+
     /**
      * @description
      * Used to dynamically resolve related entities in custom fields. Based on the field
@@ -62,10 +64,10 @@ export class CustomFieldRelationResolverService {
         }
 
         const translated: any = Array.isArray(result)
-            ? result.map(r => (this.isTranslatable(r) ? translateDeep(r, ctx.languageCode) : r))
+            ? result.map(r => (this.isTranslatable(r) ? translateDeep(r, ctx.languageCode, ctx.channel.defaultLanguageCode) : r))
             : this.isTranslatable(result)
-            ? translateDeep(result, ctx.languageCode)
-            : result;
+                ? translateDeep(result, ctx.languageCode, ctx.channel.defaultLanguageCode)
+                : result;
 
         return translated;
     }

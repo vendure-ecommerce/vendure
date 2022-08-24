@@ -55,7 +55,8 @@ export class EntityHydrator {
     constructor(
         private connection: TransactionalConnection,
         private productPriceApplicator: ProductPriceApplicator,
-    ) {}
+    ) {
+    }
 
     /**
      * @description
@@ -135,7 +136,7 @@ export class EntityHydrator {
 
                 this.assignSettableProperties(
                     target,
-                    translateDeep(target as any, ctx.languageCode, translateDeepRelations as any),
+                    translateDeep(target as any, ctx.languageCode, ctx.channel.defaultLanguageCode, translateDeepRelations as any),
                 );
             }
         }

@@ -165,6 +165,7 @@ export class OrderModifier {
                 order,
             ),
             ctx.languageCode,
+            ctx.channel.defaultLanguageCode,
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });

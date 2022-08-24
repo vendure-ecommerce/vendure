@@ -86,7 +86,7 @@ export class ProductService {
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                    translateDeep(product, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facetValues', ['facetValues', 'facet']]),
                 );
                 return {
                     items,
@@ -115,7 +115,7 @@ export class ProductService {
         if (!product) {
             return;
         }
-        return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
+        return translateDeep(product, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facetValues', ['facetValues', 'facet']]);
     }
 
     async findByIds(
@@ -137,7 +137,7 @@ export class ProductService {
             .getMany()
             .then(products =>
                 products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                    translateDeep(product, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facetValues', ['facetValues', 'facet']]),
                 ),
             );
     }
@@ -161,7 +161,7 @@ export class ProductService {
                 relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
             })
             .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facet'])),
             );
     }
 
@@ -200,7 +200,7 @@ export class ProductService {
             .getOne()
             .then(product =>
                 product
-                    ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
+                    ? translateDeep(product, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facetValues', ['facetValues', 'facet']])
                     : undefined,
             );
     }

@@ -73,7 +73,7 @@ export class ShippingMethodService {
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
-                items: items.map(i => translateDeep(i, ctx.languageCode)),
+                items: items.map(i => translateDeep(i, ctx.languageCode, ctx.channel.defaultLanguageCode)),
                 totalItems,
             }));
     }
@@ -94,7 +94,7 @@ export class ShippingMethodService {
                 ...(includeDeleted === false ? { where: { deletedAt: null } } : {}),
             },
         );
-        return shippingMethod && translateDeep(shippingMethod, ctx.languageCode);
+        return shippingMethod && translateDeep(shippingMethod, ctx.languageCode, ctx.channel.defaultLanguageCode);
     }
 
     async create(ctx: RequestContext, input: CreateShippingMethodInput): Promise<ShippingMethod> {
@@ -205,7 +205,7 @@ export class ShippingMethodService {
         });
         return shippingMethods
             .filter(sm => sm.channels.find(c => idsAreEqual(c.id, ctx.channelId)))
-            .map(m => translateDeep(m, ctx.languageCode));
+            .map(m => translateDeep(m, ctx.languageCode, ctx.channel.defaultLanguageCode));
     }
 
     /**

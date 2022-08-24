@@ -115,7 +115,7 @@ export class ProductVariantService {
             })
             .then(async result => {
                 if (result) {
-                    return translateDeep(await this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
+                    return translateDeep(await this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, ctx.channel.defaultLanguageCode, [
                         'product',
                     ]);
                 }
@@ -235,7 +235,7 @@ export class ProductVariantService {
             relations: ['productVariant', 'productVariant.taxCategory'],
             includeSoftDeleted: true,
         });
-        return translateDeep(await this.applyChannelPriceAndTax(productVariant, ctx), ctx.languageCode);
+        return translateDeep(await this.applyChannelPriceAndTax(productVariant, ctx), ctx.languageCode, ctx.channel.defaultLanguageCode);
     }
 
     /**
@@ -247,7 +247,7 @@ export class ProductVariantService {
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
                 relations: ['options'],
             })
-            .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
+            .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode, ctx.channel.defaultLanguageCode))));
     }
 
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
@@ -256,7 +256,7 @@ export class ProductVariantService {
                 relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
             })
             .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ctx.channel.defaultLanguageCode, ['facet'])),
             );
     }
 
@@ -270,7 +270,7 @@ export class ProductVariantService {
         const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
             includeSoftDeleted: true,
         });
-        return translateDeep(product, ctx.languageCode);
+        return translateDeep(product, ctx.languageCode, ctx.channel.defaultLanguageCode);
     }
 
     /**
@@ -607,7 +607,7 @@ export class ProductVariantService {
         return await Promise.all(
             variants.map(async variant => {
                 const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
-                return translateDeep(variantWithPrices, ctx.languageCode, [
+                return translateDeep(variantWithPrices, ctx.languageCode, ctx.channel.defaultLanguageCode, [
                     'options',
                     'facetValues',
                     ['facetValues', 'facet'],
@@ -770,7 +770,7 @@ export class ProductVariantService {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
                 if (variantOptionIds === inputOptionIds) {
                     throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                        variantName: translateDeep(variant, ctx.languageCode).name,
+                        variantName: translateDeep(variant, ctx.languageCode, ctx.channel.defaultLanguageCode).name,
                     });
                 }
             });
