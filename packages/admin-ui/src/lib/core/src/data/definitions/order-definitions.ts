@@ -83,8 +83,11 @@ export const FULFILLMENT_FRAGMENT = gql`
         createdAt
         updatedAt
         method
-        orderItems {
-            id
+        summary {
+            orderLine {
+                id
+            }
+            quantity
         }
         trackingCode
     }
@@ -106,6 +109,9 @@ export const ORDER_LINE_FRAGMENT = gql`
         discounts {
             ...Discount
         }
+        fulfillments {
+            ...Fulfillment
+        }
         unitPrice
         unitPriceWithTax
         proratedUnitPrice
@@ -113,14 +119,8 @@ export const ORDER_LINE_FRAGMENT = gql`
         quantity
         items {
             id
-            unitPrice
-            unitPriceWithTax
-            taxRate
             refundId
             cancelled
-            fulfillment {
-                ...Fulfillment
-            }
         }
         linePrice
         lineTax

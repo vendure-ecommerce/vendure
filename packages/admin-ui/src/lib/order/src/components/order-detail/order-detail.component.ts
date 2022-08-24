@@ -8,6 +8,8 @@ import {
     CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
+    FulfillmentFragment,
+    FulfillmentLineSummary,
     GetOrderHistory,
     GetOrderQuery,
     HistoryEntry,
@@ -252,9 +254,19 @@ export class OrderDetailComponent
     }
 
     canAddFulfillment(order: OrderDetail.Fragment): boolean {
-        const allItemsFulfilled = order.lines
-            .reduce((items, line) => [...items, ...line.items], [] as OrderLineFragment['items'])
-            .every(item => !!item.fulfillment || item.cancelled);
+        const allFulfillmentSummaryRows: FulfillmentFragment['summary'] = (order.fulfillments ?? []).reduce(
+            (all, fulfillment) => [...all, ...fulfillment.summary],
+            [] as FulfillmentFragment['summary'],
+        );
+        let allItemsFulfilled = true;
+        for (const line of order.lines) {
+            const totalFulfilledCount = allFulfillmentSummaryRows
+                .filter(row => row.orderLine.id === line.id)
+                .reduce((sum, row) => sum + row.quantity, 0);
+            if (totalFulfilledCount < line.quantity) {
+                allItemsFulfilled = false;
+            }
+        }
         return (
             !allItemsFulfilled &&
             !this.hasUnsettledModifications(order) &&

@@ -1613,10 +1613,17 @@ export type Fulfillment = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   orderItems: Array<OrderItem>;
+  summary: Array<FulfillmentLineSummary>;
   state: Scalars['String'];
   method: Scalars['String'];
   trackingCode?: Maybe<Scalars['String']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FulfillmentLineSummary = {
+  __typename?: 'FulfillmentLineSummary';
+  orderLine: OrderLine;
+  quantity: Scalars['Int'];
 };
 
 /** Returned when there is an error in transitioning the Fulfillment state */
@@ -3395,6 +3402,7 @@ export type OrderLine = Node & {
   discounts: Array<Discount>;
   taxLines: Array<TaxLine>;
   order: Order;
+  fulfillments?: Maybe<Array<Fulfillment>>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -6299,9 +6307,13 @@ export type OrderFragment = (
 export type FulfillmentFragment = (
   { __typename?: 'Fulfillment' }
   & Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>
-  & { orderItems: Array<(
-    { __typename?: 'OrderItem' }
-    & Pick<OrderItem, 'id'>
+  & { summary: Array<(
+    { __typename?: 'FulfillmentLineSummary' }
+    & Pick<FulfillmentLineSummary, 'quantity'>
+    & { orderLine: (
+      { __typename?: 'OrderLine' }
+      & Pick<OrderLine, 'id'>
+    ) }
   )> }
 );
 
@@ -6317,13 +6329,12 @@ export type OrderLineFragment = (
   ), discounts: Array<(
     { __typename?: 'Discount' }
     & DiscountFragment
-  )>, items: Array<(
+  )>, fulfillments?: Maybe<Array<(
+    { __typename?: 'Fulfillment' }
+    & FulfillmentFragment
+  )>>, items: Array<(
     { __typename?: 'OrderItem' }
-    & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'>
-    & { fulfillment?: Maybe<(
-      { __typename?: 'Fulfillment' }
-      & FulfillmentFragment
-    )> }
+    & Pick<OrderItem, 'id' | 'refundId' | 'cancelled'>
   )> }
 );
 
@@ -9719,7 +9730,8 @@ export namespace Order {
 
 export namespace Fulfillment {
   export type Fragment = FulfillmentFragment;
-  export type OrderItems = NonNullable<(NonNullable<FulfillmentFragment['orderItems']>)[number]>;
+  export type Summary = NonNullable<(NonNullable<FulfillmentFragment['summary']>)[number]>;
+  export type OrderLine = (NonNullable<NonNullable<(NonNullable<FulfillmentFragment['summary']>)[number]>['orderLine']>);
 }
 
 export namespace OrderLine {
@@ -9727,8 +9739,8 @@ export namespace OrderLine {
   export type FeaturedAsset = (NonNullable<OrderLineFragment['featuredAsset']>);
   export type ProductVariant = (NonNullable<OrderLineFragment['productVariant']>);
   export type Discounts = NonNullable<(NonNullable<OrderLineFragment['discounts']>)[number]>;
+  export type Fulfillments = NonNullable<(NonNullable<OrderLineFragment['fulfillments']>)[number]>;
   export type Items = NonNullable<(NonNullable<OrderLineFragment['items']>)[number]>;
-  export type Fulfillment = (NonNullable<NonNullable<(NonNullable<OrderLineFragment['items']>)[number]>['fulfillment']>);
 }
 
 export namespace OrderDetail {

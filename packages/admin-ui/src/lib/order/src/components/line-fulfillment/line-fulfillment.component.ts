@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { OrderDetail } from '@vendure/admin-ui/core';
+import { OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 
 export type FulfillmentStatus = 'full' | 'partial' | 'none';
@@ -15,7 +15,10 @@ export class LineFulfillmentComponent implements OnChanges {
     @Input() orderState: string;
     fulfilledCount = 0;
     fulfillmentStatus: FulfillmentStatus;
-    fulfillments: Array<{ count: number; fulfillment: OrderDetail.Fulfillments }> = [];
+    fulfillments: Array<{
+        count: number;
+        fulfillment: NonNullable<OrderDetailFragment['fulfillments']>[number];
+    }> = [];
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.line) {
@@ -29,7 +32,13 @@ export class LineFulfillmentComponent implements OnChanges {
      * Returns the number of items in an OrderLine which are fulfilled.
      */
     private getDeliveredCount(line: OrderDetail.Lines): number {
-        return line.items.reduce((sum, item) => sum + (item.fulfillment ? 1 : 0), 0);
+        return (
+            line.fulfillments?.reduce(
+                (sum, fulfillment) =>
+                    sum + (fulfillment.summary.find(s => s.orderLine.id === line.id)?.quantity ?? 0),
+                0,
+            ) ?? 0
+        );
     }
 
     private getFulfillmentStatus(fulfilledCount: number, lineQuantity: number): FulfillmentStatus {
@@ -44,28 +53,15 @@ export class LineFulfillmentComponent implements OnChanges {
 
     private getFulfillments(
         line: OrderDetail.Lines,
-    ): Array<{ count: number; fulfillment: OrderDetail.Fulfillments }> {
-        const counts: { [fulfillmentId: string]: number } = {};
-
-        for (const item of line.items) {
-            if (item.fulfillment) {
-                if (counts[item.fulfillment.id] === undefined) {
-                    counts[item.fulfillment.id] = 1;
-                } else {
-                    counts[item.fulfillment.id]++;
-                }
-            }
-        }
-        const all = line.items.reduce((fulfillments, item) => {
-            return item.fulfillment ? [...fulfillments, item.fulfillment] : fulfillments;
-        }, [] as OrderDetail.Fulfillments[]);
-
-        return Object.entries(counts).map(([id, count]) => {
-            return {
-                count,
-                // tslint:disable-next-line:no-non-null-assertion
-                fulfillment: all.find(f => f.id === id)!,
-            };
-        });
+    ): Array<{ count: number; fulfillment: NonNullable<OrderDetailFragment['fulfillments']>[number] }> {
+        return (
+            line.fulfillments?.map(fulfillment => {
+                const summaryLine = fulfillment.summary.find(s => s.orderLine.id === line.id);
+                return {
+                    count: summaryLine?.quantity ?? 0,
+                    fulfillment,
+                };
+            }) ?? []
+        );
     }
 }

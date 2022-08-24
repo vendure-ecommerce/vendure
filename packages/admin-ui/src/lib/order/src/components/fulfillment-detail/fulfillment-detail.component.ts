@@ -31,21 +31,16 @@ export class FulfillmentDetailComponent implements OnInit, OnChanges {
     }
 
     get items(): Array<{ name: string; quantity: number }> {
-        const itemMap = new Map<string, number>();
-        const fulfillmentItemIds = this.fulfillment?.orderItems.map(i => i.id);
-        for (const line of this.order.lines) {
-            for (const item of line.items) {
-                if (fulfillmentItemIds?.includes(item.id)) {
-                    const count = itemMap.get(line.productVariant.name);
-                    if (count != null) {
-                        itemMap.set(line.productVariant.name, count + 1);
-                    } else {
-                        itemMap.set(line.productVariant.name, 1);
-                    }
-                }
-            }
-        }
-        return Array.from(itemMap.entries()).map(([name, quantity]) => ({ name, quantity }));
+        return (
+            this.fulfillment?.summary.map(row => {
+                return {
+                    name:
+                        this.order.lines.find(line => line.id === row.orderLine.id)?.productVariant.name ??
+                        '',
+                    quantity: row.quantity,
+                };
+            }) ?? []
+        );
     }
 
     buildCustomFieldsFormGroup() {
