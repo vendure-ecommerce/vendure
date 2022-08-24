@@ -3,6 +3,7 @@ import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types'
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { FulfillmentLineSummary } from '@vendure/payments-plugin/e2e/graphql/generated-admin-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -13,6 +14,7 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
+import { OrderLine } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -114,6 +116,31 @@ export class FulfillmentService {
     async getOrderItemsByFulfillmentId(ctx: RequestContext, id: ID): Promise<OrderItem[]> {
         const fulfillment = await this.findOneOrThrow(ctx, id);
         return fulfillment.orderItems;
+    }
+
+    async getFulfillmentLineSummary(
+        ctx: RequestContext,
+        id: ID,
+    ): Promise<Array<{ orderLine: OrderLine; quantity: number }>> {
+        const result = await this.connection
+            .getRepository(ctx, OrderLine)
+            .createQueryBuilder('line')
+            .leftJoinAndSelect('line.items', 'item')
+            .leftJoin('item.fulfillments', 'fulfillment')
+            .select('line.id', 'lineId')
+            .addSelect('COUNT(item.id)', 'itemCount')
+            .groupBy('line.id')
+            .where('fulfillment.id = :id', { id })
+            .getRawMany();
+
+        return Promise.all(
+            result.map(async ({ lineId, itemCount }: { lineId: ID; itemCount: string }) => {
+                return {
+                    orderLine: await this.connection.getEntityOrThrow(ctx, OrderLine, lineId),
+                    quantity: +itemCount,
+                };
+            }),
+        );
     }
 
     async getFulfillmentsByOrderLineId(

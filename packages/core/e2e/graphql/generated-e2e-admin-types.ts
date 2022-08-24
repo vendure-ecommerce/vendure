@@ -1571,10 +1571,16 @@ export type Fulfillment = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    summary: Array<FulfillmentLineSummary>;
     state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FulfillmentLineSummary = {
+    orderLine: OrderLine;
+    quantity: Scalars['Int'];
 };
 
 /** Returned when there is an error in transitioning the Fulfillment state */
@@ -3167,6 +3173,7 @@ export type OrderLine = Node & {
     discounts: Array<Discount>;
     taxLines: Array<TaxLine>;
     order: Order;
+    fulfillments?: Maybe<Array<Fulfillment>>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -6212,7 +6219,15 @@ export type GetOrderFulfillmentsQueryVariables = Exact<{
 export type GetOrderFulfillmentsQuery = {
     order?: Maybe<
         Pick<Order, 'id' | 'state'> & {
-            fulfillments?: Maybe<Array<Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'method'>>>;
+            fulfillments?: Maybe<
+                Array<
+                    Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'method'> & {
+                        summary: Array<
+                            Pick<FulfillmentLineSummary, 'quantity'> & { orderLine: Pick<OrderLine, 'id'> }
+                        >;
+                    }
+                >
+            >;
         }
     >;
 };
@@ -6769,6 +6784,32 @@ export type GetOrderWithPaymentsQuery = {
                         refunds: Array<Pick<Refund, 'id' | 'total'>>;
                     }
                 >
+            >;
+        }
+    >;
+};
+
+export type GetOrderLineFulfillmentsQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetOrderLineFulfillmentsQuery = {
+    order?: Maybe<
+        Pick<Order, 'id'> & {
+            lines: Array<
+                Pick<OrderLine, 'id'> & {
+                    fulfillments?: Maybe<
+                        Array<
+                            Pick<Fulfillment, 'id' | 'state'> & {
+                                summary: Array<
+                                    Pick<FulfillmentLineSummary, 'quantity'> & {
+                                        orderLine: Pick<OrderLine, 'id'>;
+                                    }
+                                >;
+                            }
+                        >
+                    >;
+                }
             >;
         }
     >;
@@ -8649,6 +8690,22 @@ export namespace GetOrderFulfillments {
     export type Fulfillments = NonNullable<
         NonNullable<NonNullable<GetOrderFulfillmentsQuery['order']>['fulfillments']>[number]
     >;
+    export type Summary = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetOrderFulfillmentsQuery['order']>['fulfillments']>[number]
+            >['summary']
+        >[number]
+    >;
+    export type OrderLine = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<NonNullable<GetOrderFulfillmentsQuery['order']>['fulfillments']>[number]
+                >['summary']
+            >[number]
+        >['orderLine']
+    >;
 }
 
 export namespace GetOrderList {
@@ -9207,6 +9264,46 @@ export namespace GetOrderWithPayments {
                 NonNullable<NonNullable<GetOrderWithPaymentsQuery['order']>['payments']>[number]
             >['refunds']
         >[number]
+    >;
+}
+
+export namespace GetOrderLineFulfillments {
+    export type Variables = GetOrderLineFulfillmentsQueryVariables;
+    export type Query = GetOrderLineFulfillmentsQuery;
+    export type Order = NonNullable<GetOrderLineFulfillmentsQuery['order']>;
+    export type Lines = NonNullable<
+        NonNullable<NonNullable<GetOrderLineFulfillmentsQuery['order']>['lines']>[number]
+    >;
+    export type Fulfillments = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetOrderLineFulfillmentsQuery['order']>['lines']>[number]
+            >['fulfillments']
+        >[number]
+    >;
+    export type Summary = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<NonNullable<GetOrderLineFulfillmentsQuery['order']>['lines']>[number]
+                    >['fulfillments']
+                >[number]
+            >['summary']
+        >[number]
+    >;
+    export type OrderLine = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<NonNullable<GetOrderLineFulfillmentsQuery['order']>['lines']>[number]
+                        >['fulfillments']
+                    >[number]
+                >['summary']
+            >[number]
+        >['orderLine']
     >;
 }
 

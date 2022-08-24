@@ -1,4 +1,5 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { FulfillmentLineSummary } from '@vendure/payments-plugin/e2e/graphql/generated-admin-types';
 
 import { RequestContextCacheService } from '../../../cache/index';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
@@ -20,6 +21,13 @@ export class FulfillmentEntityResolver {
             ctx,
             `FulfillmentEntityResolver.orderItems(${fulfillment.id})`,
             () => this.fulfillmentService.getOrderItemsByFulfillmentId(ctx, fulfillment.id),
+        );
+    }
+
+    @ResolveField()
+    async summary(@Ctx() ctx: RequestContext, @Parent() fulfillment: Fulfillment) {
+        return this.requestContextCache.get(ctx, `FulfillmentEntityResolver.summary(${fulfillment.id})`, () =>
+            this.fulfillmentService.getFulfillmentLineSummary(ctx, fulfillment.id),
         );
     }
 }

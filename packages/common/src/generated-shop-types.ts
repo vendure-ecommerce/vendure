@@ -1038,10 +1038,17 @@ export type Fulfillment = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    summary: Array<FulfillmentLineSummary>;
     state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FulfillmentLineSummary = {
+    __typename?: 'FulfillmentLineSummary';
+    orderLine: OrderLine;
+    quantity: Scalars['Int'];
 };
 
 export enum GlobalFlag {
@@ -2025,6 +2032,7 @@ export type OrderLine = Node & {
     discounts: Array<Discount>;
     taxLines: Array<TaxLine>;
     order: Order;
+    fulfillments?: Maybe<Array<Fulfillment>>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 

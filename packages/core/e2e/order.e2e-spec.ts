@@ -47,7 +47,11 @@ import {
     GetOrder,
     GetOrderFulfillmentItems,
     GetOrderFulfillments,
+    GetOrderFulfillmentsQuery,
+    GetOrderFulfillmentsQueryVariables,
     GetOrderHistory,
+    GetOrderLineFulfillmentsQuery,
+    GetOrderLineFulfillmentsQueryVariables,
     GetOrderList,
     GetOrderListFulfillments,
     GetOrderListWithQty,
@@ -756,6 +760,35 @@ describe('Orders resolver', () => {
             ]);
         });
 
+        it('order.fulfillments.summary', async () => {
+            const { order } = await adminClient.query<
+                GetOrderFulfillmentsQuery,
+                GetOrderFulfillmentsQueryVariables
+            >(GET_ORDER_FULFILLMENTS, {
+                id: orderId,
+            });
+
+            expect(order?.fulfillments?.map(pick(['id', 'state', 'summary']))).toEqual([
+                { id: f1Id, state: 'Pending', summary: [{ orderLine: { id: 'T_3' }, quantity: 1 }] },
+                { id: f2Id, state: 'Cancelled', summary: [{ orderLine: { id: 'T_4' }, quantity: 3 }] },
+            ]);
+        });
+
+        it('lines.fulfillments', async () => {
+            const { order } = await adminClient.query<
+                GetOrderLineFulfillmentsQuery,
+                GetOrderLineFulfillmentsQueryVariables
+            >(GET_ORDER_LINE_FULFILLMENTS, {
+                id: orderId,
+            });
+
+            expect(order?.lines.find(l => l.id === 'T_3')!.fulfillments).toEqual([
+                { id: f1Id, state: 'Pending', summary: [{ orderLine: { id: 'T_3' }, quantity: 1 }] },
+            ]);
+            // Cancelled Fulfillments do not appear in the line field
+            expect(order?.lines.find(l => l.id === 'T_4')!.fulfillments).toEqual([]);
+        });
+
         it('creates third fulfillment with same items from second fulfillment', async () => {
             const lines = await getUnfulfilledOrderLineInput(adminClient, orderId);
             const { addFulfillmentToOrder } = await adminClient.query<
@@ -1019,7 +1052,9 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(order!.fulfillments?.sort(sortById)).toEqual([
+            expect(
+                order!.fulfillments?.sort(sortById).map(pick(['id', 'method', 'state', 'nextStates'])),
+            ).toEqual([
                 { id: f1Id, method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
                 { id: f2Id, method: 'Test2', state: 'Cancelled', nextStates: [] },
                 { id: f3Id, method: 'Test3', state: 'Delivered', nextStates: ['Cancelled'] },
@@ -2656,6 +2691,27 @@ const GET_ORDER_WITH_PAYMENTS = gql`
                 refunds {
                     id
                     total
+                }
+            }
+        }
+    }
+`;
+
+export const GET_ORDER_LINE_FULFILLMENTS = gql`
+    query GetOrderLineFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            lines {
+                id
+                fulfillments {
+                    id
+                    state
+                    summary {
+                        orderLine {
+                            id
+                        }
+                        quantity
+                    }
                 }
             }
         }

@@ -512,6 +512,12 @@ export const GET_ORDER_FULFILLMENTS = gql`
                 state
                 nextStates
                 method
+                summary {
+                    orderLine {
+                        id
+                    }
+                    quantity
+                }
             }
         }
     }
