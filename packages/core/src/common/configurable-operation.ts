@@ -363,7 +363,7 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
     toGraphQlType(ctx: RequestContext): ConfigurableOperationDefinition {
         return {
             code: this.code,
-            description: localizeString(this.description, ctx.languageCode),
+            description: localizeString(this.description, ctx.languageCode, ctx.channel.defaultLanguageCode),
             args: Object.entries(this.args).map(
                 ([name, arg]) =>
                     ({
@@ -373,8 +373,8 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
                         required: arg.required ?? true,
                         defaultValue: arg.defaultValue,
                         ui: arg.ui,
-                        label: arg.label && localizeString(arg.label, ctx.languageCode),
-                        description: arg.description && localizeString(arg.description, ctx.languageCode),
+                        label: arg.label && localizeString(arg.label, ctx.languageCode, ctx.channel.defaultLanguageCode),
+                        description: arg.description && localizeString(arg.description, ctx.languageCode, ctx.channel.defaultLanguageCode),
                     } as Required<ConfigArgDefinition>),
             ),
         };
@@ -405,7 +405,7 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
     }
 }
 
-function localizeString(stringArray: LocalizedStringArray, languageCode: LanguageCode): string {
+function localizeString(stringArray: LocalizedStringArray, languageCode: LanguageCode, channelLanguageCode: LanguageCode): string {
     let match = stringArray.find(x => x.languageCode === languageCode);
     if (!match) {
         match = stringArray.find(x => x.languageCode === DEFAULT_LANGUAGE_CODE);
