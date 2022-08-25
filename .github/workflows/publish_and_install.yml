@@ -76,5 +76,5 @@ jobs:
     - name: Server smoke tests
       run: |
         cd $HOME/install/test-app
-        npm run start &
+        npm run dev &
         node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
