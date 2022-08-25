@@ -1,4 +1,8 @@
-import { getDefaultConfigArgValue } from '@vendure/admin-ui/core';
+import {
+    ConfigurableOperation,
+    getDefaultConfigArgValue,
+    toConfigurableOperationInput,
+} from '@vendure/admin-ui/core';
 
 describe('getDefaultConfigArgValue()', () => {
     it('returns a default string value', () => {
@@ -85,5 +89,58 @@ describe('getDefaultConfigArgValue()', () => {
         });
 
         expect(value).toBe(false);
+    });
+});
+
+describe('toConfigurableOperationInput()', () => {
+    const configOp: ConfigurableOperation = {
+        code: 'test',
+        args: [
+            {
+                name: 'option1',
+                value: 'value1',
+            },
+            {
+                name: 'option2',
+                value: 'value2',
+            },
+        ],
+    };
+    it('returns correct structure', () => {
+        const value = toConfigurableOperationInput(configOp, {
+            args: { option1: 'value1-2', option2: 'value2-2' },
+        });
+        expect(value).toEqual({
+            code: 'test',
+            arguments: [
+                {
+                    name: 'option1',
+                    value: 'value1-2',
+                },
+                {
+                    name: 'option2',
+                    value: 'value2-2',
+                },
+            ],
+        });
+    });
+
+    it('works with out-of-order args', () => {
+        const value = toConfigurableOperationInput(configOp, {
+            args: { option2: 'value2-2', option1: 'value1-2' },
+        });
+        expect(value).toEqual({
+            code: 'test',
+            arguments: [
+                {
+                    name: 'option1',
+                    value: 'value1-2',
+                },
+                {
+                    name: 'option2',
+                    value: 'value2-2',
+                },
+            ],
+        });
     });
 });
