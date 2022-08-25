@@ -85,25 +85,34 @@ export class FacetService {
      * @deprecated Use {@link FacetService.findByCode findByCode(ctx, facetCode, lang)} instead
      */
     findByCode(facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined>;
-    findByCode(ctx: RequestContext, facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined>;
     findByCode(
-        ctxOrFacetCode: RequestContext | string, 
-        facetCodeOrLang: string | LanguageCode, 
-        lang?: LanguageCode
+        ctx: RequestContext,
+        facetCode: string,
+        lang: LanguageCode,
+    ): Promise<Translated<Facet> | undefined>;
+    findByCode(
+        ctxOrFacetCode: RequestContext | string,
+        facetCodeOrLang: string | LanguageCode,
+        lang?: LanguageCode,
     ): Promise<Translated<Facet> | undefined> {
         const relations = ['values', 'values.facet'];
-        const [repository, facetCode, languageCode] = ctxOrFacetCode instanceof RequestContext 
-            ? [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
-            : [this.connection.rawConnection.getRepository(Facet), ctxOrFacetCode, facetCodeOrLang as LanguageCode];
+        const [repository, facetCode, languageCode] =
+            ctxOrFacetCode instanceof RequestContext
+                ? [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
+                : [
+                      this.connection.rawConnection.getRepository(Facet),
+                      ctxOrFacetCode,
+                      facetCodeOrLang as LanguageCode,
+                  ];
 
-
-        return repository.findOne({
-            where: {
-                code: facetCode,
-            },
-            relations,
-        })
-        .then(facet => facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']]));
+        return repository
+            .findOne({
+                where: {
+                    code: facetCode,
+                },
+                relations,
+            })
+            .then(facet => facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']]));
     }
 
     /**
@@ -131,7 +140,12 @@ export class FacetService {
             translationType: FacetTranslation,
             beforeSave: async f => {
                 f.code = await this.ensureUniqueCode(ctx, f.code);
-                await this.channelService.assignToCurrentChannel(f, ctx);
+                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                if (ctx.channelId === defaultChannel.id) {
+                    await this.channelService.assignToAllChannels(f, ctx, defaultChannel);
+                } else {
+                    await this.channelService.assignToCurrentChannel(f, ctx);
+                }
             },
         });
         const facetWithRelations = await this.customFieldRelationService.updateRelations(
