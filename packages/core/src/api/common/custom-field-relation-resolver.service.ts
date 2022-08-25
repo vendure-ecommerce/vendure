@@ -9,7 +9,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../../service/helpers/product-price-applicator/product-price-applicator';
-import { translateDeep } from '../../service/helpers/utils/translate-entity';
+import { Translator } from '../../service/helpers/translator/translator';
 
 import { RequestContext } from './request-context';
 
@@ -26,6 +26,7 @@ export class CustomFieldRelationResolverService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private productPriceApplicator: ProductPriceApplicator,
+        private translator: Translator,
     ) {
     }
 
@@ -64,9 +65,9 @@ export class CustomFieldRelationResolverService {
         }
 
         const translated: any = Array.isArray(result)
-            ? result.map(r => (this.isTranslatable(r) ? translateDeep(r, ctx.languageCode, ctx.channel.defaultLanguageCode) : r))
+            ? result.map(r => (this.isTranslatable(r) ? this.translator.translate(r,ctx) : r))
             : this.isTranslatable(result)
-                ? translateDeep(result, ctx.languageCode, ctx.channel.defaultLanguageCode)
+                ? this.translator.translate(result,ctx)
                 : result;
 
         return translated;

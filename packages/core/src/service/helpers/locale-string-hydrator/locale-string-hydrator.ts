@@ -6,8 +6,7 @@ import { RequestContextCacheService } from '../../../cache/request-context-cache
 import { Translatable, TranslatableKeys, Translated } from '../../../common/types/locale-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { translateDeep } from '../utils/translate-entity';
+import { Translator } from '../translator/translator';
 
 /**
  * This helper class is to be used in GraphQL entity resolvers, to resolve fields which depend on being
@@ -18,6 +17,7 @@ export class LocaleStringHydrator {
     constructor(
         private connection: TransactionalConnection,
         private requestCache: RequestContextCacheService,
+        private translator: Translator,
     ) {
     }
 
@@ -61,7 +61,7 @@ export class LocaleStringHydrator {
             });
         }
         if (entity.translations.length) {
-            const translated = translateDeep(entity, ctx.languageCode, ctx.channel.defaultLanguageCode);
+            const translated = this.translator.translate(entity, ctx);
             for (const localeStringProp of Object.keys(entity.translations[0])) {
                 if (
                     localeStringProp === 'base' ||

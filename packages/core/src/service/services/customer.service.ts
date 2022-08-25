@@ -58,9 +58,9 @@ import { PasswordResetEvent } from '../../event-bus/events/password-reset-event'
 import { PasswordResetVerifiedEvent } from '../../event-bus/events/password-reset-verified-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { Translator } from '../helpers/translator/translator';
 import { addressToLine } from '../helpers/utils/address-to-line';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
@@ -85,6 +85,7 @@ export class CustomerService {
         private historyService: HistoryService,
         private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
+        private translator: Translator,
     ) {}
 
     findAll(
@@ -155,7 +156,7 @@ export class CustomerService {
             .getMany()
             .then(addresses => {
                 addresses.forEach(address => {
-                    address.country = translateDeep(address.country, ctx.languageCode, ctx.channel.defaultLanguageCode);
+                    address.country = this.translator.translate(address.country, ctx);
                 });
                 return addresses;
             });
@@ -724,7 +725,7 @@ export class CustomerService {
         if (input.countryCode && input.countryCode !== address.country.code) {
             address.country = await this.countryService.findOneByCode(ctx, input.countryCode);
         } else {
-            address.country = translateDeep(address.country, ctx.languageCode, ctx.channel.defaultLanguageCode);
+            address.country = this.translator.translate(address.country, ctx);
         }
         let updatedAddress = patchEntity(address, input);
         updatedAddress = await this.connection.getRepository(ctx, Address).save(updatedAddress);
@@ -758,7 +759,7 @@ export class CustomerService {
         if (!customer) {
             throw new EntityNotFoundError('Address', id);
         }
-        address.country = translateDeep(address.country, ctx.languageCode, ctx.channel.defaultLanguageCode);
+        address.country = this.translator.translate(address.country, ctx);
         await this.reassignDefaultsForDeletedAddress(ctx, address);
         await this.historyService.createHistoryEntryForCustomer({
             customerId: address.customer.id,
