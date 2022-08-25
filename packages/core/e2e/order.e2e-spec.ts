@@ -754,7 +754,7 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(order?.fulfillments?.map(pick(['id', 'state']))).toEqual([
+            expect(order?.fulfillments?.sort(sortById).map(pick(['id', 'state']))).toEqual([
                 { id: f1Id, state: 'Pending' },
                 { id: f2Id, state: 'Cancelled' },
             ]);
@@ -768,7 +768,7 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(order?.fulfillments?.map(pick(['id', 'state', 'summary']))).toEqual([
+            expect(order?.fulfillments?.sort(sortById).map(pick(['id', 'state', 'summary']))).toEqual([
                 { id: f1Id, state: 'Pending', summary: [{ orderLine: { id: 'T_3' }, quantity: 1 }] },
                 { id: f2Id, state: 'Cancelled', summary: [{ orderLine: { id: 'T_4' }, quantity: 3 }] },
             ]);
@@ -1067,7 +1067,7 @@ describe('Orders resolver', () => {
             );
 
             expect(orders.items[0].fulfillments).toEqual([]);
-            expect(orders.items[1].fulfillments).toEqual([
+            expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([
                 { id: f1Id, method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
                 { id: f2Id, method: 'Test2', state: 'Cancelled', nextStates: [] },
                 { id: f3Id, method: 'Test3', state: 'Delivered', nextStates: ['Cancelled'] },
@@ -1081,9 +1081,10 @@ describe('Orders resolver', () => {
             >(GET_ORDER_FULFILLMENT_ITEMS, {
                 id: orderId,
             });
-            expect(order!.fulfillments![0].orderItems).toEqual([{ id: 'T_3' }]);
-            expect(order!.fulfillments![1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
-            expect(order!.fulfillments![2].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
+            const sortedFulfillments = order!.fulfillments!.sort(sortById);
+            expect(sortedFulfillments[0].orderItems).toEqual([{ id: 'T_3' }]);
+            expect(sortedFulfillments[1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
+            expect(sortedFulfillments[2].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
         });
 
         it('order.line.items.fulfillment resolver', async () => {
