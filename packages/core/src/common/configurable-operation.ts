@@ -408,6 +408,9 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
 function localizeString(stringArray: LocalizedStringArray, languageCode: LanguageCode, channelLanguageCode: LanguageCode): string {
     let match = stringArray.find(x => x.languageCode === languageCode);
     if (!match) {
+        match = stringArray.find(x => x.languageCode === channelLanguageCode);
+    }
+    if (!match) {
         match = stringArray.find(x => x.languageCode === DEFAULT_LANGUAGE_CODE);
     }
     if (!match) {
