@@ -127,11 +127,11 @@ function getDbConfig(): ConnectionOptions {
             console.log('Using mysql connection');
             return {
                 synchronize: true,
-                type: 'mariadb',
-                host: '127.0.0.1',
+                type: 'mysql',
+                host: 'localhost',
                 port: 3306,
                 username: 'root',
-                password: '',
+                password: 'root',
                 database: 'vendure-dev',
             };
     }

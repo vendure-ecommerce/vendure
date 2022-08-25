@@ -1,9 +1,10 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "declaration": true,
-    "removeComments": true,
-    "strictPropertyInitialization": false,
-    "sourceMap": true
-  }
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "declaration": true,
+        "removeComments": true,
+        "strictPropertyInitialization": false,
+        "sourceMap": true,
+        "experimentalDecorators": true
+    }
 }
