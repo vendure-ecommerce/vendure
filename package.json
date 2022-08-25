@@ -6,6 +6,7 @@
         "node": ">= 10.12.0 < 11 || >= 12.00"
     },
     "scripts": {
+        "dev":"yarn dev-server:start",
         "watch": "lerna run watch --parallel",
         "watch:core-common": "lerna run --scope @vendure/common --scope @vendure/core watch --parallel",
         "lint": "yarn tslint --fix",
