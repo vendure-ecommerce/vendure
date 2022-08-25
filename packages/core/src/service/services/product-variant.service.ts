@@ -41,7 +41,7 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { samplesEach } from '../helpers/utils/samples-each';
 
 import { AssetService } from './asset.service';
@@ -76,7 +76,7 @@ export class ProductVariantService {
         private customFieldRelationService: CustomFieldRelationService,
         private requestCache: RequestContextCacheService,
         private productPriceApplicator: ProductPriceApplicator,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     async findAll(

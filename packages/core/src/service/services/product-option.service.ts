@@ -17,7 +17,7 @@ import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -32,7 +32,7 @@ export class ProductOptionService {
         private translatableSaver: TranslatableSaver,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {

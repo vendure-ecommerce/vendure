@@ -35,7 +35,7 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -69,7 +69,7 @@ export class ProductService {
         private eventBus: EventBus,
         private slugValidator: SlugValidator,
         private customFieldRelationService: CustomFieldRelationService,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     async findAll(

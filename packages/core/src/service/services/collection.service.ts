@@ -39,7 +39,7 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 
 import { AssetService } from './asset.service';
@@ -76,7 +76,7 @@ export class CollectionService implements OnModuleInit {
         private slugValidator: SlugValidator,
         private configArgService: ConfigArgService,
         private customFieldRelationService: CustomFieldRelationService,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {
     }
 

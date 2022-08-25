@@ -9,7 +9,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../../service/helpers/product-price-applicator/product-price-applicator';
-import { Translator } from '../../service/helpers/translator/translator';
+import { TranslatorService } from '../../service/helpers/translator/translator.service';
 
 import { RequestContext } from './request-context';
 
@@ -26,7 +26,7 @@ export class CustomFieldRelationResolverService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private productPriceApplicator: ProductPriceApplicator,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {
     }
 

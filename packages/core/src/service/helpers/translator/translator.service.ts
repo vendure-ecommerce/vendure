@@ -3,8 +3,10 @@ import { Translatable } from '../../../common/types/locale-types';
 import { ConfigService } from '../../../config';
 import { VendureEntity } from '../../../entity';
 import { DeepTranslatableRelations, translateDeep } from '../utils/translate-entity';
+import { Injectable } from '@nestjs/common';
 
-export class Translator {
+@Injectable()
+export class TranslatorService {
     constructor(
         private configService: ConfigService,
     ) {

@@ -110,7 +110,7 @@ import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import {
     orderItemsAreAllCancelled,
     orderItemsAreDelivered,
@@ -163,7 +163,7 @@ export class OrderService {
         private orderModifier: OrderModifier,
         private customFieldRelationService: CustomFieldRelationService,
         private requestCache: RequestContextCacheService,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     /**

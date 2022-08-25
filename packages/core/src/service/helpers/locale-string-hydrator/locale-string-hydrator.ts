@@ -6,7 +6,7 @@ import { RequestContextCacheService } from '../../../cache/request-context-cache
 import { Translatable, TranslatableKeys, Translated } from '../../../common/types/locale-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { Translator } from '../translator/translator';
+import { TranslatorService } from '../translator/translator.service';
 
 /**
  * This helper class is to be used in GraphQL entity resolvers, to resolve fields which depend on being
@@ -17,7 +17,7 @@ export class LocaleStringHydrator {
     constructor(
         private connection: TransactionalConnection,
         private requestCache: RequestContextCacheService,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {
     }
 

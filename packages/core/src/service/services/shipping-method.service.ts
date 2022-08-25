@@ -26,7 +26,7 @@ import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 import { ChannelService } from './channel.service';
 
@@ -47,7 +47,7 @@ export class ShippingMethodService {
         private translatableSaver: TranslatableSaver,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     /** @internal */

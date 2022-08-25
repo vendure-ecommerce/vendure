@@ -21,7 +21,7 @@ import { EventBus } from '../../event-bus';
 import { CountryEvent } from '../../event-bus/events/country-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -36,7 +36,7 @@ export class CountryService {
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {
     }
 

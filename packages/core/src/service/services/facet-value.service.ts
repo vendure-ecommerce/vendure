@@ -22,7 +22,7 @@ import { EventBus } from '../../event-bus';
 import { FacetValueEvent } from '../../event-bus/events/facet-value-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
@@ -42,7 +42,7 @@ export class FacetValueService {
         private customFieldRelationService: CustomFieldRelationService,
         private channelService: ChannelService,
         private eventBus: EventBus,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {
     }
 

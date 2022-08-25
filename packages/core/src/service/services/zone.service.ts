@@ -21,7 +21,7 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ZoneEvent } from '../../event-bus/events/zone-event';
 import { ZoneMembersEvent } from '../../event-bus/events/zone-members-event';
-import { Translator } from '../helpers/translator/translator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 /**
@@ -40,7 +40,7 @@ export class ZoneService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private eventBus: EventBus,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     /** @internal */

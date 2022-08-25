@@ -50,7 +50,7 @@ import { StockMovementService } from '../../services/stock-movement.service';
 import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
 import { EntityHydrator } from '../entity-hydrator/entity-hydrator.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
-import { Translator } from '../translator/translator';
+import { TranslatorService } from '../translator/translator.service';
 import { patchEntity } from '../utils/patch-entity';
 
 /**
@@ -81,7 +81,7 @@ export class OrderModifier {
         private eventBus: EventBus,
         private entityHydrator: EntityHydrator,
         private historyService: HistoryService,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {}
 
     /**

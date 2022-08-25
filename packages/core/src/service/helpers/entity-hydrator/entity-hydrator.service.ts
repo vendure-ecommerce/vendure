@@ -9,7 +9,7 @@ import { TransactionalConnection } from '../../../connection/transactional-conne
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
-import { Translator } from '../translator/translator';
+import { TranslatorService } from '../translator/translator.service';
 
 import { HydrateOptions } from './entity-hydrator-types';
 
@@ -55,7 +55,7 @@ export class EntityHydrator {
     constructor(
         private connection: TransactionalConnection,
         private productPriceApplicator: ProductPriceApplicator,
-        private translator: Translator,
+        private translator: TranslatorService,
     ) {
     }
 
