@@ -92,7 +92,20 @@ export class ChannelService {
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, [ctx.channelId], 'assigned'));
         return entity;
     }
-
+    async assignToAllChannels<T extends ChannelAware & VendureEntity>(
+        entity: T,
+        ctx: RequestContext,
+        defaultChannel?: Channel,
+    ): Promise<T> {
+        if (defaultChannel === undefined || defaultChannel === null) {
+            defaultChannel = await this.getDefaultChannel(ctx);
+        }
+        const allIds = (await this.findAll(ctx)).map(c => c.id);
+        const channelIds = unique([...allIds, defaultChannel.id]);
+        entity.channels = channelIds.map(id => ({ id })) as any;
+        this.eventBus.publish(new ChangeChannelEvent(ctx, entity, [ctx.channelId], 'assigned'));
+        return entity;
+    }
     /**
      * @description
      * Assigns the entity to the given Channels and saves.
