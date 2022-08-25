@@ -21,8 +21,8 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ZoneEvent } from '../../event-bus/events/zone-event';
 import { ZoneMembersEvent } from '../../event-bus/events/zone-members-event';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { translateDeep } from '../helpers/utils/translate-entity';
 
 /**
  * @description
@@ -40,6 +40,7 @@ export class ZoneService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private eventBus: EventBus,
+        private translator: TranslatorService,
     ) {}
 
     /** @internal */
@@ -67,10 +68,10 @@ export class ZoneService {
     }
 
     async findAll(ctx: RequestContext): Promise<Zone[]> {
-        return this.zones.memoize([ctx.languageCode], [ctx], (zones, languageCode) => {
+        return this.zones.memoize([], [ctx], (zones) => {
             return zones.map((zone, i) => {
                 const cloneZone = { ...zone };
-                cloneZone.members = zone.members.map(country => translateDeep(country, languageCode));
+                cloneZone.members = zone.members.map(country => this.translator.translate(country, ctx));
                 return cloneZone;
             });
         });
@@ -84,7 +85,7 @@ export class ZoneService {
             })
             .then(zone => {
                 if (zone) {
-                    zone.members = zone.members.map(country => translateDeep(country, ctx.languageCode));
+                    zone.members = zone.members.map(country => this.translator.translate(country, ctx));
                     return zone;
                 }
             });

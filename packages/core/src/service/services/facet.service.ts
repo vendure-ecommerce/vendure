@@ -22,6 +22,7 @@ import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
@@ -44,6 +45,7 @@ export class FacetService {
         private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private translator: TranslatorService,
     ) {}
 
     findAll(
@@ -60,7 +62,7 @@ export class FacetService {
             .getManyAndCount()
             .then(([facets, totalItems]) => {
                 const items = facets.map(facet =>
-                    translateDeep(facet, ctx.languageCode, ['values', ['values', 'facet']]),
+                    this.translator.translate(facet, ctx, ['values', ['values', 'facet']]),
                 );
                 return {
                     items,
@@ -78,7 +80,7 @@ export class FacetService {
             .findOneInChannel(ctx, Facet, facetId, ctx.channelId, {
                 relations: relations ?? ['values', 'values.facet', 'channels'],
             })
-            .then(facet => facet && translateDeep(facet, ctx.languageCode, ['values', ['values', 'facet']]));
+            .then(facet => facet && this.translator.translate(facet, ctx, ['values', ['values', 'facet']]));
     }
 
     /**
@@ -87,23 +89,23 @@ export class FacetService {
     findByCode(facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined>;
     findByCode(ctx: RequestContext, facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined>;
     findByCode(
-        ctxOrFacetCode: RequestContext | string, 
-        facetCodeOrLang: string | LanguageCode, 
+        ctxOrFacetCode: RequestContext | string,
+        facetCodeOrLang: string | LanguageCode,
         lang?: LanguageCode
     ): Promise<Translated<Facet> | undefined> {
         const relations = ['values', 'values.facet'];
-        const [repository, facetCode, languageCode] = ctxOrFacetCode instanceof RequestContext 
+        const [repository, facetCode, languageCode] = ctxOrFacetCode instanceof RequestContext
             ? [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
             : [this.connection.rawConnection.getRepository(Facet), ctxOrFacetCode, facetCodeOrLang as LanguageCode];
 
-
+        // ToDo Implement usage of channelLanguageCode
         return repository.findOne({
             where: {
                 code: facetCode,
             },
             relations,
         })
-        .then(facet => facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']]));
+        .then(facet => facet && translateDeep(facet, languageCode,['values', ['values', 'facet']]));
     }
 
     /**
@@ -119,7 +121,7 @@ export class FacetService {
             .where('facetValue.id = :id', { id })
             .getOne();
         if (facet) {
-            return translateDeep(facet, ctx.languageCode);
+            return this.translator.translate(facet, ctx);
         }
     }
 

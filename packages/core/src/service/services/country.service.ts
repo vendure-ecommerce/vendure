@@ -21,7 +21,7 @@ import { EventBus } from '../../event-bus';
 import { CountryEvent } from '../../event-bus/events/country-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -36,7 +36,9 @@ export class CountryService {
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
-    ) {}
+        private translator: TranslatorService,
+    ) {
+    }
 
     findAll(
         ctx: RequestContext,
@@ -47,7 +49,7 @@ export class CountryService {
             .build(Country, options, { ctx, relations })
             .getManyAndCount()
             .then(([countries, totalItems]) => {
-                const items = countries.map(country => translateDeep(country, ctx.languageCode));
+                const items = countries.map(country => this.translator.translate(country, ctx));
                 return {
                     items,
                     totalItems,
@@ -63,7 +65,7 @@ export class CountryService {
         return this.connection
             .getRepository(ctx, Country)
             .findOne(countryId, { relations })
-            .then(country => country && translateDeep(country, ctx.languageCode));
+            .then(country => country && this.translator.translate(country, ctx));
     }
 
     /**
@@ -74,7 +76,7 @@ export class CountryService {
         return this.connection
             .getRepository(ctx, Country)
             .find({ where: { enabled: true } })
-            .then(items => items.map(country => translateDeep(country, ctx.languageCode)));
+            .then(items => items.map(country => this.translator.translate(country, ctx)));
     }
 
     /**
@@ -90,7 +92,7 @@ export class CountryService {
         if (!country) {
             throw new UserInputError('error.country-code-not-valid', { countryCode });
         }
-        return translateDeep(country, ctx.languageCode);
+        return this.translator.translate(country, ctx);
     }
 
     async create(ctx: RequestContext, input: CreateCountryInput): Promise<Translated<Country>> {

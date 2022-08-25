@@ -23,7 +23,7 @@ import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -41,6 +41,7 @@ export class OrderTestingService {
         private configArgService: ConfigArgService,
         private configService: ConfigService,
         private productPriceApplicator: ProductPriceApplicator,
+        private translator: TranslatorService,
     ) {}
 
     /**
@@ -87,7 +88,7 @@ export class OrderTestingService {
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, mockOrder);
         return eligibleMethods
             .map(result => {
-                translateDeep(result.method, ctx.languageCode);
+                this.translator.translate(result.method, ctx);
                 return result;
             })
             .map(result => {

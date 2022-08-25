@@ -17,7 +17,7 @@ import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -32,7 +32,9 @@ export class ProductOptionGroupService {
         private translatableSaver: TranslatableSaver,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
-    ) {}
+        private translator: TranslatorService,
+    ) {
+    }
 
     findAll(
         ctx: RequestContext,
@@ -50,7 +52,7 @@ export class ProductOptionGroupService {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .find(findOptions)
-            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+            .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
     findOne(
@@ -63,7 +65,7 @@ export class ProductOptionGroupService {
             .findOne(id, {
                 relations: relations ?? ['options'],
             })
-            .then(group => group && translateDeep(group, ctx.languageCode, ['options']));
+            .then(group => group && this.translator.translate(group, ctx, ['options']));
     }
 
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
@@ -78,7 +80,7 @@ export class ProductOptionGroupService {
                     id: 'ASC',
                 },
             })
-            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+            .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
     async create(

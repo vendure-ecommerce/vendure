@@ -17,7 +17,7 @@ import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -32,6 +32,7 @@ export class ProductOptionService {
         private translatableSaver: TranslatableSaver,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private translator: TranslatorService,
     ) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
@@ -40,7 +41,7 @@ export class ProductOptionService {
             .find({
                 relations: ['group'],
             })
-            .then(options => options.map(option => translateDeep(option, ctx.languageCode)));
+            .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
@@ -49,7 +50,7 @@ export class ProductOptionService {
             .findOne(id, {
                 relations: ['group'],
             })
-            .then(option => option && translateDeep(option, ctx.languageCode));
+            .then(option => option && this.translator.translate(option, ctx));
     }
 
     async create(
