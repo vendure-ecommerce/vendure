@@ -15,7 +15,7 @@ const result = sass.renderSync({
 
 fs.writeFileSync(outFile, result.css, 'utf8');
 
-function importer(url, prev, done) {
+function importer(url, prev) {
     let file = url;
     // Handle the imports prefixed with ~
     // which are usually resolved by Webpack.
@@ -29,7 +29,7 @@ function importer(url, prev, done) {
     // library styles which are not needed in external
     // apps.
     if (/^~@(ng-select|angular)/.test(url)) {
-        return false;
+        return null;
     }
 
     return { file };

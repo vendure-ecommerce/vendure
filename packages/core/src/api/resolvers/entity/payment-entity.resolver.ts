@@ -1,6 +1,7 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { pick } from '@vendure/common/lib/pick';
 
+import { RequestContextCacheService } from '../../../cache/index';
 import { PaymentMetadata } from '../../../common/types/common-types';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
@@ -13,14 +14,19 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Payment')
 export class PaymentEntityResolver {
-    constructor(private orderService: OrderService) {}
+    constructor(
+        private orderService: OrderService,
+        private requestContextCache: RequestContextCacheService,
+    ) {}
 
     @ResolveField()
     async refunds(@Ctx() ctx: RequestContext, @Parent() payment: Payment): Promise<Refund[]> {
         if (payment.refunds) {
             return payment.refunds;
         } else {
-            return this.orderService.getPaymentRefunds(ctx, payment.id);
+            return this.requestContextCache.get(ctx, `PaymentEntityResolver.refunds(${payment.id})`, () =>
+                this.orderService.getPaymentRefunds(ctx, payment.id),
+            );
         }
     }
 

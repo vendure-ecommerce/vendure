@@ -103,6 +103,7 @@ export class StripeController {
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, orderId, {
             method: paymentMethod.code,
             metadata: {
+                paymentIntentAmountReceived: paymentIntent.amount_received,
                 paymentIntentId: paymentIntent.id,
             },
         });

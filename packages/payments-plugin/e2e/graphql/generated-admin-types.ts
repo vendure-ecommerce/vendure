@@ -309,6 +309,15 @@ export type CancelOrderResult =
     | CancelActiveOrderError
     | OrderStateTransitionError;
 
+/** Returned if the Payment cancellation fails */
+export type CancelPaymentError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    paymentErrorMessage: Scalars['String'];
+};
+
+export type CancelPaymentResult = Payment | CancelPaymentError | PaymentStateTransitionError;
+
 export type Cancellation = Node &
     StockMovement & {
         id: Scalars['ID'];
@@ -1383,6 +1392,7 @@ export enum ErrorCode {
     LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
     CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
     SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+    CANCEL_PAYMENT_ERROR = 'CANCEL_PAYMENT_ERROR',
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
     INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
@@ -1561,10 +1571,16 @@ export type Fulfillment = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    summary: Array<FulfillmentLineSummary>;
     state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FulfillmentLineSummary = {
+    orderLine: OrderLine;
+    quantity: Scalars['Int'];
 };
 
 /** Returned when there is an error in transitioning the Fulfillment state */
@@ -2341,6 +2357,7 @@ export type Mutation = {
     cancelJob: Job;
     flushBufferedJobs: Success;
     settlePayment: SettlePaymentResult;
+    cancelPayment: CancelPaymentResult;
     addFulfillmentToOrder: AddFulfillmentToOrderResult;
     cancelOrder: CancelOrderResult;
     refundOrder: RefundOrderResult;
@@ -2381,6 +2398,8 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
+    /** Delete a ProductOption */
+    deleteProductOption: DeletionResponse;
     reindex: Job;
     runPendingSearchIndexUpdates: Success;
     /** Create a new Product */
@@ -2659,6 +2678,10 @@ export type MutationSettlePaymentArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationCancelPaymentArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationAddFulfillmentToOrderArgs = {
     input: FulfillOrderInput;
 };
@@ -2741,6 +2764,10 @@ export type MutationCreateProductOptionArgs = {
 
 export type MutationUpdateProductOptionArgs = {
     input: UpdateProductOptionInput;
+};
+
+export type MutationDeleteProductOptionArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateProductArgs = {
@@ -3028,6 +3055,7 @@ export type OrderAddress = {
 
 export type OrderFilterParameter = {
     customerLastName?: Maybe<StringOperators>;
+    transactionId?: Maybe<StringOperators>;
     id?: Maybe<IdOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -3145,6 +3173,7 @@ export type OrderLine = Node & {
     discounts: Array<Discount>;
     taxLines: Array<TaxLine>;
     order: Order;
+    fulfillments?: Maybe<Array<Fulfillment>>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -3197,6 +3226,7 @@ export type OrderProcessState = {
 
 export type OrderSortParameter = {
     customerLastName?: Maybe<SortOrder>;
+    transactionId?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;

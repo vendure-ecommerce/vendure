@@ -10,8 +10,10 @@ import { CustomProductOptionFieldsTranslation } from '../custom-entity-fields';
 import { ProductOption } from './product-option.entity';
 
 @Entity()
-export class ProductOptionTranslation extends VendureEntity
-    implements Translation<ProductOption>, HasCustomFields {
+export class ProductOptionTranslation
+    extends VendureEntity
+    implements Translation<ProductOption>, HasCustomFields
+{
     constructor(input?: DeepPartial<Translation<ProductOption>>) {
         super(input);
     }
@@ -20,6 +22,7 @@ export class ProductOptionTranslation extends VendureEntity
 
     @Column() name: string;
 
+    // TODO: V2 need to add onDelete: CASCADE here
     @ManyToOne(type => ProductOption, base => base.translations)
     base: ProductOption;
 

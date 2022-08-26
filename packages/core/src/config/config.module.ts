@@ -6,6 +6,7 @@ import { ConfigurableOperationDef } from '../common/configurable-operation';
 import { Injector } from '../common/injector';
 import { InjectableStrategy } from '../common/types/injectable-strategy';
 
+import { resetConfig } from './config-helpers';
 import { ConfigService } from './config.service';
 
 @Module({
@@ -23,6 +24,14 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
     async onApplicationShutdown(signal?: string) {
         await this.destroyInjectableStrategies();
         await this.destroyConfigurableOperations();
+        /**
+         * When the application shuts down, we reset the activeConfig to the default. Usually this is
+         * redundant, as the app shutdown would normally coincide with the process ending. However, in some
+         * circumstances, such as when running migrations immediately followed by app bootstrap, the activeConfig
+         * will persist between these two applications and mutations e.g. to the CustomFields will result in
+         * hard-to-debug errors. So resetting is a precaution against this scenario.
+         */
+        resetConfig();
     }
 
     private async initInjectableStrategies() {
@@ -83,6 +92,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
         const { healthChecks } = this.configService.systemOptions;
+        const { assetImportStrategy } = this.configService.importExportOptions;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
@@ -109,6 +119,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockAllocationStrategy,
             stockDisplayStrategy,
             ...healthChecks,
+            assetImportStrategy,
         ];
     }
 

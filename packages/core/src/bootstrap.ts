@@ -98,9 +98,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<VendureWorker> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
-    if (config.logger instanceof DefaultLogger) {
-        config.logger.setDefaultContext('Vendure Worker');
-    }
+    config.logger.setDefaultContext?.('Vendure Worker');
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
 

@@ -340,6 +340,53 @@ describe('Promotions applied to Orders', () => {
                 },
             ]);
         });
+
+        describe('coupon codes in other channels', () => {
+            const OTHER_CHANNEL_TOKEN = 'other-channel';
+            const OTHER_CHANNEL_COUPON_CODE = 'OTHER_CHANNEL_CODE';
+
+            beforeAll(async () => {
+                const { createChannel } = await adminClient.query<
+                    CreateChannel.Mutation,
+                    CreateChannel.Variables
+                >(CREATE_CHANNEL, {
+                    input: {
+                        code: 'other-channel',
+                        currencyCode: CurrencyCode.GBP,
+                        pricesIncludeTax: false,
+                        defaultTaxZoneId: 'T_1',
+                        defaultShippingZoneId: 'T_1',
+                        defaultLanguageCode: LanguageCode.en,
+                        token: OTHER_CHANNEL_TOKEN,
+                    },
+                });
+
+                await createPromotion({
+                    enabled: true,
+                    name: 'Other Channel Promo',
+                    couponCode: OTHER_CHANNEL_COUPON_CODE,
+                    conditions: [],
+                    actions: [freeOrderAction],
+                });
+            });
+
+            afterAll(() => {
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1692
+            it('does not allow a couponCode from another channel', async () => {
+                shopClient.setChannelToken(OTHER_CHANNEL_TOKEN);
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, {
+                    couponCode: OTHER_CHANNEL_COUPON_CODE,
+                });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+                expect(applyCouponCode!.errorCode).toEqual('COUPON_CODE_INVALID_ERROR');
+            });
+        });
     });
 
     describe('default PromotionConditions', () => {

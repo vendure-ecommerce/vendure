@@ -53,9 +53,9 @@ Vendure Create will guide you through the setup. When done, you can run:
 ```sh
 cd my-app
 
-yarn start
+yarn dev
 # or
-npm run start
+npm run dev
 ```
 
 Assuming the default config settings, you can now access:

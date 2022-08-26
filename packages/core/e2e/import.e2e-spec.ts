@@ -1,7 +1,9 @@
 import { omit } from '@vendure/common/lib/omit';
 import { User } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import * as fs from 'fs';
 import gql from 'graphql-tag';
+import http from 'http';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -407,4 +409,97 @@ describe('Import resolver', () => {
         // Import localeString custom fields
         expect(paperStretcher.customFields.localName).toEqual('纸张拉伸器');
     }, 20000);
+
+    describe('asset urls', () => {
+        let staticServer: http.Server;
+
+        beforeAll(() => {
+            // Set up minimal static file server
+            staticServer = http
+                .createServer((req, res) => {
+                    const filePath = path.join(__dirname, 'fixtures/assets', req?.url ?? '');
+                    fs.readFile(filePath, (err, data) => {
+                        if (err) {
+                            res.writeHead(404);
+                            res.end(JSON.stringify(err));
+                            return;
+                        }
+                        res.writeHead(200);
+                        res.end(data);
+                    });
+                })
+                .listen(3456);
+        });
+
+        afterAll(() => {
+            if (staticServer) {
+                return new Promise<void>((resolve, reject) => {
+                    staticServer.close(err => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+            }
+        });
+
+        it('imports assets with url paths', async () => {
+            const timeout = process.env.CI ? 2000 : 1000;
+            await new Promise(resolve => {
+                setTimeout(resolve, timeout);
+            });
+
+            const csvFile = path.join(__dirname, 'fixtures', 'e2e-product-import-asset-urls.csv');
+            const result = await adminClient.fileUploadMutation({
+                mutation: gql`
+                    mutation ImportProducts($csvFile: Upload!) {
+                        importProducts(csvFile: $csvFile) {
+                            imported
+                            processed
+                            errors
+                        }
+                    }
+                `,
+                filePaths: [csvFile],
+                mapVariables: () => ({ csvFile: null }),
+            });
+
+            expect(result.importProducts.errors).toEqual([]);
+            expect(result.importProducts.imported).toBe(1);
+            expect(result.importProducts.processed).toBe(1);
+
+            const productResult = await adminClient.query(
+                gql`
+                    query GetProducts($options: ProductListOptions) {
+                        products(options: $options) {
+                            totalItems
+                            items {
+                                id
+                                name
+                                featuredAsset {
+                                    id
+                                    name
+                                    preview
+                                }
+                            }
+                        }
+                    }
+                `,
+                {
+                    options: {
+                        filter: {
+                            name: { contains: 'guitar' },
+                        },
+                    },
+                },
+            );
+
+            expect(productResult.products.items.length).toBe(1);
+            expect(productResult.products.items[0].featuredAsset.preview).toBe(
+                'test-url/test-assets/guitar__preview.jpg',
+            );
+        });
+    });
 });

@@ -4,7 +4,7 @@ import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
-import { DocumentNode } from 'graphql';
+import { DocumentNode, GraphQLScalarType } from 'graphql';
 
 import { RuntimeVendureConfig } from '../config/vendure-config';
 
@@ -71,7 +71,16 @@ export interface APIExtensionDefinition {
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
      * classes, i.e. using the Nest `\@Resolver()` decorator etc.
      */
-    resolvers: Array<Type<any>> | (() => Array<Type<any>>);
+    resolvers?: Array<Type<any>> | (() => Array<Type<any>>);
+    /**
+     * @description
+     * A map of GraphQL scalar types which should correspond to any custom scalars defined in your schema.
+     * Read more about defining custom scalars in the
+     * [Apollo Server Custom Scalars docs](https://www.apollographql.com/docs/apollo-server/schema/custom-scalars)
+     *
+     * @since 1.7.0
+     */
+    scalars?: Record<string, GraphQLScalarType> | (() => Record<string, GraphQLScalarType>);
 }
 
 /**

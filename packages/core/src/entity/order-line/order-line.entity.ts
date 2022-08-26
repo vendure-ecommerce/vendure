@@ -6,6 +6,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
+import { Logger } from '../../config/index';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomOrderLineFields } from '../custom-entity-fields';
@@ -262,6 +263,11 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * Returns all non-cancelled OrderItems on this line.
      */
     get activeItems(): OrderItem[] {
+        if (this.items == null) {
+            Logger.warn(
+                `Attempted to access OrderLine.items without first joining the relation: { relations: ['items'] }`,
+            );
+        }
         return (this.items || []).filter(i => !i.cancelled);
     }
 

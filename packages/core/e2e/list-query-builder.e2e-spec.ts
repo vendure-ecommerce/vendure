@@ -964,7 +964,7 @@ describe('ListQueryBuilder', () => {
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/1611
-    xdescribe('translations handling', () => {
+    describe('translations handling', () => {
         const allTranslations = [
             [
                 { languageCode: LanguageCode.en, name: 'apple' },
@@ -975,6 +975,14 @@ describe('ListQueryBuilder', () => {
                 { languageCode: LanguageCode.de, name: 'fahrrad' },
             ],
         ];
+        function getTestEntityTranslations(testEntities: { items: any[] }) {
+            // Explicitly sort the order of the translations as it was being non-deterministic on
+            // the mysql CI tests.
+            return testEntities.items.map((e: any) =>
+                e.translations.sort((a: any, b: any) => (a.languageCode < b.languageCode ? 1 : -1)),
+            );
+        }
+
         it('returns all translations with default languageCode', async () => {
             const { testEntities } = await shopClient.query(GET_LIST_WITH_TRANSLATIONS, {
                 options: {
@@ -985,8 +993,9 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
+            const testEntityTranslations = getTestEntityTranslations(testEntities);
             expect(testEntities.items.map((e: any) => e.name)).toEqual(['apple', 'bike']);
-            expect(testEntities.items.map((e: any) => e.translations)).toEqual(allTranslations);
+            expect(testEntityTranslations).toEqual(allTranslations);
         });
         it('returns all translations with non-default languageCode', async () => {
             const { testEntities } = await shopClient.query(
@@ -1002,8 +1011,9 @@ describe('ListQueryBuilder', () => {
                 { languageCode: LanguageCode.de },
             );
 
+            const testEntityTranslations = getTestEntityTranslations(testEntities);
             expect(testEntities.items.map((e: any) => e.name)).toEqual(['apfel', 'fahrrad']);
-            expect(testEntities.items.map((e: any) => e.translations)).toEqual(allTranslations);
+            expect(testEntityTranslations).toEqual(allTranslations);
         });
     });
 });

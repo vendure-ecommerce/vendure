@@ -17,7 +17,7 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { ApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
 import { UserInputError } from '../../../common/error/errors';
-import { FilterParameter, ListQueryOptions, SortParameter } from '../../../common/types/common-types';
+import { ListQueryOptions, NullOptionals, SortParameter } from '../../../common/types/common-types';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFields } from '../../../config/index';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -66,7 +66,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      *
      * Example: we want to allow sort/filter by and Order's `customerLastName`. The actual lastName property is
      * not a column in the Order table, it exists on the Customer entity, and Order has a relation to Customer via
-     * `Order.customer`. Therefore we can define a customPropertyMap like this:
+     * `Order.customer`. Therefore, we can define a customPropertyMap like this:
      *
      * @example
      * ```GraphQL
@@ -90,7 +90,11 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      *   customPropertyMap: {
      *     // Tell TypeORM how to map that custom
      *     // sort/filter field to the property on a
-     *     // related entity
+     *     // related entity. Note that the `customer`
+     *     // part needs to match the *table name* of the
+     *     // related entity. So, e.g. if you are mapping to
+     *     // a `FacetValue` relation's `id` property, the value
+     *     // would be `facet_value.id`.
      *     customerLastName: 'customer.lastName',
      *   },
      * };
@@ -208,8 +212,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
-        this.applyTranslationConditions(qb, entity, extendedOptions.ctx, extendedOptions.entityAlias);
-
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
 
@@ -218,10 +220,18 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
         const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
+        const sortParams = Object.assign({}, options.sort, extendedOptions.orderBy);
+        this.applyTranslationConditions(
+            qb,
+            entity,
+            sortParams,
+            extendedOptions.ctx,
+            extendedOptions.entityAlias,
+        );
         const sort = parseSortParams(
             rawConnection,
             entity,
-            Object.assign({}, options.sort, extendedOptions.orderBy),
+            sortParams,
             customPropertyMap,
             entityAlias,
             customFieldsForType,
@@ -509,13 +519,15 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     }
 
     /**
-     * If this entity is Translatable, then we need to apply appropriate WHERE clauses to limit
-     * the joined translation relations. This method applies a simple "WHERE" on the languageCode
-     * in the case of the default language, otherwise we use a more complex.
+     * @description
+     * If this entity is Translatable, and we are sorting on one of the translatable fields,
+     * then we need to apply appropriate WHERE clauses to limit
+     * the joined translation relations.
      */
     private applyTranslationConditions<T extends VendureEntity>(
         qb: SelectQueryBuilder<any>,
         entity: Type<T>,
+        sortParams: NullOptionals<SortParameter<T>> & FindOneOptions<T>['order'],
         ctx?: RequestContext,
         entityAlias?: string,
     ) {
@@ -528,7 +540,15 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         } = getColumnMetadata(this.connection.rawConnection, entity);
         const alias = entityAlias ?? defaultAlias;
 
-        if (translationColumns.length) {
+        const sortKeys = Object.keys(sortParams);
+        let sortingOnTranslatableKey = false;
+        for (const translationColumn of translationColumns) {
+            if (sortKeys.includes(translationColumn.propertyName)) {
+                sortingOnTranslatableKey = true;
+            }
+        }
+
+        if (translationColumns.length && sortingOnTranslatableKey) {
             const translationsAlias = qb.connection.namingStrategy.eagerJoinRelationAlias(
                 alias,
                 'translations',
@@ -580,7 +600,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     }
                     qb.setParameters({
                         nonDefaultLanguageCode: languageCode,
-                        defaultLanguageCode: this.configService.defaultLanguageCode,
+                        defaultLanguageCode,
                     });
                 }),
             );

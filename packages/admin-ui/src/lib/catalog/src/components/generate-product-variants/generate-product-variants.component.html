@@ -2,6 +2,7 @@
     <div class="name">
         <label>{{ 'catalog.option' | translate }}</label>
         <input
+            #optionGroupName
             placeholder="e.g. Size"
             clrInput
             [(ngModel)]="group.name"
@@ -16,6 +17,7 @@
             #optionValueInputComponent
             [(ngModel)]="group.values"
             (ngModelChange)="generateVariants()"
+            (edit)="generateVariants()"
             [groupName]="group.name"
             [disabled]="group.name === ''"
         ></vdr-option-value-input>

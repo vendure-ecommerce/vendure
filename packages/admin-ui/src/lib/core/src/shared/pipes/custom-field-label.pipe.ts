@@ -1,8 +1,6 @@
-import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Pipe, PipeTransform } from '@angular/core';
 
 import { CustomFieldConfig, LanguageCode, StringFieldOption } from '../../common/generated-types';
-import { DataService } from '../../data/providers/data.service';
 
 /**
  * Displays a localized label for a CustomField or StringFieldOption, falling back to the
@@ -10,35 +8,20 @@ import { DataService } from '../../data/providers/data.service';
  */
 @Pipe({
     name: 'customFieldLabel',
-    pure: false,
+    pure: true,
 })
-export class CustomFieldLabelPipe implements PipeTransform, OnDestroy {
-    private readonly subscription: Subscription;
-    private uiLanguageCode: LanguageCode;
-
-    constructor(private dataService: DataService) {
-        this.subscription = dataService.client.uiState().stream$.subscribe(val => {
-            this.uiLanguageCode = val.uiState.language;
-        });
-    }
-
-    transform(value: CustomFieldConfig | StringFieldOption): string {
+export class CustomFieldLabelPipe implements PipeTransform {
+    transform(value: CustomFieldConfig | StringFieldOption, uiLanguageCode: LanguageCode | null): string {
         if (!value) {
             return value;
         }
         const { label } = value;
         const name = this.isCustomFieldConfig(value) ? value.name : value.value;
         if (label) {
-            const match = label.find(l => l.languageCode === this.uiLanguageCode);
+            const match = label.find(l => l.languageCode === uiLanguageCode);
             return match ? match.value : label[0].value;
         } else {
             return name;
-        }
-    }
-
-    ngOnDestroy(): void {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
         }
     }
 

@@ -20,18 +20,22 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
+    failsToCancelPaymentMethod,
     failsToSettlePaymentMethod,
+    onCancelPaymentSpy,
     onTransitionSpy,
     partialPaymentMethod,
     singleStageRefundablePaymentMethod,
     singleStageRefundFailingPaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
-import { FULFILLMENT_FRAGMENT } from './graphql/fragments';
+import { FULFILLMENT_FRAGMENT, PAYMENT_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToOrder,
     CanceledOrderFragment,
     CancelOrder,
+    CancelPaymentMutation,
+    CancelPaymentMutationVariables,
     CreateFulfillment,
     CreateShippingMethod,
     DeleteOrderNote,
@@ -43,10 +47,16 @@ import {
     GetOrder,
     GetOrderFulfillmentItems,
     GetOrderFulfillments,
+    GetOrderFulfillmentsQuery,
+    GetOrderFulfillmentsQueryVariables,
     GetOrderHistory,
+    GetOrderLineFulfillmentsQuery,
+    GetOrderLineFulfillmentsQueryVariables,
     GetOrderList,
     GetOrderListFulfillments,
     GetOrderListWithQty,
+    GetOrderQuery,
+    GetOrderQueryVariables,
     GetOrderWithPayments,
     GetProductWithVariants,
     GetStockMovement,
@@ -62,6 +72,8 @@ import {
     SortOrder,
     StockMovementType,
     TransitFulfillment,
+    TransitionPaymentToStateMutation,
+    TransitionPaymentToStateMutationVariables,
     UpdateOrderNote,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
@@ -95,6 +107,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
+    TRANSITION_PAYMENT_TO_STATE,
     TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -123,6 +136,7 @@ describe('Orders resolver', () => {
                     singleStageRefundablePaymentMethod,
                     partialPaymentMethod,
                     singleStageRefundFailingPaymentMethod,
+                    failsToCancelPaymentMethod,
                 ],
             },
         }),
@@ -151,6 +165,10 @@ describe('Orders resolver', () => {
                     {
                         name: failsToSettlePaymentMethod.code,
                         handler: { code: failsToSettlePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: failsToCancelPaymentMethod.code,
+                        handler: { code: failsToCancelPaymentMethod.code, arguments: [] },
                     },
                     {
                         name: singleStageRefundablePaymentMethod.code,
@@ -572,6 +590,23 @@ describe('Orders resolver', () => {
                 },
             ]);
         });
+
+        it('filter by transactionId', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            transactionId: {
+                                eq: '12345-' + firstOrderCode,
+                            },
+                        },
+                    },
+                },
+            );
+            expect(result.orders.totalItems).toEqual(1);
+            expect(result.orders.items[0].code).toBe(firstOrderCode);
+        });
     });
 
     describe('fulfillment', () => {
@@ -719,10 +754,39 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(order?.fulfillments?.map(pick(['id', 'state']))).toEqual([
+            expect(order?.fulfillments?.sort(sortById).map(pick(['id', 'state']))).toEqual([
                 { id: f1Id, state: 'Pending' },
                 { id: f2Id, state: 'Cancelled' },
             ]);
+        });
+
+        it('order.fulfillments.summary', async () => {
+            const { order } = await adminClient.query<
+                GetOrderFulfillmentsQuery,
+                GetOrderFulfillmentsQueryVariables
+            >(GET_ORDER_FULFILLMENTS, {
+                id: orderId,
+            });
+
+            expect(order?.fulfillments?.sort(sortById).map(pick(['id', 'state', 'summary']))).toEqual([
+                { id: f1Id, state: 'Pending', summary: [{ orderLine: { id: 'T_3' }, quantity: 1 }] },
+                { id: f2Id, state: 'Cancelled', summary: [{ orderLine: { id: 'T_4' }, quantity: 3 }] },
+            ]);
+        });
+
+        it('lines.fulfillments', async () => {
+            const { order } = await adminClient.query<
+                GetOrderLineFulfillmentsQuery,
+                GetOrderLineFulfillmentsQueryVariables
+            >(GET_ORDER_LINE_FULFILLMENTS, {
+                id: orderId,
+            });
+
+            expect(order?.lines.find(l => l.id === 'T_3')!.fulfillments).toEqual([
+                { id: f1Id, state: 'Pending', summary: [{ orderLine: { id: 'T_3' }, quantity: 1 }] },
+            ]);
+            // Cancelled Fulfillments do not appear in the line field
+            expect(order?.lines.find(l => l.id === 'T_4')!.fulfillments).toEqual([]);
         });
 
         it('creates third fulfillment with same items from second fulfillment', async () => {
@@ -988,7 +1052,9 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(order!.fulfillments?.sort(sortById)).toEqual([
+            expect(
+                order!.fulfillments?.sort(sortById).map(pick(['id', 'method', 'state', 'nextStates'])),
+            ).toEqual([
                 { id: f1Id, method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
                 { id: f2Id, method: 'Test2', state: 'Cancelled', nextStates: [] },
                 { id: f3Id, method: 'Test3', state: 'Delivered', nextStates: ['Cancelled'] },
@@ -1001,7 +1067,7 @@ describe('Orders resolver', () => {
             );
 
             expect(orders.items[0].fulfillments).toEqual([]);
-            expect(orders.items[1].fulfillments).toEqual([
+            expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([
                 { id: f1Id, method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
                 { id: f2Id, method: 'Test2', state: 'Cancelled', nextStates: [] },
                 { id: f3Id, method: 'Test3', state: 'Delivered', nextStates: ['Cancelled'] },
@@ -1015,9 +1081,10 @@ describe('Orders resolver', () => {
             >(GET_ORDER_FULFILLMENT_ITEMS, {
                 id: orderId,
             });
-            expect(order!.fulfillments![0].orderItems).toEqual([{ id: 'T_3' }]);
-            expect(order!.fulfillments![1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
-            expect(order!.fulfillments![2].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
+            const sortedFulfillments = order!.fulfillments!.sort(sortById);
+            expect(sortedFulfillments[0].orderItems).toEqual([{ id: 'T_3' }]);
+            expect(sortedFulfillments[1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
+            expect(sortedFulfillments[2].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
         });
 
         it('order.line.items.fulfillment resolver', async () => {
@@ -1786,6 +1853,60 @@ describe('Orders resolver', () => {
         });
     });
 
+    describe('payment cancellation', () => {
+        it("cancelling payment calls the method's cancelPayment handler", async () => {
+            await createTestOrder(adminClient, shopClient, customers[0].emailAddress, password);
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentAuthorized');
+            const paymentId = order.payments![0].id;
+
+            expect(onCancelPaymentSpy).not.toHaveBeenCalled();
+
+            const { cancelPayment } = await adminClient.query<
+                CancelPaymentMutation,
+                CancelPaymentMutationVariables
+            >(CANCEL_PAYMENT, {
+                paymentId,
+            });
+
+            paymentGuard.assertSuccess(cancelPayment);
+            expect(cancelPayment.state).toBe('Cancelled');
+            expect(cancelPayment.metadata.cancellationCode).toBe('12345');
+            expect(onCancelPaymentSpy).toHaveBeenCalledTimes(1);
+        });
+
+        it('cancellation failure', async () => {
+            await createTestOrder(adminClient, shopClient, customers[0].emailAddress, password);
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, failsToCancelPaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            expect(order.state).toBe('PaymentAuthorized');
+            const paymentId = order.payments![0].id;
+
+            const { cancelPayment } = await adminClient.query<
+                CancelPaymentMutation,
+                CancelPaymentMutationVariables
+            >(CANCEL_PAYMENT, {
+                paymentId,
+            });
+
+            paymentGuard.assertErrorResult(cancelPayment);
+            expect(cancelPayment.message).toBe('Cancelling the payment failed');
+            const { order: checkorder } = await adminClient.query<GetOrderQuery, GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: order.id,
+                },
+            );
+            expect(checkorder!.payments![0].state).toBe('Authorized');
+            expect(checkorder!.payments![0].metadata).toEqual({ cancellationData: 'foo' });
+        });
+    });
+
     describe('order notes', () => {
         let orderId: string;
         let firstNoteId: string;
@@ -2342,6 +2463,61 @@ describe('Orders resolver', () => {
                     .price,
             ).toBe(108720);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1558
+        it('cancelling OrderItem avoids items that have been fulfilled', async () => {
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                CREATE_FULFILLMENT,
+                {
+                    input: {
+                        lines: [
+                            {
+                                orderLineId: order.lines[0].id,
+                                quantity: 1,
+                            },
+                        ],
+                        handler: {
+                            code: manualFulfillmentHandler.code,
+                            arguments: [{ name: 'method', value: 'Test' }],
+                        },
+                    },
+                },
+            );
+
+            const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(
+                CANCEL_ORDER,
+                {
+                    input: {
+                        orderId: order.id,
+                        lines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(cancelOrder);
+
+            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: order.id,
+            });
+
+            const items = order2!.lines[0].items;
+            const itemWhichIsCancelledAndFulfilled = items.find(
+                i => i.cancelled === true && i.fulfillment != null,
+            );
+            expect(itemWhichIsCancelledAndFulfilled).toBeUndefined();
+        });
     });
 });
 
@@ -2522,6 +2698,27 @@ const GET_ORDER_WITH_PAYMENTS = gql`
     }
 `;
 
+export const GET_ORDER_LINE_FULFILLMENTS = gql`
+    query GetOrderLineFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            lines {
+                id
+                fulfillments {
+                    id
+                    state
+                    summary {
+                        orderLine {
+                            id
+                        }
+                        quantity
+                    }
+                }
+            }
+        }
+    }
+`;
+
 const GET_ORDERS_LIST_WITH_QUANTITIES = gql`
     query GetOrderListWithQty($options: OrderListOptions) {
         orders(options: $options) {
@@ -2536,4 +2733,23 @@ const GET_ORDERS_LIST_WITH_QUANTITIES = gql`
             }
         }
     }
+`;
+
+const CANCEL_PAYMENT = gql`
+    mutation CancelPayment($paymentId: ID!) {
+        cancelPayment(id: $paymentId) {
+            ...Payment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on PaymentStateTransitionError {
+                transitionError
+            }
+            ... on CancelPaymentError {
+                paymentErrorMessage
+            }
+        }
+    }
+    ${PAYMENT_FRAGMENT}
 `;

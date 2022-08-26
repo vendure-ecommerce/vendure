@@ -5,9 +5,11 @@ import {
     SUPER_ADMIN_USER_PASSWORD,
 } from '@vendure/common/lib/shared-constants';
 
+import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 
+import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
@@ -32,7 +34,6 @@ import { defaultPromotionActions, defaultPromotionConditions } from './promotion
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
-import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { DefaultTaxLineCalculationStrategy } from './tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { RuntimeVendureConfig } from './vendure-config';
@@ -148,6 +149,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     importExportOptions: {
         importAssetsDir: __dirname,
+        assetImportStrategy: new DefaultAssetImportStrategy(),
     },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),

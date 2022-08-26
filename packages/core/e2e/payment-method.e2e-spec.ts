@@ -66,7 +66,7 @@ describe('PaymentMethod resolver', () => {
 
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
-        logger: new DefaultLogger(),
+        // logger: new DefaultLogger(),
         paymentOptions: {
             paymentMethodEligibilityCheckers: [minPriceChecker],
             paymentMethodHandlers: [dummyPaymentHandler],

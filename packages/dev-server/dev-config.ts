@@ -66,8 +66,8 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
-        BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin.init(),
+        // BullMQJobQueuePlugin.init({}),
+        DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',

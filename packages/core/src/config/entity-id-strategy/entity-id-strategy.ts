@@ -12,6 +12,13 @@ export type PrimaryKeyType<T> = T extends 'uuid' ? string : T extends 'increment
  * but custom strategies can be used, e.g. to apply some custom encoding to the ID before exposing
  * it in the GraphQL API.
  *
+ * {{% alert "warning" %}}
+ * Note: changing from an integer-based strategy to a uuid-based strategy
+ * on an existing Vendure database will lead to problems with broken foreign-key
+ * references. To change primary key types like this, you'll need to start with
+ * a fresh database.
+ * {{% /alert %}}
+ *
  * @docsCategory configuration
  * @docsPage EntityIdStrategy
  * */

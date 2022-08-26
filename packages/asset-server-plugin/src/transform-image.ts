@@ -1,6 +1,7 @@
 import sharp, { Region, ResizeOptions } from 'sharp';
 
-import { ImageTransformPreset } from './types';
+import { getValidFormat } from './common';
+import { ImageTransformFormat, ImageTransformPreset } from './types';
 
 export type Dimensions = { w: number; h: number };
 export type Point = { x: number; y: number };
@@ -18,6 +19,7 @@ export async function transformImage(
     let mode = queryParams.mode || 'crop';
     const fpx = +queryParams.fpx || undefined;
     const fpy = +queryParams.fpy || undefined;
+    const imageFormat = getValidFormat(queryParams.format);
     if (queryParams.preset) {
         const matchingPreset = presets.find(p => p.name === queryParams.preset);
         if (matchingPreset) {
@@ -34,6 +36,7 @@ export async function transformImage(
     }
 
     const image = sharp(originalImage);
+    applyFormat(image, imageFormat);
     if (fpx && fpy && targetWidth && targetHeight && mode === 'crop') {
         const metadata = await image.metadata();
         if (metadata.width && metadata.height) {
@@ -49,6 +52,22 @@ export async function transformImage(
     }
 
     return image.resize(targetWidth, targetHeight, options);
+}
+
+function applyFormat(image: sharp.Sharp, format: ImageTransformFormat | undefined) {
+    switch (format) {
+        case 'jpg':
+        case 'jpeg':
+            return image.jpeg();
+        case 'png':
+            return image.png();
+        case 'webp':
+            return image.webp();
+        case 'avif':
+            return image.avif();
+        default:
+            return image;
+    }
 }
 
 /**

@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '../config/logger/vendure-logger';
 import { TransactionalConnection } from '../connection/transactional-connection';
 import { Administrator } from '../entity/administrator/administrator.entity';
+import { EventBus } from '../event-bus';
+import { InitializerEvent } from '../event-bus/events/initializer-event';
 
 import { AdministratorService } from './services/administrator.service';
 import { ChannelService } from './services/channel.service';
@@ -25,6 +27,7 @@ export class InitializerService {
         private administratorService: AdministratorService,
         private shippingMethodService: ShippingMethodService,
         private globalSettingsService: GlobalSettingsService,
+        private eventBus: EventBus,
     ) {}
 
     async onModuleInit() {
@@ -41,6 +44,7 @@ export class InitializerService {
         await this.roleService.initRoles();
         await this.administratorService.initAdministrators();
         await this.shippingMethodService.initShippingMethods();
+        this.eventBus.publish(new InitializerEvent());
     }
 
     /**

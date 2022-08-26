@@ -14,7 +14,7 @@
 }
 vdr-breadcrumb {
     @media screen and (min-width: $breakpoint-small){
-        margin-left: 10.8rem;
+        margin-left: $clr-sidenav-width;
     }
 }
 .header-actions {

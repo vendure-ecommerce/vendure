@@ -4,13 +4,13 @@ This is the administration interface for Vendure.
 
 It is an Angular application built with the Angular CLI.
 
-The UI is powered by the [Clarity Design System](https://vmware.github.io/clarity/).
+The UI is powered by the [Clarity Design System](https://clarity.design).
 
 ## Structure
 
 ### Library
 
-The Admin UI is structured as an Angular library conforming to the [ng-packagr format](https://github.com/ng-packagr/ng-packagr). This library is what is published to npm as `@vendure/admin-ui`. The libary consists
+The Admin UI is structured as an Angular library conforming to the [ng-packagr format](https://github.com/ng-packagr/ng-packagr). This library is what is published to npm as `@vendure/admin-ui`. The library consists
 of a set of modules which are accessible from consuming applications as sub-packages:
 
 * `@vendure/admin-ui/core`

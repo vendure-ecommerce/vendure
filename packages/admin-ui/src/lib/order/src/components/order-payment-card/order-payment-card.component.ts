@@ -23,6 +23,6 @@ export class OrderPaymentCardComponent {
         if (!this.payment) {
             return [];
         }
-        return this.payment.nextStates.filter(s => s !== 'Settled');
+        return this.payment.nextStates.filter(s => s !== 'Settled' && s !== 'Error');
     }
 }

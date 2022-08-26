@@ -1,0 +1,9 @@
+FROM node:16
+
+WORKDIR /usr/src/app
+
+COPY package.json ./
+COPY {{#if useYarn}}yarn.lock{{else}}package-lock.json{{/if}} ./
+RUN {{#if useYarn}}yarn{{else}}npm install{{/if}}
+COPY . .
+RUN {{#if useYarn}}yarn{{else}}npm run{{/if}} build

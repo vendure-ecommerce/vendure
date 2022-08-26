@@ -15,7 +15,7 @@ import {
  */
 export function getConfigArgValue(value: any) {
     try {
-        return value ? JSON.parse(value) : undefined;
+        return value != null ? JSON.parse(value) : undefined;
     } catch (e) {
         return value;
     }
@@ -56,7 +56,7 @@ export function configurableDefinitionToInstance(
  * ```
  * {
  *     code: 'my-operation',
- *     args: [
+ *     arguments: [
  *         { name: 'someProperty', value: 'foo' }
  *     ]
  * }
@@ -64,16 +64,19 @@ export function configurableDefinitionToInstance(
  */
 export function toConfigurableOperationInput(
     operation: ConfigurableOperation,
-    formValueOperations: any,
+    formValueOperations: { args: Record<string, any> },
 ): ConfigurableOperationInput {
     return {
         code: operation.code,
-        arguments: Object.values<any>(formValueOperations.args || {}).map((value, j) => ({
-            name: operation.args[j].name,
-            value: value?.hasOwnProperty('value')
-                ? encodeConfigArgValue((value as any).value)
-                : encodeConfigArgValue(value),
-        })),
+        arguments: operation.args.map(({ name, value }, j) => {
+            const formValue = formValueOperations.args[name];
+            return {
+                name,
+                value: formValue?.hasOwnProperty('value')
+                    ? encodeConfigArgValue((formValue as any).value)
+                    : encodeConfigArgValue(formValue),
+            };
+        }),
     };
 }
 
@@ -103,7 +106,7 @@ export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
     if (arg.list) {
         return [];
     }
-    if (arg.defaultValue) {
+    if (arg.defaultValue != null) {
         return arg.defaultValue;
     }
     const type = arg.type as ConfigArgType;

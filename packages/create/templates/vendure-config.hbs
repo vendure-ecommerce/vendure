@@ -1,77 +1,73 @@
-{{#if isTs }}import{{ else }}const{{/if}} {
+import {
     dummyPaymentHandler,
     DefaultJobQueuePlugin,
-    DefaultSearchPlugin,{{#if isTs}}
-    VendureConfig,{{/if}}
-} {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
-{{#if isTs }}
+    DefaultSearchPlugin,
+    VendureConfig,
+} from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
-{{ else }}
-const { defaultEmailHandlers, EmailPlugin } = require('@vendure/email-plugin');
-{{/if}}
-{{#if isTs }}
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
-{{ else }}
-const { AssetServerPlugin } = require('@vendure/asset-server-plugin');
-{{/if}}
-{{#if isTs }}
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-{{ else }}
-const { AdminUiPlugin } = require('@vendure/admin-ui-plugin');
-{{/if}}
-{{#if isTs }}
+import 'dotenv/config';
 import path from 'path';
-{{ else }}
-const path = require('path');
-{{/if}}
 
-{{#if isTs}}export {{/if}}const config{{#if isTs}}: VendureConfig{{/if}} = {
+const IS_DEV = process.env.APP_ENV === 'dev';
+
+export const config: VendureConfig = {
     apiOptions: {
         port: 3000,
         adminApiPath: 'admin-api',
-        adminApiPlayground: {
-            settings: {
-                'request.credentials': 'include',
-            }{{#if isTs}} as any{{/if}},
-        },// turn this off for production
-        adminApiDebug: true, // turn this off for production
         shopApiPath: 'shop-api',
-        shopApiPlayground: {
-            settings: {
-                'request.credentials': 'include',
-            }{{#if isTs}} as any{{/if}},
-        },// turn this off for production
-        shopApiDebug: true,// turn this off for production
+        // The following options are useful in development mode,
+        // but are best turned off for production for security
+        // reasons.
+        ...(IS_DEV ? {
+            adminApiPlayground: {
+                settings: { 'request.credentials': 'include' } as any,
+            },
+            adminApiDebug: true,
+            shopApiPlayground: {
+                settings: { 'request.credentials': 'include' } as any,
+            },
+            shopApiDebug: true,
+        } : {}),
     },
     authOptions: {
+        tokenMethod: ['bearer', 'cookie'],
         superadminCredentials: {
-            identifier: '{{{ escapeSingle superadminIdentifier }}}',
-            password: '{{{ escapeSingle superadminPassword }}}',
+            identifier: process.env.SUPERADMIN_USERNAME,
+            password: process.env.SUPERADMIN_PASSWORD,
         },
         cookieOptions: {
-          secret: process.env.COOKIE_SECRET || 'cookie-secret',
+          secret: process.env.COOKIE_SECRET,
         },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
-        synchronize: true, // turn this off for production
+        // See the README.md "Migrations" section for an explanation of
+        // the `synchronize` and `migrations` options.
+        synchronize: false,
+        migrations: [path.join(__dirname, './migrations/*.ts')],
         logging: false,
-        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}'{{{ escapeSingle dbName }}}'{{/if}},
+        database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}process.env.DB_NAME{{/if}},
+        {{#if dbSchema}}
+        schema: process.env.DB_SCHEMA,
+        {{/if}}
         {{#if isSQLjs}}
         location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,
         {{/if}}
         {{#if requiresConnection}}
-        host: '{{ dbHost }}',
-        port: {{ dbPort }},
-        username: '{{{ escapeSingle dbUserName }}}',
-        password: '{{{ escapeSingle dbPassword }}}',
+        host: process.env.DB_HOST,
+        port: +process.env.DB_PORT,
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
         {{/if}}
-        migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
+    // When adding or altering custom field definitions, the database will
+    // need to be updated. See the "Migrations" section in README.md.
     customFields: {},
     plugins: [
         AssetServerPlugin.init({
@@ -87,7 +83,8 @@ const path = require('path');
             handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../static/email/templates'),
             globalTemplateVars: {
-                // The following variables will change depending on your storefront implementation
+                // The following variables will change depending on your storefront implementation.
+                // Here we are assuming a storefront running at http://localhost:8080.
                 fromAddress: '"example" <noreply@example.com>',
                 verifyEmailAddressUrl: 'http://localhost:8080/verify',
                 passwordResetUrl: 'http://localhost:8080/password-reset',
@@ -100,8 +97,3 @@ const path = require('path');
         }),
     ],
 };
-{{#if isTs}}
-{{else}}
-
-module.exports = { config };
-{{/if}}

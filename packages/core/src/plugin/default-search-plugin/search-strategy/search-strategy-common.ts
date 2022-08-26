@@ -22,6 +22,14 @@ export const fieldsToSelect = [
     'productVariantPreviewFocalPoint',
 ];
 
+export const identifierFields = [
+    'channelId',
+    'productVariantId',
+    'productId',
+    'productAssetId',
+    'productVariantAssetId',
+]
+
 export function getFieldsToSelect(includeStockStatus: boolean = false) {
     return includeStockStatus ? [...fieldsToSelect, 'inStock', 'productInStock'] : fieldsToSelect;
 }

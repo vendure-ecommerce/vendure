@@ -512,6 +512,12 @@ export const GET_ORDER_FULFILLMENTS = gql`
                 state
                 nextStates
                 method
+                summary {
+                    orderLine {
+                        id
+                    }
+                    quantity
+                }
             }
         }
     }
@@ -949,4 +955,20 @@ export const GET_COLLECTIONS = gql`
             }
         }
     }
+`;
+
+export const TRANSITION_PAYMENT_TO_STATE = gql`
+    mutation TransitionPaymentToState($id: ID!, $state: String!) {
+        transitionPaymentToState(id: $id, state: $state) {
+            ...Payment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on PaymentStateTransitionError {
+                transitionError
+            }
+        }
+    }
+    ${PAYMENT_FRAGMENT}
 `;

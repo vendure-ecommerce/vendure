@@ -79,7 +79,10 @@ export class ShopProductsResolver {
     async collections(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionsArgs,
-        @Relations({ entity: Collection, omit: ['productVariants', 'assets'] })
+        @Relations({
+            entity: Collection,
+            omit: ['productVariants', 'assets', 'parent.productVariants', 'children.productVariants'],
+        })
         relations: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
         const options: ListQueryOptions<Collection> = {
@@ -96,7 +99,10 @@ export class ShopProductsResolver {
     async collection(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionArgs,
-        @Relations({ entity: Collection, omit: ['productVariants', 'assets'] })
+        @Relations({
+            entity: Collection,
+            omit: ['productVariants', 'assets', 'parent.productVariants', 'children.productVariants'],
+        })
         relations: RelationPaths<Collection>,
     ): Promise<Translated<Collection> | undefined> {
         let collection: Translated<Collection> | undefined;

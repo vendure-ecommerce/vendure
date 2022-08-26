@@ -9,20 +9,20 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {
     [K in keyof T]: T[K] extends string ? never :
-    T[K] extends number ? never :
-    T[K] extends boolean ? never :
-    T[K] extends undefined ? never :
-    T[K] extends string[] ? never :
-    T[K] extends number[] ? never :
-    T[K] extends boolean[] ? never :
-    K extends 'translations' ? never :
-    K extends 'customFields' ? never : K
+        T[K] extends number ? never :
+            T[K] extends boolean ? never :
+                T[K] extends undefined ? never :
+                    T[K] extends string[] ? never :
+                        T[K] extends number[] ? never :
+                            T[K] extends boolean[] ? never :
+                                K extends 'translations' ? never :
+                                    K extends 'customFields' ? never : K
 }[keyof T];
 
 // prettier-ignore
 export type NestedTranslatableRelations<T> = {
     [K in TranslatableRelationsKeys<T>]: T[K] extends any[] ?
-        [K, TranslatableRelationsKeys<UnwrappedArray<T[K]>>]:
+        [K, TranslatableRelationsKeys<UnwrappedArray<T[K]>>] :
         [K, TranslatableRelationsKeys<T[K]>]
 };
 
@@ -38,11 +38,19 @@ export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | 
  */
 export function translateEntity<T extends Translatable & VendureEntity>(
     translatable: T,
-    languageCode: LanguageCode,
+    languageCode: LanguageCode | [LanguageCode, ...LanguageCode[]],
 ): Translated<T> {
     let translation: Translation<VendureEntity> | undefined;
     if (translatable.translations) {
-        translation = translatable.translations.find(t => t.languageCode === languageCode);
+        if (Array.isArray(languageCode)) {
+            for (const lc of languageCode) {
+                translation = translatable.translations.find(t => t.languageCode === lc);
+                if (translation) break;
+            }
+        } else {
+            translation = translatable.translations.find(t => t.languageCode === languageCode);
+        }
+
         if (!translation && languageCode !== DEFAULT_LANGUAGE_CODE) {
             translation = translatable.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
         }
@@ -56,7 +64,7 @@ export function translateEntity<T extends Translatable & VendureEntity>(
     if (!translation) {
         throw new InternalServerError(`error.entity-has-no-translation-in-language`, {
             entityName: translatable.constructor.name,
-            languageCode,
+            languageCode: Array.isArray(languageCode) ? languageCode.join() : languageCode,
         });
     }
 
@@ -83,7 +91,7 @@ export function translateEntity<T extends Translatable & VendureEntity>(
  */
 export function translateDeep<T extends Translatable & VendureEntity>(
     translatable: T,
-    languageCode: LanguageCode,
+    languageCode: LanguageCode | [LanguageCode, ...LanguageCode[]],
     translatableRelations: DeepTranslatableRelations<T> = [],
 ): Translated<T> {
     let translatedEntity: Translated<T>;
@@ -132,7 +140,7 @@ export function translateDeep<T extends Translatable & VendureEntity>(
 function translateLeaf(
     object: { [key: string]: any } | undefined,
     property: string,
-    languageCode: LanguageCode,
+    languageCode: LanguageCode | [LanguageCode, ...LanguageCode[]],
 ): any {
     if (object && object[property]) {
         if (Array.isArray(object[property])) {
@@ -150,7 +158,7 @@ export type TreeNode = { children: TreeNode[] } & Translatable & VendureEntity;
  */
 export function translateTree<T extends TreeNode>(
     node: T,
-    languageCode: LanguageCode,
+    languageCode: LanguageCode | [LanguageCode, ...LanguageCode[]],
     translatableRelations: DeepTranslatableRelations<T> = [],
 ): Translated<T> {
     const output = translateDeep(node, languageCode, translatableRelations);

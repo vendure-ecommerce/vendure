@@ -1,8 +1,7 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 
-import { CurrencyCode } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { OptionValueInputComponent } from '../option-value-input/option-value-input.component';
 
 const DEFAULT_VARIANT_CODE = '__DEFAULT_VARIANT__';
@@ -25,6 +24,7 @@ export type CreateProductVariantsConfig = {
 })
 export class GenerateProductVariantsComponent implements OnInit {
     @Output() variantsChange = new EventEmitter<CreateProductVariantsConfig>();
+    @ViewChildren('optionGroupName', { read: ElementRef }) groupNameInputs: QueryList<ElementRef>;
     optionGroups: Array<{ name: string; values: Array<{ name: string; locked: boolean }> }> = [];
     currencyCode: CurrencyCode;
     variants: Array<{ id: string; values: string[] }>;
@@ -41,6 +41,11 @@ export class GenerateProductVariantsComponent implements OnInit {
 
     addOption() {
         this.optionGroups.push({ name: '', values: [] });
+        const index = this.optionGroups.length - 1;
+        setTimeout(() => {
+            const input = this.groupNameInputs.get(index)?.nativeElement;
+            input?.focus();
+        });
     }
 
     removeOption(name: string) {

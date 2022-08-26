@@ -4,6 +4,7 @@ import {
     AddNoteToOrderInput,
     CancelOrder,
     CancelOrderInput,
+    CancelPayment,
     CreateFulfillment,
     DeleteOrderNote,
     FulfillOrderInput,
@@ -33,6 +34,7 @@ import {
     ADD_MANUAL_PAYMENT_TO_ORDER,
     ADD_NOTE_TO_ORDER,
     CANCEL_ORDER,
+    CANCEL_PAYMENT,
     CREATE_FULFILLMENT,
     DELETE_ORDER_NOTE,
     GET_ORDER,
@@ -77,6 +79,12 @@ export class OrderDataService {
 
     settlePayment(id: string) {
         return this.baseDataService.mutate<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+            id,
+        });
+    }
+
+    cancelPayment(id: string) {
+        return this.baseDataService.mutate<CancelPayment.Mutation, CancelPayment.Variables>(CANCEL_PAYMENT, {
             id,
         });
     }

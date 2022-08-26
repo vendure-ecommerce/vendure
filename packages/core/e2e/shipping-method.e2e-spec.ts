@@ -338,6 +338,132 @@ describe('ShippingMethod resolver', () => {
         const listResult2 = await adminClient.query<GetShippingMethodList.Query>(GET_SHIPPING_METHOD_LIST);
         expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2']);
     });
+
+    describe('argument ordering', () => {
+        it('createShippingMethod corrects order of arguments', async () => {
+            const { createShippingMethod } = await adminClient.query<
+                CreateShippingMethod.Mutation,
+                CreateShippingMethod.Variables
+            >(CREATE_SHIPPING_METHOD, {
+                input: {
+                    code: 'new-method',
+                    fulfillmentHandler: manualFulfillmentHandler.code,
+                    checker: {
+                        code: defaultShippingEligibilityChecker.code,
+                        arguments: [
+                            {
+                                name: 'orderMinimum',
+                                value: '0',
+                            },
+                        ],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '500' },
+                            { name: 'taxRate', value: '20' },
+                            { name: 'includesTax', value: 'include' },
+                        ],
+                    },
+                    translations: [{ languageCode: LanguageCode.en, name: 'new method', description: '' }],
+                },
+            });
+
+            expect(createShippingMethod.calculator).toEqual({
+                code: defaultShippingCalculator.code,
+                args: [
+                    { name: 'rate', value: '500' },
+                    { name: 'includesTax', value: 'include' },
+                    { name: 'taxRate', value: '20' },
+                ],
+            });
+        });
+
+        it('updateShippingMethod corrects order of arguments', async () => {
+            const { updateShippingMethod } = await adminClient.query<
+                UpdateShippingMethod.Mutation,
+                UpdateShippingMethod.Variables
+            >(UPDATE_SHIPPING_METHOD, {
+                input: {
+                    id: 'T_4',
+                    translations: [],
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '500' },
+                            { name: 'taxRate', value: '20' },
+                            { name: 'includesTax', value: 'include' },
+                        ],
+                    },
+                },
+            });
+
+            expect(updateShippingMethod.calculator).toEqual({
+                code: defaultShippingCalculator.code,
+                args: [
+                    { name: 'rate', value: '500' },
+                    { name: 'includesTax', value: 'include' },
+                    { name: 'taxRate', value: '20' },
+                ],
+            });
+        });
+
+        it('get shippingMethod preserves correct ordering', async () => {
+            const { shippingMethod } = await adminClient.query<
+                GetShippingMethod.Query,
+                GetShippingMethod.Variables
+            >(GET_SHIPPING_METHOD, {
+                id: 'T_4',
+            });
+
+            expect(shippingMethod?.calculator.args).toEqual([
+                { name: 'rate', value: '500' },
+                { name: 'includesTax', value: 'include' },
+                { name: 'taxRate', value: '20' },
+            ]);
+        });
+
+        it('testShippingMethod corrects order of arguments', async () => {
+            const { testShippingMethod } = await adminClient.query<
+                TestShippingMethod.Query,
+                TestShippingMethod.Variables
+            >(TEST_SHIPPING_METHOD, {
+                input: {
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '500' },
+                            { name: 'taxRate', value: '0' },
+                            { name: 'includesTax', value: 'include' },
+                        ],
+                    },
+                    checker: {
+                        code: defaultShippingEligibilityChecker.code,
+                        arguments: [
+                            {
+                                name: 'orderMinimum',
+                                value: '0',
+                            },
+                        ],
+                    },
+                    lines: [{ productVariantId: 'T_1', quantity: 1 }],
+                    shippingAddress: {
+                        streetLine1: '',
+                        countryCode: 'GB',
+                    },
+                },
+            });
+
+            expect(testShippingMethod).toEqual({
+                eligible: true,
+                quote: {
+                    metadata: null,
+                    price: 500,
+                    priceWithTax: 500,
+                },
+            });
+        });
+    });
 });
 
 const GET_SHIPPING_METHOD = gql`

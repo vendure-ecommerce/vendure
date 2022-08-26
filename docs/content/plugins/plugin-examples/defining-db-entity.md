@@ -5,7 +5,7 @@ showtoc: true
 
 # Defining a new database entity
 
-This example shows how new TypeORM database entities can be defined by plugins.
+This example shows how new [TypeORM database entities](https://typeorm.io/entities) can be defined by plugins.
 
 ```TypeScript
 // product-review.entity.ts
@@ -43,3 +43,7 @@ import { ProductReview } from './product-review.entity';
 })
 export class ReviewsPlugin {}
 ```
+
+## Corresponding GraphQL type
+
+Once you have defined a new DB entity, it is likely that you want to expose it in your GraphQL API. Here's how to [define a new type in your GraphQL API]({{< relref "extending-graphql-api" >}}#defining-a-new-type).

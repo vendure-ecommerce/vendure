@@ -42,7 +42,7 @@ plugins: [
   AdminUiPlugin.init({
     port: 3002,
     app: compileUiExtensions({
-      outputPath: path.join(__dirname, 'admin-ui'),
+      outputPath: path.join(__dirname, '../admin-ui'),
       extensions: [{
         // ...
       }],
@@ -62,7 +62,7 @@ import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 compileUiExtensions({
-    outputPath: path.join(__dirname, 'admin-ui'),
+    outputPath: path.join(__dirname, '../admin-ui'),
     extensions: [/* ... */],
 }).compile?.().then(() => {
     process.exit(0);

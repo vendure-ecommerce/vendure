@@ -7,6 +7,7 @@ import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { preBootstrapConfig } from './bootstrap';
+import { resetConfig } from './config/config-helpers';
 import { VendureConfig } from './config/vendure-config';
 
 /**
@@ -51,7 +52,23 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
         console.log(e.message);
         process.exitCode = 1;
     } finally {
+        await checkMigrationStatus(connection);
         await connection.close();
+        resetConfig();
+    }
+}
+
+async function checkMigrationStatus(connection: Connection) {
+    const builderLog = await connection.driver.createSchemaBuilder().log();
+    if (builderLog.upQueries.length) {
+        console.log(
+            chalk.yellow(
+                `Your database schema does not match your current configuration. Generate a new migration for the following changes:`,
+            ),
+        );
+        for (const query of builderLog.upQueries) {
+            console.log(' - ' + chalk.yellow(query.query));
+        }
     }
 }
 
@@ -75,6 +92,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
         process.exitCode = 1;
     } finally {
         await connection.close();
+        resetConfig();
     }
 }
 
@@ -156,6 +174,7 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
         console.log(chalk.yellow(`No changes in database schema were found - cannot generate a migration.`));
     }
     await connection.close();
+    resetConfig();
 }
 
 function createConnectionOptions(userConfig: Partial<VendureConfig>): ConnectionOptions {

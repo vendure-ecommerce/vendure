@@ -1,5 +1,13 @@
 <vdr-action-bar>
-    <vdr-ab-left> </vdr-ab-left>
+    <vdr-ab-left>
+        <input
+            type="text"
+            name="emailSearchTerm"
+            [formControl]="searchTerm"
+            [placeholder]="'customer.search-by-group-name' | translate"
+            class="search-input ml3"
+        />
+    </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="customer-group-list"></vdr-action-bar-items>
         <button class="btn btn-primary" *vdrIfPermissions="'CreateCustomerGroup'" (click)="create()">
@@ -10,56 +18,66 @@
 </vdr-action-bar>
 <div class="group-wrapper">
     <div class="group-list">
-        <table
-            class="table mt0"
+        <vdr-data-table
             [class.expanded]="activeGroup$ | async"
-            *ngIf="!(listIsEmpty$ | async); else emptyPlaceholder"
+            [items]="items$ | async"
+            [itemsPerPage]="itemsPerPage$ | async"
+            [totalItems]="totalItems$ | async"
+            [currentPage]="currentPage$ | async"
+            (pageChange)="setPageNumber($event)"
+            (itemsPerPageChange)="setItemsPerPage($event)"
         >
+            <ng-template let-group="item">
+                <td class="left align-middle" [class.active]="group.id === activeGroupId">
+                    <vdr-entity-info [entity]="group"></vdr-entity-info>
+                </td>
+                <td class="left align-middle" [class.active]="group.id === activeGroupId">
+                    <vdr-chip [colorFrom]="group.id">{{ group.name }}</vdr-chip>
+                </td>
+                <td class="left align-middle" [class.active]="group.id === activeGroupId">
+                    <a
+                        class="btn btn-link btn-sm"
+                        [routerLink]="['./', { contents: group.id }]"
+                        queryParamsHandling="preserve"
+                    >
+                        <clr-icon shape="view-list"></clr-icon>
+                        {{ 'customer.view-group-members' | translate }}
+                    </a>
+                </td>
+                <td class="right align-middle" [class.active]="group.id === activeGroupId">
+                    <button class="btn btn-link btn-sm" (click)="update(group)">
+                        <clr-icon shape="edit"></clr-icon>
+                        {{ 'common.edit' | translate }}
+                    </button>
+                </td>
+                <td [class.active]="group.id === activeGroupId">
+                    <vdr-dropdown>
+                        <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
+                            {{ 'common.actions' | translate }}
+                            <clr-icon shape="caret down"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                            <button
+                                class="button"
+                                vdrDropdownItem
+                                (click)="delete(group.id)"
+                                [disabled]="!('DeleteCustomerGroup' | hasPermission)"
+                            >
+                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                {{ 'common.delete' | translate }}
+                            </button>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
+                </td>
+            </ng-template>
+        </vdr-data-table>
+
+        <table class="table mt0" *ngIf="!(listIsEmpty$ | async); else emptyPlaceholder">
             <tbody>
                 <tr
-                    *ngFor="let group of groups$ | async"
+                    *ngFor="let group of items$ | async"
                     [class.active]="group.id === (activeGroup$ | async)?.id"
-                >
-                    <td class="left align-middle"><vdr-entity-info [entity]="group"></vdr-entity-info></td>
-                    <td class="left align-middle">
-                        <vdr-chip [colorFrom]="group.id">{{ group.name }}</vdr-chip>
-                    </td>
-                    <td class="text-right align-middle">
-                        <a
-                            class="btn btn-link btn-sm"
-                            [routerLink]="['./', { contents: group.id }]"
-                            queryParamsHandling="preserve"
-                        >
-                            <clr-icon shape="view-list"></clr-icon>
-                            {{ 'customer.view-group-members' | translate }}
-                        </a>
-                    </td>
-                    <td class="align-middle">
-                        <button class="btn btn-link btn-sm" (click)="update(group)">
-                            <clr-icon shape="edit"></clr-icon>
-                            {{ 'common.edit' | translate }}
-                        </button>
-                    </td>
-                    <td class="align-middle">
-                        <vdr-dropdown>
-                            <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
-                                {{ 'common.actions' | translate }}
-                                <clr-icon shape="caret down"></clr-icon>
-                            </button>
-                            <vdr-dropdown-menu vdrPosition="bottom-right">
-                                <button
-                                    class="button"
-                                    vdrDropdownItem
-                                    (click)="delete(group.id)"
-                                    [disabled]="!('DeleteCustomerGroup' | hasPermission)"
-                                >
-                                    <clr-icon shape="trash" class="is-danger"></clr-icon>
-                                    {{ 'common.delete' | translate }}
-                                </button>
-                            </vdr-dropdown-menu>
-                        </vdr-dropdown>
-                    </td>
-                </tr>
+                ></tr>
             </tbody>
         </table>
     </div>

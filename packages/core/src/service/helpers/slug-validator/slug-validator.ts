@@ -5,9 +5,14 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Collection, Product } from '../../../entity';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 
+/**
+ * @docsCategory service-helpers
+ * @docsPage SlugValidator
+ */
 export type InputWithSlug = {
     id?: ID | null;
     translations?: Array<{
@@ -17,6 +22,10 @@ export type InputWithSlug = {
     }> | null;
 };
 
+/**
+ * @docsCategory service-helpers
+ * @docsPage SlugValidator
+ */
 export type TranslationEntity = VendureEntity & {
     id: ID;
     languageCode: LanguageCode;
@@ -24,6 +33,14 @@ export type TranslationEntity = VendureEntity & {
     base: any;
 };
 
+/**
+ * @description
+ * Used to validate slugs to ensure they are URL-safe and unique. Designed to be used with translatable
+ * entities such as {@link Product} and {@link Collection}.
+ *
+ * @docsCategory service-helpers
+ * @docsWeight 0
+ */
 @Injectable()
 export class SlugValidator {
     constructor(private connection: TransactionalConnection) {}
@@ -50,10 +67,12 @@ export class SlugValidator {
                             .getRepository(ctx, translationEntity)
                             .createQueryBuilder('translation')
                             .innerJoinAndSelect('translation.base', 'base')
-                            .where(`translation.slug = :slug`, { slug: t.slug })
+                            .innerJoinAndSelect('base.channels', 'channel')
+                            .where(`channel.id = :channelId`, { channelId: ctx.channelId })
+                            .andWhere(`translation.slug = :slug`, { slug: t.slug })
                             .andWhere(`translation.languageCode = :languageCode`, {
                                 languageCode: t.languageCode,
-                            })
+                            });
                         if (input.id) {
                             qb.andWhere(`translation.base != :id`, { id: input.id });
                         }

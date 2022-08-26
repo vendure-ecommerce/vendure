@@ -1,6 +1,7 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { DefaultLogger } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -11,7 +12,11 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { PRODUCT_VARIANT_FRAGMENT, PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
 import {
     AddOptionGroupToProduct,
+    ChannelFragment,
     CreateProduct,
+    CreateProductOptionGroup,
+    CreateProductOptionGroupMutation,
+    CreateProductOptionGroupMutationVariables,
     CreateProductVariants,
     DeleteProduct,
     DeleteProductVariant,
@@ -25,18 +30,24 @@ import {
     GetProductVariantList,
     GetProductWithVariantList,
     GetProductWithVariants,
+    GetProductWithVariantsQuery,
+    GetProductWithVariantsQueryVariables,
     LanguageCode,
     ProductVariantFragment,
+    ProductVariantListOptions,
     ProductWithOptionsFragment,
     ProductWithVariants,
     RemoveOptionGroupFromProduct,
     SortOrder,
+    UpdateChannel,
+    UpdateGlobalSettings,
     UpdateProduct,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
+    CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -44,6 +55,8 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_CHANNEL,
+    UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -52,11 +65,16 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 // tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
+    const { server, adminClient, shopClient } = createTestEnvironment({
+        ...testConfig(),
+        // logger: new DefaultLogger(),
+    });
 
     const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
         input => !!input.optionGroups,
     );
+
+    const updateChannelGuard: ErrorResultGuard<ChannelFragment> = createErrorResultGuard(input => !!input.id);
 
     beforeAll(async () => {
         await server.init({
@@ -1212,15 +1230,26 @@ describe('Product resolver', () => {
         );
 
         it('addOptionGroupToProduct adds an option group', async () => {
+            const optionGroup = await createOptionGroup('Quark-type', ['Charm', 'Strange']);
             const result = await adminClient.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_2',
+                optionGroupId: optionGroup.id,
                 productId: newProduct.id,
             });
             expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
-            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_2');
+            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe(optionGroup.id);
+
+            // not really testing this, but just cleaning up for later tests
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: optionGroup.id,
+                productId: newProduct.id,
+            });
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
         });
 
         it(
@@ -1231,10 +1260,25 @@ describe('Product resolver', () => {
                         ADD_OPTION_GROUP_TO_PRODUCT,
                         {
                             optionGroupId: 'T_1',
-                            productId: '999',
+                            productId: 'T_999',
                         },
                     ),
                 `No Product with the id '999' could be found`,
+            ),
+        );
+
+        it(
+            'addOptionGroupToProduct errors if the OptionGroup is already assigned to another Product',
+            assertThrowsWithMessage(
+                () =>
+                    adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                        ADD_OPTION_GROUP_TO_PRODUCT,
+                        {
+                            optionGroupId: 'T_1',
+                            productId: 'T_2',
+                        },
+                    ),
+                `The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"`,
             ),
         );
 
@@ -1254,20 +1298,20 @@ describe('Product resolver', () => {
         );
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
+            const optionGroup = await createOptionGroup('Length', ['Short', 'Long']);
             const { addOptionGroupToProduct } = await adminClient.query<
                 AddOptionGroupToProduct.Mutation,
                 AddOptionGroupToProduct.Variables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             expect(addOptionGroupToProduct.optionGroups.length).toBe(1);
-
             const { removeOptionGroupFromProduct } = await adminClient.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
@@ -1292,6 +1336,33 @@ describe('Product resolver', () => {
             expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
             expect(removeOptionGroupFromProduct.productVariantCount).toBe(2);
+        });
+
+        it('removeOptionGroupFromProduct succeeds if all related ProductVariants are also deleted', async () => {
+            const { product } = await adminClient.query<
+                GetProductWithVariantsQuery,
+                GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, { id: 'T_2' });
+
+            // Delete all variants for that product
+            for (const variant of product!.variants) {
+                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
+                    DELETE_PRODUCT_VARIANT,
+                    {
+                        id: variant.id,
+                    },
+                );
+            }
+
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: product!.optionGroups[0].id,
+                productId: product!.id,
+            });
+
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
         });
 
         it(
@@ -1330,23 +1401,22 @@ describe('Product resolver', () => {
             let optionGroup3: GetOptionGroup.ProductOptionGroup;
 
             beforeAll(async () => {
+                optionGroup2 = await createOptionGroup('group-2', ['group2-option-1', 'group2-option-2']);
+                optionGroup3 = await createOptionGroup('group-3', ['group3-option-1', 'group3-option-2']);
                 await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
                     ADD_OPTION_GROUP_TO_PRODUCT,
                     {
-                        optionGroupId: 'T_3',
+                        optionGroupId: optionGroup2.id,
                         productId: newProduct.id,
                     },
                 );
-                const result1 = await adminClient.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
-                    GET_OPTION_GROUP,
-                    { id: 'T_2' },
+                await adminClient.query<AddOptionGroupToProduct.Mutation, AddOptionGroupToProduct.Variables>(
+                    ADD_OPTION_GROUP_TO_PRODUCT,
+                    {
+                        optionGroupId: optionGroup3.id,
+                        productId: newProduct.id,
+                    },
                 );
-                const result2 = await adminClient.query<GetOptionGroup.Query, GetOptionGroup.Variables>(
-                    GET_OPTION_GROUP,
-                    { id: 'T_3' },
-                );
-                optionGroup2 = result1.productOptionGroup!;
-                optionGroup3 = result2.productOptionGroup!;
             });
 
             it(
@@ -1365,7 +1435,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it(
@@ -1384,7 +1454,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it('createProductVariants works', async () => {
@@ -1724,6 +1794,132 @@ describe('Product resolver', () => {
 
                 expect(product?.variants.length).toBe(1);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1631
+            describe('changing the Channel default language', () => {
+                let productId: string;
+
+                function getProductWithVariantsInLanguage(
+                    id: string,
+                    languageCode: LanguageCode,
+                    variantListOptions?: ProductVariantListOptions,
+                ) {
+                    return adminClient.query<
+                        GetProductWithVariantList.Query,
+                        GetProductWithVariantList.Variables
+                    >(GET_PRODUCT_WITH_VARIANT_LIST, { id, variantListOptions }, { languageCode });
+                }
+
+                beforeAll(async () => {
+                    await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+                        UPDATE_GLOBAL_SETTINGS,
+                        {
+                            input: {
+                                availableLanguages: [LanguageCode.en, LanguageCode.de],
+                            },
+                        },
+                    );
+                    const { createProduct } = await adminClient.query<
+                        CreateProduct.Mutation,
+                        CreateProduct.Variables
+                    >(CREATE_PRODUCT, {
+                        input: {
+                            translations: [
+                                {
+                                    languageCode: LanguageCode.en,
+                                    name: 'Bottle',
+                                    slug: 'bottle',
+                                    description: 'A container for liquids',
+                                },
+                            ],
+                        },
+                    });
+
+                    productId = createProduct.id;
+                    await adminClient.query<CreateProductVariants.Mutation, CreateProductVariants.Variables>(
+                        CREATE_PRODUCT_VARIANTS,
+                        {
+                            input: [
+                                {
+                                    productId,
+                                    sku: 'BOTTLE111',
+                                    optionIds: [],
+                                    translations: [{ languageCode: LanguageCode.en, name: 'Bottle' }],
+                                },
+                            ],
+                        },
+                    );
+                });
+
+                afterAll(async () => {
+                    // Restore the default language to English for the subsequent tests
+                    await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                        input: {
+                            id: 'T_1',
+                            defaultLanguageCode: LanguageCode.en,
+                        },
+                    });
+                });
+
+                it('returns all variants', async () => {
+                    const { product: product1 } = await adminClient.query<
+                        GetProductWithVariants.Query,
+                        GetProductWithVariants.Variables
+                    >(
+                        GET_PRODUCT_WITH_VARIANTS,
+                        {
+                            id: productId,
+                        },
+                        { languageCode: LanguageCode.en },
+                    );
+                    expect(product1?.variants.length).toBe(1);
+
+                    // Change the default language of the channel to "de"
+                    const { updateChannel } = await adminClient.query<
+                        UpdateChannel.Mutation,
+                        UpdateChannel.Variables
+                    >(UPDATE_CHANNEL, {
+                        input: {
+                            id: 'T_1',
+                            defaultLanguageCode: LanguageCode.de,
+                        },
+                    });
+                    updateChannelGuard.assertSuccess(updateChannel);
+                    expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.de);
+
+                    // Fetch the product in en, it should still return 1 variant
+                    const { product: product2 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.en,
+                    );
+                    expect(product2?.variantList.items.length).toBe(1);
+
+                    // Fetch the product in de, it should still return 1 variant
+                    const { product: product3 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.de,
+                    );
+                    expect(product3?.variantList.items.length).toBe(1);
+                });
+
+                it('returns all variants when sorting on variant name', async () => {
+                    // Fetch the product in en, it should still return 1 variant
+                    const { product: product1 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.en,
+                        { sort: { name: SortOrder.ASC } },
+                    );
+                    expect(product1?.variantList.items.length).toBe(1);
+
+                    // Fetch the product in de, it should still return 1 variant
+                    const { product: product2 } = await getProductWithVariantsInLanguage(
+                        productId,
+                        LanguageCode.de,
+                        { sort: { name: SortOrder.ASC } },
+                    );
+                    expect(product2?.variantList.items.length).toBe(1);
+                });
+            });
         });
     });
 
@@ -1894,6 +2090,23 @@ describe('Product resolver', () => {
             expect(product.slug).toBe(productToDelete.slug);
         });
     });
+
+    async function createOptionGroup(name: string, options: string[]) {
+        const { createProductOptionGroup } = await adminClient.query<
+            CreateProductOptionGroupMutation,
+            CreateProductOptionGroupMutationVariables
+        >(CREATE_PRODUCT_OPTION_GROUP, {
+            input: {
+                code: name.toLowerCase(),
+                translations: [{ languageCode: LanguageCode.en, name }],
+                options: options.map(option => ({
+                    code: option.toLowerCase(),
+                    translations: [{ languageCode: LanguageCode.en, name: option }],
+                })),
+            },
+        });
+        return createProductOptionGroup;
+    }
 });
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
