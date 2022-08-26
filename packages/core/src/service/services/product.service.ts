@@ -367,7 +367,7 @@ export class ProductService {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
         if (optionGroup.product) {
-            const translated = translateDeep(optionGroup.product, ctx.languageCode);
+            const translated = this.translator.translate(optionGroup.product, ctx);
             throw new UserInputError(`error.product-option-group-already-assigned`, {
                 groupCode: optionGroup.code,
                 productName: translated.name,
