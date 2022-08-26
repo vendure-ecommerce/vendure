@@ -7,7 +7,7 @@ program
     .command('generate <name>')
     .description('Generate a new migration file with the given name')
     .action(name => {
-        return generateMigration(config, { name, outputDir: './migrations' });
+        return generateMigration(config, { name, outputDir: './src/migrations' });
     });
 
 program

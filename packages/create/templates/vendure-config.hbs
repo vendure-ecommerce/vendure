@@ -46,7 +46,7 @@ export const config: VendureConfig = {
         // See the README.md "Migrations" section for an explanation of
         // the `synchronize` and `migrations` options.
         synchronize: false,
-        migrations: [path.join(__dirname, '../migrations/*.ts')],
+        migrations: [path.join(__dirname, './migrations/*.ts')],
         logging: false,
         database: {{#if isSQLjs}}new Uint8Array([]){{else if isSQLite}}path.join(__dirname, '../vendure.sqlite'){{else}}process.env.DB_NAME{{/if}},
         {{#if dbSchema}}
