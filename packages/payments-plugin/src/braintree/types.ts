@@ -43,7 +43,7 @@ export interface BraintreePluginOptions {
     /**
      * @description
      * Allows you to configure exactly what information from the Braintree
-     * [Transaction object](https://developer.paypal.com/braintree/docs/reference/response/transaction#result-object] (which is returned by the
+     * [Transaction object](https://developer.paypal.com/braintree/docs/reference/response/transaction#result-object) (which is returned by the
      * `transaction.sale()` method of the SDK) should be persisted to the resulting Payment entity metadata.
      *
      * By default, the built-in extraction function will return a metadata object that looks like this:
