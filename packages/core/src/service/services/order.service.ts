@@ -112,6 +112,7 @@ import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import {
     orderItemsAreAllCancelled,
     orderItemsAreDelivered,
@@ -120,7 +121,6 @@ import {
     totalCoveredByPayments,
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
@@ -165,6 +165,7 @@ export class OrderService {
         private orderModifier: OrderModifier,
         private customFieldRelationService: CustomFieldRelationService,
         private requestCache: RequestContextCacheService,
+        private translator: TranslatorService,
     ) {}
 
     /**
@@ -258,13 +259,13 @@ export class OrderService {
         if (order) {
             if (effectiveRelations.includes('lines.productVariant')) {
                 for (const line of order.lines) {
-                    line.productVariant = translateDeep(
+                    line.productVariant = this.translator.translate(
                         await this.productVariantService.applyChannelPriceAndTax(
                             line.productVariant,
                             ctx,
                             order,
                         ),
-                        ctx.languageCode,
+                        ctx,
                     );
                 }
             }
@@ -1228,7 +1229,7 @@ export class OrderService {
                 line.productVariant,
             );
             if (fulfillableStockLevel < lineInput.quantity) {
-                const productVariant = translateDeep(line.productVariant, ctx.languageCode);
+                const productVariant = this.translator.translate(line.productVariant, ctx);
                 return new InsufficientStockOnHandError(
                     productVariant.id as string,
                     productVariant.name,

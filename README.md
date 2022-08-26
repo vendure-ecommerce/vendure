@@ -82,11 +82,48 @@ DB=<mysql|postgres|sqlite> yarn dev-server:start
 ```
 If you do not specify the `DB` argument, it will default to "mysql".
 
-### 6. Launch the admin ui
+### Testing admin ui changes locally
+
+If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
 
 1. `cd packages/admin-ui`
 2. `yarn start`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
+
+This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just
+to test backend changes.
+
+### Testing your changes locally
+This example shows how to test changes to the `payments-plugin` package locally, but it will also work for other packages.
+
+1. Open 2 terminal windows:
+
+- Terminal 1 for watching and compiling the changes of the package you are developing
+- Terminal 2 for running the dev-server
+
+```shell
+# Terminal 1
+cd packages/payments-plugin
+yarn watch
+```
+:warning: If you are developing changes for the `core`package, you also need to watch the `common` package:
+```shell
+# Terminal 1
+# Root of the project
+yarn watch:core-common
+```
+
+2. After the changes in your package are compiled you have to stop and restart the dev-server:
+
+```shell
+# Terminal 2
+cd packages/dev-server
+DB=sqlite yarn start
+```
+
+3. The dev-server will now have your local changes from the changed package.
+
+:information_source: Lerna links to the `dist` folder of the packages, so you **don't** need to rerun 'yarn bootstrap'
 
 ### Code generation
 

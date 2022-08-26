@@ -13,7 +13,7 @@ export const orderFixedDiscount = new PromotionOrderAction({
         },
     },
     execute(ctx, order, args) {
-        return -args.discount;
+        return -Math.min(args.discount, order.total);
     },
     description: [{ languageCode: LanguageCode.en, value: 'Discount order by fixed amount' }],
 });

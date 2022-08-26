@@ -34,7 +34,7 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -69,6 +69,7 @@ export class ProductService {
         private eventBus: EventBus,
         private slugValidator: SlugValidator,
         private customFieldRelationService: CustomFieldRelationService,
+        private translator: TranslatorService,
         private productOptionGroupService: ProductOptionGroupService,
     ) {}
 
@@ -87,7 +88,7 @@ export class ProductService {
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                    this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]),
                 );
                 return {
                     items,
@@ -116,7 +117,7 @@ export class ProductService {
         if (!product) {
             return;
         }
-        return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
+        return this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]);
     }
 
     async findByIds(
@@ -138,7 +139,7 @@ export class ProductService {
             .getMany()
             .then(products =>
                 products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                    this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]),
                 ),
             );
     }
@@ -162,7 +163,7 @@ export class ProductService {
                 relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
             })
             .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+                !variant ? [] : variant.facetValues.map(o => this.translator.translate(o, ctx, ['facet'])),
             );
     }
 
@@ -201,7 +202,7 @@ export class ProductService {
             .getOne()
             .then(product =>
                 product
-                    ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
+                    ? this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']])
                     : undefined,
             );
     }

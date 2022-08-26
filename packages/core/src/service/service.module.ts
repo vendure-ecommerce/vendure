@@ -26,6 +26,7 @@ import { RequestContextService } from './helpers/request-context/request-context
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { SlugValidator } from './helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
+import { TranslatorService } from './helpers/translator/translator.service';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
 import { InitializerService } from './initializer.service';
 import { AdministratorService } from './services/administrator.service';
@@ -118,6 +119,7 @@ const helpers = [
     ProductPriceApplicator,
     EntityHydrator,
     RequestContextService,
+    TranslatorService,
 ];
 
 /**

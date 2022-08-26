@@ -50,8 +50,8 @@ import { StockMovementService } from '../../services/stock-movement.service';
 import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
 import { EntityHydrator } from '../entity-hydrator/entity-hydrator.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
+import { TranslatorService } from '../translator/translator.service';
 import { patchEntity } from '../utils/patch-entity';
-import { translateDeep } from '../utils/translate-entity';
 
 /**
  * @description
@@ -81,6 +81,7 @@ export class OrderModifier {
         private eventBus: EventBus,
         private entityHydrator: EntityHydrator,
         private historyService: HistoryService,
+        private translator: TranslatorService,
     ) {}
 
     /**
@@ -158,13 +159,13 @@ export class OrderModifier {
                 'productVariant.taxCategory',
             ],
         });
-        lineWithRelations.productVariant = translateDeep(
+        lineWithRelations.productVariant = this.translator.translate(
             await this.productVariantService.applyChannelPriceAndTax(
                 lineWithRelations.productVariant,
                 ctx,
                 order,
             ),
-            ctx.languageCode,
+            ctx,
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
