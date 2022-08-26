@@ -59,14 +59,14 @@
 * **create** Simplify create steps - remove JS option ([73b4671](https://github.com/vendure-ecommerce/vendure/commit/73b4671))
 * **create** Support schema selection for Postgres ([217ee79](https://github.com/vendure-ecommerce/vendure/commit/217ee79)), closes [#1662](https://github.com/vendure-ecommerce/vendure/issues/1662)
 * **create** Use dotenv to handle env vars ([4fdc8aa](https://github.com/vendure-ecommerce/vendure/commit/4fdc8aa))
-* **payments-plugin** BraintreePlugin make card vault optional ([16ad00c](https://github.com/vendure-ecommerce/vendure/commit/16ad00c)), closes [#1651](https://github.com/vendure-ecommerce/vendure/issues/1651)
 * **payments-plugin** Make BraintreePlugin metadata configurable ([99c80e8](https://github.com/vendure-ecommerce/vendure/commit/99c80e8))
 * **ui-devkit** Support Clarity Sass variable overrides (#1684) ([46d1e2d](https://github.com/vendure-ecommerce/vendure/commit/46d1e2d)), closes [#1684](https://github.com/vendure-ecommerce/vendure/issues/1684)
 
 
 ### BREAKING CHANGE
 
-* (TypeORM): Due to an update of the TypeORM version, there is a potential breaking change if you make use of TypeORM's soft-remove feature in combination with listeners/subscribers. Namely, update listeners and subscriber no longer triggered by soft-remove and recover (https://github.com/typeorm/typeorm/blob/master/CHANGELOG.md#0242-2022-02-16). This is not used in Vendure core and is a relatively obscure edge-case.
+* (TypeORM): Due to an update of the TypeORM version, there is a **very remote** potential breaking change if you make use of TypeORM's soft-remove feature in combination with listeners/subscribers. Namely, update listeners and subscriber no longer triggered by soft-remove and recover (https://github.com/typeorm/typeorm/blob/master/CHANGELOG.md#0242-2022-02-16). This is not used in Vendure core and is a relatively obscure edge-case.
+
 ## <small>1.6.5 (2022-08-15)</small>
 
 
