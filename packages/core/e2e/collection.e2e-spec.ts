@@ -5,7 +5,7 @@ import {
     facetValueCollectionFilter,
     variantNameCollectionFilter,
 } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -24,6 +24,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
+    CREATE_CHANNEL,
     CREATE_COLLECTION,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -51,6 +52,7 @@ describe('Collection resolver', () => {
     let electronicsBreadcrumbsCollection: CollectionFragment;
     let computersBreadcrumbsCollection: CollectionFragment;
     let pearBreadcrumbsCollection: CollectionFragment;
+    const SECOND_CHANNEL_TOKEN = 'second_channel_token';
 
     beforeAll(async () => {
         await server.init({
@@ -74,6 +76,20 @@ describe('Collection resolver', () => {
         facetValues = facetValuesResult.facets.items.reduce(
             (values, facet) => [...values, ...facet.values],
             [] as FacetValueFragment[],
+        );
+        await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
+            CREATE_CHANNEL,
+            {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.USD,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            },
         );
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -265,7 +281,41 @@ describe('Collection resolver', () => {
                 'zubehor-2',
             );
         });
-        it('creates a root collection to became a 1st level collection later #779', async () => {
+
+        it('creates the duplicate slug without suffix in another channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { createCollection } = await adminClient.query<
+                Codegen.CreateCollectionMutation,
+                Codegen.CreateCollectionMutationVariables
+            >(CREATE_COLLECTION, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Accessories',
+                            description: '',
+                            slug: 'Accessories',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'Zubehör',
+                            description: '',
+                            slug: 'Zubehör',
+                        },
+                    ],
+                    filters: [],
+                },
+            });
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.en)?.slug).toBe(
+                'accessories',
+            );
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
+                'zubehor',
+            );
+        });
+
+        it('creates a root collection to become a 1st level collection later #779', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const result = await adminClient.query<
                 Codegen.CreateCollectionMutation,
                 Codegen.CreateCollectionMutationVariables
@@ -527,9 +577,17 @@ describe('Collection resolver', () => {
             expect(product?.collections.sort(sortById)).toEqual([
                 {
                     id: 'T_10',
+                    name: 'Electronics Breadcrumbs',
+                    parent: {
+                        id: 'T_1',
+                        name: '__root_collection__',
+                    },
+                },
+                {
+                    id: 'T_11',
                     name: 'Pear Breadcrumbs',
                     parent: {
-                        id: 'T_8',
+                        id: 'T_9',
                         name: 'Computers Breadcrumbs',
                     },
                 },
@@ -558,16 +616,8 @@ describe('Collection resolver', () => {
                     },
                 },
                 {
-                    id: 'T_8',
-                    name: 'Computers Breadcrumbs',
-                    parent: {
-                        id: 'T_1',
-                        name: '__root_collection__',
-                    },
-                },
-                {
                     id: 'T_9',
-                    name: 'Electronics Breadcrumbs',
+                    name: 'Computers Breadcrumbs',
                     parent: {
                         id: 'T_1',
                         name: '__root_collection__',
@@ -865,24 +915,27 @@ describe('Collection resolver', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1595
         it('children correctly ordered', async () => {
-            await adminClient.query<MoveCollection.Mutation, MoveCollection.Variables>(MOVE_COLLECTION, {
-                input: {
-                    collectionId: computersCollection.id,
-                    parentId: 'T_1',
-                    index: 4,
-                },
-            });
-            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
-                GET_COLLECTION,
+            await adminClient.query<Codegen.MoveCollectionMutation, Codegen.MoveCollectionMutationVariables>(
+                MOVE_COLLECTION,
                 {
-                    id: 'T_1',
+                    input: {
+                        collectionId: computersCollection.id,
+                        parentId: 'T_1',
+                        index: 4,
+                    },
                 },
             );
+            const result = await adminClient.query<
+                Codegen.GetCollectionQuery,
+                Codegen.GetCollectionQueryVariables
+            >(GET_COLLECTION, {
+                id: 'T_1',
+            });
             if (!result.collection) {
                 fail(`did not return the collection`);
                 return;
             }
-            expect(result.collection.children?.map(c => (c as any).position)).toEqual([0, 1, 2, 3, 4, 5]);
+            expect(result.collection.children?.map(c => (c as any).position)).toEqual([0, 1, 2, 3, 4, 5, 6]);
         });
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
@@ -1001,23 +1054,23 @@ describe('Collection resolver', () => {
                     name: 'Pear',
                 },
                 {
-                    id: 'T_8',
+                    id: 'T_9',
                     name: 'Computers Breadcrumbs',
                 },
                 {
-                    id: 'T_9',
+                    id: 'T_10',
                     name: 'Electronics Breadcrumbs',
                 },
                 {
-                    id: 'T_10',
+                    id: 'T_11',
                     name: 'Pear Breadcrumbs',
                 },
                 {
-                    id: 'T_11',
+                    id: 'T_12',
                     name: 'Delete Me Parent',
                 },
                 {
-                    id: 'T_12',
+                    id: 'T_13',
                     name: 'Delete Me Child',
                 },
             ]);
@@ -1072,10 +1125,14 @@ describe('Collection resolver', () => {
                 },
                 {
                     id: 'T_9',
-                    name: 'Electronics Breadcrumbs',
+                    name: 'Computers Breadcrumbs',
                 },
                 {
                     id: 'T_10',
+                    name: 'Electronics Breadcrumbs',
+                },
+                {
+                    id: 'T_11',
                     name: 'Pear Breadcrumbs',
                 },
             ]);
@@ -2018,27 +2075,27 @@ describe('Collection resolver', () => {
                     name: 'Pear',
                 },
                 {
-                    id: 'T_9',
+                    id: 'T_10',
                     name: 'Electronics Breadcrumbs',
                 },
                 {
-                    id: 'T_14',
+                    id: 'T_15',
                     name: 'Photo AND Pear',
                 },
                 {
-                    id: 'T_15',
+                    id: 'T_16',
                     name: 'Photo OR Pear',
                 },
                 {
-                    id: 'T_17',
+                    id: 'T_18',
                     name: 'contains camera',
                 },
                 {
-                    id: 'T_19',
+                    id: 'T_20',
                     name: 'endsWith camera',
                 },
                 {
-                    id: 'T_25',
+                    id: 'T_26',
                     name: 'pear electronics',
                 },
             ]);

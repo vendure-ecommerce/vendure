@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
     CreateProductOptionGroupInput,
+    DeletionResult,
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -9,15 +10,19 @@ import { FindManyOptions, Like } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
+import { Logger } from '../../config/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Product, ProductOption, ProductOptionTranslation, ProductVariant } from '../../entity/index';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
+
+import { ProductOptionService } from './product-option.service';
 
 /**
  * @description
@@ -31,7 +36,9 @@ export class ProductOptionGroupService {
         private connection: TransactionalConnection,
         private translatableSaver: TranslatableSaver,
         private customFieldRelationService: CustomFieldRelationService,
+        private productOptionService: ProductOptionService,
         private eventBus: EventBus,
+        private translator: TranslatorService,
     ) {}
 
     findAll(
@@ -50,7 +57,7 @@ export class ProductOptionGroupService {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .find(findOptions)
-            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+            .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
     findOne(
@@ -63,7 +70,7 @@ export class ProductOptionGroupService {
             .findOne(id, {
                 relations: relations ?? ['options'],
             })
-            .then(group => group && translateDeep(group, ctx.languageCode, ['options']));
+            .then(group => group && this.translator.translate(group, ctx, ['options']));
     }
 
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
@@ -78,7 +85,7 @@ export class ProductOptionGroupService {
                     id: 'ASC',
                 },
             })
-            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
+            .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
     async create(
@@ -114,5 +121,92 @@ export class ProductOptionGroupService {
         await this.customFieldRelationService.updateRelations(ctx, ProductOptionGroup, input, group);
         this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
         return assertFound(this.findOne(ctx, group.id));
+    }
+
+    /**
+     * @description
+     * Deletes the ProductOptionGroup and any associated ProductOptions. If the ProductOptionGroup
+     * is still referenced by a soft-deleted Product, then a soft-delete will be used to preserve
+     * referential integrity. Otherwise a hard-delete will be performed.
+     */
+    async deleteGroupAndOptionsFromProduct(ctx: RequestContext, id: ID, productId: ID) {
+        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
+            relations: ['options', 'product'],
+        });
+        const inUseByActiveProducts = await this.isInUseByOtherProducts(ctx, optionGroup, productId);
+        if (0 < inUseByActiveProducts) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.product-option-group-used', {
+                    code: optionGroup.code,
+                    count: inUseByActiveProducts,
+                }),
+            };
+        }
+
+        for (const option of optionGroup.options) {
+            const { result, message } = await this.productOptionService.delete(ctx, option.id);
+            if (result === DeletionResult.NOT_DELETED) {
+                await this.connection.rollBackTransaction(ctx);
+                return { result, message };
+            }
+        }
+        const hasOptionsWhichAreInUse = await this.groupOptionsAreInUse(ctx, optionGroup);
+        if (0 < hasOptionsWhichAreInUse) {
+            // soft delete
+            optionGroup.deletedAt = new Date();
+            await this.connection.getRepository(ctx, ProductOptionGroup).save(optionGroup, { reload: false });
+        } else {
+            // hard delete
+
+            const product = await this.connection
+                .getRepository(ctx, Product)
+                .findOne(productId, { relations: ['optionGroups'] });
+            if (product) {
+                product.optionGroups = product.optionGroups.filter(og => !idsAreEqual(og.id, id));
+                await this.connection.getRepository(ctx, Product).save(product, { reload: false });
+            }
+
+            // TODO: V2 rely on onDelete: CASCADE rather than this manual loop
+            for (const translation of optionGroup.translations) {
+                await this.connection
+                    .getRepository(ctx, ProductOptionGroupTranslation)
+                    .remove(translation as ProductOptionGroupTranslation);
+            }
+
+            try {
+                await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
+            } catch (e) {
+                Logger.error(e.message, undefined, e.stack);
+            }
+        }
+        this.eventBus.publish(new ProductOptionGroupEvent(ctx, optionGroup, 'deleted', id));
+        return {
+            result: DeletionResult.DELETED,
+        };
+    }
+
+    private async isInUseByOtherProducts(
+        ctx: RequestContext,
+        productOptionGroup: ProductOptionGroup,
+        targetProductId: ID,
+    ): Promise<number> {
+        return this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .leftJoin('product.optionGroups', 'optionGroup')
+            .where('product.deletedAt IS NULL')
+            .andWhere('optionGroup.id = :id', { id: productOptionGroup.id })
+            .andWhere('product.id != :productId', { productId: targetProductId })
+            .getCount();
+    }
+
+    private async groupOptionsAreInUse(ctx: RequestContext, productOptionGroup: ProductOptionGroup) {
+        return this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .leftJoin('variant.options', 'option')
+            .where('option.groupId = :groupId', { groupId: productOptionGroup.id })
+            .getCount();
     }
 }

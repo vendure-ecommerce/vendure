@@ -1,6 +1,7 @@
 import {
     Coordinate,
     CurrencyCode,
+    LanguageCode,
     PriceRange,
     SearchResult,
     SearchResultAsset,
@@ -8,6 +9,11 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { QueryBuilder, SelectQueryBuilder } from 'typeorm';
+
+import { SearchIndexItem } from '../entities/search-index-item.entity';
+
+import { identifierFields } from './search-strategy-common';
 
 /**
  * Maps a raw database result to a SearchResult.
@@ -109,4 +115,44 @@ function parseFocalPoint(focalPoint: any): Coordinate | undefined {
 
 export function createPlaceholderFromId(id: ID): string {
     return '_' + id.toString().replace(/-/g, '_');
+}
+
+/**
+ * Applies language constraints for {@link SearchIndexItem} query.
+ *
+ * @param qb QueryBuilder instance
+ * @param languageCode Preferred language code
+ * @param defaultLanguageCode Default language code that is used if {@link SearchIndexItem} is not available in preferred language
+ */
+export function applyLanguageConstraints(
+    qb: SelectQueryBuilder<SearchIndexItem>,
+    languageCode: LanguageCode,
+    defaultLanguageCode: LanguageCode,
+) {
+    if (languageCode === defaultLanguageCode) {
+        qb.andWhere('si.languageCode = :languageCode', { languageCode });
+    } else {
+        qb.andWhere('si.languageCode IN (:...languageCodes)', {
+            languageCodes: [languageCode, defaultLanguageCode],
+        });
+
+        const joinFieldConditions = identifierFields.map(field => `si.${field} = sil.${field}`).join(' AND ');
+
+        qb.leftJoin(
+            SearchIndexItem,
+            'sil',
+            `
+            ${joinFieldConditions}
+            AND si.languageCode != sil.languageCode
+            AND sil.languageCode = :languageCode
+        `,
+            {
+                languageCode,
+            },
+        );
+
+        qb.andWhere('sil.languageCode IS NULL');
+    }
+
+    return qb;
 }

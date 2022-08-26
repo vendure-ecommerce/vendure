@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+    CancelPaymentResult,
     ManualPaymentInput,
     RefundOrderInput,
     SettlePaymentResult,
@@ -78,19 +79,12 @@ export class PaymentService {
         if (state === 'Settled') {
             return this.settlePayment(ctx, paymentId);
         }
+        if (state === 'Cancelled') {
+            return this.cancelPayment(ctx, paymentId);
+        }
         const payment = await this.findOneOrThrow(ctx, paymentId);
         const fromState = payment.state;
-
-        try {
-            await this.paymentStateMachine.transition(ctx, payment.order, payment, state);
-        } catch (e: any) {
-            const transitionError = ctx.translate(e.message, { fromState, toState: state });
-            return new PaymentStateTransitionError({ transitionError, fromState, toState: state });
-        }
-        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
-        this.eventBus.publish(new PaymentStateTransitionEvent(fromState, state, ctx, payment, payment.order));
-
-        return payment;
+        return this.transitionStateAndSave(ctx, payment, fromState, state);
     }
 
     getNextStates(payment: Payment): ReadonlyArray<PaymentState> {
@@ -175,6 +169,47 @@ export class PaymentService {
         } else {
             toState = settlePaymentResult.state || 'Error';
             payment.errorMessage = settlePaymentResult.errorMessage;
+        }
+        return this.transitionStateAndSave(ctx, payment, fromState, toState);
+    }
+
+    async cancelPayment(ctx: RequestContext, paymentId: ID): Promise<PaymentStateTransitionError | Payment> {
+        const payment = await this.connection.getEntityOrThrow(ctx, Payment, paymentId, {
+            relations: ['order'],
+        });
+        const { paymentMethod, handler } = await this.paymentMethodService.getMethodAndOperations(
+            ctx,
+            payment.method,
+        );
+        const cancelPaymentResult = await handler.cancelPayment(
+            ctx,
+            payment.order,
+            payment,
+            paymentMethod.handler.args,
+            paymentMethod,
+        );
+        const fromState = payment.state;
+        let toState: PaymentState;
+        payment.metadata = this.mergePaymentMetadata(payment.metadata, cancelPaymentResult?.metadata);
+        if (cancelPaymentResult == null || cancelPaymentResult.success) {
+            toState = 'Cancelled';
+        } else {
+            toState = cancelPaymentResult.state || 'Error';
+            payment.errorMessage = cancelPaymentResult.errorMessage;
+        }
+        return this.transitionStateAndSave(ctx, payment, fromState, toState);
+    }
+
+    private async transitionStateAndSave(
+        ctx: RequestContext,
+        payment: Payment,
+        fromState: PaymentState,
+        toState: PaymentState,
+    ) {
+        if (fromState === toState) {
+            // in case metadata was changed
+            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+            return payment;
         }
         try {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);

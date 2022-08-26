@@ -13,6 +13,7 @@ import { DefaultSearchPluginInitOptions, SearchInput } from '../types';
 import { SearchStrategy } from './search-strategy';
 import { getFieldsToSelect } from './search-strategy-common';
 import {
+    applyLanguageConstraints,
     createCollectionIdCountMap,
     createFacetIdCountMap,
     createPlaceholderFromId,
@@ -89,10 +90,10 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .createQueryBuilder('si')
             .select(this.createPostgresSelect(!!input.groupByProduct));
         if (input.groupByProduct) {
-            qb.addSelect('MIN(price)', 'minPrice')
-                .addSelect('MAX(price)', 'maxPrice')
-                .addSelect('MIN("priceWithTax")', 'minPriceWithTax')
-                .addSelect('MAX("priceWithTax")', 'maxPriceWithTax');
+            qb.addSelect('MIN(si.price)', 'minPrice')
+                .addSelect('MAX(si.price)', 'maxPrice')
+                .addSelect('MIN(si.priceWithTax)', 'minPriceWithTax')
+                .addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
         this.applyTermAndFilters(ctx, qb, input);
 
@@ -243,7 +244,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 collectionSlug,
             });
         }
-        qb.andWhere('si.languageCode = :languageCode', { languageCode: ctx.languageCode });
+
+        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');

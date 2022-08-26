@@ -1,6 +1,7 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { DefaultLogger } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -14,6 +15,7 @@ import { DeletionResult, ErrorCode, LanguageCode, SortOrder } from './graphql/ge
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
+    CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -33,6 +35,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
+        // logger: new DefaultLogger(),
     });
 
     const removeOptionGuard: ErrorResultGuard<Codegen.ProductWithOptionsFragment> = createErrorResultGuard(
@@ -1201,15 +1204,26 @@ describe('Product resolver', () => {
         );
 
         it('addOptionGroupToProduct adds an option group', async () => {
+            const optionGroup = await createOptionGroup('Quark-type', ['Charm', 'Strange']);
             const result = await adminClient.query<
                 Codegen.AddOptionGroupToProductMutation,
                 Codegen.AddOptionGroupToProductMutationVariables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_2',
+                optionGroupId: optionGroup.id,
                 productId: newProduct.id,
             });
             expect(result.addOptionGroupToProduct.optionGroups.length).toBe(1);
-            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe('T_2');
+            expect(result.addOptionGroupToProduct.optionGroups[0].id).toBe(optionGroup.id);
+
+            // not really testing this, but just cleaning up for later tests
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: optionGroup.id,
+                productId: newProduct.id,
+            });
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
         });
 
         it(
@@ -1221,9 +1235,24 @@ describe('Product resolver', () => {
                         Codegen.AddOptionGroupToProductMutationVariables
                     >(ADD_OPTION_GROUP_TO_PRODUCT, {
                         optionGroupId: 'T_1',
-                        productId: '999',
+                        productId: 'T_999',
                     }),
                 `No Product with the id '999' could be found`,
+            ),
+        );
+
+        it(
+            'addOptionGroupToProduct errors if the OptionGroup is already assigned to another Product',
+            assertThrowsWithMessage(
+                () =>
+                    adminClient.query<
+                        Codegen.AddOptionGroupToProductMutation,
+                        Codegen.AddOptionGroupToProductMutationVariables
+                    >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                        optionGroupId: 'T_1',
+                        productId: 'T_2',
+                    }),
+                `The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"`,
             ),
         );
 
@@ -1243,20 +1272,20 @@ describe('Product resolver', () => {
         );
 
         it('removeOptionGroupFromProduct removes an option group', async () => {
+            const optionGroup = await createOptionGroup('Length', ['Short', 'Long']);
             const { addOptionGroupToProduct } = await adminClient.query<
                 Codegen.AddOptionGroupToProductMutation,
                 Codegen.AddOptionGroupToProductMutationVariables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             expect(addOptionGroupToProduct.optionGroups.length).toBe(1);
-
             const { removeOptionGroupFromProduct } = await adminClient.query<
                 Codegen.RemoveOptionGroupFromProductMutation,
                 Codegen.RemoveOptionGroupFromProductMutationVariables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                optionGroupId: 'T_1',
+                optionGroupId: optionGroup.id,
                 productId: newProductWithAssets.id,
             });
             removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
@@ -1281,6 +1310,33 @@ describe('Product resolver', () => {
             expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
             expect(removeOptionGroupFromProduct.productVariantCount).toBe(2);
+        });
+
+        it('removeOptionGroupFromProduct succeeds if all related ProductVariants are also deleted', async () => {
+            const { product } = await adminClient.query<
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, { id: 'T_2' });
+
+            // Delete all variants for that product
+            for (const variant of product!.variants) {
+                await adminClient.query<
+                    Codegen.DeleteProductVariantMutation,
+                    Codegen.DeleteProductVariantMutationVariables
+                >(DELETE_PRODUCT_VARIANT, {
+                    id: variant.id,
+                });
+            }
+
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                Codegen.RemoveOptionGroupFromProductMutation,
+                Codegen.RemoveOptionGroupFromProductMutationVariables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: product!.optionGroups[0].id,
+                productId: product!.id,
+            });
+
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
         });
 
         it(
@@ -1319,23 +1375,22 @@ describe('Product resolver', () => {
             let optionGroup3: NonNullable<Codegen.GetOptionGroupQuery['productOptionGroup']>;
 
             beforeAll(async () => {
+                optionGroup2 = await createOptionGroup('group-2', ['group2-option-1', 'group2-option-2']);
+                optionGroup3 = await createOptionGroup('group-3', ['group3-option-1', 'group3-option-2']);
                 await adminClient.query<
                     Codegen.AddOptionGroupToProductMutation,
                     Codegen.AddOptionGroupToProductMutationVariables
                 >(ADD_OPTION_GROUP_TO_PRODUCT, {
-                    optionGroupId: 'T_3',
+                    optionGroupId: optionGroup2.id,
                     productId: newProduct.id,
                 });
-                const result1 = await adminClient.query<
-                    Codegen.GetOptionGroupQuery,
-                    Codegen.GetOptionGroupQueryVariables
-                >(GET_OPTION_GROUP, { id: 'T_2' });
-                const result2 = await adminClient.query<
-                    Codegen.GetOptionGroupQuery,
-                    Codegen.GetOptionGroupQueryVariables
-                >(GET_OPTION_GROUP, { id: 'T_3' });
-                optionGroup2 = result1.productOptionGroup!;
-                optionGroup3 = result2.productOptionGroup!;
+                await adminClient.query<
+                    Codegen.AddOptionGroupToProductMutation,
+                    Codegen.AddOptionGroupToProductMutationVariables
+                >(ADD_OPTION_GROUP_TO_PRODUCT, {
+                    optionGroupId: optionGroup3.id,
+                    productId: newProduct.id,
+                });
             });
 
             it(
@@ -2015,6 +2070,23 @@ describe('Product resolver', () => {
             expect(product.slug).toBe(productToDelete.slug);
         });
     });
+
+    async function createOptionGroup(name: string, options: string[]) {
+        const { createProductOptionGroup } = await adminClient.query<
+            Codegen.CreateProductOptionGroupMutation,
+            Codegen.CreateProductOptionGroupMutationVariables
+        >(CREATE_PRODUCT_OPTION_GROUP, {
+            input: {
+                code: name.toLowerCase(),
+                translations: [{ languageCode: LanguageCode.en, name }],
+                options: options.map(option => ({
+                    code: option.toLowerCase(),
+                    translations: [{ languageCode: LanguageCode.en, name: option }],
+                })),
+            },
+        });
+        return createProductOptionGroup;
+    }
 });
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`

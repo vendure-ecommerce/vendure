@@ -22,6 +22,7 @@ import { EventBus } from '../../event-bus';
 import { FacetValueEvent } from '../../event-bus/events/facet-value-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
@@ -41,6 +42,7 @@ export class FacetValueService {
         private customFieldRelationService: CustomFieldRelationService,
         private channelService: ChannelService,
         private eventBus: EventBus,
+        private translator: TranslatorService,
     ) {}
 
     /**
@@ -57,7 +59,7 @@ export class FacetValueService {
                 ? // tslint:disable-next-line:no-non-null-assertion
                   [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
                 : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
-
+        // TODO: Implement usage of channelLanguageCode
         return repository
             .find({
                 relations: ['facet'],
@@ -73,7 +75,7 @@ export class FacetValueService {
             .findOne(id, {
                 relations: ['facet'],
             })
-            .then(facetValue => facetValue && translateDeep(facetValue, ctx.languageCode, ['facet']));
+            .then(facetValue => facetValue && this.translator.translate(facetValue, ctx, ['facet']));
     }
 
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {
@@ -81,7 +83,7 @@ export class FacetValueService {
             relations: ['facet'],
         });
         return facetValues.then(values =>
-            values.map(facetValue => translateDeep(facetValue, ctx.languageCode, ['facet'])),
+            values.map(facetValue => this.translator.translate(facetValue, ctx, ['facet'])),
         );
     }
 
@@ -97,7 +99,7 @@ export class FacetValueService {
                     facet: { id },
                 },
             })
-            .then(values => values.map(facetValue => translateDeep(facetValue, ctx.languageCode)));
+            .then(values => values.map(facetValue => this.translator.translate(facetValue, ctx)));
     }
 
     async create(

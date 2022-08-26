@@ -5,6 +5,39 @@ showtoc: true
 
 # Extending the GraphQL API
 
+Extension to the GraphQL API consists of two parts:
+
+1. **Schema extensions**. These define new types, fields, queries and mutations.
+2. **Resolvers**. These provide the logic that backs up the schema extensions.
+
+The Shop API and Admin APIs can be extended independently:
+
+```TypeScript {hl_lines=["16-22"]}
+import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import gql from 'graphql-tag';
+import { TopSellersResolver } from './top-products.resolver';
+
+const schemaExtension = gql`
+  extend type Query {
+    topProducts: [Product!]!
+  }
+`
+
+@VendurePlugin({
+  imports: [PluginCommonModule],
+  // We pass our schema extension and any related resolvers
+  // to our plugin metadata  
+  shopApiExtensions: {
+    schema: schemaExtension,
+    resolvers: [TopProductsResolver],
+  },
+  // Likewise, if you want to extend the Admin API,
+  // you would use `adminApiExtensions` in exactly the
+  // same way.  
+})
+export class TopProductsPlugin {}
+```
+
 There are a number of ways the GraphQL APIs can be modified by a plugin.
 
 ## Adding a new Query or Mutation
@@ -74,6 +107,43 @@ New mutations are defined in the same way, except that the `@Mutation()` decorat
 extend type Mutation { 
     myCustomProductMutation(id: ID!): Product!
 }
+```
+
+## Defining a new type
+
+If you have [defined a new database entity]({{< relref "defining-db-entity" >}}), it is likely that you'll want to expose this entity in your GraphQL API. To do so, you'll need to define a corresponding GraphQL type:
+
+```TypeScript
+import gql from 'graphql-tag';
+import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { ReviewsResolver } from './reviews.resolver';
+import { ProductReview } from './product-review.entity';
+
+@VendurePlugin({
+  imports: [PluginCommonModule],
+  shopApiExtensions: {
+    schema: gql`
+      # This is where we define the GraphQL type
+      # which corresponds to the Review entity
+      type ProductReview implements Node {
+        id: ID!
+        createdAt: DateTime!
+        updatedAt: DateTime!
+        text: String!
+        rating: Float!
+      }
+      
+      extend type Query {
+        # Now we can use this ProductReview type in queries
+        # and mutations.
+        reviewsForProduct(productId: ID!): [ProductReview!]!
+      }
+    `,
+    resolvers: [ReviewsResolver]
+  },
+  entities: [ProductReview],  
+})
+export class ReviewsPlugin {}
 ```
 
 ## Add fields to existing types

@@ -1,13 +1,13 @@
-{{#if isTs }}import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';{{else}}const { generateMigration, revertLastMigration, runMigrations } = require('@vendure/core');{{/if}}
-{{#if isTs }}import program from 'commander';{{else}}const program = require('commander');{{/if}}
+import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
+import program from 'commander';
 
-{{#if isTs }}import { config } from './src/vendure-config';{{else}}const { config } = require('./src/vendure-config');{{/if}}
+import { config } from './src/vendure-config';
 
 program
     .command('generate <name>')
     .description('Generate a new migration file with the given name')
     .action(name => {
-        return generateMigration(config, { name, outputDir: './migrations' });
+        return generateMigration(config, { name, outputDir: './src/migrations' });
     });
 
 program

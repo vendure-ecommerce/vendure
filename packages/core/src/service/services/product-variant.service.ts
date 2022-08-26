@@ -41,8 +41,8 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { samplesEach } from '../helpers/utils/samples-each';
-import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -76,6 +76,7 @@ export class ProductVariantService {
         private customFieldRelationService: CustomFieldRelationService,
         private requestCache: RequestContextCacheService,
         private productPriceApplicator: ProductPriceApplicator,
+        private translator: TranslatorService,
     ) {}
 
     async findAll(
@@ -115,7 +116,7 @@ export class ProductVariantService {
             })
             .then(async result => {
                 if (result) {
-                    return translateDeep(await this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
+                    return this.translator.translate(await this.applyChannelPriceAndTax(result, ctx), ctx, [
                         'product',
                     ]);
                 }
@@ -235,7 +236,7 @@ export class ProductVariantService {
             relations: ['productVariant', 'productVariant.taxCategory'],
             includeSoftDeleted: true,
         });
-        return translateDeep(await this.applyChannelPriceAndTax(productVariant, ctx), ctx.languageCode);
+        return this.translator.translate(await this.applyChannelPriceAndTax(productVariant, ctx), ctx);
     }
 
     /**
@@ -247,7 +248,7 @@ export class ProductVariantService {
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
                 relations: ['options'],
             })
-            .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
+            .then(variant => (!variant ? [] : variant.options.map(o => this.translator.translate(o, ctx))));
     }
 
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
@@ -256,7 +257,7 @@ export class ProductVariantService {
                 relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
             })
             .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+                !variant ? [] : variant.facetValues.map(o => this.translator.translate(o, ctx, ['facet'])),
             );
     }
 
@@ -270,7 +271,7 @@ export class ProductVariantService {
         const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
             includeSoftDeleted: true,
         });
-        return translateDeep(product, ctx.languageCode);
+        return this.translator.translate(product, ctx);
     }
 
     /**
@@ -607,7 +608,7 @@ export class ProductVariantService {
         return await Promise.all(
             variants.map(async variant => {
                 const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
-                return translateDeep(variantWithPrices, ctx.languageCode, [
+                return this.translator.translate(variantWithPrices, ctx, [
                     'options',
                     'facetValues',
                     ['facetValues', 'facet'],
@@ -770,7 +771,7 @@ export class ProductVariantService {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
                 if (variantOptionIds === inputOptionIds) {
                     throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                        variantName: translateDeep(variant, ctx.languageCode).name,
+                        variantName: this.translator.translate(variant, ctx).name,
                     });
                 }
             });

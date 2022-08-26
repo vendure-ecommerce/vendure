@@ -4,14 +4,18 @@ import Handlebars from 'handlebars';
 import path from 'path';
 import prompts, { PromptObject } from 'prompts';
 
-import { DbType, UserResponses } from './types';
+import { DbType, FileSources, UserResponses } from './types';
 
 // tslint:disable:no-console
 
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
  */
-export async function gatherUserResponses(root: string): Promise<UserResponses> {
+export async function gatherUserResponses(
+    root: string,
+    alreadyRanScaffold: boolean,
+    useYarn: boolean,
+): Promise<UserResponses> {
     function onSubmit(prompt: PromptObject, answer: any) {
         if (prompt.name === 'dbType') {
             dbType = answer;
@@ -20,106 +24,94 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
 
     let dbType: DbType;
 
-    const answers = await prompts(
-        [
-            {
-                type: 'select',
-                name: 'dbType',
-                message: 'Which database are you using?',
-                choices: [
-                    { title: 'MySQL', value: 'mysql' },
-                    { title: 'MariaDB', value: 'mariadb' },
-                    { title: 'Postgres', value: 'postgres' },
-                    { title: 'SQLite', value: 'sqlite' },
-                    { title: 'SQL.js', value: 'sqljs' },
-                    // Don't show these until they have been tested.
-                    // { title: 'MS SQL Server', value: 'mssql' },
-                    // { title: 'Oracle', value: 'oracle' },
-                ],
-                initial: 0 as any,
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbHost',
-                message: `What's the database host address?`,
-                initial: 'localhost',
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbPort',
-                message: `What port is the database listening on?`,
-                initial: (() => defaultDBPort(dbType)) as any,
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbName',
-                message: `What's the name of the database?`,
-                initial: 'vendure',
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
-                name: 'dbUserName',
-                message: `What's the database user name?`,
-                initial: 'root',
-            },
-            {
-                type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'password')) as any,
-                name: 'dbPassword',
-                message: `What's the database password?`,
-            },
-            {
-                type: 'select',
-                name: 'language',
-                message: 'Which programming language will you be using?',
-                choices: [
-                    { title: 'TypeScript', value: 'ts' },
-                    { title: 'JavaScript', value: 'js' },
-                ],
-                initial: 0 as any,
-            },
-            {
-                type: 'toggle',
-                name: 'populateProducts',
-                message: 'Populate with some sample product data?',
-                initial: true,
-                active: 'yes',
-                inactive: 'no',
-            },
-            {
-                type: 'text',
-                name: 'superadminIdentifier',
-                message: 'What identifier do you want to use for the superadmin user?',
-                initial: SUPER_ADMIN_USER_IDENTIFIER,
-            },
-            {
-                type: 'text',
-                name: 'superadminPassword',
-                message: 'What password do you want to use for the superadmin user?',
-                initial: SUPER_ADMIN_USER_PASSWORD,
-            },
-        ],
+    const scaffoldPrompts: Array<prompts.PromptObject<any>> = [
         {
-            onSubmit,
-            onCancel() {
-                /* */
-            },
+            type: 'select',
+            name: 'dbType',
+            message: 'Which database are you using?',
+            choices: [
+                { title: 'MySQL', value: 'mysql' },
+                { title: 'MariaDB', value: 'mariadb' },
+                { title: 'Postgres', value: 'postgres' },
+                { title: 'SQLite', value: 'sqlite' },
+                { title: 'SQL.js', value: 'sqljs' },
+                // Don't show these until they have been tested.
+                // { title: 'MS SQL Server', value: 'mssql' },
+                // { title: 'Oracle', value: 'oracle' },
+            ],
+            initial: 0 as any,
         },
-    );
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbHost',
+            message: `What's the database host address?`,
+            initial: 'localhost',
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbPort',
+            message: `What port is the database listening on?`,
+            initial: (() => defaultDBPort(dbType)) as any,
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbName',
+            message: `What's the name of the database?`,
+            initial: 'vendure',
+        },
+        {
+            type: (() => (dbType === 'postgres' ? 'text' : null)) as any,
+            name: 'dbSchema',
+            message: `What's the schema name we should use?`,
+            initial: 'public',
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
+            name: 'dbUserName',
+            message: `What's the database user name?`,
+            initial: 'root',
+        },
+        {
+            type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'password')) as any,
+            name: 'dbPassword',
+            message: `What's the database password?`,
+        },
+        {
+            type: 'text',
+            name: 'superadminIdentifier',
+            message: 'What identifier do you want to use for the superadmin user?',
+            initial: SUPER_ADMIN_USER_IDENTIFIER,
+        },
+        {
+            type: 'text',
+            name: 'superadminPassword',
+            message: 'What password do you want to use for the superadmin user?',
+            initial: SUPER_ADMIN_USER_PASSWORD,
+        },
+    ];
 
-    if (!answers.language) {
-        console.log('Setup aborted. No changes made');
-        process.exit(0);
-    }
+    const initPrompts: Array<prompts.PromptObject<any>> = [
+        {
+            type: 'toggle',
+            name: 'populateProducts',
+            message: 'Populate with some sample product data?',
+            initial: true,
+            active: 'yes',
+            inactive: 'no',
+        },
+    ];
 
-    const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
-        await generateSources(root, answers);
+    const answers = await prompts(alreadyRanScaffold ? initPrompts : [...scaffoldPrompts, ...initPrompts], {
+        onSubmit,
+        onCancel() {
+            /* */
+            console.log(`Setup cancelled`);
+            process.exit(1);
+        },
+    });
+
     return {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        migrationSource,
-        readmeSource,
-        usingTs: answers.language === 'ts',
+        ...(await generateSources(root, answers, useYarn)),
         dbType: answers.dbType,
         populateProducts: answers.populateProducts,
         superadminIdentifier: answers.superadminIdentifier,
@@ -130,7 +122,7 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
 /**
  * Returns mock "user response" without prompting, for use in CI
  */
-export async function gatherCiUserResponses(root: string): Promise<UserResponses> {
+export async function gatherCiUserResponses(root: string, useYarn: boolean): Promise<UserResponses> {
     const ciAnswers = {
         dbType: 'sqlite' as const,
         dbHost: '',
@@ -138,20 +130,13 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
         dbName: 'vendure',
         dbUserName: '',
         dbPassword: '',
-        language: 'ts',
         populateProducts: true,
         superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
         superadminPassword: SUPER_ADMIN_USER_PASSWORD,
     };
-    const { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource } =
-        await generateSources(root, ciAnswers);
+
     return {
-        indexSource,
-        indexWorkerSource,
-        configSource,
-        migrationSource,
-        readmeSource,
-        usingTs: ciAnswers.language === 'ts',
+        ...(await generateSources(root, ciAnswers, useYarn)),
         dbType: ciAnswers.dbType,
         populateProducts: ciAnswers.populateProducts,
         superadminIdentifier: ciAnswers.superadminIdentifier,
@@ -162,16 +147,7 @@ export async function gatherCiUserResponses(root: string): Promise<UserResponses
 /**
  * Create the server index, worker and config source code based on the options specified by the CLI prompts.
  */
-async function generateSources(
-    root: string,
-    answers: any,
-): Promise<{
-    indexSource: string;
-    indexWorkerSource: string;
-    configSource: string;
-    migrationSource: string;
-    readmeSource: string;
-}> {
+async function generateSources(root: string, answers: any, useYarn: boolean): Promise<FileSources> {
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
 
     /**
@@ -185,24 +161,30 @@ async function generateSources(
 
     const templateContext = {
         ...answers,
+        useYarn,
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
-        isTs: answers.language === 'ts',
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
+        cookieSecret: Math.random().toString(36).substr(2),
     };
-    const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
-    const configSource = Handlebars.compile(configTemplate, { noEscape: true })(templateContext);
-    const indexTemplate = await fs.readFile(assetPath('index.hbs'), 'utf-8');
-    const indexSource = Handlebars.compile(indexTemplate)(templateContext);
-    const indexWorkerTemplate = await fs.readFile(assetPath('index-worker.hbs'), 'utf-8');
-    const indexWorkerSource = Handlebars.compile(indexWorkerTemplate)(templateContext);
-    const migrationTemplate = await fs.readFile(assetPath('migration.hbs'), 'utf-8');
-    const migrationSource = Handlebars.compile(migrationTemplate)(templateContext);
-    const readmeTemplate = await fs.readFile(assetPath('readme.hbs'), 'utf-8');
-    const readmeSource = Handlebars.compile(readmeTemplate)(templateContext);
-    return { indexSource, indexWorkerSource, configSource, migrationSource, readmeSource };
+
+    async function createSourceFile(filename: string, noEscape = false): Promise<string> {
+        const template = await fs.readFile(assetPath(filename), 'utf-8');
+        return Handlebars.compile(template, { noEscape })(templateContext);
+    }
+    return {
+        indexSource: await createSourceFile('index.hbs'),
+        indexWorkerSource: await createSourceFile('index-worker.hbs'),
+        configSource: await createSourceFile('vendure-config.hbs', true),
+        envSource: await createSourceFile('.env.hbs', true),
+        envDtsSource: await createSourceFile('environment.d.hbs', true),
+        migrationSource: await createSourceFile('migration.hbs'),
+        readmeSource: await createSourceFile('readme.hbs'),
+        dockerfileSource: await createSourceFile('Dockerfile.hbs'),
+        dockerComposeSource: await createSourceFile('docker-compose.hbs'),
+    };
 }
 
 function defaultDBPort(dbType: DbType): number {

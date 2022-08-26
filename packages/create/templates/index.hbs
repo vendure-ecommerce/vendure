@@ -1,7 +1,8 @@
-{{#if isTs }}import { bootstrap } from '@vendure/core';{{else}}const { bootstrap } = require('@vendure/core');{{/if}}
-{{#if isTs }}import { config } from './vendure-config';{{else}}const { config } = require('./vendure-config');{{/if}}
+import { bootstrap, runMigrations } from '@vendure/core';
+import { config } from './vendure-config';
 
-bootstrap(config).catch(err => {
-    // tslint:disable-next-line:no-console
-    console.log(err);
-});
+runMigrations(config)
+    .then(() => bootstrap(config))
+    .catch(err => {
+        console.log(err);
+    });

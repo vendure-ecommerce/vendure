@@ -77,6 +77,7 @@
     "confirm-delete-facet": "Supprimer composant ?",
     "confirm-delete-facet-value": "Supprimer valeur du composant ?",
     "confirm-delete-product": "Supprimer produit ?",
+    "confirm-delete-product-option": "",
     "confirm-delete-product-variant": "Supprimer variation du produit ?",
     "confirm-delete-promotion": "Supprimer promotion ?",
     "confirm-delete-shipping-method": "Supprimer mode d'expédition ?",

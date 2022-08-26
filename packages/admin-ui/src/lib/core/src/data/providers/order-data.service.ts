@@ -3,6 +3,7 @@ import {
     ADD_MANUAL_PAYMENT_TO_ORDER,
     ADD_NOTE_TO_ORDER,
     CANCEL_ORDER,
+    CANCEL_PAYMENT,
     CREATE_FULFILLMENT,
     DELETE_ORDER_NOTE,
     GET_ORDER,
@@ -55,6 +56,15 @@ export class OrderDataService {
             Codegen.SettlePaymentMutation,
             Codegen.SettlePaymentMutationVariables
         >(SETTLE_PAYMENT, {
+            id,
+        });
+    }
+
+    cancelPayment(id: string) {
+        return this.baseDataService.mutate<
+            Codegen.CancelPaymentMutation,
+            Codegen.CancelPaymentMutationVariables
+        >(CANCEL_PAYMENT, {
             id,
         });
     }

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
+import { unique } from '@vendure/common/lib/unique';
+import { FulfillmentLineSummary } from '@vendure/payments-plugin/e2e/graphql/generated-admin-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -12,6 +14,7 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
+import { OrderLine } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -115,6 +118,56 @@ export class FulfillmentService {
         return fulfillment.orderItems;
     }
 
+    async getFulfillmentLineSummary(
+        ctx: RequestContext,
+        id: ID,
+    ): Promise<Array<{ orderLine: OrderLine; quantity: number }>> {
+        const result = await this.connection
+            .getRepository(ctx, OrderLine)
+            .createQueryBuilder('line')
+            .leftJoinAndSelect('line.items', 'item')
+            .leftJoin('item.fulfillments', 'fulfillment')
+            .select('line.id', 'lineId')
+            .addSelect('COUNT(item.id)', 'itemCount')
+            .groupBy('line.id')
+            .where('fulfillment.id = :id', { id })
+            .getRawMany();
+
+        return Promise.all(
+            result.map(async ({ lineId, itemCount }: { lineId: ID; itemCount: string }) => {
+                return {
+                    orderLine: await this.connection.getEntityOrThrow(ctx, OrderLine, lineId),
+                    quantity: +itemCount,
+                };
+            }),
+        );
+    }
+
+    async getFulfillmentsByOrderLineId(
+        ctx: RequestContext,
+        orderLineId: ID,
+    ): Promise<Array<{ fulfillment: Fulfillment; orderItemIds: Set<ID> }>> {
+        const itemIdsQb = await this.connection
+            .getRepository(ctx, OrderItem)
+            .createQueryBuilder('item')
+            .select('item.id', 'id')
+            .where('item.lineId = :orderLineId', { orderLineId });
+
+        const fulfillments = await this.connection
+            .getRepository(ctx, Fulfillment)
+            .createQueryBuilder('fulfillment')
+            .leftJoinAndSelect('fulfillment.orderItems', 'item')
+            .where(`item.id IN (${itemIdsQb.getQuery()})`)
+            .andWhere('fulfillment.state != :cancelledState', { cancelledState: 'Cancelled' })
+            .setParameters(itemIdsQb.getParameters())
+            .getMany();
+
+        return fulfillments.map(fulfillment => ({
+            fulfillment,
+            orderItemIds: new Set(fulfillment.orderItems.map(i => i.id)),
+        }));
+    }
+
     /**
      * @description
      * Returns the Fulfillment for the given OrderItem (if one exists).
@@ -147,14 +200,14 @@ export class FulfillmentService {
           }
         | FulfillmentStateTransitionError
     > {
-        const fulfillment = await this.findOneOrThrow(ctx, fulfillmentId, [
-            'orderItems',
-            'orderItems.line',
-            'orderItems.line.order',
-        ]);
-        // Find orders based on order items filtering by id, removing duplicated orders
-        const ordersInOrderItems = fulfillment.orderItems.map(oi => oi.line.order);
-        const orders = ordersInOrderItems.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
+        const fulfillment = await this.findOneOrThrow(ctx, fulfillmentId, ['orderItems']);
+        const lineIds = unique(fulfillment.orderItems.map(item => item.lineId));
+        const orders = await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.lines', 'line')
+            .where('line.id IN (:...lineIds)', { lineIds })
+            .getMany();
         const fromState = fulfillment.state;
         try {
             await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);

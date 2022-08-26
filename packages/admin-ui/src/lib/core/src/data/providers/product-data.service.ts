@@ -14,6 +14,7 @@ import {
     CREATE_TAG,
     DELETE_ASSETS,
     DELETE_PRODUCT,
+    DELETE_PRODUCT_OPTION,
     DELETE_PRODUCT_VARIANT,
     DELETE_TAG,
     GET_ASSET,
@@ -272,7 +273,14 @@ export class ProductDataService {
         >(ADD_OPTION_TO_GROUP, { input });
     }
 
-    removeOptionGroupFromProduct(variables: Codegen.RemoveOptionGroupFromProductMutationVariables) {
+    deleteProductOption(id: string) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteProductOptionMutation,
+            Codegen.DeleteProductOptionMutationVariables
+        >(DELETE_PRODUCT_OPTION, { id });
+    }
+
+    removeOptionGroupFromProduct(variables: RemoveOptionGroupFromProduct.Variables) {
         return this.baseDataService.mutate<
             Codegen.RemoveOptionGroupFromProductMutation,
             Codegen.RemoveOptionGroupFromProductMutationVariables

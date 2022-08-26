@@ -69,10 +69,25 @@ export class ConfigArgService {
     parseInput(defType: ConfigDefType, input: ConfigurableOperationInput): ConfigurableOperation {
         const match = this.getByCode(defType, input.code);
         this.validateRequiredFields(input, match);
+        const orderedArgs = this.orderArgsToMatchDef(match, input.arguments);
         return {
             code: input.code,
-            args: input.arguments,
+            args: orderedArgs,
         };
+    }
+
+    private orderArgsToMatchDef<T extends ConfigDefType>(
+        def: ConfigDefTypeMap[T],
+        args: ConfigurableOperation['args'],
+    ) {
+        const output: ConfigurableOperation['args'] = [];
+        for (const name of Object.keys(def.args)) {
+            const match = args.find(arg => arg.name === name);
+            if (match) {
+                output.push(match);
+            }
+        }
+        return output;
     }
 
     private parseOperationArgs(

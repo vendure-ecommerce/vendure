@@ -77,6 +77,7 @@
     "confirm-delete-facet": "Видалити тег?",
     "confirm-delete-facet-value": "Видалити значення тегу?",
     "confirm-delete-product": "Видалити товар?",
+    "confirm-delete-product-option": "",
     "confirm-delete-product-variant": "Видалити варіант товару?",
     "confirm-delete-promotion": "Видалити промо-акцію?",
     "confirm-delete-shipping-method": "Видалити спосіб доставки?",

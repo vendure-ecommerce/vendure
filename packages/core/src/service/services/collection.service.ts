@@ -24,7 +24,6 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Asset, FacetValue } from '../../entity';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -40,8 +39,8 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { TranslatorService } from '../helpers/translator/translator.service';
 import { moveToIndex } from '../helpers/utils/move-to-index';
-import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -77,6 +76,7 @@ export class CollectionService implements OnModuleInit {
         private slugValidator: SlugValidator,
         private configArgService: ConfigArgService,
         private customFieldRelationService: CustomFieldRelationService,
+        private translator: TranslatorService,
     ) {}
 
     /**
@@ -149,7 +149,7 @@ export class CollectionService implements OnModuleInit {
             .getManyAndCount()
             .then(async ([collections, totalItems]) => {
                 const items = collections.map(collection =>
-                    translateDeep(collection, ctx.languageCode, ['parent']),
+                    this.translator.translate(collection, ctx, ['parent']),
                 );
                 return {
                     items,
@@ -176,7 +176,7 @@ export class CollectionService implements OnModuleInit {
         if (!collection) {
             return;
         }
-        return translateDeep(collection, ctx.languageCode, ['parent']);
+        return this.translator.translate(collection, ctx, ['parent']);
     }
 
     async findByIds(
@@ -189,7 +189,7 @@ export class CollectionService implements OnModuleInit {
             loadEagerRelations: true,
         });
         return collections.then(values =>
-            values.map(collection => translateDeep(collection, ctx.languageCode, ['parent'])),
+            values.map(collection => this.translator.translate(collection, ctx, ['parent'])),
         );
     }
 
@@ -241,7 +241,7 @@ export class CollectionService implements OnModuleInit {
             )
             .getOne();
 
-        return parent && translateDeep(parent, ctx.languageCode);
+        return parent && this.translator.translate(parent, ctx);
     }
 
     /**
@@ -293,7 +293,7 @@ export class CollectionService implements OnModuleInit {
         }
         const result = await qb.getMany();
 
-        return result.map(collection => translateDeep(collection, ctx.languageCode));
+        return result.map(collection => this.translator.translate(collection, ctx));
     }
 
     /**
@@ -320,7 +320,7 @@ export class CollectionService implements OnModuleInit {
         };
 
         const descendants = await getChildren(rootId);
-        return descendants.map(c => translateDeep(c, ctx.languageCode));
+        return descendants.map(c => this.translator.translate(c, ctx));
     }
 
     /**
@@ -359,7 +359,7 @@ export class CollectionService implements OnModuleInit {
                 ancestors.forEach(a => {
                     const category = categories.find(c => c.id === a.id);
                     if (category) {
-                        resultCategories.push(ctx ? translateDeep(category, ctx.languageCode) : category);
+                        resultCategories.push(ctx ? this.translator.translate(category, ctx) : category);
                     }
                 });
                 return resultCategories;
@@ -688,7 +688,7 @@ export class CollectionService implements OnModuleInit {
             .getOne();
 
         if (existingRoot) {
-            this.rootCollection = translateDeep(existingRoot, ctx.languageCode);
+            this.rootCollection = this.translator.translate(existingRoot, ctx);
             return this.rootCollection;
         }
 
@@ -713,7 +713,7 @@ export class CollectionService implements OnModuleInit {
                 filters: [],
             }),
         );
-        this.rootCollection = translateDeep(newRoot, ctx.languageCode);
+        this.rootCollection = this.translator.translate(newRoot, ctx);
         return this.rootCollection;
     }
 }

@@ -5,11 +5,16 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2017",
+    "strictPropertyInitialization": false,
+    "target": "es2019",
     "strict": true,
     "sourceMap": false,
+    "skipLibCheck": true,
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "exclude": ["node_modules", "migration.ts"]
+  "exclude": ["node_modules", "migration.ts"],
+  "ts-node": {
+    "files": true
+  }
 }

@@ -2,10 +2,12 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     AddFulfillmentToOrderResult,
     CancelOrderResult,
+    CancelPaymentResult,
     MutationAddFulfillmentToOrderArgs,
     MutationAddManualPaymentToOrderArgs,
     MutationAddNoteToOrderArgs,
     MutationCancelOrderArgs,
+    MutationCancelPaymentArgs,
     MutationDeleteOrderNoteArgs,
     MutationModifyOrderArgs,
     MutationRefundOrderArgs,
@@ -73,6 +75,16 @@ export class OrderResolver {
         @Args() args: MutationSettlePaymentArgs,
     ): Promise<ErrorResultUnion<SettlePaymentResult, Payment>> {
         return this.orderService.settlePayment(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async cancelPayment(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCancelPaymentArgs,
+    ): Promise<ErrorResultUnion<CancelPaymentResult, Payment>> {
+        return this.orderService.cancelPayment(ctx, args.id);
     }
 
     @Transaction()

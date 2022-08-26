@@ -37,6 +37,14 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
         '.travis.yml',
         '.gitlab-ci.yml',
         '.gitattributes',
+        'migration.ts',
+        'node_modules',
+        'package.json',
+        'package-lock.json',
+        'src',
+        'static',
+        'tsconfig.json',
+        'yarn.lock',
     ];
     console.log();
 
@@ -71,6 +79,12 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
         });
     });
     return true;
+}
+
+export function scaffoldAlreadyExists(root: string, name: string): boolean {
+    const scaffoldFiles = ['migration.ts', 'package.json', 'tsconfig.json', 'README.md'];
+    const files = fs.readdirSync(root);
+    return scaffoldFiles.every(scaffoldFile => files.includes(scaffoldFile));
 }
 
 export function checkNodeVersion(requiredVersion: string) {
@@ -225,7 +239,6 @@ export function installPackages(
 }
 
 export function getDependencies(
-    usingTs: boolean,
     dbType: DbType,
     vendurePkgVersion = '',
 ): { dependencies: string[]; devDependencies: string[] } {
@@ -235,13 +248,9 @@ export function getDependencies(
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         dbDriverPackage(dbType),
+        `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently'];
-    if (usingTs) {
-        devDependencies.push('ts-node');
-        dependencies.push(`typescript@${TYPESCRIPT_VERSION}`);
-    }
-
+    const devDependencies = ['concurrently', 'dotenv', 'ts-node'];
     return { dependencies, devDependencies };
 }
 
@@ -324,14 +333,24 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
         password: options.password,
         port: options.port,
         database: options.database,
+        schema: options.schema,
     };
     const client = new Client(connectionOptions);
 
     try {
         await client.connect();
+
+        const schema = await client.query(
+            `SELECT schema_name FROM information_schema.schemata WHERE schema_name = '${options.schema}'`,
+        );
+        if (schema.rows.length === 0) {
+            throw new Error('NO_SCHEMA');
+        }
     } catch (e: any) {
         if (e.code === '3D000') {
             throwDatabaseDoesNotExist(options.database);
+        } else if (e.message === 'NO_SCHEMA') {
+            throwDatabaseSchemaDoesNotExist(options.database, options.schema);
         }
         throwConnectionError(e);
         await client.end();
@@ -352,6 +371,12 @@ function throwConnectionError(err: any) {
 
 function throwDatabaseDoesNotExist(name: string) {
     throw new Error(`Database "${name}" does not exist. Please create the database and then try again.`);
+}
+
+function throwDatabaseSchemaDoesNotExist(dbName: string, schemaName: string) {
+    throw new Error(
+        `Schema "${dbName}.${schemaName}" does not exist. Please create the schema "${schemaName}" and then try again.`,
+    );
 }
 
 export async function isServerPortInUse(): Promise<boolean> {

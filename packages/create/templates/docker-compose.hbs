@@ -1,0 +1,39 @@
+version: "3"
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    command: [{{#if useYarn}}"yarn"{{else}}"npm", "run"{{/if}}, "start:server"]
+    volumes:
+      - /usr/src/app
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: vendure
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: [{{#if useYarn}}"yarn"{{else}}"npm", "run"{{/if}}, "start:worker"]
+    volumes:
+      - /usr/src/app
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: vendure
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+  database:
+    image: postgres
+    volumes:
+      - /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vendure

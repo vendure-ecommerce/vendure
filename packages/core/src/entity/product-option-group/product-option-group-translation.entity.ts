@@ -22,6 +22,7 @@ export class ProductOptionGroupTranslation
 
     @Column() name: string;
 
+    // TODO: V2 need to add onDelete: CASCADE here
     @Index()
     @ManyToOne(type => ProductOptionGroup, base => base.translations)
     base: ProductOptionGroup;

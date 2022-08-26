@@ -9,7 +9,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../../service/helpers/product-price-applicator/product-price-applicator';
-import { translateDeep } from '../../service/helpers/utils/translate-entity';
+import { TranslatorService } from '../../service/helpers/translator/translator.service';
 
 import { RequestContext } from './request-context';
 
@@ -26,7 +26,9 @@ export class CustomFieldRelationResolverService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private productPriceApplicator: ProductPriceApplicator,
+        private translator: TranslatorService,
     ) {}
+
     /**
      * @description
      * Used to dynamically resolve related entities in custom fields. Based on the field
@@ -62,9 +64,9 @@ export class CustomFieldRelationResolverService {
         }
 
         const translated: any = Array.isArray(result)
-            ? result.map(r => (this.isTranslatable(r) ? translateDeep(r, ctx.languageCode) : r))
+            ? result.map(r => (this.isTranslatable(r) ? this.translator.translate(r, ctx) : r))
             : this.isTranslatable(result)
-            ? translateDeep(result, ctx.languageCode)
+            ? this.translator.translate(result, ctx)
             : result;
 
         return translated;

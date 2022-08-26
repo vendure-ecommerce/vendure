@@ -19,7 +19,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { ORDER_WITH_LINES_FRAGMENT, PAYMENT_FRAGMENT } from './graphql/fragments';
+import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { ErrorCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
@@ -118,7 +118,7 @@ describe('Payment process', () => {
 
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
+            // logger: new DefaultLogger(),
             orderOptions: {
                 process: [customOrderProcess as any],
                 orderPlacedStrategy: new TestOrderPlacedStrategy(),
@@ -393,22 +393,6 @@ describe('Payment process', () => {
         });
     });
 });
-
-const TRANSITION_PAYMENT_TO_STATE = gql`
-    mutation TransitionPaymentToState($id: ID!, $state: String!) {
-        transitionPaymentToState(id: $id, state: $state) {
-            ...Payment
-            ... on ErrorResult {
-                errorCode
-                message
-            }
-            ... on PaymentStateTransitionError {
-                transitionError
-            }
-        }
-    }
-    ${PAYMENT_FRAGMENT}
-`;
 
 export const ADD_MANUAL_PAYMENT = gql`
     mutation AddManualPayment2($input: ManualPaymentInput!) {

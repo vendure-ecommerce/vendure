@@ -77,6 +77,7 @@
     "confirm-delete-facet": "Facette löschen?",
     "confirm-delete-facet-value": "Facettenwert löschen?",
     "confirm-delete-product": "Produkt löschen?",
+    "confirm-delete-product-option": "",
     "confirm-delete-product-variant": "Produktvariante löschen?",
     "confirm-delete-promotion": "Werbeaktion löschen?",
     "confirm-delete-shipping-method": "Versandart löschen?",

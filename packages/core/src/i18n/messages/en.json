@@ -40,6 +40,7 @@
     "products-cannot-be-removed-from-default-channel": "Products cannot be removed from the default Channel",
     "product-id-or-slug-must-be-provided": "Either the Product id or slug must be provided",
     "product-id-slug-mismatch": "The provided id and slug refer to different Products",
+    "product-option-group-already-assigned": "The ProductOptionGroup \"{ groupCode }\" is already assigned to the Product \"{ productName }\"",
     "product-variant-option-ids-not-compatible": "ProductVariant optionIds must include one optionId from each of the groups: {groupNames}",
     "product-variant-options-combination-already-exists": "A ProductVariant with the selected options already exists: {variantName}",
     "promotion-channels-can-only-be-changed-from-default-channel": "Promotions channels may only be changed from the Default Channel",
@@ -51,6 +52,7 @@
     "ALREADY_LOGGED_IN_ERROR": "Cannot set a Customer for the Order when already logged in",
     "ALREADY_REFUNDED_ERROR": "Cannot refund an OrderItem which has already been refunded",
     "CANCEL_ACTIVE_ORDER_ERROR": "Cannot cancel OrderLines from an Order in the \"{ orderState }\" state",
+    "CANCEL_PAYMENT_ERROR": "Cancelling the payment failed",
     "CHANNEL_DEFAULT_LANGUAGE_ERROR": "Cannot make language \"{ language }\" unavailable as it is used as the defaultLanguage by the channel \"{ channelCode }\"",
     "COUPON_CODE_EXPIRED_ERROR": "Coupon code \"{ couponCode }\" has expired",
     "COUPON_CODE_INVALID_ERROR": "Coupon code \"{ couponCode }\" is not valid",
@@ -116,6 +118,7 @@
     "facet-value-force-deleted": "The selected FacetValue was removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}} and deleted",
     "facet-value-used": "The selected FacetValue is assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "payment-method-used-in-channels": "The selected PaymentMethod is assigned to the following Channels: { channelCodes }. Set \"force: true\" to delete from all Channels.",
+    "product-option-used": "Cannot delete the option \"{code}\" as it is being used by {count, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "zone-used-in-channels": "The selected Zone cannot be deleted as it used as a default in the following Channels: { channelCodes }",
     "zone-used-in-tax-rates": "The selected Zone cannot be deleted as it is used in the following TaxRates: { taxRateNames }"
   }

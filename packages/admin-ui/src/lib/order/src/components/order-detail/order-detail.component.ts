@@ -8,6 +8,8 @@ import {
     CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
+    FulfillmentFragment,
+    FulfillmentLineSummary,
     GetOrderHistoryQuery,
     GetOrderQuery,
     HistoryEntry,
@@ -210,10 +212,9 @@ export class OrderDetailComponent
     }
 
     transitionPaymentState({ payment, state }: { payment: Payment; state: string }) {
-        this.dataService.order
-            .transitionPaymentToState(payment.id, state)
-            .subscribe(({ transitionPaymentToState }) => {
-                switch (transitionPaymentToState.__typename) {
+        if (state === 'Cancelled') {
+            this.dataService.order.cancelPayment(payment.id).subscribe(({ cancelPayment }) => {
+                switch (cancelPayment.__typename) {
                     case 'Payment':
                         this.notificationService.success(_('order.transitioned-payment-to-state-success'), {
                             state,
@@ -222,16 +223,50 @@ export class OrderDetailComponent
                         this.fetchHistory.next();
                         break;
                     case 'PaymentStateTransitionError':
-                        this.notificationService.error(transitionPaymentToState.message);
+                        this.notificationService.error(cancelPayment.transitionError);
+                        break;
+                    case 'CancelPaymentError':
+                        this.notificationService.error(cancelPayment.paymentErrorMessage);
                         break;
                 }
             });
+        } else {
+            this.dataService.order
+                .transitionPaymentToState(payment.id, state)
+                .subscribe(({ transitionPaymentToState }) => {
+                    switch (transitionPaymentToState.__typename) {
+                        case 'Payment':
+                            this.notificationService.success(
+                                _('order.transitioned-payment-to-state-success'),
+                                {
+                                    state,
+                                },
+                            );
+                            this.dataService.order.getOrder(this.id).single$.subscribe();
+                            this.fetchHistory.next();
+                            break;
+                        case 'PaymentStateTransitionError':
+                            this.notificationService.error(transitionPaymentToState.message);
+                            break;
+                    }
+                });
+        }
     }
 
     canAddFulfillment(order: OrderDetailFragment): boolean {
-        const allItemsFulfilled = order.lines
-            .reduce((items, line) => [...items, ...line.items], [] as OrderLineFragment['items'])
-            .every(item => !!item.fulfillment || item.cancelled);
+        const allFulfillmentSummaryRows: FulfillmentFragment['summary'] = (order.fulfillments ?? []).reduce(
+            (all, fulfillment) => [...all, ...fulfillment.summary],
+            [] as FulfillmentFragment['summary'],
+        );
+        let allItemsFulfilled = true;
+        for (const line of order.lines) {
+            const totalFulfilledCount = allFulfillmentSummaryRows
+                .filter(row => row.orderLine.id === line.id)
+                .reduce((sum, row) => sum + row.quantity, 0);
+            if (totalFulfilledCount < line.quantity) {
+                allItemsFulfilled = false;
+            }
+        }
         return (
             !allItemsFulfilled &&
             !this.hasUnsettledModifications(order) &&

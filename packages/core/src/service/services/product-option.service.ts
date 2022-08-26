@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
     CreateGroupOptionInput,
     CreateProductOptionInput,
+    DeletionResponse,
+    DeletionResult,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
@@ -9,7 +11,9 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { Logger } from '../../config/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ProductVariant } from '../../entity/index';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
@@ -17,7 +21,7 @@ import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { translateDeep } from '../helpers/utils/translate-entity';
+import { TranslatorService } from '../helpers/translator/translator.service';
 
 /**
  * @description
@@ -32,6 +36,7 @@ export class ProductOptionService {
         private translatableSaver: TranslatableSaver,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private translator: TranslatorService,
     ) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
@@ -40,7 +45,7 @@ export class ProductOptionService {
             .find({
                 relations: ['group'],
             })
-            .then(options => options.map(option => translateDeep(option, ctx.languageCode)));
+            .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
@@ -49,7 +54,7 @@ export class ProductOptionService {
             .findOne(id, {
                 relations: ['group'],
             })
-            .then(option => option && translateDeep(option, ctx.languageCode));
+            .then(option => option && this.translator.translate(option, ctx));
     }
 
     async create(
@@ -88,5 +93,65 @@ export class ProductOptionService {
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
         this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
         return assertFound(this.findOne(ctx, option.id));
+    }
+
+    /**
+     * @description
+     * Deletes a ProductOption.
+     *
+     * - If the ProductOption is used by any ProductVariants, the deletion will fail.
+     * - If the ProductOption is used only by soft-deleted ProductVariants, the option will itself
+     *   be soft-deleted.
+     * - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
+     */
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id);
+        const inUseByActiveVariants = await this.isInUse(ctx, productOption, 'active');
+        if (0 < inUseByActiveVariants) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.product-option-used', {
+                    code: productOption.code,
+                    count: inUseByActiveVariants,
+                }),
+            };
+        }
+        const isInUseBySoftDeletedVariants = await this.isInUse(ctx, productOption, 'soft-deleted');
+        if (0 < isInUseBySoftDeletedVariants) {
+            // soft delete
+            productOption.deletedAt = new Date();
+            await this.connection.getRepository(ctx, ProductOption).save(productOption, { reload: false });
+        } else {
+            // hard delete
+            try {
+                // TODO: V2 rely on onDelete: CASCADE rather than this manual loop
+                for (const translation of productOption.translations) {
+                    await this.connection
+                        .getRepository(ctx, ProductOptionTranslation)
+                        .remove(translation as ProductOptionTranslation);
+                }
+                await this.connection.getRepository(ctx, ProductOption).remove(productOption);
+            } catch (e: any) {
+                Logger.error(e.message, undefined, e.stack);
+            }
+        }
+        this.eventBus.publish(new ProductOptionEvent(ctx, productOption, 'deleted', id));
+        return {
+            result: DeletionResult.DELETED,
+        };
+    }
+
+    private async isInUse(
+        ctx: RequestContext,
+        productOption: ProductOption,
+        variantState: 'active' | 'soft-deleted',
+    ): Promise<number> {
+        return this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .leftJoin('variant.options', 'option')
+            .where(variantState === 'active' ? 'variant.deletedAt IS NULL' : 'variant.deletedAt IS NOT NULL')
+            .andWhere('option.id = :id', { id: productOption.id })
+            .getCount();
     }
 }

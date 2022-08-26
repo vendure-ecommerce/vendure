@@ -564,6 +564,15 @@ export const UPDATE_PRODUCT_OPTION = gql`
     ${PRODUCT_OPTION_FRAGMENT}
 `;
 
+export const DELETE_PRODUCT_OPTION = gql`
+    mutation DeleteProductOption($id: ID!) {
+        deleteProductOption(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const DELETE_PRODUCT_VARIANT = gql`
     mutation DeleteProductVariant($id: ID!) {
         deleteProductVariant(id: $id) {
