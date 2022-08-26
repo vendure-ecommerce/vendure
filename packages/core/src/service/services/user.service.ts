@@ -378,6 +378,7 @@ export class UserService {
         if (!user) {
             throw new EntityNotFoundError('User', userId);
         }
+        const password = newPassword;
         const passwordValidationResult = await this.validatePassword(ctx, password);
         if (passwordValidationResult !== true) {
             return passwordValidationResult;
