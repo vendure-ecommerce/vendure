@@ -1,6 +1,7 @@
 import { RequestContext } from '../../api/common/request-context';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
+import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
 /**
@@ -53,5 +54,6 @@ export interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
         ctx: RequestContext,
         productVariant: ProductVariant,
         orderLineCustomFields: { [key: string]: any },
+        order: Order,
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }
