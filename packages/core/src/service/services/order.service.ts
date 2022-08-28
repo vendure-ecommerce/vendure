@@ -1558,7 +1558,7 @@ export class OrderService {
                 ? orderOrId
                 : await this.connection
                       .getRepository(ctx, Order)
-                      .findOneOrFail(orderOrId, { relations: ['lines'] });
+                      .findOneOrFail(orderOrId, { relations: ['lines', 'shippingLines'] });
         // If there is a Session referencing the Order to be deleted, we must first remove that
         // reference in order to avoid a foreign key error. See https://github.com/vendure-ecommerce/vendure/issues/1454
         const sessions = await this.connection
