@@ -116,8 +116,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
         }
 
         return qb
-            .take(take)
-            .skip(skip)
+            .limit(take)
+            .offset(skip)
             .getRawMany()
             .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }

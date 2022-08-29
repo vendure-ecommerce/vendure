@@ -20,6 +20,7 @@ import { ProductOptionInUseError } from '../../common/error/generated-graphql-ad
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { removeCustomFieldsWithEagerRelations } from '../../connection/remove-custom-fields-with-eager-relations';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -173,8 +174,12 @@ export class ProductService {
         relations?: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
         const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
+        const effectiveRelations = removeCustomFieldsWithEagerRelations(
+            qb,
+            relations ? [...new Set(this.relations.concat(relations))] : this.relations,
+        );
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: relations ? [...new Set(this.relations.concat(relations))] : this.relations,
+            relations: effectiveRelations,
         });
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);

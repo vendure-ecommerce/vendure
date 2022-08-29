@@ -29,7 +29,7 @@ import path from 'path';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { AddItemToOrderMutation } from './graphql/generated-e2e-shop-types';
@@ -79,6 +79,7 @@ class Vendor extends VendureEntity {
     constructor() {
         super();
     }
+
     @OneToOne(type => Product, { eager: true })
     @JoinColumn()
     featuredProduct: Product;
@@ -112,6 +113,16 @@ customFieldConfig.Product?.push(
         public: true,
     },
 );
+customFieldConfig.User?.push({
+    name: 'cfVendor',
+    type: 'relation',
+    entity: Vendor,
+    graphQLType: 'Vendor',
+    list: false,
+    eager: true,
+    internal: false,
+    public: true,
+});
 
 const testResolverSpy = jest.fn();
 
@@ -138,6 +149,7 @@ class TestResolver1636 {
                 getAssetTest(id: ID!): Boolean!
             }
             type Vendor {
+                id: ID
                 featuredProduct: Product
             }
         `,
@@ -146,6 +158,7 @@ class TestResolver1636 {
     adminApiExtensions: {
         schema: gql`
             type Vendor {
+                id: ID
                 featuredProduct: Product
             }
         `,
@@ -800,10 +813,53 @@ describe('Custom field relations', () => {
             });
 
             // https://github.com/vendure-ecommerce/vendure/issues/1664
-            it('successfully gets product with eager-loading custom field relation', async () => {
+            it('successfully gets product by id with eager-loading custom field relation', async () => {
                 const { product } = await shopClient.query(gql`
                     query {
                         product(id: "T_1") {
+                            id
+                            customFields {
+                                cfVendor {
+                                    featuredProduct {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(product).toBeDefined();
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1664
+            it('successfully gets product by id with nested eager-loading custom field relation', async () => {
+                const { customer } = await adminClient.query(gql`
+                    query {
+                        customer(id: "T_1") {
+                            id
+                            firstName
+                            lastName
+                            emailAddress
+                            phoneNumber
+                            user {
+                                customFields {
+                                    cfVendor {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(customer).toBeDefined();
+            });
+
+            it('successfully gets product by slug with eager-loading custom field relation', async () => {
+                const { product } = await shopClient.query(gql`
+                    query {
+                        product(slug: "laptop") {
                             id
                             customFields {
                                 cfVendor {

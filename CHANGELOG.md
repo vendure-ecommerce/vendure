@@ -1,3 +1,14 @@
+## <small>1.7.1 (2022-08-29)</small>
+
+
+#### Fixes
+
+* **core** Fix DefaultSearchPlugin pagination/sort with non-default lang ([5f7bea4](https://github.com/vendure-ecommerce/vendure/commit/5f7bea4)), closes [#1752](https://github.com/vendure-ecommerce/vendure/issues/1752) [#1746](https://github.com/vendure-ecommerce/vendure/issues/1746)
+* **core** Fix delete order method when called with id (#1751) ([fc57b0d](https://github.com/vendure-ecommerce/vendure/commit/fc57b0d)), closes [#1751](https://github.com/vendure-ecommerce/vendure/issues/1751)
+* **core** Fix regression with custom field relations & product by slug ([e90b99a](https://github.com/vendure-ecommerce/vendure/commit/e90b99a)), closes [#1723](https://github.com/vendure-ecommerce/vendure/issues/1723)
+* **core** Password change checks pw validity (#1745) ([4b6ac3b](https://github.com/vendure-ecommerce/vendure/commit/4b6ac3b)), closes [#1745](https://github.com/vendure-ecommerce/vendure/issues/1745)
+* **core** Work-around for nested custom field relations issue ([651710a](https://github.com/vendure-ecommerce/vendure/commit/651710a)), closes [#1664](https://github.com/vendure-ecommerce/vendure/issues/1664)
+
 ## 1.7.0 (2022-08-26)
 
 

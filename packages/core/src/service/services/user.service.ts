@@ -367,7 +367,7 @@ export class UserService {
         userId: ID,
         currentPassword: string,
         newPassword: string,
-    ): Promise<boolean | InvalidCredentialsError> {
+    ): Promise<boolean | InvalidCredentialsError | PasswordValidationError> {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
@@ -377,6 +377,11 @@ export class UserService {
             .getOne();
         if (!user) {
             throw new EntityNotFoundError('User', userId);
+        }
+        const password = newPassword;
+        const passwordValidationResult = await this.validatePassword(ctx, password);
+        if (passwordValidationResult !== true) {
+            return passwordValidationResult;
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         const matches = await this.passwordCipher.check(currentPassword, nativeAuthMethod.passwordHash);

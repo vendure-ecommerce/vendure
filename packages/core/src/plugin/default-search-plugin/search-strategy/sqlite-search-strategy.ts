@@ -112,13 +112,10 @@ export class SqliteSearchStrategy implements SearchStrategy {
         }
 
         return await qb
-            .take(take)
-            .skip(skip)
+            .limit(take)
+            .offset(skip)
             .getRawMany()
-            .then(res => {
-                // console.warn(qb.getQueryAndParameters(), "take", take, "skip", skip, "length", res.length)
-                return res.map(r => mapToSearchResult(r, ctx.channel.currencyCode));
-            });
+            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {

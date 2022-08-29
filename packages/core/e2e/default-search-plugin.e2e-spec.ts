@@ -1658,6 +1658,29 @@ describe('Default search plugin', () => {
                 expect(search1.items.map(i => i.productName)).toContain('Laptop');
                 expect(search1.items.map(i => i.productVariantName)).toContain('laptop variant fr');
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1752
+            // https://github.com/vendure-ecommerce/vendure/issues/1746
+            it('sort by name with non-default languageCode', async () => {
+                const result = await adminClient.query<
+                    SearchProductsShopQuery,
+                    SearchProductShopQueryVariables
+                >(
+                    SEARCH_PRODUCTS,
+                    {
+                        input: {
+                            take: 2,
+                            sort: {
+                                name: SortOrder.ASC,
+                            },
+                        },
+                    },
+                    {
+                        languageCode: LanguageCode.de,
+                    },
+                );
+                expect(result.search.items.length).toEqual(2);
+            });
         });
     });
 });
