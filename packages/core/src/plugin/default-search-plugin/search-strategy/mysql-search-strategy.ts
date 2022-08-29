@@ -98,10 +98,10 @@ export class MysqlSearchStrategy implements SearchStrategy {
         this.applyTermAndFilters(ctx, qb, input);
         if (sort) {
             if (sort.name) {
-                qb.addOrderBy(input.groupByProduct ? 'MIN(si.productName)' : 'productName', sort.name);
+                qb.addOrderBy(input.groupByProduct ? 'MIN(si.productName)' : 'si.productName', sort.name);
             }
             if (sort.price) {
-                qb.addOrderBy(input.groupByProduct ? 'MIN(si.price)' : 'price', sort.price);
+                qb.addOrderBy(input.groupByProduct ? 'MIN(si.price)' : 'si.price', sort.price);
             }
         } else {
             if (input.term && input.term.length > this.minTermLength) {
@@ -113,8 +113,8 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
 
         return qb
-            .take(take)
-            .skip(skip)
+            .limit(take)
+            .offset(skip)
             .getRawMany()
             .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }

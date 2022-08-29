@@ -116,8 +116,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
         }
 
         return qb
-            .take(take)
-            .skip(skip)
+            .limit(take)
+            .offset(skip)
             .getRawMany()
             .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
@@ -244,7 +244,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 collectionSlug,
             });
         }
-        
+
         applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
