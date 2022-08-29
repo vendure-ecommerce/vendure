@@ -264,10 +264,31 @@ export class TransactionalConnection {
         channelId: ID,
         options: FindOneOptions = {},
     ) {
-        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
+        let qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
         options.relations = removeCustomFieldsWithEagerRelations(qb, options.relations);
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
-        if (options.loadEagerRelations !== false) {
+        let skipEagerRelations = false;
+        try {
+            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
+        } catch (e: any) {
+            // https://github.com/vendure-ecommerce/vendure/issues/1664
+            // This is a failsafe to catch edge cases related to the TypeORM
+            // bug described in the doc block of `removeCustomFieldsWithEagerRelations`.
+            // In this case, a nested custom field relation has an eager-loaded relation,
+            // and is throwing an error. In this case we throw our hands up and say
+            // "sod it!", refuse to load _any_ relations at all, and rely on the
+            // GraphQL entity resolvers to take care of them.
+            Logger.debug(
+                `TransactionalConnection.findOneInChannel ran into issues joining nested custom field relations. Running the query without joining any relations instead.`,
+            );
+            qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
+            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+                ...options,
+                relations: [],
+                loadEagerRelations: false,
+            });
+            skipEagerRelations = true;
+        }
+        if (options.loadEagerRelations !== false && !skipEagerRelations) {
             // tslint:disable-next-line:no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }

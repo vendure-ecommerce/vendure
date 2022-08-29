@@ -1,4 +1,5 @@
 import {
+    Facet,
     LanguageCode,
     LocaleString,
     PluginCommonModule,
@@ -74,6 +75,27 @@ const schema = gql`
             ui: {
                 component: 'cp-product-vendor-selector',
             },
+        });
+        config.customFields.User.push({
+            name: 'vendor',
+            label: [{ languageCode: LanguageCode.en_AU, value: 'Vendor' }],
+            type: 'relation',
+            entity: Vendor,
+            eager: true,
+            nullable: false,
+            defaultValue: null,
+            ui: {
+                component: 'cp-product-vendor-selector',
+            },
+        });
+        config.customFields.User.push({
+            name: 'facet',
+            label: [{ languageCode: LanguageCode.en_AU, value: 'Facet' }],
+            type: 'relation',
+            entity: Facet,
+            eager: true,
+            nullable: false,
+            defaultValue: null,
         });
 
         config.customFields.Product.push({
