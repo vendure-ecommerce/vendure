@@ -11,6 +11,7 @@ type Asset implements Node {
     source: String!
     preview: String!
     focalPoint: Coordinate
+    tags: [Tag!]!
 }
 
 type Coordinate {
