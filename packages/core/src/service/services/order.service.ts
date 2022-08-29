@@ -1153,7 +1153,7 @@ export class OrderService {
         const payment = await this.paymentService.cancelPayment(ctx, paymentId);
         if (!isGraphQlErrorResult(payment)) {
             if (payment.state !== 'Cancelled') {
-                return new CancelPaymentError(payment.errorMessage || '');
+                return new CancelPaymentError({ paymentErrorMessage: payment.errorMessage || '' });
             }
         }
         return payment;

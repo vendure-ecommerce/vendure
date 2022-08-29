@@ -1217,8 +1217,8 @@ describe('Product resolver', () => {
 
             // not really testing this, but just cleaning up for later tests
             const { removeOptionGroupFromProduct } = await adminClient.query<
-                RemoveOptionGroupFromProduct.Mutation,
-                RemoveOptionGroupFromProduct.Variables
+                Codegen.RemoveOptionGroupFromProductMutation,
+                Codegen.RemoveOptionGroupFromProductMutationVariables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: optionGroup.id,
                 productId: newProduct.id,
@@ -1409,7 +1409,7 @@ describe('Product resolver', () => {
                             },
                         ],
                     });
-                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it(
@@ -1428,7 +1428,7 @@ describe('Product resolver', () => {
                             },
                         ],
                     });
-                }, 'ProductVariant optionIds must include one optionId from each of the groups: curvy-monitor-monitor-size, laptop-ram'),
+                }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
             );
 
             it('createProductVariants works', async () => {

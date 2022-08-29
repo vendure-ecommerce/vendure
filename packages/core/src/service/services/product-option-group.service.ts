@@ -176,7 +176,7 @@ export class ProductOptionGroupService {
 
             try {
                 await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(e.message, undefined, e.stack);
             }
         }

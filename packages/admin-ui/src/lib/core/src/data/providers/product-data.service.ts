@@ -280,7 +280,7 @@ export class ProductDataService {
         >(DELETE_PRODUCT_OPTION, { id });
     }
 
-    removeOptionGroupFromProduct(variables: RemoveOptionGroupFromProduct.Variables) {
+    removeOptionGroupFromProduct(variables: Codegen.RemoveOptionGroupFromProductMutationVariables) {
         return this.baseDataService.mutate<
             Codegen.RemoveOptionGroupFromProductMutation,
             Codegen.RemoveOptionGroupFromProductMutationVariables

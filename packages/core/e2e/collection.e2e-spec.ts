@@ -15,14 +15,15 @@ import { pick } from '../../common/lib/pick';
 import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/index';
 
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     CollectionFragment,
+    CurrencyCode,
     DeletionResult,
     FacetValueFragment,
     LanguageCode,
     SortOrder,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     CREATE_CHANNEL,
     CREATE_COLLECTION,
@@ -1119,10 +1120,6 @@ describe('Collection resolver', () => {
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_4', name: 'Computers' },
                 { id: 'T_5', name: 'Pear' },
-                {
-                    id: 'T_8',
-                    name: 'Computers Breadcrumbs',
-                },
                 {
                     id: 'T_9',
                     name: 'Computers Breadcrumbs',

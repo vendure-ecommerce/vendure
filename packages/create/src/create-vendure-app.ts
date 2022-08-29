@@ -212,7 +212,7 @@ async function createApp(
                                 subscriber.complete();
                             })
                             .catch(err => subscriber.error(err));
-                    });
+                    }) as any;
                 },
             },
         );

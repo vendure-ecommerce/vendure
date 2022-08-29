@@ -23,7 +23,11 @@ import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { ErrorCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
+import {
+    ADMIN_TRANSITION_TO_STATE,
+    GET_ORDER,
+    TRANSITION_PAYMENT_TO_STATE,
+} from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
