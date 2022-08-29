@@ -29,7 +29,7 @@ import path from 'path';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
@@ -800,10 +800,29 @@ describe('Custom field relations', () => {
             });
 
             // https://github.com/vendure-ecommerce/vendure/issues/1664
-            it('successfully gets product with eager-loading custom field relation', async () => {
+            it('successfully gets product by id with eager-loading custom field relation', async () => {
                 const { product } = await shopClient.query(gql`
                     query {
                         product(id: "T_1") {
+                            id
+                            customFields {
+                                cfVendor {
+                                    featuredProduct {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(product).toBeDefined();
+            });
+
+            it('successfully gets product by slug with eager-loading custom field relation', async () => {
+                const { product } = await shopClient.query(gql`
+                    query {
+                        product(slug: "laptop") {
                             id
                             customFields {
                                 cfVendor {
