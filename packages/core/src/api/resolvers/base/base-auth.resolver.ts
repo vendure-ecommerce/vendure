@@ -1,4 +1,7 @@
-import { AuthenticationResult as ShopAuthenticationResult } from '@vendure/common/lib/generated-shop-types';
+import {
+    AuthenticationResult as ShopAuthenticationResult,
+    PasswordValidationError,
+} from '@vendure/common/lib/generated-shop-types';
 import {
     AuthenticationResult as AdminAuthenticationResult,
     CurrentUser,
@@ -138,7 +141,7 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         currentPassword: string,
         newPassword: string,
-    ): Promise<boolean | InvalidCredentialsError> {
+    ): Promise<boolean | InvalidCredentialsError | PasswordValidationError> {
         const { activeUserId } = ctx;
         if (!activeUserId) {
             throw new ForbiddenError();
