@@ -900,7 +900,7 @@ describe('Shop orders', () => {
             const address: CreateAddressInput = {
                 fullName: 'name',
                 company: 'company',
-                streetLine1: '12 the street',
+                streetLine1: '12 Shipping Street',
                 streetLine2: null,
                 city: 'foo',
                 province: 'bar',
@@ -918,7 +918,7 @@ describe('Shop orders', () => {
             expect(setOrderShippingAddress!.shippingAddress).toEqual({
                 fullName: 'name',
                 company: 'company',
-                streetLine1: '12 the street',
+                streetLine1: '12 Shipping Street',
                 streetLine2: null,
                 city: 'foo',
                 province: 'bar',
@@ -932,7 +932,7 @@ describe('Shop orders', () => {
             const address: CreateAddressInput = {
                 fullName: 'name',
                 company: 'company',
-                streetLine1: '12 the street',
+                streetLine1: '22 Billing Avenue',
                 streetLine2: null,
                 city: 'foo',
                 province: 'bar',
@@ -950,7 +950,7 @@ describe('Shop orders', () => {
             expect(setOrderBillingAddress!.billingAddress).toEqual({
                 fullName: 'name',
                 company: 'company',
-                streetLine1: '12 the street',
+                streetLine1: '22 Billing Avenue',
                 streetLine2: null,
                 city: 'foo',
                 province: 'bar',
@@ -1040,11 +1040,18 @@ describe('Shop orders', () => {
             });
 
             // tslint:disable-next-line:no-non-null-assertion
-            const address = result.customer!.addresses![0];
-            expect(address.streetLine1).toBe('12 the street');
-            expect(address.postalCode).toBe('123456');
-            expect(address.defaultBillingAddress).toBe(true);
-            expect(address.defaultShippingAddress).toBe(true);
+            const shippingAddress = result.customer!.addresses!.find(a => a.defaultShippingAddress)!;
+            expect(shippingAddress.streetLine1).toBe('12 Shipping Street');
+            expect(shippingAddress.postalCode).toBe('123456');
+            expect(shippingAddress.defaultBillingAddress).toBe(false);
+            expect(shippingAddress.defaultShippingAddress).toBe(true);
+
+            // tslint:disable-next-line:no-non-null-assertion
+            const billingAddress = result.customer!.addresses!.find(a => a.defaultBillingAddress)!;
+            expect(billingAddress.streetLine1).toBe('22 Billing Avenue');
+            expect(billingAddress.postalCode).toBe('123456');
+            expect(billingAddress.defaultBillingAddress).toBe(true);
+            expect(billingAddress.defaultShippingAddress).toBe(false);
         });
     });
 
