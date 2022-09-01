@@ -493,18 +493,7 @@ export class ProductVariantService {
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, updatedVariant);
         if (input.price != null) {
-            const variantPriceRepository = this.connection.getRepository(ctx, ProductVariantPrice);
-            const variantPrice = await variantPriceRepository.findOne({
-                where: {
-                    variant: input.id,
-                    channelId: ctx.channelId,
-                },
-            });
-            if (!variantPrice) {
-                throw new InternalServerError(`error.could-not-find-product-variant-price`);
-            }
-            variantPrice.price = input.price;
-            await variantPriceRepository.save(variantPrice);
+            await this.createOrUpdateProductVariantPrice(ctx, input.id, input.price, ctx.channelId);
         }
         return updatedVariant.id;
     }
