@@ -40,7 +40,7 @@ export class ProsemirrorService {
     constructor(private modalService: ModalService) {}
 
     createEditorView(options: CreateEditorViewOptions) {
-        this.editorView = new EditorView<Schema>(options.element, {
+        this.editorView = new EditorView(options.element, {
             state: this.getStateFromText(''),
             dispatchTransaction: tr => {
                 if (!this.enabled) {
