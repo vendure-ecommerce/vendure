@@ -9,12 +9,13 @@ import {
     ExternalImageDialogComponent,
 } from '../../external-image-dialog/external-image-dialog.component';
 
-import { canInsert } from './menu-common';
+import { canInsert, renderClarityIcon } from './menu-common';
 
 export function insertImageItem(nodeType: NodeType, modalService: ModalService) {
     return new MenuItem({
         title: 'Insert image',
         label: 'Image',
+        render: renderClarityIcon({ shape: 'image', label: 'Image' }),
         class: '',
         css: '',
         enable(state: EditorState) {

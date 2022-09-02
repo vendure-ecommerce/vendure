@@ -1,4 +1,4 @@
-import { buildMenuItems } from '@vendure/admin-ui/core';
+import { buildMenuItems, renderClarityIcon } from '@vendure/admin-ui/core';
 import OrderedMap from 'orderedmap';
 import { Dropdown, IconSpec, MenuElement, MenuItem } from 'prosemirror-menu';
 import { NodeSpec, Schema, Node } from 'prosemirror-model';
@@ -50,19 +50,7 @@ export function getTableMenu(schema: Schema) {
             label,
             select: cmd,
             run: cmd,
-            render: iconShape
-                ? view => {
-                      const icon = document.createElement('clr-icon');
-                      icon.setAttribute('shape', iconShape);
-                      icon.setAttribute('size', '16');
-                      const wrapperEl = document.createElement('span');
-                      wrapperEl.classList.add('menu-item-with-icon');
-                      const labelEl = document.createElement('span');
-                      labelEl.textContent = label;
-                      wrapperEl.append(icon, labelEl);
-                      return wrapperEl;
-                  }
-                : undefined,
+            render: iconShape ? renderClarityIcon({ shape: iconShape, label }) : undefined,
         });
     }
     function separator(): MenuElement {
