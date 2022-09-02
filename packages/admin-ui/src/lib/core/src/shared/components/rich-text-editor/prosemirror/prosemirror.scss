@@ -336,4 +336,31 @@
         margin-bottom: 0.5rem;
         color: var(--color-grey-800) !important;
     }
+
+    .ProseMirror .tableWrapper {
+        td, th {
+            border: 1px solid var(--color-grey-400);
+            padding: 3px 6px;
+        }
+        td p, th p {
+            margin-top: 0;
+        }
+        th, th p {
+            font-weight: bold;
+        }
+    }
+
+    .menu-separator {
+        border-bottom: 1px solid var(--color-grey-400);
+        height: 0;
+        margin: 6px 0;
+        pointer-events: none;
+    }
+    .menu-item-with-icon {
+        display: flex;
+        align-items: center;
+        clr-icon {
+            margin-right: 2px;
+        }
+    }
 }

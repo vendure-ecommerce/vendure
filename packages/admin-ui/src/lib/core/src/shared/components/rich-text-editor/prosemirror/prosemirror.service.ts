@@ -1,21 +1,20 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { baseKeymap } from 'prosemirror-commands';
 import { dropCursor } from 'prosemirror-dropcursor';
 import { gapCursor } from 'prosemirror-gapcursor';
 import { history } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
-import { menuBar } from 'prosemirror-menu';
 import { DOMParser, DOMSerializer, Schema } from 'prosemirror-model';
 import { schema } from 'prosemirror-schema-basic';
 import { addListNodes } from 'prosemirror-schema-list';
 import { EditorState, Plugin } from 'prosemirror-state';
+import { columnResizing, fixTables, tableEditing } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
-
-import { ModalService } from '../../../../providers/modal/modal.service';
 
 import { buildInputRules } from './inputrules';
 import { buildKeymap } from './keymap';
-import { buildMenuItems } from './menu/menu';
+import { customMenuPlugin } from './menu/menu-plugin';
+import { getTableNodes } from './menu/tables';
 import { linkSelectPlugin } from './plugins/link-select-plugin';
 import { SetupOptions } from './types';
 
@@ -32,12 +31,12 @@ export class ProsemirrorService {
     // Mix the nodes from prosemirror-schema-list into the basic schema to
     // create a schema with list support.
     private mySchema = new Schema({
-        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block'),
+        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block').append(getTableNodes() as any),
         marks: schema.spec.marks,
     });
     private enabled = true;
 
-    constructor(private modalService: ModalService) {}
+    constructor(private injector: Injector) {}
 
     createEditorView(options: CreateEditorViewOptions) {
         this.editorView = new EditorView(options.element, {
@@ -58,8 +57,10 @@ export class ProsemirrorService {
 
     update(text: string) {
         if (this.editorView) {
-            const state = this.getStateFromText(text);
+            let state = this.getStateFromText(text);
             if (document.body.contains(this.editorView.dom)) {
+                const fix = fixTables(state);
+                if (fix) state = state.apply(fix.setMeta('addToHistory', false));
                 this.editorView.updateState(state);
             }
         }
@@ -107,16 +108,14 @@ export class ProsemirrorService {
             dropCursor(),
             gapCursor(),
             linkSelectPlugin,
+            columnResizing({}),
+            tableEditing({ allowTableNodeSelection: true }),
+            customMenuPlugin({
+                floatingMenu: options.floatingMenu,
+                injector: this.injector,
+                schema: options.schema,
+            }),
         ];
-        if (options.menuBar !== false) {
-            plugins.push(
-                menuBar({
-                    floating: options.floatingMenu !== false,
-                    content:
-                        options.menuContent || buildMenuItems(options.schema, this.modalService).fullMenu,
-                }),
-            );
-        }
         if (options.history !== false) {
             plugins.push(history());
         }

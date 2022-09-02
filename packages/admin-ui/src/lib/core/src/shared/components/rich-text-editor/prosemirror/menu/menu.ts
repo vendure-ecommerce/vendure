@@ -21,6 +21,7 @@ import { ModalService } from '../../../../../providers/modal/modal.service';
 import { insertImageItem } from './images';
 import { linkItem } from './links';
 import { canInsert, markActive } from './menu-common';
+import { addTable, getTableMenu } from './tables';
 
 // Helpers to create specific types of items
 
@@ -192,7 +193,24 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
     }
 
     const cut = <T>(arr: T[]): T[] => arr.filter(x => x);
-    r.insertMenu = new Dropdown(cut([r.insertImage, r.insertHorizontalRule]), { label: 'Insert' });
+    r.insertMenu = new Dropdown(
+        cut([
+            r.insertImage,
+            r.insertHorizontalRule,
+            new MenuItem({
+                label: 'Add table',
+                run: (state, dispatch) => {
+                    addTable(state, dispatch, {
+                        rowsCount: 2,
+                        colsCount: 2,
+                        withHeaderRow: true,
+                        cellContent: '',
+                    });
+                },
+            }),
+        ]),
+        { label: 'Insert' },
+    );
     r.typeMenu = new Dropdown(
         cut([
             r.makeParagraph,
@@ -205,6 +223,7 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
         ]),
         { label: 'Type...' },
     );
+    r.tableMenu = new Dropdown(getTableMenu(schema), { label: 'Table' });
 
     const inlineMenu = cut([r.toggleStrong, r.toggleEm, r.toggleLink]);
     r.inlineMenu = [inlineMenu];
@@ -218,7 +237,11 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
             selectParentNodeItem,
         ]),
     ];
-    r.fullMenu = [inlineMenu].concat([[r.insertMenu, r.typeMenu]], [[undoItem, redoItem]], r.blockMenu);
+    r.fullMenu = [inlineMenu].concat(
+        [[r.insertMenu, r.typeMenu, r.tableMenu]],
+        [[undoItem, redoItem]],
+        r.blockMenu,
+    );
 
     return r;
 }
