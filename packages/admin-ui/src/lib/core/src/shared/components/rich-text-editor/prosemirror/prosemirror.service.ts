@@ -11,12 +11,15 @@ import { EditorState, Plugin } from 'prosemirror-state';
 import { columnResizing, fixTables, tableEditing } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
 import { Observable } from 'rxjs';
+import { ModalService } from '../../../../providers/modal/modal.service';
 
 import { ContextMenuService } from './context-menu/context-menu.service';
+import { iframeNode, iframeNodeView } from './custom-nodes';
 import { buildInputRules } from './inputrules';
 import { buildKeymap } from './keymap';
 import { customMenuPlugin } from './menu/menu-plugin';
 import { linkSelectPlugin } from './plugins/link-select-plugin';
+import { rawEditorPlugin } from './plugins/raw-editor-plugin';
 import { getTableNodes, tableContextMenuPlugin } from './plugins/tables-plugin';
 import { SetupOptions } from './types';
 
@@ -33,7 +36,9 @@ export class ProsemirrorService {
     // Mix the nodes from prosemirror-schema-list into the basic schema to
     // create a schema with list support.
     private mySchema = new Schema({
-        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block').append(getTableNodes() as any),
+        nodes: addListNodes(schema.spec.nodes, 'paragraph block*', 'block')
+            .append(getTableNodes() as any)
+            .addToEnd('iframe', iframeNode),
         marks: schema.spec.marks,
     });
     private enabled = true;
@@ -56,6 +61,17 @@ export class ProsemirrorService {
                 }
             },
             editable: () => options.isReadOnly(),
+            handleDOMEvents: {
+                focus: view => {
+                    this.contextMenuService.setVisibility(true);
+                },
+                blur: view => {
+                    this.contextMenuService.setVisibility(false);
+                },
+            },
+            nodeViews: {
+                iframe: iframeNodeView,
+            },
         });
     }
 
@@ -115,6 +131,7 @@ export class ProsemirrorService {
             columnResizing({}),
             tableEditing({ allowTableNodeSelection: true }),
             tableContextMenuPlugin(this.contextMenuService),
+            rawEditorPlugin(this.contextMenuService, this.injector.get(ModalService)),
             customMenuPlugin({
                 floatingMenu: options.floatingMenu,
                 injector: this.injector,

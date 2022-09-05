@@ -49,6 +49,7 @@
     }
 
     .context-menu-trigger {
+        min-height: 16px;
         &.hidden {
             visibility: hidden;
         }

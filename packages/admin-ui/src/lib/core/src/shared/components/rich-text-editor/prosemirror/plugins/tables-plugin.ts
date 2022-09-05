@@ -29,6 +29,9 @@ export const tableContextMenuPlugin = (contextMenuService: ContextMenuService) =
         view: () => {
             return {
                 update: view => {
+                    if (!view.hasFocus()) {
+                        return;
+                    }
                     const { doc, selection } = view.state;
                     let tableNode: Node | undefined;
                     let tableNodePos = 0;
@@ -56,6 +59,7 @@ export const tableContextMenuPlugin = (contextMenuService: ContextMenuService) =
                                     enabled,
                                     iconClass,
                                     onClick: () => {
+                                        contextMenuService.clearContextMenu();
                                         view.focus();
                                         commandFn(view.state, view.dispatch);
                                     },
@@ -70,6 +74,7 @@ export const tableContextMenuPlugin = (contextMenuService: ContextMenuService) =
                                 },
                             };
                             contextMenuService.setContextMenu({
+                                ref: selection,
                                 title: 'Table',
                                 iconShape: 'table',
                                 element: node,

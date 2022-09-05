@@ -20,39 +20,7 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
 
 @Component({
     selector: 'vdr-context-menu',
-    template: `
-        <ng-template #contextMenu>
-            <vdr-dropdown>
-                <button class="context-menu-trigger" vdrDropdownTrigger [class.hidden]="hideTrigger$ | async">
-                    <clr-icon
-                        *ngIf="menuConfig?.iconShape as shape"
-                        [attr.shape]="shape"
-                        size="16"
-                        class="mr2"
-                    ></clr-icon>
-                    <span class="title-label">{{ menuConfig?.title }}</span>
-                </button>
-                <vdr-dropdown-menu vdrPosition="bottom-right" customClasses="context-menu">
-                    <ng-container *ngFor="let item of menuConfig?.items">
-                        <button
-                            class="context-menu-item"
-                            *ngIf="item.enabled && item.separator !== true"
-                            type="button"
-                            (click)="clickItem(item)"
-                        >
-                            <div *ngIf="item.iconClass" class="cm-icon" [ngClass]="item.iconClass"></div>
-                            {{ item.label }}
-                        </button>
-                        <div
-                            *ngIf="item.enabled && item.separator"
-                            class="dropdown-divider"
-                            role="separator"
-                        ></div>
-                    </ng-container>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
-        </ng-template>
-    `,
+    templateUrl: './context-menu.component.html',
     styleUrls: ['./context-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -125,7 +93,9 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    private setUpIntersectionObserver() {}
+    triggerClick() {
+        this.contextMenuService.setVisibility(true);
+    }
 
     ngOnDestroy(): void {
         this.overlayRef?.dispose();

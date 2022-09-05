@@ -1,8 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, Subject, of, interval } from 'rxjs';
+import {
+    bufferWhen,
+    debounceTime,
+    delayWhen,
+    distinctUntilChanged,
+    filter,
+    map,
+    skip,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 
 export interface ContextMenuConfig {
+    ref: any;
     iconShape?: string;
     title: string;
     element: Element;
@@ -13,6 +24,7 @@ export interface ContextMenuConfig {
 export interface ContextMenuItem {
     separator?: boolean;
     iconClass?: string;
+    iconShape?: string;
     label: string;
     enabled: boolean;
     onClick: () => void;
@@ -21,21 +33,43 @@ export interface ContextMenuItem {
 @Injectable({ providedIn: 'root' })
 export class ContextMenuService {
     contextMenu$: Observable<ContextMenuConfig | undefined>;
+    private menuIsVisible$ = new BehaviorSubject<boolean>(false);
     private setContextMenuConfig$ = new Subject<ContextMenuConfig | undefined>();
     constructor() {
-        this.contextMenu$ = this.setContextMenuConfig$.asObservable().pipe(
-            distinctUntilChanged((a, b) => {
-                if (a == null && b == null) {
-                    return true;
-                }
-                if (a?.element === b?.element) {
-                    if (a?.items.map(i => i.enabled).join(',') === b?.items.map(i => i.enabled).join(',')) {
-                        return true;
+        const source$ = this.setContextMenuConfig$.asObservable();
+        const groupedConfig$ = source$.pipe(
+            bufferWhen(() => source$.pipe(debounceTime(50))),
+            map(group => {
+                return group.reduce((acc, cur) => {
+                    if (!acc) {
+                        return cur;
+                    } else {
+                        if (cur?.ref === acc.ref) {
+                            acc.items.push(
+                                // de-duplicate items
+                                ...(cur?.items.filter(i => !acc.items.find(ai => ai.label === i.label)) ??
+                                    []),
+                            );
+                        }
                     }
-                }
-                return false;
+                    return acc;
+                }, undefined as ContextMenuConfig | undefined);
             }),
         );
+
+        const visible$ = this.menuIsVisible$.pipe(filter(val => val === true));
+
+        const isVisible$ = this.menuIsVisible$.pipe(
+            delayWhen(value => (value ? of(value) : interval(100).pipe(takeUntil(visible$)))),
+            distinctUntilChanged(),
+        );
+        this.contextMenu$ = combineLatest(groupedConfig$, isVisible$).pipe(
+            map(([config, isVisible]) => (isVisible ? config : undefined)),
+        );
+    }
+
+    setVisibility(isVisible: boolean) {
+        this.menuIsVisible$.next(isVisible);
     }
 
     setContextMenu(config: ContextMenuConfig) {
