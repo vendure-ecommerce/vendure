@@ -15,12 +15,12 @@ import { wrapInList } from 'prosemirror-schema-list';
 import { EditorState } from 'prosemirror-state';
 
 import { ModalService } from '../../../../../providers/modal/modal.service';
+import { addTable } from '../plugins/tables-plugin';
 
 import { insertImageItem } from './images';
 import { linkItem } from './links';
 import { canInsert, IconSize, markActive, renderClarityIcon, wrapInMenuItemWithIcon } from './menu-common';
 import { SubMenuWithIcon } from './sub-menu-with-icon';
-import { addTable, getTableMenu } from './tables';
 
 // Helpers to create specific types of items
 
@@ -245,7 +245,6 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
         ]),
         { label: 'Type...' },
     );
-    r.tableMenu = new Dropdown(getTableMenu(schema), { label: 'Table' });
 
     const inlineMenu = cut([r.toggleStrong, r.toggleEm, r.toggleLink]);
     r.inlineMenu = [inlineMenu];
@@ -277,7 +276,7 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
             render: renderClarityIcon({ shape: 'redo', size: IconSize.Large }),
         }),
     ];
-    r.fullMenu = [inlineMenu].concat([[r.insertMenu, r.typeMenu, r.tableMenu]], [undoRedo], r.blockMenu);
+    r.fullMenu = [inlineMenu].concat([[r.insertMenu, r.typeMenu]], [undoRedo], r.blockMenu);
 
     return r;
 }

@@ -10,12 +10,14 @@ import { addListNodes } from 'prosemirror-schema-list';
 import { EditorState, Plugin } from 'prosemirror-state';
 import { columnResizing, fixTables, tableEditing } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
+import { Observable } from 'rxjs';
 
+import { ContextMenuService } from './context-menu/context-menu.service';
 import { buildInputRules } from './inputrules';
 import { buildKeymap } from './keymap';
 import { customMenuPlugin } from './menu/menu-plugin';
-import { getTableNodes } from './menu/tables';
 import { linkSelectPlugin } from './plugins/link-select-plugin';
+import { getTableNodes, tableContextMenuPlugin } from './plugins/tables-plugin';
 import { SetupOptions } from './types';
 
 export interface CreateEditorViewOptions {
@@ -36,7 +38,9 @@ export class ProsemirrorService {
     });
     private enabled = true;
 
-    constructor(private injector: Injector) {}
+    constructor(private injector: Injector, private contextMenuService: ContextMenuService) {}
+
+    contextMenuItems$: Observable<string>;
 
     createEditorView(options: CreateEditorViewOptions) {
         this.editorView = new EditorView(options.element, {
@@ -110,6 +114,7 @@ export class ProsemirrorService {
             linkSelectPlugin,
             columnResizing({}),
             tableEditing({ allowTableNodeSelection: true }),
+            tableContextMenuPlugin(this.contextMenuService),
             customMenuPlugin({
                 floatingMenu: options.floatingMenu,
                 injector: this.injector,

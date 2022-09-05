@@ -1,8 +1,11 @@
 import { Injector } from '@angular/core';
-import { buildMenuItems, ModalService } from '@vendure/admin-ui/core';
 import { menuBar } from 'prosemirror-menu';
 import { Schema } from 'prosemirror-model';
 import { EditorState, Plugin } from 'prosemirror-state';
+
+import { ModalService } from '../../../../../providers/modal/modal.service';
+
+import { buildMenuItems } from './menu';
 
 export interface CustomMenuPluginOptions {
     floatingMenu?: boolean;

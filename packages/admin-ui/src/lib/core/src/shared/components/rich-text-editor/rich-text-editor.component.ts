@@ -8,9 +8,11 @@ import {
     Input,
     OnDestroy,
     ViewChild,
+    ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+import { ContextMenuService } from './prosemirror/context-menu/context-menu.service';
 import { ProsemirrorService } from './prosemirror/prosemirror.service';
 
 /**
@@ -56,7 +58,16 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
 
     @ViewChild('editor', { static: true }) private editorEl: ElementRef<HTMLDivElement>;
 
-    constructor(private changeDetector: ChangeDetectorRef, private prosemirrorService: ProsemirrorService) {}
+    constructor(
+        private changeDetector: ChangeDetectorRef,
+        private prosemirrorService: ProsemirrorService,
+        private viewContainerRef: ViewContainerRef,
+        public contextMenuService: ContextMenuService,
+    ) {}
+
+    get menuElement(): HTMLDivElement {
+        return this.viewContainerRef.element.nativeElement.querySelector('.ProseMirror-menubar');
+    }
 
     ngAfterViewInit() {
         this.prosemirrorService.createEditorView({

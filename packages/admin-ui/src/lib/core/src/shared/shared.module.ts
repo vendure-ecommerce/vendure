@@ -74,6 +74,7 @@ import { ProductSearchInputComponent } from './components/product-search-input/p
 import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
+import { ContextMenuComponent } from './components/rich-text-editor/prosemirror/context-menu/context-menu.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
@@ -240,6 +241,7 @@ const DECLARATIONS = [
     AssetPreviewLinksComponent,
     ProductMultiSelectorDialogComponent,
     ProductSearchInputComponent,
+    ContextMenuComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

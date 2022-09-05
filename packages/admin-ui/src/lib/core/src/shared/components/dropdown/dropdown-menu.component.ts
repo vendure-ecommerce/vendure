@@ -41,7 +41,7 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     template: `
         <ng-template #menu>
             <div class="dropdown open">
-                <div class="dropdown-menu">
+                <div class="dropdown-menu" [ngClass]="customClasses">
                     <div class="dropdown-content-wrapper">
                         <ng-content></ng-content>
                     </div>
@@ -54,6 +54,7 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
 })
 export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
     @Input('vdrPosition') private position: DropdownPosition = 'bottom-left';
+    @Input() customClasses: string;
     @ViewChild('menu', { static: true }) private menuTemplate: TemplateRef<any>;
     private menuPortal: TemplatePortal<any>;
     private overlayRef: OverlayRef;
