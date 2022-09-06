@@ -11,6 +11,7 @@ import { EditorState, Plugin } from 'prosemirror-state';
 import { columnResizing, fixTables, tableEditing } from 'prosemirror-tables';
 import { EditorView } from 'prosemirror-view';
 import { Observable } from 'rxjs';
+
 import { ModalService } from '../../../../providers/modal/modal.service';
 
 import { ContextMenuService } from './context-menu/context-menu.service';
@@ -78,11 +79,14 @@ export class ProsemirrorService {
 
     update(text: string) {
         if (this.editorView) {
-            let state = this.getStateFromText(text);
-            if (document.body.contains(this.editorView.dom)) {
-                const fix = fixTables(state);
-                if (fix) state = state.apply(fix.setMeta('addToHistory', false));
-                this.editorView.updateState(state);
+            const currentText = this.getTextFromState(this.editorView.state);
+            if (text !== currentText) {
+                let state = this.getStateFromText(text);
+                if (document.body.contains(this.editorView.dom)) {
+                    const fix = fixTables(state);
+                    if (fix) state = state.apply(fix.setMeta('addToHistory', false));
+                    this.editorView.updateState(state);
+                }
             }
         }
     }
