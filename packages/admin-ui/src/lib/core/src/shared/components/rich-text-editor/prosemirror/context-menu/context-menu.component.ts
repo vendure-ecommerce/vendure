@@ -13,8 +13,6 @@ import {
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
-import { RichTextEditorComponent } from '../../rich-text-editor.component';
-
 import { ContextMenuConfig, ContextMenuItem, ContextMenuService } from './context-menu.service';
 
 type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -26,6 +24,7 @@ type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextMenuComponent implements AfterViewInit, OnDestroy {
+    @Input() editorMenuElement: HTMLElement;
     @ViewChild('contextMenu', { static: true }) private menuTemplate: TemplateRef<any>;
 
     menuConfig: ContextMenuConfig | undefined;
@@ -38,7 +37,6 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
     private hideTriggerHandler: (() => void) | undefined;
 
     constructor(
-        private richTextEditor: RichTextEditorComponent,
         private overlay: Overlay,
         private viewContainerRef: ViewContainerRef,
         public contextMenuService: ContextMenuService,
@@ -71,7 +69,7 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
                 this.triggerIsHidden.next(false);
 
                 const triggerButton = this.overlayRef.hostElement.querySelector('.context-menu-trigger');
-                const editorMenu = this.richTextEditor.menuElement;
+                const editorMenu = this.editorMenuElement;
                 if (triggerButton) {
                     const overlapMarginPx = 5;
                     this.hideTriggerHandler = () => {

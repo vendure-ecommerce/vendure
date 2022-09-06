@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import { ConfigArgDefinition } from '../../../../common/generated-types';
-import { Dialog } from '../../../../providers/modal/modal.service';
+import { Dialog } from '../../../../providers/modal/modal.types';
 import { HtmlEditorFormInputComponent } from '../../../dynamic-form-inputs/code-editor-form-input/html-editor-form-input.component';
 
 @Component({

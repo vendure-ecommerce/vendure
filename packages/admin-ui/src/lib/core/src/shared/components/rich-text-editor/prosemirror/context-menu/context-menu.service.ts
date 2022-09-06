@@ -77,6 +77,6 @@ export class ContextMenuService {
     }
 
     clearContextMenu() {
-        this.setContextMenuConfig$.next();
+        this.setContextMenuConfig$.next(undefined);
     }
 }
