@@ -1,6 +1,6 @@
 {
     "name": "@vendure/payments-plugin",
-    "version": "2.0.0-next.14",
+    "version": "2.0.0-next.15",
     "license": "MIT",
     "main": "package/index.js",
     "types": "package/index.d.ts",
@@ -28,9 +28,9 @@
     "devDependencies": {
         "@mollie/api-client": "^3.6.0",
         "@types/braintree": "^2.22.15",
-        "@vendure/common": "^2.0.0-next.14",
-        "@vendure/core": "^2.0.0-next.14",
-        "@vendure/testing": "^2.0.0-next.14",
+        "@vendure/common": "^2.0.0-next.15",
+        "@vendure/core": "^2.0.0-next.15",
+        "@vendure/testing": "^2.0.0-next.15",
         "braintree": "^3.0.0",
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
