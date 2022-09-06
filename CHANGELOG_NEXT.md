@@ -1,5 +1,6 @@
 ## 2.0.0-next.15 (2022-09-06)
 
+(This was released to rectify a publishing error with the last version. No code changes.)
 
 ## 2.0.0-next.14 (2022-09-06)
 
