@@ -101,9 +101,11 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
     }
 
     writeValue(value: any) {
-        this.value = value;
-        if (this.prosemirrorService) {
-            this.prosemirrorService.update(value);
+        if (value !== this.value) {
+            this.value = value;
+            if (this.prosemirrorService) {
+                this.prosemirrorService.update(value);
+            }
         }
     }
 }
