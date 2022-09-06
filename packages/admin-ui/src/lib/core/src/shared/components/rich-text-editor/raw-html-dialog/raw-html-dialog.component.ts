@@ -1,26 +1,9 @@
-import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-    Component,
-    ComponentFactoryResolver,
-    ElementRef,
-    Injector,
-    OnInit,
-    ViewChild,
-} from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ConfigArgDefinition, jsonValidator } from '@vendure/admin-ui/core';
-import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
-import { CodeJar } from 'codejar';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
+import { ConfigArgDefinition } from '../../../../common/generated-types';
 import { Dialog } from '../../../../providers/modal/modal.service';
 import { HtmlEditorFormInputComponent } from '../../../dynamic-form-inputs/code-editor-form-input/html-editor-form-input.component';
-
-export interface LinkAttrs {
-    href: string;
-    title: string;
-}
 
 @Component({
     selector: 'vdr-raw-html-dialog',

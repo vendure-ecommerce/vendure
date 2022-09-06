@@ -1,25 +1,9 @@
-import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, ViewChild } from '@angular/core';
+import { FormControl, ValidatorFn } from '@angular/forms';
+import { DefaultFormComponentConfig } from '@vendure/common/lib/shared-types';
 import { CodeJar } from 'codejar';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
-
-export function jsonValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-        const error: ValidationErrors = { jsonInvalid: true };
-
-        try {
-            JSON.parse(control.value);
-        } catch (e) {
-            control.setErrors(error);
-            return error;
-        }
-
-        control.setErrors(null);
-        return null;
-    };
-}
 
 export interface CodeEditorConfig {
     validator: ValidatorFn;

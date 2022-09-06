@@ -10,13 +10,14 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import { RichTextEditorComponent } from '@vendure/admin-ui/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
+import { RichTextEditorComponent } from '../../rich-text-editor.component';
+
 import { ContextMenuConfig, ContextMenuItem, ContextMenuService } from './context-menu.service';
 
-export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
 @Component({
     selector: 'vdr-context-menu',
@@ -25,7 +26,6 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextMenuComponent implements AfterViewInit, OnDestroy {
-    @Input('vdrPosition') private position: DropdownPosition = 'top-left';
     @ViewChild('contextMenu', { static: true }) private menuTemplate: TemplateRef<any>;
 
     menuConfig: ContextMenuConfig | undefined;
@@ -137,7 +137,7 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
             },
         };
 
-        const pos = position[this.position];
+        const pos = position['top-left'];
 
         return this.overlay
             .position()

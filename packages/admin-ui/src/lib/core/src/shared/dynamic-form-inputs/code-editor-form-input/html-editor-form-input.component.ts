@@ -6,7 +6,7 @@ import { FormInputComponent } from '../../../common/component-registry-types';
 
 import { BaseCodeEditorFormInputComponent } from './base-code-editor-form-input.component';
 
-export function jsonValidator(): ValidatorFn {
+function htmlValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
         return null;
     };
@@ -40,7 +40,7 @@ export class HtmlEditorFormInputComponent
 
     ngOnInit() {
         this.configure({
-            validator: jsonValidator,
+            validator: htmlValidator,
             highlight: (html: string, errorPos: number | undefined) => {
                 let hasMarkedError = false;
                 return html.replace(HTML_TAG_RE, (match, ...args) => {
