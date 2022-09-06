@@ -13,8 +13,6 @@ import {
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
-import { RichTextEditorComponent } from '../../rich-text-editor.component';
-
 import { ContextMenuConfig, ContextMenuItem, ContextMenuService } from './context-menu.service';
 
 type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -26,6 +24,7 @@ type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextMenuComponent implements AfterViewInit, OnDestroy {
+    @Input() editorMenuElement: HTMLElement | null | undefined;
     @ViewChild('contextMenu', { static: true }) private menuTemplate: TemplateRef<any>;
 
     menuConfig: ContextMenuConfig | undefined;
@@ -34,11 +33,10 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
     private menuPortal: TemplatePortal<any>;
     private overlayRef: OverlayRef;
     private contextMenuSub: Subscription;
-    private contentArea: HTMLDivElement;
+    private contentArea: HTMLDivElement | null;
     private hideTriggerHandler: (() => void) | undefined;
 
     constructor(
-        private richTextEditor: RichTextEditorComponent,
         private overlay: Overlay,
         private viewContainerRef: ViewContainerRef,
         public contextMenuService: ContextMenuService,
@@ -51,12 +49,11 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
     };
 
     ngAfterViewInit() {
-        // tslint:disable-next-line:no-non-null-assertion
-        this.contentArea = document.querySelector('.content-area')!;
+        this.contentArea = document.querySelector('.content-area');
         this.menuPortal = new TemplatePortal(this.menuTemplate, this.viewContainerRef);
 
         this.hideTrigger$ = this.triggerIsHidden.asObservable().pipe(distinctUntilChanged());
-        this.contentArea.addEventListener('scroll', this.onScroll, { passive: true });
+        this.contentArea?.addEventListener('scroll', this.onScroll, { passive: true });
 
         this.contextMenuSub = this.contextMenuService.contextMenu$.subscribe(contextMenuConfig => {
             this.overlayRef?.dispose();
@@ -71,25 +68,27 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
                 this.triggerIsHidden.next(false);
 
                 const triggerButton = this.overlayRef.hostElement.querySelector('.context-menu-trigger');
-                const editorMenu = this.richTextEditor.menuElement;
+                const editorMenu = this.editorMenuElement;
                 if (triggerButton) {
                     const overlapMarginPx = 5;
                     this.hideTriggerHandler = () => {
-                        if (
-                            triggerButton.getBoundingClientRect().top + overlapMarginPx <
-                            editorMenu.getBoundingClientRect().bottom
-                        ) {
-                            this.triggerIsHidden.next(true);
-                        } else {
-                            this.triggerIsHidden.next(false);
+                        if (editorMenu && triggerButton) {
+                            if (
+                                triggerButton.getBoundingClientRect().top + overlapMarginPx <
+                                editorMenu.getBoundingClientRect().bottom
+                            ) {
+                                this.triggerIsHidden.next(true);
+                            } else {
+                                this.triggerIsHidden.next(false);
+                            }
                         }
                     };
-                    this.contentArea.addEventListener('scroll', this.hideTriggerHandler, { passive: true });
+                    this.contentArea?.addEventListener('scroll', this.hideTriggerHandler, { passive: true });
                     requestAnimationFrame(() => this.hideTriggerHandler?.());
                 }
             } else {
                 if (this.hideTriggerHandler) {
-                    this.contentArea.removeEventListener('scroll', this.hideTriggerHandler);
+                    this.contentArea?.removeEventListener('scroll', this.hideTriggerHandler);
                 }
             }
         });
@@ -102,7 +101,10 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.overlayRef?.dispose();
         this.contextMenuSub?.unsubscribe();
-        this.contentArea.removeEventListener('scroll', this.onScroll);
+        this.contentArea?.removeEventListener('scroll', this.onScroll);
+        if (this.hideTriggerHandler) {
+            this.contentArea?.removeEventListener('scroll', this.hideTriggerHandler);
+        }
     }
 
     clickItem(item: ContextMenuItem) {

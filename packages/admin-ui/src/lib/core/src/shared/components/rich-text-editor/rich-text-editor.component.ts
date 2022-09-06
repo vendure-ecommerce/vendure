@@ -41,6 +41,7 @@ import { ProsemirrorService } from './prosemirror/prosemirror.service';
             multi: true,
         },
         ProsemirrorService,
+        ContextMenuService,
     ],
 })
 export class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
@@ -65,7 +66,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
         public contextMenuService: ContextMenuService,
     ) {}
 
-    get menuElement(): HTMLDivElement {
+    get menuElement(): HTMLDivElement | null {
         return this.viewContainerRef.element.nativeElement.querySelector('.ProseMirror-menubar');
     }
 
