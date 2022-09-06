@@ -1,3 +1,11 @@
+## 2.0.0-next.14 (2022-09-06)
+
+
+#### Fixes
+
+* **admin-ui** Fix issues with rich text editor in custom field ([aa13dcb](https://github.com/vendure-ecommerce/vendure/commit/aa13dcb))
+* **admin-ui** Fix rich text editor when used in custom field list ([21ef048](https://github.com/vendure-ecommerce/vendure/commit/21ef048))
+
 ## 2.0.0-next.13 (2022-09-06)
 
 
