@@ -341,26 +341,7 @@ export class ShopOrderResolver {
                     return order;
                 }
                 if (order.active === false) {
-                    if (order.customer) {
-                        const addresses = await this.customerService.findAddressesByCustomerId(
-                            ctx,
-                            order.customer.id,
-                        );
-                        // If the Customer has no addresses yet, use the shipping address data
-                        // to populate the initial default Address.
-                        if (addresses.length === 0 && order.shippingAddress?.country) {
-                            const address = order.shippingAddress;
-                            await this.customerService.createAddress(ctx, order.customer.id, {
-                                ...address,
-                                company: address.company || '',
-                                streetLine1: address.streetLine1 || '',
-                                streetLine2: address.streetLine2 || '',
-                                countryCode: address.countryCode || '',
-                                defaultBillingAddress: true,
-                                defaultShippingAddress: true,
-                            });
-                        }
-                    }
+                    await this.customerService.createAddressesForNewCustomer(ctx, order);
                 }
                 if (order.active === false && ctx.session?.activeOrderId === sessionOrder.id) {
                     await this.sessionService.unsetActiveOrder(ctx, ctx.session);

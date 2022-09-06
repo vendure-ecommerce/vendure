@@ -73,13 +73,15 @@
 
     .ProseMirror-menuseparator {
         border-right: 1px solid var(--color-component-border-200);
-        margin-right: 3px;
+        margin: 0 12px 0 8px;
+        height: 18px;
     }
 
     .ProseMirror-menu-dropdown,
     .ProseMirror-menu-dropdown-menu {
         font-size: 90%;
         white-space: nowrap;
+        border-radius: var(--border-radius-input);
     }
 
     .ProseMirror-menu-dropdown {
@@ -90,7 +92,7 @@
     }
 
     .ProseMirror-menu-dropdown-wrap {
-        padding: 1px 0 1px 4px;
+        padding: 1px 3px 1px 6px;
         display: inline-block;
         position: relative;
     }
@@ -109,8 +111,7 @@
     .ProseMirror-menu-dropdown-menu,
     .ProseMirror-menu-submenu {
         position: absolute;
-        background: white;
-        color: var(--color-grey-600);
+        background: var(--color-component-bg-100);
         border: 1px solid var(--color-component-border-200);
         padding: 2px;
     }
@@ -118,6 +119,7 @@
     .ProseMirror-menu-dropdown-menu {
         z-index: 15;
         min-width: 6em;
+        color: var(--color-text-200);
     }
 
     .ProseMirror-menu-dropdown-item {
@@ -126,12 +128,12 @@
     }
 
     .ProseMirror-menu-dropdown-item:hover {
-        background: var(--color-component-bg-100);
+        background: var(--color-component-bg-200);
     }
 
     .ProseMirror-menu-submenu-wrap {
         position: relative;
-        margin-right: -4px;
+        margin-right: 4px;
     }
 
     .ProseMirror-menu-submenu-label:after {
@@ -141,7 +143,7 @@
         border-left: 4px solid currentColor;
         opacity: 0.6;
         position: absolute;
-        right: 4px;
+        right: -8px;
         top: calc(50% - 4px);
     }
 
@@ -186,6 +188,7 @@
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         overflow: visible;
+        align-items: center;
     }
 
     .ProseMirror-icon {
@@ -336,4 +339,93 @@
         margin-bottom: 0.5rem;
         color: var(--color-grey-800) !important;
     }
+
+    .ProseMirror .tableWrapper {
+        td,
+        th {
+            border: 1px solid var(--color-grey-300);
+            padding: 3px 6px;
+        }
+        td p,
+        th p {
+            margin-top: 0;
+        }
+        th,
+        th p {
+            font-weight: bold;
+        }
+    }
+
+    .ProseMirror table {
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+      overflow: hidden;
+    }
+    .ProseMirror td,
+    .ProseMirror th {
+      vertical-align: top;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .ProseMirror .column-resize-handle {
+      position: absolute;
+      right: -2px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      z-index: 20;
+      background-color: #adf;
+      pointer-events: none;
+    }
+    .ProseMirror.resize-cursor {
+      cursor: ew-resize;
+      cursor: col-resize;
+    }
+    /* Give selected cells a blue overlay */
+    .ProseMirror .selectedCell:after {
+      z-index: 2;
+      position: absolute;
+      content: '';
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: #afdaf355;
+      pointer-events: none;
+    }
+
+
+
+    .menu-separator {
+        border-bottom: 1px solid var(--color-grey-400);
+        height: 0;
+        margin: 6px 0;
+        pointer-events: none;
+    }
+    .menu-item-with-icon {
+        display: flex;
+        align-items: center;
+        clr-icon,
+        .custom-icon {
+            margin-right: 4px;
+            color: var(--color-text-200);
+        }
+        .hr-icon {
+            width: 13px;
+            height: 8px;
+            border-bottom: 2px solid var(--color-text-100);
+            margin: -8px 5px 0 2px;
+        }
+        .h-icon {
+            width: 16px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+    }
+}
+
+.context-menu {
+    position: fixed;
 }

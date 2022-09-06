@@ -74,6 +74,8 @@ import { ProductSearchInputComponent } from './components/product-search-input/p
 import { ProductVariantSelectorComponent } from './components/product-variant-selector/product-variant-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
+import { ContextMenuComponent } from './components/rich-text-editor/prosemirror/context-menu/context-menu.component';
+import { RawHtmlDialogComponent } from './components/rich-text-editor/raw-html-dialog/raw-html-dialog.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
@@ -89,6 +91,7 @@ import { IfDefaultChannelActiveDirective } from './directives/if-default-channel
 import { IfMultichannelDirective } from './directives/if-multichannel.directive';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
+import { HtmlEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/html-editor-form-input.component';
 import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
 import { CombinationModeFormInputComponent } from './dynamic-form-inputs/combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
@@ -240,6 +243,8 @@ const DECLARATIONS = [
     AssetPreviewLinksComponent,
     ProductMultiSelectorDialogComponent,
     ProductSearchInputComponent,
+    ContextMenuComponent,
+    RawHtmlDialogComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -264,6 +269,7 @@ const DYNAMIC_FORM_INPUTS = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    HtmlEditorFormInputComponent,
     ProductMultiSelectorFormInputComponent,
     CombinationModeFormInputComponent,
 ];

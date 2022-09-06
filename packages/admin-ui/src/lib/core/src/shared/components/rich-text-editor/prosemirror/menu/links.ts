@@ -6,7 +6,7 @@ import { EditorState, TextSelection } from 'prosemirror-state';
 import { ModalService } from '../../../../../providers/modal/modal.service';
 import { LinkAttrs, LinkDialogComponent } from '../../link-dialog/link-dialog.component';
 
-import { markActive } from './menu-common';
+import { markActive, renderClarityIcon } from './menu-common';
 
 function selectionIsWithinLink(state: EditorState, anchor: number, head: number): boolean {
     const { doc } = state;
@@ -27,7 +27,7 @@ function selectionIsWithinLink(state: EditorState, anchor: number, head: number)
 export function linkItem(linkMark: MarkType, modalService: ModalService) {
     return new MenuItem({
         title: 'Add or remove link',
-        icon: icons.link,
+        render: renderClarityIcon({ shape: 'link', size: 22 }),
         class: '',
         css: '',
         active(state) {

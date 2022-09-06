@@ -9,6 +9,7 @@ import {
 } from '../../providers/custom-field-component/custom-field-component.service';
 
 import { BooleanFormInputComponent } from './boolean-form-input/boolean-form-input.component';
+import { HtmlEditorFormInputComponent } from './code-editor-form-input/html-editor-form-input.component';
 import { JsonEditorFormInputComponent } from './code-editor-form-input/json-editor-form-input.component';
 import { CombinationModeFormInputComponent } from './combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './currency-form-input/currency-form-input.component';
@@ -40,6 +41,7 @@ export const defaultFormInputs = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    HtmlEditorFormInputComponent,
     ProductMultiSelectorFormInputComponent,
     CombinationModeFormInputComponent,
 ];
