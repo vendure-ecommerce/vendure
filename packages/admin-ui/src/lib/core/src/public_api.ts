@@ -153,7 +153,7 @@ export * from './shared/components/rich-text-editor/external-image-dialog/extern
 export * from './shared/components/rich-text-editor/link-dialog/link-dialog.component';
 export * from './shared/components/rich-text-editor/prosemirror/inputrules';
 export * from './shared/components/rich-text-editor/prosemirror/keymap';
-export * from './shared/components/rich-text-editor/prosemirror/menu/images';
+export * from './shared/components/rich-text-editor/prosemirror/plugins/image-plugin';
 export * from './shared/components/rich-text-editor/prosemirror/menu/links';
 export * from './shared/components/rich-text-editor/prosemirror/menu/menu-common';
 export * from './shared/components/rich-text-editor/prosemirror/menu/menu';

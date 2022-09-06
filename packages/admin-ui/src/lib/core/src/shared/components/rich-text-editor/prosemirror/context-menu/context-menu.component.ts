@@ -73,9 +73,10 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
                 const triggerButton = this.overlayRef.hostElement.querySelector('.context-menu-trigger');
                 const editorMenu = this.richTextEditor.menuElement;
                 if (triggerButton) {
+                    const overlapMarginPx = 5;
                     this.hideTriggerHandler = () => {
                         if (
-                            triggerButton.getBoundingClientRect().top <
+                            triggerButton.getBoundingClientRect().top + overlapMarginPx <
                             editorMenu.getBoundingClientRect().bottom
                         ) {
                             this.triggerIsHidden.next(true);
@@ -84,6 +85,7 @@ export class ContextMenuComponent implements AfterViewInit, OnDestroy {
                         }
                     };
                     this.contentArea.addEventListener('scroll', this.hideTriggerHandler, { passive: true });
+                    requestAnimationFrame(() => this.hideTriggerHandler?.());
                 }
             } else {
                 if (this.hideTriggerHandler) {

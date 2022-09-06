@@ -18,6 +18,7 @@ import { iframeNode, iframeNodeView } from './custom-nodes';
 import { buildInputRules } from './inputrules';
 import { buildKeymap } from './keymap';
 import { customMenuPlugin } from './menu/menu-plugin';
+import { imageContextMenuPlugin } from './plugins/image-plugin';
 import { linkSelectPlugin } from './plugins/link-select-plugin';
 import { rawEditorPlugin } from './plugins/raw-editor-plugin';
 import { getTableNodes, tableContextMenuPlugin } from './plugins/tables-plugin';
@@ -131,6 +132,7 @@ export class ProsemirrorService {
             columnResizing({}),
             tableEditing({ allowTableNodeSelection: true }),
             tableContextMenuPlugin(this.contextMenuService),
+            imageContextMenuPlugin(this.contextMenuService, this.injector.get(ModalService)),
             rawEditorPlugin(this.contextMenuService, this.injector.get(ModalService)),
             customMenuPlugin({
                 floatingMenu: options.floatingMenu,

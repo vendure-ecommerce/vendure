@@ -15,9 +15,9 @@ import { wrapInList } from 'prosemirror-schema-list';
 import { EditorState } from 'prosemirror-state';
 
 import { ModalService } from '../../../../../providers/modal/modal.service';
+import { insertImageItem } from '../plugins/image-plugin';
 import { addTable } from '../plugins/tables-plugin';
 
-import { insertImageItem } from './images';
 import { linkItem } from './links';
 import { canInsert, IconSize, markActive, renderClarityIcon, wrapInMenuItemWithIcon } from './menu-common';
 import { SubMenuWithIcon } from './sub-menu-with-icon';
