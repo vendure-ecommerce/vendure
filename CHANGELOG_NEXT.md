@@ -1,3 +1,20 @@
+## 2.0.0-next.13 (2022-09-06)
+
+
+#### Features
+
+* **admin-ui** Add basic table support to rich text editor ([09f8482](https://github.com/vendure-ecommerce/vendure/commit/09f8482)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add context menu for images in rich text editor ([5b09abd](https://github.com/vendure-ecommerce/vendure/commit/5b09abd)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add context menu for table operations ([7b68300](https://github.com/vendure-ecommerce/vendure/commit/7b68300)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Implement raw HTML editing support in rich text editor ([e9f7fcd](https://github.com/vendure-ecommerce/vendure/commit/e9f7fcd)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Improve styling of rich text editor ([054aba4](https://github.com/vendure-ecommerce/vendure/commit/054aba4))
+* **payments-plugin** Add support for opting-out of Braintree vault ([faeef6d](https://github.com/vendure-ecommerce/vendure/commit/faeef6d)), closes [#1651](https://github.com/vendure-ecommerce/vendure/issues/1651)
+
+#### Fixes
+
+* **core** Correctly populate shipping/billing address for new customer ([264b326](https://github.com/vendure-ecommerce/vendure/commit/264b326))
+* **create** Fix default migration path of scaffold (#1759) ([e1c90cc](https://github.com/vendure-ecommerce/vendure/commit/e1c90cc)), closes [#1759](https://github.com/vendure-ecommerce/vendure/issues/1759)
+
 ## 2.0.0-next.12 (2022-08-29)
 
 * Includes all features & fixes from v1.7.1
