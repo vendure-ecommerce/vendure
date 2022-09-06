@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subject, of, interval } from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, Observable, of, Subject } from 'rxjs';
 import {
     bufferWhen,
     debounceTime,
@@ -77,6 +77,6 @@ export class ContextMenuService {
     }
 
     clearContextMenu() {
-        this.setContextMenuConfig$.next();
+        this.setContextMenuConfig$.next(undefined);
     }
 }
