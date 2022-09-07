@@ -48,16 +48,22 @@ export class FacetValueService {
      */
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
     findAll(ctx: RequestContext, lang: LanguageCode): Promise<Array<Translated<FacetValue>>>;
-    findAll(ctxOrLang: RequestContext | LanguageCode, lang?: LanguageCode): Promise<Array<Translated<FacetValue>>> {
-        const [repository, languageCode] = ctxOrLang instanceof RequestContext 
-            ? [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
-            : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
+    findAll(
+        ctxOrLang: RequestContext | LanguageCode,
+        lang?: LanguageCode,
+    ): Promise<Array<Translated<FacetValue>>> {
+        const [repository, languageCode] =
+            ctxOrLang instanceof RequestContext
+                ? [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
+                : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
 
         return repository
             .find({
                 relations: ['facet'],
             })
-            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, languageCode, ['facet'])));
+            .then(facetValues =>
+                facetValues.map(facetValue => translateDeep(facetValue, languageCode, ['facet'])),
+            );
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<FacetValue> | undefined> {
@@ -105,9 +111,15 @@ export class FacetValueService {
             translationType: FacetValueTranslation,
             beforeSave: async fv => {
                 fv.facet = facet;
-                await this.channelService.assignToCurrentChannel(fv, ctx);
+                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                if (ctx.channelId === defaultChannel.id) {
+                    await this.channelService.assignToAllChannels(fv, ctx);
+                } else {
+                    await this.channelService.assignToCurrentChannel(fv, ctx);
+                }
             },
         });
+
         const facetValueWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
             FacetValue,
