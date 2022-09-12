@@ -122,11 +122,19 @@
                                     [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
                                 />
                             </vdr-form-field>
-                            <vdr-rich-text-editor
-                                formControlName="description"
-                                [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                            <vdr-form-field
                                 [label]="'common.description' | translate"
-                            ></vdr-rich-text-editor>
+                                for="description"
+                                [errors]="{ pattern: 'catalog.description-pattern-error' | translate }"
+                            >
+                                <textarea
+                                    rows="7"
+                                    id="slug"
+                                    type="text"
+                                    formControlName="description"
+                                    [readonly]="!(['UpdateCatalog', 'UpdateProduct'] | hasPermission)"
+                                ></textarea>
+                            </vdr-form-field>
 
                             <section formGroupName="customFields" *ngIf="customFields.length">
                                 <label>{{ 'common.custom-fields' | translate }}</label>

@@ -8,6 +8,10 @@
     }
 }
 
+textarea{
+    width: 100%;
+}
+
 .facets {
     margin-top: 12px;
     @media screen and (min-width: $breakpoint-small) {
