@@ -7,6 +7,7 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -55,7 +56,40 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Facet: [
+            {
+                name: 'color1',
+                type: 'string',
+                ui: { component: 'colorpicker-form-input' },
+                label: [{ languageCode: LanguageCode.en, value: 'Color 1' }],
+            },
+            {
+                name: 'color2',
+                type: 'string',
+                ui: { component: 'colorpicker-form-input' },
+                label: [{ languageCode: LanguageCode.en, value: 'Color 2' }],
+            },
+        ],
+        FacetValue: [
+            {
+                name: 'color1',
+                type: 'string',
+                ui: { component: 'colorpicker-form-input' },
+                label: [{ languageCode: LanguageCode.en, value: 'Color 1' }],
+            },
+            {
+                name: 'color2',
+                type: 'string',
+                ui: { component: 'colorpicker-form-input' },
+                label: [{ languageCode: LanguageCode.en, value: 'Color 2' }],
+            },
+        ],
+        User: [
+            { name: 'referral', type: 'string' },
+            { name: 'barcode', type: 'string' },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -129,7 +163,7 @@ function getDbConfig(): ConnectionOptions {
                 synchronize: true,
                 type: 'mysql',
                 host: 'localhost',
-                port: 3306,
+                port: 3307,
                 username: 'root',
                 password: 'root',
                 database: 'vendure-dev',

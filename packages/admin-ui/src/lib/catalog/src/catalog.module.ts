@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '@vendure/admin-ui/core';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -54,7 +55,7 @@ const CATALOG_COMPONENTS = [
 ];
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(catalogRoutes)],
+    imports: [SharedModule, ColorPickerModule, RouterModule.forChild(catalogRoutes)],
     exports: [...CATALOG_COMPONENTS],
     declarations: [...CATALOG_COMPONENTS],
 })

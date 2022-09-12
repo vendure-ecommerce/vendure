@@ -2,3 +2,7 @@
 .visible-toggle {
     margin-top: -3px !important;
 }
+
+vdr-tabbed-custom-fields[entityname='FacetValue']{
+    display: flex;
+}

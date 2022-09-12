@@ -74,7 +74,6 @@
         </vdr-form-field>
 
         <section formGroupName="customFields" *ngIf="customFields.length">
-            <label>{{ 'common.custom-fields' | translate }}</label>
             <vdr-tabbed-custom-fields
                 entityName="Facet"
                 [customFields]="customFields"
@@ -99,7 +98,7 @@
                     <th>{{ 'common.name' | translate }}</th>
                     <th>{{ 'common.code' | translate }}</th>
                     <ng-container *ngIf="customValueFields.length">
-                        <th>{{ 'common.custom-fields' | translate }}</th>
+                        <th>Colors</th>
                     </ng-container>
                     <th></th>
                 </tr>

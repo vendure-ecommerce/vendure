@@ -10,6 +10,7 @@ import '@clr/icons/shapes/all-shapes';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import '@webcomponents/custom-elements/custom-elements.min.js';
+import { ColorPickerModule } from 'ngx-color-picker';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { ModalService } from '../providers/modal/modal.service';
@@ -90,6 +91,7 @@ import { IfMultichannelDirective } from './directives/if-multichannel.directive'
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
 import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
+import { ColorPickerFormInputComponent } from './dynamic-form-inputs/colorpicker-form-input/colorpicker-form-input.component';
 import { CombinationModeFormInputComponent } from './dynamic-form-inputs/combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
 import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
@@ -145,6 +147,7 @@ const IMPORTS = [
     TranslateModule,
     OverlayModule,
     DragDropModule,
+    ColorPickerModule,
 ];
 
 const DECLARATIONS = [
@@ -266,6 +269,7 @@ const DYNAMIC_FORM_INPUTS = [
     JsonEditorFormInputComponent,
     ProductMultiSelectorFormInputComponent,
     CombinationModeFormInputComponent,
+    ColorPickerFormInputComponent,
 ];
 
 @NgModule({

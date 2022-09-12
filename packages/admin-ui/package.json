@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@angular/animations": "12.2.16",
-    "@angular/cdk": "12.2.13",
+    "@angular/cdk": "13.3.9",
     "@angular/common": "12.2.16",
     "@angular/core": "12.2.16",
     "@angular/forms": "12.2.16",
@@ -48,6 +48,7 @@
     "dayjs": "^1.10.4",
     "graphql": "15.5.1",
     "messageformat": "2.3.0",
+    "ngx-color-picker": "^12.0.1",
     "ngx-pagination": "^5.0.0",
     "ngx-translate-messageformat-compiler": "^4.8.0",
     "prosemirror-commands": "^1.1.7",

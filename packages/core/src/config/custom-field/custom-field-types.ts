@@ -18,6 +18,7 @@ import {
     UiComponentConfig,
 } from '@vendure/common/lib/shared-types';
 
+import { bootstrap } from '../../bootstrap';
 import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
 
@@ -196,6 +197,7 @@ export type CustomFieldConfig =
  *
  * @docsCategory custom-fields
  */
+
 export interface CustomFields {
     Address?: CustomFieldConfig[];
     Administrator?: CustomFieldConfig[];

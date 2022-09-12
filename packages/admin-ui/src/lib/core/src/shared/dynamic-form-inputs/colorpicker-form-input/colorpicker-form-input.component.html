@@ -1,0 +1,7 @@
+<vdr-affixed-input
+    [suffix]="suffix"
+    [prefix]="prefix"
+>
+    <input (colorPickerChange)="updateColor($event);" [formControl]="formControl"
+                             [(colorPicker)]="color" [style.background]="color"/>
+</vdr-affixed-input>
