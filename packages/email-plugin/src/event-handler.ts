@@ -130,6 +130,7 @@ import {
  */
 export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
+    private setLanguageCodeFn: (event: Event) => LanguageCode | undefined;
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
     private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
@@ -175,6 +176,19 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      */
     setRecipient(setRecipientFn: (event: Event) => string): EmailEventHandler<T, Event> {
         this.setRecipientFn = setRecipientFn;
+        return this;
+    }
+
+    /**
+     * @description
+     * A function which allows to override the language of the email. If not defined, the language from the context will be used.
+     *
+     * @since 1.8.0
+     */
+    setLanguageCode(
+        setLanguageCodeFn: (event: Event) => LanguageCode | undefined,
+    ): EmailEventHandler<T, Event> {
+        this.setLanguageCodeFn = setLanguageCodeFn;
         return this;
     }
 
@@ -343,7 +357,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             );
         }
         const { ctx } = event;
-        const configuration = this.getBestConfiguration(ctx.channel.code, ctx.languageCode);
+        const languageCode = this.setLanguageCodeFn?.(event) || ctx.languageCode;
+        const configuration = this.getBestConfiguration(ctx.channel.code, languageCode);
         const subject = configuration ? configuration.subject : this.defaultSubject;
         if (subject == null) {
             throw new Error(

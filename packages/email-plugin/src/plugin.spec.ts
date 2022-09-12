@@ -369,6 +369,28 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[1][0].subject).toBe('Servus, Test!');
             expect(onSend.mock.calls[1][0].body).toContain('German body.');
         });
+
+        it('set LanguageCode', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setSubject('Hello, {{ name }}!')
+                .setRecipient(() => 'test@test.com')
+                .setLanguageCode(() => LanguageCode.de)
+                .setTemplateVars(() => ({ name: 'Test' }))
+                .addTemplate({
+                    channelCode: 'default',
+                    languageCode: LanguageCode.de,
+                    templateFile: 'body.de.hbs',
+                    subject: 'Servus, {{ name }}!',
+                });
+
+            const ctxEn = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.en } as any);
+            eventBus.publish(new MockEvent(ctxEn, true));
+            await pause();
+            expect(onSend.mock.calls[1][0].subject).toBe('Servus, Test!');
+            expect(onSend.mock.calls[1][0].body).toContain('German body.');
+        });
     });
 
     describe('loadData', () => {
