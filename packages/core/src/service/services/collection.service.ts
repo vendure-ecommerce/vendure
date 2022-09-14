@@ -267,6 +267,12 @@ export class CollectionService implements OnModuleInit {
         }
         const pickProps = pick(['id', 'name', 'slug']);
         const ancestors = await this.getAncestors(collection.id, ctx);
+        if (collection.name == null || collection.slug == null) {
+            collection = this.translator.translate(
+                await this.connection.getEntityOrThrow(ctx, Collection, collection.id),
+                ctx,
+            );
+        }
         return [pickProps(rootCollection), ...ancestors.map(pickProps).reverse(), pickProps(collection)];
     }
 
