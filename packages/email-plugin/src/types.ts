@@ -100,20 +100,6 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
 
 /**
  * @description
- * The credentials used for sending email via SMTP
- *
- * @docsCategory EmailPlugin
- * @docsPage Email Plugin Types
- */
-export interface SMTPCredentials {
-    /** @description The username */
-    user: string;
-    /** @description The password */
-    pass: string;
-}
-
-/**
- * @description
  * A union of all the possible transport options for sending emails.
  *
  * @docsCategory EmailPlugin
