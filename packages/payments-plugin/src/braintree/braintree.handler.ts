@@ -41,7 +41,12 @@ export const braintreePaymentMethodHandler = new PaymentMethodHandler({
         try {
             await entityHydrator.hydrate(ctx, order, { relations: ['customer'] });
             const customer = order.customer;
-            if (options.storeCustomersInBraintree && ctx.activeUserId && customer) {
+            if (
+                options.storeCustomersInBraintree &&
+                ctx.activeUserId &&
+                customer &&
+                metadata.includeCustomerId !== false
+            ) {
                 customerId = await getBraintreeCustomerId(ctx, gateway, customer);
             }
             return processPayment(ctx, gateway, order, amount, metadata.nonce, customerId, options);

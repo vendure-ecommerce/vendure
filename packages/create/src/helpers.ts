@@ -247,10 +247,11 @@ export function getDependencies(
         `@vendure/email-plugin${vendurePkgVersion}`,
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
+        'dotenv',
         dbDriverPackage(dbType),
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently', 'dotenv', 'ts-node'];
+    const devDependencies = ['concurrently', 'ts-node'];
     return { dependencies, devDependencies };
 }
 

@@ -2,6 +2,7 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Injector, RequestContext, VendureEvent } from '@vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 import { EmailEventHandler } from './event-handler';
 
@@ -99,20 +100,6 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
 
 /**
  * @description
- * The credentials used for sending email via SMTP
- *
- * @docsCategory EmailPlugin
- * @docsPage Email Plugin Types
- */
-export interface SMTPCredentials {
-    /** @description The username */
-    user: string;
-    /** @description The password */
-    pass: string;
-}
-
-/**
- * @description
  * A union of all the possible transport options for sending emails.
  *
  * @docsCategory EmailPlugin
@@ -127,58 +114,13 @@ export type EmailTransportOptions =
 
 /**
  * @description
- * A subset of the SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
+ * The SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
  *
  * @docsCategory EmailPlugin
  * @docsPage Transport Options
  */
-export interface SMTPTransportOptions {
+export interface SMTPTransportOptions extends SMTPTransport.Options {
     type: 'smtp';
-    /**
-     * @description
-     * the hostname or IP address to connect to (defaults to ‘localhost’)
-     */
-    host: string;
-    /**
-     * @description
-     * The port to connect to (defaults to 25 or 465)
-     */
-    port: number;
-    /**
-     * @description
-     * Defines authentication data
-     */
-    auth: SMTPCredentials;
-    /**
-     * @description
-     * Defines if the connection should use SSL (if true) or not (if false)
-     */
-    secure?: boolean;
-    /**
-     * @description
-     * Turns off STARTTLS support if true
-     */
-    ignoreTLS?: boolean;
-    /**
-     * @description
-     * Forces the client to use STARTTLS. Returns an error if upgrading the connection is not possible or fails.
-     */
-    requireTLS?: boolean;
-    /**
-     * @description
-     * Optional hostname of the client, used for identifying to the server
-     */
-    name?: string;
-    /**
-     * @description
-     * The local interface to bind to for network connections
-     */
-    localAddress?: string;
-    /**
-     * @description
-     * Defines preferred authentication method, e.g. ‘PLAIN’
-     */
-    authMethod?: string;
     /**
      * @description
      * If true, uses the configured {@link VendureLogger} to log messages from Nodemailer as it interacts with
@@ -187,20 +129,6 @@ export interface SMTPTransportOptions {
      * @default false
      */
     logging?: boolean;
-    /**
-     * @description
-     * If set to true, then logs SMTP traffic without message content.
-     *
-     * @default false
-     */
-    transactionLog?: boolean;
-    /**
-     * @description
-     * If set to true, then logs SMTP traffic and message content, otherwise logs only transaction events.
-     *
-     * @default false
-     */
-    debug?: boolean;
 }
 
 /**

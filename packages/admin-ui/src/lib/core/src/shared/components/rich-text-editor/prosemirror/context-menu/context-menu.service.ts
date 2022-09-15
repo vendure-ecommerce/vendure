@@ -60,7 +60,7 @@ export class ContextMenuService {
         const visible$ = this.menuIsVisible$.pipe(filter(val => val === true));
 
         const isVisible$ = this.menuIsVisible$.pipe(
-            delayWhen(value => (value ? of(value) : interval(100).pipe(takeUntil(visible$)))),
+            delayWhen(value => (value ? of(value) : interval(250).pipe(takeUntil(visible$)))),
             distinctUntilChanged(),
         );
         this.contextMenu$ = combineLatest(groupedConfig$, isVisible$).pipe(

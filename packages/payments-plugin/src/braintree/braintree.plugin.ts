@@ -215,6 +215,26 @@ import { BraintreePluginOptions } from './types';
  * `, { includeCustomerId: false });
  * ```
  *
+ * as well as in the metadata of the `addPaymentToOrder` mutation:
+ *
+ * ```TypeScript
+ * const { addPaymentToOrder } = await graphQlClient.query(gql`
+ *   mutation AddPayment($input: PaymentInput!) {
+ *     addPaymentToOrder(input: $input) {
+ *       ...Order
+ *       ...ErrorResult
+ *     }
+ *   }`, {
+ *     input: {
+ *       method: 'braintree',
+ *       metadata: {
+ *         ...paymentResult,
+ *         includeCustomerId: false,
+ *       },
+ *     }
+ *   );
+ * ```
+ *
  * @docsCategory payments-plugin
  * @docsPage BraintreePlugin
  */
