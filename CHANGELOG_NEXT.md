@@ -1,3 +1,21 @@
+## 2.0.0-next.16 (2022-09-15)
+
+
+#### Features
+
+* **core** Export prorate function (#1783) ([d86fa29](https://github.com/vendure-ecommerce/vendure/commit/d86fa29)), closes [#1783](https://github.com/vendure-ecommerce/vendure/issues/1783)
+* **email-plugin** Allow to override email language (#1775) ([54c41ac](https://github.com/vendure-ecommerce/vendure/commit/54c41ac)), closes [#1775](https://github.com/vendure-ecommerce/vendure/issues/1775)
+* **email-plugin** Use full Nodemailer SMTPTransport options (#1781) ([86b12bc](https://github.com/vendure-ecommerce/vendure/commit/86b12bc)), closes [#1781](https://github.com/vendure-ecommerce/vendure/issues/1781)
+* **payments-plugin** Add `includeCustomerId` metadata key to Braintree ([a94fc22](https://github.com/vendure-ecommerce/vendure/commit/a94fc22))
+
+#### Fixes
+
+* **admin-ui** Adjust rich text context menu sensitivity ([86442cf](https://github.com/vendure-ecommerce/vendure/commit/86442cf))
+* **admin-ui** Fix issues with rich text editor in custom field ([f350ad8](https://github.com/vendure-ecommerce/vendure/commit/f350ad8))
+* **admin-ui** Fix rich text editor when used in custom field list ([77fef28](https://github.com/vendure-ecommerce/vendure/commit/77fef28))
+* **core** Handle edge-case of Collection.breadcrumbs having null values ([4a9ec5c](https://github.com/vendure-ecommerce/vendure/commit/4a9ec5c))
+* **create** Make dotenv a dependency, not devDependency ([a641beb](https://github.com/vendure-ecommerce/vendure/commit/a641beb))
+
 ## 2.0.0-next.15 (2022-09-06)
 
 (This was released to rectify a publishing error with the last version. No code changes.)
