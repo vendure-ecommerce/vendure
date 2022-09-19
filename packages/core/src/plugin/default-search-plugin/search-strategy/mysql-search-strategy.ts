@@ -149,6 +149,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
             input;
 
         if (term && term.length > this.minTermLength) {
+            const safeTerm = term.replace(/"/g, '');
             const termScoreQuery = this.connection
                 .getRepository(ctx, SearchIndexItem)
                 .createQueryBuilder('si_inner')
@@ -171,7 +172,11 @@ export class MysqlSearchStrategy implements SearchStrategy {
                     }),
                 )
                 .andWhere('si_inner.channelId = :channelId')
-                .setParameters({ term: `${term}*`, like_term: `%${term}%`, channelId: ctx.channelId });
+                .setParameters({
+                    term: `${safeTerm}*`,
+                    like_term: `%${safeTerm}%`,
+                    channelId: ctx.channelId,
+                });
 
             qb.innerJoin(`(${termScoreQuery.getQuery()})`, 'term_result', 'inner_productId = si.productId')
                 .addSelect(input.groupByProduct ? 'MAX(term_result.score)' : 'term_result.score', 'score')
