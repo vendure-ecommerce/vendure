@@ -155,7 +155,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             ? term
                   .trim()
                   .split(/\s+/g)
-                  .map(t => `${t}:*`)
+                  .map(t => `'${t}':*`)
                   .join(' & ')
             : '';
 

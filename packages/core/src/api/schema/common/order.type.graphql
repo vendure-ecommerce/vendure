@@ -93,6 +93,7 @@ type OrderList implements PaginatedList {
 }
 
 type ShippingLine {
+    id: ID!
     shippingMethod: ShippingMethod!
     price: Int!
     priceWithTax: Int!

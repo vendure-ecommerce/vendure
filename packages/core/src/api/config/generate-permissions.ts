@@ -11,7 +11,7 @@ GraphQL resolvers via the {@link Allow} decorator.
 
 ## Understanding Permission.Owner
 
-\`Permission.Owner\` is a special permission which is used in some of the Vendure resolvers to indicate that that resolver should only
+\`Permission.Owner\` is a special permission which is used in some Vendure resolvers to indicate that that resolver should only
 be accessible to the "owner" of that resource.
 
 For example, the Shop API \`activeCustomer\` query resolver should only return the Customer object for the "owner" of that Customer, i.e.

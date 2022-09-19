@@ -32,6 +32,9 @@ export function isEntityCreateOrUpdateMutation(documentNode: DocumentNode): stri
             if (inputTypeName === 'UpdateActiveAdministratorInput') {
                 return 'Administrator';
             }
+            if (inputTypeName === 'ModifyOrderInput') {
+                return 'Order';
+            }
 
             const createMatch = inputTypeName.match(CREATE_ENTITY_REGEX);
             if (createMatch) {
