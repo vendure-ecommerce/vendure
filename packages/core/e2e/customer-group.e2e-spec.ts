@@ -11,6 +11,7 @@ import { DeletionResult } from './graphql/generated-e2e-shop-types';
 import {
     ADD_CUSTOMERS_TO_GROUP,
     CREATE_CUSTOMER_GROUP,
+    DELETE_CUSTOMER,
     DELETE_CUSTOMER_GROUP,
     GET_CUSTOMER_GROUP,
     GET_CUSTOMER_GROUPS,
@@ -275,5 +276,37 @@ describe('CustomerGroup resolver', () => {
             GET_CUSTOMER_GROUPS,
         );
         expect(customerGroups.totalItems).toBe(0);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1785
+    it('removes customer from group when customer is deleted', async () => {
+        const customer5Id = customers[4].id;
+        const { createCustomerGroup } = await adminClient.query<
+            Codegen.CreateCustomerGroupMutation,
+            Codegen.CreateCustomerGroupMutationVariables
+        >(CREATE_CUSTOMER_GROUP, {
+            input: {
+                name: 'group-1785',
+                customerIds: [customer5Id],
+            },
+        });
+
+        expect(createCustomerGroup.customers.items).toEqual([{ id: customer5Id }]);
+
+        await adminClient.query<Codegen.DeleteCustomerMutation, Codegen.DeleteCustomerMutationVariables>(
+            DELETE_CUSTOMER,
+            {
+                id: customer5Id,
+            },
+        );
+
+        const { customerGroup } = await adminClient.query<
+            Codegen.GetCustomerGroupQuery,
+            Codegen.GetCustomerGroupQueryVariables
+        >(GET_CUSTOMER_GROUP, {
+            id: createCustomerGroup.id,
+        });
+
+        expect(customerGroup?.customers.items).toEqual([]);
     });
 });

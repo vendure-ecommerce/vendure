@@ -64,12 +64,17 @@ export function configurableDefinitionToInstance(
  */
 export function toConfigurableOperationInput(
     operation: ConfigurableOperation,
-    formValueOperations: { args: Record<string, any> },
+    formValueOperations: { args: Record<string, string> | Array<{ name: string; value: string }> },
 ): ConfigurableOperationInput {
+    const argsArray = Array.isArray(formValueOperations.args) ? formValueOperations.args : undefined;
+    const argsMap = !Array.isArray(formValueOperations.args) ? formValueOperations.args : undefined;
     return {
         code: operation.code,
         arguments: operation.args.map(({ name, value }, j) => {
-            const formValue = formValueOperations.args[name];
+            const formValue = argsArray?.find(arg => arg.name === name)?.value ?? argsMap?.[name];
+            if (!formValue) {
+                throw new Error(`Cannot find an argument value for the key "${name}"`);
+            }
             return {
                 name,
                 value: formValue?.hasOwnProperty('value')

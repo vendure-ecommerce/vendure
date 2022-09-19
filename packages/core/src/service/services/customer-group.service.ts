@@ -77,6 +77,7 @@ export class CustomerGroupService {
             .leftJoin('customer.groups', 'group')
             .leftJoin('customer.channels', 'channel')
             .andWhere('group.id = :groupId', { groupId: customerGroupId })
+            .andWhere('customer.deletedAt IS NULL', { groupId: customerGroupId })
             .andWhere('channel.id =:channelId', { channelId: ctx.channelId })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));

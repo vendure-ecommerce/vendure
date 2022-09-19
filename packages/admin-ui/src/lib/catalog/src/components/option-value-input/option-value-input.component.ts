@@ -140,7 +140,12 @@ export class OptionValueInputComponent implements ControlValueAccessor {
     }
 
     private addOptionValue() {
-        const options = this.parseInputIntoOptions(this.input);
+        const options = this.parseInputIntoOptions(this.input).filter(option => {
+            // do not add an option with the same name
+            // as an existing option
+            const existing = this.options ?? this.formValue;
+            return !existing?.find(o => o?.name === option.name);
+        });
         if (!this.formValue && this.options) {
             for (const option of options) {
                 this.add.emit(option);

@@ -1682,6 +1682,40 @@ describe('Default search plugin', () => {
                 expect(result.search.items.length).toEqual(2);
             });
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1789
+        describe('input escaping', () => {
+            it('correctly escapes "a & b"', async () => {
+                const result = await adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                    SEARCH_PRODUCTS,
+                    {
+                        input: {
+                            take: 10,
+                            term: 'laptop & camera',
+                        },
+                    },
+                    {
+                        languageCode: LanguageCode.de,
+                    },
+                );
+                expect(result.search.items).toBeDefined();
+            });
+            it('correctly escapes other special chars', async () => {
+                const result = await adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+                    SEARCH_PRODUCTS,
+                    {
+                        input: {
+                            take: 10,
+                            term: 'a : b ? * (c) ! "foo"',
+                        },
+                    },
+                    {
+                        languageCode: LanguageCode.de,
+                    },
+                );
+                expect(result.search.items).toBeDefined();
+            });
+        });
     });
 });
 

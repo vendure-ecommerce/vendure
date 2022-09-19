@@ -143,4 +143,26 @@ describe('toConfigurableOperationInput()', () => {
             ],
         });
     });
+
+    it('works with array input', () => {
+        const value = toConfigurableOperationInput(configOp, {
+            args: [
+                { name: 'option2', value: 'value2-2' },
+                { name: 'option1', value: 'value1-2' },
+            ],
+        });
+        expect(value).toEqual({
+            code: 'test',
+            arguments: [
+                {
+                    name: 'option1',
+                    value: 'value1-2',
+                },
+                {
+                    name: 'option2',
+                    value: 'value2-2',
+                },
+            ],
+        });
+    });
 });

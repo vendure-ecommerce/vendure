@@ -50,7 +50,7 @@
                         {{ 'common.edit' | translate }}
                     </button>
                 </td>
-                <td [class.active]="group.id === activeGroupId">
+                <td [class.active]="group.id === activeGroupId" class="align-middle">
                     <vdr-dropdown>
                         <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
                             {{ 'common.actions' | translate }}
@@ -71,15 +71,6 @@
                 </td>
             </ng-template>
         </vdr-data-table>
-
-        <table class="table mt0" *ngIf="!(listIsEmpty$ | async); else emptyPlaceholder">
-            <tbody>
-                <tr
-                    *ngFor="let group of items$ | async"
-                    [class.active]="group.id === (activeGroup$ | async)?.id"
-                ></tr>
-            </tbody>
-        </table>
     </div>
     <ng-template #emptyPlaceholder>
         <vdr-empty-placeholder></vdr-empty-placeholder>

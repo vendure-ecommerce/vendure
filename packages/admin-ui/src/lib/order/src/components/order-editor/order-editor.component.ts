@@ -20,8 +20,10 @@ import {
     ServerConfigService,
     SortOrder,
     SurchargeInput,
+    transformRelationCustomFieldInputs,
 } from '@vendure/admin-ui/core';
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { concat, EMPTY, Observable, of, Subject } from 'rxjs';
 import {
     distinctUntilChanged,
@@ -379,8 +381,14 @@ export class OrderEditorComponent
     }
 
     previewAndModify(order: OrderDetailFragment) {
-        const input: ModifyOrderInput = {
+        const modifyOrderInput: ModifyOrderData = {
             ...this.modifyOrderInput,
+            adjustOrderLines: this.modifyOrderInput.adjustOrderLines.map(line => {
+                return transformRelationCustomFieldInputs(simpleDeepClone(line), this.orderLineCustomFields);
+            }),
+        };
+        const input: ModifyOrderInput = {
+            ...modifyOrderInput,
             ...(this.billingAddressForm.dirty ? { updateBillingAddress: this.billingAddressForm.value } : {}),
             ...(this.shippingAddressForm.dirty
                 ? { updateShippingAddress: this.shippingAddressForm.value }

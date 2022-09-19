@@ -63,14 +63,12 @@
                             ></vdr-line-fulfillment>
                         </td>
                         <td *ngIf="orderLineCustomFields.length" class="order-line-custom-field align-middle">
-                            <ng-container *ngFor="let customField of orderLineCustomFields">
-                                <vdr-custom-field-control
-                                    [customField]="customField"
-                                    [customFieldsFormGroup]="orderLineCustomFieldsFormArray.get([i])"
-                                    entityName="OrderLine"
-                                    [compact]="true"
-                                ></vdr-custom-field-control>
-                            </ng-container>
+                            <vdr-tabbed-custom-fields
+                                entityName="OrderLine"
+                                [customFields]="orderLineCustomFields"
+                                [customFieldsFormGroup]="orderLineCustomFieldsFormArray.get([i])"
+                                [compact]="true"
+                            ></vdr-tabbed-custom-fields>
                         </td>
                         <td class="align-middle total">
                             {{ line.linePriceWithTax | localeCurrency: order.currencyCode }}
@@ -241,7 +239,8 @@
                             [formControl]="couponCodesControl"
                         >
                             <ng-template ng-option-tmp let-item="item">
-                                <vdr-chip>{{ item.code }}</vdr-chip> {{ item.promotionName }}
+                                <vdr-chip>{{ item.code }}</vdr-chip>
+                                {{ item.promotionName }}
                             </ng-template>
                         </ng-select>
                     </clr-accordion-content>
@@ -257,13 +256,13 @@
                             <vdr-form-field [label]="'order.product-sku' | translate" for="sku"
                                 ><input id="sku" type="text" formControlName="sku"
                             /></vdr-form-field>
-                            <vdr-form-field [label]="'common.price' | translate" for="price"
-                                ><vdr-currency-input
+                            <vdr-form-field [label]="'common.price' | translate" for="price">
+                                <vdr-currency-input
                                     [currencyCode]="order.currencyCode"
                                     id="price"
                                     formControlName="price"
-                                ></vdr-currency-input
-                            ></vdr-form-field>
+                                ></vdr-currency-input>
+                            </vdr-form-field>
                             <vdr-form-field
                                 [label]="
                                     'catalog.price-includes-tax-at'
@@ -276,15 +275,16 @@
                                     clrCheckbox
                                     formControlName="priceIncludesTax"
                             /></vdr-form-field>
-                            <vdr-form-field [label]="'order.tax-rate' | translate" for="taxRate"
-                                ><vdr-affixed-input suffix="%"
+                            <vdr-form-field [label]="'order.tax-rate' | translate" for="taxRate">
+                                <vdr-affixed-input suffix="%"
                                     ><input
                                         id="taxRate"
                                         type="number"
                                         min="0"
                                         max="100"
-                                        formControlName="taxRate" /></vdr-affixed-input
-                            ></vdr-form-field>
+                                        formControlName="taxRate"
+                                /></vdr-affixed-input>
+                            </vdr-form-field>
                             <vdr-form-field [label]="'order.tax-description' | translate" for="taxDescription"
                                 ><input id="taxDescription" type="text" formControlName="taxDescription"
                             /></vdr-form-field>
