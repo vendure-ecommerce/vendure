@@ -1,3 +1,24 @@
+## <small>1.7.2 (2022-09-19)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correctly parse configurable args when not edited ([f753f76](https://github.com/vendure-ecommerce/vendure/commit/f753f76)), closes [#1786](https://github.com/vendure-ecommerce/vendure/issues/1786)
+* **admin-ui** Do not allow duplicate option names ([4c4ad29](https://github.com/vendure-ecommerce/vendure/commit/4c4ad29)), closes [#1747](https://github.com/vendure-ecommerce/vendure/issues/1747)
+* **admin-ui** Fix alignment of breadcrumbs ([3584ef9](https://github.com/vendure-ecommerce/vendure/commit/3584ef9))
+* **admin-ui** Fix error when modifying Order with custom field relation ([eace1c1](https://github.com/vendure-ecommerce/vendure/commit/eace1c1)), closes [#1792](https://github.com/vendure-ecommerce/vendure/issues/1792)
+* **admin-ui** Fix error when using non-standard currencyCode ([4466b24](https://github.com/vendure-ecommerce/vendure/commit/4466b24)), closes [#1768](https://github.com/vendure-ecommerce/vendure/issues/1768)
+* **admin-ui** Fix refresh issues with customer group list view ([04b431c](https://github.com/vendure-ecommerce/vendure/commit/04b431c))
+* **core** Add missing driver options in DefaultSearchPlugin ([12e2807](https://github.com/vendure-ecommerce/vendure/commit/12e2807))
+* **core** Correctly escape search term for mysql strategy ([2fa7fcf](https://github.com/vendure-ecommerce/vendure/commit/2fa7fcf)), closes [#1789](https://github.com/vendure-ecommerce/vendure/issues/1789)
+* **core** Correctly escape search term for postgres strategy ([ec70228](https://github.com/vendure-ecommerce/vendure/commit/ec70228)), closes [#1789](https://github.com/vendure-ecommerce/vendure/issues/1789)
+* **core** Correctly populate shipping/billing address for new customer ([264b326](https://github.com/vendure-ecommerce/vendure/commit/264b326))
+* **core** Handle edge-case of Collection.breadcrumbs having null values ([4a9ec5c](https://github.com/vendure-ecommerce/vendure/commit/4a9ec5c))
+* **core** Include missing id field in ShippingLine type ([481d0de](https://github.com/vendure-ecommerce/vendure/commit/481d0de)), closes [#1792](https://github.com/vendure-ecommerce/vendure/issues/1792)
+* **core** Remove deleted Customers from any CustomerGroups ([9820d9e](https://github.com/vendure-ecommerce/vendure/commit/9820d9e)), closes [#1785](https://github.com/vendure-ecommerce/vendure/issues/1785)
+* **create** Fix default migration path of scaffold (#1759) ([e1c90cc](https://github.com/vendure-ecommerce/vendure/commit/e1c90cc)), closes [#1759](https://github.com/vendure-ecommerce/vendure/issues/1759)
+* **create** Make dotenv a dependency, not devDependency ([a641beb](https://github.com/vendure-ecommerce/vendure/commit/a641beb))
+
 ## <small>1.7.1 (2022-08-29)</small>
 
 
