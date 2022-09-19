@@ -142,11 +142,10 @@ export class CustomerGroupListComponent
                         ? this.dataService.customer.createCustomerGroup({ ...result, customerIds: [] })
                         : EMPTY,
                 ),
-                // refresh list
-                switchMap(() => this.dataService.customer.getCustomerGroupList().single$),
             )
             .subscribe(
                 () => {
+                    this.refresh();
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'CustomerGroup',
                     });
@@ -189,6 +188,7 @@ export class CustomerGroupListComponent
                     if (typeof result.errorMessage === 'string') {
                         this.notificationService.error(result.errorMessage);
                     } else {
+                        this.refresh();
                         this.notificationService.success(_('common.notify-delete-success'), {
                             entity: 'CustomerGroup',
                         });
@@ -214,6 +214,7 @@ export class CustomerGroupListComponent
             )
             .subscribe(
                 () => {
+                    this.refresh();
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'CustomerGroup',
                     });
