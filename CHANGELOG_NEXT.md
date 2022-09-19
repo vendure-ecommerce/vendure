@@ -1,3 +1,64 @@
+## 2.0.0-next.17 (2022-09-19)
+
+
+#### Features
+
+* **admin-ui** Add basic table support to rich text editor ([09f8482](https://github.com/vendure-ecommerce/vendure/commit/09f8482)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add context menu for images in rich text editor ([5b09abd](https://github.com/vendure-ecommerce/vendure/commit/5b09abd)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add context menu for table operations ([7b68300](https://github.com/vendure-ecommerce/vendure/commit/7b68300)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add filter inheritance control to Collection detail view ([7f1b01e](https://github.com/vendure-ecommerce/vendure/commit/7f1b01e)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **admin-ui** Implement raw HTML editing support in rich text editor ([e9f7fcd](https://github.com/vendure-ecommerce/vendure/commit/e9f7fcd)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Improve styling of rich text editor ([054aba4](https://github.com/vendure-ecommerce/vendure/commit/054aba4))
+* **admin-ui** Update collection preview on filter inheritance toggle ([1a4aced](https://github.com/vendure-ecommerce/vendure/commit/1a4aced))
+* **admin-ui** Update to Angular v13 ([3b49d23](https://github.com/vendure-ecommerce/vendure/commit/3b49d23))
+* **asset-server-plugin** Update to Sharp v0.30 ([15d8e8d](https://github.com/vendure-ecommerce/vendure/commit/15d8e8d))
+* **core** Add indices to many-to-one relations ([01e369f](https://github.com/vendure-ecommerce/vendure/commit/01e369f)), closes [#1502](https://github.com/vendure-ecommerce/vendure/issues/1502)
+* **core** Added a unique index to Order.code ([aa6025d](https://github.com/vendure-ecommerce/vendure/commit/aa6025d))
+* **core** Collection preview handles filter inheritance ([3d2c0fb](https://github.com/vendure-ecommerce/vendure/commit/3d2c0fb))
+* **core** Collections can control inheritance of filters ([5d4206f](https://github.com/vendure-ecommerce/vendure/commit/5d4206f)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **core** Export prorate function (#1783) ([d86fa29](https://github.com/vendure-ecommerce/vendure/commit/d86fa29)), closes [#1783](https://github.com/vendure-ecommerce/vendure/issues/1783)
+* **core** Improve Collection tree data structure ([5e7af0d](https://github.com/vendure-ecommerce/vendure/commit/5e7af0d))
+* **core** Update codegen errors plugin to use object inputs ([6b9b2a4](https://github.com/vendure-ecommerce/vendure/commit/6b9b2a4))
+* **core** Update to NestJS v8, Apollo Server v3, GraphQL v16 ([c843860](https://github.com/vendure-ecommerce/vendure/commit/c843860))
+* **email-plugin** Allow to override email language (#1775) ([54c41ac](https://github.com/vendure-ecommerce/vendure/commit/54c41ac)), closes [#1775](https://github.com/vendure-ecommerce/vendure/issues/1775)
+* **email-plugin** Use full Nodemailer SMTPTransport options (#1781) ([86b12bc](https://github.com/vendure-ecommerce/vendure/commit/86b12bc)), closes [#1781](https://github.com/vendure-ecommerce/vendure/issues/1781)
+* **payments-plugin** Add `includeCustomerId` metadata key to Braintree ([a94fc22](https://github.com/vendure-ecommerce/vendure/commit/a94fc22))
+* **payments-plugin** Add support for opting-out of Braintree vault ([faeef6d](https://github.com/vendure-ecommerce/vendure/commit/faeef6d)), closes [#1651](https://github.com/vendure-ecommerce/vendure/issues/1651)
+
+#### Fixes
+
+* **admin-ui** Adjust rich text context menu sensitivity ([86442cf](https://github.com/vendure-ecommerce/vendure/commit/86442cf))
+* **admin-ui** Fix broken filter controls in Collection detail ([fd67ac2](https://github.com/vendure-ecommerce/vendure/commit/fd67ac2))
+* **admin-ui** Fix issues with rich text editor in custom field ([f350ad8](https://github.com/vendure-ecommerce/vendure/commit/f350ad8))
+* **admin-ui** Fix issues with rich text editor in custom field ([aa13dcb](https://github.com/vendure-ecommerce/vendure/commit/aa13dcb))
+* **admin-ui** Fix merge error in collection detail component ([09fc5ef](https://github.com/vendure-ecommerce/vendure/commit/09fc5ef))
+* **admin-ui** Fix rich text editor when used in custom field list ([77fef28](https://github.com/vendure-ecommerce/vendure/commit/77fef28))
+* **admin-ui** Fix rich text editor when used in custom field list ([21ef048](https://github.com/vendure-ecommerce/vendure/commit/21ef048))
+* **admin-ui** Rename vdr-product-selector ([9d9275c](https://github.com/vendure-ecommerce/vendure/commit/9d9275c))
+* **core** Correctly populate Collections in channel ([58090bb](https://github.com/vendure-ecommerce/vendure/commit/58090bb))
+
+
+### BREAKING CHANGE
+
+* Explicit indexes have been added to many-to-one relations used throughout the data
+model. If you are using MySQL/MariaDB you should not notice a change from this, since they
+automatically add indexes to FK relations. Postgres, however, does not so this change will require
+a DB migration.
+* The Admin UI component `vdr-product-selector` has been renamed to
+ `vdr-product-variant-selector` to more accurately represent what it does.
+
+ If you are using `vdr-product-selector` if any ui extensions code, update it to use the
+ new selector.
+* The data structure used to represent the tree of Collections has changed,
+which will require a DB migration.
+* The internal ErrorResult classes now take all constructors arguments
+as a single input object.
+* The internal ErrorResult classes now take all constructors arguments
+as a single input object.
+
+feat(core): Update codegen errors plugin to use object inputs
+* The new `inheritFilters` property on the Collection entity will require a DB
+migration.
 ## 2.0.0-next.16 (2022-09-15)
 
 
