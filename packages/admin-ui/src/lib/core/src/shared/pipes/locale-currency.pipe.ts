@@ -30,9 +30,14 @@ export class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform 
         if (typeof value === 'number' && typeof currencyCode === 'string') {
             const activeLocale = this.getActiveLocale(locale);
             const majorUnits = value / 100;
-            return new Intl.NumberFormat(activeLocale, { style: 'currency', currency: currencyCode }).format(
-                majorUnits,
-            );
+            try {
+                return new Intl.NumberFormat(activeLocale, {
+                    style: 'currency',
+                    currency: currencyCode,
+                }).format(majorUnits);
+            } catch (e: any) {
+                return majorUnits.toFixed(2);
+            }
         }
         return value;
     }
