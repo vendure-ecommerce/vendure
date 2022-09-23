@@ -1729,6 +1729,7 @@ export class OrderService {
                     ctx,
                     variant,
                     updatedOrderLine.customFields || {},
+                    order
                 );
                 const initialListPrice =
                     updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
@@ -1738,6 +1739,7 @@ export class OrderService {
                         ctx,
                         priceResult,
                         updatedOrderLine.items,
+                        order,
                     );
                 }
                 for (const item of updatedOrderLine.items) {

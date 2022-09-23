@@ -2,6 +2,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { Order } from '../../entity/order/order.entity';
 
 /**
  * @description
@@ -25,5 +26,6 @@ export interface ChangedPriceHandlingStrategy extends InjectableStrategy {
         ctx: RequestContext,
         current: PriceCalculationResult,
         existingItems: OrderItem[],
+        order: Order,
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }
