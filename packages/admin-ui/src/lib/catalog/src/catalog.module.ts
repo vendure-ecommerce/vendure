@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { BulkActionRegistryService, SharedModule } from '@vendure/admin-ui/core';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
@@ -19,6 +19,7 @@ import { FacetListComponent } from './components/facet-list/facet-list.component
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
+import { deleteProductsBulkAction } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
@@ -58,4 +59,8 @@ const CATALOG_COMPONENTS = [
     exports: [...CATALOG_COMPONENTS],
     declarations: [...CATALOG_COMPONENTS],
 })
-export class CatalogModule {}
+export class CatalogModule {
+    constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+        bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
+    }
+}

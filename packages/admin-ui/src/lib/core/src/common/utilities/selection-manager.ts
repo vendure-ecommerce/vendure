@@ -67,6 +67,9 @@ export class SelectionManager<T> {
     }
 
     areAllCurrentItemsSelected(): boolean {
+        if (!this.items || this.items.length === 0) {
+            return false;
+        }
         return this.items.every(a => this._selection.find(b => this.options.itemsAreEqual(a, b)));
     }
 
@@ -76,6 +79,7 @@ export class SelectionManager<T> {
                 a => !this.items.find(b => this.options.itemsAreEqual(a, b)),
             );
         } else {
+            this._selection = this._selection.slice(0);
             for (const item of this.items) {
                 if (!this._selection.find(a => this.options.itemsAreEqual(a, item))) {
                     this._selection.push(item);

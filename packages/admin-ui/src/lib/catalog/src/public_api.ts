@@ -18,6 +18,7 @@ export * from './components/facet-list/facet-list.component';
 export * from './components/generate-product-variants/generate-product-variants.component';
 export * from './components/option-value-input/option-value-input.component';
 export * from './components/product-detail/product-detail.component';
+export * from './components/product-list/product-list-bulk-actions';
 export * from './components/product-list/product-list.component';
 export * from './components/product-options-editor/product-options-editor.component';
 export * from './components/product-variants-editor/product-variants-editor.component';

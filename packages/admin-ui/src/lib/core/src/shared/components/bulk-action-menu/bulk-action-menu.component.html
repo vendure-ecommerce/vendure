@@ -1,0 +1,17 @@
+<vdr-dropdown *ngIf="actions.length">
+    <button class="btn btn-sm btn-outline" vdrDropdownTrigger [disabled]="!(selection?.length)">
+        <clr-icon shape="file-group"></clr-icon>
+        {{ 'common.with-selected' | translate }}
+    </button>
+    <vdr-dropdown-menu vdrPosition="bottom-left">
+        <button
+            *ngFor="let action of actions"
+            type="button"
+            vdrDropdownItem
+            (click)="actionClick($event, action)"
+        >
+            <clr-icon *ngIf="action.icon" [attr.shape]="action.icon" [ngClass]="action.iconClass || ''"></clr-icon>
+            {{ action.label | translate }}
+        </button>
+    </vdr-dropdown-menu>
+</vdr-dropdown>

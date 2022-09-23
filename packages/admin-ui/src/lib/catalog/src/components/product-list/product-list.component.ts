@@ -13,20 +13,11 @@ import {
     ProductSearchInputComponent,
     SearchInput,
     SearchProducts,
+    SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { EMPTY, Observable, of } from 'rxjs';
-import {
-    delay,
-    distinctUntilChanged,
-    map,
-    shareReplay,
-    switchMap,
-    take,
-    takeUntil,
-    tap,
-    withLatestFrom,
-} from 'rxjs/operators';
+import { EMPTY, Observable } from 'rxjs';
+import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-products-list',
@@ -45,9 +36,11 @@ export class ProductListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
+    selectionManager: SelectionManager<SearchProducts.Items>;
 
     @ViewChild('productSearchInputComponent', { static: true })
     private productSearchInput: ProductSearchInputComponent;
+
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
@@ -93,6 +86,12 @@ export class ProductListComponent
                 } as SearchInput,
             }),
         );
+        this.selectionManager = new SelectionManager<SearchProducts.Items>({
+            multiSelect: true,
+            itemsAreEqual: (a, b) =>
+                this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
+            additiveMode: true,
+        });
     }
 
     ngOnInit() {
@@ -115,6 +114,10 @@ export class ProductListComponent
             .getPendingSearchIndexUpdates()
             .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
             .subscribe(value => (this.pendingSearchIndexUpdates = value));
+
+        this.items$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(items => this.selectionManager.setCurrentItems(items));
     }
 
     ngAfterViewInit() {
@@ -195,4 +198,20 @@ export class ProductListComponent
     setLanguage(code: LanguageCode) {
         this.dataService.client.setContentLanguage(code).subscribe();
     }
+
+    areAllSelected(): boolean {
+        return this.selectionManager.areAllCurrentItemsSelected();
+    }
+
+    toggleSelectAll() {
+        this.selectionManager.toggleSelectAll();
+    }
+
+    toggleSelectMember({ event, item }: { event: MouseEvent; item: SearchProducts.Items }) {
+        this.selectionManager.toggleSelection(item, event);
+    }
+
+    isMemberSelected = (product: SearchProducts.Items): boolean => {
+        return this.selectionManager.isSelected(product);
+    };
 }
