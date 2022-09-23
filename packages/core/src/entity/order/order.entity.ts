@@ -167,7 +167,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     get discounts(): Discount[] {
         this.throwIfLinesNotJoined('discounts');
         const groupedAdjustments = new Map<string, Discount>();
-        for (const line of this.lines) {
+        for (const line of this.lines ?? []) {
             for (const discount of line.discounts) {
                 const adjustment = groupedAdjustments.get(discount.adjustmentSource);
                 if (adjustment) {
@@ -178,7 +178,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
                 }
             }
         }
-        for (const shippingLine of this.shippingLines) {
+        for (const shippingLine of this.shippingLines ?? []) {
             for (const discount of shippingLine.discounts) {
                 const adjustment = groupedAdjustments.get(discount.adjustmentSource);
                 if (adjustment) {
@@ -276,7 +276,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
             { rate: number; base: number; tax: number; description: string }
         >();
         const taxId = (taxLine: TaxLine): string => `${taxLine.description}:${taxLine.taxRate}`;
-        const taxableLines = [...this.lines, ...this.shippingLines];
+        const taxableLines = [...(this.lines ?? []), ...(this.shippingLines ?? [])];
         for (const line of taxableLines) {
             const taxRateTotal = summate(line.taxLines, 'taxRate');
             for (const taxLine of line.taxLines) {
