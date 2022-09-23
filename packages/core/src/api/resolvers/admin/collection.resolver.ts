@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ConfigurableOperationDefinition,
-    DeletionResponse,
+    DeletionResponse, MutationAssignCollectionsToChannelArgs,
     MutationCreateCollectionArgs,
     MutationDeleteCollectionArgs,
-    MutationMoveCollectionArgs,
+    MutationMoveCollectionArgs, MutationRemoveCollectionsFromChannelArgs,
     MutationUpdateCollectionArgs,
     Permission,
     QueryCollectionArgs,
@@ -150,4 +150,24 @@ export class CollectionResolver {
         }
         return collection;
     };
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateCatalog, Permission.CreateCollection)
+    async assignCollectionsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignCollectionsToChannelArgs,
+    ): Promise<Array<Translated<Collection>>> {
+        return await this.collectionService.assignCollectionsToChannel(ctx,args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteCollection)
+    async removeCollectionsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveCollectionsFromChannelArgs,
+    ): Promise<Array<Translated<Collection>>> {
+        return await this.collectionService.removeCollectionsFromChannel(ctx, args.input);
+    }
 }
