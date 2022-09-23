@@ -158,7 +158,7 @@ export class FacetResolver {
     async removeFacetsFromChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveFacetsFromChannelArgs,
-    ): Promise<Facet[]> {
+    ): Promise<DeletionResponse[]> {
         return await this.facetService.removeFacetsFromChannel(ctx, args.input);
     }
 }

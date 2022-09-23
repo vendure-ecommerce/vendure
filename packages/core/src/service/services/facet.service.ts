@@ -50,7 +50,8 @@ export class FacetService {
         private eventBus: EventBus,
         private translator: TranslatorService,
         private roleService: RoleService,
-    ) {}
+    ) {
+    }
 
     findAll(
         ctx: RequestContext,
@@ -105,12 +106,12 @@ export class FacetService {
         const [repository, facetCode, languageCode] =
             ctxOrFacetCode instanceof RequestContext
                 ? // tslint:disable-next-line:no-non-null-assertion
-                  [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
+                [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
                 : [
-                      this.connection.rawConnection.getRepository(Facet),
-                      ctxOrFacetCode,
-                      facetCodeOrLang as LanguageCode,
-                  ];
+                    this.connection.rawConnection.getRepository(Facet),
+                    ctxOrFacetCode,
+                    facetCodeOrLang as LanguageCode,
+                ];
 
         // ToDo Implement usage of channelLanguageCode
         return repository
@@ -290,7 +291,7 @@ export class FacetService {
     async removeFacetsFromChannel(
         ctx: RequestContext,
         input: RemoveFacetsFromChannelInput,
-    ): Promise<Array<Translated<Facet>>> {
+    ): Promise<DeletionResponse[]> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
             ctx,
             input.channelId,
@@ -307,21 +308,47 @@ export class FacetService {
             .getRepository(ctx, Facet)
             .findByIds(input.facetIds);
 
-        await Promise.all(
-            facets.map(async facet => {
-                await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
-                return this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'removed'));
-            }),
-        );
+        const results: DeletionResponse[] = [];
 
-        return this.connection.findByIdsInChannel(
-            ctx,
-            Facet,
-            facets.map(f => f.id),
-            defaultChannel.id,
-            {},
-        ).then(fcts =>
-            fcts.map(facet => translateDeep(facet, ctx.languageCode)),
-        );
+        for (const facet of facets) {
+            let productCount = 0;
+            let variantCount = 0;
+            if (facet.values.length) {
+                const counts = await this.facetValueService.checkFacetValueUsage(
+                    ctx,
+                    facet.values.map(fv => fv.id),
+                );
+                productCount = counts.productCount;
+                variantCount = counts.variantCount;
+
+                const isInUse = !!(productCount || variantCount);
+                const both = !!(productCount && variantCount) ? 'both' : 'single';
+                const i18nVars = { products: productCount, variants: variantCount, both };
+                let message = '';
+                let result: DeletionResult;
+
+                if (!isInUse) {
+                    await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
+                    await this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'removed'));
+                    result = DeletionResult.DELETED;
+                } else if (input.force === undefined ? false : input.force) {
+                    await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
+                    await this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'removed'));
+                    message = ctx.translate('message.facet-force-remove-from-channel', i18nVars);
+                    result = DeletionResult.DELETED;
+                } else {
+                    message = ctx.translate('message.facet-used-in-channel', i18nVars);
+                    result = DeletionResult.NOT_DELETED;
+                }
+
+                results.push({
+                    result,
+                    message,
+                });
+            }
+
+        }
+
+        return results;
     }
 }

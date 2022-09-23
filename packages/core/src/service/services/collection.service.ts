@@ -10,7 +10,7 @@ import {
     Permission,
     PreviewCollectionVariantsInput,
     RemoveCollectionsFromChannelInput,
-    UpdateCollectionInput
+    UpdateCollectionInput,
 } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
@@ -83,7 +83,8 @@ export class CollectionService implements OnModuleInit {
         private customFieldRelationService: CustomFieldRelationService,
         private translator: TranslatorService,
         private roleService: RoleService,
-    ) {}
+    ) {
+    }
 
     /**
      * @internal
@@ -744,6 +745,13 @@ export class CollectionService implements OnModuleInit {
             }),
         );
 
+
+        await this.applyFiltersQueue.add({
+            ctx: ctx.serialize(),
+            collectionIds: collections.map(collection => collection.id),
+        });
+
+
         return this.connection.findByIdsInChannel(
             ctx,
             Collection,
@@ -781,7 +789,9 @@ export class CollectionService implements OnModuleInit {
 
         await Promise.all(
             collections.map(async collection => {
+                const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
                 await this.channelService.removeFromChannels(ctx, Collection, collection.id, [input.channelId]);
+                this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
                 return this.eventBus.publish(new CollectionChannelEvent(ctx, collection, input.channelId, 'removed'));
             }),
         );

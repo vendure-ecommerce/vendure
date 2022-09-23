@@ -2479,7 +2479,7 @@ export type Mutation = {
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
   /** Removes Facets from the specified Channel */
-  removeFacetsFromChannel: Array<Facet>;
+  removeFacetsFromChannel: Array<DeletionResponse>;
   /** Remove members from a Zone */
   removeMembersFromZone: Zone;
   /** Remove an OptionGroup from a Product */
@@ -4597,6 +4597,7 @@ export type RemoveCollectionsFromChannelInput = {
 export type RemoveFacetsFromChannelInput = {
   facetIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
 };
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;

@@ -2415,7 +2415,7 @@ export type Mutation = {
   /** Assigns Facets to the specified Channel */
   assignFacetsToChannel: Array<Facet>;
   /** Removes Facets from the specified Channel */
-  removeFacetsFromChannel: Array<Facet>;
+  removeFacetsFromChannel: Array<DeletionResponse>;
   updateGlobalSettings: UpdateGlobalSettingsResult;
   importProducts?: Maybe<ImportInfo>;
   /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
@@ -4529,6 +4529,7 @@ export type RemoveCollectionsFromChannelInput = {
 export type RemoveFacetsFromChannelInput = {
   facetIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
 };
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
