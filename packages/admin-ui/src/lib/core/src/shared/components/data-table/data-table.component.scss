@@ -5,6 +5,10 @@
     overflow: auto;
 }
 
+table.no-select {
+    user-select: none;
+}
+
 thead th {
     position: sticky;
     top: 24px;
@@ -13,6 +17,10 @@ thead th {
     &.expand {
         width: 100%;
     }
+}
+
+.selection-col {
+    width: 24px;
 }
 
 .table-footer {

@@ -1,5 +1,5 @@
 <ng-container *ngIf="!items || (items && items.length); else emptyPlaceholder">
-    <table class="table">
+    <table class="table" [class.no-select]="disableSelect">
         <thead>
             <tr>
                 <th *ngIf="isRowSelectedFn" class="align-middle">
@@ -29,12 +29,12 @@
                     trackBy: trackByFn
                 "
             >
-                <td *ngIf="isRowSelectedFn" class="align-middle">
+                <td *ngIf="isRowSelectedFn" class="align-middle selection-col">
                     <input
                         type="checkbox"
                         clrCheckbox
                         [checked]="isRowSelectedFn(item)"
-                        (change)="rowSelectChange.emit(item)"
+                        (click)="rowSelectChange.emit({ event: $event, item })"
                     />
                 </td>
                 <ng-container

@@ -66,6 +66,24 @@ export class SelectionManager<T> {
         return !!this._selection.find(a => this.options.itemsAreEqual(a, item));
     }
 
+    areAllCurrentItemsSelected(): boolean {
+        return this.items.every(a => this._selection.find(b => this.options.itemsAreEqual(a, b)));
+    }
+
+    toggleSelectAll() {
+        if (this.areAllCurrentItemsSelected()) {
+            this._selection = this._selection.filter(
+                a => !this.items.find(b => this.options.itemsAreEqual(a, b)),
+            );
+        } else {
+            for (const item of this.items) {
+                if (!this._selection.find(a => this.options.itemsAreEqual(a, item))) {
+                    this._selection.push(item);
+                }
+            }
+        }
+    }
+
     lastSelected(): T {
         return this._selection[this._selection.length - 1];
     }

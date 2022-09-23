@@ -1,12 +1,17 @@
 import {
     AfterContentInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ContentChildren,
     EventEmitter,
-    Input, OnChanges,
+    Input,
+    OnChanges,
+    OnDestroy,
+    OnInit,
     Output,
-    QueryList, SimpleChanges,
+    QueryList,
+    SimpleChanges,
     TemplateRef,
 } from '@angular/core';
 import { PaginationService } from 'ngx-pagination';
@@ -79,7 +84,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
 })
-export class DataTableComponent<T> implements AfterContentInit, OnChanges {
+export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
@@ -88,7 +93,7 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges {
     @Input() isRowSelectedFn: (item: T) => boolean;
     @Input() emptyStateLabel: string;
     @Output() allSelectChange = new EventEmitter<void>();
-    @Output() rowSelectChange = new EventEmitter<T>();
+    @Output() rowSelectChange = new EventEmitter<{ event: MouseEvent; item: T }>();
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
     @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
@@ -96,6 +101,39 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges {
     rowTemplate: TemplateRef<any>;
     currentStart: number;
     currentEnd: number;
+    // This is used to apply a `user-select: none` CSS rule to the table,
+    // which allows shift-click multi-row selection
+    disableSelect = false;
+
+    constructor(private changeDetectorRef: ChangeDetectorRef) {}
+
+    private shiftDownHandler = (event: KeyboardEvent) => {
+        if (event.shiftKey && !this.disableSelect) {
+            this.disableSelect = true;
+            this.changeDetectorRef.markForCheck();
+        }
+    };
+
+    private shiftUpHandler = (event: KeyboardEvent) => {
+        if (this.disableSelect) {
+            this.disableSelect = false;
+            this.changeDetectorRef.markForCheck();
+        }
+    };
+
+    ngOnInit() {
+        if (typeof this.isRowSelectedFn === 'function') {
+            document.addEventListener('keydown', this.shiftDownHandler, { passive: true });
+            document.addEventListener('keyup', this.shiftUpHandler, { passive: true });
+        }
+    }
+
+    ngOnDestroy() {
+        if (typeof this.isRowSelectedFn === 'function') {
+            document.removeEventListener('keydown', this.shiftDownHandler);
+            document.removeEventListener('keyup', this.shiftUpHandler);
+        }
+    }
 
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
