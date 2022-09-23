@@ -56,3 +56,5 @@ export * from './events/tax-rate-event';
 export * from './events/tax-rate-modification-event';
 export * from './events/zone-event';
 export * from './events/zone-members-event';
+export * from './events/facet-channel-event';
+export * from './events/collection-channel-event';

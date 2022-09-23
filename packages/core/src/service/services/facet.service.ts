@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AssignFacetsToChannelInput,
     CreateFacetInput,
     DeletionResponse,
     DeletionResult,
-    LanguageCode,
+    LanguageCode, Permission, RemoveFacetsFromChannelInput,
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
+import { ForbiddenError, UserInputError } from '../../common';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -17,7 +19,7 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { EventBus } from '../../event-bus';
+import { EventBus, FacetChannelEvent } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -27,6 +29,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+import { RoleService } from './role.service';
 
 /**
  * @description
@@ -46,6 +49,7 @@ export class FacetService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private roleService: RoleService,
     ) {}
 
     findAll(
@@ -239,5 +243,85 @@ export class FacetService {
         } while (conflict);
 
         return candidate;
+    }
+
+    /**
+     * @description
+     * Assigns a Facets to the specified Channel
+     */
+    async assignFacetsToChannel(
+        ctx: RequestContext,
+        input: AssignFacetsToChannelInput,
+    ): Promise<Array<Translated<Facet>>> {
+        const hasPermission = await this.roleService.userHasPermissionOnChannel(
+            ctx,
+            input.channelId,
+            Permission.UpdateCatalog,
+        );
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const facets = await this.connection
+            .getRepository(ctx, Facet)
+            .findByIds(input.facetIds);
+
+        await Promise.all(
+            facets.map(async facet => {
+                await this.channelService.assignToChannels(ctx, Facet, facet.id, [input.channelId]);
+                return this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'assigned'));
+            }),
+        );
+
+        return this.connection.findByIdsInChannel(
+            ctx,
+            Facet,
+            facets.map(f => f.id),
+            ctx.channelId,
+            {},
+        ).then(fcts =>
+            fcts.map(facet => translateDeep(facet, ctx.languageCode)),
+        );
+    }
+
+    /**
+     * @description
+     * Remove a Facets from the specified Channel
+     */
+    async removeFacetsFromChannel(
+        ctx: RequestContext,
+        input: RemoveFacetsFromChannelInput,
+    ): Promise<Array<Translated<Facet>>> {
+        const hasPermission = await this.roleService.userHasPermissionOnChannel(
+            ctx,
+            input.channelId,
+            Permission.UpdateCatalog,
+        );
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.facets-cannot-be-removed-from-default-channel');
+        }
+        const facets = await this.connection
+            .getRepository(ctx, Facet)
+            .findByIds(input.facetIds);
+
+        await Promise.all(
+            facets.map(async facet => {
+                await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
+                return this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'removed'));
+            }),
+        );
+
+        return this.connection.findByIdsInChannel(
+            ctx,
+            Facet,
+            facets.map(f => f.id),
+            defaultChannel.id,
+            {},
+        ).then(fcts =>
+            fcts.map(facet => translateDeep(facet, ctx.languageCode)),
+        );
     }
 }

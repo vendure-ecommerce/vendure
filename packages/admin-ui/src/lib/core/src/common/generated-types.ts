@@ -233,6 +233,16 @@ export type AssignAssetsToChannelInput = {
   channelId: Scalars['ID'];
 };
 
+export type AssignCollectionsToChannelInput = {
+  collectionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type AssignFacetsToChannelInput = {
+  facetIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
 export type AssignProductVariantsToChannelInput = {
   productVariantIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
@@ -2345,6 +2355,10 @@ export type Mutation = {
   addOptionGroupToProduct: Product;
   /** Assign assets to channel */
   assignAssetsToChannel: Array<Asset>;
+  /** Assigns Collections to the specified Channel */
+  assignCollectionsToChannel: Array<Collection>;
+  /** Assigns Facets to the specified Channel */
+  assignFacetsToChannel: Array<Facet>;
   /** Assigns ProductVariants to the specified Channel */
   assignProductVariantsToChannel: Array<ProductVariant>;
   /** Assigns all ProductVariants of Product to the specified Channel */
@@ -2460,8 +2474,12 @@ export type Mutation = {
   moveCollection: Collection;
   refundOrder: RefundOrderResult;
   reindex: Job;
+  /** Removes Collections from the specified Channel */
+  removeCollectionsFromChannel: Array<Collection>;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
+  /** Removes Facets from the specified Channel */
+  removeFacetsFromChannel: Array<Facet>;
   /** Remove members from a Zone */
   removeMembersFromZone: Zone;
   /** Remove an OptionGroup from a Product */
@@ -2583,6 +2601,16 @@ export type MutationAddOptionGroupToProductArgs = {
 
 export type MutationAssignAssetsToChannelArgs = {
   input: AssignAssetsToChannelInput;
+};
+
+
+export type MutationAssignCollectionsToChannelArgs = {
+  input: AssignCollectionsToChannelInput;
+};
+
+
+export type MutationAssignFacetsToChannelArgs = {
+  input: AssignFacetsToChannelInput;
 };
 
 
@@ -2895,9 +2923,19 @@ export type MutationRefundOrderArgs = {
 };
 
 
+export type MutationRemoveCollectionsFromChannelArgs = {
+  input: RemoveCollectionsFromChannelInput;
+};
+
+
 export type MutationRemoveCustomersFromGroupArgs = {
   customerGroupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationRemoveFacetsFromChannelArgs = {
+  input: RemoveFacetsFromChannelInput;
 };
 
 
@@ -4549,6 +4587,16 @@ export type Release = Node & StockMovement & {
   type: StockMovementType;
   quantity: Scalars['Int'];
   orderItem: OrderItem;
+};
+
+export type RemoveCollectionsFromChannelInput = {
+  collectionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type RemoveFacetsFromChannelInput = {
+  facetIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
 };
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
