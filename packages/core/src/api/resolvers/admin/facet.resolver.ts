@@ -1,19 +1,23 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
+    MutationAssignFacetsToChannelArgs,
     MutationCreateFacetArgs,
     MutationCreateFacetValuesArgs,
     MutationDeleteFacetArgs,
     MutationDeleteFacetValuesArgs,
+    MutationRemoveFacetsFromChannelArgs,
     MutationUpdateFacetArgs,
     MutationUpdateFacetValuesArgs,
     Permission,
     QueryFacetArgs,
     QueryFacetsArgs,
+    RemoveFacetFromChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { EntityNotFoundError } from '../../../common/error/errors';
+import { ErrorResultUnion } from '../../../common/index';
 import { Translated } from '../../../common/types/locale-types';
 import { ConfigService } from '../../../config/config.service';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
@@ -133,11 +137,30 @@ export class FacetResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteFacetValuesArgs,
     ): Promise<DeletionResponse[]> {
-        // return Promise.all(args.ids.map(id => this.facetValueService.delete(ctx, id, args.force || false)));
         const results: DeletionResponse[] = [];
         for (const id of args.ids) {
             results.push(await this.facetValueService.delete(ctx, id, args.force || false));
         }
         return results;
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateCatalog, Permission.CreateFacet)
+    async assignFacetsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignFacetsToChannelArgs,
+    ): Promise<Facet[]> {
+        return await this.facetService.assignFacetsToChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteFacet)
+    async removeFacetsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveFacetsFromChannelArgs,
+    ): Promise<Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>>> {
+        return await this.facetService.removeFacetsFromChannel(ctx, args.input);
     }
 }

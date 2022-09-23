@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AssignFacetsToChannelInput,
     CreateFacetInput,
     DeletionResponse,
     DeletionResult,
     LanguageCode,
+    Permission,
+    RemoveFacetFromChannelResult,
+    RemoveFacetsFromChannelInput,
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
+import { ErrorResultUnion, FacetInUseError, ForbiddenError, UserInputError } from '../../common';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -27,6 +32,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+import { RoleService } from './role.service';
 
 /**
  * @description
@@ -46,6 +52,7 @@ export class FacetService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private roleService: RoleService,
     ) {}
 
     findAll(
@@ -239,5 +246,99 @@ export class FacetService {
         } while (conflict);
 
         return candidate;
+    }
+
+    /**
+     * @description
+     * Assigns Facets to the specified Channel
+     */
+    async assignFacetsToChannel(
+        ctx: RequestContext,
+        input: AssignFacetsToChannelInput,
+    ): Promise<Array<Translated<Facet>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.UpdateFacet,
+            Permission.UpdateCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const facetsToAssign = await this.connection.getRepository(ctx, Facet).findByIds(input.facetIds);
+
+        await Promise.all(
+            facetsToAssign.map(async facet => {
+                return this.channelService.assignToChannels(ctx, Facet, facet.id, [input.channelId]);
+            }),
+        );
+
+        return this.connection
+            .findByIdsInChannel(
+                ctx,
+                Facet,
+                facetsToAssign.map(f => f.id),
+                ctx.channelId,
+                {},
+            )
+            .then(facets => facets.map(facet => translateDeep(facet, ctx.languageCode)));
+    }
+
+    /**
+     * @description
+     * Remove Facets from the specified Channel
+     */
+    async removeFacetsFromChannel(
+        ctx: RequestContext,
+        input: RemoveFacetsFromChannelInput,
+    ): Promise<Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.DeleteFacet,
+            Permission.DeleteCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.facets-cannot-be-removed-from-default-channel');
+        }
+        const facets = await this.connection.getRepository(ctx, Facet).findByIds(input.facetIds);
+
+        const results: Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>> = [];
+
+        for (const facet of facets) {
+            let productCount = 0;
+            let variantCount = 0;
+            if (facet.values.length) {
+                const counts = await this.facetValueService.checkFacetValueUsage(
+                    ctx,
+                    facet.values.map(fv => fv.id),
+                );
+                productCount = counts.productCount;
+                variantCount = counts.variantCount;
+
+                const isInUse = !!(productCount || variantCount);
+                const both = !!(productCount && variantCount) ? 'both' : 'single';
+                const i18nVars = { products: productCount, variants: variantCount, both };
+                let result: Translated<Facet> | undefined;
+
+                if (!isInUse) {
+                    await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
+                    result = await this.findOne(ctx, facet.id);
+                    if (result) {
+                        results.push(result);
+                    }
+                } else if (input?.force) {
+                    await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
+                    result = await this.findOne(ctx, facet.id);
+                    if (result) {
+                        results.push(result);
+                    }
+                } else {
+                    results.push(new FacetInUseError(productCount, variantCount));
+                }
+            }
+        }
+
+        return results;
     }
 }
