@@ -84,6 +84,7 @@
       "CreateFulfillmentError",
       "EmailAddressConflictError",
       "EmptyOrderLineSelectionError",
+      "FacetInUseError",
       "FulfillmentStateTransitionError",
       "InsufficientStockError",
       "InsufficientStockOnHandError",
@@ -202,6 +203,10 @@
       "RefundOrderStateError",
       "AlreadyRefundedError",
       "RefundStateTransitionError"
+    ],
+    "RemoveFacetFromChannelResult": [
+      "Facet",
+      "FacetInUseError"
     ],
     "RemoveOptionGroupFromProductResult": [
       "Product",

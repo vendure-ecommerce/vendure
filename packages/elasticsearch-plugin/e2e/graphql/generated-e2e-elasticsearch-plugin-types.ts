@@ -1382,6 +1382,7 @@ export enum ErrorCode {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
   LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
+  FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
   CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
   CANCEL_PAYMENT_ERROR = 'CANCEL_PAYMENT_ERROR',
@@ -1445,6 +1446,13 @@ export type FacetFilterParameter = {
   languageCode?: Maybe<StringOperators>;
   name?: Maybe<StringOperators>;
   code?: Maybe<StringOperators>;
+};
+
+export type FacetInUseError = ErrorResult & {
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  productCount: Scalars['Int'];
+  variantCount: Scalars['Int'];
 };
 
 export type FacetList = PaginatedList & {
@@ -2339,7 +2347,7 @@ export type Mutation = {
   /** Assigns Facets to the specified Channel */
   assignFacetsToChannel: Array<Facet>;
   /** Removes Facets from the specified Channel */
-  removeFacetsFromChannel: Array<DeletionResponse>;
+  removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
   updateGlobalSettings: UpdateGlobalSettingsResult;
   importProducts?: Maybe<ImportInfo>;
   /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
@@ -4404,6 +4412,8 @@ export type RemoveCollectionsFromChannelInput = {
   collectionIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
 };
+
+export type RemoveFacetFromChannelResult = Facet | FacetInUseError;
 
 export type RemoveFacetsFromChannelInput = {
   facetIds: Array<Scalars['ID']>;

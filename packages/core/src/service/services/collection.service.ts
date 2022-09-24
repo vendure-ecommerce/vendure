@@ -30,7 +30,6 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { CollectionChannelEvent } from '../../event-bus';
 import { EventBus } from '../../event-bus/event-bus';
 import { CollectionEvent } from '../../event-bus/events/collection-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
@@ -720,7 +719,7 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * @description
-     * Assigns a Collections to the specified Channel
+     * Assigns Collections to the specified Channel
      */
     async assignCollectionsToChannel(
         ctx: RequestContext,
@@ -729,7 +728,7 @@ export class CollectionService implements OnModuleInit {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
             ctx,
             input.channelId,
-            Permission.UpdateCatalog,
+            Permission.UpdateCollection,
         );
         if (!hasPermission) {
             throw new ForbiddenError();
@@ -740,8 +739,7 @@ export class CollectionService implements OnModuleInit {
 
         await Promise.all(
             collections.map(async collection => {
-                await this.channelService.assignToChannels(ctx, Collection, collection.id, [input.channelId]);
-                return this.eventBus.publish(new CollectionChannelEvent(ctx, collection, input.channelId, 'assigned'));
+                return this.channelService.assignToChannels(ctx, Collection, collection.id, [input.channelId]);
             }),
         );
 
@@ -765,7 +763,7 @@ export class CollectionService implements OnModuleInit {
 
     /**
      * @description
-     * Remove a Collections from the specified Channel
+     * Remove Collections from the specified Channel
      */
     async removeCollectionsFromChannel(
         ctx: RequestContext,
@@ -774,7 +772,7 @@ export class CollectionService implements OnModuleInit {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
             ctx,
             input.channelId,
-            Permission.UpdateCatalog,
+            Permission.DeleteCollection,
         );
         if (!hasPermission) {
             throw new ForbiddenError();
@@ -783,27 +781,25 @@ export class CollectionService implements OnModuleInit {
         if (idsAreEqual(input.channelId, defaultChannel.id)) {
             throw new UserInputError('error.collections-cannot-be-removed-from-default-channel');
         }
-        const collections = await this.connection
+        const collectionsToAssign = await this.connection
             .getRepository(ctx, Collection)
             .findByIds(input.collectionIds);
 
-        await Promise.all(
-            collections.map(async collection => {
-                const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
-                await this.channelService.removeFromChannels(ctx, Collection, collection.id, [input.channelId]);
-                this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
-                return this.eventBus.publish(new CollectionChannelEvent(ctx, collection, input.channelId, 'removed'));
-            }),
-        );
+
+        collectionsToAssign.map(async collection => {
+            const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
+            await this.channelService.removeFromChannels(ctx, Collection, collection.id, [input.channelId]);
+            this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+        });
 
         return this.connection.findByIdsInChannel(
             ctx,
             Collection,
-            collections.map(f => f.id),
-            defaultChannel.id,
+            collectionsToAssign.map(f => f.id),
+            ctx.channelId,
             {},
-        ).then(clcs =>
-            clcs.map(collection => this.translator.translate(collection, ctx)),
+        ).then(collections =>
+            collections.map(collection => this.translator.translate(collection, ctx)),
         );
     }
 }

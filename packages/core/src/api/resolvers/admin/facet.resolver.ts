@@ -10,6 +10,7 @@ import {
     Permission,
     QueryFacetArgs,
     QueryFacetsArgs,
+    RemoveFacetFromChannelResult
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -25,6 +26,7 @@ import { Allow } from '../../decorators/allow.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
+import { Collection } from '../../../entity';
 
 @Resolver('Facet')
 export class FacetResolver {
@@ -158,7 +160,8 @@ export class FacetResolver {
     async removeFacetsFromChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveFacetsFromChannelArgs,
-    ): Promise<DeletionResponse[]> {
+    ): Promise<RemoveFacetFromChannelResult[]> {
         return await this.facetService.removeFacetsFromChannel(ctx, args.input);
     }
 }
+

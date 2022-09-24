@@ -4,8 +4,8 @@ import {
     CreateFacetInput,
     DeletionResponse,
     DeletionResult,
-    LanguageCode, Permission, RemoveFacetsFromChannelInput,
-    UpdateFacetInput,
+    FacetInUseError, LanguageCode, Permission,
+    RemoveFacetFromChannelResult, RemoveFacetsFromChannelInput, UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -19,7 +19,7 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { EventBus, FacetChannelEvent } from '../../event-bus';
+import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -248,7 +248,7 @@ export class FacetService {
 
     /**
      * @description
-     * Assigns a Facets to the specified Channel
+     * Assigns Facets to the specified Channel
      */
     async assignFacetsToChannel(
         ctx: RequestContext,
@@ -257,45 +257,44 @@ export class FacetService {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
             ctx,
             input.channelId,
-            Permission.UpdateCatalog,
+            Permission.UpdateFacet,
         );
         if (!hasPermission) {
             throw new ForbiddenError();
         }
-        const facets = await this.connection
+        const facetsToAssign = await this.connection
             .getRepository(ctx, Facet)
             .findByIds(input.facetIds);
 
         await Promise.all(
-            facets.map(async facet => {
-                await this.channelService.assignToChannels(ctx, Facet, facet.id, [input.channelId]);
-                return this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'assigned'));
+            facetsToAssign.map(async facet => {
+                return this.channelService.assignToChannels(ctx, Facet, facet.id, [input.channelId]);
             }),
         );
 
         return this.connection.findByIdsInChannel(
             ctx,
             Facet,
-            facets.map(f => f.id),
+            facetsToAssign.map(f => f.id),
             ctx.channelId,
             {},
-        ).then(fcts =>
-            fcts.map(facet => translateDeep(facet, ctx.languageCode)),
+        ).then(facets =>
+            facets.map(facet => translateDeep(facet, ctx.languageCode)),
         );
     }
 
     /**
      * @description
-     * Remove a Facets from the specified Channel
+     * Remove Facets from the specified Channel
      */
     async removeFacetsFromChannel(
         ctx: RequestContext,
         input: RemoveFacetsFromChannelInput,
-    ): Promise<DeletionResponse[]> {
+    ): Promise<RemoveFacetFromChannelResult[]> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
             ctx,
             input.channelId,
-            Permission.UpdateCatalog,
+            Permission.DeleteFacet,
         );
         if (!hasPermission) {
             throw new ForbiddenError();
@@ -308,7 +307,7 @@ export class FacetService {
             .getRepository(ctx, Facet)
             .findByIds(input.facetIds);
 
-        const results: DeletionResponse[] = [];
+        const results: RemoveFacetFromChannelResult[] = [];
 
         for (const facet of facets) {
             let productCount = 0;
@@ -324,27 +323,28 @@ export class FacetService {
                 const isInUse = !!(productCount || variantCount);
                 const both = !!(productCount && variantCount) ? 'both' : 'single';
                 const i18nVars = { products: productCount, variants: variantCount, both };
-                let message = '';
-                let result: DeletionResult;
+                let result: Translated<Facet> | undefined;
 
                 if (!isInUse) {
                     await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
-                    await this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'removed'));
-                    result = DeletionResult.DELETED;
-                } else if (input.force === undefined ? false : input.force) {
+                    result = await this.findOne(ctx, facet.id);
+                    if (result) {
+                        results.push(result);
+                    }
+                } else if (input?.force) {
                     await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
-                    await this.eventBus.publish(new FacetChannelEvent(ctx, facet, input.channelId, 'removed'));
-                    message = ctx.translate('message.facet-force-remove-from-channel', i18nVars);
-                    result = DeletionResult.DELETED;
+                    result = await this.findOne(ctx, facet.id);
+                    if (result) {
+                        results.push(result);
+                    }
                 } else {
-                    message = ctx.translate('message.facet-used-in-channel', i18nVars);
-                    result = DeletionResult.NOT_DELETED;
+                    results.push({
+                        errorCode: DeletionResult.NOT_DELETED,
+                        message: ctx.translate('message.facet-used-in-channel', i18nVars),
+                        productCount: productCount,
+                        variantCount: variantCount,
+                    });
                 }
-
-                results.push({
-                    result,
-                    message,
-                });
             }
 
         }
