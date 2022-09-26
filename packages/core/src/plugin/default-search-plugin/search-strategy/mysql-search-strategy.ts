@@ -46,7 +46,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
 
         this.applyTermAndFilters(ctx, facetValuesQb, { ...input, groupByProduct: true });
         if (!input.groupByProduct) {
-            facetValuesQb.groupBy('productVariantId');
+            facetValuesQb.groupBy('si.productVariantId');
         }
         if (enabledOnly) {
             facetValuesQb.andWhere('si.enabled = :enabled', { enabled: true });

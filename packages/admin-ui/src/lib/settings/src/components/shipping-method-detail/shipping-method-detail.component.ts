@@ -241,6 +241,8 @@ export class ShippingMethodDetailComponent
                     this.changeDetector.markForCheck();
                 },
                 err => {
+                    // tslint:disable-next-line:no-console
+                    console.error(err);
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'ShippingMethod',
                     });
