@@ -19,6 +19,9 @@ type Mutation {
     "Delete a Product"
     deleteProduct(id: ID!): DeletionResponse!
 
+    "Delete multiple Products"
+    deleteProducts(ids: [ID!]!): [DeletionResponse!]!
+
     "Add an OptionGroup to a Product"
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
 
@@ -33,6 +36,9 @@ type Mutation {
 
     "Delete a ProductVariant"
     deleteProductVariant(id: ID!): DeletionResponse!
+
+    "Delete multiple ProductVariants"
+    deleteProductVariants(ids: [ID!]!): [DeletionResponse!]!
 
     "Assigns all ProductVariants of Product to the specified Channel"
     assignProductsToChannel(input: AssignProductsToChannelInput!): [Product!]!

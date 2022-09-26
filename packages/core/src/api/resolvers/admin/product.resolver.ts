@@ -7,7 +7,9 @@ import {
     MutationCreateProductArgs,
     MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
+    MutationDeleteProductsArgs,
     MutationDeleteProductVariantArgs,
+    MutationDeleteProductVariantsArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationRemoveProductsFromChannelArgs,
     MutationRemoveProductVariantsFromChannelArgs,
@@ -136,6 +138,16 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProducts(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.productService.softDelete(ctx, id)));
+    }
+
+    @Transaction()
+    @Mutation()
     @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
     async addOptionGroupToProduct(
         @Ctx() ctx: RequestContext,
@@ -186,6 +198,16 @@ export class ProductResolver {
         @Args() args: MutationDeleteProductVariantArgs,
     ): Promise<DeletionResponse> {
         return this.productVariantService.softDelete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductVariants(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductVariantsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.productVariantService.softDelete(ctx, id)));
     }
 
     @Transaction()

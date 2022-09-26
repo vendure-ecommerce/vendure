@@ -2406,6 +2406,8 @@ export type Mutation = {
   updateProduct: Product;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
+  /** Delete multiple Products */
+  deleteProducts: Array<DeletionResponse>;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
   /** Remove an OptionGroup from a Product */
@@ -2416,6 +2418,8 @@ export type Mutation = {
   updateProductVariants: Array<Maybe<ProductVariant>>;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
+  /** Delete multiple ProductVariants */
+  deleteProductVariants: Array<DeletionResponse>;
   /** Assigns all ProductVariants of Product to the specified Channel */
   assignProductsToChannel: Array<Product>;
   /** Removes all ProductVariants of Product from the specified Channel */
@@ -2874,6 +2878,11 @@ export type MutationDeleteProductArgs = {
 };
 
 
+export type MutationDeleteProductsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationAddOptionGroupToProductArgs = {
   productId: Scalars['ID'];
   optionGroupId: Scalars['ID'];
@@ -2898,6 +2907,11 @@ export type MutationUpdateProductVariantsArgs = {
 
 export type MutationDeleteProductVariantArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteProductVariantsArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
