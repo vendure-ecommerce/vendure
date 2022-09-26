@@ -5485,6 +5485,20 @@ export type PreviewCollectionVariantsQuery = { previewCollectionVariants: (
     & { items: Array<Pick<ProductVariant, 'id' | 'name'>> }
   ) };
 
+export type AssignCollectionsToChannelMutationVariables = Exact<{
+  input: AssignCollectionsToChannelInput;
+}>;
+
+
+export type AssignCollectionsToChannelMutation = { assignCollectionsToChannel: Array<CollectionFragment> };
+
+export type RemoveCollectionsFromChannelMutationVariables = Exact<{
+  input: RemoveCollectionsFromChannelInput;
+}>;
+
+
+export type RemoveCollectionsFromChannelMutation = { removeCollectionsFromChannel: Array<CollectionFragment> };
+
 export type GetCheckersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -7565,6 +7579,18 @@ export namespace PreviewCollectionVariants {
   export type Query = PreviewCollectionVariantsQuery;
   export type PreviewCollectionVariants = (NonNullable<PreviewCollectionVariantsQuery['previewCollectionVariants']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<PreviewCollectionVariantsQuery['previewCollectionVariants']>)['items']>)[number]>;
+}
+
+export namespace AssignCollectionsToChannel {
+  export type Variables = AssignCollectionsToChannelMutationVariables;
+  export type Mutation = AssignCollectionsToChannelMutation;
+  export type AssignCollectionsToChannel = NonNullable<(NonNullable<AssignCollectionsToChannelMutation['assignCollectionsToChannel']>)[number]>;
+}
+
+export namespace RemoveCollectionsFromChannel {
+  export type Variables = RemoveCollectionsFromChannelMutationVariables;
+  export type Mutation = RemoveCollectionsFromChannelMutation;
+  export type RemoveCollectionsFromChannel = NonNullable<(NonNullable<RemoveCollectionsFromChannelMutation['removeCollectionsFromChannel']>)[number]>;
 }
 
 export namespace GetCheckers {
