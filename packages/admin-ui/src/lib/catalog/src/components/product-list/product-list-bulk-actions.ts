@@ -7,8 +7,11 @@ import {
     NotificationService,
     SearchProducts,
 } from '@vendure/admin-ui/core';
+import { unique } from '@vendure/common/lib/unique';
 import { EMPTY } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+
+import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 
 import { ProductListComponent } from './product-list.component';
 
@@ -34,7 +37,9 @@ export const deleteProductsBulkAction: BulkAction<SearchProducts.Items, ProductL
             })
             .pipe(
                 switchMap(response =>
-                    response ? dataService.product.deleteProducts(selection.map(p => p.productId)) : EMPTY,
+                    response
+                        ? dataService.product.deleteProducts(unique(selection.map(p => p.productId)))
+                        : EMPTY,
                 ),
             )
             .subscribe(result => {
@@ -58,6 +63,37 @@ export const deleteProductsBulkAction: BulkAction<SearchProducts.Items, ProductL
                 }
                 hostComponent.refresh();
                 clearSelection();
+            });
+    },
+};
+
+export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+    location: 'product-list',
+    label: _('catalog.assign-to-channel'),
+    icon: 'layers',
+    isVisible: ({ injector }) => {
+        return injector
+            .get(DataService)
+            .client.userStatus()
+            .mapSingle(({ userStatus }) => 1 < userStatus.channels.length)
+            .toPromise();
+    },
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        const dataService = injector.get(DataService);
+        const notificationService = injector.get(NotificationService);
+        modalService
+            .fromComponent(AssignProductsToChannelDialogComponent, {
+                size: 'lg',
+                locals: {
+                    productIds: unique(selection.map(p => p.productId)),
+                    currentChannelIds: [],
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    clearSelection();
+                }
             });
     },
 };

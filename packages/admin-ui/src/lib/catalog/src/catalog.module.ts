@@ -19,7 +19,10 @@ import { FacetListComponent } from './components/facet-list/facet-list.component
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
-import { deleteProductsBulkAction } from './components/product-list/product-list-bulk-actions';
+import {
+    assignProductsToChannelBulkAction,
+    deleteProductsBulkAction,
+} from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
@@ -61,6 +64,7 @@ const CATALOG_COMPONENTS = [
 })
 export class CatalogModule {
     constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+        bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
     }
 }

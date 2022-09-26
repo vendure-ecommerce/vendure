@@ -58,6 +58,7 @@ export interface NavMenuSection {
     label: string;
     items: NavMenuItem[];
     /**
+     * @description
      * Control the display of this item based on the user permissions.
      */
     requiresPermission?: string | ((userPermissions: string[]) => boolean);
