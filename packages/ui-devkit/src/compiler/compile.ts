@@ -128,15 +128,11 @@ function runWatchMode(
             const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
-            buildProcess = spawn(
-                cmd,
-                ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`, ...buildProcessArguments(args)],
-                {
-                    cwd: outputPath,
-                    shell: true,
-                    stdio: 'inherit',
-                },
-            );
+            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, ...buildProcessArguments(args)], {
+                cwd: outputPath,
+                shell: true,
+                stdio: 'inherit',
+            });
 
             buildProcess.on('close', code => {
                 if (code !== 0) {
