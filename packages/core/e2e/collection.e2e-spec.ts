@@ -10,11 +10,11 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { pick } from '../../common/lib/pick';
 import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/index';
 
-import { CHANNEL_FRAGMENT, COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
+import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
     AssignCollectionsToChannelMutation,
     AssignCollectionsToChannelMutationVariables,
@@ -36,8 +36,8 @@ import {
     GetAssetList,
     GetCollection,
     GetCollectionBreadcrumbs,
-    GetCollectionListQuery,
-    GetCollectionListQueryVariables,
+    GetCollectionListAdminQuery,
+    GetCollectionListAdminQueryVariables,
     GetCollectionNestedParents,
     GetCollectionProducts,
     GetCollections,
@@ -2126,8 +2126,8 @@ describe('Collection resolver', () => {
         it('assign to channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { collections: before } = await adminClient.query<
-                GetCollectionListQuery,
-                GetCollectionListQueryVariables
+                GetCollectionListAdminQuery,
+                GetCollectionListAdminQueryVariables
             >(GET_COLLECTION_LIST);
             expect(before.items.length).toBe(1);
             expect(before.items.map(i => i.id).includes(testCollection.id)).toBe(false);
@@ -2147,8 +2147,8 @@ describe('Collection resolver', () => {
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { collections: after } = await adminClient.query<
-                GetCollectionListQuery,
-                GetCollectionListQueryVariables
+                GetCollectionListAdminQuery,
+                GetCollectionListAdminQueryVariables
             >(GET_COLLECTION_LIST);
             expect(after.items.length).toBe(2);
             expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(true);
@@ -2170,8 +2170,8 @@ describe('Collection resolver', () => {
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { collections: after } = await adminClient.query<
-                GetCollectionListQuery,
-                GetCollectionListQueryVariables
+                GetCollectionListAdminQuery,
+                GetCollectionListAdminQueryVariables
             >(GET_COLLECTION_LIST);
             expect(after.items.length).toBe(1);
             expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(false);
@@ -2204,7 +2204,7 @@ export const GET_COLLECTION = gql`
 `;
 
 export const GET_COLLECTION_LIST = gql`
-    query GetCollectionList($options: CollectionListOptions) {
+    query GetCollectionListAdmin($options: CollectionListOptions) {
         collections(options: $options) {
             items {
                 ...Collection

@@ -5378,6 +5378,16 @@ export type GetCollectionQuery = { collection?: Maybe<(
     & CollectionFragment
   )> };
 
+export type GetCollectionListAdminQueryVariables = Exact<{
+  options?: Maybe<CollectionListOptions>;
+}>;
+
+
+export type GetCollectionListAdminQuery = { collections: (
+    Pick<CollectionList, 'totalItems'>
+    & { items: Array<CollectionFragment> }
+  ) };
+
 export type MoveCollectionMutationVariables = Exact<{
   input: MoveCollectionInput;
 }>;
@@ -5783,6 +5793,20 @@ export type UpdateFacetValuesMutationVariables = Exact<{
 
 
 export type UpdateFacetValuesMutation = { updateFacetValues: Array<FacetValueFragment> };
+
+export type AssignFacetsToChannelMutationVariables = Exact<{
+  input: AssignFacetsToChannelInput;
+}>;
+
+
+export type AssignFacetsToChannelMutation = { assignFacetsToChannel: Array<Pick<Facet, 'id' | 'name'>> };
+
+export type RemoveFacetsFromChannelMutationVariables = Exact<{
+  input: RemoveFacetsFromChannelInput;
+}>;
+
+
+export type RemoveFacetsFromChannelMutation = { removeFacetsFromChannel: Array<Pick<Facet, 'id' | 'name'> | Pick<FacetInUseError, 'errorCode' | 'message' | 'productCount' | 'variantCount'>> };
 
 export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7497,6 +7521,13 @@ export namespace GetCollection {
   export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCollectionQuery['collection']>)['productVariants']>)['items']>)[number]>;
 }
 
+export namespace GetCollectionListAdmin {
+  export type Variables = GetCollectionListAdminQueryVariables;
+  export type Query = GetCollectionListAdminQuery;
+  export type Collections = (NonNullable<GetCollectionListAdminQuery['collections']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetCollectionListAdminQuery['collections']>)['items']>)[number]>;
+}
+
 export namespace MoveCollection {
   export type Variables = MoveCollectionMutationVariables;
   export type Mutation = MoveCollectionMutation;
@@ -7845,6 +7876,20 @@ export namespace UpdateFacetValues {
   export type Variables = UpdateFacetValuesMutationVariables;
   export type Mutation = UpdateFacetValuesMutation;
   export type UpdateFacetValues = NonNullable<(NonNullable<UpdateFacetValuesMutation['updateFacetValues']>)[number]>;
+}
+
+export namespace AssignFacetsToChannel {
+  export type Variables = AssignFacetsToChannelMutationVariables;
+  export type Mutation = AssignFacetsToChannelMutation;
+  export type AssignFacetsToChannel = NonNullable<(NonNullable<AssignFacetsToChannelMutation['assignFacetsToChannel']>)[number]>;
+}
+
+export namespace RemoveFacetsFromChannel {
+  export type Variables = RemoveFacetsFromChannelMutationVariables;
+  export type Mutation = RemoveFacetsFromChannelMutation;
+  export type RemoveFacetsFromChannel = NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>;
+  export type FacetInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>, { __typename?: 'Facet' }>);
+  export type FacetInUseErrorInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>, { __typename?: 'FacetInUseError' }>);
 }
 
 export namespace GetGlobalSettings {

@@ -60,6 +60,7 @@
     "CREATE_FULFILLMENT_ERROR": "An error occurred when attempting to create the Fulfillment",
     "EMAIL_ADDRESS_CONFLICT_ERROR": "The email address is not available.",
     "EMPTY_ORDER_LINE_SELECTION_ERROR": "At least one OrderLine must be specified",
+    "FACET_IN_USE_ERROR": "The selected Facet includes FacetValues which are assigned to {productCount, plural, =0 {} one {1 Product} other {# Products}} {variantCount, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR": "Identifier change token not recognized",
     "INELIGIBLE_SHIPPING_METHOD_ERROR": "This Order is not eligible for the selected ShippingMethod",
     "INSUFFICIENT_STOCK_ERROR": "{quantityAvailable, plural, =0 {No items were} one {Only 1 item was} other {Only # items were}} added to the order due to insufficient stock",

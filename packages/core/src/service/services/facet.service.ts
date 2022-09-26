@@ -301,7 +301,9 @@ export class FacetService {
         if (idsAreEqual(input.channelId, defaultChannel.id)) {
             throw new UserInputError('error.facets-cannot-be-removed-from-default-channel');
         }
-        const facets = await this.connection.getRepository(ctx, Facet).findByIds(input.facetIds);
+        const facets = await this.connection
+            .getRepository(ctx, Facet)
+            .findByIds(input.facetIds, { relations: ['values'] });
 
         const results: Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>> = [];
 
