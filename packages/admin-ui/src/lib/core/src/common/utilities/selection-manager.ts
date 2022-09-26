@@ -62,6 +62,10 @@ export class SelectionManager<T> {
         this._selection = items;
     }
 
+    clearSelection() {
+        this._selection = [];
+    }
+
     isSelected(item: T): boolean {
         return !!this._selection.find(a => this.options.itemsAreEqual(a, item));
     }

@@ -229,6 +229,15 @@ export const DELETE_PRODUCT = gql`
     }
 `;
 
+export const DELETE_PRODUCTS = gql`
+    mutation DeleteProducts($ids: [ID!]!) {
+        deleteProducts(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const CREATE_PRODUCT_VARIANTS = gql`
     mutation CreateProductVariants($input: [CreateProductVariantInput!]!) {
         createProductVariants(input: $input) {

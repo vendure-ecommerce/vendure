@@ -2456,6 +2456,10 @@ export type Mutation = {
   deleteProductOption: DeletionResponse;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
+  /** Delete multiple ProductVariants */
+  deleteProductVariants: Array<DeletionResponse>;
+  /** Delete multiple Products */
+  deleteProducts: Array<DeletionResponse>;
   deletePromotion: DeletionResponse;
   /** Delete an existing Role */
   deleteRole: DeletionResponse;
@@ -2862,6 +2866,16 @@ export type MutationDeleteProductOptionArgs = {
 
 export type MutationDeleteProductVariantArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteProductVariantsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteProductsArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -6965,6 +6979,16 @@ export type DeleteProductMutation = { deleteProduct: (
     & Pick<DeletionResponse, 'result' | 'message'>
   ) };
 
+export type DeleteProductsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteProductsMutation = { deleteProducts: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> };
+
 export type CreateProductVariantsMutationVariables = Exact<{
   input: Array<CreateProductVariantInput> | CreateProductVariantInput;
 }>;
@@ -10031,6 +10055,12 @@ export namespace DeleteProduct {
   export type Variables = DeleteProductMutationVariables;
   export type Mutation = DeleteProductMutation;
   export type DeleteProduct = (NonNullable<DeleteProductMutation['deleteProduct']>);
+}
+
+export namespace DeleteProducts {
+  export type Variables = DeleteProductsMutationVariables;
+  export type Mutation = DeleteProductsMutation;
+  export type DeleteProducts = NonNullable<(NonNullable<DeleteProductsMutation['deleteProducts']>)[number]>;
 }
 
 export namespace CreateProductVariants {

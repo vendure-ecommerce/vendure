@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, Injector, Input, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Injector,
+    Input,
+    OnInit,
+    Output,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { BulkActionRegistryService } from '../../../providers/bulk-action-registry/bulk-action-registry.service';
@@ -13,6 +21,8 @@ import { BulkAction, BulkActionLocationId } from '../../../providers/bulk-action
 export class BulkActionMenuComponent<T = any> implements OnInit {
     @Input() locationId: BulkActionLocationId;
     @Input() selection: T[];
+    @Input() hostComponent: any;
+    @Output() clearSelection = new EventEmitter<void>();
     actions: Array<BulkAction<T>>;
 
     constructor(
@@ -31,6 +41,8 @@ export class BulkActionMenuComponent<T = any> implements OnInit {
             event,
             route: this.route,
             selection: this.selection,
+            hostComponent: this.hostComponent,
+            clearSelection: () => this.clearSelection.next(),
         });
     }
 }

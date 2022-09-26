@@ -34,8 +34,8 @@
                         >
                             <vdr-status-badge type="warning"></vdr-status-badge>
                             {{
-                            'catalog.run-pending-search-index-updates'
-                                | translate: {count: pendingSearchIndexUpdates}
+                                'catalog.run-pending-search-index-updates'
+                                    | translate: { count: pendingSearchIndexUpdates }
                             }}
                         </button>
                         <div class="dropdown-divider"></div>
@@ -53,7 +53,7 @@
         </div>
         <div class="flex wrap">
             <clr-checkbox-wrapper class="mt2">
-                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" (ngModelChange)="refresh()"/>
+                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
                 <label>{{ 'catalog.group-by-product' | translate }}</label>
             </clr-checkbox-wrapper>
             <vdr-language-selector
@@ -89,7 +89,12 @@
     (allSelectChange)="toggleSelectAll()"
 >
     <vdr-dt-column>
-        <vdr-bulk-action-menu locationId="product-list" [selection]="selectionManager.selection"></vdr-bulk-action-menu>
+        <vdr-bulk-action-menu
+            locationId="product-list"
+            [hostComponent]="this"
+            [selection]="selectionManager.selection"
+            (clearSelection)="selectionManager.clearSelection()"
+        ></vdr-bulk-action-menu>
     </vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
