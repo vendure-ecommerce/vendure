@@ -1505,6 +1505,7 @@ export type FacetInUseError = ErrorResult & {
   __typename?: 'FacetInUseError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+  facetCode: Scalars['String'];
   productCount: Scalars['Int'];
   variantCount: Scalars['Int'];
 };
@@ -6440,6 +6441,29 @@ export type GetFacetWithValuesQuery = { facet?: Maybe<(
     & FacetWithValuesFragment
   )> };
 
+export type AssignFacetsToChannelMutationVariables = Exact<{
+  input: AssignFacetsToChannelInput;
+}>;
+
+
+export type AssignFacetsToChannelMutation = { assignFacetsToChannel: Array<(
+    { __typename?: 'Facet' }
+    & Pick<Facet, 'id'>
+  )> };
+
+export type RemoveFacetsFromChannelMutationVariables = Exact<{
+  input: RemoveFacetsFromChannelInput;
+}>;
+
+
+export type RemoveFacetsFromChannelMutation = { removeFacetsFromChannel: Array<(
+    { __typename?: 'Facet' }
+    & Pick<Facet, 'id'>
+  ) | (
+    { __typename?: 'FacetInUseError' }
+    & Pick<FacetInUseError, 'errorCode' | 'message' | 'variantCount' | 'productCount'>
+  )> };
+
 export type DiscountFragment = (
   { __typename?: 'Discount' }
   & Pick<Discount, 'adjustmentSource' | 'amount' | 'amountWithTax' | 'description' | 'type'>
@@ -9927,6 +9951,20 @@ export namespace GetFacetWithValues {
   export type Variables = GetFacetWithValuesQueryVariables;
   export type Query = GetFacetWithValuesQuery;
   export type Facet = (NonNullable<GetFacetWithValuesQuery['facet']>);
+}
+
+export namespace AssignFacetsToChannel {
+  export type Variables = AssignFacetsToChannelMutationVariables;
+  export type Mutation = AssignFacetsToChannelMutation;
+  export type AssignFacetsToChannel = NonNullable<(NonNullable<AssignFacetsToChannelMutation['assignFacetsToChannel']>)[number]>;
+}
+
+export namespace RemoveFacetsFromChannel {
+  export type Variables = RemoveFacetsFromChannelMutationVariables;
+  export type Mutation = RemoveFacetsFromChannelMutation;
+  export type RemoveFacetsFromChannel = NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>;
+  export type FacetInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>, { __typename?: 'Facet' }>);
+  export type FacetInUseErrorInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>, { __typename?: 'FacetInUseError' }>);
 }
 
 export namespace Discount {

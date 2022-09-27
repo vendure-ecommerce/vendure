@@ -126,3 +126,27 @@ export const GET_FACET_WITH_VALUES = gql`
     }
     ${FACET_WITH_VALUES_FRAGMENT}
 `;
+
+export const ASSIGN_FACETS_TO_CHANNEL = gql`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+        }
+    }
+`;
+
+export const REMOVE_FACETS_FROM_CHANNEL = gql`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+            }
+            ... on FacetInUseError {
+                errorCode
+                message
+                variantCount
+                productCount
+            }
+        }
+    }
+`;

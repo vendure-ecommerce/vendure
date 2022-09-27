@@ -8,6 +8,8 @@ import { AssetDetailComponent } from './components/asset-detail/asset-detail.com
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { AssetsComponent } from './components/assets/assets.component';
 import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
+import { AssignToChannelDialogComponent } from './components/assign-to-channel-dialog/assign-to-channel-dialog.component';
+import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
@@ -15,7 +17,11 @@ import { CollectionTreeNodeComponent } from './components/collection-tree/collec
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
 import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
-import { deleteFacetsBulkAction } from './components/facet-list/facet-list-bulk-actions';
+import {
+    assignFacetsToChannelBulkAction,
+    deleteFacetsBulkAction,
+    removeFacetsFromChannelBulkAction,
+} from './components/facet-list/facet-list-bulk-actions';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
@@ -32,7 +38,6 @@ import { ProductVariantsListComponent } from './components/product-variants-list
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
-import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -59,6 +64,7 @@ const CATALOG_COMPONENTS = [
     ConfirmVariantDeletionDialogComponent,
     ProductOptionsEditorComponent,
     BulkAddFacetValuesDialogComponent,
+    AssignToChannelDialogComponent,
 ];
 
 @NgModule({
@@ -71,6 +77,9 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
+
+        bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteFacetsBulkAction);
     }
 }
