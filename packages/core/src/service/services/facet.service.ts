@@ -197,7 +197,7 @@ export class FacetService {
 
         const isInUse = !!(productCount || variantCount);
         const both = !!(productCount && variantCount) ? 'both' : 'single';
-        const i18nVars = { products: productCount, variants: variantCount, both };
+        const i18nVars = { products: productCount, variants: variantCount, both, facetCode: facet.code };
         let message = '';
         let result: DeletionResult;
 

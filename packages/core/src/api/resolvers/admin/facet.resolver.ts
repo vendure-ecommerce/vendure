@@ -5,6 +5,7 @@ import {
     MutationCreateFacetArgs,
     MutationCreateFacetValuesArgs,
     MutationDeleteFacetArgs,
+    MutationDeleteFacetsArgs,
     MutationDeleteFacetValuesArgs,
     MutationRemoveFacetsFromChannelArgs,
     MutationUpdateFacetArgs,
@@ -96,6 +97,16 @@ export class FacetResolver {
         @Args() args: MutationDeleteFacetArgs,
     ): Promise<DeletionResponse> {
         return this.facetService.delete(ctx, args.id, args.force || false);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteFacet)
+    async deleteFacets(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteFacetsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.facetService.delete(ctx, id, args.force || false)));
     }
 
     @Transaction()

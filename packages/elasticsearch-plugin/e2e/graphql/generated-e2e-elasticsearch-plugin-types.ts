@@ -2338,6 +2338,8 @@ export type Mutation = {
   updateFacet: Facet;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
+  /** Delete multiple existing Facets */
+  deleteFacets: Array<DeletionResponse>;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
   /** Update one or more FacetValues */
@@ -2690,6 +2692,12 @@ export type MutationUpdateFacetArgs = {
 
 export type MutationDeleteFacetArgs = {
   id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteFacetsArgs = {
+  ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
 

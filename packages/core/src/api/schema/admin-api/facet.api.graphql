@@ -13,6 +13,9 @@ type Mutation {
     "Delete an existing Facet"
     deleteFacet(id: ID!, force: Boolean): DeletionResponse!
 
+    "Delete multiple existing Facets"
+    deleteFacets(ids: [ID!]!, force: Boolean): [DeletionResponse!]!
+
     "Create one or more FacetValues"
     createFacetValues(input: [CreateFacetValueInput!]!): [FacetValue!]!
 
