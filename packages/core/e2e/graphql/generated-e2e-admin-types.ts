@@ -1451,6 +1451,7 @@ export type FacetFilterParameter = {
 export type FacetInUseError = ErrorResult & {
   errorCode: ErrorCode;
   message: Scalars['String'];
+  facetCode: Scalars['String'];
   productCount: Scalars['Int'];
   variantCount: Scalars['Int'];
 };

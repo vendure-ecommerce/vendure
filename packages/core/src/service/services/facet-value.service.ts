@@ -176,24 +176,40 @@ export class FacetValueService {
     async checkFacetValueUsage(
         ctx: RequestContext,
         facetValueIds: ID[],
+        channelId?: ID,
     ): Promise<{ productCount: number; variantCount: number }> {
-        const consumingProducts = await this.connection
+        const consumingProductsQb = this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
             .leftJoinAndSelect('product.facetValues', 'facetValues')
             .where('facetValues.id IN (:...facetValueIds)', { facetValueIds })
-            .getMany();
+            .andWhere('product.deletedAt IS NULL');
 
-        const consumingVariants = await this.connection
+        const consumingVariantsQb = this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variant')
             .leftJoinAndSelect('variant.facetValues', 'facetValues')
             .where('facetValues.id IN (:...facetValueIds)', { facetValueIds })
-            .getMany();
+            .andWhere('variant.deletedAt IS NULL');
+
+        if (channelId) {
+            consumingProductsQb
+                .leftJoin('product.channels', 'product_channel')
+                .leftJoin('facetValues.channels', 'channel')
+                .andWhere('product_channel.id = :channelId')
+                .andWhere('channel.id = :channelId')
+                .setParameter('channelId', channelId);
+            consumingVariantsQb
+                .leftJoin('variant.channels', 'variant_channel')
+                .leftJoin('facetValues.channels', 'channel')
+                .andWhere('variant_channel.id = :channelId')
+                .andWhere('channel.id = :channelId')
+                .setParameter('channelId', channelId);
+        }
 
         return {
-            productCount: consumingProducts.length,
-            variantCount: consumingVariants.length,
+            productCount: await consumingProductsQb.getCount(),
+            variantCount: await consumingVariantsQb.getCount(),
         };
     }
 }

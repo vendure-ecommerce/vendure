@@ -22,6 +22,7 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { FacetValue } from '../../entity/index';
 import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -263,13 +264,22 @@ export class FacetService {
         if (!hasPermission) {
             throw new ForbiddenError();
         }
-        const facetsToAssign = await this.connection.getRepository(ctx, Facet).findByIds(input.facetIds);
+        const facetsToAssign = await this.connection
+            .getRepository(ctx, Facet)
+            .findByIds(input.facetIds, { relations: ['values'] });
+        const valuesToAssign = facetsToAssign.reduce(
+            (values, facet) => [...values, ...facet.values],
+            [] as FacetValue[],
+        );
 
-        await Promise.all(
-            facetsToAssign.map(async facet => {
+        await Promise.all<any>([
+            ...facetsToAssign.map(async facet => {
                 return this.channelService.assignToChannels(ctx, Facet, facet.id, [input.channelId]);
             }),
-        );
+            ...valuesToAssign.map(async value =>
+                this.channelService.assignToChannels(ctx, FacetValue, value.id, [input.channelId]),
+            ),
+        ]);
 
         return this.connection
             .findByIdsInChannel(
@@ -301,19 +311,20 @@ export class FacetService {
         if (idsAreEqual(input.channelId, defaultChannel.id)) {
             throw new UserInputError('error.facets-cannot-be-removed-from-default-channel');
         }
-        const facets = await this.connection
+        const facetsToRemove = await this.connection
             .getRepository(ctx, Facet)
             .findByIds(input.facetIds, { relations: ['values'] });
 
         const results: Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>> = [];
 
-        for (const facet of facets) {
+        for (const facet of facetsToRemove) {
             let productCount = 0;
             let variantCount = 0;
             if (facet.values.length) {
                 const counts = await this.facetValueService.checkFacetValueUsage(
                     ctx,
                     facet.values.map(fv => fv.id),
+                    input.channelId,
                 );
                 productCount = counts.productCount;
                 variantCount = counts.variantCount;
@@ -323,20 +334,19 @@ export class FacetService {
                 const i18nVars = { products: productCount, variants: variantCount, both };
                 let result: Translated<Facet> | undefined;
 
-                if (!isInUse) {
+                if (!isInUse || input.force) {
                     await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
-                    result = await this.findOne(ctx, facet.id);
-                    if (result) {
-                        results.push(result);
-                    }
-                } else if (input?.force) {
-                    await this.channelService.removeFromChannels(ctx, Facet, facet.id, [input.channelId]);
+                    await Promise.all(
+                        facet.values.map(fv =>
+                            this.channelService.removeFromChannels(ctx, FacetValue, fv.id, [input.channelId]),
+                        ),
+                    );
                     result = await this.findOne(ctx, facet.id);
                     if (result) {
                         results.push(result);
                     }
                 } else {
-                    results.push(new FacetInUseError(productCount, variantCount));
+                    results.push(new FacetInUseError(facet.code, productCount, variantCount));
                 }
             }
         }

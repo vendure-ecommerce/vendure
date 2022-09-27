@@ -91,6 +91,7 @@ input RemoveFacetsFromChannelInput {
 type FacetInUseError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
+    facetCode: String!
     productCount: Int!
     variantCount: Int!
 }

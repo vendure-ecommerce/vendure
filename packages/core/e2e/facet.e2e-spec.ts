@@ -374,7 +374,7 @@ describe('Facet resolver', () => {
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.NOT_DELETED,
-                message: `The selected Facet includes FacetValues which are assigned to 1 Product`,
+                message: `The Facet "speaker-type" includes FacetValues which are assigned to 1 Product`,
             });
 
             expect(result2.facet).not.toBe(null);
@@ -668,7 +668,7 @@ describe('Facet resolver', () => {
                 {
                     errorCode: 'FACET_IN_USE_ERROR',
                     message:
-                        'The selected Facet includes FacetValues which are assigned to 1 Product 1 ProductVariant',
+                        'The Facet "channel-facet" includes FacetValues which are assigned to 1 Product 1 ProductVariant',
                     productCount: 1,
                     variantCount: 1,
                 },

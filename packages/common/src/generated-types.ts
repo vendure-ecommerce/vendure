@@ -1497,6 +1497,7 @@ export type FacetInUseError = ErrorResult & {
   __typename?: 'FacetInUseError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+  facetCode: Scalars['String'];
   productCount: Scalars['Int'];
   variantCount: Scalars['Int'];
 };

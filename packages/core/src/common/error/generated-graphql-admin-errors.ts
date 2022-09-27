@@ -133,6 +133,7 @@ export class FacetInUseError extends ErrorResult {
   readonly errorCode = 'FACET_IN_USE_ERROR' as any;
   readonly message = 'FACET_IN_USE_ERROR';
   constructor(
+    public facetCode: Scalars['String'],
     public productCount: Scalars['Int'],
     public variantCount: Scalars['Int'],
   ) {
