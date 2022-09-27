@@ -30,6 +30,7 @@ import {
     assignFacetValuesToProductsBulkAction,
     assignProductsToChannelBulkAction,
     deleteProductsBulkAction,
+    removeProductsFromChannelBulkAction,
 } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
@@ -76,6 +77,7 @@ export class CatalogModule {
     constructor(private bulkActionRegistryService: BulkActionRegistryService) {
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeProductsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);

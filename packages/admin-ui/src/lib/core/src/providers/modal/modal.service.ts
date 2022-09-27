@@ -28,6 +28,7 @@ export interface Dialog<R = any> {
 export interface DialogButtonConfig<T> {
     label: string;
     type: 'secondary' | 'primary' | 'danger';
+    translationVars?: Record<string, string | number>;
     returnValue?: T;
 }
 

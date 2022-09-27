@@ -13,6 +13,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, of } from 'rxjs';
 import { map, mapTo, switchMap } from 'rxjs/operators';
 
+import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/get-channel-code-from-user-status';
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
 
 export const deleteFacetsBulkAction: BulkAction<GetFacetList.Items, FacetListComponent> = {
@@ -133,7 +134,8 @@ export const assignFacetsToChannelBulkAction: BulkAction<GetFacetList.Items, Fac
             )
             .subscribe(result => {
                 notificationService.success(_('catalog.assign-facets-to-channel-success'), {
-                    channel: result.code,
+                    count: selection.length,
+                    channelCode: result.code,
                 });
                 clearSelection();
             });
@@ -142,7 +144,8 @@ export const assignFacetsToChannelBulkAction: BulkAction<GetFacetList.Items, Fac
 
 export const removeFacetsFromChannelBulkAction: BulkAction<GetFacetList.Items, FacetListComponent> = {
     location: 'facet-list',
-    label: _('common.remove-from-active-channel'),
+    label: _('catalog.remove-from-channel'),
+    getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),
     icon: 'layers',
     iconClass: 'is-warning',
     isVisible: ({ injector }) => {
@@ -163,10 +166,14 @@ export const removeFacetsFromChannelBulkAction: BulkAction<GetFacetList.Items, F
         const dataService = injector.get(DataService);
         const notificationService = injector.get(NotificationService);
 
+        const activeChannelId$ = dataService.client
+            .userStatus()
+            .mapSingle(({ userStatus }) => userStatus.activeChannelId);
+
         function showModalAndDelete(facetIds: string[], message?: string) {
             return modalService
                 .dialog({
-                    title: _('catalog.confirm-remove-facets-from-channel'),
+                    title: _('catalog.remove-from-channel'),
                     translationVars: {
                         count: selection.length,
                     },
@@ -184,22 +191,19 @@ export const removeFacetsFromChannelBulkAction: BulkAction<GetFacetList.Items, F
                 .pipe(
                     switchMap(res =>
                         res
-                            ? dataService.client
-                                  .userStatus()
-                                  .mapSingle(({ userStatus }) => userStatus.activeChannelId)
-                                  .pipe(
-                                      switchMap(activeChannelId =>
-                                          activeChannelId
-                                              ? dataService.facet.removeFacetsFromChannel({
-                                                    channelId: activeChannelId,
-                                                    facetIds,
-                                                    force: !!message,
-                                                })
-                                              : EMPTY,
-                                      ),
-                                      map(res2 => res2.removeFacetsFromChannel),
-                                  )
-                            : of([]),
+                            ? activeChannelId$.pipe(
+                                  switchMap(activeChannelId =>
+                                      activeChannelId
+                                          ? dataService.facet.removeFacetsFromChannel({
+                                                channelId: activeChannelId,
+                                                facetIds,
+                                                force: !!message,
+                                            })
+                                          : EMPTY,
+                                  ),
+                                  map(res2 => res2.removeFacetsFromChannel),
+                              )
+                            : EMPTY,
                     ),
                 );
         }
@@ -207,37 +211,47 @@ export const removeFacetsFromChannelBulkAction: BulkAction<GetFacetList.Items, F
         showModalAndDelete(unique(selection.map(f => f.id)))
             .pipe(
                 switchMap(result => {
-                    let removedCount = 0;
+                    let removedCount = selection.length;
                     const errors: string[] = [];
                     const errorIds: string[] = [];
                     let i = 0;
                     for (const item of result) {
-                        if (item.__typename === 'Facet') {
-                            removedCount++;
-                        } else if (item.__typename === 'FacetInUseError') {
+                        if (item.__typename === 'FacetInUseError') {
                             errors.push(item.message);
                             errorIds.push(selection[i]?.id);
+                            removedCount--;
                         }
                         i++;
                     }
                     if (0 < errorIds.length) {
                         return showModalAndDelete(errorIds, errors.join('\n')).pipe(
                             map(result2 => {
-                                const deletedCount2 = result2.filter(r => r.__typename === 'Facet').length;
-                                return removedCount + deletedCount2;
+                                const notRemovedCount = result2.filter(
+                                    r => r.__typename === 'FacetInUseError',
+                                ).length;
+                                return selection.length - notRemovedCount;
                             }),
                         );
                     } else {
                         return of(removedCount);
                     }
                 }),
+                switchMap(removedCount =>
+                    removedCount
+                        ? getChannelCodeFromUserStatus(dataService).then(({ channelCode }) => ({
+                              channelCode,
+                              removedCount,
+                          }))
+                        : EMPTY,
+                ),
             )
-            .subscribe(removedCount => {
+            .subscribe(({ removedCount, channelCode }) => {
                 if (removedCount) {
                     hostComponent.refresh();
                     clearSelection();
-                    notificationService.success(_('common.notify-remove-facets-from-channel-success'), {
+                    notificationService.success(_('catalog.notify-remove-facets-from-channel-success'), {
                         count: removedCount,
+                        channelCode,
                     });
                 }
             });

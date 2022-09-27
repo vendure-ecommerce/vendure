@@ -35,7 +35,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { BehaviorSubject, combineLatest, EMPTY, merge, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, from, merge, Observable } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -51,6 +51,7 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
+import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/get-channel-code-from-user-status';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
@@ -292,15 +293,22 @@ export class ProductDetailComponent
     }
 
     removeFromChannel(channelId: string) {
-        this.modalService
-            .dialog({
-                title: _('catalog.remove-product-from-channel'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('catalog.remove-from-channel'), returnValue: true },
-                ],
-            })
+        from(getChannelCodeFromUserStatus(this.dataService, channelId))
             .pipe(
+                switchMap(({ channelCode }) => {
+                    return this.modalService.dialog({
+                        title: _('catalog.remove-product-from-channel'),
+                        buttons: [
+                            { type: 'secondary', label: _('common.cancel') },
+                            {
+                                type: 'danger',
+                                label: _('catalog.remove-from-channel'),
+                                translationVars: { channelCode },
+                                returnValue: true,
+                            },
+                        ],
+                    });
+                }),
                 switchMap(response =>
                     response
                         ? this.dataService.product.removeProductsFromChannel({
@@ -340,15 +348,22 @@ export class ProductDetailComponent
         channelId: string;
         variant: ProductVariant.Fragment;
     }) {
-        this.modalService
-            .dialog({
-                title: _('catalog.remove-product-variant-from-channel'),
-                buttons: [
-                    { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('catalog.remove-from-channel'), returnValue: true },
-                ],
-            })
+        from(getChannelCodeFromUserStatus(this.dataService, channelId))
             .pipe(
+                switchMap(({ channelCode }) => {
+                    return this.modalService.dialog({
+                        title: _('catalog.remove-product-variant-from-channel'),
+                        buttons: [
+                            { type: 'secondary', label: _('common.cancel') },
+                            {
+                                type: 'danger',
+                                label: _('catalog.remove-from-channel'),
+                                translationVars: { channelCode },
+                                returnValue: true,
+                            },
+                        ],
+                    });
+                }),
                 switchMap(response =>
                     response
                         ? this.dataService.product.removeVariantsFromChannel({

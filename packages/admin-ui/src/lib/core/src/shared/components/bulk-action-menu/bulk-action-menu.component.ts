@@ -14,7 +14,11 @@ import { switchMap } from 'rxjs/operators';
 import { SelectionManager } from '../../../common/utilities/selection-manager';
 import { DataService } from '../../../data/providers/data.service';
 import { BulkActionRegistryService } from '../../../providers/bulk-action-registry/bulk-action-registry.service';
-import { BulkAction, BulkActionLocationId } from '../../../providers/bulk-action-registry/bulk-action-types';
+import {
+    BulkAction,
+    BulkActionFunctionContext,
+    BulkActionLocationId,
+} from '../../../providers/bulk-action-registry/bulk-action-types';
 
 @Component({
     selector: 'vdr-bulk-action-menu',
@@ -26,7 +30,9 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     @Input() locationId: BulkActionLocationId;
     @Input() selectionManager: SelectionManager<T>;
     @Input() hostComponent: any;
-    actions$: Observable<Array<BulkAction<T> & { display: boolean }>>;
+    actions$: Observable<
+        Array<BulkAction<T> & { display: boolean; translationVars: Record<string, string | number> }>
+    >;
     userPermissions: string[] = [];
 
     private subscription: Subscription;
@@ -46,16 +52,22 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
                 return Promise.all(
                     actionsForLocation.map(async action => {
                         let display = true;
+                        let translationVars = {};
                         const isVisibleFn = action.isVisible;
+                        const getTranslationVarsFn = action.getTranslationVars;
+                        const functionContext: BulkActionFunctionContext<T, any> = {
+                            injector: this.injector,
+                            hostComponent: this.hostComponent,
+                            route: this.route,
+                            selection,
+                        };
                         if (typeof isVisibleFn === 'function') {
-                            display = await isVisibleFn({
-                                injector: this.injector,
-                                hostComponent: this.hostComponent,
-                                route: this.route,
-                                selection,
-                            });
+                            display = await isVisibleFn(functionContext);
                         }
-                        return { ...action, display };
+                        if (typeof getTranslationVarsFn === 'function') {
+                            translationVars = await getTranslationVarsFn(functionContext);
+                        }
+                        return { ...action, display, translationVars };
                     }),
                 );
             }),

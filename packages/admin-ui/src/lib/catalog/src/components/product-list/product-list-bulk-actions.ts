@@ -3,16 +3,20 @@ import {
     BulkAction,
     DataService,
     DeletionResult,
+    GetFacetList,
     ModalService,
     NotificationService,
     SearchProducts,
 } from '@vendure/admin-ui/core';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { unique } from '@vendure/common/lib/unique';
-import { EMPTY } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { EMPTY, from, of } from 'rxjs';
+import { map, mapTo, switchMap } from 'rxjs/operators';
+import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/get-channel-code-from-user-status';
 
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
+import { FacetListComponent } from '../facet-list/facet-list.component';
 
 import { ProductListComponent } from './product-list.component';
 
@@ -94,6 +98,79 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items,
             .subscribe(result => {
                 if (result) {
                     clearSelection();
+                }
+            });
+    },
+};
+
+export const removeProductsFromChannelBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+    location: 'product-list',
+    label: _('catalog.remove-from-channel'),
+    getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),
+    icon: 'layers',
+    iconClass: 'is-warning',
+    isVisible: ({ injector }) => {
+        return injector
+            .get(DataService)
+            .client.userStatus()
+            .mapSingle(({ userStatus }) => {
+                if (userStatus.channels.length === 1) {
+                    return false;
+                }
+                const defaultChannelId = userStatus.channels.find(c => c.code === DEFAULT_CHANNEL_CODE)?.id;
+                return userStatus.activeChannelId !== defaultChannelId;
+            })
+            .toPromise();
+    },
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        const dataService = injector.get(DataService);
+        const notificationService = injector.get(NotificationService);
+        const activeChannelId$ = dataService.client
+            .userStatus()
+            .mapSingle(({ userStatus }) => userStatus.activeChannelId);
+
+        from(getChannelCodeFromUserStatus(injector.get(DataService)))
+            .pipe(
+                switchMap(({ channelCode }) =>
+                    modalService.dialog({
+                        title: _('catalog.remove-from-channel'),
+                        translationVars: {
+                            channelCode,
+                        },
+                        buttons: [
+                            { type: 'secondary', label: _('common.cancel') },
+                            {
+                                type: 'danger',
+                                label: _('common.remove'),
+                                returnValue: true,
+                            },
+                        ],
+                    }),
+                ),
+                switchMap(res =>
+                    res
+                        ? activeChannelId$.pipe(
+                              switchMap(activeChannelId =>
+                                  activeChannelId
+                                      ? dataService.product.removeProductsFromChannel({
+                                            channelId: activeChannelId,
+                                            productIds: selection.map(p => p.productId),
+                                        })
+                                      : EMPTY,
+                              ),
+                              mapTo(true),
+                          )
+                        : of(false),
+                ),
+            )
+            .subscribe(removed => {
+                if (removed) {
+                    clearSelection();
+                    notificationService.success(_('common.notify-remove-products-from-channel-success'), {
+                        count: selection.length,
+                    });
+                    setTimeout(() => hostComponent.refresh(), 1000);
                 }
             });
     },

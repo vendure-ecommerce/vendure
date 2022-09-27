@@ -11,7 +11,16 @@ import { ActivatedRoute } from '@angular/router';
  */
 export type BulkActionLocationId = 'product-list' | 'facet-list' | 'order-list' | string;
 
-export interface BulkActionIsVisibleContext<ItemType, ComponentType> {
+/**
+ * @description
+ * This is the argument which gets passed to the `getTranslationVars` and `isVisible` functions
+ * of the BulkAction definition.
+ *
+ * @since 1.8.0
+ * @docsCategory bulk-actions
+ * @docsPage BulkAction
+ */
+export interface BulkActionFunctionContext<ItemType, ComponentType> {
     /**
      * @description
      * An array of the selected items from the list.
@@ -42,33 +51,18 @@ export interface BulkActionIsVisibleContext<ItemType, ComponentType> {
  * @docsCategory bulk-actions
  * @docsPage BulkAction
  */
-export interface BulkActionClickContext<ItemType, ComponentType> {
-    /**
-     * @description
-     * An array of the selected items from the list.
-     */
-    selection: ItemType[];
-    /**
-     * @description
-     * The component instance that is hosting the list view. For instance,
-     * `ProductListComponent`. This can be used to call methods on the instance,
-     * e.g. calling `hostComponent.refresh()` to force a list refresh after
-     * deleting the selected items.
-     */
-    hostComponent: ComponentType;
-    /**
-     * @description
-     * The Angular [Injector](https://angular.io/api/core/Injector) which can be used
-     * to get service instances which might be needed in the click handler.
-     */
-    injector: Injector;
+export interface BulkActionClickContext<ItemType, ComponentType>
+    extends BulkActionFunctionContext<ItemType, ComponentType> {
     /**
      * @description
      * Clears the selection in the active list view.
      */
     clearSelection: () => void;
+    /**
+     * @description
+     * The click event itself.
+     */
     event: MouseEvent;
-    route: ActivatedRoute;
 }
 
 /**
@@ -85,6 +79,14 @@ export interface BulkActionClickContext<ItemType, ComponentType> {
 export interface BulkAction<ItemType = any, ComponentType = any> {
     location: BulkActionLocationId;
     label: string;
+    /**
+     * @description
+     * An optional function that should resolve to a map of translation variables which can be
+     * used when translating the `label` string.
+     */
+    getTranslationVars?: (
+        context: BulkActionFunctionContext<ItemType, ComponentType>,
+    ) => Record<string, string | number> | Promise<Record<string, string | number>>;
     /**
      * @description
      * A valid [Clarity Icons](https://clarity.design/icons) icon shape, e.g.
@@ -115,7 +117,7 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
      * This function will be invoked each time the selection is changed, so try to avoid expensive code
      * running here.
      */
-    isVisible?: (context: BulkActionIsVisibleContext<ItemType, ComponentType>) => boolean | Promise<boolean>;
+    isVisible?: (context: BulkActionFunctionContext<ItemType, ComponentType>) => boolean | Promise<boolean>;
     /**
      * @description
      * Control the display of this item based on the user permissions.

@@ -17,7 +17,7 @@
                     [attr.shape]="action.icon"
                     [ngClass]="action.iconClass || ''"
                 ></clr-icon>
-                {{ action.label | translate }}
+                {{ action.label | translate: action.translationVars }}
             </button>
         </ng-container>
     </vdr-dropdown-menu>
