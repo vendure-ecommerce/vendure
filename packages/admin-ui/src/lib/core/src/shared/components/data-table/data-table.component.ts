@@ -15,6 +15,9 @@ import {
     TemplateRef,
 } from '@angular/core';
 import { PaginationService } from 'ngx-pagination';
+import { Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { SelectionManager } from '../../../common/utilities/selection-manager';
 
 import { DataTableColumnComponent } from './data-table-column.component';
 
@@ -89,13 +92,20 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnIni
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
     @Input() totalItems: number;
-    @Input() allSelected: boolean;
-    @Input() isRowSelectedFn: (item: T) => boolean;
     @Input() emptyStateLabel: string;
-    @Output() allSelectChange = new EventEmitter<void>();
-    @Output() rowSelectChange = new EventEmitter<{ event: MouseEvent; item: T }>();
+    @Input() selectionManager?: SelectionManager<T>;
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
+
+    /** @deprecated pass a SelectionManager instance instead */
+    @Input() allSelected: boolean;
+    /** @deprecated pass a SelectionManager instance instead */
+    @Input() isRowSelectedFn: (item: T) => boolean;
+    /** @deprecated pass a SelectionManager instance instead */
+    @Output() allSelectChange = new EventEmitter<void>();
+    /** @deprecated pass a SelectionManager instance instead */
+    @Output() rowSelectChange = new EventEmitter<{ event: MouseEvent; item: T }>();
+
     @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
     @ContentChildren(TemplateRef) templateRefs: QueryList<TemplateRef<any>>;
     rowTemplate: TemplateRef<any>;
@@ -104,6 +114,7 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnIni
     // This is used to apply a `user-select: none` CSS rule to the table,
     // which allows shift-click multi-row selection
     disableSelect = false;
+    private subscription: Subscription | undefined;
 
     constructor(private changeDetectorRef: ChangeDetectorRef) {}
 
@@ -122,17 +133,30 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnIni
     };
 
     ngOnInit() {
-        if (typeof this.isRowSelectedFn === 'function') {
+        if (typeof this.isRowSelectedFn === 'function' || this.selectionManager) {
             document.addEventListener('keydown', this.shiftDownHandler, { passive: true });
             document.addEventListener('keyup', this.shiftUpHandler, { passive: true });
+        }
+
+        this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
+            this.changeDetectorRef.markForCheck(),
+        );
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.items) {
+            this.currentStart = this.itemsPerPage * (this.currentPage - 1);
+            this.currentEnd = this.currentStart + changes.items.currentValue?.length;
+            this.selectionManager?.setCurrentItems(this.items);
         }
     }
 
     ngOnDestroy() {
-        if (typeof this.isRowSelectedFn === 'function') {
+        if (typeof this.isRowSelectedFn === 'function' || this.selectionManager) {
             document.removeEventListener('keydown', this.shiftDownHandler);
             document.removeEventListener('keyup', this.shiftUpHandler);
         }
+        this.subscription?.unsubscribe();
     }
 
     ngAfterContentInit(): void {
@@ -147,10 +171,13 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnIni
         }
     }
 
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.items) {
-            this.currentStart = this.itemsPerPage * (this.currentPage - 1);
-            this.currentEnd = this.currentStart + changes.items.currentValue?.length;
-        }
+    onToggleAllClick() {
+        this.allSelectChange.emit();
+        this.selectionManager?.toggleSelectAll();
+    }
+
+    onRowClick(item: T, event: MouseEvent) {
+        this.rowSelectChange.emit({ event, item });
+        this.selectionManager?.toggleSelection(item, event);
     }
 }

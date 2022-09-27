@@ -1,3 +1,5 @@
+import { Observable, Subject } from 'rxjs';
+
 export interface SelectionManagerOptions<T> {
     multiSelect: boolean;
     itemsAreEqual: (a: T, b: T) => boolean;
@@ -10,14 +12,19 @@ export interface SelectionManagerOptions<T> {
  * cmd/ctrl/shift key.
  */
 export class SelectionManager<T> {
-    constructor(private options: SelectionManagerOptions<T>) {}
+    constructor(private options: SelectionManagerOptions<T>) {
+        this.selectionChanges$ = this.selectionChangesSubject.asObservable();
+    }
 
     get selection(): T[] {
         return this._selection;
     }
 
+    selectionChanges$: Observable<T[]>;
+
     private _selection: T[] = [];
     private items: T[] = [];
+    private selectionChangesSubject = new Subject<T[]>();
 
     setMultiSelect(isMultiSelect: boolean) {
         this.options.multiSelect = isMultiSelect;
@@ -56,14 +63,17 @@ export class SelectionManager<T> {
         }
         // Make the selection mutable
         this._selection = this._selection.map(x => ({ ...x }));
+        this.invokeOnSelectionChangeHandler();
     }
 
     selectMultiple(items: T[]) {
         this._selection = items;
+        this.invokeOnSelectionChangeHandler();
     }
 
     clearSelection() {
         this._selection = [];
+        this.invokeOnSelectionChangeHandler();
     }
 
     isSelected(item: T): boolean {
@@ -90,9 +100,14 @@ export class SelectionManager<T> {
                 }
             }
         }
+        this.invokeOnSelectionChangeHandler();
     }
 
     lastSelected(): T {
         return this._selection[this._selection.length - 1];
+    }
+
+    private invokeOnSelectionChangeHandler() {
+        this.selectionChangesSubject.next(this._selection);
     }
 }

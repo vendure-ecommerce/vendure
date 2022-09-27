@@ -1,5 +1,5 @@
 <vdr-dropdown *ngIf="actions$ | async as actions">
-    <button class="btn btn-sm btn-outline" vdrDropdownTrigger [disabled]="!selection?.length">
+    <button class="btn btn-sm btn-outline" vdrDropdownTrigger [disabled]="!selectionManager.selection?.length" [class.hidden]="!selectionManager.selection?.length">
         <clr-icon shape="file-group"></clr-icon>
         {{ 'common.with-selected' | translate }}
     </button>
@@ -22,3 +22,8 @@
         </ng-container>
     </vdr-dropdown-menu>
 </vdr-dropdown>
+<button class="btn btn-sm btn-link" (click)="clearSelection()"
+        [class.hidden]="!selectionManager.selection?.length">
+    <clr-icon shape="times"></clr-icon>
+    {{ 'common.clear-selection' | translate }}
+</button>

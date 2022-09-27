@@ -114,10 +114,6 @@ export class ProductListComponent
             .getPendingSearchIndexUpdates()
             .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates)
             .subscribe(value => (this.pendingSearchIndexUpdates = value));
-
-        this.items$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(items => this.selectionManager.setCurrentItems(items));
     }
 
     ngAfterViewInit() {
@@ -198,20 +194,4 @@ export class ProductListComponent
     setLanguage(code: LanguageCode) {
         this.dataService.client.setContentLanguage(code).subscribe();
     }
-
-    areAllSelected(): boolean {
-        return this.selectionManager.areAllCurrentItemsSelected();
-    }
-
-    toggleSelectAll() {
-        this.selectionManager.toggleSelectAll();
-    }
-
-    toggleSelectMember({ event, item }: { event: MouseEvent; item: SearchProducts.Items }) {
-        this.selectionManager.toggleSelection(item, event);
-    }
-
-    isMemberSelected = (product: SearchProducts.Items): boolean => {
-        return this.selectionManager.isSelected(product);
-    };
 }

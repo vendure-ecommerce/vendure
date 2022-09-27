@@ -19,6 +19,11 @@ export interface CustomerGroupMemberFetchParams {
     filterTerm: string;
 }
 
+type CustomerGroupMember = Pick<
+    Customer,
+    'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'
+>;
+
 @Component({
     selector: 'vdr-customer-group-member-list',
     templateUrl: './customer-group-member-list.component.html',
@@ -26,9 +31,7 @@ export interface CustomerGroupMemberFetchParams {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
-    @Input() members: Array<
-        Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
-    >;
+    @Input() members: CustomerGroupMember[];
     @Input() totalItems: number;
     @Input() route: ActivatedRoute;
     @Input() selectedMemberIds: string[] = [];

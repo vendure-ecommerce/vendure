@@ -1,19 +1,17 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
-    EventEmitter,
     Injector,
     Input,
-    OnChanges,
     OnDestroy,
     OnInit,
-    Output,
-    SimpleChanges,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
+import { SelectionManager } from '../../../common/utilities/selection-manager';
 import { DataService } from '../../../data/providers/data.service';
 import { BulkActionRegistryService } from '../../../providers/bulk-action-registry/bulk-action-registry.service';
 import { BulkAction, BulkActionLocationId } from '../../../providers/bulk-action-registry/bulk-action-types';
@@ -24,14 +22,12 @@ import { BulkAction, BulkActionLocationId } from '../../../providers/bulk-action
     styleUrls: ['./bulk-action-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BulkActionMenuComponent<T = any> implements OnInit, OnChanges, OnDestroy {
+export class BulkActionMenuComponent<T = any> implements OnInit, OnDestroy {
     @Input() locationId: BulkActionLocationId;
-    @Input() selection: T[];
+    @Input() selectionManager: SelectionManager<T>;
     @Input() hostComponent: any;
-    @Output() clearSelection = new EventEmitter<void>();
     actions$: Observable<Array<BulkAction<T> & { display: boolean }>>;
     userPermissions: string[] = [];
-    selection$ = new BehaviorSubject<T[]>([]);
 
     private subscription: Subscription;
 
@@ -40,17 +36,12 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnChanges, OnDe
         private injector: Injector,
         private route: ActivatedRoute,
         private dataService: DataService,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {}
-
-    ngOnChanges(changes: SimpleChanges) {
-        if ('selection' in changes) {
-            this.selection$.next(this.selection);
-        }
-    }
 
     ngOnInit(): void {
         const actionsForLocation = this.bulkActionRegistryService.getBulkActionsForLocation(this.locationId);
-        this.actions$ = this.selection$.pipe(
+        this.actions$ = this.selectionManager.selectionChanges$.pipe(
             switchMap(selection => {
                 return Promise.all(
                     actionsForLocation.map(async action => {
@@ -101,9 +92,14 @@ export class BulkActionMenuComponent<T = any> implements OnInit, OnChanges, OnDe
             injector: this.injector,
             event,
             route: this.route,
-            selection: this.selection,
+            selection: this.selectionManager.selection,
             hostComponent: this.hostComponent,
-            clearSelection: () => this.clearSelection.next(),
+            clearSelection: () => this.selectionManager.clearSelection(),
         });
+    }
+
+    clearSelection() {
+        this.selectionManager.clearSelection();
+        this.changeDetectorRef.markForCheck();
     }
 }

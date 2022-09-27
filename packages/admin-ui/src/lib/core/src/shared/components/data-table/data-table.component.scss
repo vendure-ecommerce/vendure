@@ -3,6 +3,14 @@
     display: block;
     max-width: 100%;
     overflow: auto;
+    position: relative;
+}
+
+.bulk-actions {
+    position: absolute;
+    left: 50px;
+    top: 30px;
+    z-index: 2;
 }
 
 table.no-select {
@@ -17,6 +25,10 @@ thead th {
     &.expand {
         width: 100%;
     }
+}
+
+thead.items-selected tr th {
+    color: transparent;
 }
 
 .selection-col {

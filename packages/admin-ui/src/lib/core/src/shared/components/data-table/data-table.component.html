@@ -1,16 +1,19 @@
 <ng-container *ngIf="!items || (items && items.length); else emptyPlaceholder">
+    <div class="bulk-actions">
+    <ng-content select="vdr-bulk-action-menu"></ng-content>
+    </div>
     <table class="table" [class.no-select]="disableSelect">
-        <thead>
+        <thead [class.items-selected]="selectionManager?.selection.length">
             <tr>
-                <th *ngIf="isRowSelectedFn" class="align-middle">
+                <th *ngIf="isRowSelectedFn || selectionManager" class="align-middle">
                     <input
                         type="checkbox"
                         clrCheckbox
-                        [checked]="allSelected"
-                        (change)="allSelectChange.emit()"
+                        [checked]="allSelected ? allSelected : selectionManager?.areAllCurrentItemsSelected()"
+                        (change)="onToggleAllClick()"
                     />
                 </th>
-                <th *ngFor="let header of columns?.toArray()" class="left" [class.expand]="header.expand">
+                <th *ngFor="let header of columns?.toArray()" class="left align-middle" [class.expand]="header.expand">
                     <ng-container *ngTemplateOutlet="header.template"></ng-container>
                 </th>
             </tr>
@@ -29,12 +32,12 @@
                     trackBy: trackByFn
                 "
             >
-                <td *ngIf="isRowSelectedFn" class="align-middle selection-col">
+                <td *ngIf="isRowSelectedFn || selectionManager" class="align-middle selection-col">
                     <input
                         type="checkbox"
                         clrCheckbox
-                        [checked]="isRowSelectedFn(item)"
-                        (click)="rowSelectChange.emit({ event: $event, item })"
+                        [checked]="isRowSelectedFn ? isRowSelectedFn(item) : selectionManager?.isSelected(item)"
+                        (click)="onRowClick(item, $event)"
                     />
                 </td>
                 <ng-container
