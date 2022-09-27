@@ -20,6 +20,7 @@ import { GenerateProductVariantsComponent } from './components/generate-product-
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import {
+    assignFacetValuesToProductsBulkAction,
     assignProductsToChannelBulkAction,
     deleteProductsBulkAction,
 } from './components/product-list/product-list-bulk-actions';
@@ -30,6 +31,7 @@ import { ProductVariantsListComponent } from './components/product-variants-list
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -55,6 +57,7 @@ const CATALOG_COMPONENTS = [
     AssetDetailComponent,
     ConfirmVariantDeletionDialogComponent,
     ProductOptionsEditorComponent,
+    BulkAddFacetValuesDialogComponent,
 ];
 
 @NgModule({
@@ -64,6 +67,7 @@ const CATALOG_COMPONENTS = [
 })
 export class CatalogModule {
     constructor(private bulkActionRegistryService: BulkActionRegistryService) {
+        bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
     }

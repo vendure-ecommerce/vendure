@@ -2557,6 +2557,8 @@ export type Mutation = {
   updateProductOptionGroup: ProductOptionGroup;
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>;
+  /** Update multiple existing Products */
+  updateProducts: Array<Product>;
   updatePromotion: UpdatePromotionResult;
   /** Update an existing Role */
   updateRole: Role;
@@ -3155,6 +3157,11 @@ export type MutationUpdateProductOptionGroupArgs = {
 
 export type MutationUpdateProductVariantsArgs = {
   input: Array<UpdateProductVariantInput>;
+};
+
+
+export type MutationUpdateProductsArgs = {
+  input: Array<UpdateProductInput>;
 };
 
 
@@ -5491,6 +5498,76 @@ export type Zone = Node & {
   members: Array<Country>;
   customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type GetProductsWithFacetValuesByIdsQueryVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type GetProductsWithFacetValuesByIdsQuery = { products: (
+    { __typename?: 'ProductList' }
+    & { items: Array<(
+      { __typename?: 'Product' }
+      & Pick<Product, 'id' | 'name'>
+      & { facetValues: Array<(
+        { __typename?: 'FacetValue' }
+        & Pick<FacetValue, 'id' | 'name' | 'code'>
+        & { facet: (
+          { __typename?: 'Facet' }
+          & Pick<Facet, 'id' | 'name' | 'code'>
+        ) }
+      )> }
+    )> }
+  ) };
+
+export type GetVariantsWithFacetValuesByIdsQueryVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type GetVariantsWithFacetValuesByIdsQuery = { productVariants: (
+    { __typename?: 'ProductVariantList' }
+    & { items: Array<(
+      { __typename?: 'ProductVariant' }
+      & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+      & { facetValues: Array<(
+        { __typename?: 'FacetValue' }
+        & Pick<FacetValue, 'id' | 'name' | 'code'>
+        & { facet: (
+          { __typename?: 'Facet' }
+          & Pick<Facet, 'id' | 'name' | 'code'>
+        ) }
+      )> }
+    )> }
+  ) };
+
+export type UpdateProductsBulkMutationVariables = Exact<{
+  input: Array<UpdateProductInput> | UpdateProductInput;
+}>;
+
+
+export type UpdateProductsBulkMutation = { updateProducts: Array<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'name'>
+    & { facetValues: Array<(
+      { __typename?: 'FacetValue' }
+      & Pick<FacetValue, 'id' | 'name' | 'code'>
+    )> }
+  )> };
+
+export type UpdateVariantsBulkMutationVariables = Exact<{
+  input: Array<UpdateProductVariantInput> | UpdateProductVariantInput;
+}>;
+
+
+export type UpdateVariantsBulkMutation = { updateProductVariants: Array<Maybe<(
+    { __typename?: 'ProductVariant' }
+    & Pick<ProductVariant, 'id' | 'name'>
+    & { facetValues: Array<(
+      { __typename?: 'FacetValue' }
+      & Pick<FacetValue, 'id' | 'name' | 'code'>
+    )> }
+  )>> };
 
 export type RoleFragment = (
   { __typename?: 'Role' }
@@ -9319,6 +9396,38 @@ export type TestEligibleShippingMethodsQuery = { testEligibleShippingMethods: Ar
   )> };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
+
+export namespace GetProductsWithFacetValuesByIds {
+  export type Variables = GetProductsWithFacetValuesByIdsQueryVariables;
+  export type Query = GetProductsWithFacetValuesByIdsQuery;
+  export type Products = (NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>)['items']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>)['items']>)[number]>['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>)['items']>)[number]>['facetValues']>)[number]>['facet']>);
+}
+
+export namespace GetVariantsWithFacetValuesByIds {
+  export type Variables = GetVariantsWithFacetValuesByIdsQueryVariables;
+  export type Query = GetVariantsWithFacetValuesByIdsQuery;
+  export type ProductVariants = (NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>)['items']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>)['items']>)[number]>['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>)['items']>)[number]>['facetValues']>)[number]>['facet']>);
+}
+
+export namespace UpdateProductsBulk {
+  export type Variables = UpdateProductsBulkMutationVariables;
+  export type Mutation = UpdateProductsBulkMutation;
+  export type UpdateProducts = NonNullable<(NonNullable<UpdateProductsBulkMutation['updateProducts']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<UpdateProductsBulkMutation['updateProducts']>)[number]>['facetValues']>)[number]>;
+}
+
+export namespace UpdateVariantsBulk {
+  export type Variables = UpdateVariantsBulkMutationVariables;
+  export type Mutation = UpdateVariantsBulkMutation;
+  export type UpdateProductVariants = NonNullable<(NonNullable<UpdateVariantsBulkMutation['updateProductVariants']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<UpdateVariantsBulkMutation['updateProductVariants']>)[number]>['facetValues']>)[number]>;
+}
 
 export namespace Role {
   export type Fragment = RoleFragment;

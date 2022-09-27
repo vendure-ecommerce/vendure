@@ -119,7 +119,8 @@
             </div>
         </td>
         <td class="left align-middle" [class.disabled]="!result.enabled">
-            {{ groupByProduct ? result.productName : result.productVariantName }}
+            <div>{{ groupByProduct ? result.productName : result.productVariantName }}</div>
+            <div *ngIf="!groupByProduct" class="sku">{{ result.sku }}</div>
         </td>
         <td class="align-middle" [class.disabled]="!result.enabled">
             <vdr-chip *ngIf="!result.enabled">{{ 'common.disabled' | translate }}</vdr-chip>

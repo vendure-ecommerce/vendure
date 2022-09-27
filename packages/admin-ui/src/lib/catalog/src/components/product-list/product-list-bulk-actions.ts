@@ -12,6 +12,7 @@ import { EMPTY } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
+import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 
 import { ProductListComponent } from './product-list.component';
 
@@ -92,6 +93,46 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items,
             })
             .subscribe(result => {
                 if (result) {
+                    clearSelection();
+                }
+            });
+    },
+};
+
+export const assignFacetValuesToProductsBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+    location: 'product-list',
+    label: _('catalog.edit-facet-values'),
+    icon: 'tag',
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        const dataService = injector.get(DataService);
+        const notificationService = injector.get(NotificationService);
+        const mode: 'product' | 'variant' = hostComponent.groupByProduct ? 'product' : 'variant';
+        const ids =
+            mode === 'product'
+                ? unique(selection.map(p => p.productId))
+                : unique(selection.map(p => p.productVariantId));
+        return dataService.facet
+            .getAllFacets()
+            .mapSingle(data => data.facets.items)
+            .pipe(
+                switchMap(facets =>
+                    modalService.fromComponent(BulkAddFacetValuesDialogComponent, {
+                        size: 'xl',
+                        locals: {
+                            facets,
+                            mode,
+                            ids,
+                        },
+                    }),
+                ),
+            )
+            .subscribe(result => {
+                if (result) {
+                    notificationService.success(_('common.notify-bulk-update-success'), {
+                        count: selection.length,
+                        entity: mode === 'product' ? 'Products' : 'ProductVariants',
+                    });
                     clearSelection();
                 }
             });
