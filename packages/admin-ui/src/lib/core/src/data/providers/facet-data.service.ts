@@ -6,6 +6,7 @@ import {
     CreateFacetValueInput,
     CreateFacetValues,
     DeleteFacet,
+    DeleteFacets,
     DeleteFacetValues,
     GetFacetList,
     GetFacetWithValues,
@@ -19,6 +20,7 @@ import {
     CREATE_FACET_VALUES,
     DELETE_FACET,
     DELETE_FACET_VALUES,
+    DELETE_FACETS,
     GET_FACET_LIST,
     GET_FACET_WITH_VALUES,
     UPDATE_FACET,
@@ -69,6 +71,13 @@ export class FacetDataService {
     deleteFacet(id: string, force: boolean) {
         return this.baseDataService.mutate<DeleteFacet.Mutation, DeleteFacet.Variables>(DELETE_FACET, {
             id,
+            force,
+        });
+    }
+
+    deleteFacets(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<DeleteFacets.Mutation, DeleteFacets.Variables>(DELETE_FACETS, {
+            ids,
             force,
         });
     }

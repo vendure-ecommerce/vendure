@@ -2447,6 +2447,8 @@ export type Mutation = {
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>;
+  /** Delete multiple existing Facets */
+  deleteFacets: Array<DeletionResponse>;
   deleteOrderNote: DeletionResponse;
   /** Delete a PaymentMethod */
   deletePaymentMethod: DeletionResponse;
@@ -2840,6 +2842,12 @@ export type MutationDeleteFacetArgs = {
 
 
 export type MutationDeleteFacetValuesArgs = {
+  ids: Array<Scalars['ID']>;
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteFacetsArgs = {
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
@@ -6366,6 +6374,17 @@ export type DeleteFacetMutation = { deleteFacet: (
     & Pick<DeletionResponse, 'result' | 'message'>
   ) };
 
+export type DeleteFacetsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type DeleteFacetsMutation = { deleteFacets: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> };
+
 export type CreateFacetValuesMutationVariables = Exact<{
   input: Array<CreateFacetValueInput> | CreateFacetValueInput;
 }>;
@@ -9871,6 +9890,12 @@ export namespace DeleteFacet {
   export type Variables = DeleteFacetMutationVariables;
   export type Mutation = DeleteFacetMutation;
   export type DeleteFacet = (NonNullable<DeleteFacetMutation['deleteFacet']>);
+}
+
+export namespace DeleteFacets {
+  export type Variables = DeleteFacetsMutationVariables;
+  export type Mutation = DeleteFacetsMutation;
+  export type DeleteFacets = NonNullable<(NonNullable<DeleteFacetsMutation['deleteFacets']>)[number]>;
 }
 
 export namespace CreateFacetValues {

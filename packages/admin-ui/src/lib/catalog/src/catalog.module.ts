@@ -15,6 +15,7 @@ import { CollectionTreeNodeComponent } from './components/collection-tree/collec
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
 import { ConfirmVariantDeletionDialogComponent } from './components/confirm-variant-deletion-dialog/confirm-variant-deletion-dialog.component';
 import { FacetDetailComponent } from './components/facet-detail/facet-detail.component';
+import { deleteFacetsBulkAction } from './components/facet-list/facet-list-bulk-actions';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
 import { GenerateProductVariantsComponent } from './components/generate-product-variants/generate-product-variants.component';
 import { OptionValueInputComponent } from './components/option-value-input/option-value-input.component';
@@ -70,5 +71,6 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteFacetsBulkAction);
     }
 }

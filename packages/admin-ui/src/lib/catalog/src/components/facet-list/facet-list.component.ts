@@ -10,6 +10,7 @@ import {
     LanguageCode,
     ModalService,
     NotificationService,
+    SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
@@ -30,6 +31,8 @@ export class FacetListComponent
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
+    selectionManager: SelectionManager<GetFacetList.Items>;
+
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
@@ -57,6 +60,11 @@ export class FacetListComponent
                 },
             }),
         );
+        this.selectionManager = new SelectionManager<GetFacetList.Items>({
+            multiSelect: true,
+            itemsAreEqual: (a, b) => a.id === b.id,
+            additiveMode: true,
+        });
     }
 
     ngOnInit() {
@@ -124,7 +132,11 @@ export class FacetListComponent
                 body: message,
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
-                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                    {
+                        type: 'danger',
+                        label: message ? _('common.force-delete') : _('common.delete'),
+                        returnValue: true,
+                    },
                 ],
             })
             .pipe(

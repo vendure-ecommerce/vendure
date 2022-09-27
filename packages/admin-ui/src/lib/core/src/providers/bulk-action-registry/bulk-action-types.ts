@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
  * @docsCategory bulk-actions
  * @docsPage BulkAction
  */
-export type BulkActionLocationId = 'product-list' | 'order-list' | string;
+export type BulkActionLocationId = 'product-list' | 'facet-list' | 'order-list' | string;
 
 export interface BulkActionIsVisibleContext<ItemType, ComponentType> {
     /**

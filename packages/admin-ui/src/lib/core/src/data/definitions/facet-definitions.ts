@@ -70,6 +70,15 @@ export const DELETE_FACET = gql`
     }
 `;
 
+export const DELETE_FACETS = gql`
+    mutation DeleteFacets($ids: [ID!]!, $force: Boolean) {
+        deleteFacets(ids: $ids, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
 export const CREATE_FACET_VALUES = gql`
     mutation CreateFacetValues($input: [CreateFacetValueInput!]!) {
         createFacetValues(input: $input) {
