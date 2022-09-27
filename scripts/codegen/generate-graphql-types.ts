@@ -7,10 +7,11 @@ import { ADMIN_API_PATH, SHOP_API_PATH } from '../../packages/common/src/shared-
 
 import { downloadIntrospectionSchema } from './download-introspection-schema';
 
-const CLIENT_QUERY_FILES = path.join(
-    __dirname,
-    '../../packages/admin-ui/src/lib/core/src/data/definitions/**/*.ts',
-);
+const CLIENT_QUERY_FILES = [
+    path.join(__dirname, '../../packages/admin-ui/src/lib/core/src/data/definitions/**/*.ts'),
+    path.join(__dirname, '../../packages/admin-ui/src/lib/**/*.graphql.ts'),
+];
+
 const specFileToIgnore = [
     'import.e2e-spec',
     'plugin.e2e-spec',

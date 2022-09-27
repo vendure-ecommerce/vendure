@@ -16,6 +16,9 @@ type Mutation {
     "Update an existing Product"
     updateProduct(input: UpdateProductInput!): Product!
 
+    "Update multiple existing Products"
+    updateProducts(input: [UpdateProductInput!]!): [Product!]!
+
     "Delete a Product"
     deleteProduct(id: ID!): DeletionResponse!
 

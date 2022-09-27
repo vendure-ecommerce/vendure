@@ -2481,6 +2481,8 @@ export type Mutation = {
   createProduct: Product;
   /** Update an existing Product */
   updateProduct: Product;
+  /** Update multiple existing Products */
+  updateProducts: Array<Product>;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
   /** Delete multiple Products */
@@ -2947,6 +2949,11 @@ export type MutationCreateProductArgs = {
 
 export type MutationUpdateProductArgs = {
   input: UpdateProductInput;
+};
+
+
+export type MutationUpdateProductsArgs = {
+  input: Array<UpdateProductInput>;
 };
 
 

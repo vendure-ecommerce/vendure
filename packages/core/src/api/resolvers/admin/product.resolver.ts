@@ -14,6 +14,7 @@ import {
     MutationRemoveProductsFromChannelArgs,
     MutationRemoveProductVariantsFromChannelArgs,
     MutationUpdateProductArgs,
+    MutationUpdateProductsArgs,
     MutationUpdateProductVariantsArgs,
     Permission,
     QueryProductArgs,
@@ -124,6 +125,17 @@ export class ProductResolver {
     ): Promise<Translated<Product>> {
         const { input } = args;
         return await this.productService.update(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async updateProducts(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateProductsArgs,
+    ): Promise<Array<Translated<Product>>> {
+        const { input } = args;
+        return await Promise.all(args.input.map(i => this.productService.update(ctx, i)));
     }
 
     @Transaction()
