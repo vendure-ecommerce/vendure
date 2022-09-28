@@ -1,5 +1,7 @@
 import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
-import { BulkAction, BulkActionRegistryService } from '@vendure/admin-ui/core';
+
+import { BulkActionRegistryService } from './bulk-action-registry.service';
+import { BulkAction } from './bulk-action-types';
 
 /**
  * @description
