@@ -21,7 +21,7 @@ import {
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 
-type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
+export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
 
 @Component({
     selector: 'vdr-products-list',

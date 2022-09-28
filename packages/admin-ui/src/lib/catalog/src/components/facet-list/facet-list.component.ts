@@ -32,7 +32,7 @@ export class FacetListComponent
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    selectionManager: SelectionManager<GetFacetList.Items>;
+    selectionManager: SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>;
 
     constructor(
         private dataService: DataService,
@@ -61,7 +61,7 @@ export class FacetListComponent
                 },
             }),
         );
-        this.selectionManager = new SelectionManager<GetFacetList.Items>({
+        this.selectionManager = new SelectionManager({
             multiSelect: true,
             itemsAreEqual: (a, b) => a.id === b.id,
             additiveMode: true,

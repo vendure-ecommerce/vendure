@@ -152,12 +152,16 @@ export class FacetInUseError extends ErrorResult {
   readonly __typename = 'FacetInUseError';
   readonly errorCode = 'FACET_IN_USE_ERROR' as any;
   readonly message = 'FACET_IN_USE_ERROR';
+  readonly facetCode: Scalars['String'];
+  readonly productCount: Scalars['Int'];
+  readonly variantCount: Scalars['Int'];
   constructor(
-    public facetCode: Scalars['String'],
-    public productCount: Scalars['Int'],
-    public variantCount: Scalars['Int'],
+    input: { facetCode: Scalars['String'], productCount: Scalars['Int'], variantCount: Scalars['Int'] }
   ) {
     super();
+    this.facetCode = input.facetCode
+    this.productCount = input.productCount
+    this.variantCount = input.variantCount
   }
 }
 
@@ -577,6 +581,11 @@ export const adminErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Refund';
     },
   },
+  RemoveFacetFromChannelResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Facet';
+    },
+  },
   RemoveOptionGroupFromProductResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Product';
@@ -615,11 +624,6 @@ export const adminErrorOperationTypeResolvers = {
   UpdateCustomerResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Customer';
-    },
-  },
-  RemoveFacetFromChannelResult: {
-    __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Facet';
     },
   },
   UpdateGlobalSettingsResult: {

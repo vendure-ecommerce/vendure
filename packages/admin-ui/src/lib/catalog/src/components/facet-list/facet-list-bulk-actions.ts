@@ -1,10 +1,13 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { FacetListComponent } from '@vendure/admin-ui/catalog';
 import {
     BulkAction,
+    currentChannelIsNotDefault,
     DataService,
     DeletionResult,
-    GetFacetList,
+    getChannelCodeFromUserStatus,
+    GetFacetListQuery,
+    isMultiChannel,
+    ItemOf,
     ModalService,
     NotificationService,
     Permission,
@@ -13,14 +16,11 @@ import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, of } from 'rxjs';
 import { map, mapTo, switchMap } from 'rxjs/operators';
 
-import {
-    currentChannelIsNotDefault,
-    getChannelCodeFromUserStatus,
-    isMultiChannel,
-} from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
 
-export const deleteFacetsBulkAction: BulkAction<GetFacetList.Items, FacetListComponent> = {
+import { FacetListComponent } from './facet-list.component';
+
+export const deleteFacetsBulkAction: BulkAction<ItemOf<GetFacetListQuery, 'facets'>, FacetListComponent> = {
     location: 'facet-list',
     label: _('common.delete'),
     icon: 'trash',
@@ -104,7 +104,10 @@ export const deleteFacetsBulkAction: BulkAction<GetFacetList.Items, FacetListCom
     },
 };
 
-export const assignFacetsToChannelBulkAction: BulkAction<GetFacetList.Items, FacetListComponent> = {
+export const assignFacetsToChannelBulkAction: BulkAction<
+    ItemOf<GetFacetListQuery, 'facets'>,
+    FacetListComponent
+> = {
     location: 'facet-list',
     label: _('catalog.assign-to-channel'),
     icon: 'layers',
@@ -145,7 +148,10 @@ export const assignFacetsToChannelBulkAction: BulkAction<GetFacetList.Items, Fac
     },
 };
 
-export const removeFacetsFromChannelBulkAction: BulkAction<GetFacetList.Items, FacetListComponent> = {
+export const removeFacetsFromChannelBulkAction: BulkAction<
+    ItemOf<GetFacetListQuery, 'facets'>,
+    FacetListComponent
+> = {
     location: 'facet-list',
     label: _('catalog.remove-from-channel'),
     getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),

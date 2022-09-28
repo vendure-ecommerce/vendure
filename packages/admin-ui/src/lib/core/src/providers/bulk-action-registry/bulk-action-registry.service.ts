@@ -1,5 +1,6 @@
 import { Injectable, Type } from '@angular/core';
-import { FormInputComponent } from '@vendure/admin-ui/core';
+
+import { FormInputComponent } from '../../common/component-registry-types';
 
 import { BulkAction, BulkActionLocationId } from './bulk-action-types';
 

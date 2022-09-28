@@ -17,6 +17,7 @@ import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/ind
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
+    ChannelFragment,
     CollectionFragment,
     CurrencyCode,
     DeletionResult,
@@ -54,6 +55,7 @@ describe('Collection resolver', () => {
     let computersBreadcrumbsCollection: CollectionFragment;
     let pearBreadcrumbsCollection: CollectionFragment;
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+    let secondChannel: ChannelFragment;
 
     beforeAll(async () => {
         await server.init({
@@ -78,20 +80,20 @@ describe('Collection resolver', () => {
             (values, facet) => [...values, ...facet.values],
             [] as FacetValueFragment[],
         );
-        const { createChannel } = await adminClient.query<Codegen.CreateChannelMutation, Codegen.CreateChannelMutationVariables>(
-            CREATE_CHANNEL,
-            {
-                input: {
-                    code: 'second-channel',
-                    token: SECOND_CHANNEL_TOKEN,
-                    defaultLanguageCode: LanguageCode.en,
-                    currencyCode: CurrencyCode.USD,
-                    pricesIncludeTax: true,
-                    defaultShippingZoneId: 'T_1',
-                    defaultTaxZoneId: 'T_1',
-                },
+        const { createChannel } = await adminClient.query<
+            Codegen.CreateChannelMutation,
+            Codegen.CreateChannelMutationVariables
+        >(CREATE_CHANNEL, {
+            input: {
+                code: 'second-channel',
+                token: SECOND_CHANNEL_TOKEN,
+                defaultLanguageCode: LanguageCode.en,
+                currencyCode: CurrencyCode.USD,
+                pricesIncludeTax: true,
+                defaultShippingZoneId: 'T_1',
+                defaultTaxZoneId: 'T_1',
             },
-        );
+        });
         secondChannel = createChannel;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -2355,11 +2357,11 @@ describe('Collection resolver', () => {
                 Codegen.GetCollectionListQueryVariables
             >(GET_COLLECTION_LIST);
 
-            expect(before.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
-                { id: 'T_28', name: 'top' },
-                { id: 'T_29', name: 'child' },
-                { id: 'T_30', name: 'grandchild' },
-                { id: 'T_8', name: 'Accessories' },
+            expect(before.items.sort(sortById).map(pick(['name']))).toEqual([
+                { name: 'top' },
+                { name: 'child' },
+                { name: 'grandchild' },
+                { name: 'Accessories' },
             ]);
 
             const { deleteCollections } = await adminClient.query<

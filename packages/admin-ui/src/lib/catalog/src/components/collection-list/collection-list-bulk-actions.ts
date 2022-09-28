@@ -1,9 +1,11 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CollectionListComponent, CollectionPartial } from '@vendure/admin-ui/catalog';
 import {
     BulkAction,
+    currentChannelIsNotDefault,
     DataService,
     DeletionResult,
+    getChannelCodeFromUserStatus,
+    isMultiChannel,
     ModalService,
     NotificationService,
     Permission,
@@ -12,12 +14,10 @@ import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, from, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
 
-import {
-    currentChannelIsNotDefault,
-    getChannelCodeFromUserStatus,
-    isMultiChannel,
-} from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
+import { CollectionPartial } from '../collection-tree/collection-tree.types';
+
+import { CollectionListComponent } from './collection-list.component';
 
 export const deleteCollectionsBulkAction: BulkAction<CollectionPartial, CollectionListComponent> = {
     location: 'collection-list',

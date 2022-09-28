@@ -346,7 +346,7 @@ export class FacetService {
                         results.push(result);
                     }
                 } else {
-                    results.push(new FacetInUseError(facet.code, productCount, variantCount));
+                    results.push(new FacetInUseError({ facetCode: facet.code, productCount, variantCount }));
                 }
             }
         }

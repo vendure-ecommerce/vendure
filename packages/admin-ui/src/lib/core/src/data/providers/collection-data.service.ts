@@ -113,7 +113,10 @@ export class CollectionDataService {
         });
     }
 
-    previewCollectionVariants(input: Codegen.PreviewCollectionVariantsInput, options: Codegen.ProductVariantListOptions) {
+    previewCollectionVariants(
+        input: Codegen.PreviewCollectionVariantsInput,
+        options: Codegen.ProductVariantListOptions,
+    ) {
         return this.baseDataService.query<
             Codegen.PreviewCollectionContentsQuery,
             Codegen.PreviewCollectionContentsQueryVariables

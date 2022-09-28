@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ModalService } from '../../../providers/modal/modal.service';
+
 import { SelectionManager } from '../../../common/utilities/selection-manager';
+import { ModalService } from '../../../providers/modal/modal.service';
 import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-preview-dialog.component';
+
 import { AssetLike } from './asset-gallery.types';
 
 @Component({

@@ -1,16 +1,25 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BulkAction, DataService, DeletionResult, ModalService, NotificationService, Permission, SearchProducts, } from '@vendure/admin-ui/core';
+import {
+    BulkAction,
+    currentChannelIsNotDefault,
+    DataService,
+    DeletionResult,
+    getChannelCodeFromUserStatus,
+    isMultiChannel,
+    ModalService,
+    NotificationService,
+    Permission,
+} from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, from, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
 
-import { currentChannelIsNotDefault, getChannelCodeFromUserStatus, isMultiChannel, } from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 
-import { ProductListComponent } from './product-list.component';
+import { ProductListComponent, SearchItem } from './product-list.component';
 
-export const deleteProductsBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+export const deleteProductsBulkAction: BulkAction<SearchItem, ProductListComponent> = {
     location: 'product-list',
     label: _('common.delete'),
     icon: 'trash',
@@ -64,7 +73,7 @@ export const deleteProductsBulkAction: BulkAction<SearchProducts.Items, ProductL
     },
 };
 
-export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+export const assignProductsToChannelBulkAction: BulkAction<SearchItem, ProductListComponent> = {
     location: 'product-list',
     label: _('catalog.assign-to-channel'),
     icon: 'layers',
@@ -92,7 +101,7 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items,
     },
 };
 
-export const removeProductsFromChannelBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+export const removeProductsFromChannelBulkAction: BulkAction<SearchItem, ProductListComponent> = {
     location: 'product-list',
     label: _('catalog.remove-from-channel'),
     requiresPermission: userPermissions =>
@@ -156,7 +165,7 @@ export const removeProductsFromChannelBulkAction: BulkAction<SearchProducts.Item
     },
 };
 
-export const assignFacetValuesToProductsBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
+export const assignFacetValuesToProductsBulkAction: BulkAction<SearchItem, ProductListComponent> = {
     location: 'product-list',
     label: _('catalog.edit-facet-values'),
     icon: 'tag',
