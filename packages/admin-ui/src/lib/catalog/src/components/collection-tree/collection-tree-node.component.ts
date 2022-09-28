@@ -1,17 +1,19 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Input,
     OnChanges,
+    OnDestroy,
     OnInit,
     Optional,
     SimpleChanges,
     SkipSelf,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DataService, Permission } from '@vendure/admin-ui/core';
-import { Observable } from 'rxjs';
+import { DataService, Permission, SelectionManager } from '@vendure/admin-ui/core';
+import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { RootNode, TreeNode } from './array-to-tree';
@@ -24,15 +26,17 @@ import { CollectionPartial } from './collection-tree.types';
     styleUrls: ['./collection-tree-node.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionTreeNodeComponent implements OnInit, OnChanges {
+export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy {
     depth = 0;
     parentName: string;
     @Input() collectionTree: TreeNode<CollectionPartial>;
     @Input() activeCollectionId: string;
     @Input() expandAll = false;
+    @Input() selectionManager: SelectionManager<CollectionPartial>;
     hasUpdatePermission$: Observable<boolean>;
     hasDeletePermission$: Observable<boolean>;
     moveListItems: Array<{ path: string; id: string }> = [];
+    private subscription: Subscription;
 
     constructor(
         @SkipSelf() @Optional() private parent: CollectionTreeNodeComponent,
@@ -40,6 +44,7 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
         private collectionTreeService: CollectionTreeService,
         private router: Router,
         private route: ActivatedRoute,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {
         if (parent) {
             this.depth = parent.depth + 1;
@@ -64,6 +69,9 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
                     perms.includes(Permission.DeleteCatalog) || perms.includes(Permission.DeleteCollection),
             ),
         );
+        this.subscription = this.selectionManager?.selectionChanges$.subscribe(() =>
+            this.changeDetectorRef.markForCheck(),
+        );
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -73,6 +81,10 @@ export class CollectionTreeNodeComponent implements OnInit, OnChanges {
                 this.collectionTree.children.forEach(c => (c.expanded = false));
             }
         }
+    }
+
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
     }
 
     trackByFn(index: number, item: CollectionPartial) {

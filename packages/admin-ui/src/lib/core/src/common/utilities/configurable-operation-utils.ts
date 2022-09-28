@@ -72,7 +72,7 @@ export function toConfigurableOperationInput(
         code: operation.code,
         arguments: operation.args.map(({ name, value }, j) => {
             const formValue = argsArray?.find(arg => arg.name === name)?.value ?? argsMap?.[name];
-            if (!formValue) {
+            if (formValue == null) {
                 throw new Error(`Cannot find an argument value for the key "${name}"`);
             }
             return {

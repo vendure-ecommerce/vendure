@@ -136,6 +136,7 @@ export class OrderTestingService {
                 ctx,
                 productVariant,
                 orderLine.customFields || {},
+                mockOrder
             );
             const taxRate = productVariant.taxRateApplied;
             const unitPrice = priceIncludesTax ? taxRate.netPriceOf(price) : price;

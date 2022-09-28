@@ -6,6 +6,7 @@
 /out-tsc
 /package
 /src/lib/package.json
+/.angular
 
 # dependencies
 /node_modules

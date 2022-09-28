@@ -1,12 +1,15 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import {
+    AssignCollectionsToChannelInput,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     CreateCollectionInput,
     DeletionResponse,
     DeletionResult,
     MoveCollectionInput,
+    Permission,
     PreviewCollectionVariantsInput,
+    RemoveCollectionsFromChannelInput,
     UpdateCollectionInput,
 } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
@@ -17,7 +20,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
-import { IllegalOperationError } from '../../common/error/errors';
+import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -45,6 +48,7 @@ import { moveToIndex } from '../helpers/utils/move-to-index';
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+import { RoleService } from './role.service';
 
 export type ApplyCollectionFiltersJobData = {
     ctx: SerializedRequestContext;
@@ -77,6 +81,7 @@ export class CollectionService implements OnModuleInit {
         private configArgService: ConfigArgService,
         private customFieldRelationService: CustomFieldRelationService,
         private translator: TranslatorService,
+        private roleService: RoleService,
     ) {}
 
     /**
@@ -721,5 +726,90 @@ export class CollectionService implements OnModuleInit {
         );
         this.rootCollection = this.translator.translate(newRoot, ctx);
         return this.rootCollection;
+    }
+
+    /**
+     * @description
+     * Assigns Collections to the specified Channel
+     */
+    async assignCollectionsToChannel(
+        ctx: RequestContext,
+        input: AssignCollectionsToChannelInput,
+    ): Promise<Array<Translated<Collection>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.UpdateCollection,
+            Permission.UpdateCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const collectionsToAssign = await this.connection
+            .getRepository(ctx, Collection)
+            .findByIds(input.collectionIds);
+
+        await Promise.all(
+            collectionsToAssign.map(collection =>
+                this.channelService.assignToChannels(ctx, Collection, collection.id, [input.channelId]),
+            ),
+        );
+
+        await this.applyFiltersQueue.add({
+            ctx: ctx.serialize(),
+            collectionIds: collectionsToAssign.map(collection => collection.id),
+        });
+
+        return this.connection
+            .findByIdsInChannel(
+                ctx,
+                Collection,
+                collectionsToAssign.map(c => c.id),
+                ctx.channelId,
+                {},
+            )
+            .then(collections => collections.map(collection => this.translator.translate(collection, ctx)));
+    }
+
+    /**
+     * @description
+     * Remove Collections from the specified Channel
+     */
+    async removeCollectionsFromChannel(
+        ctx: RequestContext,
+        input: RemoveCollectionsFromChannelInput,
+    ): Promise<Array<Translated<Collection>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.DeleteCollection,
+            Permission.DeleteCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.collections-cannot-be-removed-from-default-channel');
+        }
+        const collectionsToRemove = await this.connection
+            .getRepository(ctx, Collection)
+            .findByIds(input.collectionIds);
+
+        await Promise.all(
+            collectionsToRemove.map(async collection => {
+                const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
+                await this.channelService.removeFromChannels(ctx, Collection, collection.id, [
+                    input.channelId,
+                ]);
+                this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+            }),
+        );
+
+        return this.connection
+            .findByIdsInChannel(
+                ctx,
+                Collection,
+                collectionsToRemove.map(c => c.id),
+                ctx.channelId,
+                {},
+            )
+            .then(collections => collections.map(collection => this.translator.translate(collection, ctx)));
     }
 }

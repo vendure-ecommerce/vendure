@@ -368,7 +368,7 @@ describe('Facet resolver', () => {
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.NOT_DELETED,
-                message: `The selected Facet includes FacetValues which are assigned to 1 Product`,
+                message: `The Facet "speaker-type" includes FacetValues which are assigned to 1 Product`,
             });
 
             expect(result2.facet).not.toBe(null);
@@ -431,6 +431,7 @@ describe('Facet resolver', () => {
 
     describe('channels', () => {
         const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+        let secondChannel: ChannelFragment;
         let createdFacet: Codegen.CreateFacetMutation['createFacet'];
 
         beforeAll(async () => {
@@ -449,12 +450,14 @@ describe('Facet resolver', () => {
                 },
             });
 
+            secondChannel = createChannel as ChannelFragment;
+
             const { assignProductsToChannel } = await adminClient.query<
                 Codegen.AssignProductsToChannelMutation,
                 Codegen.AssignProductsToChannelMutationVariables
             >(ASSIGN_PRODUCT_TO_CHANNEL, {
                 input: {
-                    channelId: (createChannel as ChannelFragment).id,
+                    channelId: secondChannel.id,
                     productIds: ['T_1'],
                     priceFactor: 0.5,
                 },
@@ -641,6 +644,91 @@ describe('Facet resolver', () => {
                 });
             }, `No Facet with the id '1' could be found`),
         );
+
+        it('removing from channel with error', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { facets: before } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
+                GET_FACET_LIST_SIMPLE,
+            );
+            expect(before.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removeFacetsFromChannel } = await adminClient.query<
+                Codegen.RemoveFacetsFromChannelMutation,
+                Codegen.RemoveFacetsFromChannelMutationVariables
+            >(REMOVE_FACETS_FROM_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    facetIds: [createdFacet.id],
+                    force: false,
+                },
+            });
+
+            expect(removeFacetsFromChannel).toEqual([
+                {
+                    errorCode: 'FACET_IN_USE_ERROR',
+                    message:
+                        'The Facet "channel-facet" includes FacetValues which are assigned to 1 Product 1 ProductVariant',
+                    productCount: 1,
+                    variantCount: 1,
+                },
+            ]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
+            expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
+        });
+
+        it('force removing from channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { facets: before } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
+                GET_FACET_LIST_SIMPLE,
+            );
+            expect(before.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removeFacetsFromChannel } = await adminClient.query<
+                Codegen.RemoveFacetsFromChannelMutation,
+                Codegen.RemoveFacetsFromChannelMutationVariables
+            >(REMOVE_FACETS_FROM_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    facetIds: [createdFacet.id],
+                    force: true,
+                },
+            });
+
+            expect(removeFacetsFromChannel).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
+            expect(after.items).toEqual([]);
+        });
+
+        it('assigning to channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { facets: before } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
+                GET_FACET_LIST_SIMPLE,
+            );
+            expect(before.items).toEqual([]);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { assignFacetsToChannel } = await adminClient.query<
+                Codegen.AssignFacetsToChannelMutation,
+                Codegen.AssignFacetsToChannelMutationVariables
+            >(ASSIGN_FACETS_TO_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    facetIds: [createdFacet.id],
+                },
+            });
+
+            expect(assignFacetsToChannel).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
+            expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
+        });
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/715
@@ -782,4 +870,30 @@ export const UPDATE_FACET_VALUES = gql`
         }
     }
     ${FACET_VALUE_FRAGMENT}
+`;
+
+export const ASSIGN_FACETS_TO_CHANNEL = gql`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`;
+
+export const REMOVE_FACETS_FROM_CHANNEL = gql`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+                name
+            }
+            ... on FacetInUseError {
+                errorCode
+                message
+                productCount
+                variantCount
+            }
+        }
+    }
 `;

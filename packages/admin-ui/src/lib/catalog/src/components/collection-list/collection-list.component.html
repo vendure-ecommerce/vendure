@@ -11,15 +11,15 @@
                 class="expand-all-toggle ml3"
                 [ngClass]="(availableLanguages$ | async)?.length === 1 ? 'mt3' : 'mt1'"
             >
-                <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" (change)="toggleExpandAll()"/>
+                <input type="checkbox" clrCheckbox [(ngModel)]="expandAll" (change)="toggleExpandAll()" />
                 <label>{{ 'catalog.expand-all-collections' | translate }}</label>
             </clr-checkbox-wrapper>
             <input
-                type='text'
-                name='searchTerm'
-                [formControl]='filterTermControl'
+                type="text"
+                name="searchTerm"
+                [formControl]="filterTermControl"
                 [placeholder]="'catalog.filter-by-name' | translate"
-                class='clr-input search-input ml4'
+                class="clr-input search-input ml4"
             />
         </div>
     </vdr-ab-left>
@@ -35,12 +35,27 @@
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
+<div class="bulk-select-controls">
+    <input
+        type="checkbox"
+        clrCheckbox
+        [checked]="selectionManager.areAllCurrentItemsSelected()"
+        (click)="selectionManager.toggleSelectAll()"
+    />
+    <vdr-bulk-action-menu
+        class="ml2"
+        locationId="collection-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    ></vdr-bulk-action-menu>
+</div>
 <div class="collection-wrapper">
     <vdr-collection-tree
         [collections]="items$ | async"
         [activeCollectionId]="activeCollectionId$ | async"
         [expandAll]="expandAll"
         [expandedIds]="expandedIds"
+        [selectionManager]="selectionManager"
         (rearrange)="onRearrange($event)"
         (deleteCollection)="deleteCollection($event)"
     ></vdr-collection-tree>

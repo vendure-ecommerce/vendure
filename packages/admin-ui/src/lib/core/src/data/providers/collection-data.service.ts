@@ -4,14 +4,17 @@ import { bufferCount, concatMap } from 'rxjs/operators';
 
 import * as Codegen from '../../common/generated-types';
 import {
+    ASSIGN_COLLECTIONS_TO_CHANNEL,
     CREATE_COLLECTION,
     DELETE_COLLECTION,
+    DELETE_COLLECTIONS,
     GET_COLLECTION,
     GET_COLLECTION_CONTENTS,
     GET_COLLECTION_FILTERS,
     GET_COLLECTION_LIST,
     MOVE_COLLECTION,
     PREVIEW_COLLECTION_CONTENTS,
+    REMOVE_COLLECTIONS_FROM_CHANNEL,
     UPDATE_COLLECTION,
 } from '../definitions/collection-definitions';
 
@@ -101,6 +104,15 @@ export class CollectionDataService {
         });
     }
 
+    deleteCollections(ids: string[]) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteCollectionsMutation,
+            Codegen.DeleteCollectionsMutationVariables
+        >(DELETE_COLLECTIONS, {
+            ids,
+        });
+    }
+
     previewCollectionVariants(input: Codegen.PreviewCollectionVariantsInput, options: Codegen.ProductVariantListOptions) {
         return this.baseDataService.query<
             Codegen.PreviewCollectionContentsQuery,
@@ -122,6 +134,24 @@ export class CollectionDataService {
                 take,
                 filter,
             },
+        });
+    }
+
+    assignCollectionsToChannel(input: Codegen.AssignCollectionsToChannelInput) {
+        return this.baseDataService.mutate<
+            Codegen.AssignCollectionsToChannelMutation,
+            Codegen.AssignCollectionsToChannelMutationVariables
+        >(ASSIGN_COLLECTIONS_TO_CHANNEL, {
+            input,
+        });
+    }
+
+    removeCollectionsFromChannel(input: Codegen.RemoveCollectionsFromChannelInput) {
+        return this.baseDataService.mutate<
+            Codegen.RemoveCollectionsFromChannelMutation,
+            Codegen.RemoveCollectionsFromChannelMutationVariables
+        >(REMOVE_COLLECTIONS_FROM_CHANNEL, {
+            input,
         });
     }
 }

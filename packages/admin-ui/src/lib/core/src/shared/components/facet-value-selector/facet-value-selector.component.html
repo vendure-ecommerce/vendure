@@ -12,10 +12,16 @@
 >
     <ng-template ng-label-tmp let-item="item" let-clear="clear">
         <vdr-facet-value-chip
+            *ngIf="item.value; else facetNotFound"
             [facetValue]="item.value"
             [removable]="!readonly"
             (remove)="clear(item)"
         ></vdr-facet-value-chip>
+        <ng-template #facetNotFound>
+            <vdr-chip colorType="error" icon="times" (iconClick)="clear(item)">{{
+                'catalog.facet-value-not-available' | translate: { id: item.id }
+            }}</vdr-chip>
+        </ng-template>
     </ng-template>
     <ng-template ng-option-tmp let-item="item">
         <vdr-facet-value-chip [facetValue]="item.value" [removable]="false"></vdr-facet-value-chip>

@@ -15,10 +15,13 @@ import {
     SearchInput,
     SearchProductsQuery,
     SearchProductsQueryVariables,
+    SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+
+type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
 
 @Component({
     selector: 'vdr-products-list',
@@ -28,7 +31,7 @@ import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxj
 export class ProductListComponent
     extends BaseListComponent<
         SearchProductsQuery,
-        ItemOf<SearchProductsQuery, 'search'>,
+        SearchItem,
         SearchProductsQueryVariables
     >
     implements OnInit, AfterViewInit
@@ -41,9 +44,11 @@ export class ProductListComponent
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
+    selectionManager: SelectionManager<SearchItem>;
 
     @ViewChild('productSearchInputComponent', { static: true })
     private productSearchInput: ProductSearchInputComponent;
+
     constructor(
         private dataService: DataService,
         private modalService: ModalService,
@@ -89,6 +94,12 @@ export class ProductListComponent
                 } as SearchInput,
             }),
         );
+        this.selectionManager = new SelectionManager({
+            multiSelect: true,
+            itemsAreEqual: (a, b) =>
+                this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,
+            additiveMode: true,
+        });
     }
 
     ngOnInit() {

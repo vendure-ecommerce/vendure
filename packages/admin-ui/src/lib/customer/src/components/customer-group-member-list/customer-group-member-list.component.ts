@@ -10,7 +10,6 @@ import {
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Customer, DataService } from '@vendure/admin-ui/core';
-import { ZoneMember } from '@vendure/admin-ui/settings';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, takeUntil, tap } from 'rxjs/operators';
 
@@ -20,6 +19,11 @@ export interface CustomerGroupMemberFetchParams {
     filterTerm: string;
 }
 
+type CustomerGroupMember = Pick<
+    Customer,
+    'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'
+>;
+
 @Component({
     selector: 'vdr-customer-group-member-list',
     templateUrl: './customer-group-member-list.component.html',
@@ -27,9 +31,7 @@ export interface CustomerGroupMemberFetchParams {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
-    @Input() members: Array<
-        Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
-    >;
+    @Input() members: CustomerGroupMember[];
     @Input() totalItems: number;
     @Input() route: ActivatedRoute;
     @Input() selectedMemberIds: string[] = [];
@@ -118,7 +120,7 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
         }
     }
 
-    toggleSelectMember(member: ZoneMember) {
+    toggleSelectMember({ item: member }: { item: { id: string } }) {
         if (this.selectedMemberIds.includes(member.id)) {
             this.selectionChange.emit(this.selectedMemberIds.filter(id => id !== member.id));
         } else {
@@ -126,7 +128,7 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
         }
     }
 
-    isMemberSelected = (member: ZoneMember): boolean => {
+    isMemberSelected = (member: { id: string }): boolean => {
         return -1 < this.selectedMemberIds.indexOf(member.id);
     };
 }

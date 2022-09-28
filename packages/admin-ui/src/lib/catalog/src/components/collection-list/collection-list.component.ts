@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
@@ -10,6 +10,7 @@ import {
     ModalService,
     NotificationService,
     QueryResult,
+    SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
@@ -24,7 +25,7 @@ import {
     tap,
 } from 'rxjs/operators';
 
-import { RearrangeEvent } from '../collection-tree/collection-tree.types';
+import { CollectionPartial, RearrangeEvent } from '../collection-tree/collection-tree.types';
 
 @Component({
     selector: 'vdr-collection-list',
@@ -41,6 +42,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
     contentLanguage$: Observable<LanguageCode>;
     expandAll = false;
     expandedIds: string[] = [];
+    selectionManager: SelectionManager<CollectionPartial>;
     private queryResult: QueryResult<any>;
     private destroy$ = new Subject<void>();
 
@@ -51,11 +53,23 @@ export class CollectionListComponent implements OnInit, OnDestroy {
         private router: Router,
         private route: ActivatedRoute,
         private serverConfigService: ServerConfigService,
-    ) {}
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {
+        this.selectionManager = new SelectionManager({
+            additiveMode: true,
+            multiSelect: true,
+            itemsAreEqual: (a, b) => a.id === b.id,
+        });
+    }
 
     ngOnInit() {
         this.queryResult = this.dataService.collection.getCollections(1000, 0).refetchOnChannelChange();
-        this.items$ = this.queryResult.mapStream(data => data.collections.items).pipe(shareReplay(1));
+        this.items$ = this.queryResult
+            .mapStream(data => data.collections.items)
+            .pipe(
+                tap(items => this.selectionManager.setCurrentItems(items)),
+                shareReplay(1),
+            );
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),
@@ -172,7 +186,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
         this.dataService.client.setContentLanguage(code).subscribe();
     }
 
-    private refresh() {
+    refresh() {
         const filterTerm = this.route.snapshot.queryParamMap.get('q');
         this.queryResult.ref.refetch({
             options: {

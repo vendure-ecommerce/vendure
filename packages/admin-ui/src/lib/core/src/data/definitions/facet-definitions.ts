@@ -70,6 +70,15 @@ export const DELETE_FACET = gql`
     }
 `;
 
+export const DELETE_FACETS = gql`
+    mutation DeleteFacets($ids: [ID!]!, $force: Boolean) {
+        deleteFacets(ids: $ids, force: $force) {
+            result
+            message
+        }
+    }
+`;
+
 export const CREATE_FACET_VALUES = gql`
     mutation CreateFacetValues($input: [CreateFacetValueInput!]!) {
         createFacetValues(input: $input) {
@@ -116,4 +125,28 @@ export const GET_FACET_WITH_VALUES = gql`
         }
     }
     ${FACET_WITH_VALUES_FRAGMENT}
+`;
+
+export const ASSIGN_FACETS_TO_CHANNEL = gql`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+        }
+    }
+`;
+
+export const REMOVE_FACETS_FROM_CHANNEL = gql`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+            }
+            ... on FacetInUseError {
+                errorCode
+                message
+                variantCount
+                productCount
+            }
+        }
+    }
 `;

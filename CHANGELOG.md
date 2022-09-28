@@ -1,3 +1,12 @@
+## <small>1.7.3 (2022-09-24)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix ShippingMethod update error with falsy config values ([0484053](https://github.com/vendure-ecommerce/vendure/commit/0484053)), closes [#1800](https://github.com/vendure-ecommerce/vendure/issues/1800)
+* **core** 'productVariantId' in group statement is ambiguous (#1793) ([3c63364](https://github.com/vendure-ecommerce/vendure/commit/3c63364)), closes [#1793](https://github.com/vendure-ecommerce/vendure/issues/1793)
+* **core** Add null checks for relations in Order entity getters ([3f469bb](https://github.com/vendure-ecommerce/vendure/commit/3f469bb))
+
 ## <small>1.7.2 (2022-09-19)</small>
 
 

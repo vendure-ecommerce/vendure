@@ -99,6 +99,7 @@ export class ModalService {
     dialog<T>(config: DialogConfig<T>): Observable<T | undefined> {
         return this.fromComponent(SimpleDialogComponent, {
             locals: config,
+            size: config.size,
         });
     }
 }

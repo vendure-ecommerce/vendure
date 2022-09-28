@@ -30,6 +30,7 @@ import { AssetPreviewDialogComponent } from './components/asset-preview-dialog/a
 import { AssetPreviewLinksComponent } from './components/asset-preview-links/asset-preview-links.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { AssetSearchInputComponent } from './components/asset-search-input/asset-search-input.component';
+import { BulkActionMenuComponent } from './components/bulk-action-menu/bulk-action-menu.component';
 import { ChannelAssignmentControlComponent } from './components/channel-assignment-control/channel-assignment-control.component';
 import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.component';
 import { ChipComponent } from './components/chip/chip.component';
@@ -245,6 +246,7 @@ const DECLARATIONS = [
     ProductSearchInputComponent,
     ContextMenuComponent,
     RawHtmlDialogComponent,
+    BulkActionMenuComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

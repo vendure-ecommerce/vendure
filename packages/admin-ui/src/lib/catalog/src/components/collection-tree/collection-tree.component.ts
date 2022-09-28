@@ -8,6 +8,7 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
+import { Collection, SelectionManager } from '@vendure/admin-ui/core';
 
 import { arrayToTree, RootNode } from './array-to-tree';
 import { CollectionTreeService } from './collection-tree.service';
@@ -25,6 +26,7 @@ export class CollectionTreeComponent implements OnInit, OnChanges {
     @Input() activeCollectionId: string;
     @Input() expandAll = false;
     @Input() expandedIds: string[] = [];
+    @Input() selectionManager: SelectionManager<CollectionPartial>;
     @Output() rearrange = new EventEmitter<RearrangeEvent>();
     @Output() deleteCollection = new EventEmitter<string>();
     collectionTree: RootNode<CollectionPartial>;

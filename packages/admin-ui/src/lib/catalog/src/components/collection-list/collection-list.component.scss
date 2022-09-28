@@ -5,6 +5,14 @@
     flex-direction: column;
 }
 
+.bulk-select-controls {
+    min-height: 36px;
+    padding-left: 14px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-component-border-200);
+}
+
 .expand-all-toggle {
     display: block;
 }

@@ -2,12 +2,15 @@ import { pick } from '@vendure/common/lib/pick';
 
 import * as Codegen from '../../common/generated-types';
 import {
+    ASSIGN_FACETS_TO_CHANNEL,
     CREATE_FACET,
     CREATE_FACET_VALUES,
     DELETE_FACET,
     DELETE_FACET_VALUES,
+    DELETE_FACETS,
     GET_FACET_LIST,
     GET_FACET_WITH_VALUES,
+    REMOVE_FACETS_FROM_CHANNEL,
     UPDATE_FACET,
     UPDATE_FACET_VALUES,
 } from '../definitions/facet-definitions';
@@ -75,6 +78,13 @@ export class FacetDataService {
         );
     }
 
+    deleteFacets(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<Codegen.DeleteFacetsMutation, Codegen.DeleteFacetsMutationVariables>(DELETE_FACETS, {
+            ids,
+            force,
+        });
+    }
+
     createFacetValues(facetValues: Codegen.CreateFacetValueInput[]) {
         const input: Codegen.CreateFacetValuesMutationVariables = {
             input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
@@ -102,6 +112,24 @@ export class FacetDataService {
         >(DELETE_FACET_VALUES, {
             ids,
             force,
+        });
+    }
+
+    assignFacetsToChannel(input: Codegen.AssignFacetsToChannelInput) {
+        return this.baseDataService.mutate<Codegen.AssignFacetsToChannelMutation, Codegen.AssignFacetsToChannelMutationVariables>(
+            ASSIGN_FACETS_TO_CHANNEL,
+            {
+                input,
+            },
+        );
+    }
+
+    removeFacetsFromChannel(input: Codegen.RemoveFacetsFromChannelInput) {
+        return this.baseDataService.mutate<
+            Codegen.RemoveFacetsFromChannelMutation,
+            Codegen.RemoveFacetsFromChannelMutationVariables
+        >(REMOVE_FACETS_FROM_CHANNEL, {
+            input,
         });
     }
 }

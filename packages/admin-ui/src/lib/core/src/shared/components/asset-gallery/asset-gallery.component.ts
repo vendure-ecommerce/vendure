@@ -31,7 +31,7 @@ export class AssetGalleryComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         if (this.assets) {
             for (const asset of this.selectionManager.selection) {
-                // Update and selected assets with any changes
+                // Update any selected assets with any changes
                 const match = this.assets.find(a => a.id === asset.id);
                 if (match) {
                     Object.assign(asset, match);
