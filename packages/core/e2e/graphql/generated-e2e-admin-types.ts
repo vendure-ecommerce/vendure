@@ -2296,6 +2296,8 @@ export type Mutation = {
   updateCollection: Collection;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
+  /** Delete a Collection and all of its descendants */
+  deleteCollections: Array<DeletionResponse>;
   /** Move a Collection to a different parent or index */
   moveCollection: Collection;
   /** Assigns Collections to the specified Channel */
@@ -2574,6 +2576,11 @@ export type MutationUpdateCollectionArgs = {
 
 export type MutationDeleteCollectionArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCollectionsArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -5539,6 +5546,13 @@ export type RemoveCollectionsFromChannelMutationVariables = Exact<{
 
 export type RemoveCollectionsFromChannelMutation = { removeCollectionsFromChannel: Array<CollectionFragment> };
 
+export type DeleteCollectionsBulkMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteCollectionsBulkMutation = { deleteCollections: Array<Pick<DeletionResponse, 'message' | 'result'>> };
+
 export type GetCheckersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -7652,6 +7666,12 @@ export namespace RemoveCollectionsFromChannel {
   export type Variables = RemoveCollectionsFromChannelMutationVariables;
   export type Mutation = RemoveCollectionsFromChannelMutation;
   export type RemoveCollectionsFromChannel = NonNullable<(NonNullable<RemoveCollectionsFromChannelMutation['removeCollectionsFromChannel']>)[number]>;
+}
+
+export namespace DeleteCollectionsBulk {
+  export type Variables = DeleteCollectionsBulkMutationVariables;
+  export type Mutation = DeleteCollectionsBulkMutation;
+  export type DeleteCollections = NonNullable<(NonNullable<DeleteCollectionsBulkMutation['deleteCollections']>)[number]>;
 }
 
 export namespace GetCheckers {

@@ -2296,6 +2296,8 @@ export type Mutation = {
   updateCollection: Collection;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
+  /** Delete a Collection and all of its descendants */
+  deleteCollections: Array<DeletionResponse>;
   /** Move a Collection to a different parent or index */
   moveCollection: Collection;
   /** Assigns Collections to the specified Channel */
@@ -2574,6 +2576,11 @@ export type MutationUpdateCollectionArgs = {
 
 export type MutationDeleteCollectionArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCollectionsArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 

@@ -17,6 +17,9 @@ type Mutation {
     "Delete a Collection and all of its descendants"
     deleteCollection(id: ID!): DeletionResponse!
 
+    "Delete multiple Collections and all of their descendants"
+    deleteCollections(ids: [ID!]!): [DeletionResponse!]!
+
     "Move a Collection to a different parent or index"
     moveCollection(input: MoveCollectionInput!): Collection!
 

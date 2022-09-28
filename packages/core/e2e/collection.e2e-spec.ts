@@ -10,7 +10,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { pick } from '../../common/lib/pick';
 import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/index';
 
@@ -29,6 +29,9 @@ import {
     CreateCollectionSelectVariants,
     CurrencyCode,
     DeleteCollection,
+    DeleteCollectionsBulk,
+    DeleteCollectionsBulkMutation,
+    DeleteCollectionsBulkMutationVariables,
     DeleteProduct,
     DeleteProductVariant,
     DeletionResult,
@@ -38,6 +41,8 @@ import {
     GetCollectionBreadcrumbs,
     GetCollectionListAdminQuery,
     GetCollectionListAdminQueryVariables,
+    GetCollectionListQuery,
+    GetCollectionListQueryVariables,
     GetCollectionNestedParents,
     GetCollectionProducts,
     GetCollections,
@@ -2178,6 +2183,73 @@ describe('Collection resolver', () => {
         });
     });
 
+    describe('deleteCollections (multiple)', () => {
+        let top: CollectionFragment;
+        let child: CollectionFragment;
+        let grandchild: CollectionFragment;
+        beforeAll(async () => {
+            async function createNewCollection(name: string, parentId?: string) {
+                const { createCollection } = await adminClient.query<
+                    CreateCollectionMutation,
+                    CreateCollectionMutationVariables
+                >(CREATE_COLLECTION, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name,
+                                description: '',
+                                slug: name,
+                            },
+                        ],
+                        filters: [],
+                    },
+                });
+                return createCollection;
+            }
+
+            top = await createNewCollection('top');
+            child = await createNewCollection('child', top.id);
+            grandchild = await createNewCollection('grandchild', child.id);
+        });
+
+        it('deletes all selected collections', async () => {
+            const { collections: before } = await adminClient.query<
+                GetCollectionListQuery,
+                GetCollectionListQueryVariables
+            >(GET_COLLECTION_LIST);
+
+            expect(before.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
+                { id: 'T_28', name: 'top' },
+                { id: 'T_29', name: 'child' },
+                { id: 'T_30', name: 'grandchild' },
+                { id: 'T_8', name: 'Accessories' },
+            ]);
+
+            const { deleteCollections } = await adminClient.query<
+                DeleteCollectionsBulkMutation,
+                DeleteCollectionsBulkMutationVariables
+            >(DELETE_COLLECTIONS_BULK, {
+                ids: [top.id, child.id, grandchild.id],
+            });
+
+            expect(deleteCollections).toEqual([
+                { result: DeletionResult.DELETED, message: null },
+                { result: DeletionResult.DELETED, message: null },
+                { result: DeletionResult.DELETED, message: null },
+            ]);
+
+            const { collections: after } = await adminClient.query<
+                GetCollectionListQuery,
+                GetCollectionListQueryVariables
+            >(GET_COLLECTION_LIST);
+
+            expect(after.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
+                { id: 'T_8', name: 'Accessories' },
+            ]);
+        });
+    });
+
     function getFacetValueId(code: string): string {
         const match = facetValues.find(fv => fv.code === code);
         if (!match) {
@@ -2383,4 +2455,13 @@ const REMOVE_COLLECTIONS_FROM_CHANNEL = gql`
         }
     }
     ${COLLECTION_FRAGMENT}
+`;
+
+const DELETE_COLLECTIONS_BULK = gql`
+    mutation DeleteCollectionsBulk($ids: [ID!]!) {
+        deleteCollections(ids: $ids) {
+            message
+            result
+        }
+    }
 `;
