@@ -149,6 +149,7 @@
     "remove-option": "Eliminar opção",
     "remove-product-from-channel": "Eliminar produto do canal",
     "remove-product-variant-from-channel": "Remover variante do canal?",
+    "root-collection": "",
     "run-pending-search-index-updates": "Executar {count, plural, one {1 actualização pendente} other {{count} actualizações pendentes}}",
     "running-search-index-updates": "A executar {count, plural, one {1 actualização} other {{count} actualizações}}",
     "search-asset-name-or-tag": "Pesquisar pelo nome ou tag",

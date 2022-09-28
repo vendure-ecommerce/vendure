@@ -149,6 +149,7 @@
     "remove-option": "Remove option",
     "remove-product-from-channel": "Remove product from channel",
     "remove-product-variant-from-channel": "Remove product variant from channel",
+    "root-collection": "Root collection",
     "run-pending-search-index-updates": "Run {count, plural, one {1 pending update} other {{count} pending updates}}",
     "running-search-index-updates": "Running {count, plural, one {1 update} other {{count} updates}} to search index",
     "search-asset-name-or-tag": "Search by asset name or tags",

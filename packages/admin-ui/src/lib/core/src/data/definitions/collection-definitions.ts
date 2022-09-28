@@ -22,6 +22,11 @@ export const COLLECTION_FRAGMENT = gql`
         description
         isPrivate
         languageCode
+        breadcrumbs {
+            id
+            name
+            slug
+        }
         featuredAsset {
             ...Asset
         }

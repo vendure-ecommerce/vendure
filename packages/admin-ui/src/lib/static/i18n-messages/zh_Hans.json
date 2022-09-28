@@ -149,6 +149,7 @@
     "remove-option": "移除选项",
     "remove-product-from-channel": "从销售渠道移除商品",
     "remove-product-variant-from-channel": "从销售渠道移除商品变体",
+    "root-collection": "",
     "run-pending-search-index-updates": "",
     "running-search-index-updates": "",
     "search-asset-name-or-tag": "输入要搜索的资源名称或标签",

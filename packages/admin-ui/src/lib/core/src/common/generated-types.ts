@@ -5929,7 +5929,10 @@ export type GetCollectionFiltersQuery = { collectionFilters: Array<(
 export type CollectionFragment = (
   { __typename?: 'Collection' }
   & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'slug' | 'description' | 'isPrivate' | 'languageCode'>
-  & { featuredAsset?: Maybe<(
+  & { breadcrumbs: Array<(
+    { __typename?: 'CollectionBreadcrumb' }
+    & Pick<CollectionBreadcrumb, 'id' | 'name' | 'slug'>
+  )>, featuredAsset?: Maybe<(
     { __typename?: 'Asset' }
     & AssetFragment
   )>, assets: Array<(
@@ -9721,6 +9724,7 @@ export namespace GetCollectionFilters {
 
 export namespace Collection {
   export type Fragment = CollectionFragment;
+  export type Breadcrumbs = NonNullable<(NonNullable<CollectionFragment['breadcrumbs']>)[number]>;
   export type FeaturedAsset = (NonNullable<CollectionFragment['featuredAsset']>);
   export type Assets = NonNullable<(NonNullable<CollectionFragment['assets']>)[number]>;
   export type Filters = NonNullable<(NonNullable<CollectionFragment['filters']>)[number]>;
