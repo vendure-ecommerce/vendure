@@ -116,11 +116,41 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
      *
      * This function will be invoked each time the selection is changed, so try to avoid expensive code
      * running here.
+     *
+     * @example
+     * ```TypeScript
+     * import { registerBulkAction, DataService } from '\@vendure/admin-ui/core';
+     *
+     * registerBulkAction({
+     *   location: 'product-list',
+     *   label: 'Assign to channel',
+     *   // Only display this action if there are multiple channels
+     *   isVisible: ({ injector }) => injector.get(DataService).client
+     *     .userStatus()
+     *     .mapSingle(({ userStatus }) => 1 < userStatus.channels.length)
+     *     .toPromise(),
+     *   // ...
+     * });
+     * ```
      */
     isVisible?: (context: BulkActionFunctionContext<ItemType, ComponentType>) => boolean | Promise<boolean>;
     /**
      * @description
      * Control the display of this item based on the user permissions.
+     *
+     * @example
+     * ```TypeScript
+     * registerBulkAction({
+     *   // Can be specified as a simple string
+     *   requiresPermission: Permission.UpdateProduct,
+     *
+     *   // Or as a function that returns a boolean if permissions are satisfied
+     *   requiresPermission: userPermissions =>
+     *     userPermissions.includes(Permission.UpdateCatalog) ||
+     *     userPermissions.includes(Permission.UpdateProduct),
+     *   // ...
+     * })
+     * ```
      */
     requiresPermission?: string | ((userPermissions: string[]) => boolean);
 }
