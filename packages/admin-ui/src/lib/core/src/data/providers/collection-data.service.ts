@@ -3,10 +3,15 @@ import { from } from 'rxjs';
 import { bufferCount, concatMap } from 'rxjs/operators';
 
 import {
+    AssignCollectionsToChannelInput,
+    AssignCollectionsToChannelMutation,
+    AssignCollectionsToChannelMutationVariables,
     CollectionFilterParameter,
     CreateCollection,
     CreateCollectionInput,
     DeleteCollection,
+    DeleteCollectionsMutation,
+    DeleteCollectionsMutationVariables,
     GetCollection,
     GetCollectionContents,
     GetCollectionFilters,
@@ -17,18 +22,24 @@ import {
     PreviewCollectionContentsQueryVariables,
     PreviewCollectionVariantsInput,
     ProductVariantListOptions,
+    RemoveCollectionsFromChannelInput,
+    RemoveCollectionsFromChannelMutation,
+    RemoveCollectionsFromChannelMutationVariables,
     UpdateCollection,
     UpdateCollectionInput,
 } from '../../common/generated-types';
 import {
+    ASSIGN_COLLECTIONS_TO_CHANNEL,
     CREATE_COLLECTION,
     DELETE_COLLECTION,
+    DELETE_COLLECTIONS,
     GET_COLLECTION,
     GET_COLLECTION_CONTENTS,
     GET_COLLECTION_FILTERS,
     GET_COLLECTION_LIST,
     MOVE_COLLECTION,
     PREVIEW_COLLECTION_CONTENTS,
+    REMOVE_COLLECTIONS_FROM_CHANNEL,
     UPDATE_COLLECTION,
 } from '../definitions/collection-definitions';
 
@@ -113,6 +124,15 @@ export class CollectionDataService {
         );
     }
 
+    deleteCollections(ids: string[]) {
+        return this.baseDataService.mutate<DeleteCollectionsMutation, DeleteCollectionsMutationVariables>(
+            DELETE_COLLECTIONS,
+            {
+                ids,
+            },
+        );
+    }
+
     previewCollectionVariants(input: PreviewCollectionVariantsInput, options: ProductVariantListOptions) {
         return this.baseDataService.query<
             PreviewCollectionContentsQuery,
@@ -135,5 +155,23 @@ export class CollectionDataService {
                 },
             },
         );
+    }
+
+    assignCollectionsToChannel(input: AssignCollectionsToChannelInput) {
+        return this.baseDataService.mutate<
+            AssignCollectionsToChannelMutation,
+            AssignCollectionsToChannelMutationVariables
+        >(ASSIGN_COLLECTIONS_TO_CHANNEL, {
+            input,
+        });
+    }
+
+    removeCollectionsFromChannel(input: RemoveCollectionsFromChannelInput) {
+        return this.baseDataService.mutate<
+            RemoveCollectionsFromChannelMutation,
+            RemoveCollectionsFromChannelMutationVariables
+        >(REMOVE_COLLECTIONS_FROM_CHANNEL, {
+            input,
+        });
     }
 }

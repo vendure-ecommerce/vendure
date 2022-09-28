@@ -12,6 +12,11 @@ import { AssignToChannelDialogComponent } from './components/assign-to-channel-d
 import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
+import {
+    assignCollectionsToChannelBulkAction,
+    deleteCollectionsBulkAction,
+    removeCollectionsFromChannelBulkAction,
+} from './components/collection-list/collection-list-bulk-actions';
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
 import { CollectionTreeNodeComponent } from './components/collection-tree/collection-tree-node.component';
 import { CollectionTreeComponent } from './components/collection-tree/collection-tree.component';
@@ -83,5 +88,9 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteFacetsBulkAction);
+
+        bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
     }
 }

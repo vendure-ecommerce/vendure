@@ -6,6 +6,7 @@ import {
     GetFacetList,
     ModalService,
     NotificationService,
+    Permission,
     SearchProducts,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
@@ -25,6 +26,9 @@ export const deleteProductsBulkAction: BulkAction<SearchProducts.Items, ProductL
     label: _('common.delete'),
     icon: 'trash',
     iconClass: 'is-danger',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.DeleteProduct) ||
+        userPermissions.includes(Permission.DeleteCatalog),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);
@@ -58,9 +62,8 @@ export const deleteProductsBulkAction: BulkAction<SearchProducts.Items, ProductL
                     }
                 }
                 if (0 < deleted) {
-                    notificationService.success(_('common.notify-bulk-delete-success'), {
+                    notificationService.success(_('catalog.notify-bulk-delete-products-success'), {
                         count: deleted,
-                        entity: 'Products',
                     });
                 }
                 if (0 < errors.length) {
@@ -76,6 +79,9 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items,
     location: 'product-list',
     label: _('catalog.assign-to-channel'),
     icon: 'layers',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateProduct),
     isVisible: ({ injector }) => {
         return injector
             .get(DataService)
@@ -106,6 +112,9 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items,
 export const removeProductsFromChannelBulkAction: BulkAction<SearchProducts.Items, ProductListComponent> = {
     location: 'product-list',
     label: _('catalog.remove-from-channel'),
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateChannel) ||
+        userPermissions.includes(Permission.UpdateProduct),
     getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),
     icon: 'layers',
     iconClass: 'is-warning',
@@ -180,6 +189,9 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<SearchProducts.It
     location: 'product-list',
     label: _('catalog.edit-facet-values'),
     icon: 'tag',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateProduct),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);

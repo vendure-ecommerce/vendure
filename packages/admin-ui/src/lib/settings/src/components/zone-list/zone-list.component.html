@@ -94,7 +94,7 @@
                                 vdrDropdownTrigger
                                 [disabled]="selectedMemberIds.length === 0"
                             >
-                                {{ 'common.with-selected' | translate }}
+                                {{ 'common.with-selected' | translate: { count: selectedMemberIds.length } }}
                                 <clr-icon shape="caret down"></clr-icon>
                             </button>
                             <vdr-dropdown-menu vdrPosition="bottom-right">

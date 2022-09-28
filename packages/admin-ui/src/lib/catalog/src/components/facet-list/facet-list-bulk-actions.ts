@@ -7,6 +7,7 @@ import {
     GetFacetList,
     ModalService,
     NotificationService,
+    Permission,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { unique } from '@vendure/common/lib/unique';
@@ -21,6 +22,9 @@ export const deleteFacetsBulkAction: BulkAction<GetFacetList.Items, FacetListCom
     label: _('common.delete'),
     icon: 'trash',
     iconClass: 'is-danger',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.DeleteFacet) ||
+        userPermissions.includes(Permission.DeleteCatalog),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);
@@ -89,9 +93,8 @@ export const deleteFacetsBulkAction: BulkAction<GetFacetList.Items, FacetListCom
                 if (deletedCount) {
                     hostComponent.refresh();
                     clearSelection();
-                    notificationService.success(_('common.notify-bulk-delete-success'), {
+                    notificationService.success(_('catalog.notify-bulk-delete-facets-success'), {
                         count: deletedCount,
-                        entity: 'Facets',
                     });
                 }
             });
@@ -102,6 +105,9 @@ export const assignFacetsToChannelBulkAction: BulkAction<GetFacetList.Items, Fac
     location: 'facet-list',
     label: _('catalog.assign-to-channel'),
     icon: 'layers',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateFacet) ||
+        userPermissions.includes(Permission.UpdateCatalog),
     isVisible: ({ injector }) => {
         return injector
             .get(DataService)
@@ -148,6 +154,9 @@ export const removeFacetsFromChannelBulkAction: BulkAction<GetFacetList.Items, F
     getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),
     icon: 'layers',
     iconClass: 'is-warning',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateFacet) ||
+        userPermissions.includes(Permission.UpdateCatalog),
     isVisible: ({ injector }) => {
         return injector
             .get(DataService)

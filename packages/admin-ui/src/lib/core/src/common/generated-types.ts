@@ -2435,6 +2435,8 @@ export type Mutation = {
   deleteChannel: DeletionResponse;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
+  /** Delete a Collection and all of its descendants */
+  deleteCollections: Array<DeletionResponse>;
   /** Delete a Country */
   deleteCountry: DeletionResponse;
   /** Delete a Customer */
@@ -2808,6 +2810,11 @@ export type MutationDeleteChannelArgs = {
 
 export type MutationDeleteCollectionArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCollectionsArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -6014,6 +6021,16 @@ export type DeleteCollectionMutation = { deleteCollection: (
     & Pick<DeletionResponse, 'result' | 'message'>
   ) };
 
+export type DeleteCollectionsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteCollectionsMutation = { deleteCollections: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> };
+
 export type GetCollectionContentsQueryVariables = Exact<{
   id: Scalars['ID'];
   options?: Maybe<ProductVariantListOptions>;
@@ -6047,6 +6064,26 @@ export type PreviewCollectionContentsQuery = { previewCollectionVariants: (
       & Pick<ProductVariant, 'id' | 'productId' | 'name' | 'sku'>
     )> }
   ) };
+
+export type AssignCollectionsToChannelMutationVariables = Exact<{
+  input: AssignCollectionsToChannelInput;
+}>;
+
+
+export type AssignCollectionsToChannelMutation = { assignCollectionsToChannel: Array<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+  )> };
+
+export type RemoveCollectionsFromChannelMutationVariables = Exact<{
+  input: RemoveCollectionsFromChannelInput;
+}>;
+
+
+export type RemoveCollectionsFromChannelMutation = { removeCollectionsFromChannel: Array<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+  )> };
 
 export type AddressFragment = (
   { __typename?: 'Address' }
@@ -9731,6 +9768,12 @@ export namespace DeleteCollection {
   export type DeleteCollection = (NonNullable<DeleteCollectionMutation['deleteCollection']>);
 }
 
+export namespace DeleteCollections {
+  export type Variables = DeleteCollectionsMutationVariables;
+  export type Mutation = DeleteCollectionsMutation;
+  export type DeleteCollections = NonNullable<(NonNullable<DeleteCollectionsMutation['deleteCollections']>)[number]>;
+}
+
 export namespace GetCollectionContents {
   export type Variables = GetCollectionContentsQueryVariables;
   export type Query = GetCollectionContentsQuery;
@@ -9744,6 +9787,18 @@ export namespace PreviewCollectionContents {
   export type Query = PreviewCollectionContentsQuery;
   export type PreviewCollectionVariants = (NonNullable<PreviewCollectionContentsQuery['previewCollectionVariants']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<PreviewCollectionContentsQuery['previewCollectionVariants']>)['items']>)[number]>;
+}
+
+export namespace AssignCollectionsToChannel {
+  export type Variables = AssignCollectionsToChannelMutationVariables;
+  export type Mutation = AssignCollectionsToChannelMutation;
+  export type AssignCollectionsToChannel = NonNullable<(NonNullable<AssignCollectionsToChannelMutation['assignCollectionsToChannel']>)[number]>;
+}
+
+export namespace RemoveCollectionsFromChannel {
+  export type Variables = RemoveCollectionsFromChannelMutationVariables;
+  export type Mutation = RemoveCollectionsFromChannelMutation;
+  export type RemoveCollectionsFromChannel = NonNullable<(NonNullable<RemoveCollectionsFromChannelMutation['removeCollectionsFromChannel']>)[number]>;
 }
 
 export namespace Address {
