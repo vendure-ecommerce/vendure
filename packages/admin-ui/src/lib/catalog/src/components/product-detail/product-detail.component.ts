@@ -51,7 +51,7 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
-import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/get-channel-code-from-user-status';
+import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/bulk-action-utils';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';

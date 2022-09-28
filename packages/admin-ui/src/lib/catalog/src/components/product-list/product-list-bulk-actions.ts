@@ -1,23 +1,12 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    BulkAction,
-    DataService,
-    DeletionResult,
-    GetFacetList,
-    ModalService,
-    NotificationService,
-    Permission,
-    SearchProducts,
-} from '@vendure/admin-ui/core';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { BulkAction, DataService, DeletionResult, ModalService, NotificationService, Permission, SearchProducts, } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, from, of } from 'rxjs';
-import { map, mapTo, switchMap } from 'rxjs/operators';
-import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/get-channel-code-from-user-status';
+import { mapTo, switchMap } from 'rxjs/operators';
 
+import { currentChannelIsNotDefault, getChannelCodeFromUserStatus, isMultiChannel, } from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
-import { FacetListComponent } from '../facet-list/facet-list.component';
 
 import { ProductListComponent } from './product-list.component';
 
@@ -82,13 +71,7 @@ export const assignProductsToChannelBulkAction: BulkAction<SearchProducts.Items,
     requiresPermission: userPermissions =>
         userPermissions.includes(Permission.UpdateCatalog) ||
         userPermissions.includes(Permission.UpdateProduct),
-    isVisible: ({ injector }) => {
-        return injector
-            .get(DataService)
-            .client.userStatus()
-            .mapSingle(({ userStatus }) => 1 < userStatus.channels.length)
-            .toPromise();
-    },
+    isVisible: ({ injector }) => isMultiChannel(injector.get(DataService)),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);
@@ -118,19 +101,7 @@ export const removeProductsFromChannelBulkAction: BulkAction<SearchProducts.Item
     getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),
     icon: 'layers',
     iconClass: 'is-warning',
-    isVisible: ({ injector }) => {
-        return injector
-            .get(DataService)
-            .client.userStatus()
-            .mapSingle(({ userStatus }) => {
-                if (userStatus.channels.length === 1) {
-                    return false;
-                }
-                const defaultChannelId = userStatus.channels.find(c => c.code === DEFAULT_CHANNEL_CODE)?.id;
-                return userStatus.activeChannelId !== defaultChannelId;
-            })
-            .toPromise();
-    },
+    isVisible: ({ injector }) => currentChannelIsNotDefault(injector.get(DataService)),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);

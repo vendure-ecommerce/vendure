@@ -1,5 +1,5 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CollectionListComponent, CollectionPartial, ProductListComponent } from '@vendure/admin-ui/catalog';
+import { CollectionListComponent, CollectionPartial } from '@vendure/admin-ui/catalog';
 import {
     BulkAction,
     DataService,
@@ -7,14 +7,16 @@ import {
     ModalService,
     NotificationService,
     Permission,
-    SearchProducts,
 } from '@vendure/admin-ui/core';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, from, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
 
-import { getChannelCodeFromUserStatus } from '../../../../core/src/common/utilities/get-channel-code-from-user-status';
+import {
+    currentChannelIsNotDefault,
+    getChannelCodeFromUserStatus,
+    isMultiChannel,
+} from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
 
 export const deleteCollectionsBulkAction: BulkAction<CollectionPartial, CollectionListComponent> = {
@@ -79,13 +81,7 @@ export const assignCollectionsToChannelBulkAction: BulkAction<CollectionPartial,
     requiresPermission: userPermissions =>
         userPermissions.includes(Permission.UpdateCatalog) ||
         userPermissions.includes(Permission.UpdateProduct),
-    isVisible: ({ injector }) => {
-        return injector
-            .get(DataService)
-            .client.userStatus()
-            .mapSingle(({ userStatus }) => 1 < userStatus.channels.length)
-            .toPromise();
-    },
+    isVisible: ({ injector }) => isMultiChannel(injector.get(DataService)),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
         const dataService = injector.get(DataService);
@@ -129,21 +125,7 @@ export const removeCollectionsFromChannelBulkAction: BulkAction<CollectionPartia
         getTranslationVars: ({ injector }) => getChannelCodeFromUserStatus(injector.get(DataService)),
         icon: 'layers',
         iconClass: 'is-warning',
-        isVisible: ({ injector }) => {
-            return injector
-                .get(DataService)
-                .client.userStatus()
-                .mapSingle(({ userStatus }) => {
-                    if (userStatus.channels.length === 1) {
-                        return false;
-                    }
-                    const defaultChannelId = userStatus.channels.find(
-                        c => c.code === DEFAULT_CHANNEL_CODE,
-                    )?.id;
-                    return userStatus.activeChannelId !== defaultChannelId;
-                })
-                .toPromise();
-        },
+        isVisible: ({ injector }) => currentChannelIsNotDefault(injector.get(DataService)),
         onClick: ({ injector, selection, hostComponent, clearSelection }) => {
             const modalService = injector.get(ModalService);
             const dataService = injector.get(DataService);
