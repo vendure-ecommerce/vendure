@@ -476,6 +476,8 @@ describe('Promotions applied to Orders', () => {
         });
 
         it('containsProducts', async () => {
+            const item5000 = getVariantBySlug('item-5000')!;
+            const item1000 = getVariantBySlug('item-1000')!;
             const promotion = await createPromotion({
                 enabled: true,
                 name: 'Free if buying 3 or more offer products',
@@ -486,10 +488,7 @@ describe('Promotions applied to Orders', () => {
                             { name: 'minimum', value: '3' },
                             {
                                 name: 'productVariantIds',
-                                value: JSON.stringify([
-                                    getVariantBySlug('item-5000').id,
-                                    getVariantBySlug('item-1000').id,
-                                ]),
+                                value: JSON.stringify([item5000.id, item1000.id]),
                             },
                         ],
                     },
@@ -497,14 +496,14 @@ describe('Promotions applied to Orders', () => {
                 actions: [freeOrderAction],
             });
             await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-                productVariantId: getVariantBySlug('item-5000').id,
+                productVariantId: item5000.id,
                 quantity: 1,
             });
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrder.Mutation,
                 AddItemToOrder.Variables
             >(ADD_ITEM_TO_ORDER, {
-                productVariantId: getVariantBySlug('item-1000').id,
+                productVariantId: item1000.id,
                 quantity: 1,
             });
             orderResultGuard.assertSuccess(addItemToOrder);
@@ -515,7 +514,7 @@ describe('Promotions applied to Orders', () => {
                 AdjustItemQuantity.Mutation,
                 AdjustItemQuantity.Variables
             >(ADJUST_ITEM_QUANTITY, {
-                orderLineId: addItemToOrder!.lines[0].id,
+                orderLineId: addItemToOrder!.lines.find(l => l.productVariant.id === item5000.id)!.id,
                 quantity: 2,
             });
             orderResultGuard.assertSuccess(adjustOrderLine);

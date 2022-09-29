@@ -188,6 +188,21 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
         return promotionState;
     }
+
+    async activate(ctx: RequestContext, order: Order) {
+        for (const action of this.actions) {
+            const promotionAction = this.allActions[action.code];
+            await promotionAction.onActivate(ctx, order, action.args);
+        }
+    }
+
+    async deactivate(ctx: RequestContext, order: Order) {
+        for (const action of this.actions) {
+            const promotionAction = this.allActions[action.code];
+            await promotionAction.onDeactivate(ctx, order, action.args);
+        }
+    }
+
     private isShippingAction(
         value: PromotionItemAction | PromotionOrderAction | PromotionShippingAction,
     ): value is PromotionItemAction {
