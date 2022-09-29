@@ -184,7 +184,6 @@ export class OrderStateMachine {
             if (shouldSetAsPlaced) {
                 order.active = false;
                 order.orderPlacedAt = new Date();
-                await this.promotionService.addPromotionsToOrder(ctx, order);
                 this.eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
             }
         }
