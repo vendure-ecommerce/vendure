@@ -1716,6 +1716,9 @@ export class OrderService {
         order: Order,
         updatedOrderLines?: OrderLine[],
     ): Promise<Order> {
+        const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
+        const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+
         if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =
                 this.configService.orderOptions;
@@ -1729,7 +1732,7 @@ export class OrderService {
                     ctx,
                     variant,
                     updatedOrderLine.customFields || {},
-                    order
+                    order,
                 );
                 const initialListPrice =
                     updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
@@ -1751,16 +1754,6 @@ export class OrderService {
                 }
             }
         }
-
-        const promotions = await this.connection
-            .getRepository(ctx, Promotion)
-            .createQueryBuilder('promotion')
-            .leftJoin('promotion.channels', 'channel')
-            .where('channel.id = :channelId', { channelId: ctx.channelId })
-            .andWhere('promotion.deletedAt IS NULL')
-            .andWhere('promotion.enabled = :enabled', { enabled: true })
-            .orderBy('promotion.priorityScore', 'ASC')
-            .getMany();
 
         const updatedItems = await this.orderCalculator.applyPriceAdjustments(
             ctx,
@@ -1789,7 +1782,9 @@ export class OrderService {
             .execute();
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
-        return order;
+        await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
+
+        return assertFound(this.findOne(ctx, order.id));
     }
 
     private async getOrderWithFulfillments(ctx: RequestContext, orderId: ID): Promise<Order> {

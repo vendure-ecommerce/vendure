@@ -3,7 +3,7 @@ import { VendureLogger } from '@vendure/core';
 /**
  * @description
  * The TestingLogger can be used in unit tests or e2e tests to make assertions on whether the various
- * Logger methods have been called, and which which arguments.
+ * Logger methods have been called, and which arguments.
  *
  * Here's some examples of how to use it in e2e tests and unit tests. In both cases we are using
  * the Jest testing framework, but the TestingLogger should work with other similar frameworks

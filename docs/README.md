@@ -90,6 +90,12 @@ class.
 
 The @since tag indicates that a class, method, or other symbol was added in a specific version.
 
+##### `@experimental`
+
+The @experimental tag indicates that a class, method, or other symbol is part of an experimental API and 
+may be subject to changes. This is used to allow the testing of new features to gather developer feedback before
+marking the API as stable
+
 ##### Example
 
 ````ts
@@ -106,6 +112,7 @@ The @since tag indicates that a class, method, or other symbol was added in a sp
  * ```
  *
  * @docsCategory helpers
+ * @since 1.2.3
  */
 export class Greeter {
 

@@ -1,6 +1,4 @@
-import { Injectable, Type } from '@angular/core';
-
-import { FormInputComponent } from '../../common/component-registry-types';
+import { Injectable } from '@angular/core';
 
 import { BulkAction, BulkActionLocationId } from './bulk-action-types';
 

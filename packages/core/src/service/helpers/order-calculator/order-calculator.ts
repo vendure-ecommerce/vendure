@@ -56,6 +56,9 @@ export class OrderCalculator {
         options?: { recalculateShipping?: boolean },
     ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
+        // We reset the promotions array as all promotions
+        // must be revalidated on any changes to an Order.
+        order.promotions = [];
         const zones = await this.zoneService.findAll(ctx);
         const activeTaxZone = await this.requestContextCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
@@ -249,6 +252,7 @@ export class OrderCalculator {
                         this.calculateOrderTotals(order);
                         priceAdjusted = false;
                     }
+                    this.addPromotion(order, promotion);
                 }
             }
             const lineNoLongerHasPromotions = !line.firstItem?.adjustments?.find(
@@ -355,6 +359,7 @@ export class OrderCalculator {
                         });
                         this.calculateOrderTotals(order);
                     }
+                    this.addPromotion(order, promotion);
                 }
             }
             this.calculateOrderTotals(order);
@@ -380,6 +385,7 @@ export class OrderCalculator {
                             shippingLine.addAdjustment(adjustment);
                         }
                     }
+                    this.addPromotion(order, promotion);
                 }
             }
         } else {
@@ -469,5 +475,11 @@ export class OrderCalculator {
 
         order.shipping = shippingPrice;
         order.shippingWithTax = shippingPriceWithTax;
+    }
+
+    private addPromotion(order: Order, promotion: Promotion) {
+        if (order.promotions && !order.promotions.find(p => idsAreEqual(p.id, promotion.id))) {
+            order.promotions.push(promotion);
+        }
     }
 }
