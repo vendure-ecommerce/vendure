@@ -283,6 +283,7 @@ export class TypescriptDocsRenderer {
         for (const member of members || []) {
             let defaultParam = '';
             let sinceParam = '';
+            let experimentalParam = '';
             let type = '';
             if (member.kind === 'property') {
                 type = this.renderType(member.type, knownTypeMap, docsUrl);
@@ -302,10 +303,13 @@ export class TypescriptDocsRenderer {
             if (member.since) {
                 sinceParam = `since="${member.since}" `;
             }
+            if (member.experimental) {
+                experimentalParam = 'experimental="true"';
+            }
             output += `### ${member.name}\n\n`;
             output += `{{< member-info kind="${[...member.modifiers, member.kind].join(
                 ' ',
-            )}" type="${type}" ${defaultParam} ${sinceParam}>}}\n\n`;
+            )}" type="${type}" ${defaultParam} ${sinceParam}${experimentalParam}>}}\n\n`;
             output += `{{< member-description >}}${this.renderDescription(
                 member.description,
                 knownTypeMap,
@@ -334,7 +338,11 @@ export class TypescriptDocsRenderer {
         if (info.since) {
             sinceData = ` since="${info.since}"`;
         }
-        return `{{< generation-info sourceFile="${sourceFile}" sourceLine="${info.sourceLine}" packageName="${info.packageName}"${sinceData}>}}\n\n`;
+        let experimental = '';
+        if (info.experimental) {
+            experimental = ` experimental="true"`;
+        }
+        return `{{< generation-info sourceFile="${sourceFile}" sourceLine="${info.sourceLine}" packageName="${info.packageName}"${sinceData}${experimental}>}}\n\n`;
     }
 
     /**

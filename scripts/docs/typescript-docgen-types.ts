@@ -14,6 +14,7 @@ export interface MemberInfo {
     fullText: string;
     modifiers: string[];
     since: string | undefined;
+    experimental: boolean;
 }
 
 export interface PropertyInfo extends MemberInfo {
@@ -44,6 +45,7 @@ export interface DeclarationInfo {
     description: string;
     page: string | undefined;
     since: string | undefined;
+    experimental: boolean;
 }
 
 export interface InterfaceInfo extends DeclarationInfo {
