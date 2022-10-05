@@ -157,14 +157,17 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         }
     }
 
-    addOption(groupId: string, optionName: string) {
-        this.optionGroups.find(g => g.id === groupId)?.values.push({ name: optionName, locked: false });
-        this.generateVariants();
-        this.optionsChanged = true;
+    addOption(index: number, optionName: string) {
+        const group = this.optionGroups[index];
+        if (group) {
+            group.values.push({ name: optionName, locked: false });
+            this.generateVariants();
+            this.optionsChanged = true;
+        }
     }
 
-    removeOption(groupId: string, { id, name }: { id?: string; name: string }) {
-        const optionGroup = this.optionGroups.find(g => g.id === groupId);
+    removeOption(index: number, { id, name }: { id?: string; name: string }) {
+        const optionGroup = this.optionGroups[index];
         if (optionGroup) {
             if (!id) {
                 optionGroup.values = optionGroup.values.filter(v => v.name !== name);
@@ -442,15 +445,22 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             .reduce((flat, o) => [...flat, ...o], []);
         const variants = this.generatedVariants
             .filter(v => v.enabled && !v.existing)
-            .map(v => ({
-                price: v.price,
-                sku: v.sku,
-                stock: v.stock,
-                optionIds: v.options
-                    .map(name => options.find(o => o.name === name.name))
-                    .filter(notNullOrUndefined)
-                    .map(o => o.id),
-            }));
+            .map(v => {
+                const optionIds = groups.map((group, index) => {
+                    const option = group.options.find(o => o.name === v.options[index].name);
+                    if (option) {
+                        return option.id;
+                    } else {
+                        throw new Error(`Could not find a matching option for group ${group.name}`);
+                    }
+                });
+                return {
+                    price: v.price,
+                    sku: v.sku,
+                    stock: v.stock,
+                    optionIds,
+                };
+            });
         return this.productDetailService.createProductVariants(
             this.product,
             variants,
