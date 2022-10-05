@@ -5,8 +5,22 @@ export const shopSchema = gql`
         errorCode: ErrorCode!
         message: String!
     }
+    type MollieAmount {
+        value: String
+        currency: String
+    }
+    type MolliePaymentMethodImages {
+        size1x: String
+        size2x: String
+        svg: String
+    }
     type MolliePaymentMethod {
-        id: String!
+        id: ID!
+        code: String!
+        description: String
+        minimumAmount: MollieAmount
+        maximumAmount: MollieAmount
+        image: MolliePaymentMethodImages
     }
     type MolliePaymentIntent {
         url: String!
@@ -14,7 +28,10 @@ export const shopSchema = gql`
     union MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError
     input MolliePaymentIntentInput {
         paymentMethodCode: String!
-        molliePaymentMethod: String
+        """
+        The molliePaymentMethod can be found using the 'code' field of one of the methods from the query 'molliePaymentMethods'
+        """
+        molliePaymentMethodCode: String
     }
     input MolliePaymentMethodsInput {
         paymentMethodCode: String!

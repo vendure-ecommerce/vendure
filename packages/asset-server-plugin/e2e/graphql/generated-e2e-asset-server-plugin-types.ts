@@ -2296,7 +2296,7 @@ export type Mutation = {
   updateCollection: Collection;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
-  /** Delete a Collection and all of its descendants */
+  /** Delete multiple Collections and all of their descendants */
   deleteCollections: Array<DeletionResponse>;
   /** Move a Collection to a different parent or index */
   moveCollection: Collection;

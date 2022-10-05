@@ -19,7 +19,7 @@ export class MollieResolver {
         @Ctx() ctx: RequestContext,
         @Args('input') input: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
-        return this.mollieService.createPaymentIntent(ctx, input.paymentMethodCode);
+        return this.mollieService.createPaymentIntent(ctx, input);
     }
 
     @ResolveField()

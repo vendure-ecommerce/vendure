@@ -1551,6 +1551,12 @@ export type MissingPasswordError = ErrorResult & {
   message: Scalars['String'];
 };
 
+export type MollieAmount = {
+  __typename?: 'MollieAmount';
+  value?: Maybe<Scalars['String']>;
+  currency?: Maybe<Scalars['String']>;
+};
+
 export type MolliePaymentIntent = {
   __typename?: 'MolliePaymentIntent';
   url: Scalars['String'];
@@ -1564,14 +1570,27 @@ export type MolliePaymentIntentError = ErrorResult & {
 
 export type MolliePaymentIntentInput = {
   paymentMethodCode: Scalars['String'];
-  molliePaymentMethod?: Maybe<Scalars['String']>;
+  /** The molliePaymentMethod can be found using the 'code' field of one of the methods from the query 'molliePaymentMethods' */
+  molliePaymentMethodCode?: Maybe<Scalars['String']>;
 };
 
 export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
 
 export type MolliePaymentMethod = {
   __typename?: 'MolliePaymentMethod';
-  id: Scalars['String'];
+  id: Scalars['ID'];
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  minimumAmount?: Maybe<MollieAmount>;
+  maximumAmount?: Maybe<MollieAmount>;
+  image?: Maybe<MolliePaymentMethodImages>;
+};
+
+export type MolliePaymentMethodImages = {
+  __typename?: 'MolliePaymentMethodImages';
+  size1x?: Maybe<Scalars['String']>;
+  size2x?: Maybe<Scalars['String']>;
+  svg?: Maybe<Scalars['String']>;
 };
 
 export type MolliePaymentMethodsInput = {

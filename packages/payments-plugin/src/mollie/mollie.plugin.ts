@@ -64,6 +64,7 @@ export interface MolliePluginOptions {
  * mutation CreateMolliePaymentIntent {
  *   createMolliePaymentIntent(input: {
  *     paymentMethodCode: "mollie-payment-method"
+ *     molliePaymentMethodCode: "ideal"
  *   }) {
  *          ... on MolliePaymentIntent {
                 url
@@ -75,9 +76,36 @@ export interface MolliePluginOptions {
  *   }
  * }
  * ```
+ *
  * The response will contain
  * a redirectUrl, which can be used to redirect your customer to the Mollie
  * platform.
+ *
+ * 'molliePaymentMethodCode' is an optional parameter that can be passed to skip Mollie's hosted payment method selection screen
+ * You can get available Mollie payment methods with the following query:
+ *
+ * ```GraphQL
+ * {
+ *  molliePaymentMethods(input: { paymentMethodCode: "mollie-payment-method" }) {
+ *    id
+ *    description
+ *    minimumAmount {
+ *      value
+ *      currency
+ *    }
+ *    maximumAmount {
+ *      value
+ *      currency
+ *    }
+ *    image {
+ *      size1x
+ *      size2x
+ *      svg
+ *    }
+ *  }
+ * }
+ * ```
+ * You can pass `MolliePaymentMethod.code` to the `createMolliePaymentIntent` mutation to skip the method selection.
  *
  * After completing payment on the Mollie platform,
  * the user is redirected to the configured redirect url + orderCode: `https://storefront/order/CH234X5`
