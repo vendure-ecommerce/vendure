@@ -28,9 +28,6 @@ export const shopSchema = gql`
     union MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError
     input MolliePaymentIntentInput {
         paymentMethodCode: String!
-        """
-        The molliePaymentMethod can be found using the 'code' field of one of the methods from the query 'molliePaymentMethods'
-        """
         molliePaymentMethodCode: String
     }
     input MolliePaymentMethodsInput {
