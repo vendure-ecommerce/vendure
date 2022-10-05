@@ -67,12 +67,12 @@ export interface MolliePluginOptions {
  *     molliePaymentMethodCode: "ideal"
  *   }) {
  *          ... on MolliePaymentIntent {
-                url
-            }
-            ... on MolliePaymentIntentError {
-                errorCode
-                message
-            }
+ *               url
+ *           }
+ *          ... on MolliePaymentIntentError {
+ *               errorCode
+ *               message
+ *          }
  *   }
  * }
  * ```
