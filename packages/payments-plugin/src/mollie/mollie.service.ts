@@ -63,7 +63,10 @@ export class MollieService {
     /**
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
      */
-    async createPaymentIntent(ctx: RequestContext, { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput): Promise<MolliePaymentIntentResult> {
+    async createPaymentIntent(
+        ctx: RequestContext,
+        { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput
+    ): Promise<MolliePaymentIntentResult> {
         if (molliePaymentMethodCode && !this.allowedMethods.includes(molliePaymentMethodCode)) {
             return new InvalidInput(`molliePaymentMethodCode has to be one of "${this.allowedMethods.join(',')}"`);
         }
