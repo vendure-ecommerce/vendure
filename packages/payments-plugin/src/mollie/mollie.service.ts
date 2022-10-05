@@ -17,11 +17,14 @@ import { OrderStateTransitionError } from '@vendure/core/dist/common/error/gener
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import {
     ErrorCode,
-    MolliePaymentIntentError, MolliePaymentIntentInput,
+    MolliePaymentIntentError,
+    MolliePaymentIntentInput,
     MolliePaymentIntentResult,
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/parameters';
+import { PaymentMethod as MollieClientMethod } from '@mollie/api-client';
 
 interface SettlePaymentInput {
     channelToken: string;
@@ -38,17 +41,13 @@ class PaymentIntentError implements MolliePaymentIntentError {
 
 class InvalidInput implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
+
     constructor(public message: string) {
     }
 }
 
 @Injectable()
 export class MollieService {
-
-    /**
-     * Only these methods are allow to pass to createPayment() according to the docs
-     */
-    allowedMethods = ['applepay', 'bancontact', 'banktransfer', 'belfius', 'creditcard', 'directdebit', 'eps', 'giftcard', 'giropay', 'ideal', 'kbc', 'mybank', 'paypal', 'paysafecard', 'przelewy24', 'sofort'];
 
     constructor(
         private paymentMethodService: PaymentMethodService,
@@ -65,10 +64,11 @@ export class MollieService {
      */
     async createPaymentIntent(
         ctx: RequestContext,
-        { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput
+        { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
-        if (molliePaymentMethodCode && !this.allowedMethods.includes(molliePaymentMethodCode)) {
-            return new InvalidInput(`molliePaymentMethodCode has to be one of "${this.allowedMethods.join(',')}"`);
+        const allowedMethods = Object.values(MollieClientMethod) as string[];
+        if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
+            return new InvalidInput(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
         }
         const [order, paymentMethod] = await Promise.all([
             this.activeOrderService.getOrderFromContext(ctx),
@@ -101,7 +101,7 @@ export class MollieService {
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const payment = await mollieClient.payments.create({
+        const paymentInput: CreateParameters = {
             amount: {
                 value: `${(order.totalWithTax / 100).toFixed(2)}`,
                 currency: order.currencyCode,
@@ -112,7 +112,11 @@ export class MollieService {
             description: `Order ${order.code}`,
             redirectUrl: `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
-        });
+        };
+        if (molliePaymentMethodCode) {
+            paymentInput.method = molliePaymentMethodCode as MollieClientMethod;
+        }
+        const payment = await mollieClient.payments.create(paymentInput);
         const url = payment.getCheckoutUrl();
         if (!url) {
             throw Error(`Unable to getCheckoutUrl() from Mollie payment`);
@@ -199,7 +203,7 @@ export class MollieService {
         const methods = await client.methods.list();
         return methods.map(m => ({
             ...m,
-            code: m.id
+            code: m.id,
         }));
     }
 
