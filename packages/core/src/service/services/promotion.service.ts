@@ -38,6 +38,7 @@ import { Promotion } from '../../entity/promotion/promotion.entity';
 import { EventBus } from '../../event-bus';
 import { PromotionEvent } from '../../event-bus/events/promotion-event';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -61,6 +62,7 @@ export class PromotionService {
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
         private configArgService: ConfigArgService,
+        private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
     ) {
         this.availableConditions = this.configService.promotionOptions.promotionConditions || [];
@@ -130,7 +132,13 @@ export class PromotionService {
         }
         await this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
-        this.eventBus.publish(new PromotionEvent(ctx, newPromotion, 'created', input));
+        const promotionWithRelations = await this.customFieldRelationService.updateRelations(
+            ctx,
+            Promotion,
+            input,
+            newPromotion,
+        );
+        this.eventBus.publish(new PromotionEvent(ctx, promotionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
@@ -157,6 +165,12 @@ export class PromotionService {
         }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            Promotion,
+            input,
+            updatedPromotion,
+        );
         this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
