@@ -7,14 +7,19 @@ import {
     LanguageCode,
     Logger,
     Order,
-    OrderService,
+    OrderService, PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
-import { ErrorCode, MolliePaymentIntentError, MolliePaymentIntentResult } from './graphql/generated-shop-types';
+import {
+    ErrorCode,
+    MolliePaymentIntentError,
+    MolliePaymentIntentResult,
+    MolliePaymentMethod,
+} from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
 
 interface SettlePaymentInput {
@@ -45,9 +50,9 @@ export class MollieService {
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
      */
     async createPaymentIntent(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentIntentResult> {
-        const [order, paymentMethods] = await Promise.all([
+        const [order, paymentMethod] = await Promise.all([
             this.activeOrderService.getOrderFromContext(ctx),
-            this.paymentMethodService.findAll(ctx),
+            this.getPaymentMethod(ctx, paymentMethodCode),
         ]);
         if (!order) {
             return new PaymentIntentError('No active order found for session');
@@ -62,18 +67,15 @@ export class MollieService {
         if (!order.shippingLines?.length) {
             return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
         }
-        const paymentMethod = paymentMethods.items.find(pm => pm.code === paymentMethodCode);
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
         }
-        const apiKeyArg = paymentMethod.handler.args.find(arg => arg.name === 'apiKey');
-        const redirectUrlArg = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl');
-        if (!apiKeyArg || !redirectUrlArg) {
+        const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
+        let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
+        if (!apiKey || !redirectUrl) {
             Logger.warn(`CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`, loggerCtx);
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
         }
-        const apiKey = apiKeyArg.value;
-        let redirectUrl = redirectUrlArg.value;
         const mollieClient = createMollieClient({ apiKey });
         redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
@@ -165,6 +167,23 @@ export class MollieService {
             );
         }
         Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
+    }
+
+    async getEnabledPaymentMethods(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentMethod[]> {
+        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
+        const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
+        if (!apiKey) {
+            throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
+        }
+        const client = createMollieClient({apiKey});
+        const methods = client.methods.list();
+        console.log('methods', methods);
+        return methods;
+    }
+
+    private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
+        const paymentMethods = await this.paymentMethodService.findAll(ctx);
+        return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
     }
 
     private async createContext(channelToken: string): Promise<RequestContext> {
