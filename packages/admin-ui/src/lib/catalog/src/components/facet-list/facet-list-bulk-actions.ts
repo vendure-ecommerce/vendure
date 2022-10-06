@@ -1,10 +1,12 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { FacetListComponent } from '@vendure/admin-ui/catalog';
 import {
     BulkAction,
+    currentChannelIsNotDefault,
     DataService,
     DeletionResult,
+    getChannelCodeFromUserStatus,
     GetFacetList,
+    isMultiChannel,
     ModalService,
     NotificationService,
     Permission,
@@ -13,12 +15,9 @@ import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, of } from 'rxjs';
 import { map, mapTo, switchMap } from 'rxjs/operators';
 
-import {
-    currentChannelIsNotDefault,
-    getChannelCodeFromUserStatus,
-    isMultiChannel,
-} from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
+
+import { FacetListComponent } from './facet-list.component';
 
 export const deleteFacetsBulkAction: BulkAction<GetFacetList.Items, FacetListComponent> = {
     location: 'facet-list',

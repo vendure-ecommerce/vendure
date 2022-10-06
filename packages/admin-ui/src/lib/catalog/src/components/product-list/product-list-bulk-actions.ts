@@ -1,10 +1,20 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BulkAction, DataService, DeletionResult, ModalService, NotificationService, Permission, SearchProducts, } from '@vendure/admin-ui/core';
+import {
+    BulkAction,
+    currentChannelIsNotDefault,
+    DataService,
+    DeletionResult,
+    getChannelCodeFromUserStatus,
+    isMultiChannel,
+    ModalService,
+    NotificationService,
+    Permission,
+    SearchProducts,
+} from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, from, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
 
-import { currentChannelIsNotDefault, getChannelCodeFromUserStatus, isMultiChannel, } from '../../../../core/src/common/utilities/bulk-action-utils';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 

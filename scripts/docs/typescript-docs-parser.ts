@@ -111,6 +111,7 @@ export class TypescriptDocsParser {
         const description = this.getDeclarationDescription(statement);
         const docsPage = this.getDocsPage(statement);
         const since = this.getSince(statement);
+        const experimental = this.getExperimental(statement);
         const packageName = this.getPackageName(sourceFile);
 
         const info = {
@@ -124,6 +125,7 @@ export class TypescriptDocsParser {
             description,
             page: docsPage,
             since,
+            experimental,
         };
 
         if (ts.isInterfaceDeclaration(statement)) {
@@ -226,7 +228,7 @@ export class TypescriptDocsParser {
     }
 
     /**
-     * Parses an array of inteface members into a simple object which can be rendered into markdown.
+     * Parses an array of interface members into a simple object which can be rendered into markdown.
      */
     private parseMembers(
         members: ts.NodeArray<ts.TypeElement | ts.ClassElement | ts.EnumMember>,
@@ -259,6 +261,7 @@ export class TypescriptDocsParser {
                 let fullText = '';
                 let isInternal = false;
                 let since: string | undefined;
+                let experimental = false;
                 if (ts.isConstructorDeclaration(member)) {
                     fullText = 'constructor';
                 } else if (ts.isMethodDeclaration(member)) {
@@ -274,6 +277,7 @@ export class TypescriptDocsParser {
                     default: comment => (defaultValue = comment || ''),
                     internal: comment => (isInternal = true),
                     since: comment => (since = comment || undefined),
+                    experimental: comment => (experimental = comment != null),
                 });
                 if (isInternal) {
                     continue;
@@ -288,6 +292,7 @@ export class TypescriptDocsParser {
                     type,
                     modifiers,
                     since,
+                    experimental,
                 };
                 if (
                     ts.isMethodSignature(member) ||
@@ -356,6 +361,17 @@ export class TypescriptDocsParser {
             since: comment => (since = comment),
         });
         return since;
+    }
+
+    /**
+     * Reads the @experimental JSDoc tag
+     */
+    private getExperimental(statement: ValidDeclaration): boolean {
+        let experimental = false;
+        this.parseTags(statement, {
+            experimental: comment => (experimental = comment != null),
+        });
+        return experimental;
     }
 
     /**

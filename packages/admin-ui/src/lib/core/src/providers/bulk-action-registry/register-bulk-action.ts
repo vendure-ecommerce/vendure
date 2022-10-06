@@ -1,5 +1,7 @@
 import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
-import { BulkAction, BulkActionRegistryService } from '@vendure/admin-ui/core';
+
+import { BulkActionRegistryService } from './bulk-action-registry.service';
+import { BulkAction } from './bulk-action-types';
 
 /**
  * @description
@@ -15,6 +17,9 @@ import { BulkAction, BulkActionRegistryService } from '@vendure/admin-ui/core';
  *
  * @example
  * ```TypeScript
+ * import { NgModule } from '\@angular/core';
+ * import { ModalService, registerBulkAction, SharedModule } from '\@vendure/admin-ui/core';
+ *
  * \@NgModule({
  *   imports: [SharedModule],
  *   providers: [
