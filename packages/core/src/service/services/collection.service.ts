@@ -119,10 +119,20 @@ export class CollectionService implements OnModuleInit {
                     }
                     completed++;
                     if (collection) {
-                        const affectedVariantIds = await this.applyCollectionFiltersInternal(
-                            collection,
-                            job.data.applyToChangedVariantsOnly,
-                        );
+                        let affectedVariantIds: ID[] = [];
+                        try {
+                            affectedVariantIds = await this.applyCollectionFiltersInternal(
+                                collection,
+                                job.data.applyToChangedVariantsOnly,
+                            );
+                        } catch (e) {
+                            const translatedCollection = await this.translator.translate(collection, ctx);
+                            Logger.error(
+                                `An error occurred when processing the filters for the collection "${translatedCollection.name}" (id: ${collection.id})`,
+                            );
+                            Logger.error(e.message);
+                            continue;
+                        }
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                         this.eventBus.publish(
                             new CollectionModificationEvent(ctx, collection, affectedVariantIds),
