@@ -1551,6 +1551,12 @@ export type MissingPasswordError = ErrorResult & {
   message: Scalars['String'];
 };
 
+export type MollieAmount = {
+  __typename?: 'MollieAmount';
+  value?: Maybe<Scalars['String']>;
+  currency?: Maybe<Scalars['String']>;
+};
+
 export type MolliePaymentIntent = {
   __typename?: 'MolliePaymentIntent';
   url: Scalars['String'];
@@ -1564,9 +1570,32 @@ export type MolliePaymentIntentError = ErrorResult & {
 
 export type MolliePaymentIntentInput = {
   paymentMethodCode: Scalars['String'];
+  /** The molliePaymentMethod can be found using the 'code' field of one of the methods from the query 'molliePaymentMethods' */
+  molliePaymentMethodCode?: Maybe<Scalars['String']>;
 };
 
 export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
+export type MolliePaymentMethod = {
+  __typename?: 'MolliePaymentMethod';
+  id: Scalars['ID'];
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  minimumAmount?: Maybe<MollieAmount>;
+  maximumAmount?: Maybe<MollieAmount>;
+  image?: Maybe<MolliePaymentMethodImages>;
+};
+
+export type MolliePaymentMethodImages = {
+  __typename?: 'MolliePaymentMethodImages';
+  size1x?: Maybe<Scalars['String']>;
+  size2x?: Maybe<Scalars['String']>;
+  svg?: Maybe<Scalars['String']>;
+};
+
+export type MolliePaymentMethodsInput = {
+  paymentMethodCode: Scalars['String'];
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -2697,20 +2726,21 @@ export type Query = {
   activeOrder?: Maybe<Order>;
   /** An array of supported Countries */
   availableCountries: Array<Country>;
-  /** A list of Collections available to the shop */
-  collections: CollectionList;
   /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */
   collection?: Maybe<Collection>;
-  /** Returns a list of eligible shipping methods based on the current active Order */
-  eligibleShippingMethods: Array<ShippingMethodQuote>;
+  /** A list of Collections available to the shop */
+  collections: CollectionList;
   /** Returns a list of payment methods and their eligibility based on the current active Order */
   eligiblePaymentMethods: Array<PaymentMethodQuote>;
-  /** A list of Facets available to the shop */
-  facets: FacetList;
+  /** Returns a list of eligible shipping methods based on the current active Order */
+  eligibleShippingMethods: Array<ShippingMethodQuote>;
   /** Returns a Facet by its id */
   facet?: Maybe<Facet>;
+  /** A list of Facets available to the shop */
+  facets: FacetList;
   /** Returns information about the current authenticated User */
   me?: Maybe<CurrentUser>;
+  molliePaymentMethods: Array<MolliePaymentMethod>;
   /** Returns the possible next states that the activeOrder can transition to */
   nextOrderStates: Array<Scalars['String']>;
   /**
@@ -2734,14 +2764,19 @@ export type Query = {
 };
 
 
+export type QueryCollectionArgs = {
+  id?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
+};
+
+
 export type QueryCollectionsArgs = {
   options?: Maybe<CollectionListOptions>;
 };
 
 
-export type QueryCollectionArgs = {
-  id?: Maybe<Scalars['ID']>;
-  slug?: Maybe<Scalars['String']>;
+export type QueryFacetArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -2750,8 +2785,8 @@ export type QueryFacetsArgs = {
 };
 
 
-export type QueryFacetArgs = {
-  id: Scalars['ID'];
+export type QueryMolliePaymentMethodsArgs = {
+  input: MolliePaymentMethodsInput;
 };
 
 

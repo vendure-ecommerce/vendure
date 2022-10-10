@@ -2435,7 +2435,7 @@ export type Mutation = {
   deleteChannel: DeletionResponse;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
-  /** Delete a Collection and all of its descendants */
+  /** Delete multiple Collections and all of their descendants */
   deleteCollections: Array<DeletionResponse>;
   /** Delete a Country */
   deleteCountry: DeletionResponse;
