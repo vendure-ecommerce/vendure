@@ -88,6 +88,7 @@ export interface MolliePluginOptions {
  * {
  *  molliePaymentMethods(input: { paymentMethodCode: "mollie-payment-method" }) {
  *    id
+ *    code
  *    description
  *    minimumAmount {
  *      value
