@@ -57,10 +57,7 @@ export class CollectionResolver {
         })
         relations: RelationPaths<Collection>,
     ): Promise<PaginatedList<Translated<Collection>>> {
-        return this.collectionService.findAll(ctx, args.options || undefined, relations).then(res => {
-            res.items.forEach(this.encodeFilters);
-            return res;
-        });
+        return this.collectionService.findAll(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -85,8 +82,7 @@ export class CollectionResolver {
         } else {
             throw new UserInputError(`error.collection-id-or-slug-must-be-provided`);
         }
-
-        return this.encodeFilters(collection);
+        return collection;
     }
 
     @Query()
@@ -105,7 +101,7 @@ export class CollectionResolver {
     ): Promise<Translated<Collection>> {
         const { input } = args;
         this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, input.filters);
-        return this.collectionService.create(ctx, input).then(this.encodeFilters);
+        return this.collectionService.create(ctx, input);
     }
 
     @Transaction()
@@ -117,7 +113,7 @@ export class CollectionResolver {
     ): Promise<Translated<Collection>> {
         const { input } = args;
         this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, input.filters || []);
-        return this.collectionService.update(ctx, input).then(this.encodeFilters);
+        return this.collectionService.update(ctx, input);
     }
 
     @Transaction()
@@ -128,7 +124,7 @@ export class CollectionResolver {
         @Args() args: MutationMoveCollectionArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        return this.collectionService.move(ctx, input).then(this.encodeFilters);
+        return this.collectionService.move(ctx, input);
     }
 
     @Transaction()
@@ -150,19 +146,6 @@ export class CollectionResolver {
     ): Promise<DeletionResponse[]> {
         return Promise.all(args.ids.map(id => this.collectionService.delete(ctx, id)));
     }
-
-    /**
-     * Encodes any entity IDs used in the filter arguments.
-     */
-    private encodeFilters = <T extends Collection | undefined>(collection: T): T => {
-        if (collection) {
-            this.configurableOperationCodec.encodeConfigurableOperationIds(
-                CollectionFilter,
-                collection.filters,
-            );
-        }
-        return collection;
-    };
 
     @Transaction()
     @Mutation()

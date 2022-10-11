@@ -9,6 +9,7 @@
     "cannot-transition-payment-from-to": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-refund-from-to": "Cannot transition Refund from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-fulfillment-from-to": "Cannot transition Fulfillment from \"{ fromState }\" to \"{ toState }\"",
+    "channel-not-found": "No Channel with the token \"{ token }\" could be found",
     "collections-cannot-be-removed-from-default-channel": "Collections cannot be removed from the default Channel",
     "collection-id-or-slug-must-be-provided": "Either the Collection id or slug must be provided",
     "collection-id-slug-mismatch": "The provided id and slug refer to different Collections",

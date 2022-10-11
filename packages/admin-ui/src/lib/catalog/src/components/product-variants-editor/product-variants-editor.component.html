@@ -10,7 +10,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<div *ngFor="let group of optionGroups" class="option-groups">
+<div *ngFor="let group of optionGroups; index as i" class="option-groups">
     <div class="name">
         <label>{{ 'catalog.option' | translate }}</label>
         <input clrInput [(ngModel)]="group.name" name="name" [readonly]="!group.isNew" />
@@ -22,8 +22,8 @@
             [options]="group.values"
             [groupName]="group.name"
             [disabled]="group.name === ''"
-            (add)="addOption(group.id, $event.name)"
-            (remove)="removeOption(group.id, $event)"
+            (add)="addOption(i, $event.name)"
+            (remove)="removeOption(i, $event)"
         ></vdr-option-value-input>
     </div>
     <div>

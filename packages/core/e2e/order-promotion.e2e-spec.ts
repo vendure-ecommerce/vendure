@@ -754,6 +754,41 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode!.discounts[0].description).toBe('$10 discount on order');
                 expect(applyCouponCode!.totalWithTax).toBe(5000);
             });
+
+            it('does not result in negative total when shipping is included', async () => {
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { addItemToOrder } = await shopClient.query<
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: getVariantBySlug('item-100').id,
+                    quantity: 1,
+                });
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.totalWithTax).toBe(120);
+                expect(addItemToOrder!.discounts.length).toBe(0);
+
+                const { setOrderShippingMethod } = await shopClient.query<
+                    CodegenShop.SetShippingMethodMutation,
+                    CodegenShop.SetShippingMethodMutationVariables
+                >(SET_SHIPPING_METHOD, {
+                    id: 'T_1',
+                });
+                orderResultGuard.assertSuccess(setOrderShippingMethod);
+                expect(setOrderShippingMethod.totalWithTax).toBe(620);
+
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, {
+                    couponCode,
+                });
+                orderResultGuard.assertSuccess(applyCouponCode);
+                expect(applyCouponCode!.discounts.length).toBe(1);
+                expect(applyCouponCode!.discounts[0].description).toBe('$10 discount on order');
+                expect(applyCouponCode!.subTotalWithTax).toBe(0);
+                expect(applyCouponCode!.totalWithTax).toBe(500); // shipping price
+            });
         });
 
         describe('discountOnItemWithFacets', () => {

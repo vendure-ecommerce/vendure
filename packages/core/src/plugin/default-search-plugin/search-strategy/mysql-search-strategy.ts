@@ -149,7 +149,12 @@ export class MysqlSearchStrategy implements SearchStrategy {
             input;
 
         if (term && term.length > this.minTermLength) {
-            const safeTerm = term.replace(/"/g, '');
+            const safeTerm = term
+                .replace(/"/g, '')
+                .replace(/@/g, ' ')
+                .trim()
+                .replace(/[+\-*~<>]/g, ' ')
+                .trim();
             const termScoreQuery = this.connection
                 .getRepository(ctx, SearchIndexItem)
                 .createQueryBuilder('si_inner')

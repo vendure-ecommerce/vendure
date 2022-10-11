@@ -114,6 +114,10 @@ export class TestServer {
                 cors: config.apiOptions.cors,
                 logger: new Logger(),
             });
+            const earlyMiddlewares = config.apiOptions.middleware.filter(mid => mid.beforeListen);
+            earlyMiddlewares.forEach(mid => {
+                app.use(mid.route, mid.handler);
+            });
             await app.listen(config.apiOptions.port);
             await app.get(JobQueueService).start();
             DefaultLogger.restoreOriginalLogLevel();
