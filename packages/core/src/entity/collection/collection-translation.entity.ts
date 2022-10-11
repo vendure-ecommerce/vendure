@@ -19,7 +19,9 @@ export class CollectionTranslation extends VendureEntity implements Translation<
 
     @Column() name: string;
 
-    @Column() slug: string;
+    @Index({ unique: false })
+    @Column()
+    slug: string;
 
     @Column('text') description: string;
 
