@@ -23,6 +23,7 @@ import {
     TransactionalConnection,
     Translatable,
     Translation,
+    TranslatorService,
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 
@@ -93,6 +94,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         private configService: ConfigService,
         private productVariantService: ProductVariantService,
         private requestContextCache: RequestContextCacheService,
+        private translatorService: TranslatorService,
     ) {}
 
     onModuleInit(): any {
@@ -675,12 +677,30 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 .select('channel.id')
                 .getMany(),
         );
-        const product = await this.connection.getRepository(Product).findOne(productId, {
-            relations: ['variants'],
-        });
+
+        let product = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .select([
+                'product.id',
+                'productVariant.id',
+                'productTranslations.languageCode',
+                'productVariantTranslations.languageCode',
+            ])
+            .leftJoin('product.translations', 'productTranslations')
+            .leftJoin('product.variants', 'productVariant')
+            .leftJoin('productVariant.translations', 'productVariantTranslations')
+            .leftJoin('product.channels', 'channel')
+            .where('product.id = :productId', { productId })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('(productVariant.deletedAt IS NOT NULL OR productVariant.enabled = false)')
+            .getOne();
+
         if (!product) {
             return [];
         }
+
+        product = this.translatorService.translate(product, ctx, ['variants']);
 
         Logger.debug(`Deleting 1 Product (id: ${productId})`, loggerCtx);
         const operations: BulkVariantOperation[] = [];
