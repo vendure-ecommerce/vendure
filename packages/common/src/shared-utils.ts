@@ -24,7 +24,9 @@ export function isObject(item: any): item is object {
 }
 
 export function isClassInstance(item: any): boolean {
-    return isObject(item) && item.constructor.name !== 'Object';
+    // Even if item is an object, it might not have a constructor as in the
+    // case when it is a null-prototype object, i.e. created using `Object.create(null)`.
+    return isObject(item) && item.constructor && item.constructor.name !== 'Object';
 }
 
 type NumericPropsOf<T> = {

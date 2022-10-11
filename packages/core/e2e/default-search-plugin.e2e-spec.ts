@@ -1670,35 +1670,37 @@ describe('Default search plugin', () => {
 
         // https://github.com/vendure-ecommerce/vendure/issues/1789
         describe('input escaping', () => {
-            it('correctly escapes "a & b"', async () => {
-                const result = await adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
+            function search(term: string) {
+                return adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
                     SEARCH_PRODUCTS,
                     {
-                        input: {
-                            take: 10,
-                            term: 'laptop & camera',
-                        },
+                        input: { take: 10, term },
                     },
                     {
-                        languageCode: LanguageCode.de,
+                        languageCode: LanguageCode.en,
                     },
                 );
+            }
+            it('correctly escapes "a & b"', async () => {
+                const result = await search('laptop & camera');
                 expect(result.search.items).toBeDefined();
             });
+
             it('correctly escapes other special chars', async () => {
-                const result = await adminClient.query<SearchProductsShop.Query, SearchProductShopVariables>(
-                    SEARCH_PRODUCTS,
-                    {
-                        input: {
-                            take: 10,
-                            term: 'a : b ? * (c) ! "foo"',
-                        },
-                    },
-                    {
-                        languageCode: LanguageCode.de,
-                    },
-                );
+                const result = await search('a : b ? * (c) ! "foo"');
                 expect(result.search.items).toBeDefined();
+            });
+
+            it('correctly escapes mysql binary mode chars', async () => {
+                expect((await search('foo+')).search.items).toBeDefined();
+                expect((await search('foo-')).search.items).toBeDefined();
+                expect((await search('foo<')).search.items).toBeDefined();
+                expect((await search('foo>')).search.items).toBeDefined();
+                expect((await search('foo*')).search.items).toBeDefined();
+                expect((await search('foo~')).search.items).toBeDefined();
+                expect((await search('foo@bar')).search.items).toBeDefined();
+                expect((await search('foo + - *')).search.items).toBeDefined();
+                expect((await search('foo + - bar')).search.items).toBeDefined();
             });
         });
     });

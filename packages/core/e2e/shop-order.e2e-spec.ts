@@ -2203,6 +2203,75 @@ describe('Shop orders', () => {
             expect(removeAllOrderLines.shippingWithTax).toBe(0);
         });
     });
+
+    describe('edge cases', () => {
+        it('calling setShippingMethod and setBillingMethod in parallel does not introduce race condition', async () => {
+            const shippingAddress: CreateAddressInput = {
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 Shipping Street',
+                streetLine2: null,
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                countryCode: 'US',
+                phoneNumber: '4444444',
+            };
+            const billingAddress: CreateAddressInput = {
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '22 Billing Avenue',
+                streetLine2: null,
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                countryCode: 'US',
+                phoneNumber: '4444444',
+            };
+
+            await Promise.all([
+                shopClient.query<SetBillingAddress.Mutation, SetBillingAddress.Variables>(
+                    SET_BILLING_ADDRESS,
+                    {
+                        input: billingAddress,
+                    },
+                ),
+                shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                    SET_SHIPPING_ADDRESS,
+                    {
+                        input: shippingAddress,
+                    },
+                ),
+            ]);
+
+            const { activeOrder } = await shopClient.query(gql`
+                query {
+                    activeOrder {
+                        shippingAddress {
+                            ...OrderAddress
+                        }
+                        billingAddress {
+                            ...OrderAddress
+                        }
+                    }
+                }
+                fragment OrderAddress on OrderAddress {
+                    fullName
+                    company
+                    streetLine1
+                    streetLine2
+                    city
+                    province
+                    postalCode
+                    countryCode
+                    phoneNumber
+                }
+            `);
+
+            expect(activeOrder.shippingAddress).toEqual(shippingAddress);
+            expect(activeOrder.billingAddress).toEqual(billingAddress);
+        });
+    });
 });
 
 const GET_ORDER_CUSTOM_FIELDS = gql`

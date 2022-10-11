@@ -106,6 +106,7 @@
                             *ngFor="let condition of getAvailableConditions()"
                             type="button"
                             vdrDropdownItem
+                            class="item-wrap"
                             (click)="addCondition(condition)"
                         >
                             {{ condition.description }}
@@ -136,6 +137,7 @@
                             *ngFor="let action of getAvailableActions()"
                             type="button"
                             vdrDropdownItem
+                            class="item-wrap"
                             (click)="addAction(action)"
                         >
                             {{ action.description }}

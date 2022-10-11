@@ -751,10 +751,16 @@ export class OrderService {
     async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
-        order.shippingAddress = { ...input, countryCode: input.countryCode, country: country.name };
-        await this.connection.getRepository(ctx, Order).save(order);
+        const shippingAddress = { ...input, countryCode: input.countryCode, country: country.name };
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .update(Order)
+            .set({ shippingAddress })
+            .where('id = :id', { id: order.id });
+        order.shippingAddress = shippingAddress;
         // Since a changed ShippingAddress could alter the activeTaxZone,
-        // we will remove any cached activeTaxZone so it can be re-calculated
+        // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
         this.requestCache.set(ctx, 'activeTaxZone', undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
@@ -767,10 +773,16 @@ export class OrderService {
     async setBillingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
-        order.billingAddress = { ...input, countryCode: input.countryCode, country: country.name };
-        await this.connection.getRepository(ctx, Order).save(order);
-        // Since a changed ShippingAddress could alter the activeTaxZone,
-        // we will remove any cached activeTaxZone so it can be re-calculated
+        const billingAddress = { ...input, countryCode: input.countryCode, country: country.name };
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .update(Order)
+            .set({ billingAddress })
+            .where('id = :id', { id: order.id });
+        order.billingAddress = billingAddress;
+        // Since a changed BillingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
         this.requestCache.set(ctx, 'activeTaxZone', undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);

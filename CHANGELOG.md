@@ -1,3 +1,25 @@
+## <small>1.7.4 (2022-10-11)</small>
+
+
+#### Perf
+
+* **core** Improve performance when querying product by slug ([742ad36](https://github.com/vendure-ecommerce/vendure/commit/742ad36))
+
+#### Fixes
+
+* **admin-ui** Fix fix of ShippingMethod update error ([2367ab0](https://github.com/vendure-ecommerce/vendure/commit/2367ab0)), closes [#1800](https://github.com/vendure-ecommerce/vendure/issues/1800)
+* **admin-ui** Fix variant editing when 2 options have same name ([56948c8](https://github.com/vendure-ecommerce/vendure/commit/56948c8)), closes [#1813](https://github.com/vendure-ecommerce/vendure/issues/1813)
+* **admin-ui** Wrap long promotion condition/action names ([3eba1c8](https://github.com/vendure-ecommerce/vendure/commit/3eba1c8))
+* **common** Handle edge case in serializing null prototype objects ([02249fb](https://github.com/vendure-ecommerce/vendure/commit/02249fb))
+* **core** Add translation for 'channel-not-found' error ([f7c053f](https://github.com/vendure-ecommerce/vendure/commit/f7c053f))
+* **core** Do not allow negative total with orderFixedDiscount action ([a031956](https://github.com/vendure-ecommerce/vendure/commit/a031956)), closes [#1823](https://github.com/vendure-ecommerce/vendure/issues/1823)
+* **core** Export TranslatorService helper from core (#1826) ([50d5856](https://github.com/vendure-ecommerce/vendure/commit/50d5856)), closes [#1826](https://github.com/vendure-ecommerce/vendure/issues/1826)
+* **core** Fix default search handling of mysql binary operators ([c133cce](https://github.com/vendure-ecommerce/vendure/commit/c133cce)), closes [#1808](https://github.com/vendure-ecommerce/vendure/issues/1808)
+* **core** Fix race condition when updating order addresses in parallel ([d436ea9](https://github.com/vendure-ecommerce/vendure/commit/d436ea9))
+* **core** Improved error handling for malformed collection filters ([cab520b](https://github.com/vendure-ecommerce/vendure/commit/cab520b))
+* **core** Persist customField relations in PromotionService (#1822) ([40fdd80](https://github.com/vendure-ecommerce/vendure/commit/40fdd80)), closes [#1822](https://github.com/vendure-ecommerce/vendure/issues/1822)
+* **testing** Correctly apply beforeListen middleware on TestServer (#1802) ([c1db17e](https://github.com/vendure-ecommerce/vendure/commit/c1db17e)), closes [#1802](https://github.com/vendure-ecommerce/vendure/issues/1802)
+
 ## <small>1.7.3 (2022-09-24)</small>
 
 
