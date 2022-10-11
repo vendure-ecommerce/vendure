@@ -174,42 +174,32 @@ export class ProductService {
         relations?: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
         const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
-        const effectiveRelations = removeCustomFieldsWithEagerRelations(
-            qb,
-            relations ? [...new Set(this.relations.concat(relations))] : this.relations,
-        );
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: effectiveRelations,
-        });
-        // tslint:disable-next-line:no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         const translationQb = this.connection
             .getRepository(ctx, ProductTranslation)
             .createQueryBuilder('_product_translation')
             .select('_product_translation.baseId')
             .andWhere('_product_translation.slug = :slug', { slug });
 
-        const translationsAlias = relations?.includes('translations' as any)
-            ? 'product__translations'
-            : 'product_translations';
-        qb.leftJoin('product.channels', 'channel')
+        qb.leftJoin('product.translations', 'translation')
+            .andWhere('product.deletedAt IS NULL')
             .andWhere('product.id IN (' + translationQb.getQuery() + ')')
             .setParameters(translationQb.getParameters())
-            .andWhere('product.deletedAt IS NULL')
-            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .select('product.id', 'id')
             .addSelect(
                 // tslint:disable-next-line:max-line-length
-                `CASE ${translationsAlias}.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
+                `CASE translation.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
                 'sort_order',
             )
             .orderBy('sort_order', 'DESC');
-        return qb
-            .getOne()
-            .then(product =>
-                product
-                    ? this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']])
-                    : undefined,
-            );
+        // We use getRawOne here to simply get the ID as efficiently as possible,
+        // which we then pass to the regular findOne() method which will handle
+        // all the joins etc.
+        const result = await qb.getRawOne();
+        if (result) {
+            return this.findOne(ctx, result.id, relations);
+        } else {
+            return undefined;
+        }
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
