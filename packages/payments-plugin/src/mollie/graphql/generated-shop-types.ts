@@ -1550,6 +1550,12 @@ export type MissingPasswordError = ErrorResult & {
   message: Scalars['String'];
 };
 
+export type MollieAmount = {
+  __typename?: 'MollieAmount';
+  currency?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['String']>;
+};
+
 export type MolliePaymentIntent = {
   __typename?: 'MolliePaymentIntent';
   url: Scalars['String'];
@@ -1562,10 +1568,32 @@ export type MolliePaymentIntentError = ErrorResult & {
 };
 
 export type MolliePaymentIntentInput = {
+  molliePaymentMethodCode?: InputMaybe<Scalars['String']>;
   paymentMethodCode: Scalars['String'];
 };
 
 export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
+export type MolliePaymentMethod = {
+  __typename?: 'MolliePaymentMethod';
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  image?: Maybe<MolliePaymentMethodImages>;
+  maximumAmount?: Maybe<MollieAmount>;
+  minimumAmount?: Maybe<MollieAmount>;
+};
+
+export type MolliePaymentMethodImages = {
+  __typename?: 'MolliePaymentMethodImages';
+  size1x?: Maybe<Scalars['String']>;
+  size2x?: Maybe<Scalars['String']>;
+  svg?: Maybe<Scalars['String']>;
+};
+
+export type MolliePaymentMethodsInput = {
+  paymentMethodCode: Scalars['String'];
+};
 
 export type Mutation = {
   __typename?: 'Mutation';
@@ -2710,6 +2738,7 @@ export type Query = {
   facets: FacetList;
   /** Returns information about the current authenticated User */
   me?: Maybe<CurrentUser>;
+  molliePaymentMethods: Array<MolliePaymentMethod>;
   /** Returns the possible next states that the activeOrder can transition to */
   nextOrderStates: Array<Scalars['String']>;
   /**
@@ -2751,6 +2780,11 @@ export type QueryFacetArgs = {
 
 export type QueryFacetsArgs = {
   options?: InputMaybe<FacetListOptions>;
+};
+
+
+export type QueryMolliePaymentMethodsArgs = {
+  input: MolliePaymentMethodsInput;
 };
 
 

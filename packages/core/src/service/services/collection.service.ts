@@ -130,7 +130,7 @@ export class CollectionService implements OnModuleInit {
                                 collection,
                                 job.data.applyToChangedVariantsOnly,
                             );
-                        } catch (e) {
+                        } catch (e: any) {
                             const translatedCollection = await this.translator.translate(collection, ctx);
                             Logger.error(
                                 `An error occurred when processing the filters for the collection "${translatedCollection.name}" (id: ${collection.id})`,

@@ -1,4 +1,6 @@
 import createMollieClient, { PaymentStatus } from '@mollie/api-client';
+import { PaymentMethod as MollieClientMethod } from '@mollie/api-client';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/parameters';
 import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
@@ -8,11 +10,11 @@ import {
     Logger,
     Order,
     OrderService,
+    OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
-import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import {
@@ -23,8 +25,6 @@ import {
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/parameters';
-import { PaymentMethod as MollieClientMethod } from '@mollie/api-client';
 
 interface SettlePaymentInput {
     channelToken: string;
@@ -35,20 +35,17 @@ interface SettlePaymentInput {
 class PaymentIntentError implements MolliePaymentIntentError {
     errorCode = ErrorCode.ORDER_PAYMENT_STATE_ERROR;
 
-    constructor(public message: string) {
-    }
+    constructor(public message: string) {}
 }
 
 class InvalidInput implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
 
-    constructor(public message: string) {
-    }
+    constructor(public message: string) {}
 }
 
 @Injectable()
 export class MollieService {
-
     constructor(
         private paymentMethodService: PaymentMethodService,
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
@@ -92,8 +89,13 @@ export class MollieService {
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
         let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
         if (!apiKey || !redirectUrl) {
-            Logger.warn(`CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`, loggerCtx);
-            return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
+            Logger.warn(
+                `CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`,
+                loggerCtx,
+            );
+            return new PaymentIntentError(
+                `Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`,
+            );
         }
         const mollieClient = createMollieClient({ apiKey });
         redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
@@ -193,7 +195,10 @@ export class MollieService {
         Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
     }
 
-    async getEnabledPaymentMethods(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentMethod[]> {
+    async getEnabledPaymentMethods(
+        ctx: RequestContext,
+        paymentMethodCode: string,
+    ): Promise<MolliePaymentMethod[]> {
         const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
         const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -207,7 +212,10 @@ export class MollieService {
         }));
     }
 
-    private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
+    private async getPaymentMethod(
+        ctx: RequestContext,
+        paymentMethodCode: string,
+    ): Promise<PaymentMethod | undefined> {
         const paymentMethods = await this.paymentMethodService.findAll(ctx);
         return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
     }
