@@ -137,19 +137,6 @@
     }
 }
 
-@media screen and (max-width: $breakpoint-small) {
-    .login-wrapper {
-        justify-content: center;
-        background-color: transparent;
-
-        .login {
-            margin: 20px;
-            padding: 24px;
-        }
-    }
-}
-
-
 .version {
     flex: 1;
     flex-grow: 1;
@@ -179,7 +166,6 @@
 }
 
 @keyframes shake {
-
     10%,
     90% {
         transform: translate3d(-1px, 0, 0);
