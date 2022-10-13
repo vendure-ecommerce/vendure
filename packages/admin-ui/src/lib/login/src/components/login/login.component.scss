@@ -18,11 +18,21 @@
         align-items: stretch;
         position: relative;
 
+        @media (max-width: $breakpoint-medium) {
+            flex-direction: column;
+            height: auto;
+            width: 100%
+        }
+
         .login-wrapper-image {
             height: 100%;
             flex-grow: 1;
             position: relative;
 
+            @media (max-width: $breakpoint-medium) {
+                height: 300px;
+            }
+    
             img {
                 display: block;
                 width: 100%;
@@ -53,6 +63,10 @@
                     font-weight: bold;
                     color: white;
                     margin-bottom: 20px;
+
+                    @media (max-width: $breakpoint-medium) {
+                        font-size: 1.2rem;
+                    }
                 }
 
                 .login-wrapper-image-copyright {
@@ -76,6 +90,13 @@
             box-shadow: 0px 20px 25px rgba(0,0,0,0.1);
             overflow: hidden;
             border-radius: 5px;
+            flex-shrink: 0;
+
+            @media (max-width: $breakpoint-medium) {
+                height: auto;
+                width: 100%;
+                padding: 20px;
+            }
 
             .login-title {
                 font-weight: bold;
