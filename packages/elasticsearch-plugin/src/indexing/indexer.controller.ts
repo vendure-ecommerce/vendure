@@ -23,7 +23,6 @@ import {
     TransactionalConnection,
     Translatable,
     Translation,
-    TranslatorService,
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 
@@ -94,7 +93,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         private configService: ConfigService,
         private productVariantService: ProductVariantService,
         private requestContextCache: RequestContextCacheService,
-        private translatorService: TranslatorService,
     ) {}
 
     onModuleInit(): any {
@@ -678,7 +676,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 .getMany(),
         );
 
-        let product = await this.connection
+        const product = await this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
             .select([
@@ -693,14 +691,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             .leftJoin('product.channels', 'channel')
             .where('product.id = :productId', { productId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
-            .andWhere('(productVariant.deletedAt IS NOT NULL OR productVariant.enabled = false)')
             .getOne();
 
         if (!product) {
             return [];
         }
-
-        product = this.translatorService.translate(product, ctx, ['variants']);
 
         Logger.debug(`Deleting 1 Product (id: ${productId})`, loggerCtx);
         const operations: BulkVariantOperation[] = [];
