@@ -9,6 +9,7 @@ import { ADMIN_UI_VERSION, AuthService, AUTH_REDIRECT_PARAM, getAppConfig } from
     styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
+    imageCookieName = 'vendureLoginImage';
     username = '';
     password = '';
     rememberMe = false;
@@ -47,6 +48,13 @@ export class LoginComponent {
     }
 
     loadImage() {
+        const dataFromCookie = this.getCookie(this.imageCookieName);
+
+        if (dataFromCookie) {
+            this.updateImage(JSON.parse(dataFromCookie));
+            return;
+        }
+
         this.httpClient
             .get('https://api.unsplash.com/photos/random', {
                 params: new HttpParams()
@@ -55,13 +63,38 @@ export class LoginComponent {
             })
             .toPromise()
             .then(res => {
-                const user: any = (res as any).user;
-                const location: any = (res as any).location;
-
-                this.imageUrl = (res as any).urls.regular;
-                this.imageCreator = user.name;
-                this.imageLocation = location.name;
+                this.setCookie(this.imageCookieName, JSON.stringify(res), 2);
+                this.updateImage(res);
             });
+    }
+
+    updateImage(res) {
+        const user: any = (res as any).user;
+        const location: any = (res as any).location;
+
+        this.imageUrl = (res as any).urls.regular;
+        this.imageCreator = user.name;
+        this.imageLocation = location.name;
+    }
+
+    setCookie(name: string, value: string, days: number) {
+        let expires = '';
+        if (days) {
+            const date = new Date();
+            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+            expires = '; expires=' + date.toUTCString();
+        }
+        document.cookie = name + '=' + (value || '') + expires + '; path=/';
+    }
+
+    getCookie(name: string) {
+        const nameEQ = name + '=';
+        const ca = document.cookie.split(';');
+        for (let c of ca) {
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
     }
 
     /**
