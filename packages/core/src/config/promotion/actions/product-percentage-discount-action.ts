@@ -10,7 +10,7 @@ export const productsPercentageDiscount = new PromotionItemAction({
     description: [{ languageCode: LanguageCode.en, value: 'Discount specified products by { discount }%' }],
     args: {
         discount: {
-            type: 'int',
+            type: 'float',
             ui: {
                 component: 'number-form-input',
                 suffix: '%',
