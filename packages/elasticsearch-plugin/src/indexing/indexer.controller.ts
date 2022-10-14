@@ -675,9 +675,24 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 .select('channel.id')
                 .getMany(),
         );
-        const product = await this.connection.getRepository(Product).findOne(productId, {
-            relations: ['variants'],
-        });
+
+        const product = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .select([
+                'product.id',
+                'productVariant.id',
+                'productTranslations.languageCode',
+                'productVariantTranslations.languageCode',
+            ])
+            .leftJoin('product.translations', 'productTranslations')
+            .leftJoin('product.variants', 'productVariant')
+            .leftJoin('productVariant.translations', 'productVariantTranslations')
+            .leftJoin('product.channels', 'channel')
+            .where('product.id = :productId', { productId })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getOne();
+
         if (!product) {
             return [];
         }
