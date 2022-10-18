@@ -5,10 +5,10 @@ import { Order } from '../../../entity/order/order.entity';
 /**
  * @description
  * An interface to extend standard {@link OrderState}.
- * 
+ *
  * @docsCategory orders
  */
- export interface CustomOrderStates {}
+export interface CustomOrderStates {}
 
 /**
  * @description
@@ -19,6 +19,7 @@ import { Order } from '../../../entity/order/order.entity';
  */
 export type OrderState =
     | 'Created'
+    | 'Draft'
     | 'AddingItems'
     | 'ArrangingPayment'
     | 'PaymentAuthorized'
@@ -34,7 +35,10 @@ export type OrderState =
 
 export const orderStateTransitions: Transitions<OrderState> = {
     Created: {
-        to: ['AddingItems'],
+        to: ['AddingItems', 'Draft'],
+    },
+    Draft: {
+        to: ['Cancelled', 'PaymentAuthorized', 'PaymentSettled'],
     },
     AddingItems: {
         to: ['ArrangingPayment', 'Cancelled'],

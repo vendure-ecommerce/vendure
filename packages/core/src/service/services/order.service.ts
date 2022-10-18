@@ -412,19 +412,7 @@ export class OrderService {
      * User's Customer account.
      */
     async create(ctx: RequestContext, userId?: ID): Promise<Order> {
-        const newOrder = new Order({
-            code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
-            state: this.orderStateMachine.getInitialState(),
-            lines: [],
-            surcharges: [],
-            couponCodes: [],
-            modifications: [],
-            shippingAddress: {},
-            billingAddress: {},
-            subTotal: 0,
-            subTotalWithTax: 0,
-            currencyCode: ctx.channel.currencyCode,
-        });
+        const newOrder = await this.createEmptyOrderEntity(ctx);
         if (userId) {
             const customer = await this.customerService.findOneByUserId(ctx, userId);
             if (customer) {
@@ -440,6 +428,36 @@ export class OrderService {
             throw transitionResult;
         }
         return transitionResult;
+    }
+
+    async createDraft(ctx: RequestContext) {
+        const newOrder = await this.createEmptyOrderEntity(ctx);
+        newOrder.active = false;
+        await this.channelService.assignToCurrentChannel(newOrder, ctx);
+        const order = await this.connection.getRepository(ctx, Order).save(newOrder);
+        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
+        const transitionResult = await this.transitionToState(ctx, order.id, 'Draft');
+        if (isGraphQlErrorResult(transitionResult)) {
+            // this should never occur, so we will throw rather than return
+            throw transitionResult;
+        }
+        return transitionResult;
+    }
+
+    private async createEmptyOrderEntity(ctx: RequestContext) {
+        return new Order({
+            code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
+            state: this.orderStateMachine.getInitialState(),
+            lines: [],
+            surcharges: [],
+            couponCodes: [],
+            modifications: [],
+            shippingAddress: {},
+            billingAddress: {},
+            subTotal: 0,
+            subTotalWithTax: 0,
+            currencyCode: ctx.channel.currencyCode,
+        });
     }
 
     /**
@@ -1686,10 +1704,10 @@ export class OrderService {
     }
 
     /**
-     * Returns error if the Order is not in the "AddingItems" state.
+     * Returns error if the Order is not in the "AddingItems" or "Draft" state.
      */
     private assertAddingItemsState(order: Order) {
-        if (order.state !== 'AddingItems') {
+        if (order.state !== 'AddingItems' && order.state !== 'Draft') {
             return new OrderModificationError();
         }
     }
