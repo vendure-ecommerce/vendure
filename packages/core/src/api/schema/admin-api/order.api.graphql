@@ -36,10 +36,10 @@ type Mutation {
     addManualPaymentToOrder(input: ManualPaymentInput!): AddManualPaymentToOrderResult!
     "Creates a draft Order"
     createDraftOrder: Order!
-    "Adds an item to the draft Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
-    addItemToDraftOrder(orderId: ID!, productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
+    "Adds an item to the draft Order."
+    addItemToDraftOrder(orderId: ID!, input: AddItemToDraftOrderInput!): UpdateOrderItemsResult!
     "Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
-    adjustDraftOrderLine(orderId: ID!, orderLineId: ID!, quantity: Int!): UpdateOrderItemsResult!
+    adjustDraftOrderLine(orderId: ID!, input: AdjustDraftOrderLineInput!): UpdateOrderItemsResult!
     "Remove an OrderLine from the draft Order"
     removeDraftOrderLine(orderId: ID!, orderLineId: ID!): RemoveOrderItemsResult!
     setCustomerForDraftOrder(
@@ -198,6 +198,16 @@ input ManualPaymentInput {
     method: String!
     transactionId: String
     metadata: JSON
+}
+
+input AddItemToDraftOrderInput {
+    productVariantId: ID!
+    quantity: Int!
+}
+
+input AdjustDraftOrderLineInput {
+    orderLineId: ID!
+    quantity: Int!
 }
 
 "Returned if the Payment settlement fails"

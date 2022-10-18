@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    ApplyCouponCodeResult,
     ActiveOrderResult,
+    ApplyCouponCodeResult,
     RemoveOrderItemsResult,
-    UpdateOrderItemsResult,
     SetOrderShippingMethodResult,
+    UpdateOrderItemsResult,
 } from '@vendure/common/lib/generated-shop-types';
 import {
     MutationAddItemToDraftOrderArgs,
@@ -51,14 +51,14 @@ export class DraftOrderResolver {
     @Allow(Permission.CreateOrder)
     async addItemToDraftOrder(
         @Ctx() ctx: RequestContext,
-        @Args() args: MutationAddItemToDraftOrderArgs,
+        @Args() { orderId, input }: MutationAddItemToDraftOrderArgs,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         return this.orderService.addItemToOrder(
             ctx,
-            args.orderId,
-            args.productVariantId,
-            args.quantity,
-            (args as any).customFields,
+            orderId,
+            input.productVariantId,
+            input.quantity,
+            (input as any).customFields,
         );
     }
 
@@ -67,17 +67,17 @@ export class DraftOrderResolver {
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async adjustDraftOrderLine(
         @Ctx() ctx: RequestContext,
-        @Args() args: MutationAdjustDraftOrderLineArgs,
+        @Args() { orderId, input }: MutationAdjustDraftOrderLineArgs,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        if (args.quantity === 0) {
-            return this.removeDraftOrderLine(ctx, { orderId: args.orderId, orderLineId: args.orderLineId });
+        if (input.quantity === 0) {
+            return this.removeDraftOrderLine(ctx, { orderId, orderLineId: input.orderLineId });
         }
         return this.orderService.adjustOrderLine(
             ctx,
-            args.orderId,
-            args.orderLineId,
-            args.quantity,
-            (args as any).customFields,
+            orderId,
+            input.orderLineId,
+            input.quantity,
+            (input as any).customFields,
         );
     }
 

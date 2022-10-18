@@ -1588,6 +1588,7 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 
@@ -1599,6 +1600,7 @@ export type MutationRemoveOrderLineArgs = {
 export type MutationAdjustOrderLineArgs = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 
@@ -1837,7 +1839,7 @@ export type Order = Node & {
   /** A summary of the taxes being applied to this Order */
   taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<OrderCustomFields>;
 };
 
 
@@ -1859,6 +1861,10 @@ export type OrderAddress = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type OrderCustomFields = {
+  tags?: Maybe<Array<Scalars['String']>>;
+};
+
 export type OrderFilterParameter = {
   id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
@@ -1875,6 +1881,7 @@ export type OrderFilterParameter = {
   shippingWithTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
   totalWithTax?: Maybe<NumberOperators>;
+  tags?: Maybe<StringListOperators>;
 };
 
 export type OrderItem = Node & {
@@ -1978,7 +1985,17 @@ export type OrderLine = Node & {
   taxLines: Array<TaxLine>;
   order: Order;
   fulfillments?: Maybe<Array<Fulfillment>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<OrderLineCustomFields>;
+};
+
+export type OrderLineCustomFields = {
+  referrer?: Maybe<Customer>;
+  description?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+  referrerId?: Maybe<Scalars['ID']>;
+  description?: Maybe<Scalars['String']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -2995,8 +3012,12 @@ export type UpdateCustomerInput = {
 
 export type UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError;
 
+export type UpdateOrderCustomFieldsInput = {
+  tags?: Maybe<Array<Scalars['String']>>;
+};
+
 export type UpdateOrderInput = {
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
 };
 
 export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;

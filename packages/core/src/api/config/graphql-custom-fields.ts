@@ -387,6 +387,24 @@ export function addOrderLineCustomFieldsInput(
 
         extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
     }
+    if (schema.getType('AddItemToDraftOrderInput')) {
+        const customFieldTypeDefs = `
+            extend input AddItemToDraftOrderInput {
+                customFields: OrderLineCustomFieldsInput
+            }
+        `;
+
+        extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
+    }
+    if (schema.getType('AdjustDraftOrderLineInput')) {
+        const customFieldTypeDefs = `
+            extend input AdjustDraftOrderLineInput {
+                customFields: OrderLineCustomFieldsInput
+            }
+        `;
+
+        extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
+    }
 
     return extendedSchema;
 }
