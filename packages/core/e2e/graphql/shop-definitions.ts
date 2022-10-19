@@ -684,6 +684,21 @@ export const GET_ACTIVE_ORDER_ORDERS = gql`
     }
 `;
 
+export const GET_ACTIVE_CUSTOMER_ORDERS = gql`
+    query GetActiveCustomerOrders {
+        activeCustomer {
+            id
+            orders {
+                totalItems
+                items {
+                    id
+                    state
+                }
+            }
+        }
+    }
+`;
+
 export const APPLY_COUPON_CODE = gql`
     mutation ApplyCouponCode($couponCode: String!) {
         applyCouponCode(couponCode: $couponCode) {

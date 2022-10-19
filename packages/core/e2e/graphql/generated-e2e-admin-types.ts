@@ -23,13 +23,11 @@ export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionE
 export type AddItemInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AddItemToDraftOrderInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
@@ -67,13 +65,11 @@ export type Address = Node & {
 export type AdjustDraftOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AdjustOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type Adjustment = {
@@ -2262,7 +2258,6 @@ export type ModifyOrderInput = {
   refund?: Maybe<AdministratorRefundInput>;
   options?: Maybe<ModifyOrderOptions>;
   couponCodes?: Maybe<Array<Scalars['String']>>;
-  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
 };
 
 export type ModifyOrderOptions = {
@@ -3318,7 +3313,7 @@ export type Order = Node & {
   /** A summary of the taxes being applied to this Order */
   taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
-  customFields?: Maybe<OrderCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -3340,10 +3335,6 @@ export type OrderAddress = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type OrderCustomFields = {
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
 export type OrderFilterParameter = {
   customerLastName?: Maybe<StringOperators>;
   transactionId?: Maybe<StringOperators>;
@@ -3362,7 +3353,6 @@ export type OrderFilterParameter = {
   shippingWithTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
   totalWithTax?: Maybe<NumberOperators>;
-  tags?: Maybe<StringListOperators>;
 };
 
 export type OrderItem = Node & {
@@ -3466,17 +3456,7 @@ export type OrderLine = Node & {
   taxLines: Array<TaxLine>;
   order: Order;
   fulfillments?: Maybe<Array<Fulfillment>>;
-  customFields?: Maybe<OrderLineCustomFields>;
-};
-
-export type OrderLineCustomFields = {
-  referrer?: Maybe<Customer>;
-  description?: Maybe<Scalars['String']>;
-};
-
-export type OrderLineCustomFieldsInput = {
-  referrerId?: Maybe<Scalars['ID']>;
-  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderLineInput = {
@@ -5277,13 +5257,9 @@ export type UpdateOrderAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
 };
 
-export type UpdateOrderCustomFieldsInput = {
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
 export type UpdateOrderInput = {
   id: Scalars['ID'];
-  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
@@ -5846,6 +5822,100 @@ export type SearchGetPricesQueryVariables = Exact<{
 
 
 export type SearchGetPricesQuery = { search: { items: Array<{ price: Pick<PriceRange, 'min' | 'max'> | Pick<SinglePrice, 'value'>, priceWithTax: Pick<PriceRange, 'min' | 'max'> | Pick<SinglePrice, 'value'> }> } };
+
+export type CreateDraftOrderMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateDraftOrderMutation = { createDraftOrder: OrderWithLinesFragment };
+
+export type AddItemToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AddItemToDraftOrderInput;
+}>;
+
+
+export type AddItemToDraftOrderMutation = { addItemToDraftOrder: OrderWithLinesFragment | Pick<OrderModificationError, 'errorCode' | 'message'> | Pick<OrderLimitError, 'errorCode' | 'message'> | Pick<NegativeQuantityError, 'errorCode' | 'message'> | Pick<InsufficientStockError, 'errorCode' | 'message'> };
+
+export type AdjustDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AdjustDraftOrderLineInput;
+}>;
+
+
+export type AdjustDraftOrderLineMutation = { adjustDraftOrderLine: OrderWithLinesFragment | Pick<OrderModificationError, 'errorCode' | 'message'> | Pick<OrderLimitError, 'errorCode' | 'message'> | Pick<NegativeQuantityError, 'errorCode' | 'message'> | Pick<InsufficientStockError, 'errorCode' | 'message'> };
+
+export type RemoveDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
+}>;
+
+
+export type RemoveDraftOrderLineMutation = { removeDraftOrderLine: OrderWithLinesFragment | Pick<OrderModificationError, 'errorCode' | 'message'> };
+
+export type SetCustomerForDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  customerId?: Maybe<Scalars['ID']>;
+  input?: Maybe<CreateCustomerInput>;
+}>;
+
+
+export type SetCustomerForDraftOrderMutation = { setCustomerForDraftOrder: OrderWithLinesFragment | Pick<EmailAddressConflictError, 'errorCode' | 'message'> };
+
+export type SetDraftOrderShippingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderShippingAddressMutation = { setDraftOrderShippingAddress: OrderWithLinesFragment };
+
+export type SetDraftOrderBillingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderBillingAddressMutation = { setDraftOrderBillingAddress: (
+    { billingAddress?: Maybe<ShippingAddressFragment> }
+    & OrderWithLinesFragment
+  ) };
+
+export type ApplyCouponCodeToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type ApplyCouponCodeToDraftOrderMutation = { applyCouponCodeToDraftOrder: (
+    Pick<Order, 'couponCodes'>
+    & OrderWithLinesFragment
+  ) | Pick<CouponCodeExpiredError, 'errorCode' | 'message'> | Pick<CouponCodeInvalidError, 'errorCode' | 'message'> | Pick<CouponCodeLimitError, 'errorCode' | 'message'> };
+
+export type RemoveCouponCodeFromDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type RemoveCouponCodeFromDraftOrderMutation = { removeCouponCodeFromDraftOrder?: Maybe<(
+    Pick<Order, 'couponCodes'>
+    & OrderWithLinesFragment
+  )> };
+
+export type DraftOrderEligibleShippingMethodsQueryVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DraftOrderEligibleShippingMethodsQuery = { eligibleShippingMethodsForDraftOrder: Array<Pick<ShippingMethodQuote, 'id' | 'name' | 'code' | 'description' | 'price' | 'priceWithTax' | 'metadata'>> };
+
+export type SetDraftOrderShippingMethodMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
+}>;
+
+
+export type SetDraftOrderShippingMethodMutation = { setDraftOrderShippingMethod: OrderWithLinesFragment | Pick<OrderModificationError, 'errorCode' | 'message'> | Pick<IneligibleShippingMethodError, 'errorCode' | 'message'> | Pick<NoActiveOrderError, 'errorCode' | 'message'> };
 
 export type IdTest1QueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7941,6 +8011,81 @@ export namespace SearchGetPrices {
   export type PriceWithTax = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchGetPricesQuery['search']>)['items']>)[number]>['priceWithTax']>);
   export type _PriceRangeInlineFragment = (DiscriminateUnion<(NonNullable<NonNullable<(NonNullable<(NonNullable<SearchGetPricesQuery['search']>)['items']>)[number]>['priceWithTax']>), { __typename?: 'PriceRange' }>);
   export type _SinglePriceInlineFragment = (DiscriminateUnion<(NonNullable<NonNullable<(NonNullable<(NonNullable<SearchGetPricesQuery['search']>)['items']>)[number]>['priceWithTax']>), { __typename?: 'SinglePrice' }>);
+}
+
+export namespace CreateDraftOrder {
+  export type Variables = CreateDraftOrderMutationVariables;
+  export type Mutation = CreateDraftOrderMutation;
+  export type CreateDraftOrder = (NonNullable<CreateDraftOrderMutation['createDraftOrder']>);
+}
+
+export namespace AddItemToDraftOrder {
+  export type Variables = AddItemToDraftOrderMutationVariables;
+  export type Mutation = AddItemToDraftOrderMutation;
+  export type AddItemToDraftOrder = (NonNullable<AddItemToDraftOrderMutation['addItemToDraftOrder']>);
+  export type ErrorResultInlineFragment = (DiscriminateUnion<(NonNullable<AddItemToDraftOrderMutation['addItemToDraftOrder']>), { __typename?: 'ErrorResult' }>);
+}
+
+export namespace AdjustDraftOrderLine {
+  export type Variables = AdjustDraftOrderLineMutationVariables;
+  export type Mutation = AdjustDraftOrderLineMutation;
+  export type AdjustDraftOrderLine = (NonNullable<AdjustDraftOrderLineMutation['adjustDraftOrderLine']>);
+  export type ErrorResultInlineFragment = (DiscriminateUnion<(NonNullable<AdjustDraftOrderLineMutation['adjustDraftOrderLine']>), { __typename?: 'ErrorResult' }>);
+}
+
+export namespace RemoveDraftOrderLine {
+  export type Variables = RemoveDraftOrderLineMutationVariables;
+  export type Mutation = RemoveDraftOrderLineMutation;
+  export type RemoveDraftOrderLine = (NonNullable<RemoveDraftOrderLineMutation['removeDraftOrderLine']>);
+  export type ErrorResultInlineFragment = (DiscriminateUnion<(NonNullable<RemoveDraftOrderLineMutation['removeDraftOrderLine']>), { __typename?: 'ErrorResult' }>);
+}
+
+export namespace SetCustomerForDraftOrder {
+  export type Variables = SetCustomerForDraftOrderMutationVariables;
+  export type Mutation = SetCustomerForDraftOrderMutation;
+  export type SetCustomerForDraftOrder = (NonNullable<SetCustomerForDraftOrderMutation['setCustomerForDraftOrder']>);
+  export type ErrorResultInlineFragment = (DiscriminateUnion<(NonNullable<SetCustomerForDraftOrderMutation['setCustomerForDraftOrder']>), { __typename?: 'ErrorResult' }>);
+}
+
+export namespace SetDraftOrderShippingAddress {
+  export type Variables = SetDraftOrderShippingAddressMutationVariables;
+  export type Mutation = SetDraftOrderShippingAddressMutation;
+  export type SetDraftOrderShippingAddress = (NonNullable<SetDraftOrderShippingAddressMutation['setDraftOrderShippingAddress']>);
+}
+
+export namespace SetDraftOrderBillingAddress {
+  export type Variables = SetDraftOrderBillingAddressMutationVariables;
+  export type Mutation = SetDraftOrderBillingAddressMutation;
+  export type SetDraftOrderBillingAddress = (NonNullable<SetDraftOrderBillingAddressMutation['setDraftOrderBillingAddress']>);
+  export type BillingAddress = (NonNullable<(NonNullable<SetDraftOrderBillingAddressMutation['setDraftOrderBillingAddress']>)['billingAddress']>);
+}
+
+export namespace ApplyCouponCodeToDraftOrder {
+  export type Variables = ApplyCouponCodeToDraftOrderMutationVariables;
+  export type Mutation = ApplyCouponCodeToDraftOrderMutation;
+  export type ApplyCouponCodeToDraftOrder = (NonNullable<ApplyCouponCodeToDraftOrderMutation['applyCouponCodeToDraftOrder']>);
+  export type OrderInlineFragment = (DiscriminateUnion<(NonNullable<ApplyCouponCodeToDraftOrderMutation['applyCouponCodeToDraftOrder']>), { __typename?: 'Order' }>);
+  export type ErrorResultInlineFragment = (DiscriminateUnion<(NonNullable<ApplyCouponCodeToDraftOrderMutation['applyCouponCodeToDraftOrder']>), { __typename?: 'ErrorResult' }>);
+}
+
+export namespace RemoveCouponCodeFromDraftOrder {
+  export type Variables = RemoveCouponCodeFromDraftOrderMutationVariables;
+  export type Mutation = RemoveCouponCodeFromDraftOrderMutation;
+  export type RemoveCouponCodeFromDraftOrder = (NonNullable<RemoveCouponCodeFromDraftOrderMutation['removeCouponCodeFromDraftOrder']>);
+  export type OrderInlineFragment = ({ __typename: 'Order' } & Pick<(NonNullable<RemoveCouponCodeFromDraftOrderMutation['removeCouponCodeFromDraftOrder']>), 'couponCodes'>);
+}
+
+export namespace DraftOrderEligibleShippingMethods {
+  export type Variables = DraftOrderEligibleShippingMethodsQueryVariables;
+  export type Query = DraftOrderEligibleShippingMethodsQuery;
+  export type EligibleShippingMethodsForDraftOrder = NonNullable<(NonNullable<DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder']>)[number]>;
+}
+
+export namespace SetDraftOrderShippingMethod {
+  export type Variables = SetDraftOrderShippingMethodMutationVariables;
+  export type Mutation = SetDraftOrderShippingMethodMutation;
+  export type SetDraftOrderShippingMethod = (NonNullable<SetDraftOrderShippingMethodMutation['setDraftOrderShippingMethod']>);
+  export type ErrorResultInlineFragment = (DiscriminateUnion<(NonNullable<SetDraftOrderShippingMethodMutation['setDraftOrderShippingMethod']>), { __typename?: 'ErrorResult' }>);
 }
 
 export namespace IdTest1 {

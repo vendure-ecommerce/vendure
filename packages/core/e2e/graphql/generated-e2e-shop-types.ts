@@ -1588,7 +1588,6 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 
@@ -1600,7 +1599,6 @@ export type MutationRemoveOrderLineArgs = {
 export type MutationAdjustOrderLineArgs = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 
@@ -1839,7 +1837,7 @@ export type Order = Node & {
   /** A summary of the taxes being applied to this Order */
   taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
-  customFields?: Maybe<OrderCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -1861,10 +1859,6 @@ export type OrderAddress = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type OrderCustomFields = {
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
 export type OrderFilterParameter = {
   id?: Maybe<IdOperators>;
   createdAt?: Maybe<DateOperators>;
@@ -1881,7 +1875,6 @@ export type OrderFilterParameter = {
   shippingWithTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
   totalWithTax?: Maybe<NumberOperators>;
-  tags?: Maybe<StringListOperators>;
 };
 
 export type OrderItem = Node & {
@@ -1985,17 +1978,7 @@ export type OrderLine = Node & {
   taxLines: Array<TaxLine>;
   order: Order;
   fulfillments?: Maybe<Array<Fulfillment>>;
-  customFields?: Maybe<OrderLineCustomFields>;
-};
-
-export type OrderLineCustomFields = {
-  referrer?: Maybe<Customer>;
-  description?: Maybe<Scalars['String']>;
-};
-
-export type OrderLineCustomFieldsInput = {
-  referrerId?: Maybe<Scalars['ID']>;
-  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -3012,12 +2995,8 @@ export type UpdateCustomerInput = {
 
 export type UpdateCustomerPasswordResult = Success | InvalidCredentialsError | PasswordValidationError | NativeAuthStrategyError;
 
-export type UpdateOrderCustomFieldsInput = {
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
 export type UpdateOrderInput = {
-  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
@@ -3379,6 +3358,17 @@ export type GetCustomerOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCustomerOrdersQuery = { activeOrder?: Maybe<{ customer?: Maybe<{ orders: { items: Array<Pick<Order, 'id'>> } }> }> };
+
+export type GetActiveCustomerOrdersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveCustomerOrdersQuery = { activeCustomer?: Maybe<(
+    Pick<Customer, 'id'>
+    & { orders: (
+      Pick<OrderList, 'totalItems'>
+      & { items: Array<Pick<Order, 'id' | 'state'>> }
+    ) }
+  )> };
 
 export type ApplyCouponCodeMutationVariables = Exact<{
   couponCode: Scalars['String'];
@@ -3749,6 +3739,14 @@ export namespace GetCustomerOrders {
   export type Customer = (NonNullable<(NonNullable<GetCustomerOrdersQuery['activeOrder']>)['customer']>);
   export type Orders = (NonNullable<(NonNullable<(NonNullable<GetCustomerOrdersQuery['activeOrder']>)['customer']>)['orders']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCustomerOrdersQuery['activeOrder']>)['customer']>)['orders']>)['items']>)[number]>;
+}
+
+export namespace GetActiveCustomerOrders {
+  export type Variables = GetActiveCustomerOrdersQueryVariables;
+  export type Query = GetActiveCustomerOrdersQuery;
+  export type ActiveCustomer = (NonNullable<GetActiveCustomerOrdersQuery['activeCustomer']>);
+  export type Orders = (NonNullable<(NonNullable<GetActiveCustomerOrdersQuery['activeCustomer']>)['orders']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetActiveCustomerOrdersQuery['activeCustomer']>)['orders']>)['items']>)[number]>;
 }
 
 export namespace ApplyCouponCode {

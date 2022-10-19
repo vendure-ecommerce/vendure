@@ -23,13 +23,11 @@ export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionE
 export type AddItemInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AddItemToDraftOrderInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
@@ -67,13 +65,11 @@ export type Address = Node & {
 export type AdjustDraftOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AdjustOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type Adjustment = {
@@ -2262,7 +2258,6 @@ export type ModifyOrderInput = {
   refund?: Maybe<AdministratorRefundInput>;
   options?: Maybe<ModifyOrderOptions>;
   couponCodes?: Maybe<Array<Scalars['String']>>;
-  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
 };
 
 export type ModifyOrderOptions = {
@@ -3318,7 +3313,7 @@ export type Order = Node & {
   /** A summary of the taxes being applied to this Order */
   taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
-  customFields?: Maybe<OrderCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -3340,10 +3335,6 @@ export type OrderAddress = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type OrderCustomFields = {
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
 export type OrderFilterParameter = {
   customerLastName?: Maybe<StringOperators>;
   transactionId?: Maybe<StringOperators>;
@@ -3362,7 +3353,6 @@ export type OrderFilterParameter = {
   shippingWithTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
   totalWithTax?: Maybe<NumberOperators>;
-  tags?: Maybe<StringListOperators>;
 };
 
 export type OrderItem = Node & {
@@ -3466,17 +3456,7 @@ export type OrderLine = Node & {
   taxLines: Array<TaxLine>;
   order: Order;
   fulfillments?: Maybe<Array<Fulfillment>>;
-  customFields?: Maybe<OrderLineCustomFields>;
-};
-
-export type OrderLineCustomFields = {
-  referrer?: Maybe<Customer>;
-  description?: Maybe<Scalars['String']>;
-};
-
-export type OrderLineCustomFieldsInput = {
-  referrerId?: Maybe<Scalars['ID']>;
-  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderLineInput = {
@@ -5277,13 +5257,9 @@ export type UpdateOrderAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
 };
 
-export type UpdateOrderCustomFieldsInput = {
-  tags?: Maybe<Array<Scalars['String']>>;
-};
-
 export type UpdateOrderInput = {
   id: Scalars['ID'];
-  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
