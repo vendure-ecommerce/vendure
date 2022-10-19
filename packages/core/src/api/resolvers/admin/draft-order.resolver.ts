@@ -7,9 +7,12 @@ import {
     UpdateOrderItemsResult,
 } from '@vendure/common/lib/generated-shop-types';
 import {
+    DeletionResponse,
+    DeletionResult,
     MutationAddItemToDraftOrderArgs,
     MutationAdjustDraftOrderLineArgs,
     MutationApplyCouponCodeToDraftOrderArgs,
+    MutationDeleteDraftOrderArgs,
     MutationRemoveCouponCodeFromDraftOrderArgs,
     MutationRemoveDraftOrderLineArgs,
     MutationSetCustomerForDraftOrderArgs,
@@ -44,6 +47,33 @@ export class DraftOrderResolver {
     @Allow(Permission.CreateOrder)
     async createDraftOrder(@Ctx() ctx: RequestContext): Promise<Order> {
         return this.orderService.createDraft(ctx);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteOrder)
+    async deleteDraftOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteDraftOrderArgs,
+    ): Promise<DeletionResponse> {
+        const order = await this.orderService.findOne(ctx, args.orderId);
+        if (!order || order.state !== 'Draft') {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: `No draft Order with the ID ${args.orderId} was found`,
+            };
+        }
+        try {
+            await this.orderService.deleteOrder(ctx, args.orderId);
+            return {
+                result: DeletionResult.DELETED,
+            };
+        } catch (e: any) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: e.message,
+            };
+        }
     }
 
     @Transaction()

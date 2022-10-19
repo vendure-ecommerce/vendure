@@ -29,6 +29,7 @@ export type AddItemInput = {
 export type AddItemToDraftOrderInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
@@ -67,6 +68,7 @@ export type Address = Node & {
 export type AdjustDraftOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AdjustOrderLineInput = {
@@ -2491,6 +2493,8 @@ export type Mutation = {
   addManualPaymentToOrder: AddManualPaymentToOrderResult;
   /** Creates a draft Order */
   createDraftOrder: Order;
+  /** Deletes a draft Order */
+  deleteDraftOrder: DeletionResponse;
   /** Adds an item to the draft Order. */
   addItemToDraftOrder: UpdateOrderItemsResult;
   /** Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
@@ -2960,6 +2964,11 @@ export type MutationModifyOrderArgs = {
 
 export type MutationAddManualPaymentToOrderArgs = {
   input: ManualPaymentInput;
+};
+
+
+export type MutationDeleteDraftOrderArgs = {
+  orderId: Scalars['ID'];
 };
 
 

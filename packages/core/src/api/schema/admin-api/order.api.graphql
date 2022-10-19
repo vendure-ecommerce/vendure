@@ -36,6 +36,8 @@ type Mutation {
     addManualPaymentToOrder(input: ManualPaymentInput!): AddManualPaymentToOrderResult!
     "Creates a draft Order"
     createDraftOrder: Order!
+    "Deletes a draft Order"
+    deleteDraftOrder(orderId: ID!): DeletionResponse!
     "Adds an item to the draft Order."
     addItemToDraftOrder(orderId: ID!, input: AddItemToDraftOrderInput!): UpdateOrderItemsResult!
     "Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."

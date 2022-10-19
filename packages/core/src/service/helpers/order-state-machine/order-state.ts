@@ -38,7 +38,7 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['AddingItems', 'Draft'],
     },
     Draft: {
-        to: ['Cancelled', 'PaymentAuthorized', 'PaymentSettled'],
+        to: ['Cancelled', 'ArrangingPayment'],
     },
     AddingItems: {
         to: ['ArrangingPayment', 'Cancelled'],
