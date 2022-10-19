@@ -74,10 +74,12 @@
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="order-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
-            <clr-icon shape="plus"></clr-icon>
-            {{ 'catalog.create-draft-order' | translate }}
-        </a>
+        <ng-container *ngIf="canCreateDraftOrder">
+            <a class="btn btn-primary" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
+                <clr-icon shape="plus"></clr-icon>
+                {{ 'catalog.create-draft-order' | translate }}
+            </a>
+        </ng-container>
     </vdr-ab-right>
 </vdr-action-bar>
 
@@ -113,7 +115,13 @@
             <vdr-table-row-action
                 iconShape="shopping-cart"
                 [label]="'common.open' | translate"
-                [linkTo]="order.state === 'Modifying' ? ['./', order.id, 'modify'] : order.state === 'Draft' ? ['./draft', order.id] : ['./', order.id]"
+                [linkTo]="
+                    order.state === 'Modifying'
+                        ? ['./', order.id, 'modify']
+                        : order.state === 'Draft'
+                        ? ['./draft', order.id]
+                        : ['./', order.id]
+                "
             ></vdr-table-row-action>
         </td>
     </ng-template>

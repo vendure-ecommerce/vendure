@@ -86,6 +86,7 @@ export class OrderListComponent
         },
     ];
     activePreset$: Observable<string>;
+    canCreateDraftOrder = false;
 
     constructor(
         private serverConfigService: ServerConfigService,
@@ -111,6 +112,13 @@ export class OrderListComponent
         const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
         if (lastFilters) {
             this.setQueryParam(lastFilters, { replaceUrl: true });
+        }
+        this.canCreateDraftOrder = !!this.serverConfigService
+            .getOrderProcessStates()
+            .find(state => state.name === 'Created')
+            ?.to.includes('Draft');
+        if (!this.canCreateDraftOrder) {
+            this.filterPresets = this.filterPresets.filter(p => p.name !== 'draft');
         }
     }
 
