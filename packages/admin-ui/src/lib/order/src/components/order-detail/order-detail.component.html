@@ -32,6 +32,7 @@
             *ngIf="
                 order.active === false &&
                 order.state !== 'ArrangingAdditionalPayment' &&
+                order.state !== 'ArrangingPayment' &&
                 0 < outstandingPaymentAmount(order)
             "
             (click)="transitionToState('ArrangingAdditionalPayment')"

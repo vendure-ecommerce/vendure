@@ -1,0 +1,175 @@
+<vdr-action-bar *ngIf="entity$ | async as order">
+    <vdr-ab-left>
+        <div class="flex clr-align-items-center">
+            <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+            <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
+        </div>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+        <button
+            class="btn btn-primary"
+            (click)="completeOrder()"
+            [disabled]="!order.customer || !order.lines.length || !order.shippingLines.length"
+        >
+            <clr-icon shape="check"></clr-icon>
+            {{ 'order.complete-draft-order' | translate }}
+        </button>
+        <vdr-dropdown>
+            <button class="icon-button" vdrDropdownTrigger>
+                <clr-icon shape="ellipsis-vertical"></clr-icon>
+            </button>
+            <vdr-dropdown-menu vdrPosition="bottom-right">
+                <button type="button" class="btn" vdrDropdownItem (click)="deleteOrder()">
+                    <clr-icon shape="trash" class="is-danger"></clr-icon>
+                    {{ 'order.delete-draft-order' | translate }}
+                </button>
+            </vdr-dropdown-menu>
+        </vdr-dropdown>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<div *ngIf="entity$ | async as order">
+    <div class="clr-row">
+        <div class="clr-col-lg-8">
+            <vdr-draft-order-variant-selector
+                [orderLineCustomFields]="orderLineCustomFields"
+                [currencyCode]="order.currencyCode"
+                (addItem)="addItemToOrder($event)"
+            ></vdr-draft-order-variant-selector>
+            <vdr-order-table
+                [order]="order"
+                [orderLineCustomFields]="orderLineCustomFields"
+                [isDraft]="true"
+                (adjust)="adjustOrderLine($event)"
+                (remove)="removeOrderLine($event)"
+            ></vdr-order-table>
+            <div class="flex">
+                <button
+                    *ngIf="order.couponCodes.length === 0 && !displayCouponCodeInput"
+                    class="btn btn-link btn-sm mr2"
+                    (click)="displayCouponCodeInput = !displayCouponCodeInput"
+                >
+                    {{ 'order.set-coupon-codes' | translate }}
+                </button>
+                <div *ngIf="order.couponCodes.length || displayCouponCodeInput">
+                    <label>{{ 'order.set-coupon-codes' | translate }}</label>
+                    <vdr-coupon-code-selector
+                        [couponCodes]="order.couponCodes"
+                        (addCouponCode)="applyCouponCode($event)"
+                        (removeCouponCode)="removeCouponCode($event)"
+                    ></vdr-coupon-code-selector>
+                </div>
+            </div>
+            <ng-container *ngIf="order.taxSummary.length">
+                <h4>{{ 'order.tax-summary' | translate }}</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'common.description' | translate }}</th>
+                            <th>{{ 'order.tax-rate' | translate }}</th>
+                            <th>{{ 'order.tax-base' | translate }}</th>
+                            <th>{{ 'order.tax-total' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of order.taxSummary">
+                            <td>{{ row.description }}</td>
+                            <td>{{ row.taxRate / 100 | percent }}</td>
+                            <td>{{ row.taxBase | localeCurrency: order.currencyCode }}</td>
+                            <td>{{ row.taxTotal | localeCurrency: order.currencyCode }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ng-container>
+        </div>
+        <div class="clr-col-lg-4 order-cards">
+            <div class="card">
+                <div class="card-header">
+                    <clr-icon *ngIf="!order.customer" shape="unknown-status" class="is-warning"></clr-icon>
+                    <clr-icon *ngIf="order.customer" shape="check" class="is-success"></clr-icon>
+                    {{ 'order.customer' | translate }}
+                </div>
+                <div class="card-block">
+                    <div class="card-text">
+                        <vdr-customer-label
+                            class="block mb2"
+                            *ngIf="order.customer"
+                            [customer]="order.customer"
+                        ></vdr-customer-label>
+                        <button class="btn btn-link btn-sm" (click)="setCustomer()">
+                            {{ 'order.set-customer-for-order' | translate }}
+                        </button>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <h4 class="card-title">
+                        <clr-icon
+                            *ngIf="!order.billingAddress.streetLine1"
+                            shape="unknown-status"
+                            class="is-warning"
+                        ></clr-icon>
+                        <clr-icon
+                            *ngIf="order.billingAddress.streetLine1"
+                            shape="check"
+                            class="is-success"
+                        ></clr-icon>
+                        {{ 'order.billing-address' | translate }}
+                    </h4>
+                    <div class="card-text">
+                        <vdr-formatted-address
+                            class="block mb2"
+                            *ngIf="order.billingAddress"
+                            [address]="order.billingAddress"
+                        ></vdr-formatted-address>
+                        <button class="btn btn-link btn-sm" (click)="setBillingAddress()">
+                            {{ 'order.set-billing-address' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <clr-icon
+                        *ngIf="!order.shippingAddress.streetLine1 || !order.shippingLines.length"
+                        shape="unknown-status"
+                        class="is-warning"
+                    ></clr-icon>
+                    <clr-icon
+                        *ngIf="order.shippingAddress.streetLine1 && order.shippingLines.length"
+                        shape="check"
+                        class="is-success"
+                    ></clr-icon>
+                    {{ 'order.shipping' | translate }}
+                </div>
+                <div class="card-block">
+                    <div class="card-text">
+                        <vdr-formatted-address
+                            class="block mb2"
+                            *ngIf="order.shippingAddress"
+                            [address]="order.shippingAddress"
+                        ></vdr-formatted-address>
+                        <button class="btn btn-link btn-sm" (click)="setShippingAddress()">
+                            {{ 'order.set-shipping-address' | translate }}
+                        </button>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="card-text">
+                        <div *ngFor="let shippingLine of order.shippingLines">
+                            {{ shippingLine.shippingMethod.name }}
+                        </div>
+                        <button class="btn btn-link btn-sm" (click)="setShippingMethod()">
+                            {{ 'order.set-shipping-method' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <vdr-order-custom-fields-card
+                [customFieldsConfig]="customFields"
+                [customFieldValues]="order.customFields"
+                (updateClick)="updateCustomFields($event)"
+            ></vdr-order-custom-fields-card>
+        </div>
+    </div>
+</div>

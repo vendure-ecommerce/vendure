@@ -24,6 +24,13 @@ export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionE
 export type AddItemInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
+};
+
+export type AddItemToDraftOrderInput = {
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
@@ -59,9 +66,16 @@ export type Address = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type AdjustDraftOrderLineInput = {
+  orderLineId: Scalars['ID'];
+  quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
+};
+
 export type AdjustOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
+  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type Adjustment = {
@@ -155,6 +169,8 @@ export type AlreadyRefundedError = ErrorResult & {
   message: Scalars['String'];
   refundId: Scalars['ID'];
 };
+
+export type ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError;
 
 export type Asset = Node & {
   __typename?: 'Asset';
@@ -1469,7 +1485,10 @@ export enum ErrorCode {
   INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
-  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR'
+  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
+  ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
+  INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
+  NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR'
 }
 
 export type ErrorResult = {
@@ -1763,6 +1782,13 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>;
   processed: Scalars['Int'];
   imported: Scalars['Int'];
+};
+
+/** Returned when attempting to set a ShippingMethod for which the Order is not eligible */
+export type IneligibleShippingMethodError = ErrorResult & {
+  __typename?: 'IneligibleShippingMethodError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to add more items to the Order than are available */
@@ -2320,6 +2346,7 @@ export type ModifyOrderInput = {
   refund?: Maybe<AdministratorRefundInput>;
   options?: Maybe<ModifyOrderOptions>;
   couponCodes?: Maybe<Array<Scalars['String']>>;
+  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
 };
 
 export type ModifyOrderOptions = {
@@ -2347,6 +2374,8 @@ export type Mutation = {
   /** Add Customers to a CustomerGroup */
   addCustomersToGroup: CustomerGroup;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
+  /** Adds an item to the draft Order. */
+  addItemToDraftOrder: UpdateOrderItemsResult;
   /**
    * Used to manually create a new Payment against an Order.
    * This can be used by an Administrator when an Order is in the ArrangingPayment state.
@@ -2363,6 +2392,10 @@ export type Mutation = {
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
+  /** Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
+  adjustDraftOrderLine: UpdateOrderItemsResult;
+  /** Applies the given coupon code to the draft Order */
+  applyCouponCodeToDraftOrder: ApplyCouponCodeResult;
   /** Assign assets to channel */
   assignAssetsToChannel: Array<Asset>;
   /** Assigns Collections to the specified Channel */
@@ -2398,6 +2431,8 @@ export type Mutation = {
   createCustomerAddress: Address;
   /** Create a new CustomerGroup */
   createCustomerGroup: CustomerGroup;
+  /** Creates a draft Order */
+  createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
   /** Create one or more FacetValues */
@@ -2446,6 +2481,8 @@ export type Mutation = {
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
   deleteCustomerNote: DeletionResponse;
+  /** Deletes a draft Order */
+  deleteDraftOrder: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
@@ -2494,8 +2531,12 @@ export type Mutation = {
   reindex: Job;
   /** Removes Collections from the specified Channel */
   removeCollectionsFromChannel: Array<Collection>;
+  /** Removes the given coupon code from the draft Order */
+  removeCouponCodeFromDraftOrder?: Maybe<Order>;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
+  /** Remove an OrderLine from the draft Order */
+  removeDraftOrderLine: RemoveOrderItemsResult;
   /** Removes Facets from the specified Channel */
   removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
   /** Remove members from a Zone */
@@ -2517,7 +2558,16 @@ export type Mutation = {
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
   setContentLanguage: LanguageCode;
+  setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
   setDisplayUiExtensionPoints: Scalars['Boolean'];
+  /** Sets the billing address for a draft Order */
+  setDraftOrderBillingAddress: Order;
+  /** Allows any custom fields to be set for the active order */
+  setDraftOrderCustomFields: Order;
+  /** Sets the shipping address for a draft Order */
+  setDraftOrderShippingAddress: Order;
+  /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
+  setDraftOrderShippingMethod: SetOrderShippingMethodResult;
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiLocale?: Maybe<Scalars['String']>;
@@ -2592,6 +2642,12 @@ export type MutationAddFulfillmentToOrderArgs = {
 };
 
 
+export type MutationAddItemToDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  input: AddItemToDraftOrderInput;
+};
+
+
 export type MutationAddManualPaymentToOrderArgs = {
   input: ManualPaymentInput;
 };
@@ -2616,6 +2672,18 @@ export type MutationAddNoteToOrderArgs = {
 export type MutationAddOptionGroupToProductArgs = {
   productId: Scalars['ID'];
   optionGroupId: Scalars['ID'];
+};
+
+
+export type MutationAdjustDraftOrderLineArgs = {
+  orderId: Scalars['ID'];
+  input: AdjustDraftOrderLineInput;
+};
+
+
+export type MutationApplyCouponCodeToDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
 };
 
 
@@ -2843,6 +2911,11 @@ export type MutationDeleteCustomerNoteArgs = {
 };
 
 
+export type MutationDeleteDraftOrderArgs = {
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationDeleteFacetArgs = {
   id: Scalars['ID'];
   force?: Maybe<Scalars['Boolean']>;
@@ -2969,9 +3042,21 @@ export type MutationRemoveCollectionsFromChannelArgs = {
 };
 
 
+export type MutationRemoveCouponCodeFromDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+};
+
+
 export type MutationRemoveCustomersFromGroupArgs = {
   customerGroupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationRemoveDraftOrderLineArgs = {
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
 };
 
 
@@ -3028,8 +3113,39 @@ export type MutationSetContentLanguageArgs = {
 };
 
 
+export type MutationSetCustomerForDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  customerId?: Maybe<Scalars['ID']>;
+  input?: Maybe<CreateCustomerInput>;
+};
+
+
 export type MutationSetDisplayUiExtensionPointsArgs = {
   display: Scalars['Boolean'];
+};
+
+
+export type MutationSetDraftOrderBillingAddressArgs = {
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+};
+
+
+export type MutationSetDraftOrderCustomFieldsArgs = {
+  orderId: Scalars['ID'];
+  input: UpdateOrderInput;
+};
+
+
+export type MutationSetDraftOrderShippingAddressArgs = {
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+};
+
+
+export type MutationSetDraftOrderShippingMethodArgs = {
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
 };
 
 
@@ -3246,6 +3362,16 @@ export type NetworkStatus = {
   inFlightRequests: Scalars['Int'];
 };
 
+/**
+ * Returned when invoking a mutation which depends on there being an active Order on the
+ * current session.
+ */
+export type NoActiveOrderError = ErrorResult & {
+  __typename?: 'NoActiveOrderError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
 /** Returned when a call to modifyOrder fails to specify any changes */
 export type NoChangesSpecifiedError = ErrorResult & {
   __typename?: 'NoChangesSpecifiedError';
@@ -3340,7 +3466,7 @@ export type Order = Node & {
   /** A summary of the taxes being applied to this Order */
   taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<OrderCustomFields>;
 };
 
 
@@ -3363,6 +3489,11 @@ export type OrderAddress = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type OrderCustomFields = {
+  __typename?: 'OrderCustomFields';
+  tags?: Maybe<Array<Scalars['String']>>;
+};
+
 export type OrderFilterParameter = {
   customerLastName?: Maybe<StringOperators>;
   transactionId?: Maybe<StringOperators>;
@@ -3381,6 +3512,7 @@ export type OrderFilterParameter = {
   shippingWithTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
   totalWithTax?: Maybe<NumberOperators>;
+  tags?: Maybe<StringListOperators>;
 };
 
 export type OrderItem = Node & {
@@ -3487,7 +3619,18 @@ export type OrderLine = Node & {
   taxLines: Array<TaxLine>;
   order: Order;
   fulfillments?: Maybe<Array<Fulfillment>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<OrderLineCustomFields>;
+};
+
+export type OrderLineCustomFields = {
+  __typename?: 'OrderLineCustomFields';
+  referrer?: Maybe<Customer>;
+  description?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+  referrerId?: Maybe<Scalars['ID']>;
+  description?: Maybe<Scalars['String']>;
 };
 
 export type OrderLineInput = {
@@ -3526,6 +3669,13 @@ export type OrderModification = Node & {
   payment?: Maybe<Payment>;
   refund?: Maybe<Refund>;
   isSettled: Scalars['Boolean'];
+};
+
+/** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
+export type OrderModificationError = ErrorResult & {
+  __typename?: 'OrderModificationError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to modify the contents of an Order that is not in the `Modifying` state. */
@@ -4269,6 +4419,8 @@ export type Query = {
   customerGroup?: Maybe<CustomerGroup>;
   customerGroups: CustomerGroupList;
   customers: CustomerList;
+  /** Returns a list of eligible shipping methods for the draft Order */
+  eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
   facet?: Maybe<Facet>;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
@@ -4388,6 +4540,11 @@ export type QueryCustomerGroupsArgs = {
 
 export type QueryCustomersArgs = {
   options?: Maybe<CustomerListOptions>;
+};
+
+
+export type QueryEligibleShippingMethodsForDraftOrderArgs = {
+  orderId: Scalars['ID'];
 };
 
 
@@ -4650,6 +4807,8 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
+export type RemoveOrderItemsResult = Order | OrderModificationError;
+
 export type RemoveProductVariantsFromChannelInput = {
   productVariantIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
@@ -4806,6 +4965,10 @@ export type ServerConfig = {
   permissions: Array<PermissionDefinition>;
   customFieldConfig: CustomFields;
 };
+
+export type SetCustomerForDraftOrderResult = Order | EmailAddressConflictError;
+
+export type SetOrderShippingMethodResult = Order | OrderModificationError | IneligibleShippingMethodError | NoActiveOrderError;
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -5349,10 +5512,16 @@ export type UpdateOrderAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
 };
 
+export type UpdateOrderCustomFieldsInput = {
+  tags?: Maybe<Array<Scalars['String']>>;
+};
+
 export type UpdateOrderInput = {
   id: Scalars['ID'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateOrderCustomFieldsInput>;
 };
+
+export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
 
 export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];
@@ -6981,6 +7150,182 @@ export type AddManualPaymentMutation = { addManualPaymentToOrder: (
     & ErrorResult_ManualPaymentStateError_Fragment
   ) };
 
+export type CreateDraftOrderMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateDraftOrderMutation = { createDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) };
+
+export type DeleteDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DeleteDraftOrderMutation = { deleteDraftOrder: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) };
+
+export type AddItemToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AddItemToDraftOrderInput;
+}>;
+
+
+export type AddItemToDraftOrderMutation = { addItemToDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) | (
+    { __typename?: 'OrderLimitError' }
+    & ErrorResult_OrderLimitError_Fragment
+  ) | (
+    { __typename?: 'NegativeQuantityError' }
+    & ErrorResult_NegativeQuantityError_Fragment
+  ) | (
+    { __typename?: 'InsufficientStockError' }
+    & ErrorResult_InsufficientStockError_Fragment
+  ) };
+
+export type AdjustDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AdjustDraftOrderLineInput;
+}>;
+
+
+export type AdjustDraftOrderLineMutation = { adjustDraftOrderLine: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) | (
+    { __typename?: 'OrderLimitError' }
+    & ErrorResult_OrderLimitError_Fragment
+  ) | (
+    { __typename?: 'NegativeQuantityError' }
+    & ErrorResult_NegativeQuantityError_Fragment
+  ) | (
+    { __typename?: 'InsufficientStockError' }
+    & ErrorResult_InsufficientStockError_Fragment
+  ) };
+
+export type RemoveDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
+}>;
+
+
+export type RemoveDraftOrderLineMutation = { removeDraftOrderLine: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) };
+
+export type SetCustomerForDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  customerId?: Maybe<Scalars['ID']>;
+  input?: Maybe<CreateCustomerInput>;
+}>;
+
+
+export type SetCustomerForDraftOrderMutation = { setCustomerForDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'EmailAddressConflictError' }
+    & ErrorResult_EmailAddressConflictError_Fragment
+  ) };
+
+export type SetDraftOrderShippingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderShippingAddressMutation = { setDraftOrderShippingAddress: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) };
+
+export type SetDraftOrderBillingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderBillingAddressMutation = { setDraftOrderBillingAddress: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) };
+
+export type ApplyCouponCodeToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type ApplyCouponCodeToDraftOrderMutation = { applyCouponCodeToDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'CouponCodeExpiredError' }
+    & ErrorResult_CouponCodeExpiredError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeInvalidError' }
+    & ErrorResult_CouponCodeInvalidError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeLimitError' }
+    & ErrorResult_CouponCodeLimitError_Fragment
+  ) };
+
+export type RemoveCouponCodeFromDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type RemoveCouponCodeFromDraftOrderMutation = { removeCouponCodeFromDraftOrder?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  )> };
+
+export type DraftOrderEligibleShippingMethodsQueryVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DraftOrderEligibleShippingMethodsQuery = { eligibleShippingMethodsForDraftOrder: Array<(
+    { __typename?: 'ShippingMethodQuote' }
+    & Pick<ShippingMethodQuote, 'id' | 'name' | 'code' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+  )> };
+
+export type SetDraftOrderShippingMethodMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
+}>;
+
+
+export type SetDraftOrderShippingMethodMutation = { setDraftOrderShippingMethod: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) | (
+    { __typename?: 'IneligibleShippingMethodError' }
+    & ErrorResult_IneligibleShippingMethodError_Fragment
+  ) | (
+    { __typename?: 'NoActiveOrderError' }
+    & ErrorResult_NoActiveOrderError_Fragment
+  ) };
+
 export type AssetFragment = (
   { __typename?: 'Asset' }
   & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'>
@@ -7574,7 +7919,7 @@ export type GetProductVariantQueryVariables = Exact<{
 
 export type GetProductVariantQuery = { productVariant?: Maybe<(
     { __typename?: 'ProductVariant' }
-    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+    & Pick<ProductVariant, 'id' | 'name' | 'sku' | 'stockOnHand' | 'stockAllocated' | 'stockLevel' | 'useGlobalOutOfStockThreshold' | 'price' | 'priceWithTax'>
     & { featuredAsset?: Maybe<(
       { __typename?: 'Asset' }
       & Pick<Asset, 'id' | 'preview'>
@@ -9239,6 +9584,11 @@ type ErrorResult_FulfillmentStateTransitionError_Fragment = (
   & Pick<FulfillmentStateTransitionError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_IneligibleShippingMethodError_Fragment = (
+  { __typename?: 'IneligibleShippingMethodError' }
+  & Pick<IneligibleShippingMethodError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_InsufficientStockError_Fragment = (
   { __typename?: 'InsufficientStockError' }
   & Pick<InsufficientStockError, 'errorCode' | 'message'>
@@ -9299,6 +9649,11 @@ type ErrorResult_NegativeQuantityError_Fragment = (
   & Pick<NegativeQuantityError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_NoActiveOrderError_Fragment = (
+  { __typename?: 'NoActiveOrderError' }
+  & Pick<NoActiveOrderError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_NoChangesSpecifiedError_Fragment = (
   { __typename?: 'NoChangesSpecifiedError' }
   & Pick<NoChangesSpecifiedError, 'errorCode' | 'message'>
@@ -9312,6 +9667,11 @@ type ErrorResult_NothingToRefundError_Fragment = (
 type ErrorResult_OrderLimitError_Fragment = (
   { __typename?: 'OrderLimitError' }
   & Pick<OrderLimitError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_OrderModificationError_Fragment = (
+  { __typename?: 'OrderModificationError' }
+  & Pick<OrderModificationError, 'errorCode' | 'message'>
 );
 
 type ErrorResult_OrderModificationStateError_Fragment = (
@@ -9369,7 +9729,7 @@ type ErrorResult_SettlePaymentError_Fragment = (
   & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }
@@ -9476,6 +9836,20 @@ export type TestEligibleShippingMethodsQueryVariables = Exact<{
 export type TestEligibleShippingMethodsQuery = { testEligibleShippingMethods: Array<(
     { __typename?: 'ShippingMethodQuote' }
     & Pick<ShippingMethodQuote, 'id' | 'name' | 'code' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+  )> };
+
+export type GetCustomerAddressesQueryVariables = Exact<{
+  customerId: Scalars['ID'];
+}>;
+
+
+export type GetCustomerAddressesQuery = { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id'>
+    & { addresses?: Maybe<Array<(
+      { __typename?: 'Address' }
+      & AddressFragment
+    )>> }
   )> };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
@@ -10214,6 +10588,78 @@ export namespace AddManualPayment {
   export type Variables = AddManualPaymentMutationVariables;
   export type Mutation = AddManualPaymentMutation;
   export type AddManualPaymentToOrder = (NonNullable<AddManualPaymentMutation['addManualPaymentToOrder']>);
+}
+
+export namespace CreateDraftOrder {
+  export type Variables = CreateDraftOrderMutationVariables;
+  export type Mutation = CreateDraftOrderMutation;
+  export type CreateDraftOrder = (NonNullable<CreateDraftOrderMutation['createDraftOrder']>);
+}
+
+export namespace DeleteDraftOrder {
+  export type Variables = DeleteDraftOrderMutationVariables;
+  export type Mutation = DeleteDraftOrderMutation;
+  export type DeleteDraftOrder = (NonNullable<DeleteDraftOrderMutation['deleteDraftOrder']>);
+}
+
+export namespace AddItemToDraftOrder {
+  export type Variables = AddItemToDraftOrderMutationVariables;
+  export type Mutation = AddItemToDraftOrderMutation;
+  export type AddItemToDraftOrder = (NonNullable<AddItemToDraftOrderMutation['addItemToDraftOrder']>);
+}
+
+export namespace AdjustDraftOrderLine {
+  export type Variables = AdjustDraftOrderLineMutationVariables;
+  export type Mutation = AdjustDraftOrderLineMutation;
+  export type AdjustDraftOrderLine = (NonNullable<AdjustDraftOrderLineMutation['adjustDraftOrderLine']>);
+}
+
+export namespace RemoveDraftOrderLine {
+  export type Variables = RemoveDraftOrderLineMutationVariables;
+  export type Mutation = RemoveDraftOrderLineMutation;
+  export type RemoveDraftOrderLine = (NonNullable<RemoveDraftOrderLineMutation['removeDraftOrderLine']>);
+}
+
+export namespace SetCustomerForDraftOrder {
+  export type Variables = SetCustomerForDraftOrderMutationVariables;
+  export type Mutation = SetCustomerForDraftOrderMutation;
+  export type SetCustomerForDraftOrder = (NonNullable<SetCustomerForDraftOrderMutation['setCustomerForDraftOrder']>);
+}
+
+export namespace SetDraftOrderShippingAddress {
+  export type Variables = SetDraftOrderShippingAddressMutationVariables;
+  export type Mutation = SetDraftOrderShippingAddressMutation;
+  export type SetDraftOrderShippingAddress = (NonNullable<SetDraftOrderShippingAddressMutation['setDraftOrderShippingAddress']>);
+}
+
+export namespace SetDraftOrderBillingAddress {
+  export type Variables = SetDraftOrderBillingAddressMutationVariables;
+  export type Mutation = SetDraftOrderBillingAddressMutation;
+  export type SetDraftOrderBillingAddress = (NonNullable<SetDraftOrderBillingAddressMutation['setDraftOrderBillingAddress']>);
+}
+
+export namespace ApplyCouponCodeToDraftOrder {
+  export type Variables = ApplyCouponCodeToDraftOrderMutationVariables;
+  export type Mutation = ApplyCouponCodeToDraftOrderMutation;
+  export type ApplyCouponCodeToDraftOrder = (NonNullable<ApplyCouponCodeToDraftOrderMutation['applyCouponCodeToDraftOrder']>);
+}
+
+export namespace RemoveCouponCodeFromDraftOrder {
+  export type Variables = RemoveCouponCodeFromDraftOrderMutationVariables;
+  export type Mutation = RemoveCouponCodeFromDraftOrderMutation;
+  export type RemoveCouponCodeFromDraftOrder = (NonNullable<RemoveCouponCodeFromDraftOrderMutation['removeCouponCodeFromDraftOrder']>);
+}
+
+export namespace DraftOrderEligibleShippingMethods {
+  export type Variables = DraftOrderEligibleShippingMethodsQueryVariables;
+  export type Query = DraftOrderEligibleShippingMethodsQuery;
+  export type EligibleShippingMethodsForDraftOrder = NonNullable<(NonNullable<DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder']>)[number]>;
+}
+
+export namespace SetDraftOrderShippingMethod {
+  export type Variables = SetDraftOrderShippingMethodMutationVariables;
+  export type Mutation = SetDraftOrderShippingMethodMutation;
+  export type SetDraftOrderShippingMethod = (NonNullable<SetDraftOrderShippingMethodMutation['setDraftOrderShippingMethod']>);
 }
 
 export namespace Asset {
@@ -11089,4 +11535,11 @@ export namespace TestEligibleShippingMethods {
   export type Variables = TestEligibleShippingMethodsQueryVariables;
   export type Query = TestEligibleShippingMethodsQuery;
   export type TestEligibleShippingMethods = NonNullable<(NonNullable<TestEligibleShippingMethodsQuery['testEligibleShippingMethods']>)[number]>;
+}
+
+export namespace GetCustomerAddresses {
+  export type Variables = GetCustomerAddressesQueryVariables;
+  export type Query = GetCustomerAddressesQuery;
+  export type Customer = (NonNullable<GetCustomerAddressesQuery['customer']>);
+  export type Addresses = NonNullable<(NonNullable<(NonNullable<GetCustomerAddressesQuery['customer']>)['addresses']>)[number]>;
 }

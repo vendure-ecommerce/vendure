@@ -40,10 +40,14 @@
                         [clearable]="true"
                         [searchable]="false"
                     >
-                        <ng-template ng-option-tmp let-item="item">{{ item | stateI18nToken | translate }}</ng-template>
+                        <ng-template ng-option-tmp let-item="item">{{
+                            item | stateI18nToken | translate
+                        }}</ng-template>
                         <ng-template ng-label-tmp let-item="item" let-clear="clear">
                             <span class="ng-value-label"> {{ item | stateI18nToken | translate }}</span>
-                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true"
+                                >×</span
+                            >
                         </ng-template>
                     </ng-select>
                     <button
@@ -70,6 +74,10 @@
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="order-list"></vdr-action-bar-items>
+        <a class="btn btn-primary" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'catalog.create-draft-order' | translate }}
+        </a>
     </vdr-ab-right>
 </vdr-action-bar>
 
@@ -105,7 +113,7 @@
             <vdr-table-row-action
                 iconShape="shopping-cart"
                 [label]="'common.open' | translate"
-                [linkTo]="order.state === 'Modifying' ? ['./', order.id, 'modify'] : ['./', order.id]"
+                [linkTo]="order.state === 'Modifying' ? ['./', order.id, 'modify'] : order.state === 'Draft' ? ['./draft', order.id] : ['./', order.id]"
             ></vdr-table-row-action>
         </td>
     </ng-template>

@@ -497,3 +497,128 @@ export const ADD_MANUAL_PAYMENT_TO_ORDER = gql`
     ${ORDER_DETAIL_FRAGMENT}
     ${ERROR_RESULT_FRAGMENT}
 `;
+
+export const CREATE_DRAFT_ORDER = gql`
+    mutation CreateDraftOrder {
+        createDraftOrder {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const DELETE_DRAFT_ORDER = gql`
+    mutation DeleteDraftOrder($orderId: ID!) {
+        deleteDraftOrder(orderId: $orderId) {
+            result
+            message
+        }
+    }
+`;
+
+export const ADD_ITEM_TO_DRAFT_ORDER = gql`
+    mutation AddItemToDraftOrder($orderId: ID!, $input: AddItemToDraftOrderInput!) {
+        addItemToDraftOrder(orderId: $orderId, input: $input) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const ADJUST_DRAFT_ORDER_LINE = gql`
+    mutation AdjustDraftOrderLine($orderId: ID!, $input: AdjustDraftOrderLineInput!) {
+        adjustDraftOrderLine(orderId: $orderId, input: $input) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const REMOVE_DRAFT_ORDER_LINE = gql`
+    mutation RemoveDraftOrderLine($orderId: ID!, $orderLineId: ID!) {
+        removeDraftOrderLine(orderId: $orderId, orderLineId: $orderLineId) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const SET_CUSTOMER_FOR_DRAFT_ORDER = gql`
+    mutation SetCustomerForDraftOrder($orderId: ID!, $customerId: ID, $input: CreateCustomerInput) {
+        setCustomerForDraftOrder(orderId: $orderId, customerId: $customerId, input: $input) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation SetDraftOrderShippingAddress($orderId: ID!, $input: CreateAddressInput!) {
+        setDraftOrderShippingAddress(orderId: $orderId, input: $input) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation SetDraftOrderBillingAddress($orderId: ID!, $input: CreateAddressInput!) {
+        setDraftOrderBillingAddress(orderId: $orderId, input: $input) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const APPLY_COUPON_CODE_TO_DRAFT_ORDER = gql`
+    mutation ApplyCouponCodeToDraftOrder($orderId: ID!, $couponCode: String!) {
+        applyCouponCodeToDraftOrder(orderId: $orderId, couponCode: $couponCode) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const REMOVE_COUPON_CODE_FROM_DRAFT_ORDER = gql`
+    mutation RemoveCouponCodeFromDraftOrder($orderId: ID!, $couponCode: String!) {
+        removeCouponCodeFromDraftOrder(orderId: $orderId, couponCode: $couponCode) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS = gql`
+    query DraftOrderEligibleShippingMethods($orderId: ID!) {
+        eligibleShippingMethodsForDraftOrder(orderId: $orderId) {
+            id
+            name
+            code
+            description
+            price
+            priceWithTax
+            metadata
+        }
+    }
+`;
+
+export const SET_DRAFT_ORDER_SHIPPING_METHOD = gql`
+    mutation SetDraftOrderShippingMethod($orderId: ID!, $shippingMethodId: ID!) {
+        setDraftOrderShippingMethod(orderId: $orderId, shippingMethodId: $shippingMethodId) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;

@@ -49,7 +49,7 @@ export class OrderListComponent
             config: {
                 active: false,
                 states: this.orderStates.filter(
-                    s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped',
+                    s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped' && s !== 'Draft',
                 ),
             },
         },
@@ -74,6 +74,14 @@ export class OrderListComponent
             label: _('order.filter-preset-active'),
             config: {
                 active: true,
+            },
+        },
+        {
+            name: 'draft',
+            label: _('order.filter-preset-draft'),
+            config: {
+                active: false,
+                states: ['Draft'],
             },
         },
     ];

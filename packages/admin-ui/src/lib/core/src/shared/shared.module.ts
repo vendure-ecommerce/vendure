@@ -73,6 +73,8 @@ import { PaginationControlsComponent } from './components/pagination-controls/pa
 import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
+import { RadioCardFieldsetComponent } from './components/radio-card/radio-card-fieldset.component';
+import { RadioCardComponent } from './components/radio-card/radio-card.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
 import { ContextMenuComponent } from './components/rich-text-editor/prosemirror/context-menu/context-menu.component';
@@ -247,6 +249,8 @@ const DECLARATIONS = [
     ContextMenuComponent,
     RawHtmlDialogComponent,
     BulkActionMenuComponent,
+    RadioCardComponent,
+    RadioCardFieldsetComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
