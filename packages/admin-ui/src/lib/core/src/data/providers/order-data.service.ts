@@ -4,33 +4,33 @@ import {
     ADD_MANUAL_PAYMENT_TO_ORDER,
     ADD_NOTE_TO_ORDER,
     ADJUST_DRAFT_ORDER_LINE,
+    APPLY_COUPON_CODE_TO_DRAFT_ORDER,
     CANCEL_ORDER,
     CANCEL_PAYMENT,
     CREATE_DRAFT_ORDER,
     CREATE_FULFILLMENT,
+    DELETE_DRAFT_ORDER,
     DELETE_ORDER_NOTE,
+    DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS,
     GET_ORDER,
     GET_ORDERS_LIST,
     GET_ORDER_HISTORY,
     GET_ORDER_SUMMARY,
     MODIFY_ORDER,
     REFUND_ORDER,
+    REMOVE_COUPON_CODE_FROM_DRAFT_ORDER,
     REMOVE_DRAFT_ORDER_LINE,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
+    SET_BILLING_ADDRESS_FOR_DRAFT_ORDER,
     SET_CUSTOMER_FOR_DRAFT_ORDER,
+    SET_DRAFT_ORDER_SHIPPING_METHOD,
+    SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER,
     TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
     TRANSITION_PAYMENT_TO_STATE,
     UPDATE_ORDER_CUSTOM_FIELDS,
     UPDATE_ORDER_NOTE,
-    SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER,
-    SET_BILLING_ADDRESS_FOR_DRAFT_ORDER,
-    APPLY_COUPON_CODE_TO_DRAFT_ORDER,
-    REMOVE_COUPON_CODE_FROM_DRAFT_ORDER,
-    DRAFT_ORDER_ELIGIBLE_SHIPPING_METHODS,
-    SET_DRAFT_ORDER_SHIPPING_METHOD,
-    DELETE_DRAFT_ORDER,
 } from '../definitions/order-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -214,20 +214,20 @@ export class OrderDataService {
     }
 
     deleteDraftOrder(orderId: string) {
-        return this.baseDataService.mutate<Codegen.DeleteDraftOrderMutation, DeleteDraftOrderMutationVariables>(
+        return this.baseDataService.mutate<Codegen.DeleteDraftOrderMutation, Codegen.DeleteDraftOrderMutationVariables>(
             DELETE_DRAFT_ORDER,
             { orderId },
         );
     }
 
-    addItemToDraftOrder(orderId: string, input: AddItemToDraftOrderInput) {
-        return this.baseDataService.mutate<Codegen.AddItemToDraftOrderMutation, AddItemToDraftOrderMutationVariables>(
+    addItemToDraftOrder(orderId: string, input: Codegen.AddItemToDraftOrderInput) {
+        return this.baseDataService.mutate<Codegen.AddItemToDraftOrderMutation, Codegen.AddItemToDraftOrderMutationVariables>(
             ADD_ITEM_TO_DRAFT_ORDER,
             { orderId, input },
         );
     }
 
-    adjustDraftOrderLine(orderId: string, input: AdjustDraftOrderLineInput) {
+    adjustDraftOrderLine(orderId: string, input: Codegen.AdjustDraftOrderLineInput) {
         return this.baseDataService.mutate<
             Codegen.AdjustDraftOrderLineMutation,
             Codegen.AdjustDraftOrderLineMutationVariables
@@ -243,7 +243,7 @@ export class OrderDataService {
 
     setCustomerForDraftOrder(
         orderId: string,
-        { customerId, input }: { customerId?: string; input?: CreateCustomerInput },
+        { customerId, input }: { customerId?: string; input?: Codegen.CreateCustomerInput },
     ) {
         return this.baseDataService.mutate<
             Codegen.SetCustomerForDraftOrderMutation,
@@ -251,14 +251,14 @@ export class OrderDataService {
         >(SET_CUSTOMER_FOR_DRAFT_ORDER, { orderId, customerId, input });
     }
 
-    setDraftOrderShippingAddress(orderId: string, input: CreateAddressInput) {
+    setDraftOrderShippingAddress(orderId: string, input: Codegen.CreateAddressInput) {
         return this.baseDataService.mutate<
             Codegen.SetDraftOrderShippingAddressMutation,
             Codegen.SetDraftOrderShippingAddressMutationVariables
         >(SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER, { orderId, input });
     }
 
-    setDraftOrderBillingAddress(orderId: string, input: CreateAddressInput) {
+    setDraftOrderBillingAddress(orderId: string, input: Codegen.CreateAddressInput) {
         return this.baseDataService.mutate<
             Codegen.SetDraftOrderBillingAddressMutation,
             Codegen.SetDraftOrderBillingAddressMutationVariables

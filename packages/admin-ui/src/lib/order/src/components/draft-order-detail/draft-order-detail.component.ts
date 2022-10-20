@@ -11,12 +11,13 @@ import {
     ModalService,
     NotificationService,
     Order,
-    OrderDetail,
+    OrderDetailFragment,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { OrderTransitionService } from '@vendure/admin-ui/order';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
+
+import { OrderTransitionService } from '../../providers/order-transition.service';
 import { SelectAddressDialogComponent } from '../select-address-dialog/select-address-dialog.component';
 import { SelectCustomerDialogComponent } from '../select-customer-dialog/select-customer-dialog.component';
 import { SelectShippingMethodDialogComponent } from '../select-shipping-method-dialog/select-shipping-method-dialog.component';
@@ -28,7 +29,7 @@ import { SelectShippingMethodDialogComponent } from '../select-shipping-method-d
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DraftOrderDetailComponent
-    extends BaseDetailComponent<OrderDetail.Fragment>
+    extends BaseDetailComponent<OrderDetailFragment>
     implements OnInit, OnDestroy
 {
     detailForm = new FormGroup({});
@@ -228,7 +229,7 @@ export class DraftOrderDetailComponent
         return typeof input === 'object' && !!input.id;
     }
 
-    protected setFormValues(entity: Order.Fragment): void {
+    protected setFormValues(entity: OrderDetailFragment): void {
         // empty
     }
 }

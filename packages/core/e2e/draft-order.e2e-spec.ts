@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig, orderPercentageDiscount } from '@vendure/core';
+import { DefaultLogger, mergeConfig, orderPercentageDiscount } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -22,6 +22,7 @@ import { GET_ACTIVE_CUSTOMER_ORDERS } from './graphql/shop-definitions';
 describe('Draft Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
+            logger: new DefaultLogger(),
             paymentOptions: {
                 paymentMethodHandlers: [singleStageRefundablePaymentMethod],
             },

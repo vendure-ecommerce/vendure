@@ -1,3 +1,4 @@
+import { LogicalOperator } from '../../common/generated-types';
 import * as Codegen from '../../common/generated-types';
 import {
     ADD_CUSTOMERS_TO_GROUP,
@@ -10,8 +11,8 @@ import {
     DELETE_CUSTOMER_GROUP,
     DELETE_CUSTOMER_NOTE,
     GET_CUSTOMER,
-    GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
     GET_CUSTOMER_GROUPS,
+    GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
     GET_CUSTOMER_HISTORY,
     GET_CUSTOMER_LIST,
     REMOVE_CUSTOMERS_FROM_GROUP,

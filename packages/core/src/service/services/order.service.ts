@@ -321,7 +321,7 @@ export class OrderService {
                 channelId: ctx.channelId,
                 ctx,
             })
-            .andWhere('order.state != "Draft"')
+            .andWhere('order.state != :draftState', { draftState: 'Draft' })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
