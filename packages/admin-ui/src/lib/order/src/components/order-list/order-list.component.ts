@@ -50,7 +50,7 @@ export class OrderListComponent
             config: {
                 active: false,
                 states: this.orderStates.filter(
-                    s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped',
+                    s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped' && s !== 'Draft',
                 ),
             },
         },
@@ -77,8 +77,17 @@ export class OrderListComponent
                 active: true,
             },
         },
+        {
+            name: 'draft',
+            label: _('order.filter-preset-draft'),
+            config: {
+                active: false,
+                states: ['Draft'],
+            },
+        },
     ];
     activePreset$: Observable<string>;
+    canCreateDraftOrder = false;
 
     constructor(
         private serverConfigService: ServerConfigService,
@@ -104,6 +113,13 @@ export class OrderListComponent
         const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
         if (lastFilters) {
             this.setQueryParam(lastFilters, { replaceUrl: true });
+        }
+        this.canCreateDraftOrder = !!this.serverConfigService
+            .getOrderProcessStates()
+            .find(state => state.name === 'Created')
+            ?.to.includes('Draft');
+        if (!this.canCreateDraftOrder) {
+            this.filterPresets = this.filterPresets.filter(p => p.name !== 'draft');
         }
     }
 

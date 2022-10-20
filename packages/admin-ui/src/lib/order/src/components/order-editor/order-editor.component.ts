@@ -69,8 +69,6 @@ export class OrderEditorComponent
     implements OnInit, OnDestroy
 {
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
-    availableCouponCodes$: Observable<Array<{ code: string; promotionName: string }>>;
-    couponCodeInput$ = new Subject<string>();
     addressCustomFields: CustomFieldConfig[];
     detailForm = new FormGroup({});
     couponCodesControl = new FormControl();
@@ -197,22 +195,7 @@ export class OrderEditorComponent
                 this.orderLineCustomFieldsFormArray.push(formGroup);
             }
         });
-        this.availableCouponCodes$ = concat(
-            this.couponCodeInput$.pipe(
-                distinctUntilChanged(),
-                switchMap(
-                    term =>
-                        this.dataService.promotion.getPromotions(10, 0, {
-                            couponCode: { contains: term },
-                        }).single$,
-                ),
-                map(({ promotions }) =>
-                    // tslint:disable-next-line:no-non-null-assertion
-                    promotions.items.map(p => ({ code: p.couponCode!, promotionName: p.name })),
-                ),
-                startWith([]),
-            ),
-        );
+
         this.addItemCustomFieldsFormArray = new FormArray([]);
         this.addItemCustomFieldsForm = new FormGroup({});
         for (const customField of this.orderLineCustomFields) {

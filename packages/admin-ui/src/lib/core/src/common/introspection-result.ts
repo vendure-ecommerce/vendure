@@ -20,6 +20,12 @@
       "ManualPaymentStateError",
       "Order"
     ],
+    "ApplyCouponCodeResult": [
+      "CouponCodeExpiredError",
+      "CouponCodeInvalidError",
+      "CouponCodeLimitError",
+      "Order"
+    ],
     "AuthenticationResult": [
       "CurrentUser",
       "InvalidCredentialsError"
@@ -86,6 +92,7 @@
       "EmptyOrderLineSelectionError",
       "FacetInUseError",
       "FulfillmentStateTransitionError",
+      "IneligibleShippingMethodError",
       "InsufficientStockError",
       "InsufficientStockOnHandError",
       "InvalidCredentialsError",
@@ -98,9 +105,11 @@
       "MultipleOrderError",
       "NativeAuthStrategyError",
       "NegativeQuantityError",
+      "NoActiveOrderError",
       "NoChangesSpecifiedError",
       "NothingToRefundError",
       "OrderLimitError",
+      "OrderModificationError",
       "OrderModificationStateError",
       "OrderStateTransitionError",
       "PaymentMethodMissingError",
@@ -212,9 +221,23 @@
       "Product",
       "ProductOptionInUseError"
     ],
+    "RemoveOrderItemsResult": [
+      "Order",
+      "OrderModificationError"
+    ],
     "SearchResultPrice": [
       "PriceRange",
       "SinglePrice"
+    ],
+    "SetCustomerForDraftOrderResult": [
+      "EmailAddressConflictError",
+      "Order"
+    ],
+    "SetOrderShippingMethodResult": [
+      "IneligibleShippingMethodError",
+      "NoActiveOrderError",
+      "Order",
+      "OrderModificationError"
     ],
     "SettlePaymentResult": [
       "OrderStateTransitionError",
@@ -265,6 +288,13 @@
     "UpdateGlobalSettingsResult": [
       "ChannelDefaultLanguageError",
       "GlobalSettings"
+    ],
+    "UpdateOrderItemsResult": [
+      "InsufficientStockError",
+      "NegativeQuantityError",
+      "Order",
+      "OrderLimitError",
+      "OrderModificationError"
     ],
     "UpdatePromotionResult": [
       "MissingConditionsError",

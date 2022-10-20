@@ -26,6 +26,11 @@ export type AddItemInput = {
   quantity: Scalars['Int'];
 };
 
+export type AddItemToDraftOrderInput = {
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+};
+
 export type AddManualPaymentToOrderResult = ManualPaymentStateError | Order;
 
 export type AddNoteToCustomerInput = {
@@ -56,6 +61,11 @@ export type Address = Node & {
   streetLine1: Scalars['String'];
   streetLine2?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
+};
+
+export type AdjustDraftOrderLineInput = {
+  orderLineId: Scalars['ID'];
+  quantity: Scalars['Int'];
 };
 
 export type AdjustOrderLineInput = {
@@ -149,6 +159,8 @@ export type AlreadyRefundedError = ErrorResult & {
   message: Scalars['String'];
   refundId: Scalars['ID'];
 };
+
+export type ApplyCouponCodeResult = CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError | Order;
 
 export type Asset = Node & {
   createdAt: Scalars['DateTime'];
@@ -1394,6 +1406,7 @@ export enum ErrorCode {
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
   FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+  INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
   INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
   INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
   INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
@@ -1407,8 +1420,10 @@ export enum ErrorCode {
   NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
   NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
   NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
+  NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
   NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
+  ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
   ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
   ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
   PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
@@ -1699,6 +1714,12 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>;
   imported: Scalars['Int'];
   processed: Scalars['Int'];
+};
+
+/** Returned when attempting to set a ShippingMethod for which the Order is not eligible */
+export type IneligibleShippingMethodError = ErrorResult & {
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to add more items to the Order than are available */
@@ -2264,6 +2285,8 @@ export type Mutation = {
   /** Add Customers to a CustomerGroup */
   addCustomersToGroup: CustomerGroup;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
+  /** Adds an item to the draft Order. */
+  addItemToDraftOrder: UpdateOrderItemsResult;
   /**
    * Used to manually create a new Payment against an Order.
    * This can be used by an Administrator when an Order is in the ArrangingPayment state.
@@ -2280,6 +2303,10 @@ export type Mutation = {
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
+  /** Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
+  adjustDraftOrderLine: UpdateOrderItemsResult;
+  /** Applies the given coupon code to the draft Order */
+  applyCouponCodeToDraftOrder: ApplyCouponCodeResult;
   /** Assign assets to channel */
   assignAssetsToChannel: Array<Asset>;
   /** Assigns Collections to the specified Channel */
@@ -2315,6 +2342,8 @@ export type Mutation = {
   createCustomerAddress: Address;
   /** Create a new CustomerGroup */
   createCustomerGroup: CustomerGroup;
+  /** Creates a draft Order */
+  createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
   /** Create one or more FacetValues */
@@ -2363,6 +2392,8 @@ export type Mutation = {
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
   deleteCustomerNote: DeletionResponse;
+  /** Deletes a draft Order */
+  deleteDraftOrder: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
@@ -2411,8 +2442,12 @@ export type Mutation = {
   reindex: Job;
   /** Removes Collections from the specified Channel */
   removeCollectionsFromChannel: Array<Collection>;
+  /** Removes the given coupon code from the draft Order */
+  removeCouponCodeFromDraftOrder?: Maybe<Order>;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
+  /** Remove an OrderLine from the draft Order */
+  removeDraftOrderLine: RemoveOrderItemsResult;
   /** Removes Facets from the specified Channel */
   removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
   /** Remove members from a Zone */
@@ -2428,6 +2463,15 @@ export type Mutation = {
   /** Remove all settled jobs in the given queues older than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
   runPendingSearchIndexUpdates: Success;
+  setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
+  /** Sets the billing address for a draft Order */
+  setDraftOrderBillingAddress: Order;
+  /** Allows any custom fields to be set for the active order */
+  setDraftOrderCustomFields: Order;
+  /** Sets the shipping address for a draft Order */
+  setDraftOrderShippingAddress: Order;
+  /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
+  setDraftOrderShippingMethod: SetOrderShippingMethodResult;
   setOrderCustomFields?: Maybe<Order>;
   settlePayment: SettlePaymentResult;
   settleRefund: SettleRefundResult;
@@ -2498,6 +2542,12 @@ export type MutationAddFulfillmentToOrderArgs = {
 };
 
 
+export type MutationAddItemToDraftOrderArgs = {
+  input: AddItemToDraftOrderInput;
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationAddManualPaymentToOrderArgs = {
   input: ManualPaymentInput;
 };
@@ -2522,6 +2572,18 @@ export type MutationAddNoteToOrderArgs = {
 export type MutationAddOptionGroupToProductArgs = {
   optionGroupId: Scalars['ID'];
   productId: Scalars['ID'];
+};
+
+
+export type MutationAdjustDraftOrderLineArgs = {
+  input: AdjustDraftOrderLineInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationApplyCouponCodeToDraftOrderArgs = {
+  couponCode: Scalars['String'];
+  orderId: Scalars['ID'];
 };
 
 
@@ -2749,6 +2811,11 @@ export type MutationDeleteCustomerNoteArgs = {
 };
 
 
+export type MutationDeleteDraftOrderArgs = {
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationDeleteFacetArgs = {
   force?: InputMaybe<Scalars['Boolean']>;
   id: Scalars['ID'];
@@ -2875,9 +2942,21 @@ export type MutationRemoveCollectionsFromChannelArgs = {
 };
 
 
+export type MutationRemoveCouponCodeFromDraftOrderArgs = {
+  couponCode: Scalars['String'];
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationRemoveCustomersFromGroupArgs = {
   customerGroupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationRemoveDraftOrderLineArgs = {
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
 };
 
 
@@ -2916,6 +2995,37 @@ export type MutationRemovePromotionsFromChannelArgs = {
 export type MutationRemoveSettledJobsArgs = {
   olderThan?: InputMaybe<Scalars['DateTime']>;
   queueNames?: InputMaybe<Array<Scalars['String']>>;
+};
+
+
+export type MutationSetCustomerForDraftOrderArgs = {
+  customerId?: InputMaybe<Scalars['ID']>;
+  input?: InputMaybe<CreateCustomerInput>;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderBillingAddressArgs = {
+  input: CreateAddressInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderCustomFieldsArgs = {
+  input: UpdateOrderInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderShippingAddressArgs = {
+  input: CreateAddressInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderShippingMethodArgs = {
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
 };
 
 
@@ -3101,6 +3211,15 @@ export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError |
 
 /** Returned when attempting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/**
+ * Returned when invoking a mutation which depends on there being an active Order on the
+ * current session.
+ */
+export type NoActiveOrderError = ErrorResult & {
   errorCode: ErrorCode;
   message: Scalars['String'];
 };
@@ -3376,6 +3495,12 @@ export type OrderModification = Node & {
   refund?: Maybe<Refund>;
   surcharges?: Maybe<Array<Surcharge>>;
   updatedAt: Scalars['DateTime'];
+};
+
+/** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
+export type OrderModificationError = ErrorResult & {
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to modify the contents of an Order that is not in the `Modifying` state. */
@@ -4091,6 +4216,8 @@ export type Query = {
   customerGroup?: Maybe<CustomerGroup>;
   customerGroups: CustomerGroupList;
   customers: CustomerList;
+  /** Returns a list of eligible shipping methods for the draft Order */
+  eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
   facet?: Maybe<Facet>;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
@@ -4207,6 +4334,11 @@ export type QueryCustomerGroupsArgs = {
 
 export type QueryCustomersArgs = {
   options?: InputMaybe<CustomerListOptions>;
+};
+
+
+export type QueryEligibleShippingMethodsForDraftOrderArgs = {
+  orderId: Scalars['ID'];
 };
 
 
@@ -4463,6 +4595,8 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
+export type RemoveOrderItemsResult = Order | OrderModificationError;
+
 export type RemoveProductVariantsFromChannelInput = {
   channelId: Scalars['ID'];
   productVariantIds: Array<Scalars['ID']>;
@@ -4610,6 +4744,10 @@ export type ServerConfig = {
   permissions: Array<PermissionDefinition>;
   permittedAssetTypes: Array<Scalars['String']>;
 };
+
+export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
+
+export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -5127,6 +5265,8 @@ export type UpdateOrderInput = {
   customFields?: InputMaybe<Scalars['JSON']>;
   id: Scalars['ID'];
 };
+
+export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderNoteInput = {
   isPublic?: InputMaybe<Scalars['Boolean']>;

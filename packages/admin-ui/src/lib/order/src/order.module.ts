@@ -4,6 +4,8 @@ import { SharedModule } from '@vendure/admin-ui/core';
 
 import { AddManualPaymentDialogComponent } from './components/add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';
+import { DraftOrderDetailComponent } from './components/draft-order-detail/draft-order-detail.component';
+import { DraftOrderVariantSelectorComponent } from './components/draft-order-variant-selector/draft-order-variant-selector.component';
 import { FulfillOrderDialogComponent } from './components/fulfill-order-dialog/fulfill-order-dialog.component';
 import { FulfillmentCardComponent } from './components/fulfillment-card/fulfillment-card.component';
 import { FulfillmentDetailComponent } from './components/fulfillment-detail/fulfillment-detail.component';
@@ -28,9 +30,13 @@ import { PaymentDetailComponent } from './components/payment-detail/payment-deta
 import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
 import { RefundOrderDialogComponent } from './components/refund-order-dialog/refund-order-dialog.component';
 import { RefundStateLabelComponent } from './components/refund-state-label/refund-state-label.component';
+import { SelectCustomerDialogComponent } from './components/select-customer-dialog/select-customer-dialog.component';
 import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
 import { orderRoutes } from './order.routes';
+import { SelectAddressDialogComponent } from './components/select-address-dialog/select-address-dialog.component';
+import { CouponCodeSelectorComponent } from './components/coupon-code-selector/coupon-code-selector.component';
+import { SelectShippingMethodDialogComponent } from './components/select-shipping-method-dialog/select-shipping-method-dialog.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild(orderRoutes)],
@@ -63,6 +69,12 @@ import { orderRoutes } from './order.routes';
         ModificationDetailComponent,
         AddManualPaymentDialogComponent,
         OrderStateSelectDialogComponent,
+        DraftOrderDetailComponent,
+        DraftOrderVariantSelectorComponent,
+        SelectCustomerDialogComponent,
+        SelectAddressDialogComponent,
+        CouponCodeSelectorComponent,
+        SelectShippingMethodDialogComponent,
     ],
 })
 export class OrderModule {}

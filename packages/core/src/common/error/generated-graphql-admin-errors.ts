@@ -182,6 +182,17 @@ export class FulfillmentStateTransitionError extends ErrorResult {
   }
 }
 
+export class IneligibleShippingMethodError extends ErrorResult {
+  readonly __typename = 'IneligibleShippingMethodError';
+  readonly errorCode = 'INELIGIBLE_SHIPPING_METHOD_ERROR' as any;
+  readonly message = 'INELIGIBLE_SHIPPING_METHOD_ERROR';
+  constructor(
+
+  ) {
+    super();
+  }
+}
+
 export class InsufficientStockError extends ErrorResult {
   readonly __typename = 'InsufficientStockError';
   readonly errorCode = 'INSUFFICIENT_STOCK_ERROR' as any;
@@ -332,6 +343,17 @@ export class NegativeQuantityError extends ErrorResult {
   }
 }
 
+export class NoActiveOrderError extends ErrorResult {
+  readonly __typename = 'NoActiveOrderError';
+  readonly errorCode = 'NO_ACTIVE_ORDER_ERROR' as any;
+  readonly message = 'NO_ACTIVE_ORDER_ERROR';
+  constructor(
+
+  ) {
+    super();
+  }
+}
+
 export class NoChangesSpecifiedError extends ErrorResult {
   readonly __typename = 'NoChangesSpecifiedError';
   readonly errorCode = 'NO_CHANGES_SPECIFIED_ERROR' as any;
@@ -364,6 +386,17 @@ export class OrderLimitError extends ErrorResult {
   ) {
     super();
     this.maxItems = input.maxItems
+  }
+}
+
+export class OrderModificationError extends ErrorResult {
+  readonly __typename = 'OrderModificationError';
+  readonly errorCode = 'ORDER_MODIFICATION_ERROR' as any;
+  readonly message = 'ORDER_MODIFICATION_ERROR';
+  constructor(
+
+  ) {
+    super();
   }
 }
 
@@ -515,7 +548,7 @@ export class SettlePaymentError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set(['AlreadyRefundedError', 'CancelActiveOrderError', 'CancelPaymentError', 'ChannelDefaultLanguageError', 'CouponCodeExpiredError', 'CouponCodeInvalidError', 'CouponCodeLimitError', 'CreateFulfillmentError', 'EmailAddressConflictError', 'EmptyOrderLineSelectionError', 'FacetInUseError', 'FulfillmentStateTransitionError', 'InsufficientStockError', 'InsufficientStockOnHandError', 'InvalidCredentialsError', 'InvalidFulfillmentHandlerError', 'ItemsAlreadyFulfilledError', 'LanguageNotAvailableError', 'ManualPaymentStateError', 'MimeTypeError', 'MissingConditionsError', 'MultipleOrderError', 'NativeAuthStrategyError', 'NegativeQuantityError', 'NoChangesSpecifiedError', 'NothingToRefundError', 'OrderLimitError', 'OrderModificationStateError', 'OrderStateTransitionError', 'PaymentMethodMissingError', 'PaymentOrderMismatchError', 'PaymentStateTransitionError', 'ProductOptionInUseError', 'QuantityTooGreatError', 'RefundOrderStateError', 'RefundPaymentIdMissingError', 'RefundStateTransitionError', 'SettlePaymentError']);
+const errorTypeNames = new Set(['AlreadyRefundedError', 'CancelActiveOrderError', 'CancelPaymentError', 'ChannelDefaultLanguageError', 'CouponCodeExpiredError', 'CouponCodeInvalidError', 'CouponCodeLimitError', 'CreateFulfillmentError', 'EmailAddressConflictError', 'EmptyOrderLineSelectionError', 'FacetInUseError', 'FulfillmentStateTransitionError', 'IneligibleShippingMethodError', 'InsufficientStockError', 'InsufficientStockOnHandError', 'InvalidCredentialsError', 'InvalidFulfillmentHandlerError', 'ItemsAlreadyFulfilledError', 'LanguageNotAvailableError', 'ManualPaymentStateError', 'MimeTypeError', 'MissingConditionsError', 'MultipleOrderError', 'NativeAuthStrategyError', 'NegativeQuantityError', 'NoActiveOrderError', 'NoChangesSpecifiedError', 'NothingToRefundError', 'OrderLimitError', 'OrderModificationError', 'OrderModificationStateError', 'OrderStateTransitionError', 'PaymentMethodMissingError', 'PaymentOrderMismatchError', 'PaymentStateTransitionError', 'ProductOptionInUseError', 'QuantityTooGreatError', 'RefundOrderStateError', 'RefundPaymentIdMissingError', 'RefundStateTransitionError', 'SettlePaymentError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
@@ -526,7 +559,17 @@ export const adminErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
     },
   },
+  UpdateOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
   AddManualPaymentToOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  ApplyCouponCodeResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
@@ -581,6 +624,11 @@ export const adminErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Refund';
     },
   },
+  RemoveOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
   RemoveFacetFromChannelResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Facet';
@@ -589,6 +637,16 @@ export const adminErrorOperationTypeResolvers = {
   RemoveOptionGroupFromProductResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Product';
+    },
+  },
+  SetCustomerForDraftOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  SetOrderShippingMethodResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
   SettlePaymentResult: {

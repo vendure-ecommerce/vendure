@@ -62,7 +62,7 @@ describe('GlobalSettings resolver', () => {
         it('includes orderProcess', () => {
             expect(globalSettings.serverConfig.orderProcess[0]).toEqual({
                 name: 'Created',
-                to: ['AddingItems'],
+                to: ['AddingItems', 'Draft'],
             });
         });
 

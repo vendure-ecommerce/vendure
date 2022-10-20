@@ -26,6 +26,11 @@ export type AddItemInput = {
   quantity: Scalars['Int'];
 };
 
+export type AddItemToDraftOrderInput = {
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+};
+
 export type AddManualPaymentToOrderResult = ManualPaymentStateError | Order;
 
 export type AddNoteToCustomerInput = {
@@ -57,6 +62,11 @@ export type Address = Node & {
   streetLine1: Scalars['String'];
   streetLine2?: Maybe<Scalars['String']>;
   updatedAt: Scalars['DateTime'];
+};
+
+export type AdjustDraftOrderLineInput = {
+  orderLineId: Scalars['ID'];
+  quantity: Scalars['Int'];
 };
 
 export type AdjustOrderLineInput = {
@@ -155,6 +165,8 @@ export type AlreadyRefundedError = ErrorResult & {
   message: Scalars['String'];
   refundId: Scalars['ID'];
 };
+
+export type ApplyCouponCodeResult = CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError | Order;
 
 export type Asset = Node & {
   __typename?: 'Asset';
@@ -1445,6 +1457,7 @@ export enum ErrorCode {
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
   FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+  INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
   INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
   INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
   INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
@@ -1458,8 +1471,10 @@ export enum ErrorCode {
   NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
   NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
   NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
+  NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
   NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
+  ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
   ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
   ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
   PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
@@ -1765,6 +1780,13 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>;
   imported: Scalars['Int'];
   processed: Scalars['Int'];
+};
+
+/** Returned when attempting to set a ShippingMethod for which the Order is not eligible */
+export type IneligibleShippingMethodError = ErrorResult & {
+  __typename?: 'IneligibleShippingMethodError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to add more items to the Order than are available */
@@ -2348,6 +2370,8 @@ export type Mutation = {
   /** Add Customers to a CustomerGroup */
   addCustomersToGroup: CustomerGroup;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
+  /** Adds an item to the draft Order. */
+  addItemToDraftOrder: UpdateOrderItemsResult;
   /**
    * Used to manually create a new Payment against an Order.
    * This can be used by an Administrator when an Order is in the ArrangingPayment state.
@@ -2364,6 +2388,10 @@ export type Mutation = {
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
+  /** Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
+  adjustDraftOrderLine: UpdateOrderItemsResult;
+  /** Applies the given coupon code to the draft Order */
+  applyCouponCodeToDraftOrder: ApplyCouponCodeResult;
   /** Assign assets to channel */
   assignAssetsToChannel: Array<Asset>;
   /** Assigns Collections to the specified Channel */
@@ -2399,6 +2427,8 @@ export type Mutation = {
   createCustomerAddress: Address;
   /** Create a new CustomerGroup */
   createCustomerGroup: CustomerGroup;
+  /** Creates a draft Order */
+  createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
   /** Create one or more FacetValues */
@@ -2447,6 +2477,8 @@ export type Mutation = {
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
   deleteCustomerNote: DeletionResponse;
+  /** Deletes a draft Order */
+  deleteDraftOrder: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
@@ -2495,8 +2527,12 @@ export type Mutation = {
   reindex: Job;
   /** Removes Collections from the specified Channel */
   removeCollectionsFromChannel: Array<Collection>;
+  /** Removes the given coupon code from the draft Order */
+  removeCouponCodeFromDraftOrder?: Maybe<Order>;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
+  /** Remove an OrderLine from the draft Order */
+  removeDraftOrderLine: RemoveOrderItemsResult;
   /** Removes Facets from the specified Channel */
   removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
   /** Remove members from a Zone */
@@ -2518,7 +2554,16 @@ export type Mutation = {
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
   setContentLanguage: LanguageCode;
+  setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
   setDisplayUiExtensionPoints: Scalars['Boolean'];
+  /** Sets the billing address for a draft Order */
+  setDraftOrderBillingAddress: Order;
+  /** Allows any custom fields to be set for the active order */
+  setDraftOrderCustomFields: Order;
+  /** Sets the shipping address for a draft Order */
+  setDraftOrderShippingAddress: Order;
+  /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
+  setDraftOrderShippingMethod: SetOrderShippingMethodResult;
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiLocale?: Maybe<Scalars['String']>;
@@ -2593,6 +2638,12 @@ export type MutationAddFulfillmentToOrderArgs = {
 };
 
 
+export type MutationAddItemToDraftOrderArgs = {
+  input: AddItemToDraftOrderInput;
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationAddManualPaymentToOrderArgs = {
   input: ManualPaymentInput;
 };
@@ -2617,6 +2668,18 @@ export type MutationAddNoteToOrderArgs = {
 export type MutationAddOptionGroupToProductArgs = {
   optionGroupId: Scalars['ID'];
   productId: Scalars['ID'];
+};
+
+
+export type MutationAdjustDraftOrderLineArgs = {
+  input: AdjustDraftOrderLineInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationApplyCouponCodeToDraftOrderArgs = {
+  couponCode: Scalars['String'];
+  orderId: Scalars['ID'];
 };
 
 
@@ -2844,6 +2907,11 @@ export type MutationDeleteCustomerNoteArgs = {
 };
 
 
+export type MutationDeleteDraftOrderArgs = {
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationDeleteFacetArgs = {
   force?: InputMaybe<Scalars['Boolean']>;
   id: Scalars['ID'];
@@ -2970,9 +3038,21 @@ export type MutationRemoveCollectionsFromChannelArgs = {
 };
 
 
+export type MutationRemoveCouponCodeFromDraftOrderArgs = {
+  couponCode: Scalars['String'];
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationRemoveCustomersFromGroupArgs = {
   customerGroupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationRemoveDraftOrderLineArgs = {
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
 };
 
 
@@ -3029,8 +3109,39 @@ export type MutationSetContentLanguageArgs = {
 };
 
 
+export type MutationSetCustomerForDraftOrderArgs = {
+  customerId?: InputMaybe<Scalars['ID']>;
+  input?: InputMaybe<CreateCustomerInput>;
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationSetDisplayUiExtensionPointsArgs = {
   display: Scalars['Boolean'];
+};
+
+
+export type MutationSetDraftOrderBillingAddressArgs = {
+  input: CreateAddressInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderCustomFieldsArgs = {
+  input: UpdateOrderInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderShippingAddressArgs = {
+  input: CreateAddressInput;
+  orderId: Scalars['ID'];
+};
+
+
+export type MutationSetDraftOrderShippingMethodArgs = {
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
 };
 
 
@@ -3245,6 +3356,16 @@ export type NegativeQuantityError = ErrorResult & {
 export type NetworkStatus = {
   __typename?: 'NetworkStatus';
   inFlightRequests: Scalars['Int'];
+};
+
+/**
+ * Returned when invoking a mutation which depends on there being an active Order on the
+ * current session.
+ */
+export type NoActiveOrderError = ErrorResult & {
+  __typename?: 'NoActiveOrderError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when a call to modifyOrder fails to specify any changes */
@@ -3527,6 +3648,13 @@ export type OrderModification = Node & {
   refund?: Maybe<Refund>;
   surcharges?: Maybe<Array<Surcharge>>;
   updatedAt: Scalars['DateTime'];
+};
+
+/** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
+export type OrderModificationError = ErrorResult & {
+  __typename?: 'OrderModificationError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to modify the contents of an Order that is not in the `Modifying` state. */
@@ -4271,6 +4399,8 @@ export type Query = {
   customerGroup?: Maybe<CustomerGroup>;
   customerGroups: CustomerGroupList;
   customers: CustomerList;
+  /** Returns a list of eligible shipping methods for the draft Order */
+  eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
   facet?: Maybe<Facet>;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
@@ -4390,6 +4520,11 @@ export type QueryCustomerGroupsArgs = {
 
 export type QueryCustomersArgs = {
   options?: InputMaybe<CustomerListOptions>;
+};
+
+
+export type QueryEligibleShippingMethodsForDraftOrderArgs = {
+  orderId: Scalars['ID'];
 };
 
 
@@ -4652,6 +4787,8 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
+export type RemoveOrderItemsResult = Order | OrderModificationError;
+
 export type RemoveProductVariantsFromChannelInput = {
   channelId: Scalars['ID'];
   productVariantIds: Array<Scalars['ID']>;
@@ -4808,6 +4945,10 @@ export type ServerConfig = {
   permissions: Array<PermissionDefinition>;
   permittedAssetTypes: Array<Scalars['String']>;
 };
+
+export type SetCustomerForDraftOrderResult = EmailAddressConflictError | Order;
+
+export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -5356,6 +5497,8 @@ export type UpdateOrderInput = {
   customFields?: InputMaybe<Scalars['JSON']>;
   id: Scalars['ID'];
 };
+
+export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderNoteInput = {
   isPublic?: InputMaybe<Scalars['Boolean']>;
@@ -6224,6 +6367,98 @@ export type AddManualPaymentMutationVariables = Exact<{
 
 export type AddManualPaymentMutation = { addManualPaymentToOrder: { __typename?: 'ManualPaymentStateError', errorCode: ErrorCode, message: string } | { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } };
 
+export type CreateDraftOrderMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateDraftOrderMutation = { createDraftOrder: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } };
+
+export type DeleteDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DeleteDraftOrderMutation = { deleteDraftOrder: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
+
+export type AddItemToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AddItemToDraftOrderInput;
+}>;
+
+
+export type AddItemToDraftOrderMutation = { addItemToDraftOrder: { __typename?: 'InsufficientStockError', errorCode: ErrorCode, message: string } | { __typename?: 'NegativeQuantityError', errorCode: ErrorCode, message: string } | { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } | { __typename?: 'OrderLimitError', errorCode: ErrorCode, message: string } | { __typename?: 'OrderModificationError', errorCode: ErrorCode, message: string } };
+
+export type AdjustDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AdjustDraftOrderLineInput;
+}>;
+
+
+export type AdjustDraftOrderLineMutation = { adjustDraftOrderLine: { __typename?: 'InsufficientStockError', errorCode: ErrorCode, message: string } | { __typename?: 'NegativeQuantityError', errorCode: ErrorCode, message: string } | { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } | { __typename?: 'OrderLimitError', errorCode: ErrorCode, message: string } | { __typename?: 'OrderModificationError', errorCode: ErrorCode, message: string } };
+
+export type RemoveDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
+}>;
+
+
+export type RemoveDraftOrderLineMutation = { removeDraftOrderLine: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } | { __typename?: 'OrderModificationError', errorCode: ErrorCode, message: string } };
+
+export type SetCustomerForDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  customerId?: InputMaybe<Scalars['ID']>;
+  input?: InputMaybe<CreateCustomerInput>;
+}>;
+
+
+export type SetCustomerForDraftOrderMutation = { setCustomerForDraftOrder: { __typename?: 'EmailAddressConflictError', errorCode: ErrorCode, message: string } | { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } };
+
+export type SetDraftOrderShippingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderShippingAddressMutation = { setDraftOrderShippingAddress: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } };
+
+export type SetDraftOrderBillingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderBillingAddressMutation = { setDraftOrderBillingAddress: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } };
+
+export type ApplyCouponCodeToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type ApplyCouponCodeToDraftOrderMutation = { applyCouponCodeToDraftOrder: { __typename?: 'CouponCodeExpiredError', errorCode: ErrorCode, message: string } | { __typename?: 'CouponCodeInvalidError', errorCode: ErrorCode, message: string } | { __typename?: 'CouponCodeLimitError', errorCode: ErrorCode, message: string } | { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } };
+
+export type RemoveCouponCodeFromDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type RemoveCouponCodeFromDraftOrderMutation = { removeCouponCodeFromDraftOrder?: { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } | null };
+
+export type DraftOrderEligibleShippingMethodsQueryVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DraftOrderEligibleShippingMethodsQuery = { eligibleShippingMethodsForDraftOrder: Array<{ __typename?: 'ShippingMethodQuote', id: string, name: string, code: string, description: string, price: number, priceWithTax: number, metadata?: any | null }> };
+
+export type SetDraftOrderShippingMethodMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
+}>;
+
+
+export type SetDraftOrderShippingMethodMutation = { setDraftOrderShippingMethod: { __typename?: 'IneligibleShippingMethodError', errorCode: ErrorCode, message: string } | { __typename?: 'NoActiveOrderError', errorCode: ErrorCode, message: string } | { __typename?: 'Order', id: string, createdAt: any, updatedAt: any, code: string, state: string, nextStates: Array<string>, active: boolean, couponCodes: Array<string>, subTotal: number, subTotalWithTax: number, total: number, totalWithTax: number, currencyCode: CurrencyCode, shipping: number, shippingWithTax: number, customer?: { __typename?: 'Customer', id: string, firstName: string, lastName: string } | null, lines: Array<{ __typename?: 'OrderLine', id: string, unitPrice: number, unitPriceWithTax: number, proratedUnitPrice: number, proratedUnitPriceWithTax: number, quantity: number, linePrice: number, lineTax: number, linePriceWithTax: number, discountedLinePrice: number, discountedLinePriceWithTax: number, featuredAsset?: { __typename?: 'Asset', preview: string } | null, productVariant: { __typename?: 'ProductVariant', id: string, name: string, sku: string, trackInventory: GlobalFlag, stockOnHand: number }, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, items: Array<{ __typename?: 'OrderItem', id: string, refundId?: string | null, cancelled: boolean }> }>, surcharges: Array<{ __typename?: 'Surcharge', id: string, sku?: string | null, description: string, price: number, priceWithTax: number, taxRate: number }>, discounts: Array<{ __typename?: 'Discount', adjustmentSource: string, amount: number, amountWithTax: number, description: string, type: AdjustmentType }>, promotions: Array<{ __typename?: 'Promotion', id: string, couponCode?: string | null }>, shippingLines: Array<{ __typename?: 'ShippingLine', shippingMethod: { __typename?: 'ShippingMethod', id: string, code: string, name: string, fulfillmentHandlerCode: string, description: string } }>, taxSummary: Array<{ __typename?: 'OrderTaxSummary', description: string, taxBase: number, taxRate: number, taxTotal: number }>, shippingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, billingAddress?: { __typename?: 'OrderAddress', fullName?: string | null, company?: string | null, streetLine1?: string | null, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, country?: string | null, countryCode?: string | null, phoneNumber?: string | null } | null, payments?: Array<{ __typename?: 'Payment', id: string, createdAt: any, transactionId?: string | null, amount: number, method: string, state: string, nextStates: Array<string>, errorMessage?: string | null, metadata?: any | null, refunds: Array<{ __typename?: 'Refund', id: string, createdAt: any, state: string, items: number, adjustment: number, total: number, paymentId: string, reason?: string | null, transactionId?: string | null, method?: string | null, metadata?: any | null, orderItems: Array<{ __typename?: 'OrderItem', id: string }> }> }> | null, fulfillments?: Array<{ __typename?: 'Fulfillment', id: string, state: string, nextStates: Array<string>, createdAt: any, updatedAt: any, method: string, trackingCode?: string | null, summary: Array<{ __typename?: 'FulfillmentLineSummary', quantity: number, orderLine: { __typename?: 'OrderLine', id: string } }> }> | null, modifications: Array<{ __typename?: 'OrderModification', id: string, createdAt: any, isSettled: boolean, priceChange: number, note: string, payment?: { __typename?: 'Payment', id: string, amount: number } | null, orderItems?: Array<{ __typename?: 'OrderItem', id: string }> | null, refund?: { __typename?: 'Refund', id: string, paymentId: string, total: number } | null, surcharges?: Array<{ __typename?: 'Surcharge', id: string }> | null }> } | { __typename?: 'OrderModificationError', errorCode: ErrorCode, message: string } };
+
 export type AssetFragment = { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, name: string, fileSize: number, mimeType: string, type: AssetType, preview: string, source: string, width: number, height: number, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null };
 
 export type TagFragment = { __typename?: 'Tag', id: string, value: string };
@@ -6466,7 +6701,7 @@ export type GetProductVariantQueryVariables = Exact<{
 }>;
 
 
-export type GetProductVariantQuery = { productVariant?: { __typename?: 'ProductVariant', id: string, name: string, sku: string, featuredAsset?: { __typename?: 'Asset', id: string, preview: string, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null, product: { __typename?: 'Product', id: string, featuredAsset?: { __typename?: 'Asset', id: string, preview: string, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null } } | null };
+export type GetProductVariantQuery = { productVariant?: { __typename?: 'ProductVariant', id: string, name: string, sku: string, stockOnHand: number, stockAllocated: number, stockLevel: string, useGlobalOutOfStockThreshold: boolean, price: number, priceWithTax: number, featuredAsset?: { __typename?: 'Asset', id: string, preview: string, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null, product: { __typename?: 'Product', id: string, featuredAsset?: { __typename?: 'Asset', id: string, preview: string, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null } } | null };
 
 export type GetProductVariantListSimpleQueryVariables = Exact<{
   options: ProductVariantListOptions;
@@ -6965,6 +7200,8 @@ type ErrorResult_FacetInUseError_Fragment = { __typename?: 'FacetInUseError', er
 
 type ErrorResult_FulfillmentStateTransitionError_Fragment = { __typename?: 'FulfillmentStateTransitionError', errorCode: ErrorCode, message: string };
 
+type ErrorResult_IneligibleShippingMethodError_Fragment = { __typename?: 'IneligibleShippingMethodError', errorCode: ErrorCode, message: string };
+
 type ErrorResult_InsufficientStockError_Fragment = { __typename?: 'InsufficientStockError', errorCode: ErrorCode, message: string };
 
 type ErrorResult_InsufficientStockOnHandError_Fragment = { __typename?: 'InsufficientStockOnHandError', errorCode: ErrorCode, message: string };
@@ -6989,11 +7226,15 @@ type ErrorResult_NativeAuthStrategyError_Fragment = { __typename?: 'NativeAuthSt
 
 type ErrorResult_NegativeQuantityError_Fragment = { __typename?: 'NegativeQuantityError', errorCode: ErrorCode, message: string };
 
+type ErrorResult_NoActiveOrderError_Fragment = { __typename?: 'NoActiveOrderError', errorCode: ErrorCode, message: string };
+
 type ErrorResult_NoChangesSpecifiedError_Fragment = { __typename?: 'NoChangesSpecifiedError', errorCode: ErrorCode, message: string };
 
 type ErrorResult_NothingToRefundError_Fragment = { __typename?: 'NothingToRefundError', errorCode: ErrorCode, message: string };
 
 type ErrorResult_OrderLimitError_Fragment = { __typename?: 'OrderLimitError', errorCode: ErrorCode, message: string };
+
+type ErrorResult_OrderModificationError_Fragment = { __typename?: 'OrderModificationError', errorCode: ErrorCode, message: string };
 
 type ErrorResult_OrderModificationStateError_Fragment = { __typename?: 'OrderModificationStateError', errorCode: ErrorCode, message: string };
 
@@ -7017,7 +7258,7 @@ type ErrorResult_RefundStateTransitionError_Fragment = { __typename?: 'RefundSta
 
 type ErrorResult_SettlePaymentError_Fragment = { __typename?: 'SettlePaymentError', errorCode: ErrorCode, message: string };
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod', id: string, createdAt: any, updatedAt: any, code: string, name: string, description: string, fulfillmentHandlerCode: string, checker: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }, calculator: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }, translations: Array<{ __typename?: 'ShippingMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }> };
 
@@ -7074,3 +7315,10 @@ export type TestEligibleShippingMethodsQueryVariables = Exact<{
 
 
 export type TestEligibleShippingMethodsQuery = { testEligibleShippingMethods: Array<{ __typename?: 'ShippingMethodQuote', id: string, name: string, code: string, description: string, price: number, priceWithTax: number, metadata?: any | null }> };
+
+export type GetCustomerAddressesQueryVariables = Exact<{
+  customerId: Scalars['ID'];
+}>;
+
+
+export type GetCustomerAddressesQuery = { customer?: { __typename?: 'Customer', id: string, addresses?: Array<{ __typename?: 'Address', id: string, createdAt: any, updatedAt: any, fullName?: string | null, company?: string | null, streetLine1: string, streetLine2?: string | null, city?: string | null, province?: string | null, postalCode?: string | null, phoneNumber?: string | null, defaultShippingAddress?: boolean | null, defaultBillingAddress?: boolean | null, country: { __typename?: 'Country', id: string, code: string, name: string } }> | null } | null };

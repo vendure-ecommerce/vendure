@@ -683,6 +683,10 @@ export const GET_PRODUCT_VARIANT = gql`
             id
             name
             sku
+            stockOnHand
+            stockAllocated
+            stockLevel
+            useGlobalOutOfStockThreshold
             featuredAsset {
                 id
                 preview
@@ -691,6 +695,8 @@ export const GET_PRODUCT_VARIANT = gql`
                     y
                 }
             }
+            price
+            priceWithTax
             product {
                 id
                 featuredAsset {

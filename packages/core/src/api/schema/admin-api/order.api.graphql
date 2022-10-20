@@ -1,6 +1,8 @@
 type Query {
     order(id: ID!): Order
     orders(options: OrderListOptions): OrderList!
+    "Returns a list of eligible shipping methods for the draft Order"
+    eligibleShippingMethodsForDraftOrder(orderId: ID!): [ShippingMethodQuote!]!
 }
 
 type Mutation {
@@ -32,6 +34,33 @@ type Mutation {
     Payment.
     """
     addManualPaymentToOrder(input: ManualPaymentInput!): AddManualPaymentToOrderResult!
+    "Creates a draft Order"
+    createDraftOrder: Order!
+    "Deletes a draft Order"
+    deleteDraftOrder(orderId: ID!): DeletionResponse!
+    "Adds an item to the draft Order."
+    addItemToDraftOrder(orderId: ID!, input: AddItemToDraftOrderInput!): UpdateOrderItemsResult!
+    "Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
+    adjustDraftOrderLine(orderId: ID!, input: AdjustDraftOrderLineInput!): UpdateOrderItemsResult!
+    "Remove an OrderLine from the draft Order"
+    removeDraftOrderLine(orderId: ID!, orderLineId: ID!): RemoveOrderItemsResult!
+    setCustomerForDraftOrder(
+        orderId: ID!
+        customerId: ID
+        input: CreateCustomerInput
+    ): SetCustomerForDraftOrderResult!
+    "Sets the shipping address for a draft Order"
+    setDraftOrderShippingAddress(orderId: ID!, input: CreateAddressInput!): Order!
+    "Sets the billing address for a draft Order"
+    setDraftOrderBillingAddress(orderId: ID!, input: CreateAddressInput!): Order!
+    "Allows any custom fields to be set for the active order"
+    setDraftOrderCustomFields(orderId: ID!, input: UpdateOrderInput!): Order!
+    "Applies the given coupon code to the draft Order"
+    applyCouponCodeToDraftOrder(orderId: ID!, couponCode: String!): ApplyCouponCodeResult!
+    "Removes the given coupon code from the draft Order"
+    removeCouponCodeFromDraftOrder(orderId: ID!, couponCode: String!): Order
+    "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query"
+    setDraftOrderShippingMethod(orderId: ID!, shippingMethodId: ID!): SetOrderShippingMethodResult!
 }
 
 type Order {
@@ -171,6 +200,16 @@ input ManualPaymentInput {
     method: String!
     transactionId: String
     metadata: JSON
+}
+
+input AddItemToDraftOrderInput {
+    productVariantId: ID!
+    quantity: Int!
+}
+
+input AdjustDraftOrderLineInput {
+    orderLineId: ID!
+    quantity: Int!
 }
 
 "Returned if the Payment settlement fails"
@@ -383,3 +422,4 @@ union ModifyOrderResult =
     | CouponCodeInvalidError
     | CouponCodeLimitError
 union AddManualPaymentToOrderResult = Order | ManualPaymentStateError
+union SetCustomerForDraftOrderResult = Order | EmailAddressConflictError

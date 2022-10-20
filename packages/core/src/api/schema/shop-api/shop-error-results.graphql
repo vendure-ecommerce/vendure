@@ -1,15 +1,3 @@
-"Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state."
-type OrderModificationError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-}
-
-"Returned when attempting to set a ShippingMethod for which the Order is not eligible"
-type IneligibleShippingMethodError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-}
-
 "Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state."
 type OrderPaymentStateError implements ErrorResult {
     errorCode: ErrorCode!
@@ -121,15 +109,6 @@ Returned if `authOptions.requireVerification` is set to `true` (which is the def
 and an unverified user attempts to authenticate.
 """
 type NotVerifiedError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-}
-
-"""
-Returned when invoking a mutation which depends on there being an active Order on the
-current session.
-"""
-type NoActiveOrderError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
 }

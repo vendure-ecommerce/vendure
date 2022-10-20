@@ -3294,6 +3294,11 @@ export type GetCustomerOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetCustomerOrdersQuery = { activeOrder?: { customer?: { orders: { items: Array<{ id: string }> } } | null } | null };
 
+export type GetActiveCustomerOrdersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveCustomerOrdersQuery = { activeCustomer?: { id: string, orders: { totalItems: number, items: Array<{ id: string, state: string }> } } | null };
+
 export type ApplyCouponCodeMutationVariables = Exact<{
   couponCode: Scalars['String'];
 }>;

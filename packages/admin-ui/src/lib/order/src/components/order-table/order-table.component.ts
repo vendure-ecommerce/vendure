@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure/admin-ui/core';
 
@@ -11,6 +11,9 @@ import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure
 export class OrderTableComponent implements OnInit {
     @Input() order: OrderDetailFragment;
     @Input() orderLineCustomFields: CustomFieldConfig[];
+    @Input() isDraft = false;
+    @Output() adjust = new EventEmitter<{ lineId: string; quantity: number }>();
+    @Output() remove = new EventEmitter<{ lineId: string }>();
     orderLineCustomFieldsVisible = false;
     customFieldsForLine: {
         [lineId: string]: Array<{ config: CustomFieldConfig; formGroup: FormGroup; value: any }>;
@@ -27,6 +30,12 @@ export class OrderTableComponent implements OnInit {
     ngOnInit(): void {
         this.orderLineCustomFieldsVisible = this.orderLineCustomFields.length < 2;
         this.getLineCustomFields();
+    }
+
+    draftInputBlur(line: OrderDetailFragment['lines'][number], quantity: number) {
+        if (line.quantity !== quantity) {
+            this.adjust.emit({ lineId: line.id, quantity });
+        }
     }
 
     toggleOrderLineCustomFields() {

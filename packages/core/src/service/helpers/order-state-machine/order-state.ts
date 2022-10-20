@@ -19,6 +19,7 @@ export interface CustomOrderStates {}
  */
 export type OrderState =
     | 'Created'
+    | 'Draft'
     | 'AddingItems'
     | 'ArrangingPayment'
     | 'PaymentAuthorized'
@@ -34,7 +35,10 @@ export type OrderState =
 
 export const orderStateTransitions: Transitions<OrderState> = {
     Created: {
-        to: ['AddingItems'],
+        to: ['AddingItems', 'Draft'],
+    },
+    Draft: {
+        to: ['Cancelled', 'ArrangingPayment'],
     },
     AddingItems: {
         to: ['ArrangingPayment', 'Cancelled'],

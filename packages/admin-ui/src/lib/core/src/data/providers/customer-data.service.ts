@@ -10,8 +10,8 @@ import {
     DELETE_CUSTOMER_GROUP,
     DELETE_CUSTOMER_NOTE,
     GET_CUSTOMER,
-    GET_CUSTOMER_GROUPS,
     GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
+    GET_CUSTOMER_GROUPS,
     GET_CUSTOMER_HISTORY,
     GET_CUSTOMER_LIST,
     REMOVE_CUSTOMERS_FROM_GROUP,
@@ -33,6 +33,9 @@ export class CustomerDataService {
                       emailAddress: {
                           contains: filterTerm,
                       },
+                      lastName: {
+                          contains: filterTerm,
+                      },
                   },
               }
             : {};
@@ -44,6 +47,7 @@ export class CustomerDataService {
                 take,
                 skip,
                 ...filter,
+                filterOperator: LogicalOperator.OR,
             },
         });
     }

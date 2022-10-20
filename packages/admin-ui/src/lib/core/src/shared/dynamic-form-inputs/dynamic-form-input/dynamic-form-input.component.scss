@@ -30,6 +30,10 @@
         0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
+.drag-handle.hidden {
+    display: none;
+}
+
 .cdk-drag-placeholder {
     opacity: 0.1;
 }

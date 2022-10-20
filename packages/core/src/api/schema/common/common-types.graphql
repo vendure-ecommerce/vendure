@@ -244,3 +244,18 @@ type PaymentMethodQuote {
     isEligible: Boolean!
     eligibilityMessage: String
 }
+
+union UpdateOrderItemsResult =
+      Order
+    | OrderModificationError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError
+union RemoveOrderItemsResult = Order | OrderModificationError
+union SetOrderShippingMethodResult =
+      Order
+    | OrderModificationError
+    | IneligibleShippingMethodError
+    | NoActiveOrderError
+union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
+

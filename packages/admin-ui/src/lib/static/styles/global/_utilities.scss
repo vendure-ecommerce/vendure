@@ -10,6 +10,10 @@ $space-4: $space-unit * 3;
 $space-5: $space-unit * 4;
 
 /////////////// layout ///////////////
+.block {
+    display: block;
+}
+
 .flex {
     display: flex;
 }

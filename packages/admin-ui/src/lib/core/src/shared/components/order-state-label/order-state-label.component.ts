@@ -27,6 +27,7 @@ export class OrderStateLabelComponent {
             case 'Delivered':
                 return 'success';
             case 'Cancelled':
+            case 'Draft':
                 return 'error';
             case 'PaymentAuthorized':
             case 'PaymentSettled':
