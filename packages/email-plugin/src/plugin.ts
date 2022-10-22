@@ -120,8 +120,57 @@ import {
  *
  * The `defaultEmailHandlers` array defines the default handlers such as for handling new account registration, order confirmation, password reset
  * etc. These defaults can be extended by adding custom templates for languages other than the default, or even completely new types of emails
- * which respond to any of the available [VendureEvents](/docs/typescript-api/events/). See the {@link EmailEventHandler} documentation for
- * details on how to do so.
+ * which respond to any of the available [VendureEvents](/docs/typescript-api/events/).
+ *
+ * A good way to learn how to create your own email handlers is to take a look at the
+ * [source code of the default handlers](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
+ * New handlers are defined in exactly the same way.
+ *
+ * It is also possible to modify the default handlers:
+ *
+ * ```TypeScript
+ * // Rather than importing `defaultEmailHandlers`, you can
+ * // import the handlers individually
+ * import {
+ *   orderConfirmationHandler,
+ *   emailVerificationHandler,
+ *   passwordResetHandler,
+ *   emailAddressChangeHandler,
+ * } from '\@vendure/email-plugin';
+ * import { CustomerService } from '\@vendure/core';
+ *
+ * // This allows you to then customize each handler to your needs.
+ * // For example, let's set a new subject line to the order confirmation:
+ * orderConfirmationHandler
+ *   .setSubject(`We received your order!`);
+ *
+ * // Another example: loading additional data and setting new
+ * // template variables.
+ * passwordResetHandler
+ *   .loadData(async ({ event, injector }) => {
+ *     const customerService = injector.get(CustomerService);
+ *     const customer = await customerService.findOneByUserId(event.ctx, event.user.id);
+ *     return { customer };
+ *   })
+ *   .setTemplateVars(event => ({
+ *     passwordResetToken: event.user.getNativeAuthenticationMethod().passwordResetToken,
+ *     customer: event.data.customer,
+ *   }));
+ *
+ * // Then you pass the handlers to the EmailPlugin init method
+ * // individually
+ * EmailPlugin.init({
+ *   handlers: [
+ *     orderConfirmationHandler,
+ *     emailVerificationHandler,
+ *     passwordResetHandler,
+ *     emailAddressChangeHandler,
+ *   ],
+ *   // ...
+ * }),
+ * ```
+ *
+ * For all available methods of extending a handler, see the {@link EmailEventHandler} documentation.
  *
  * ## Dev mode
  *
@@ -129,7 +178,7 @@ import {
  * file transport (See {@link FileTransportOptions}) and outputs emails as rendered HTML files in the directory specified by the
  * `outputPath` property.
  *
- * ```ts
+ * ```TypeScript
  * EmailPlugin.init({
  *   devMode: true,
  *   route: 'mailbox',
