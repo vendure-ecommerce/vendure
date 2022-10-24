@@ -14,9 +14,10 @@ import {
     OrderDetail,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { OrderTransitionService } from '@vendure/admin-ui/order';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
+
+import { OrderTransitionService } from '../../providers/order-transition.service';
 import { SelectAddressDialogComponent } from '../select-address-dialog/select-address-dialog.component';
 import { SelectCustomerDialogComponent } from '../select-customer-dialog/select-customer-dialog.component';
 import { SelectShippingMethodDialogComponent } from '../select-shipping-method-dialog/select-shipping-method-dialog.component';
