@@ -5,12 +5,12 @@ import fs from 'fs-extra';
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
+import { EmailGenerator } from './email-generator';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { TemplateLoader } from './template-loader';
 import {
     EmailDetails,
-    EmailGenerator,
     EmailPluginOptions,
     EmailSender,
     EmailTransportOptions,

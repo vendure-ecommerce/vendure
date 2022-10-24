@@ -1,4 +1,10 @@
-import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
+import {
+    Inject,
+    MiddlewareConsumer,
+    NestModule,
+    OnApplicationBootstrap,
+    OnApplicationShutdown,
+} from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import {
     EventBus,
@@ -228,7 +234,7 @@ import {
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
 })
-export class EmailPlugin implements OnApplicationBootstrap, NestModule {
+export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
     private devMailbox: DevMailbox | undefined;
     private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
@@ -241,6 +247,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
         private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
+        @Inject(EMAIL_PLUGIN_OPTIONS) private options: EmailPluginOptions,
     ) {}
 
     /**
@@ -253,13 +260,12 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
 
     /** @internal */
     async onApplicationBootstrap(): Promise<void> {
-        const options = EmailPlugin.options;
-
+        await this.initInjectableStrategies();
         await this.setupEventSubscribers();
-        if (!isDevModeOptions(options) && options.transport.type === 'testing') {
+        if (!isDevModeOptions(this.options) && this.options.transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(options);
+            this.testingProcessor = new EmailProcessor(this.options);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();
@@ -272,15 +278,30 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
         }
     }
 
-    configure(consumer: MiddlewareConsumer) {
-        const options = EmailPlugin.options;
+    async onApplicationShutdown() {
+        await this.destroyInjectableStrategies();
+    }
 
-        if (isDevModeOptions(options) && this.processContext.isServer) {
+    configure(consumer: MiddlewareConsumer) {
+        if (isDevModeOptions(this.options) && this.processContext.isServer) {
             Logger.info('Creating dev mailbox middleware', loggerCtx);
             this.devMailbox = new DevMailbox();
-            consumer.apply(this.devMailbox.serve(options)).forRoutes(options.route);
+            consumer.apply(this.devMailbox.serve(this.options)).forRoutes(this.options.route);
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
-            registerPluginStartupMessage('Dev mailbox', options.route);
+            registerPluginStartupMessage('Dev mailbox', this.options.route);
+        }
+    }
+
+    private async initInjectableStrategies() {
+        const injector = new Injector(this.moduleRef);
+        if (typeof this.options.emailGenerator?.init === 'function') {
+            await this.options.emailGenerator.init(injector);
+        }
+    }
+
+    private async destroyInjectableStrategies() {
+        if (typeof this.options.emailGenerator?.destroy === 'function') {
+            await this.options.emailGenerator.destroy();
         }
     }
 
