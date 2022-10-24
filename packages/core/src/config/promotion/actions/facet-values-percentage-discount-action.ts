@@ -10,7 +10,7 @@ export const discountOnItemWithFacets = new PromotionItemAction({
     code: 'facet_based_discount',
     args: {
         discount: {
-            type: 'int',
+            type: 'float',
             ui: {
                 component: 'number-form-input',
                 suffix: '%',

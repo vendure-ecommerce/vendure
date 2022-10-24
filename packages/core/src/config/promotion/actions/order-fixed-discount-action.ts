@@ -13,7 +13,8 @@ export const orderFixedDiscount = new PromotionOrderAction({
         },
     },
     execute(ctx, order, args) {
-        return -Math.min(args.discount, order.subTotal);
+        const upperBound = ctx.channel.pricesIncludeTax ? order.subTotalWithTax : order.subTotal;
+        return -Math.min(args.discount, upperBound);
     },
     description: [{ languageCode: LanguageCode.en, value: 'Discount order by fixed amount' }],
 });

@@ -406,8 +406,21 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const entityMap = new Map(entities.map(e => [e.id, e]));
         const entitiesIds = entities.map(({ id }) => id);
 
-        const splitRelations = relations.map(r => r.split('.'));
+        const splitRelations = relations
+            .map(r => r.split('.'))
+            .filter(path => {
+                // There is an issue in TypeORM currently which causes
+                // an error when trying to join nested relations inside
+                // customFields. See https://github.com/vendure-ecommerce/vendure/issues/1664
+                // The work-around is to omit them and rely on the GraphQL resolver
+                // layer to handle.
+                if (path[0] === 'customFields' && 2 < path.length) {
+                    return false;
+                }
+                return true;
+            });
         const groupedRelationsMap = new Map<string, string[]>();
+
         for (const relationParts of splitRelations) {
             const group = groupedRelationsMap.get(relationParts[0]);
             if (group) {

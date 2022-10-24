@@ -708,6 +708,45 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode!.discounts[0].description).toBe('20% discount on order');
                 expect(applyCouponCode!.totalWithTax).toBe(4800);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1773
+            it('decimal percentage', async () => {
+                const decimalPercentageCouponCode = 'DPCC';
+                await createPromotion({
+                    enabled: true,
+                    name: '10.5% discount on order',
+                    couponCode: decimalPercentageCouponCode,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: orderPercentageDiscount.code,
+                            arguments: [{ name: 'discount', value: '10.5' }],
+                        },
+                    ],
+                });
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { addItemToOrder } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: getVariantBySlug('item-5000').id,
+                    quantity: 1,
+                });
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder!.totalWithTax).toBe(6000);
+                expect(addItemToOrder!.discounts.length).toBe(0);
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, {
+                    couponCode: decimalPercentageCouponCode,
+                });
+                orderResultGuard.assertSuccess(applyCouponCode);
+                expect(applyCouponCode!.discounts.length).toBe(1);
+                expect(applyCouponCode!.discounts[0].description).toBe('10.5% discount on order');
+                expect(applyCouponCode!.totalWithTax).toBe(5370);
+            });
         });
 
         describe('orderFixedDiscount', () => {
