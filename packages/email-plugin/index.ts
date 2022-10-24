@@ -8,3 +8,4 @@ export * from './src/plugin';
 export * from './src/template-loader';
 export * from './src/types';
 export * from './src/email-generator';
+export * from './src/email-sender';

@@ -19,10 +19,11 @@ import path from 'path';
 import { Readable } from 'stream';
 
 import { orderConfirmationHandler } from './default-email-handlers';
+import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-handler';
 import { EmailEventListener } from './event-listener';
 import { EmailPlugin } from './plugin';
-import { EmailDetails, EmailPluginOptions, EmailSender, EmailTransportOptions } from './types';
+import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;

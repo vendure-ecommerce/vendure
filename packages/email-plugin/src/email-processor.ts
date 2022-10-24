@@ -6,16 +6,11 @@ import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { EmailGenerator } from './email-generator';
+import { EmailSender } from './email-sender';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { TemplateLoader } from './template-loader';
-import {
-    EmailDetails,
-    EmailPluginOptions,
-    EmailSender,
-    EmailTransportOptions,
-    IntermediateEmailDetails,
-} from './types';
+import { EmailDetails, EmailPluginOptions, EmailTransportOptions, IntermediateEmailDetails } from './types';
 
 /**
  * This class combines the template loading, generation, and email sending - the actual "work" of

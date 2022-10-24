@@ -297,11 +297,17 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         if (typeof this.options.emailGenerator?.init === 'function') {
             await this.options.emailGenerator.init(injector);
         }
+        if (typeof this.options.emailSender?.init === 'function') {
+            await this.options.emailSender.init(injector);
+        }
     }
 
     private async destroyInjectableStrategies() {
         if (typeof this.options.emailGenerator?.destroy === 'function') {
             await this.options.emailGenerator.destroy();
+        }
+        if (typeof this.options.emailSender?.destroy === 'function') {
+            await this.options.emailSender.destroy();
         }
     }
 
