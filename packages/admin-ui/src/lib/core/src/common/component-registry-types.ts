@@ -92,6 +92,7 @@ export type ActionBarLocationId =
  * @docsCategory custom-detail-components
  */
 export type CustomDetailComponentLocationId =
+    | 'administrator-profile'
     | 'administrator-detail'
     | 'channel-detail'
     | 'collection-detail'

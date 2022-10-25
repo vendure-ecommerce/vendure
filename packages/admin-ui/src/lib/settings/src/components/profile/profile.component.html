@@ -16,19 +16,19 @@
 
 <form class="form" [formGroup]="detailForm">
     <vdr-form-field [label]="'settings.email-address' | translate" for="emailAddress">
-        <input id="emailAddress" type="text" formControlName="emailAddress" />
+        <input id="emailAddress" type="text" formControlName="emailAddress"/>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.first-name' | translate" for="firstName">
-        <input id="firstName" type="text" formControlName="firstName" />
+        <input id="firstName" type="text" formControlName="firstName"/>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.last-name' | translate" for="lastName">
-        <input id="lastName" type="text" formControlName="lastName" />
+        <input id="lastName" type="text" formControlName="lastName"/>
     </vdr-form-field>
     <vdr-form-field *ngIf="isNew$ | async" [label]="'settings.password' | translate" for="password">
-        <input id="password" type="password" formControlName="password" />
+        <input id="password" type="password" formControlName="password"/>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.password' | translate" for="password" [readOnlyToggle]="true">
-        <input id="password" type="password" formControlName="password" />
+        <input id="password" type="password" formControlName="password"/>
     </vdr-form-field>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
@@ -38,4 +38,9 @@
             [customFieldsFormGroup]="detailForm.get('customFields')"
         ></vdr-tabbed-custom-fields>
     </section>
+    <vdr-custom-detail-component-host
+        locationId="administrator-profile"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
 </form>
