@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 :host {
     ::ng-deep {
@@ -44,8 +44,11 @@ vdr-action-bar clr-toggle-wrapper {
 
 .view-mode {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    @media screen and (min-width: $breakpoint-small) {
+        flex-direction: row;
+    }
 }
 
 .edit-variants-btn {

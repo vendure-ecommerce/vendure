@@ -192,7 +192,7 @@
                                 [class.btn-primary]="variantDisplayMode === 'card'"
                             >
                                 <clr-icon shape="list"></clr-icon>
-                                {{ 'catalog.display-variant-cards' | translate }}
+                                <span class="full-label">{{ 'catalog.display-variant-cards' | translate }}</span>
                             </button>
                             <button
                                 class="btn"
@@ -200,7 +200,7 @@
                                 [class.btn-primary]="variantDisplayMode === 'table'"
                             >
                                 <clr-icon shape="table"></clr-icon>
-                                {{ 'catalog.display-variant-table' | translate }}
+                                <span class="full-label">{{ 'catalog.display-variant-table' | translate }}</span>
                             </button>
                         </div>
                         <div class="variant-filter">
@@ -216,7 +216,7 @@
                         <a
                             *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
                             [routerLink]="['./', 'manage-variants']"
-                            class="btn btn-secondary edit-variants-btn"
+                            class="btn btn-secondary edit-variants-btn mb0 mr0"
                         >
                             <clr-icon shape="add-text"></clr-icon>
                             {{ 'catalog.manage-variants' | translate }}

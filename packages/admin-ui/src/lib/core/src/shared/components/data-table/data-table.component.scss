@@ -13,6 +13,11 @@
     z-index: 2;
 }
 
+table.table {
+    max-width: 100vw;
+    overflow-x: auto;
+}
+
 table.no-select {
     user-select: none;
 }
