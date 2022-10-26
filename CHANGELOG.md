@@ -1,5 +1,6 @@
 ## <small>1.8.1 (2022-10-26)</small>
 
+This release corrects a publishing error with the `@vendure/admin-ui` packages. There are no code changes in this release.
 
 ## 1.8.0 (2022-10-26)
 
