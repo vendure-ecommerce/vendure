@@ -91,5 +91,29 @@
     "rimraf": "^3.0.2",
     "tslint": "~6.1.3",
     "typescript": "4.3.5"
+  },
+  "nx": {
+    "namedInputs": {
+      "default": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/scripts/**/*"
+      ],
+      "production": [
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/**/*.e2e-spec.ts"
+      ]
+    },
+    "targets": {
+      "build": {
+        "inputs": ["production", "^production"],
+        "outputs": ["{projectRoot}/dist", "{projectRoot}/package"],
+        "dependsOn": ["^build"]
+      },
+      "test": {
+        "inputs": ["default", "^production"],
+        "outputs": [],
+        "dependsOn": ["build"]
+      }
+    }
   }
 }

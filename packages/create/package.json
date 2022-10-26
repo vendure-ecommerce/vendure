@@ -46,5 +46,30 @@
     "rxjs": "^6.6.3",
     "semver": "^7.3.2",
     "tcp-port-used": "^1.0.1"
+  },
+  "nx": {
+    "namedInputs": {
+      "default": [
+        "{projectRoot}/src/**/*",
+        "{projectRoot}/templates/**/*"
+      ],
+      "production": [
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/**/*.e2e-spec.ts"
+      ]
+    },
+    "targets": {
+      "build": {
+        "inputs": ["production", "^production"],
+        "outputs": ["{projectRoot}/assets","{projectRoot}/lib"],
+        "dependsOn": ["^build"]
+      },
+      "test": {
+        "inputs": ["default", "^production"],
+        "outputs": [],
+        "dependsOn": ["build"]
+      }
+    }
   }
+  
 }

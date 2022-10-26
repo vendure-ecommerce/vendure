@@ -36,5 +36,28 @@
     "file-type": "^16.2.0",
     "fs-extra": "^10.0.0",
     "sharp": "~0.30.7"
+  },
+  "nx": {
+    "namedInputs": {
+      "default": [
+        "{projectRoot}/src/**/*"
+      ],
+      "production": [
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/**/*.e2e-spec.ts"
+      ]
+    },
+    "targets": {
+      "build": {
+        "inputs": ["production", "^production"],
+        "outputs": ["{projectRoot}/lib"],
+        "dependsOn": ["^build"]
+      },
+      "test": {
+        "inputs": ["default", "^production"],
+        "outputs": [],
+        "dependsOn": ["build"]
+      }
+    }
   }
 }

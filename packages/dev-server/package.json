@@ -30,5 +30,28 @@
     "concurrently": "^5.0.0",
     "csv-stringify": "^5.3.3",
     "progress": "^2.0.3"
+  },
+  "nx": {
+    "namedInputs": {
+      "default": [
+        "{projectRoot}/src/**/*"
+      ],
+      "production": [
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/**/*.e2e-spec.ts"
+      ]
+    },
+    "targets": {
+      "build": {
+        "inputs": ["production", "^production"],
+        "outputs": ["{projectRoot}/lib"],
+        "dependsOn": ["^build"]
+      },
+      "test": {
+        "inputs": ["default", "^production"],
+        "outputs": [],
+        "dependsOn": ["build"]
+      }
+    }
   }
 }

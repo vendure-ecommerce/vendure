@@ -29,5 +29,31 @@
   },
   "dependencies": {
     "fs-extra": "^10.0.0"
+  },
+  "nx": {
+    "implicitDependencies": [
+      "@vendure/admin-ui"
+    ],
+    "namedInputs": {
+      "default": [
+        "{projectRoot}/src/**/*"
+      ],
+      "production": [
+        "!{projectRoot}/**/*.spec.ts",
+        "!{projectRoot}/**/*.e2e-spec.ts"
+      ]
+    },
+    "targets": {
+      "build": {
+        "inputs": ["production", "^production"],
+        "outputs": ["{projectRoot}/lib"],
+        "dependsOn": ["^build"]
+      },
+      "test": {
+        "inputs": ["default", "^production"],
+        "outputs": [],
+        "dependsOn": ["build"]
+      }
+    }
   }
 }
