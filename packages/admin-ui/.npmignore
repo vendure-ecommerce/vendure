@@ -1,4 +1,5 @@
 .gitignore
+.angular
 yarn-error.log
 e2e
 dist
