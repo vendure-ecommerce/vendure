@@ -1,6 +1,6 @@
 {
   "name": "@vendure/testing",
-  "version": "2.0.0-next.19",
+  "version": "2.0.0-next.20",
   "description": "End-to-end testing tools for Vendure projects",
   "keywords": [
     "vendure",
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@types/node-fetch": "^2.5.4",
-    "@vendure/common": "^2.0.0-next.19",
+    "@vendure/common": "^2.0.0-next.20",
     "faker": "^4.1.0",
     "form-data": "^3.0.0",
     "graphql": "16.3.0",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/mysql": "^2.15.15",
     "@types/pg": "^7.14.5",
-    "@vendure/core": "^2.0.0-next.19",
+    "@vendure/core": "^2.0.0-next.20",
     "mysql": "^2.18.1",
     "pg": "^8.4.0",
     "rimraf": "^3.0.0",

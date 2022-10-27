@@ -1,3 +1,59 @@
+## 2.0.0-next.20 (2022-10-27)
+
+
+#### Perf
+
+* **core** Add indexes to Product & Collection slugs ([937cf67](https://github.com/vendure-ecommerce/vendure/commit/937cf67))
+
+#### Features
+
+* **admin-ui** Add filter inheritance control to Collection detail view ([7f1b01e](https://github.com/vendure-ecommerce/vendure/commit/7f1b01e)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **admin-ui** Update collection preview on filter inheritance toggle ([1a4aced](https://github.com/vendure-ecommerce/vendure/commit/1a4aced))
+* **admin-ui** Update to Angular v13 ([3b49d23](https://github.com/vendure-ecommerce/vendure/commit/3b49d23))
+* **asset-server-plugin** Update to Sharp v0.30 ([15d8e8d](https://github.com/vendure-ecommerce/vendure/commit/15d8e8d))
+* **core** Add indices to many-to-one relations ([01e369f](https://github.com/vendure-ecommerce/vendure/commit/01e369f)), closes [#1502](https://github.com/vendure-ecommerce/vendure/issues/1502)
+* **core** Add support for PromotionAction side effects ([1a4a117](https://github.com/vendure-ecommerce/vendure/commit/1a4a117)), closes [#1798](https://github.com/vendure-ecommerce/vendure/issues/1798)
+* **core** Added a unique index to Order.code ([aa6025d](https://github.com/vendure-ecommerce/vendure/commit/aa6025d))
+* **core** Collection preview handles filter inheritance ([3d2c0fb](https://github.com/vendure-ecommerce/vendure/commit/3d2c0fb))
+* **core** Collections can control inheritance of filters ([5d4206f](https://github.com/vendure-ecommerce/vendure/commit/5d4206f)), closes [#1382](https://github.com/vendure-ecommerce/vendure/issues/1382)
+* **core** Improve Collection tree data structure ([5e7af0d](https://github.com/vendure-ecommerce/vendure/commit/5e7af0d))
+* **core** Update codegen errors plugin to use object inputs ([6b9b2a4](https://github.com/vendure-ecommerce/vendure/commit/6b9b2a4))
+* **core** Update to NestJS v8, Apollo Server v3, GraphQL v16 ([c843860](https://github.com/vendure-ecommerce/vendure/commit/c843860))
+
+#### Fixes
+
+* **admin-ui** Fix broken filter controls in Collection detail ([fd67ac2](https://github.com/vendure-ecommerce/vendure/commit/fd67ac2))
+* **admin-ui** Fix issues with rich text editor in custom field ([aa13dcb](https://github.com/vendure-ecommerce/vendure/commit/aa13dcb))
+* **admin-ui** Fix merge error in collection detail component ([09fc5ef](https://github.com/vendure-ecommerce/vendure/commit/09fc5ef))
+* **admin-ui** Fix rich text editor when used in custom field list ([21ef048](https://github.com/vendure-ecommerce/vendure/commit/21ef048))
+* **admin-ui** Rename vdr-product-selector ([9d9275c](https://github.com/vendure-ecommerce/vendure/commit/9d9275c))
+* **core** Correctly populate Collections in channel ([58090bb](https://github.com/vendure-ecommerce/vendure/commit/58090bb))
+
+
+### BREAKING CHANGE
+
+* Explicit indexes have been added to many-to-one relations used throughout the data
+model. If you are using MySQL/MariaDB you should not notice a change from this, since they
+automatically add indexes to FK relations. Postgres, however, does not so this change will require
+a DB migration.
+* Indexes have been added to the ProductTranslation & CollectionTranslation slug
+fields. This means a database migration will be needed - the change is small and non-destructive
+so this is a routine migration which should not require manual editing of the migration script.
+* The Admin UI component `vdr-product-selector` has been renamed to
+ `vdr-product-variant-selector` to more accurately represent what it does.
+
+ If you are using `vdr-product-selector` if any ui extensions code, update it to use the
+ new selector.
+* The data structure used to represent the tree of Collections has changed,
+which will require a DB migration.
+* The internal ErrorResult classes now take all constructors arguments
+as a single input object.
+* The internal ErrorResult classes now take all constructors arguments
+as a single input object.
+
+feat(core): Update codegen errors plugin to use object inputs
+* The new `inheritFilters` property on the Collection entity will require a DB
+migration.
 ## 2.0.0-next.19 (2022-10-11)
 
 
