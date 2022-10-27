@@ -52,7 +52,7 @@
     "@types/fs-extra": "^9.0.1",
     "@vendure/common": "^2.0.0-next.19",
     "apollo-server-express": "3.6.3",
-    "bcrypt": "^5.0.0",
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.19.0",
     "chalk": "^4.1.0",
     "commander": "^7.1.0",

@@ -1,6 +1,6 @@
 <ng-container *ngIf="1 < availableLanguageCodes?.length">
     <vdr-dropdown>
-        <button type="button" class="btn btn-sm btn-link" vdrDropdownTrigger [disabled]="disabled">
+        <button type="button" class="btn btn-sm" vdrDropdownTrigger [disabled]="disabled">
             <clr-icon shape="world"></clr-icon>
             {{ 'common.language' | translate }}: {{ currentLanguageCode | localeLanguageName | uppercase }}
             <clr-icon shape="caret down"></clr-icon>

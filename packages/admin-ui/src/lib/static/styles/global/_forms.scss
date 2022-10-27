@@ -126,12 +126,14 @@ select {
     }
     input {
         border: none !important;
-        padding: 0;
         background: none !important;
     }
 }
 .ng-select.ng-select-single > .ng-select-container {
     padding-top: 9px;
+    input {
+        padding-left: 0 !important;
+    }
 }
 .ng-select.ng-select-focused > .ng-select-container {
     border-color: var(--color-primary-500) !important;
@@ -142,5 +144,5 @@ select {
     background: var(--color-form-input-bg) !important;
 }
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
-    background-color: var(--color-grey-100);
+    background-color: var(--color-grey-200);
 }

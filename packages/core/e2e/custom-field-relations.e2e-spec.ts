@@ -33,6 +33,11 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { AddItemToOrderMutation } from './graphql/generated-e2e-shop-types';
+import {
+    UpdateProductVariantsMutation,
+    UpdateProductVariantsMutationVariables,
+} from './graphql/generated-e2e-admin-types';
+import { UPDATE_PRODUCT_VARIANTS } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
@@ -120,6 +125,14 @@ customFieldConfig.User?.push({
     graphQLType: 'Vendor',
     list: false,
     eager: true,
+    internal: false,
+    public: true,
+});
+customFieldConfig.ProductVariant?.push({
+    name: 'cfRelatedProducts',
+    type: 'relation',
+    entity: Product,
+    list: true,
     internal: false,
     public: true,
 });
@@ -854,6 +867,43 @@ describe('Custom field relations', () => {
                 `);
 
                 expect(customer).toBeDefined();
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1664
+            it('successfully gets product.variants with nested custom field relation', async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProductVariants(
+                            input: [{ id: "T_1", customFields: { cfRelatedProductsIds: ["T_2"] } }]
+                        ) {
+                            id
+                        }
+                    }
+                `);
+
+                const { product } = await adminClient.query(gql`
+                    query {
+                        product(id: "T_1") {
+                            variants {
+                                id
+                                customFields {
+                                    cfRelatedProducts {
+                                        featuredAsset {
+                                            id
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(product).toBeDefined();
+                expect(product.variants[0].customFields.cfRelatedProducts).toEqual([
+                    {
+                        featuredAsset: { id: 'T_2' },
+                    },
+                ]);
             });
 
             it('successfully gets product by slug with eager-loading custom field relation', async () => {

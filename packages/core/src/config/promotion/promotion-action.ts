@@ -8,7 +8,7 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { PromotionState } from '../../entity';
+import { Promotion, PromotionState } from '../../entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -76,6 +76,7 @@ export type ExecutePromotionItemActionFn<T extends ConfigArgs, U extends Array<P
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
     state: ConditionState<U>,
+    promotion: Promotion,
 ) => number | Promise<number>;
 
 /**
@@ -91,6 +92,7 @@ export type ExecutePromotionOrderActionFn<T extends ConfigArgs, U extends Array<
     order: Order,
     args: ConfigArgValues<T>,
     state: ConditionState<U>,
+    promotion: Promotion,
 ) => number | Promise<number>;
 
 /**
@@ -110,6 +112,7 @@ export type ExecutePromotionShippingActionFn<
     order: Order,
     args: ConfigArgValues<T>,
     state: ConditionState<U>,
+    promotion: Promotion,
 ) => number | Promise<number>;
 
 /**
@@ -125,6 +128,7 @@ type PromotionActionSideEffectFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
+    promotion: Promotion,
 ) => void | Promise<void>;
 
 /**
@@ -274,13 +278,23 @@ export abstract class PromotionAction<
     abstract execute(...arg: any[]): number | Promise<number>;
 
     /** @internal */
-    onActivate(ctx: RequestContext, order: Order, args: ConfigArg[]): void | Promise<void> {
-        return this.onActivateFn?.(ctx, order, this.argsArrayToHash(args));
+    onActivate(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        promotion: Promotion,
+    ): void | Promise<void> {
+        return this.onActivateFn?.(ctx, order, this.argsArrayToHash(args), promotion);
     }
 
     /** @internal */
-    onDeactivate(ctx: RequestContext, order: Order, args: ConfigArg[]): void | Promise<void> {
-        return this.onDeactivateFn?.(ctx, order, this.argsArrayToHash(args));
+    onDeactivate(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        promotion: Promotion,
+    ): void | Promise<void> {
+        return this.onDeactivateFn?.(ctx, order, this.argsArrayToHash(args), promotion);
     }
 }
 
@@ -322,6 +336,7 @@ export class PromotionItemAction<
         orderLine: OrderLine,
         args: ConfigArg[],
         state: PromotionState,
+        promotion: Promotion,
     ) {
         const actionState = this.conditions
             ? pick(
@@ -335,6 +350,7 @@ export class PromotionItemAction<
             orderLine,
             this.argsArrayToHash(args),
             actionState as ConditionState<U>,
+            promotion,
         );
     }
 }
@@ -371,14 +387,26 @@ export class PromotionOrderAction<
     }
 
     /** @internal */
-    execute(ctx: RequestContext, order: Order, args: ConfigArg[], state: PromotionState) {
+    execute(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        state: PromotionState,
+        promotion: Promotion,
+    ) {
         const actionState = this.conditions
             ? pick(
                   state,
                   this.conditions.map(c => c.code),
               )
             : {};
-        return this.executeFn(ctx, order, this.argsArrayToHash(args), actionState as ConditionState<U>);
+        return this.executeFn(
+            ctx,
+            order,
+            this.argsArrayToHash(args),
+            actionState as ConditionState<U>,
+            promotion,
+        );
     }
 }
 
@@ -407,6 +435,7 @@ export class PromotionShippingAction<
         order: Order,
         args: ConfigArg[],
         state: PromotionState,
+        promotion: Promotion,
     ) {
         const actionState = this.conditions
             ? pick(
@@ -420,6 +449,7 @@ export class PromotionShippingAction<
             order,
             this.argsArrayToHash(args),
             actionState as ConditionState<U>,
+            promotion,
         );
     }
 }

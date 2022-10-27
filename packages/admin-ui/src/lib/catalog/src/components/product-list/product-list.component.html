@@ -52,10 +52,12 @@
             </vdr-dropdown>
         </div>
         <div class="flex wrap">
-            <clr-checkbox-wrapper class="mt2">
-                <input type="checkbox" clrCheckbox [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
-                <label>{{ 'catalog.group-by-product' | translate }}</label>
-            </clr-checkbox-wrapper>
+            <clr-toggle-wrapper class="mt2">
+                <input type="checkbox" clrToggle [(ngModel)]="groupByProduct" (ngModelChange)="refresh()" />
+                <label>
+                    {{ 'catalog.group-by-product' | translate }}
+                </label>
+            </clr-toggle-wrapper>
             <vdr-language-selector
                 [availableLanguageCodes]="availableLanguages$ | async"
                 [currentLanguageCode]="contentLanguage$ | async"
@@ -71,7 +73,7 @@
             *vdrIfPermissions="['CreateCatalog', 'CreateProduct']"
         >
             <clr-icon shape="plus"></clr-icon>
-            <span class="full-label">{{ 'catalog.create-new-product' | translate }}</span>
+            {{ 'catalog.create-new-product' | translate }}
         </a>
     </vdr-ab-right>
 </vdr-action-bar>

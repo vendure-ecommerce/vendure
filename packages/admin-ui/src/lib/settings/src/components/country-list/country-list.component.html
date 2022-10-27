@@ -7,25 +7,29 @@
             [placeholder]="'settings.search-country-by-name' | translate"
             class="search-input"
         />
-        <vdr-language-selector
-            [availableLanguageCodes]="availableLanguages$ | async"
-            [currentLanguageCode]="contentLanguage$ | async"
-            (languageCodeChange)="setLanguage($event)"
-        ></vdr-language-selector>
+        <div>
+            <vdr-language-selector
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="contentLanguage$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
+        </div>
     </vdr-ab-left>
 
     <vdr-ab-right>
         <vdr-action-bar-items locationId="country-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="['CreateSettings', 'CreateCountry']">
+        <a
+            class="btn btn-primary"
+            [routerLink]="['./create']"
+            *vdrIfPermissions="['CreateSettings', 'CreateCountry']"
+        >
             <clr-icon shape="plus"></clr-icon>
             {{ 'settings.create-new-country' | translate }}
         </a>
     </vdr-ab-right>
 </vdr-action-bar>
 
-<vdr-data-table
-    [items]="countriesWithZones$ | async"
->
+<vdr-data-table [items]="countriesWithZones$ | async">
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column [expand]="true">{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'settings.zone' | translate }}</vdr-dt-column>
@@ -36,7 +40,10 @@
         <td class="left align-middle">{{ country.code }}</td>
         <td class="left align-middle">{{ country.name }}</td>
         <td class="left align-middle">
-            <a [routerLink]="['/settings', 'zones', { contents: zone.id }]" *ngFor="let zone of country.zones">
+            <a
+                [routerLink]="['/settings', 'zones', { contents: zone.id }]"
+                *ngFor="let zone of country.zones"
+            >
                 <vdr-chip [colorFrom]="zone.name">{{ zone.name }}</vdr-chip>
             </a>
         </td>

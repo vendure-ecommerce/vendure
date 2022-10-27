@@ -6,7 +6,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
     code: 'order_percentage_discount',
     args: {
         discount: {
-            type: 'int',
+            type: 'float',
             ui: {
                 component: 'number-form-input',
                 suffix: '%',
