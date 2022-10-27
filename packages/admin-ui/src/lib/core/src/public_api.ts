@@ -155,9 +155,9 @@ export * from './shared/components/order-state-label/order-state-label.component
 export * from './shared/components/pagination-controls/pagination-controls.component';
 export * from './shared/components/product-multi-selector-dialog/product-multi-selector-dialog.component';
 export * from './shared/components/product-search-input/product-search-input.component';
+export * from './shared/components/product-variant-selector/product-variant-selector.component';
 export * from './shared/components/radio-card/radio-card-fieldset.component';
 export * from './shared/components/radio-card/radio-card.component';
-export * from './shared/components/product-variant-selector/product-variant-selector.component';
 export * from './shared/components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 export * from './shared/components/rich-text-editor/link-dialog/link-dialog.component';
 export * from './shared/components/rich-text-editor/prosemirror/context-menu/context-menu.component';
