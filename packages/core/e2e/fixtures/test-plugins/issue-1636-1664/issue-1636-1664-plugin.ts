@@ -1,17 +1,24 @@
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { ID } from '@vendure/common/lib/shared-types';
 import {
     Asset,
+    Channel,
     Ctx,
+    Customer,
     PluginCommonModule,
     Product,
     RequestContext,
     TransactionalConnection,
+    User,
     VendureEntity,
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
+
+import { ProfileAsset } from './profile-asset.entity';
+import { Profile } from './profile.entity';
 
 @Entity()
 export class Vendor extends VendureEntity {
@@ -38,6 +45,16 @@ class TestResolver1636 {
     }
 }
 
+const profileType = gql`
+    type Profile implements Node {
+        id: ID!
+        createdAt: DateTime!
+        updatedAt: DateTime!
+        name: String!
+        user: User!
+    }
+`;
+
 /**
  * Testing https://github.com/vendure-ecommerce/vendure/issues/1636
  *
@@ -47,7 +64,7 @@ class TestResolver1636 {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [Vendor],
+    entities: [Vendor, Profile, ProfileAsset],
     shopApiExtensions: {
         schema: gql`
             extend type Query {
@@ -66,19 +83,41 @@ class TestResolver1636 {
                 id: ID
                 featuredProduct: Product
             }
+            type Profile implements Node {
+                id: ID!
+                createdAt: DateTime!
+                updatedAt: DateTime!
+                name: String!
+                user: User!
+            }
         `,
         resolvers: [],
     },
     configuration: config => {
-        config.customFields.Product.push({
-            name: 'cfVendor',
-            type: 'relation',
-            entity: Vendor,
-            graphQLType: 'Vendor',
-            list: false,
-            internal: false,
-            public: true,
-        });
+        config.customFields.Product.push(
+            {
+                name: 'cfVendor',
+                type: 'relation',
+                entity: Vendor,
+                graphQLType: 'Vendor',
+                list: false,
+                internal: false,
+                public: true,
+            },
+            {
+                name: 'owner',
+                nullable: true,
+                type: 'relation',
+                // Using the Channel entity rather than User as in the example comment at
+                // https://github.com/vendure-ecommerce/vendure/issues/1664#issuecomment-1293916504
+                // because using a User causes a recursive infinite loop in TypeORM between
+                // Product > User > Vendor > Product etc.
+                entity: Channel,
+                public: false,
+                eager: true, // needs to be eager to enable indexing of user->profile attributes like name, etc.
+                readonly: true,
+            },
+        );
         config.customFields.User.push({
             name: 'cfVendor',
             type: 'relation',
@@ -89,10 +128,57 @@ class TestResolver1636 {
             internal: false,
             public: true,
         });
+
+        config.customFields.Channel.push({
+            name: 'profile',
+            type: 'relation',
+            entity: Profile,
+            nullable: true,
+            public: false,
+            internal: false,
+            readonly: true,
+            eager: true, // needs to be eager to enable indexing of profile attributes like name, etc.
+        });
+
         return config;
     },
 })
 // tslint:disable-next-line:class-name
-export class TestPlugin1636_1664 {
+export class TestPlugin1636_1664 implements OnApplicationBootstrap {
     static testResolverSpy = jest.fn();
+
+    constructor(private connection: TransactionalConnection) {}
+
+    async onApplicationBootstrap() {
+        const profilesCount = await this.connection.rawConnection.getRepository(Profile).count();
+        if (0 < profilesCount) {
+            return;
+        }
+        // Create a Profile and assign it to all the products
+        const channels = await this.connection.rawConnection.getRepository(Channel).find();
+        // tslint:disable-next-line:no-non-null-assertion
+        const channel = channels[0]!;
+        const profile = await this.connection.rawConnection.getRepository(Profile).save(
+            new Profile({
+                name: 'Test Profile',
+            }),
+        );
+
+        (channel.customFields as any).profile = profile;
+        await this.connection.rawConnection.getRepository(Channel).save(channel);
+
+        const asset = await this.connection.rawConnection.getRepository(Asset).findOne(1);
+        if (asset) {
+            const profileAsset = this.connection.rawConnection.getRepository(ProfileAsset).save({
+                asset,
+                profile,
+            });
+        }
+
+        const products = await this.connection.rawConnection.getRepository(Product).find();
+        for (const product of products) {
+            (product.customFields as any).owner = channel;
+            await this.connection.rawConnection.getRepository(Product).save(product);
+        }
+    }
 }
