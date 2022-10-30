@@ -152,7 +152,12 @@ export class FacetService {
             translationType: FacetTranslation,
             beforeSave: async f => {
                 f.code = await this.ensureUniqueCode(ctx, f.code);
-                await this.channelService.assignToCurrentChannel(f, ctx);
+                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                if (ctx.channelId === defaultChannel.id) {
+                    await this.channelService.assignToAllChannels(f, ctx, defaultChannel);
+                } else {
+                    await this.channelService.assignToCurrentChannel(f, ctx);
+                }
             },
         });
         const facetWithRelations = await this.customFieldRelationService.updateRelations(
