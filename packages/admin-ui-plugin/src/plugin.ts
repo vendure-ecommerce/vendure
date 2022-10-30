@@ -240,7 +240,7 @@ export class AdminUiPlugin implements NestModule {
             brand: AdminUiPlugin.options.adminUiConfig?.brand,
             hideVendureBranding: propOrDefault(
                 'hideVendureBranding',
-                AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || false,
+                AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || true,
             ),
             hideVersion: propOrDefault(
                 'hideVersion',

@@ -14,10 +14,6 @@ import { StockDisplayStrategy } from './stock-display-strategy';
 export class DefaultStockDisplayStrategy implements StockDisplayStrategy {
     constructor(private lowStockLevel: number = 2) {}
     getStockLevel(ctx: RequestContext, productVariant: ProductVariant, saleableStockLevel: number): string {
-        return saleableStockLevel < 1
-            ? 'OUT_OF_STOCK'
-            : saleableStockLevel <= this.lowStockLevel
-            ? 'LOW_STOCK'
-            : 'IN_STOCK';
+        return saleableStockLevel.toString();
     }
 }
