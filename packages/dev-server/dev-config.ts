@@ -7,6 +7,7 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -55,7 +56,56 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Facet: [
+            {
+                name: 'color1',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Color 1' }],
+                validate: (value: string) => {
+                    const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
+                    if (!regex.test(value)) {
+                        return 'Invalid color code';
+                    }
+                },
+            },
+            {
+                name: 'color2',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Color 2' }],
+                validate: (value: string) => {
+                    const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
+                    if (!regex.test(value)) {
+                        return 'Invalid color code';
+                    }
+                },
+            },
+        ],
+        FacetValue: [
+            {
+                name: 'color1',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Color 1' }],
+                validate: (value: string) => {
+                    const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
+                    if (!regex.test(value)) {
+                        return 'Invalid color code';
+                    }
+                },
+            },
+            {
+                name: 'color2',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Color 2' }],
+                validate: (value: string) => {
+                    const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
+                    if (!regex.test(value)) {
+                        return 'Invalid color code';
+                    }
+                },
+            },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
