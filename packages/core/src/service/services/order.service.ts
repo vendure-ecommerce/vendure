@@ -201,7 +201,7 @@ export class OrderService {
                 channelId: ctx.channelId,
                 customPropertyMap: {
                     customerLastName: 'customer.lastName',
-                    transactionId: 'payment.transactionId',
+                    transactionId: 'payments.transactionId',
                 },
             })
             .getManyAndCount()

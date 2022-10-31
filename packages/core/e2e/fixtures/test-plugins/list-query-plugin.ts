@@ -1,13 +1,18 @@
-import { OnApplicationBootstrap } from '@nestjs/common';
+import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import {
     Ctx,
+    Customer,
+    CustomerService,
     ListQueryBuilder,
     LocaleString,
+    Order,
+    OrderService,
     PluginCommonModule,
     RequestContext,
+    RequestContextService,
     TransactionalConnection,
     Translatable,
     translateDeep,
@@ -16,10 +21,9 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../../src/common/calculated-decorator';
-import { EntityId } from '../../../src/entity/entity-id.decorator';
 
 @Entity()
 export class TestEntity extends VendureEntity implements Translatable {
@@ -83,6 +87,10 @@ export class TestEntity extends VendureEntity implements Translatable {
 
     @OneToMany(type => TestEntityTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<TestEntity>>;
+
+    @OneToOne(type => Order)
+    @JoinColumn()
+    orderRelation: Order;
 }
 
 @Entity()
@@ -122,7 +130,13 @@ export class ListQueryResolver {
     @Query()
     testEntities(@Ctx() ctx: RequestContext, @Args() args: any) {
         return this.listQueryBuilder
-            .build(TestEntity, args.options, { ctx })
+            .build(TestEntity, args.options, {
+                ctx,
+                relations: ['orderRelation', 'orderRelation.customer'],
+                customPropertyMap: {
+                    customerLastName: 'orderRelation.customer.lastName',
+                },
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 for (const item of items) {
@@ -178,6 +192,7 @@ const apiExtensions = gql`
         price: Int!
         ownerId: ID!
         translations: [TestEntityTranslation!]!
+        orderRelation: Order
     }
 
     type TestEntityList implements PaginatedList {
@@ -188,6 +203,14 @@ const apiExtensions = gql`
     extend type Query {
         testEntities(options: TestEntityListOptions): TestEntityList!
         testEntitiesGetMany(options: TestEntityListOptions): [TestEntity!]!
+    }
+
+    input TestEntityFilterParameter {
+        customerLastName: StringOperators
+    }
+
+    input TestEntitySortParameter {
+        customerLastName: SortOrder
     }
 
     input TestEntityListOptions
@@ -206,7 +229,12 @@ const apiExtensions = gql`
     },
 })
 export class ListQueryPlugin implements OnApplicationBootstrap {
-    constructor(private connection: TransactionalConnection) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private requestContextService: RequestContextService,
+        private customerService: CustomerService,
+        private orderService: OrderService,
+    ) {}
 
     async onApplicationBootstrap() {
         const count = await this.connection.getRepository(TestEntity).count();
@@ -297,6 +325,24 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                         );
                     }
                 }
+            }
+        } else {
+            const testEntities = await this.connection.getRepository(TestEntity).find();
+            const ctx = await this.requestContextService.create({ apiType: 'admin' });
+            const customers = await this.connection.rawConnection.getRepository(Customer).find();
+            let i = 0;
+
+            for (const testEntity of testEntities) {
+                const customer = customers[i % customers.length];
+                try {
+                    // tslint:disable-next-line:no-non-null-assertion
+                    const order = await this.orderService.create(ctx, customer.user!.id);
+                    testEntity.orderRelation = order;
+                    await this.connection.getRepository(TestEntity).save(testEntity);
+                } catch (e: any) {
+                    Logger.error(e);
+                }
+                i++;
             }
         }
     }
