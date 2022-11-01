@@ -124,6 +124,7 @@ import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/te
 import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
+import { CustomFieldDescriptionPipe } from './pipes/custom-field-description.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
@@ -215,6 +216,7 @@ const DECLARATIONS = [
     IfDefaultChannelActiveDirective,
     ExtensionHostComponent,
     CustomFieldLabelPipe,
+    CustomFieldDescriptionPipe,
     FocalPointControlComponent,
     AssetPreviewPipe,
     LinkDialogComponent,
