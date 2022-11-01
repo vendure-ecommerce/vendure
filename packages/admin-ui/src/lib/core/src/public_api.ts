@@ -222,6 +222,7 @@ export * from './shared/dynamic-form-inputs/text-form-input/text-form-input.comp
 export * from './shared/dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 export * from './shared/pipes/asset-preview.pipe';
 export * from './shared/pipes/channel-label.pipe';
+export * from './shared/pipes/custom-field-description.pipe';
 export * from './shared/pipes/custom-field-label.pipe';
 export * from './shared/pipes/duration.pipe';
 export * from './shared/pipes/file-size.pipe';

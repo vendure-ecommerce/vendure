@@ -90,14 +90,25 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      *   customPropertyMap: {
      *     // Tell TypeORM how to map that custom
      *     // sort/filter field to the property on a
-     *     // related entity. Note that the `customer`
-     *     // part needs to match the *table name* of the
-     *     // related entity. So, e.g. if you are mapping to
-     *     // a `FacetValue` relation's `id` property, the value
-     *     // would be `facet_value.id`.
+     *     // related entity.
      *     customerLastName: 'customer.lastName',
      *   },
      * };
+     * ```
+     * We can now use the `customerLastName` property to filter or sort
+     * on the list query:
+     *
+     * @example
+     * ```GraphQL
+     * query {
+     *   myOrderQuery(options: {
+     *     filter: {
+     *       customerLastName: { contains: "sm" }
+     *     }
+     *   }) {
+     *     # ...
+     *   }
+     * }
      * ```
      */
     customPropertyMap?: { [name: string]: string };
@@ -322,14 +333,41 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     // to join the associated relations.
                     continue;
                 }
-                const tableNameLower = path.split('.')[0];
-                const entityMetadata = repository.manager.connection.entityMetadatas.find(
-                    em => em.tableNameWithoutPrefix === tableNameLower,
-                );
-                if (entityMetadata) {
-                    const relationMetadata = metadata.relations.find(r => r.type === entityMetadata.target);
+
+                // TODO: Delete for v2
+                // This is a work-around to allow the use of the legacy table-name-based
+                // customPropertyMap syntax
+                let relationPathYieldedMatch = false;
+
+                const relationPath = path.split('.').slice(0, -1);
+                let targetMetadata = metadata;
+                const recontructedPath = [];
+                for (const relationPathPart of relationPath) {
+                    const relationMetadata = targetMetadata.findRelationWithPropertyPath(relationPathPart);
                     if (relationMetadata) {
-                        requiredRelations.push(relationMetadata.propertyName);
+                        recontructedPath.push(relationMetadata.propertyName);
+                        requiredRelations.push(recontructedPath.join('.'));
+                        targetMetadata = relationMetadata.inverseEntityMetadata;
+                        relationPathYieldedMatch = true;
+                    }
+                }
+
+                if (!relationPathYieldedMatch) {
+                    // TODO: Delete this in v2.
+                    // Legacy behaviour that uses the table name to reference relations.
+                    // This causes a bunch of issues and is also a bad, unintuitive way to
+                    // reference relations. See https://github.com/vendure-ecommerce/vendure/issues/1774
+                    const tableNameLower = path.split('.')[0];
+                    const entityMetadata = repository.manager.connection.entityMetadatas.find(
+                        em => em.tableNameWithoutPrefix === tableNameLower,
+                    );
+                    if (entityMetadata) {
+                        const relationMetadata = metadata.relations.find(
+                            r => r.type === entityMetadata.target,
+                        );
+                        if (relationMetadata) {
+                            requiredRelations.push(relationMetadata.propertyName);
+                        }
                     }
                 }
             }
@@ -478,9 +516,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             const parts = customPropertyMap[property].split('.');
             const entityPart = 2 <= parts.length ? parts[parts.length - 2] : qb.alias;
             const columnPart = parts[parts.length - 1];
-            const relationAlias = qb.expressionMap.aliases.find(
-                a => a.metadata.tableNameWithoutPrefix === entityPart,
-            );
+
+            const relationMetadata =
+                qb.expressionMap.mainAlias?.metadata.findRelationWithPropertyPath(entityPart);
+            const relationAlias =
+                qb.expressionMap.aliases.find(a => a.metadata.tableNameWithoutPrefix === entityPart) ??
+                qb.expressionMap.joinAttributes.find(ja => ja.relationCache === relationMetadata)?.alias;
             if (relationAlias) {
                 customPropertyMap[property] = `${relationAlias.name}.${columnPart}`;
             } else {

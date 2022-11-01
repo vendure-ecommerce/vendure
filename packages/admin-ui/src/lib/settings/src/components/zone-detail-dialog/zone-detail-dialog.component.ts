@@ -16,7 +16,7 @@ export class ZoneDetailDialogComponent implements Dialog<CreateZoneInput>, OnIni
     form: FormGroup;
 
     constructor(private serverConfigService: ServerConfigService, private formBuilder: FormBuilder) {
-        this.customFields = this.serverConfigService.getCustomFieldsFor('CustomerGroup');
+        this.customFields = this.serverConfigService.getCustomFieldsFor('Zone');
     }
 
     ngOnInit() {

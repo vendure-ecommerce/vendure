@@ -1,3 +1,13 @@
+## <small>1.8.2 (2022-11-01)</small>
+
+
+#### Fixes
+
+* **admin-ui** Display descriptions for custom fields ([aaeb43d](https://github.com/vendure-ecommerce/vendure/commit/aaeb43d))
+* **admin-ui** Fix getting custom fields in Zone dialog ([a919555](https://github.com/vendure-ecommerce/vendure/commit/a919555))
+* **core** Fix edge case with nested eager custom field relations ([ca9848c](https://github.com/vendure-ecommerce/vendure/commit/ca9848c)), closes [#1664](https://github.com/vendure-ecommerce/vendure/issues/1664)
+* **core** Fix nested relations in ListQueryBuilder customPropertyMap ([839fa37](https://github.com/vendure-ecommerce/vendure/commit/839fa37)), closes [#1851](https://github.com/vendure-ecommerce/vendure/issues/1851) [#1774](https://github.com/vendure-ecommerce/vendure/issues/1774)
+
 ## <small>1.8.1 (2022-10-26)</small>
 
 This release corrects a publishing error with the `@vendure/admin-ui` packages. There are no code changes in this release.

@@ -1,43 +1,32 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
-import { ID } from '@vendure/common/lib/shared-types';
 import {
     Asset,
     Collection,
     Country,
-    Ctx,
     CustomFields,
+    DefaultLogger,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     Facet,
     FacetValue,
+    LogLevel,
     manualFulfillmentHandler,
     mergeConfig,
-    PluginCommonModule,
     Product,
     ProductOption,
     ProductOptionGroup,
     ProductVariant,
-    RequestContext,
     ShippingMethod,
-    TransactionalConnection,
-    VendureEntity,
-    VendurePlugin,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { Entity, JoinColumn, OneToOne } from 'typeorm';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
-import { AddItemToOrderMutation } from './graphql/generated-e2e-shop-types';
-import {
-    UpdateProductVariantsMutation,
-    UpdateProductVariantsMutationVariables,
-} from './graphql/generated-e2e-admin-types';
-import { UPDATE_PRODUCT_VARIANTS } from './graphql/shared-definitions';
+import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/issue-1636-1664-plugin';
+import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
@@ -79,17 +68,6 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'Zone',
 );
 
-@Entity()
-class Vendor extends VendureEntity {
-    constructor() {
-        super();
-    }
-
-    @OneToOne(type => Product, { eager: true })
-    @JoinColumn()
-    featuredProduct: Product;
-}
-
 const customFieldConfig: CustomFields = {};
 for (const entity of entitiesWithCustomFields) {
     customFieldConfig[entity] = [
@@ -108,26 +86,7 @@ customFieldConfig.Product?.push(
     { name: 'cfProduct', type: 'relation', entity: Product, list: false },
     { name: 'cfShippingMethod', type: 'relation', entity: ShippingMethod, list: false },
     { name: 'cfInternalAsset', type: 'relation', entity: Asset, list: false, internal: true },
-    {
-        name: 'cfVendor',
-        type: 'relation',
-        entity: Vendor,
-        graphQLType: 'Vendor',
-        list: false,
-        internal: false,
-        public: true,
-    },
 );
-customFieldConfig.User?.push({
-    name: 'cfVendor',
-    type: 'relation',
-    entity: Vendor,
-    graphQLType: 'Vendor',
-    list: false,
-    eager: true,
-    internal: false,
-    public: true,
-});
 customFieldConfig.ProductVariant?.push({
     name: 'cfRelatedProducts',
     type: 'relation',
@@ -136,49 +95,6 @@ customFieldConfig.ProductVariant?.push({
     internal: false,
     public: true,
 });
-
-const testResolverSpy = jest.fn();
-
-@Resolver()
-class TestResolver1636 {
-    constructor(private connection: TransactionalConnection) {}
-
-    @Query()
-    async getAssetTest(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
-        const asset = await this.connection.findOneInChannel(ctx, Asset, args.id, ctx.channelId, {
-            relations: ['customFields.single', 'customFields.multi'],
-        });
-        testResolverSpy(asset);
-        return true;
-    }
-}
-
-@VendurePlugin({
-    imports: [PluginCommonModule],
-    entities: [Vendor],
-    shopApiExtensions: {
-        schema: gql`
-            extend type Query {
-                getAssetTest(id: ID!): Boolean!
-            }
-            type Vendor {
-                id: ID
-                featuredProduct: Product
-            }
-        `,
-        resolvers: [TestResolver1636],
-    },
-    adminApiExtensions: {
-        schema: gql`
-            type Vendor {
-                id: ID
-                featuredProduct: Product
-            }
-        `,
-        resolvers: [],
-    },
-})
-class TestPlugin1636 {}
 
 const customConfig = mergeConfig(testConfig(), {
     paymentOptions: {
@@ -189,7 +105,7 @@ const customConfig = mergeConfig(testConfig(), {
         timezone: 'Z',
     },
     customFields: customFieldConfig,
-    plugins: [TestPlugin1636],
+    plugins: [TestPlugin1636_1664],
 });
 
 describe('Custom field relations', () => {
@@ -680,7 +596,7 @@ describe('Custom field relations', () => {
             let orderId: string;
 
             beforeAll(async () => {
-                const { addItemToOrder } = await shopClient.query<any, AddItemToOrder.Variables>(
+                const { addItemToOrder } = await shopClient.query<any, AddItemToOrderMutationVariables>(
                     ADD_ITEM_TO_ORDER,
                     {
                         productVariantId: 'T_1',
@@ -825,104 +741,130 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProductVariants[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
 
-            // https://github.com/vendure-ecommerce/vendure/issues/1664
-            it('successfully gets product by id with eager-loading custom field relation', async () => {
-                const { product } = await shopClient.query(gql`
-                    query {
-                        product(id: "T_1") {
-                            id
-                            customFields {
-                                cfVendor {
-                                    featuredProduct {
-                                        id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `);
-
-                expect(product).toBeDefined();
-            });
-
-            // https://github.com/vendure-ecommerce/vendure/issues/1664
-            it('successfully gets product by id with nested eager-loading custom field relation', async () => {
-                const { customer } = await adminClient.query(gql`
-                    query {
-                        customer(id: "T_1") {
-                            id
-                            firstName
-                            lastName
-                            emailAddress
-                            phoneNumber
-                            user {
-                                customFields {
-                                    cfVendor {
-                                        id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `);
-
-                expect(customer).toBeDefined();
-            });
-
-            // https://github.com/vendure-ecommerce/vendure/issues/1664
-            it('successfully gets product.variants with nested custom field relation', async () => {
-                await adminClient.query(gql`
-                    mutation {
-                        updateProductVariants(
-                            input: [{ id: "T_1", customFields: { cfRelatedProductsIds: ["T_2"] } }]
-                        ) {
-                            id
-                        }
-                    }
-                `);
-
-                const { product } = await adminClient.query(gql`
-                    query {
-                        product(id: "T_1") {
-                            variants {
+            describe('issue 1664', () => {
+                // https://github.com/vendure-ecommerce/vendure/issues/1664
+                it('successfully gets product by id with eager-loading custom field relation', async () => {
+                    const { product } = await shopClient.query(gql`
+                        query {
+                            product(id: "T_1") {
                                 id
                                 customFields {
-                                    cfRelatedProducts {
-                                        featuredAsset {
+                                    cfVendor {
+                                        featuredProduct {
                                             id
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                `);
+                    `);
 
-                expect(product).toBeDefined();
-                expect(product.variants[0].customFields.cfRelatedProducts).toEqual([
-                    {
-                        featuredAsset: { id: 'T_2' },
-                    },
-                ]);
-            });
+                    expect(product).toBeDefined();
+                });
 
-            it('successfully gets product by slug with eager-loading custom field relation', async () => {
-                const { product } = await shopClient.query(gql`
-                    query {
-                        product(slug: "laptop") {
-                            id
-                            customFields {
-                                cfVendor {
-                                    featuredProduct {
-                                        id
+                // https://github.com/vendure-ecommerce/vendure/issues/1664
+                it('successfully gets product by id with nested eager-loading custom field relation', async () => {
+                    const { customer } = await adminClient.query(gql`
+                        query {
+                            customer(id: "T_1") {
+                                id
+                                firstName
+                                lastName
+                                emailAddress
+                                phoneNumber
+                                user {
+                                    customFields {
+                                        cfVendor {
+                                            id
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                `);
+                    `);
 
-                expect(product).toBeDefined();
+                    expect(customer).toBeDefined();
+                });
+
+                // https://github.com/vendure-ecommerce/vendure/issues/1664
+                it('successfully gets product.variants with nested custom field relation', async () => {
+                    await adminClient.query(gql`
+                        mutation {
+                            updateProductVariants(
+                                input: [{ id: "T_1", customFields: { cfRelatedProductsIds: ["T_2"] } }]
+                            ) {
+                                id
+                            }
+                        }
+                    `);
+
+                    const { product } = await adminClient.query(gql`
+                        query {
+                            product(id: "T_1") {
+                                variants {
+                                    id
+                                    customFields {
+                                        cfRelatedProducts {
+                                            featuredAsset {
+                                                id
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    `);
+
+                    expect(product).toBeDefined();
+                    expect(product.variants[0].customFields.cfRelatedProducts).toEqual([
+                        {
+                            featuredAsset: { id: 'T_2' },
+                        },
+                    ]);
+                });
+
+                it('successfully gets product by slug with eager-loading custom field relation', async () => {
+                    const { product } = await shopClient.query(gql`
+                        query {
+                            product(slug: "laptop") {
+                                id
+                                customFields {
+                                    cfVendor {
+                                        featuredProduct {
+                                            id
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    `);
+
+                    expect(product).toBeDefined();
+                });
+
+                it('does not error on custom field relation with eager custom field relation', async () => {
+                    const { product } = await adminClient.query(gql`
+                        query {
+                            product(slug: "laptop") {
+                                name
+                                customFields {
+                                    owner {
+                                        id
+                                        code
+                                        customFields {
+                                            profile {
+                                                id
+                                                name
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    `);
+
+                    expect(product).toBeDefined();
+                });
             });
         });
 
@@ -1177,13 +1119,13 @@ describe('Custom field relations', () => {
 
             // https://github.com/vendure-ecommerce/vendure/issues/1636
             it('calling TransactionalConnection.findOneInChannel() returns custom field relations', async () => {
-                testResolverSpy.mockReset();
+                TestPlugin1636_1664.testResolverSpy.mockReset();
                 await shopClient.query(gql`
                     query {
                         getAssetTest(id: "T_1")
                     }
                 `);
-                const args = testResolverSpy.mock.calls[0];
+                const args = TestPlugin1636_1664.testResolverSpy.mock.calls[0];
                 expect(args[0].customFields.single.id).toEqual(2);
                 expect(args[0].customFields.multi.length).toEqual(2);
             });

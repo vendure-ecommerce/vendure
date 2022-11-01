@@ -45,9 +45,14 @@ export function removeCustomFieldsWithEagerRelations(
         metadata => metadata.propertyName === 'customFields',
     );
     if (customFieldsMetadata) {
-        const customFieldRelationsWithEagerRelations = customFieldsMetadata.relations.filter(
-            relation => !!relation.inverseEntityMetadata.ownRelations.find(or => or.isEager === true),
-        );
+        const customFieldRelationsWithEagerRelations = customFieldsMetadata.relations.filter(relation => {
+            return (
+                !!relation.inverseEntityMetadata.ownRelations.find(or => or.isEager === true) ||
+                relation.inverseEntityMetadata.embeddeds.find(
+                    em => em.propertyName === 'customFields' && em.relations.find(emr => emr.isEager),
+                )
+            );
+        });
         for (const relation of customFieldRelationsWithEagerRelations) {
             const propertyName = relation.propertyName;
             const relationsToRemove = relations.filter(r => r.startsWith(`customFields.${propertyName}`));

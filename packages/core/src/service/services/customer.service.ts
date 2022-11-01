@@ -99,7 +99,7 @@ export class CustomerService {
         const hasPostalCodeFilter = !!(options as CustomerListOptions)?.filter?.postalCode;
         if (hasPostalCodeFilter) {
             relations.push('addresses');
-            customPropertyMap.postalCode = 'address.postalCode';
+            customPropertyMap.postalCode = 'addresses.postalCode';
         }
         return this.listQueryBuilder
             .build(Customer, options, {
