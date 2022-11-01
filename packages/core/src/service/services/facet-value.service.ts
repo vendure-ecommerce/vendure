@@ -151,6 +151,7 @@ export class FacetValueService {
         if (!isInUse) {
             const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
+            this.eventBus.publish(new FacetValueEvent(ctx, facetValue, 'deleted', id));
             result = DeletionResult.DELETED;
         } else if (force) {
             const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
