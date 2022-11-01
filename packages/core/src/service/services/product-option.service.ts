@@ -106,6 +106,7 @@ export class ProductOptionService {
      */
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id);
+        const deletedProductOption = new ProductOption(productOption);
         const inUseByActiveVariants = await this.isInUse(ctx, productOption, 'active');
         if (0 < inUseByActiveVariants) {
             return {
@@ -135,7 +136,7 @@ export class ProductOptionService {
                 Logger.error(e.message, undefined, e.stack);
             }
         }
-        this.eventBus.publish(new ProductOptionEvent(ctx, productOption, 'deleted', id));
+        this.eventBus.publish(new ProductOptionEvent(ctx, deletedProductOption, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };
