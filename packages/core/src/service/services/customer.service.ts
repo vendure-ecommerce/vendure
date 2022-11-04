@@ -47,7 +47,7 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Order } from '../../entity/index';
+import { CustomCustomerFields, Order } from '../../entity/index';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
@@ -164,6 +164,14 @@ export class CustomerService {
             });
     }
 
+    async getCustomerByPhoneNumber(ctx: RequestContext, phoneNumber: string): Promise<Customer | undefined> {
+        return this.connection.getRepository(ctx, Customer).findOne({
+            where: {
+                phoneNumber,
+                deletedAt: null,
+            },
+        });
+    }
     /**
      * @description
      * Returns a list of all {@link CustomerGroup} entities.
@@ -383,7 +391,14 @@ export class CustomerService {
                 return { success: true };
             }
         }
-        const customFields = (input as any).customFields;
+        const customFields: CustomCustomerFields = (input as any).customFields;
+        if (customFields?.referralCode) {
+            const referringUser = await this.getCustomerByPhoneNumber(ctx, customFields.referralCode);
+            if (referringUser) {
+                customFields.referredBy = referringUser.id;
+                customFields.isReferralCompleted = false;
+            }
+        }
         const customer = await this.createOrUpdate(ctx, {
             emailAddress: input.emailAddress,
             title: input.title || '',

@@ -1,4 +1,3 @@
-
 :host {
     display: block;
     max-width: 100%;
@@ -20,6 +19,30 @@ table.table {
 
 table.no-select {
     user-select: none;
+}
+
+.tall-row {
+    height: 5rem;
+}
+
+.order-status-PaymentAuthorized {
+    background: rgb(236, 126, 255);
+}
+
+.order-status-Received {
+    background: rgb(235, 187, 97);
+}
+
+.order-status-Processing {
+    background: rgb(255, 255, 202);
+}
+
+.order-status-ReadyForPickup {
+    background: rgb(121, 240, 135);
+}
+
+.order-status-Finished {
+    background: rgb(110, 190, 246);
 }
 
 thead th {

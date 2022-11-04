@@ -330,6 +330,7 @@ export const ORDER_FRAGMENT = gql`
             id
             firstName
             lastName
+            phoneNumber
         }
     }
 `;

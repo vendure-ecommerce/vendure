@@ -17,6 +17,11 @@ import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
+import { CustomerChannelsPlugin } from './customer-channels/cutomer-channels.module';
+import { nanoid } from './nanoid';
+import cashPaymentHandler from './payment-methods/cash-payment';
+import { RestPlugin } from './payment-methods/payhere-listener.controller';
+
 /**
  * Config settings used during development
  */
@@ -41,7 +46,7 @@ export const devConfig: VendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: ['bearer', 'cookie'] as const,
-        requireVerification: true,
+        requireVerification: false,
         customPermissions: [],
         cookieOptions: {
             secret: 'abc',
@@ -54,9 +59,94 @@ export const devConfig: VendureConfig = {
         ...getDbConfig(),
     },
     paymentOptions: {
-        paymentMethodHandlers: [dummyPaymentHandler],
+        paymentMethodHandlers: [cashPaymentHandler],
     },
     customFields: {
+        Channel: [
+            {
+                name: 'latitude',
+                type: 'float',
+                public: true,
+                defaultValue: 6.906755,
+            },
+            {
+                name: 'longitude',
+                type: 'float',
+                public: true,
+                defaultValue: 79.861244,
+            },
+            {
+                name: 'name',
+                type: 'string',
+                public: true,
+                defaultValue: 'Mount Lavinia',
+            },
+            {
+                name: 'location',
+                type: 'string',
+                public: true,
+                defaultValue:
+                    'https://www.google.com/maps/dir/?api=1&destination=Crepe+Runner+-+Mount+Lavinia',
+            },
+        ],
+        Address: [
+            {
+                name: 'first_name',
+                type: 'string',
+                nullable: false,
+                defaultValue: 'John',
+            },
+            {
+                name: 'uuid',
+                type: 'string',
+                nullable: false,
+                defaultValue: nanoid(),
+            },
+            {
+                name: 'last_name',
+                type: 'string',
+                nullable: false,
+                defaultValue: 'Doe',
+            },
+            {
+                name: 'email',
+                type: 'string',
+                nullable: false,
+                defaultValue: 'johndoe@gmail.com',
+            },
+            {
+                name: 'phone',
+                type: 'string',
+                nullable: false,
+                defaultValue: '0771234567',
+            },
+        ],
+        Customer: [
+            {
+                name: 'referredBy',
+                type: 'string',
+                nullable: true,
+                internal: true,
+            },
+            {
+                name: 'isReferralCompleted',
+                type: 'boolean',
+                internal: true,
+                nullable: true,
+            },
+            {
+                name: 'referralCode',
+                type: 'string',
+                nullable: true,
+            },
+            {
+                name: 'loyaltyPoints',
+                type: 'int',
+                readonly: true,
+                defaultValue: 0,
+                nullable: false,
+            },
+        ],
         Facet: [
             {
                 name: 'color1',
@@ -111,6 +201,8 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
+        CustomerChannelsPlugin,
+        RestPlugin,
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),

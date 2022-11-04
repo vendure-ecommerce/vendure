@@ -1,16 +1,41 @@
-export class CustomAddressFields {}
+import { ID } from '../../dist';
+
+import { Customer } from '.';
+
+export class CustomAddressFields {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+}
 export class CustomAdministratorFields {}
 export class CustomAssetFields {}
-export class CustomChannelFields {}
+export class CustomChannelFields {
+    longitude: number;
+    latitude: number;
+    location: string;
+    name: string;
+}
 export class CustomCollectionFields {}
 export class CustomCollectionFieldsTranslation {}
 export class CustomCountryFields {}
 export class CustomCountryFieldsTranslation {}
-export class CustomCustomerFields {}
+export class CustomCustomerFields {
+    referredBy?: ID;
+    isReferralCompleted?: boolean;
+    loyaltyPoints: number;
+    referralCode?: string;
+}
 export class CustomCustomerGroupFields {}
-export class CustomFacetFields {}
+export class CustomFacetFields {
+    color1: string;
+    color2: string;
+}
 export class CustomFacetFieldsTranslation {}
-export class CustomFacetValueFields {}
+export class CustomFacetValueFields {
+    color1: string;
+    color2: string;
+}
 export class CustomFacetValueFieldsTranslation {}
 export class CustomFulfillmentFields {}
 export class CustomGlobalSettingsFields {}

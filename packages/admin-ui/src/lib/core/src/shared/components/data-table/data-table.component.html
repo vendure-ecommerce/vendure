@@ -1,6 +1,6 @@
 <ng-container *ngIf="!items || (items && items.length); else emptyPlaceholder">
     <div class="bulk-actions">
-    <ng-content select="vdr-bulk-action-menu"></ng-content>
+        <ng-content select="vdr-bulk-action-menu"></ng-content>
     </div>
     <table class="table" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
@@ -13,13 +13,19 @@
                         (change)="onToggleAllClick()"
                     />
                 </th>
-                <th *ngFor="let header of columns?.toArray()" class="left align-middle" [class.expand]="header.expand">
+                <th
+                    *ngFor="let header of columns?.toArray()"
+                    class="left align-middle"
+                    [class.expand]="header.expand"
+                >
                     <ng-container *ngTemplateOutlet="header.template"></ng-container>
                 </th>
             </tr>
         </thead>
         <tbody>
             <tr
+                [ngClass]="'order-status-' + item.state"
+                [ngStyle]="{ height: customRowHeight ? customRowHeight + 'rem' : 'auto' }"
                 *ngFor="
                     let item of items
                         | paginate
@@ -36,7 +42,9 @@
                     <input
                         type="checkbox"
                         clrCheckbox
-                        [checked]="isRowSelectedFn ? isRowSelectedFn(item) : selectionManager?.isSelected(item)"
+                        [checked]="
+                            isRowSelectedFn ? isRowSelectedFn(item) : selectionManager?.isSelected(item)
+                        "
                         (click)="onRowClick(item, $event)"
                     />
                 </td>

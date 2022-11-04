@@ -15,6 +15,8 @@
         "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
     },
     "dependencies": {
+        "nanoid": "^4.0.0",
+        "crypto-js": "^4.1.1",
         "@vendure/admin-ui-plugin": "^1.8.1",
         "@vendure/asset-server-plugin": "^1.8.1",
         "@vendure/common": "^1.8.1",
@@ -30,6 +32,7 @@
         "commander": "^7.1.0",
         "concurrently": "^5.0.0",
         "csv-stringify": "^5.3.3",
-        "progress": "^2.0.3"
+        "progress": "^2.0.3",
+        "@types/crypto-js": "^4.1.1"
     }
 }

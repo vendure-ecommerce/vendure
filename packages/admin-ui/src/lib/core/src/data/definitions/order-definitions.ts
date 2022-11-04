@@ -144,6 +144,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             id
             firstName
             lastName
+            phoneNumber
         }
         lines {
             ...OrderLine

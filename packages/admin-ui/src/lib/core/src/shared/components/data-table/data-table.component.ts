@@ -17,6 +17,7 @@ import {
 import { PaginationService } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+
 import { SelectionManager } from '../../../common/utilities/selection-manager';
 
 import { DataTableColumnComponent } from './data-table-column.component';
@@ -88,6 +89,8 @@ import { DataTableColumnComponent } from './data-table-column.component';
     providers: [PaginationService],
 })
 export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
+    @Input() customRowHeight: number; // rems
+    @Input() customRowClass: string;
     @Input() items: T[];
     @Input() itemsPerPage: number;
     @Input() currentPage: number;
