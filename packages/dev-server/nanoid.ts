@@ -2,7 +2,8 @@ import crypto from 'crypto';
 export const urlAlphabet = 'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict';
 
 const POOL_SIZE_MULTIPLIER = 32;
-let pool: any, poolOffset: any;
+let pool: any;
+let poolOffset: any;
 
 const random = (bytes: number): Uint8Array => {
     if (!pool || pool.length < bytes) {
