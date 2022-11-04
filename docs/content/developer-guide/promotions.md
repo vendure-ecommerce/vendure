@@ -190,7 +190,9 @@ export const freeGiftAction = new PromotionItemAction({
     // This part is responsible for ensuring the variants marked as 
     // "free gifts" have their price reduced to zero.  
     if (lineContainsIds(args.productVariantIds, orderLine)) {
-      const unitPrice = orderLine.unitPrice;
+      const unitPrice = orderLine.productVariant.listPriceIncludesTax
+        ? orderLine.unitPriceWithTax
+        : orderLine.unitPrice;
       return -unitPrice;
     }
     return 0;
