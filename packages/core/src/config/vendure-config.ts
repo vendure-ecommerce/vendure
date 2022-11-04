@@ -888,6 +888,17 @@ export interface EntityOptions {
     zoneCacheTtl?: number;
     /**
      * @description
+     * TaxRates get cached in-memory as they are accessed very frequently. This
+     * setting determines how long the cache lives (in ms) until it is considered stale and
+     * refreshed. For multi-instance deployments (e.g. serverless, load-balanced), a
+     * smaller value here will prevent data inconsistencies between instances.
+     *
+     * @since 1.9.0
+     * @default 30000
+     */
+    taxRateCacheTtl?: number;
+    /**
+     * @description
      * Allows the metadata of the built-in TypeORM entities to be manipulated. This allows you
      * to do things like altering data types, adding indices etc. This is an advanced feature
      * which should be used with some caution as it will result in DB schema changes. For examples
