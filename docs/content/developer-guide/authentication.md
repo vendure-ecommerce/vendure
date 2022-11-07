@@ -329,7 +329,7 @@ This example uses [Keycloak](https://www.keycloak.org/), a popular open-source i
 
 ### Configure a login page & Admin UI
 
-In this example we'll assume the login page is hosted at `http://intranet/login`. We'll also assume that a "login to Vendure" button has been added to that pagem and that the page is using the [Keycloak JavaScript adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter), which can be used to get the current user's authorization token:
+In this example we'll assume the login page is hosted at `http://intranet/login`. We'll also assume that a "login to Vendure" button has been added to that page and that the page is using the [Keycloak JavaScript adapter](https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter), which can be used to get the current user's authorization token:
 
 ```JavaScript
 vendureLoginButton.addEventListener('click', () => {
