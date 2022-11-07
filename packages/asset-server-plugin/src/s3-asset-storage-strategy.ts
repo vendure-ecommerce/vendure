@@ -294,14 +294,18 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             bucketExists = true;
             Logger.verbose(`Found S3 bucket "${bucket}"`, loggerCtx);
         } catch (e) {
-            Logger.verbose(`Could not find bucket "${bucket}". Attempting to create...`);
+            Logger.verbose(`Could not find bucket "${bucket}: ${e.message ?? ''}". Attempting to create...`);
         }
         if (!bucketExists) {
             try {
                 await this.s3.createBucket({ Bucket: bucket, ACL: 'private' }).promise();
                 Logger.verbose(`Created S3 bucket "${bucket}"`, loggerCtx);
             } catch (e) {
-                Logger.error(`Could not find nor create the S3 bucket "${bucket}"`, loggerCtx, e.stack);
+                Logger.error(
+                    `Could not find nor create the S3 bucket "${bucket}: ${e.message ?? ''}"`,
+                    loggerCtx,
+                    e.stack,
+                );
             }
         }
     }
