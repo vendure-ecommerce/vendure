@@ -9,7 +9,6 @@ import { ADMIN_UI_VERSION, AuthService, AUTH_REDIRECT_PARAM, getAppConfig } from
     styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-    imageCookieName = 'vendureLoginImage';
     username = '';
     password = '';
     rememberMe = false;
@@ -48,22 +47,12 @@ export class LoginComponent {
     }
 
     loadImage() {
-        const dataFromCookie = this.getCookie(this.imageCookieName);
-
-        if (dataFromCookie) {
-            this.updateImage(JSON.parse(dataFromCookie));
-            return;
-        }
-
         this.httpClient
-            .get('https://api.unsplash.com/photos/random', {
-                params: new HttpParams()
-                    .append('orientation', 'landscape')
-                    .append('client_id', '55rhuvzXFasQaP2cVKBIrc5NhhwlYU2QlUwxVL78UkY'),
+            .get('https://login-image.vendure.io', {
+                params: new HttpParams().append('domain', window.location.hostname),
             })
             .toPromise()
             .then(res => {
-                this.setCookie(this.imageCookieName, JSON.stringify(res), 2);
                 this.updateImage(res);
             });
     }
@@ -75,26 +64,6 @@ export class LoginComponent {
         this.imageUrl = (res as any).urls.regular;
         this.imageCreator = user.name;
         this.imageLocation = location.name;
-    }
-
-    setCookie(name: string, value: string, days: number) {
-        let expires = '';
-        if (days) {
-            const date = new Date();
-            date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-            expires = '; expires=' + date.toUTCString();
-        }
-        document.cookie = name + '=' + (value || '') + expires + '; path=/';
-    }
-
-    getCookie(name: string) {
-        const nameEQ = name + '=';
-        const ca = document.cookie.split(';');
-        for (let c of ca) {
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
     }
 
     /**
