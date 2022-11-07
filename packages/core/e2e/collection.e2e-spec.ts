@@ -16,13 +16,22 @@ import { productIdCollectionFilter, variantIdCollectionFilter } from '../src/ind
 
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import {
+    AssignCollectionsToChannelMutation,
+    AssignCollectionsToChannelMutationVariables,
+    ChannelFragment,
     Collection,
+    CollectionFragment,
     CreateChannel,
     CreateCollection,
     CreateCollectionInput,
+    CreateCollectionMutation,
+    CreateCollectionMutationVariables,
     CreateCollectionSelectVariants,
     CurrencyCode,
     DeleteCollection,
+    DeleteCollectionsBulk,
+    DeleteCollectionsBulkMutation,
+    DeleteCollectionsBulkMutationVariables,
     DeleteProduct,
     DeleteProductVariant,
     DeletionResult,
@@ -30,6 +39,10 @@ import {
     GetAssetList,
     GetCollection,
     GetCollectionBreadcrumbs,
+    GetCollectionListAdminQuery,
+    GetCollectionListAdminQueryVariables,
+    GetCollectionListQuery,
+    GetCollectionListQueryVariables,
     GetCollectionNestedParents,
     GetCollectionProducts,
     GetCollections,
@@ -43,6 +56,8 @@ import {
     MoveCollection,
     PreviewCollectionVariantsQuery,
     PreviewCollectionVariantsQueryVariables,
+    RemoveCollectionsFromChannelMutation,
+    RemoveCollectionsFromChannelMutationVariables,
     SortOrder,
     UpdateCollection,
     UpdateProduct,
@@ -77,6 +92,7 @@ describe('Collection resolver', () => {
     let electronicsBreadcrumbsCollection: Collection.Fragment;
     let computersBreadcrumbsCollection: Collection.Fragment;
     let pearBreadcrumbsCollection: Collection.Fragment;
+    let secondChannel: ChannelFragment;
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
 
     beforeAll(async () => {
@@ -102,17 +118,21 @@ describe('Collection resolver', () => {
             (values, facet) => [...values, ...facet.values],
             [] as FacetValueFragment[],
         );
-        await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
-            input: {
-                code: 'second-channel',
-                token: SECOND_CHANNEL_TOKEN,
-                defaultLanguageCode: LanguageCode.en,
-                currencyCode: CurrencyCode.USD,
-                pricesIncludeTax: true,
-                defaultShippingZoneId: 'T_1',
-                defaultTaxZoneId: 'T_1',
+        const { createChannel } = await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(
+            CREATE_CHANNEL,
+            {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.USD,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
             },
-        });
+        );
+        secondChannel = createChannel;
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -2070,6 +2090,166 @@ describe('Collection resolver', () => {
         });
     });
 
+    describe('channel assignment & removal', () => {
+        let testCollection: CollectionFragment;
+
+        beforeAll(async () => {
+            const { createCollection } = await adminClient.query<
+                CreateCollectionMutation,
+                CreateCollectionMutationVariables
+            >(CREATE_COLLECTION, {
+                input: {
+                    filters: [
+                        {
+                            code: facetValueCollectionFilter.code,
+                            arguments: [
+                                {
+                                    name: 'facetValueIds',
+                                    value: `["${getFacetValueId('electronics')}"]`,
+                                },
+                                {
+                                    name: 'containsAny',
+                                    value: `false`,
+                                },
+                            ],
+                        },
+                    ],
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channels Test Collection',
+                            description: '',
+                            slug: 'channels-test-collection',
+                        },
+                    ],
+                },
+            });
+
+            testCollection = createCollection;
+        });
+
+        it('assign to channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { collections: before } = await adminClient.query<
+                GetCollectionListAdminQuery,
+                GetCollectionListAdminQueryVariables
+            >(GET_COLLECTION_LIST);
+            expect(before.items.length).toBe(1);
+            expect(before.items.map(i => i.id).includes(testCollection.id)).toBe(false);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { assignCollectionsToChannel } = await adminClient.query<
+                AssignCollectionsToChannelMutation,
+                AssignCollectionsToChannelMutationVariables
+            >(ASSIGN_COLLECTIONS_TO_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    collectionIds: [testCollection.id],
+                },
+            });
+
+            expect(assignCollectionsToChannel.map(c => c.id)).toEqual([testCollection.id]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { collections: after } = await adminClient.query<
+                GetCollectionListAdminQuery,
+                GetCollectionListAdminQueryVariables
+            >(GET_COLLECTION_LIST);
+            expect(after.items.length).toBe(2);
+            expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(true);
+        });
+
+        it('remove from channel', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removeCollectionsFromChannel } = await adminClient.query<
+                RemoveCollectionsFromChannelMutation,
+                RemoveCollectionsFromChannelMutationVariables
+            >(REMOVE_COLLECTIONS_FROM_CHANNEL, {
+                input: {
+                    channelId: secondChannel.id,
+                    collectionIds: [testCollection.id],
+                },
+            });
+
+            expect(removeCollectionsFromChannel.map(c => c.id)).toEqual([testCollection.id]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { collections: after } = await adminClient.query<
+                GetCollectionListAdminQuery,
+                GetCollectionListAdminQueryVariables
+            >(GET_COLLECTION_LIST);
+            expect(after.items.length).toBe(1);
+            expect(after.items.map(i => i.id).includes(testCollection.id)).toBe(false);
+        });
+    });
+
+    describe('deleteCollections (multiple)', () => {
+        let top: CollectionFragment;
+        let child: CollectionFragment;
+        let grandchild: CollectionFragment;
+        beforeAll(async () => {
+            async function createNewCollection(name: string, parentId?: string) {
+                const { createCollection } = await adminClient.query<
+                    CreateCollectionMutation,
+                    CreateCollectionMutationVariables
+                >(CREATE_COLLECTION, {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name,
+                                description: '',
+                                slug: name,
+                            },
+                        ],
+                        filters: [],
+                    },
+                });
+                return createCollection;
+            }
+
+            top = await createNewCollection('top');
+            child = await createNewCollection('child', top.id);
+            grandchild = await createNewCollection('grandchild', child.id);
+        });
+
+        it('deletes all selected collections', async () => {
+            const { collections: before } = await adminClient.query<
+                GetCollectionListQuery,
+                GetCollectionListQueryVariables
+            >(GET_COLLECTION_LIST);
+
+            expect(before.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
+                { id: 'T_28', name: 'top' },
+                { id: 'T_29', name: 'child' },
+                { id: 'T_30', name: 'grandchild' },
+                { id: 'T_8', name: 'Accessories' },
+            ]);
+
+            const { deleteCollections } = await adminClient.query<
+                DeleteCollectionsBulkMutation,
+                DeleteCollectionsBulkMutationVariables
+            >(DELETE_COLLECTIONS_BULK, {
+                ids: [top.id, child.id, grandchild.id],
+            });
+
+            expect(deleteCollections).toEqual([
+                { result: DeletionResult.DELETED, message: null },
+                { result: DeletionResult.DELETED, message: null },
+                { result: DeletionResult.DELETED, message: null },
+            ]);
+
+            const { collections: after } = await adminClient.query<
+                GetCollectionListQuery,
+                GetCollectionListQueryVariables
+            >(GET_COLLECTION_LIST);
+
+            expect(after.items.map(pick(['id', 'name'])).sort(sortById)).toEqual([
+                { id: 'T_8', name: 'Accessories' },
+            ]);
+        });
+    });
+
     function getFacetValueId(code: string): string {
         const match = facetValues.find(fv => fv.code === code);
         if (!match) {
@@ -2090,6 +2270,18 @@ export const GET_COLLECTION = gql`
                     price
                 }
             }
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
+
+export const GET_COLLECTION_LIST = gql`
+    query GetCollectionListAdmin($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                ...Collection
+            }
+            totalItems
         }
     }
     ${COLLECTION_FRAGMENT}
@@ -2243,6 +2435,33 @@ const PREVIEW_COLLECTION_VARIANTS = gql`
                 name
             }
             totalItems
+        }
+    }
+`;
+
+const ASSIGN_COLLECTIONS_TO_CHANNEL = gql`
+    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
+        assignCollectionsToChannel(input: $input) {
+            ...Collection
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
+
+const REMOVE_COLLECTIONS_FROM_CHANNEL = gql`
+    mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
+        removeCollectionsFromChannel(input: $input) {
+            ...Collection
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
+
+const DELETE_COLLECTIONS_BULK = gql`
+    mutation DeleteCollectionsBulk($ids: [ID!]!) {
+        deleteCollections(ids: $ids) {
+            message
+            result
         }
     }
 `;

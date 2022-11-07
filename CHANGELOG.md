@@ -1,3 +1,78 @@
+## <small>1.8.2 (2022-11-01)</small>
+
+
+#### Fixes
+
+* **admin-ui** Display descriptions for custom fields ([aaeb43d](https://github.com/vendure-ecommerce/vendure/commit/aaeb43d))
+* **admin-ui** Fix getting custom fields in Zone dialog ([a919555](https://github.com/vendure-ecommerce/vendure/commit/a919555))
+* **core** Fix edge case with nested eager custom field relations ([ca9848c](https://github.com/vendure-ecommerce/vendure/commit/ca9848c)), closes [#1664](https://github.com/vendure-ecommerce/vendure/issues/1664)
+* **core** Fix nested relations in ListQueryBuilder customPropertyMap ([839fa37](https://github.com/vendure-ecommerce/vendure/commit/839fa37)), closes [#1851](https://github.com/vendure-ecommerce/vendure/issues/1851) [#1774](https://github.com/vendure-ecommerce/vendure/issues/1774)
+
+## <small>1.8.1 (2022-10-26)</small>
+
+This release corrects a publishing error with the `@vendure/admin-ui` packages. There are no code changes in this release.
+
+## 1.8.0 (2022-10-26)
+
+
+#### Features
+
+* **admin-ui** Add basic table support to rich text editor ([09f8482](https://github.com/vendure-ecommerce/vendure/commit/09f8482)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add context menu for images in rich text editor ([5b09abd](https://github.com/vendure-ecommerce/vendure/commit/5b09abd)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add context menu for table operations ([7b68300](https://github.com/vendure-ecommerce/vendure/commit/7b68300)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Add support for bulk collection actions ([220cf1c](https://github.com/vendure-ecommerce/vendure/commit/220cf1c)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Add support for bulk facet channel assignment/removal ([647857c](https://github.com/vendure-ecommerce/vendure/commit/647857c)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Add support for bulk facet deletion ([3c6cd9b](https://github.com/vendure-ecommerce/vendure/commit/3c6cd9b)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Add support for bulk product channel assignment ([6ee74e4](https://github.com/vendure-ecommerce/vendure/commit/6ee74e4)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Add support for bulk product deletion ([47fa230](https://github.com/vendure-ecommerce/vendure/commit/47fa230)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Add support for bulk product facet editing ([0d1b592](https://github.com/vendure-ecommerce/vendure/commit/0d1b592)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Add support for shift-select to DataTableComponent ([87f4062](https://github.com/vendure-ecommerce/vendure/commit/87f4062)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **admin-ui** Create supporting infrastructure for bulk actions API ([7b8d072](https://github.com/vendure-ecommerce/vendure/commit/7b8d072))
+* **admin-ui** Display breadcrumbs in Collection detail view ([5ff4c47](https://github.com/vendure-ecommerce/vendure/commit/5ff4c47))
+* **admin-ui** Draft Order creation UI ([d15cd34](https://github.com/vendure-ecommerce/vendure/commit/d15cd34)), closes [#1453](https://github.com/vendure-ecommerce/vendure/issues/1453)
+* **admin-ui** Enable overriding of default dashboard widget permissions ([c946b61](https://github.com/vendure-ecommerce/vendure/commit/c946b61)), closes [#1832](https://github.com/vendure-ecommerce/vendure/issues/1832)
+* **admin-ui** Exclude draft UI controls if Draft state not configured ([5ef9912](https://github.com/vendure-ecommerce/vendure/commit/5ef9912)), closes [#1453](https://github.com/vendure-ecommerce/vendure/issues/1453)
+* **admin-ui** Implement raw HTML editing support in rich text editor ([e9f7fcd](https://github.com/vendure-ecommerce/vendure/commit/e9f7fcd)), closes [#1716](https://github.com/vendure-ecommerce/vendure/issues/1716)
+* **admin-ui** Improve styling of rich text editor ([054aba4](https://github.com/vendure-ecommerce/vendure/commit/054aba4))
+* **admin-ui** Support CustomDetailComponent on admin profile page ([8b7bf26](https://github.com/vendure-ecommerce/vendure/commit/8b7bf26))
+* **admin-ui** Various styling fixes ([07acfbd](https://github.com/vendure-ecommerce/vendure/commit/07acfbd))
+* **core** Add bulk collection delete mutation ([98b4c57](https://github.com/vendure-ecommerce/vendure/commit/98b4c57)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **core** Add bulk facet delete mutation ([4a1a2f5](https://github.com/vendure-ecommerce/vendure/commit/4a1a2f5)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **core** Add bulk product deletion mutations ([d5f5490](https://github.com/vendure-ecommerce/vendure/commit/d5f5490)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **core** Add bulk product update mutation ([fe007e2](https://github.com/vendure-ecommerce/vendure/commit/fe007e2)), closes [#853](https://github.com/vendure-ecommerce/vendure/issues/853)
+* **core** Add Facet/Collection Channel assignment mutations ([34840c9](https://github.com/vendure-ecommerce/vendure/commit/34840c9))
+* **core** Add support for custom fields on draft orders ([43421c6](https://github.com/vendure-ecommerce/vendure/commit/43421c6)), closes [#1453](https://github.com/vendure-ecommerce/vendure/issues/1453)
+* **core** Add support for PromotionAction side effects ([81426fa](https://github.com/vendure-ecommerce/vendure/commit/81426fa)), closes [#1798](https://github.com/vendure-ecommerce/vendure/issues/1798)
+* **core** Export prorate function (#1783) ([d86fa29](https://github.com/vendure-ecommerce/vendure/commit/d86fa29)), closes [#1783](https://github.com/vendure-ecommerce/vendure/issues/1783)
+* **core** Implement APIs for draft order creation ([cb8ae03](https://github.com/vendure-ecommerce/vendure/commit/cb8ae03)), closes [#1453](https://github.com/vendure-ecommerce/vendure/issues/1453)
+* **core** Implement deletion of draft Orders ([dec00b1](https://github.com/vendure-ecommerce/vendure/commit/dec00b1)), closes [#1453](https://github.com/vendure-ecommerce/vendure/issues/1453)
+* **core** Pass order arg to OrderItemPriceCalculationStrategy and ChangedPriceHandlingStrategy (#1749) ([01d99d3](https://github.com/vendure-ecommerce/vendure/commit/01d99d3)), closes [#1749](https://github.com/vendure-ecommerce/vendure/issues/1749)
+* **core** Pass Promotion instance to condition & action functions ([e70bb66](https://github.com/vendure-ecommerce/vendure/commit/e70bb66)), closes [#1787](https://github.com/vendure-ecommerce/vendure/issues/1787)
+* **email-plugin** Allow to override email language (#1775) ([54c41ac](https://github.com/vendure-ecommerce/vendure/commit/54c41ac)), closes [#1775](https://github.com/vendure-ecommerce/vendure/issues/1775)
+* **email-plugin** EmailGenerator now implements InjectableStrategy ([f9aa5d7](https://github.com/vendure-ecommerce/vendure/commit/f9aa5d7)), closes [#1767](https://github.com/vendure-ecommerce/vendure/issues/1767)
+* **email-plugin** EmailSender now implements InjectableStrategy ([0c30be2](https://github.com/vendure-ecommerce/vendure/commit/0c30be2)), closes [#1767](https://github.com/vendure-ecommerce/vendure/issues/1767)
+* **email-plugin** Use full Nodemailer SMTPTransport options (#1781) ([86b12bc](https://github.com/vendure-ecommerce/vendure/commit/86b12bc)), closes [#1781](https://github.com/vendure-ecommerce/vendure/issues/1781)
+* **payments-plugin** Add `includeCustomerId` metadata key to Braintree ([a94fc22](https://github.com/vendure-ecommerce/vendure/commit/a94fc22))
+* **payments-plugin** Add Mollie paymentmethod selection (#1825) ([a7c4e64](https://github.com/vendure-ecommerce/vendure/commit/a7c4e64)), closes [#1825](https://github.com/vendure-ecommerce/vendure/issues/1825)
+* **payments-plugin** Add support for opting-out of Braintree vault ([faeef6d](https://github.com/vendure-ecommerce/vendure/commit/faeef6d)), closes [#1651](https://github.com/vendure-ecommerce/vendure/issues/1651)
+* **testing** Enable e2e test logging using the `LOG` env var ([5f5d133](https://github.com/vendure-ecommerce/vendure/commit/5f5d133))
+
+#### Fixes
+
+* **admin-ui** Adjust rich text context menu sensitivity ([86442cf](https://github.com/vendure-ecommerce/vendure/commit/86442cf))
+* **admin-ui** Do not allow adding/re-ording readonly list inputs ([61b29ae](https://github.com/vendure-ecommerce/vendure/commit/61b29ae))
+* **admin-ui** Fix issues with rich text editor in custom field ([f350ad8](https://github.com/vendure-ecommerce/vendure/commit/f350ad8))
+* **admin-ui** Fix rich text editor when used in custom field list ([77fef28](https://github.com/vendure-ecommerce/vendure/commit/77fef28))
+* **core** Correctly handle decimal percentages on promotion actions ([41d4652](https://github.com/vendure-ecommerce/vendure/commit/41d4652)), closes [#1773](https://github.com/vendure-ecommerce/vendure/issues/1773)
+* **core** Ensure FacetValues also get assigned to channel ([1a2639e](https://github.com/vendure-ecommerce/vendure/commit/1a2639e))
+* **core** Fix nested customField relations "alias was not found" error ([3c48263](https://github.com/vendure-ecommerce/vendure/commit/3c48263)), closes [#1664](https://github.com/vendure-ecommerce/vendure/issues/1664)
+* **core** Order fixed discount considers channel pricesIncludeTax (#1841) ([4a50461](https://github.com/vendure-ecommerce/vendure/commit/4a50461)), closes [#1841](https://github.com/vendure-ecommerce/vendure/issues/1841)
+
+#### Perf
+
+* **elasticsearch-plugin** Reduce memory usage when deleting products (#1838) ([ce078dd](https://github.com/vendure-ecommerce/vendure/commit/ce078dd)), closes [#1838](https://github.com/vendure-ecommerce/vendure/issues/1838)
+* **elasticsearch-plugin** Reduce memory usage when indexing products (#1839) ([95c72c1](https://github.com/vendure-ecommerce/vendure/commit/95c72c1)), closes [#1839](https://github.com/vendure-ecommerce/vendure/issues/1839)
+
 ## <small>1.7.4 (2022-10-11)</small>
 
 

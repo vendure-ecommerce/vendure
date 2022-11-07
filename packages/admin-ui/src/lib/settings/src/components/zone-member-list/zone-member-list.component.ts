@@ -47,7 +47,7 @@ export class ZoneMemberListComponent {
         }
     }
 
-    toggleSelectMember(member: ZoneMember) {
+    toggleSelectMember({ item: member }: { item: ZoneMember }) {
         if (this.selectedMemberIds.includes(member.id)) {
             this.selectionChange.emit(this.selectedMemberIds.filter(id => id !== member.id));
         } else {

@@ -13,9 +13,11 @@ import { DEFAULT_DASHBOARD_WIDGET_LAYOUT, DEFAULT_WIDGETS } from './default-widg
 })
 export class DashboardModule {
     constructor(dashboardWidgetService: DashboardWidgetService) {
-        Object.entries(DEFAULT_WIDGETS).map(([id, config]) =>
-            dashboardWidgetService.registerWidget(id, config),
-        );
+        Object.entries(DEFAULT_WIDGETS).map(([id, config]) => {
+            if (!dashboardWidgetService.getWidgetById(id)) {
+                dashboardWidgetService.registerWidget(id, config);
+            }
+        });
         if (dashboardWidgetService.getDefaultLayout().length === 0) {
             dashboardWidgetService.setDefaultLayout(DEFAULT_DASHBOARD_WIDGET_LAYOUT);
         }

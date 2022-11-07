@@ -44,9 +44,6 @@ export class DashboardWidgetService {
     }
 
     getWidgetById(id: string) {
-        if (!this.registry.has(id)) {
-            throw new Error(`No widget was found with the id "${id}"`);
-        }
         return this.registry.get(id);
     }
 

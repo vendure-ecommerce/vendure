@@ -28,6 +28,7 @@ export interface Dialog<R = any> {
 export interface DialogButtonConfig<T> {
     label: string;
     type: 'secondary' | 'primary' | 'danger';
+    translationVars?: Record<string, string | number>;
     returnValue?: T;
 }
 
@@ -43,6 +44,7 @@ export interface DialogConfig<T> {
     body?: string;
     translationVars?: { [key: string]: string | number };
     buttons: Array<DialogButtonConfig<T>>;
+    size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 /**
@@ -166,6 +168,7 @@ export class ModalService {
     dialog<T>(config: DialogConfig<T>): Observable<T | undefined> {
         return this.fromComponent(SimpleDialogComponent, {
             locals: config,
+            size: config.size,
         });
     }
 }

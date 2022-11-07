@@ -37,7 +37,8 @@ import { BraintreePluginOptions } from './types';
  *       BraintreePlugin.init({
  *         environment: Environment.Sandbox,
  *         // This allows saving customer payment
- *         // methods with Braintree
+ *         // methods with Braintree (see "vaulting"
+ *         // section below for details)
  *         storeCustomersInBraintree: true,
  *       }),
  *     ]
@@ -187,6 +188,53 @@ import { BraintreePluginOptions } from './types';
  *   }
  * }
  * ```
+ *
+ * ## Storing payment details (vaulting)
+ *
+ * Braintree has a [vault feature](https://developer.paypal.com/braintree/articles/control-panel/vault/overview) which allows the secure storage
+ * of customer's payment information. Using the vault allows you to offer a faster checkout for repeat customers without needing to worry about
+ * how to securely store payment details.
+ *
+ * To enable this feature, set the `storeCustomersInBraintree` option to `true`.
+ *
+ * ```TypeScript
+ * BraintreePlugin.init({
+ *   environment: Environment.Sandbox,
+ *   storeCustomersInBraintree: true,
+ * }),
+ * ```
+ *
+ * Since v1.8, it is possible to override vaulting on a per-payment basis by passing `includeCustomerId: false` to the `generateBraintreeClientToken`
+ * mutation:
+ *
+ * ```GraphQL
+ * const { generateBraintreeClientToken } = await graphQlClient.query(gql`
+ *   query GenerateBraintreeClientToken($includeCustomerId: Boolean) {
+ *     generateBraintreeClientToken(includeCustomerId: $includeCustomerId)
+ *   }
+ * `, { includeCustomerId: false });
+ * ```
+ *
+ * as well as in the metadata of the `addPaymentToOrder` mutation:
+ *
+ * ```TypeScript
+ * const { addPaymentToOrder } = await graphQlClient.query(gql`
+ *   mutation AddPayment($input: PaymentInput!) {
+ *     addPaymentToOrder(input: $input) {
+ *       ...Order
+ *       ...ErrorResult
+ *     }
+ *   }`, {
+ *     input: {
+ *       method: 'braintree',
+ *       metadata: {
+ *         ...paymentResult,
+ *         includeCustomerId: false,
+ *       },
+ *     }
+ *   );
+ * ```
+ *
  * @docsCategory payments-plugin
  * @docsPage BraintreePlugin
  */
@@ -215,7 +263,7 @@ import { BraintreePluginOptions } from './types';
     shopApiExtensions: {
         schema: gql`
             extend type Query {
-                generateBraintreeClientToken(orderId: ID): String!
+                generateBraintreeClientToken(orderId: ID, includeCustomerId: Boolean): String!
             }
         `,
         resolvers: [BraintreeResolver],

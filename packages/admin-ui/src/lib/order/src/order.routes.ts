@@ -3,16 +3,17 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BreadcrumbLabelLinkPair,
     CanDeactivateDetailGuard,
-    createResolveData,
     detailBreadcrumb,
     OrderDetail,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
+import { DraftOrderDetailComponent } from './components/draft-order-detail/draft-order-detail.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { OrderEditorComponent } from './components/order-editor/order-editor.component';
 import { OrderListComponent } from './components/order-list/order-list.component';
 import { OrderResolver } from './providers/routing/order-resolver';
+import { OrderGuard } from './providers/routing/order.guard';
 
 export const orderRoutes: Route[] = [
     {
@@ -23,9 +24,24 @@ export const orderRoutes: Route[] = [
         },
     },
     {
+        path: 'draft/:id',
+        component: DraftOrderDetailComponent,
+        resolve: {
+            entity: OrderResolver,
+        },
+        canActivate: [OrderGuard],
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: {
+            breadcrumb: orderBreadcrumb,
+        },
+    },
+    {
         path: ':id',
         component: OrderDetailComponent,
-        resolve: createResolveData(OrderResolver),
+        resolve: {
+            entity: OrderResolver,
+        },
+        canActivate: [OrderGuard],
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: orderBreadcrumb,
@@ -34,7 +50,9 @@ export const orderRoutes: Route[] = [
     {
         path: ':id/modify',
         component: OrderEditorComponent,
-        resolve: createResolveData(OrderResolver),
+        resolve: {
+            entity: OrderResolver,
+        },
         // canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: modifyingOrderBreadcrumb,

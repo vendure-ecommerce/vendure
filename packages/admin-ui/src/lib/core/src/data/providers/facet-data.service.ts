@@ -1,26 +1,35 @@
 import { pick } from '@vendure/common/lib/pick';
 
 import {
+    AssignFacetsToChannel,
+    AssignFacetsToChannelInput,
+    AssignProductsToChannelInput,
     CreateFacet,
     CreateFacetInput,
     CreateFacetValueInput,
     CreateFacetValues,
     DeleteFacet,
+    DeleteFacets,
     DeleteFacetValues,
     GetFacetList,
     GetFacetWithValues,
+    RemoveFacetsFromChannel,
+    RemoveFacetsFromChannelInput,
     UpdateFacet,
     UpdateFacetInput,
     UpdateFacetValueInput,
     UpdateFacetValues,
 } from '../../common/generated-types';
 import {
+    ASSIGN_FACETS_TO_CHANNEL,
     CREATE_FACET,
     CREATE_FACET_VALUES,
     DELETE_FACET,
     DELETE_FACET_VALUES,
+    DELETE_FACETS,
     GET_FACET_LIST,
     GET_FACET_WITH_VALUES,
+    REMOVE_FACETS_FROM_CHANNEL,
     UPDATE_FACET,
     UPDATE_FACET_VALUES,
 } from '../definitions/facet-definitions';
@@ -73,6 +82,13 @@ export class FacetDataService {
         });
     }
 
+    deleteFacets(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<DeleteFacets.Mutation, DeleteFacets.Variables>(DELETE_FACETS, {
+            ids,
+            force,
+        });
+    }
+
     createFacetValues(facetValues: CreateFacetValueInput[]) {
         const input: CreateFacetValues.Variables = {
             input: facetValues.map(pick(['facetId', 'code', 'translations', 'customFields'])),
@@ -101,5 +117,23 @@ export class FacetDataService {
                 force,
             },
         );
+    }
+
+    assignFacetsToChannel(input: AssignFacetsToChannelInput) {
+        return this.baseDataService.mutate<AssignFacetsToChannel.Mutation, AssignFacetsToChannel.Variables>(
+            ASSIGN_FACETS_TO_CHANNEL,
+            {
+                input,
+            },
+        );
+    }
+
+    removeFacetsFromChannel(input: RemoveFacetsFromChannelInput) {
+        return this.baseDataService.mutate<
+            RemoveFacetsFromChannel.Mutation,
+            RemoveFacetsFromChannel.Variables
+        >(REMOVE_FACETS_FROM_CHANNEL, {
+            input,
+        });
     }
 }

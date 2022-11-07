@@ -1,4 +1,10 @@
-import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
+import {
+    Inject,
+    MiddlewareConsumer,
+    NestModule,
+    OnApplicationBootstrap,
+    OnApplicationShutdown,
+} from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import {
     EventBus,
@@ -120,8 +126,57 @@ import {
  *
  * The `defaultEmailHandlers` array defines the default handlers such as for handling new account registration, order confirmation, password reset
  * etc. These defaults can be extended by adding custom templates for languages other than the default, or even completely new types of emails
- * which respond to any of the available [VendureEvents](/docs/typescript-api/events/). See the {@link EmailEventHandler} documentation for
- * details on how to do so.
+ * which respond to any of the available [VendureEvents](/docs/typescript-api/events/).
+ *
+ * A good way to learn how to create your own email handlers is to take a look at the
+ * [source code of the default handlers](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
+ * New handlers are defined in exactly the same way.
+ *
+ * It is also possible to modify the default handlers:
+ *
+ * ```TypeScript
+ * // Rather than importing `defaultEmailHandlers`, you can
+ * // import the handlers individually
+ * import {
+ *   orderConfirmationHandler,
+ *   emailVerificationHandler,
+ *   passwordResetHandler,
+ *   emailAddressChangeHandler,
+ * } from '\@vendure/email-plugin';
+ * import { CustomerService } from '\@vendure/core';
+ *
+ * // This allows you to then customize each handler to your needs.
+ * // For example, let's set a new subject line to the order confirmation:
+ * orderConfirmationHandler
+ *   .setSubject(`We received your order!`);
+ *
+ * // Another example: loading additional data and setting new
+ * // template variables.
+ * passwordResetHandler
+ *   .loadData(async ({ event, injector }) => {
+ *     const customerService = injector.get(CustomerService);
+ *     const customer = await customerService.findOneByUserId(event.ctx, event.user.id);
+ *     return { customer };
+ *   })
+ *   .setTemplateVars(event => ({
+ *     passwordResetToken: event.user.getNativeAuthenticationMethod().passwordResetToken,
+ *     customer: event.data.customer,
+ *   }));
+ *
+ * // Then you pass the handlers to the EmailPlugin init method
+ * // individually
+ * EmailPlugin.init({
+ *   handlers: [
+ *     orderConfirmationHandler,
+ *     emailVerificationHandler,
+ *     passwordResetHandler,
+ *     emailAddressChangeHandler,
+ *   ],
+ *   // ...
+ * }),
+ * ```
+ *
+ * For all available methods of extending a handler, see the {@link EmailEventHandler} documentation.
  *
  * ## Dev mode
  *
@@ -129,7 +184,7 @@ import {
  * file transport (See {@link FileTransportOptions}) and outputs emails as rendered HTML files in the directory specified by the
  * `outputPath` property.
  *
- * ```ts
+ * ```TypeScript
  * EmailPlugin.init({
  *   devMode: true,
  *   route: 'mailbox',
@@ -179,7 +234,7 @@ import {
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
 })
-export class EmailPlugin implements OnApplicationBootstrap, NestModule {
+export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
     private devMailbox: DevMailbox | undefined;
     private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
@@ -192,6 +247,7 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
         private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
+        @Inject(EMAIL_PLUGIN_OPTIONS) private options: EmailPluginOptions,
     ) {}
 
     /**
@@ -204,13 +260,12 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
 
     /** @internal */
     async onApplicationBootstrap(): Promise<void> {
-        const options = EmailPlugin.options;
-
+        await this.initInjectableStrategies();
         await this.setupEventSubscribers();
-        if (!isDevModeOptions(options) && options.transport.type === 'testing') {
+        if (!isDevModeOptions(this.options) && this.options.transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(options);
+            this.testingProcessor = new EmailProcessor(this.options);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();
@@ -223,15 +278,36 @@ export class EmailPlugin implements OnApplicationBootstrap, NestModule {
         }
     }
 
-    configure(consumer: MiddlewareConsumer) {
-        const options = EmailPlugin.options;
+    async onApplicationShutdown() {
+        await this.destroyInjectableStrategies();
+    }
 
-        if (isDevModeOptions(options) && this.processContext.isServer) {
+    configure(consumer: MiddlewareConsumer) {
+        if (isDevModeOptions(this.options) && this.processContext.isServer) {
             Logger.info('Creating dev mailbox middleware', loggerCtx);
             this.devMailbox = new DevMailbox();
-            consumer.apply(this.devMailbox.serve(options)).forRoutes(options.route);
+            consumer.apply(this.devMailbox.serve(this.options)).forRoutes(this.options.route);
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
-            registerPluginStartupMessage('Dev mailbox', options.route);
+            registerPluginStartupMessage('Dev mailbox', this.options.route);
+        }
+    }
+
+    private async initInjectableStrategies() {
+        const injector = new Injector(this.moduleRef);
+        if (typeof this.options.emailGenerator?.init === 'function') {
+            await this.options.emailGenerator.init(injector);
+        }
+        if (typeof this.options.emailSender?.init === 'function') {
+            await this.options.emailSender.init(injector);
+        }
+    }
+
+    private async destroyInjectableStrategies() {
+        if (typeof this.options.emailGenerator?.destroy === 'function') {
+            await this.options.emailGenerator.destroy();
+        }
+        if (typeof this.options.emailSender?.destroy === 'function') {
+            await this.options.emailSender.destroy();
         }
     }
 

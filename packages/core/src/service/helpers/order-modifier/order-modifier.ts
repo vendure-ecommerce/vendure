@@ -214,7 +214,7 @@ export class OrderModifier {
             orderLine.items = await this.connection
                 .getRepository(ctx, OrderItem)
                 .find({ where: { line: orderLine } });
-            if (!order.active) {
+            if (!order.active && order.state !== 'Draft') {
                 await this.stockMovementService.createAllocationsForOrderLines(ctx, [
                     {
                         orderLine,
@@ -463,15 +463,8 @@ export class OrderModifier {
         }
 
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
-        const promotions = await this.connection
-            .getRepository(ctx, Promotion)
-            .createQueryBuilder('promotion')
-            .leftJoin('promotion.channels', 'channel')
-            .where('channel.id = :channelId', { channelId: ctx.channelId })
-            .andWhere('promotion.deletedAt IS NULL')
-            .andWhere('promotion.enabled = :enabled', { enabled: true })
-            .orderBy('promotion.priorityScore', 'ASC')
-            .getMany();
+        const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
+        const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
@@ -480,6 +473,8 @@ export class OrderModifier {
         if (orderCustomFields) {
             patchEntity(order, { customFields: orderCustomFields });
         }
+
+        await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
 
         if (dryRun) {
             return { order, modification };
@@ -496,7 +491,11 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 refundInput.shipping = shippingDelta * -1;
             }
-            refundInput.adjustment += await this.getAdjustmentFromNewlyAppliedPromotions(ctx, order);
+            refundInput.adjustment += await this.getAdjustmentFromNewlyAppliedPromotions(
+                ctx,
+                order,
+                activePromotionsPre,
+            );
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
             if (payment) {
@@ -525,7 +524,6 @@ export class OrderModifier {
             // OrderItems. So in this case we need to save all of them.
             const orderItems = order.lines.reduce((all, line) => all.concat(line.items), [] as OrderItem[]);
             await this.connection.getRepository(ctx, OrderItem).save(orderItems, { reload: false });
-            await this.promotionService.addPromotionsToOrder(ctx, order);
         } else {
             // Otherwise, just save those OrderItems that were specifically added/removed
             await this.connection
@@ -548,13 +546,15 @@ export class OrderModifier {
         return noChanges;
     }
 
-    private async getAdjustmentFromNewlyAppliedPromotions(ctx: RequestContext, order: Order) {
-        await this.entityHydrator.hydrate(ctx, order, { relations: ['promotions'] });
-        const existingPromotions = order.promotions;
+    private async getAdjustmentFromNewlyAppliedPromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotionsPre: Promotion[],
+    ) {
         const newPromotionDiscounts = order.discounts
             .filter(discount => {
                 const promotionId = AdjustmentSource.decodeSourceId(discount.adjustmentSource).id;
-                return !existingPromotions.find(p => idsAreEqual(p.id, promotionId));
+                return !promotionsPre.find(p => idsAreEqual(p.id, promotionId));
             })
             .filter(discount => {
                 // Filter out any discounts that originate from ShippingLine discounts,

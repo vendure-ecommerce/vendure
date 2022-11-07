@@ -264,9 +264,49 @@ export class PromotionService {
         return promotion;
     }
 
+    getActivePromotionsInChannel(ctx: RequestContext) {
+        return this.connection
+            .getRepository(ctx, Promotion)
+            .createQueryBuilder('promotion')
+            .leftJoin('promotion.channels', 'channel')
+            .where('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('promotion.deletedAt IS NULL')
+            .andWhere('promotion.enabled = :enabled', { enabled: true })
+            .orderBy('promotion.priorityScore', 'ASC')
+            .getMany();
+    }
+
+    async getActivePromotionsOnOrder(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
+        const order = await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.promotions', 'promotions')
+            .where('order.id = :orderId', { orderId })
+            .getOne();
+        return order?.promotions ?? [];
+    }
+
+    async runPromotionSideEffects(ctx: RequestContext, order: Order, promotionsPre: Promotion[]) {
+        const promotionsPost = order.promotions;
+        for (const activePre of promotionsPre) {
+            if (!promotionsPost.find(p => idsAreEqual(p.id, activePre.id))) {
+                // activePre is no longer active, so call onDeactivate
+                await activePre.deactivate(ctx, order);
+            }
+        }
+        for (const activePost of promotionsPost) {
+            if (!promotionsPre.find(p => idsAreEqual(p.id, activePost.id))) {
+                // activePost was not previously active, so call onActivate
+                await activePost.activate(ctx, order);
+            }
+        }
+    }
+
     /**
      * @description
      * Used internally to associate a Promotion with an Order, once an Order has been placed.
+     *
+     * @deprecated This method is no longer used and will be removed in v2.0
      */
     async addPromotionsToOrder(ctx: RequestContext, order: Order): Promise<Order> {
         const allPromotionIds = order.discounts.map(

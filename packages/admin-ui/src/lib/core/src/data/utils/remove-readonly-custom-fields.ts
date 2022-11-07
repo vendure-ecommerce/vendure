@@ -35,6 +35,12 @@ export function isEntityCreateOrUpdateMutation(documentNode: DocumentNode): stri
             if (inputTypeName === 'ModifyOrderInput') {
                 return 'Order';
             }
+            if (
+                inputTypeName === 'AddItemToDraftOrderInput' ||
+                inputTypeName === 'AdjustDraftOrderLineInput'
+            ) {
+                return 'OrderLine';
+            }
 
             const createMatch = inputTypeName.match(CREATE_ENTITY_REGEX);
             if (createMatch) {

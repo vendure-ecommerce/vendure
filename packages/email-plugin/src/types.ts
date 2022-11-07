@@ -2,7 +2,10 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Injector, RequestContext, VendureEvent } from '@vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
+import { EmailGenerator } from './email-generator';
+import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-handler';
 
 /**
@@ -99,20 +102,6 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
 
 /**
  * @description
- * The credentials used for sending email via SMTP
- *
- * @docsCategory EmailPlugin
- * @docsPage Email Plugin Types
- */
-export interface SMTPCredentials {
-    /** @description The username */
-    user: string;
-    /** @description The password */
-    pass: string;
-}
-
-/**
- * @description
  * A union of all the possible transport options for sending emails.
  *
  * @docsCategory EmailPlugin
@@ -127,58 +116,13 @@ export type EmailTransportOptions =
 
 /**
  * @description
- * A subset of the SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
+ * The SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
  *
  * @docsCategory EmailPlugin
  * @docsPage Transport Options
  */
-export interface SMTPTransportOptions {
+export interface SMTPTransportOptions extends SMTPTransport.Options {
     type: 'smtp';
-    /**
-     * @description
-     * the hostname or IP address to connect to (defaults to ‘localhost’)
-     */
-    host: string;
-    /**
-     * @description
-     * The port to connect to (defaults to 25 or 465)
-     */
-    port: number;
-    /**
-     * @description
-     * Defines authentication data
-     */
-    auth: SMTPCredentials;
-    /**
-     * @description
-     * Defines if the connection should use SSL (if true) or not (if false)
-     */
-    secure?: boolean;
-    /**
-     * @description
-     * Turns off STARTTLS support if true
-     */
-    ignoreTLS?: boolean;
-    /**
-     * @description
-     * Forces the client to use STARTTLS. Returns an error if upgrading the connection is not possible or fails.
-     */
-    requireTLS?: boolean;
-    /**
-     * @description
-     * Optional hostname of the client, used for identifying to the server
-     */
-    name?: string;
-    /**
-     * @description
-     * The local interface to bind to for network connections
-     */
-    localAddress?: string;
-    /**
-     * @description
-     * Defines preferred authentication method, e.g. ‘PLAIN’
-     */
-    authMethod?: string;
     /**
      * @description
      * If true, uses the configured {@link VendureLogger} to log messages from Nodemailer as it interacts with
@@ -187,20 +131,6 @@ export interface SMTPTransportOptions {
      * @default false
      */
     logging?: boolean;
-    /**
-     * @description
-     * If set to true, then logs SMTP traffic without message content.
-     *
-     * @default false
-     */
-    transactionLog?: boolean;
-    /**
-     * @description
-     * If set to true, then logs SMTP traffic and message content, otherwise logs only transaction events.
-     *
-     * @default false
-     */
-    debug?: boolean;
 }
 
 /**
@@ -277,78 +207,6 @@ export interface TestingTransportOptions {
      * Callback to be invoked when an email would be sent.
      */
     onSend: (details: EmailDetails) => void;
-}
-
-/**
- * @description
- * An EmailSender is responsible for sending the email, e.g. via an SMTP connection
- * or using some other mail-sending API. By default, the EmailPlugin uses the
- * {@link NodemailerEmailSender}, but it is also possible to supply a custom implementation:
- *
- * @example
- * ```TypeScript
- * const sgMail = require('\@sendgrid/mail');
- *
- * sgMail.setApiKey(process.env.SENDGRID_API_KEY);
- *
- * class SendgridEmailSender implements EmailSender {
- *   async send(email: EmailDetails) {
- *     await sgMail.send({
- *       to: email.recipient,
- *       from: email.from,
- *       subject: email.subject,
- *       html: email.body,
- *     });
- *   }
- * }
- *
- * const config: VendureConfig = {
- *   logger: new DefaultLogger({ level: LogLevel.Debug })
- *   // ...
- *   plugins: [
- *     EmailPlugin.init({
- *        // ... template, handlers config omitted
- *       transport: { type: 'none' },
- *        emailSender: new SendgridEmailSender(),
- *     }),
- *   ],
- * };
- * ```
- *
- * @docsCategory EmailPlugin
- * @docsPage EmailSender
- * @docsWeight 0
- */
-export interface EmailSender {
-    send: (email: EmailDetails, options: EmailTransportOptions) => void | Promise<void>;
-}
-
-/**
- * @description
- * An EmailGenerator generates the subject and body details of an email.
- *
- * @docsCategory EmailPlugin
- * @docsPage EmailGenerator
- * @docsWeight 0
- */
-export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
-    /**
-     * @description
-     * Any necessary setup can be performed here.
-     */
-    onInit?(options: EmailPluginOptions): void | Promise<void>;
-
-    /**
-     * @description
-     * Given a subject and body from an email template, this method generates the final
-     * interpolated email text.
-     */
-    generate(
-        from: string,
-        subject: string,
-        body: string,
-        templateVars: { [key: string]: any },
-    ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
 }
 
 /**

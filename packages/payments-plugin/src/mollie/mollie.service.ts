@@ -8,14 +8,23 @@ import {
     Logger,
     Order,
     OrderService,
+    PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
 import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
-import { ErrorCode, MolliePaymentIntentError, MolliePaymentIntentResult } from './graphql/generated-shop-types';
+import {
+    ErrorCode,
+    MolliePaymentIntentError,
+    MolliePaymentIntentInput,
+    MolliePaymentIntentResult,
+    MolliePaymentMethod,
+} from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/parameters';
+import { PaymentMethod as MollieClientMethod } from '@mollie/api-client';
 
 interface SettlePaymentInput {
     channelToken: string;
@@ -25,12 +34,21 @@ interface SettlePaymentInput {
 
 class PaymentIntentError implements MolliePaymentIntentError {
     errorCode = ErrorCode.ORDER_PAYMENT_STATE_ERROR;
+
+    constructor(public message: string) {
+    }
+}
+
+class InvalidInput implements MolliePaymentIntentError {
+    errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
+
     constructor(public message: string) {
     }
 }
 
 @Injectable()
 export class MollieService {
+
     constructor(
         private paymentMethodService: PaymentMethodService,
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
@@ -44,10 +62,17 @@ export class MollieService {
     /**
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
      */
-    async createPaymentIntent(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentIntentResult> {
-        const [order, paymentMethods] = await Promise.all([
+    async createPaymentIntent(
+        ctx: RequestContext,
+        { paymentMethodCode, molliePaymentMethodCode }: MolliePaymentIntentInput,
+    ): Promise<MolliePaymentIntentResult> {
+        const allowedMethods = Object.values(MollieClientMethod) as string[];
+        if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
+            return new InvalidInput(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
+        }
+        const [order, paymentMethod] = await Promise.all([
             this.activeOrderService.getOrderFromContext(ctx),
-            this.paymentMethodService.findAll(ctx),
+            this.getPaymentMethod(ctx, paymentMethodCode),
         ]);
         if (!order) {
             return new PaymentIntentError('No active order found for session');
@@ -62,24 +87,21 @@ export class MollieService {
         if (!order.shippingLines?.length) {
             return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
         }
-        const paymentMethod = paymentMethods.items.find(pm => pm.code === paymentMethodCode);
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
         }
-        const apiKeyArg = paymentMethod.handler.args.find(arg => arg.name === 'apiKey');
-        const redirectUrlArg = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl');
-        if (!apiKeyArg || !redirectUrlArg) {
+        const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
+        let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
+        if (!apiKey || !redirectUrl) {
             Logger.warn(`CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`, loggerCtx);
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
         }
-        const apiKey = apiKeyArg.value;
-        let redirectUrl = redirectUrlArg.value;
         const mollieClient = createMollieClient({ apiKey });
         redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const payment = await mollieClient.payments.create({
+        const paymentInput: CreateParameters = {
             amount: {
                 value: `${(order.totalWithTax / 100).toFixed(2)}`,
                 currency: order.currencyCode,
@@ -90,7 +112,11 @@ export class MollieService {
             description: `Order ${order.code}`,
             redirectUrl: `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
-        });
+        };
+        if (molliePaymentMethodCode) {
+            paymentInput.method = molliePaymentMethodCode as MollieClientMethod;
+        }
+        const payment = await mollieClient.payments.create(paymentInput);
         const url = payment.getCheckoutUrl();
         if (!url) {
             throw Error(`Unable to getCheckoutUrl() from Mollie payment`);
@@ -165,6 +191,25 @@ export class MollieService {
             );
         }
         Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
+    }
+
+    async getEnabledPaymentMethods(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentMethod[]> {
+        const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
+        const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
+        if (!apiKey) {
+            throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
+        }
+        const client = createMollieClient({ apiKey });
+        const methods = await client.methods.list();
+        return methods.map(m => ({
+            ...m,
+            code: m.id,
+        }));
+    }
+
+    private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
+        const paymentMethods = await this.paymentMethodService.findAll(ctx);
+        return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
     }
 
     private async createContext(channelToken: string): Promise<RequestContext> {

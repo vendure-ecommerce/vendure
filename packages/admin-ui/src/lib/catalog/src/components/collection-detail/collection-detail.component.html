@@ -31,8 +31,17 @@
         </ng-template>
     </vdr-ab-right>
 </vdr-action-bar>
+<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as collection">
 
-<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as category">
+    <nav role="navigation">
+        <ul class="collection-breadcrumbs">
+            <li *ngFor="let breadcrumb of collection.breadcrumbs; let isFirst = first; let isLast = last">
+                <a [routerLink]="['/catalog/collections']" *ngIf="isFirst">{{ 'catalog.root-collection' | translate }}</a>
+                <a [routerLink]="['/catalog/collections', breadcrumb.id]" *ngIf="!isFirst && !isLast">{{ breadcrumb.name | translate }}</a>
+                <ng-container *ngIf="isLast">{{ breadcrumb.name | translate }}</ng-container>
+            </li>
+        </ul>
+    </nav>
     <div class="clr-row">
         <div class="clr-col">
             <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
@@ -47,7 +56,7 @@
                     <label class="visible-toggle">
                         <ng-container *ngIf="detailForm.value.visible; else private">{{
                             'catalog.public' | translate
-                        }}</ng-container>
+                            }}</ng-container>
                         <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
                     </label>
                 </clr-toggle-wrapper>
@@ -96,8 +105,8 @@
         </div>
         <div class="clr-col-md-auto">
             <vdr-assets
-                [assets]="category.assets"
-                [featuredAsset]="category.featuredAsset"
+                [assets]="collection.assets"
+                [featuredAsset]="collection.featuredAsset"
                 [updatePermissions]="updatePermission"
                 (change)="assetChanges = $event"
             ></vdr-assets>
@@ -147,7 +156,7 @@
                 <ng-template let-count>
                     <div class="contents-title">
                         {{ 'catalog.collection-contents' | translate }} ({{
-                            'common.results-count' | translate: { count: count }
+                        'common.results-count' | translate: {count: count}
                         }})
                     </div>
                     <clr-checkbox-wrapper [class.disabled]="detailForm.get('filters')?.pristine">

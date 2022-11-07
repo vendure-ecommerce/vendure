@@ -1,4 +1,4 @@
-import { EmailGenerator } from './types';
+import { EmailGenerator } from './email-generator';
 
 /**
  * Simply passes through the subject and template content without modification.

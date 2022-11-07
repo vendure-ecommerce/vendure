@@ -18,6 +18,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 name: '',
                 slug: '',
                 isPrivate: false,
+                breadcrumbs: [],
                 description: '',
                 featuredAsset: null,
                 assets: [],

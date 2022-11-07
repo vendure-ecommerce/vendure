@@ -136,6 +136,7 @@ export type DefaultFormComponentId =
     | 'date-form-input'
     | 'facet-value-form-input'
     | 'json-editor-form-input'
+    | 'html-editor-form-input'
     | 'number-form-input'
     | 'password-form-input'
     | 'product-selector-form-input'
@@ -161,6 +162,7 @@ type DefaultFormConfigHash = {
     'date-form-input': { min?: string; max?: string; yearRange?: number };
     'facet-value-form-input': {};
     'json-editor-form-input': { height?: string };
+    'html-editor-form-input': { height?: string };
     'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
     'password-form-input': {};
     'product-selector-form-input': {};

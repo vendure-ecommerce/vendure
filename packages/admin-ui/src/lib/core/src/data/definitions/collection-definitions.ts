@@ -22,6 +22,11 @@ export const COLLECTION_FRAGMENT = gql`
         description
         isPrivate
         languageCode
+        breadcrumbs {
+            id
+            name
+            slug
+        }
         featuredAsset {
             ...Asset
         }
@@ -118,6 +123,15 @@ export const DELETE_COLLECTION = gql`
     }
 `;
 
+export const DELETE_COLLECTIONS = gql`
+    mutation DeleteCollections($ids: [ID!]!) {
+        deleteCollections(ids: $ids) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_COLLECTION_CONTENTS = gql`
     query GetCollectionContents($id: ID!, $options: ProductVariantListOptions) {
         collection(id: $id) {
@@ -149,6 +163,24 @@ export const PREVIEW_COLLECTION_CONTENTS = gql`
                 sku
             }
             totalItems
+        }
+    }
+`;
+
+export const ASSIGN_COLLECTIONS_TO_CHANNEL = gql`
+    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
+        assignCollectionsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`;
+
+export const REMOVE_COLLECTIONS_FROM_CHANNEL = gql`
+    mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
+        removeCollectionsFromChannel(input: $input) {
+            id
+            name
         }
     }
 `;

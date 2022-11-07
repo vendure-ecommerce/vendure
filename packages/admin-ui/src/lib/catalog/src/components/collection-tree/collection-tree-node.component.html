@@ -18,6 +18,14 @@
             [ngClass]="'depth-' + depth"
             [class.active]="collection.id === activeCollectionId"
         >
+            <div>
+                <input
+                    type="checkbox"
+                    clrCheckbox
+                    [checked]="selectionManager.isSelected(collection)"
+                    (click)="selectionManager.toggleSelection(collection, $event)"
+                />
+            </div>
             <div class="name">
                 <button
                     class="icon-button folder-button"
@@ -119,6 +127,7 @@
             [expandAll]="expandAll"
             [collectionTree]="collection"
             [activeCollectionId]="activeCollectionId"
+            [selectionManager]="selectionManager"
         ></vdr-collection-tree-node>
     </div>
 </div>

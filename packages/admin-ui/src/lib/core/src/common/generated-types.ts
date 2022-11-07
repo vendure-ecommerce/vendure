@@ -26,6 +26,11 @@ export type AddItemInput = {
   quantity: Scalars['Int'];
 };
 
+export type AddItemToDraftOrderInput = {
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+};
+
 export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
 
 export type AddNoteToCustomerInput = {
@@ -57,6 +62,11 @@ export type Address = Node & {
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type AdjustDraftOrderLineInput = {
+  orderLineId: Scalars['ID'];
+  quantity: Scalars['Int'];
 };
 
 export type AdjustOrderLineInput = {
@@ -156,6 +166,8 @@ export type AlreadyRefundedError = ErrorResult & {
   refundId: Scalars['ID'];
 };
 
+export type ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError;
+
 export type Asset = Node & {
   __typename?: 'Asset';
   tags: Array<Tag>;
@@ -230,6 +242,16 @@ export enum AssetType {
 
 export type AssignAssetsToChannelInput = {
   assetIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type AssignCollectionsToChannelInput = {
+  collectionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type AssignFacetsToChannelInput = {
+  facetIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
 };
 
@@ -1424,6 +1446,7 @@ export enum ErrorCode {
   UNKNOWN_ERROR = 'UNKNOWN_ERROR',
   MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
   LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
+  FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
   CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
   CANCEL_PAYMENT_ERROR = 'CANCEL_PAYMENT_ERROR',
@@ -1458,7 +1481,10 @@ export enum ErrorCode {
   INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
-  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR'
+  COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
+  ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
+  INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
+  NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR'
 }
 
 export type ErrorResult = {
@@ -1488,6 +1514,15 @@ export type FacetFilterParameter = {
   languageCode?: Maybe<StringOperators>;
   name?: Maybe<StringOperators>;
   code?: Maybe<StringOperators>;
+};
+
+export type FacetInUseError = ErrorResult & {
+  __typename?: 'FacetInUseError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  facetCode: Scalars['String'];
+  productCount: Scalars['Int'];
+  variantCount: Scalars['Int'];
 };
 
 export type FacetList = PaginatedList & {
@@ -1743,6 +1778,13 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>;
   processed: Scalars['Int'];
   imported: Scalars['Int'];
+};
+
+/** Returned when attempting to set a ShippingMethod for which the Order is not eligible */
+export type IneligibleShippingMethodError = ErrorResult & {
+  __typename?: 'IneligibleShippingMethodError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to add more items to the Order than are available */
@@ -2327,6 +2369,8 @@ export type Mutation = {
   /** Add Customers to a CustomerGroup */
   addCustomersToGroup: CustomerGroup;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
+  /** Adds an item to the draft Order. */
+  addItemToDraftOrder: UpdateOrderItemsResult;
   /**
    * Used to manually create a new Payment against an Order.
    * This can be used by an Administrator when an Order is in the ArrangingPayment state.
@@ -2343,8 +2387,16 @@ export type Mutation = {
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
+  /** Adjusts a draft OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available. */
+  adjustDraftOrderLine: UpdateOrderItemsResult;
+  /** Applies the given coupon code to the draft Order */
+  applyCouponCodeToDraftOrder: ApplyCouponCodeResult;
   /** Assign assets to channel */
   assignAssetsToChannel: Array<Asset>;
+  /** Assigns Collections to the specified Channel */
+  assignCollectionsToChannel: Array<Collection>;
+  /** Assigns Facets to the specified Channel */
+  assignFacetsToChannel: Array<Facet>;
   /** Assigns ProductVariants to the specified Channel */
   assignProductVariantsToChannel: Array<ProductVariant>;
   /** Assigns all ProductVariants of Product to the specified Channel */
@@ -2374,6 +2426,8 @@ export type Mutation = {
   createCustomerAddress: Address;
   /** Create a new CustomerGroup */
   createCustomerGroup: CustomerGroup;
+  /** Creates a draft Order */
+  createDraftOrder: Order;
   /** Create a new Facet */
   createFacet: Facet;
   /** Create one or more FacetValues */
@@ -2411,6 +2465,8 @@ export type Mutation = {
   deleteChannel: DeletionResponse;
   /** Delete a Collection and all of its descendants */
   deleteCollection: DeletionResponse;
+  /** Delete multiple Collections and all of their descendants */
+  deleteCollections: Array<DeletionResponse>;
   /** Delete a Country */
   deleteCountry: DeletionResponse;
   /** Delete a Customer */
@@ -2420,10 +2476,14 @@ export type Mutation = {
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
   deleteCustomerNote: DeletionResponse;
+  /** Deletes a draft Order */
+  deleteDraftOrder: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>;
+  /** Delete multiple existing Facets */
+  deleteFacets: Array<DeletionResponse>;
   deleteOrderNote: DeletionResponse;
   /** Delete a PaymentMethod */
   deletePaymentMethod: DeletionResponse;
@@ -2433,6 +2493,10 @@ export type Mutation = {
   deleteProductOption: DeletionResponse;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
+  /** Delete multiple ProductVariants */
+  deleteProductVariants: Array<DeletionResponse>;
+  /** Delete multiple Products */
+  deleteProducts: Array<DeletionResponse>;
   deletePromotion: DeletionResponse;
   /** Delete an existing Role */
   deleteRole: DeletionResponse;
@@ -2460,8 +2524,16 @@ export type Mutation = {
   moveCollection: Collection;
   refundOrder: RefundOrderResult;
   reindex: Job;
+  /** Removes Collections from the specified Channel */
+  removeCollectionsFromChannel: Array<Collection>;
+  /** Removes the given coupon code from the draft Order */
+  removeCouponCodeFromDraftOrder?: Maybe<Order>;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
+  /** Remove an OrderLine from the draft Order */
+  removeDraftOrderLine: RemoveOrderItemsResult;
+  /** Removes Facets from the specified Channel */
+  removeFacetsFromChannel: Array<RemoveFacetFromChannelResult>;
   /** Remove members from a Zone */
   removeMembersFromZone: Zone;
   /** Remove an OptionGroup from a Product */
@@ -2481,7 +2553,16 @@ export type Mutation = {
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
   setContentLanguage: LanguageCode;
+  setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
   setDisplayUiExtensionPoints: Scalars['Boolean'];
+  /** Sets the billing address for a draft Order */
+  setDraftOrderBillingAddress: Order;
+  /** Allows any custom fields to be set for the active order */
+  setDraftOrderCustomFields: Order;
+  /** Sets the shipping address for a draft Order */
+  setDraftOrderShippingAddress: Order;
+  /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethodsForDraftOrder` query */
+  setDraftOrderShippingMethod: SetOrderShippingMethodResult;
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiLocale?: Maybe<Scalars['String']>;
@@ -2526,6 +2607,8 @@ export type Mutation = {
   updateProductOptionGroup: ProductOptionGroup;
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>;
+  /** Update multiple existing Products */
+  updateProducts: Array<Product>;
   updatePromotion: UpdatePromotionResult;
   /** Update an existing Role */
   updateRole: Role;
@@ -2551,6 +2634,12 @@ export type MutationAddCustomersToGroupArgs = {
 
 export type MutationAddFulfillmentToOrderArgs = {
   input: FulfillOrderInput;
+};
+
+
+export type MutationAddItemToDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  input: AddItemToDraftOrderInput;
 };
 
 
@@ -2581,8 +2670,30 @@ export type MutationAddOptionGroupToProductArgs = {
 };
 
 
+export type MutationAdjustDraftOrderLineArgs = {
+  orderId: Scalars['ID'];
+  input: AdjustDraftOrderLineInput;
+};
+
+
+export type MutationApplyCouponCodeToDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+};
+
+
 export type MutationAssignAssetsToChannelArgs = {
   input: AssignAssetsToChannelInput;
+};
+
+
+export type MutationAssignCollectionsToChannelArgs = {
+  input: AssignCollectionsToChannelInput;
+};
+
+
+export type MutationAssignFacetsToChannelArgs = {
+  input: AssignFacetsToChannelInput;
 };
 
 
@@ -2765,6 +2876,11 @@ export type MutationDeleteCollectionArgs = {
 };
 
 
+export type MutationDeleteCollectionsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
 export type MutationDeleteCountryArgs = {
   id: Scalars['ID'];
 };
@@ -2790,6 +2906,11 @@ export type MutationDeleteCustomerNoteArgs = {
 };
 
 
+export type MutationDeleteDraftOrderArgs = {
+  orderId: Scalars['ID'];
+};
+
+
 export type MutationDeleteFacetArgs = {
   id: Scalars['ID'];
   force?: Maybe<Scalars['Boolean']>;
@@ -2797,6 +2918,12 @@ export type MutationDeleteFacetArgs = {
 
 
 export type MutationDeleteFacetValuesArgs = {
+  ids: Array<Scalars['ID']>;
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteFacetsArgs = {
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
@@ -2825,6 +2952,16 @@ export type MutationDeleteProductOptionArgs = {
 
 export type MutationDeleteProductVariantArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteProductVariantsArgs = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type MutationDeleteProductsArgs = {
+  ids: Array<Scalars['ID']>;
 };
 
 
@@ -2895,9 +3032,31 @@ export type MutationRefundOrderArgs = {
 };
 
 
+export type MutationRemoveCollectionsFromChannelArgs = {
+  input: RemoveCollectionsFromChannelInput;
+};
+
+
+export type MutationRemoveCouponCodeFromDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+};
+
+
 export type MutationRemoveCustomersFromGroupArgs = {
   customerGroupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationRemoveDraftOrderLineArgs = {
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
+};
+
+
+export type MutationRemoveFacetsFromChannelArgs = {
+  input: RemoveFacetsFromChannelInput;
 };
 
 
@@ -2949,8 +3108,39 @@ export type MutationSetContentLanguageArgs = {
 };
 
 
+export type MutationSetCustomerForDraftOrderArgs = {
+  orderId: Scalars['ID'];
+  customerId?: Maybe<Scalars['ID']>;
+  input?: Maybe<CreateCustomerInput>;
+};
+
+
 export type MutationSetDisplayUiExtensionPointsArgs = {
   display: Scalars['Boolean'];
+};
+
+
+export type MutationSetDraftOrderBillingAddressArgs = {
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+};
+
+
+export type MutationSetDraftOrderCustomFieldsArgs = {
+  orderId: Scalars['ID'];
+  input: UpdateOrderInput;
+};
+
+
+export type MutationSetDraftOrderShippingAddressArgs = {
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+};
+
+
+export type MutationSetDraftOrderShippingMethodArgs = {
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
 };
 
 
@@ -3097,6 +3287,11 @@ export type MutationUpdateProductVariantsArgs = {
 };
 
 
+export type MutationUpdateProductsArgs = {
+  input: Array<UpdateProductInput>;
+};
+
+
 export type MutationUpdatePromotionArgs = {
   input: UpdatePromotionInput;
 };
@@ -3160,6 +3355,16 @@ export type NegativeQuantityError = ErrorResult & {
 export type NetworkStatus = {
   __typename?: 'NetworkStatus';
   inFlightRequests: Scalars['Int'];
+};
+
+/**
+ * Returned when invoking a mutation which depends on there being an active Order on the
+ * current session.
+ */
+export type NoActiveOrderError = ErrorResult & {
+  __typename?: 'NoActiveOrderError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when a call to modifyOrder fails to specify any changes */
@@ -3442,6 +3647,13 @@ export type OrderModification = Node & {
   payment?: Maybe<Payment>;
   refund?: Maybe<Refund>;
   isSettled: Scalars['Boolean'];
+};
+
+/** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
+export type OrderModificationError = ErrorResult & {
+  __typename?: 'OrderModificationError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
 };
 
 /** Returned when attempting to modify the contents of an Order that is not in the `Modifying` state. */
@@ -4185,6 +4397,8 @@ export type Query = {
   customerGroup?: Maybe<CustomerGroup>;
   customerGroups: CustomerGroupList;
   customers: CustomerList;
+  /** Returns a list of eligible shipping methods for the draft Order */
+  eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
   facet?: Maybe<Facet>;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
@@ -4304,6 +4518,11 @@ export type QueryCustomerGroupsArgs = {
 
 export type QueryCustomersArgs = {
   options?: Maybe<CustomerListOptions>;
+};
+
+
+export type QueryEligibleShippingMethodsForDraftOrderArgs = {
+  orderId: Scalars['ID'];
 };
 
 
@@ -4551,7 +4770,22 @@ export type Release = Node & StockMovement & {
   orderItem: OrderItem;
 };
 
+export type RemoveCollectionsFromChannelInput = {
+  collectionIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type RemoveFacetFromChannelResult = Facet | FacetInUseError;
+
+export type RemoveFacetsFromChannelInput = {
+  facetIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+};
+
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
+export type RemoveOrderItemsResult = Order | OrderModificationError;
 
 export type RemoveProductVariantsFromChannelInput = {
   productVariantIds: Array<Scalars['ID']>;
@@ -4709,6 +4943,10 @@ export type ServerConfig = {
   permissions: Array<PermissionDefinition>;
   customFieldConfig: CustomFields;
 };
+
+export type SetCustomerForDraftOrderResult = Order | EmailAddressConflictError;
+
+export type SetOrderShippingMethodResult = Order | OrderModificationError | IneligibleShippingMethodError | NoActiveOrderError;
 
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
@@ -5257,6 +5495,8 @@ export type UpdateOrderInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
+
 export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];
   note?: Maybe<Scalars['String']>;
@@ -5417,6 +5657,76 @@ export type Zone = Node & {
   members: Array<Country>;
   customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type GetProductsWithFacetValuesByIdsQueryVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type GetProductsWithFacetValuesByIdsQuery = { products: (
+    { __typename?: 'ProductList' }
+    & { items: Array<(
+      { __typename?: 'Product' }
+      & Pick<Product, 'id' | 'name'>
+      & { facetValues: Array<(
+        { __typename?: 'FacetValue' }
+        & Pick<FacetValue, 'id' | 'name' | 'code'>
+        & { facet: (
+          { __typename?: 'Facet' }
+          & Pick<Facet, 'id' | 'name' | 'code'>
+        ) }
+      )> }
+    )> }
+  ) };
+
+export type GetVariantsWithFacetValuesByIdsQueryVariables = Exact<{
+  ids: Array<Scalars['String']> | Scalars['String'];
+}>;
+
+
+export type GetVariantsWithFacetValuesByIdsQuery = { productVariants: (
+    { __typename?: 'ProductVariantList' }
+    & { items: Array<(
+      { __typename?: 'ProductVariant' }
+      & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+      & { facetValues: Array<(
+        { __typename?: 'FacetValue' }
+        & Pick<FacetValue, 'id' | 'name' | 'code'>
+        & { facet: (
+          { __typename?: 'Facet' }
+          & Pick<Facet, 'id' | 'name' | 'code'>
+        ) }
+      )> }
+    )> }
+  ) };
+
+export type UpdateProductsBulkMutationVariables = Exact<{
+  input: Array<UpdateProductInput> | UpdateProductInput;
+}>;
+
+
+export type UpdateProductsBulkMutation = { updateProducts: Array<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'name'>
+    & { facetValues: Array<(
+      { __typename?: 'FacetValue' }
+      & Pick<FacetValue, 'id' | 'name' | 'code'>
+    )> }
+  )> };
+
+export type UpdateVariantsBulkMutationVariables = Exact<{
+  input: Array<UpdateProductVariantInput> | UpdateProductVariantInput;
+}>;
+
+
+export type UpdateVariantsBulkMutation = { updateProductVariants: Array<Maybe<(
+    { __typename?: 'ProductVariant' }
+    & Pick<ProductVariant, 'id' | 'name'>
+    & { facetValues: Array<(
+      { __typename?: 'FacetValue' }
+      & Pick<FacetValue, 'id' | 'name' | 'code'>
+    )> }
+  )>> };
 
 export type RoleFragment = (
   { __typename?: 'Role' }
@@ -5762,7 +6072,10 @@ export type GetCollectionFiltersQuery = { collectionFilters: Array<(
 export type CollectionFragment = (
   { __typename?: 'Collection' }
   & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'slug' | 'description' | 'isPrivate' | 'languageCode'>
-  & { featuredAsset?: Maybe<(
+  & { breadcrumbs: Array<(
+    { __typename?: 'CollectionBreadcrumb' }
+    & Pick<CollectionBreadcrumb, 'id' | 'name' | 'slug'>
+  )>, featuredAsset?: Maybe<(
     { __typename?: 'Asset' }
     & AssetFragment
   )>, assets: Array<(
@@ -5854,6 +6167,16 @@ export type DeleteCollectionMutation = { deleteCollection: (
     & Pick<DeletionResponse, 'result' | 'message'>
   ) };
 
+export type DeleteCollectionsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteCollectionsMutation = { deleteCollections: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> };
+
 export type GetCollectionContentsQueryVariables = Exact<{
   id: Scalars['ID'];
   options?: Maybe<ProductVariantListOptions>;
@@ -5887,6 +6210,26 @@ export type PreviewCollectionContentsQuery = { previewCollectionVariants: (
       & Pick<ProductVariant, 'id' | 'productId' | 'name' | 'sku'>
     )> }
   ) };
+
+export type AssignCollectionsToChannelMutationVariables = Exact<{
+  input: AssignCollectionsToChannelInput;
+}>;
+
+
+export type AssignCollectionsToChannelMutation = { assignCollectionsToChannel: Array<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+  )> };
+
+export type RemoveCollectionsFromChannelMutationVariables = Exact<{
+  input: RemoveCollectionsFromChannelInput;
+}>;
+
+
+export type RemoveCollectionsFromChannelMutation = { removeCollectionsFromChannel: Array<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+  )> };
 
 export type AddressFragment = (
   { __typename?: 'Address' }
@@ -6215,6 +6558,17 @@ export type DeleteFacetMutation = { deleteFacet: (
     & Pick<DeletionResponse, 'result' | 'message'>
   ) };
 
+export type DeleteFacetsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type DeleteFacetsMutation = { deleteFacets: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> };
+
 export type CreateFacetValuesMutationVariables = Exact<{
   input: Array<CreateFacetValueInput> | CreateFacetValueInput;
 }>;
@@ -6268,6 +6622,29 @@ export type GetFacetWithValuesQueryVariables = Exact<{
 export type GetFacetWithValuesQuery = { facet?: Maybe<(
     { __typename?: 'Facet' }
     & FacetWithValuesFragment
+  )> };
+
+export type AssignFacetsToChannelMutationVariables = Exact<{
+  input: AssignFacetsToChannelInput;
+}>;
+
+
+export type AssignFacetsToChannelMutation = { assignFacetsToChannel: Array<(
+    { __typename?: 'Facet' }
+    & Pick<Facet, 'id'>
+  )> };
+
+export type RemoveFacetsFromChannelMutationVariables = Exact<{
+  input: RemoveFacetsFromChannelInput;
+}>;
+
+
+export type RemoveFacetsFromChannelMutation = { removeFacetsFromChannel: Array<(
+    { __typename?: 'Facet' }
+    & Pick<Facet, 'id'>
+  ) | (
+    { __typename?: 'FacetInUseError' }
+    & Pick<FacetInUseError, 'errorCode' | 'message' | 'variantCount' | 'productCount'>
   )> };
 
 export type DiscountFragment = (
@@ -6747,6 +7124,182 @@ export type AddManualPaymentMutation = { addManualPaymentToOrder: (
     & ErrorResult_ManualPaymentStateError_Fragment
   ) };
 
+export type CreateDraftOrderMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateDraftOrderMutation = { createDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) };
+
+export type DeleteDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DeleteDraftOrderMutation = { deleteDraftOrder: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) };
+
+export type AddItemToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AddItemToDraftOrderInput;
+}>;
+
+
+export type AddItemToDraftOrderMutation = { addItemToDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) | (
+    { __typename?: 'OrderLimitError' }
+    & ErrorResult_OrderLimitError_Fragment
+  ) | (
+    { __typename?: 'NegativeQuantityError' }
+    & ErrorResult_NegativeQuantityError_Fragment
+  ) | (
+    { __typename?: 'InsufficientStockError' }
+    & ErrorResult_InsufficientStockError_Fragment
+  ) };
+
+export type AdjustDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: AdjustDraftOrderLineInput;
+}>;
+
+
+export type AdjustDraftOrderLineMutation = { adjustDraftOrderLine: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) | (
+    { __typename?: 'OrderLimitError' }
+    & ErrorResult_OrderLimitError_Fragment
+  ) | (
+    { __typename?: 'NegativeQuantityError' }
+    & ErrorResult_NegativeQuantityError_Fragment
+  ) | (
+    { __typename?: 'InsufficientStockError' }
+    & ErrorResult_InsufficientStockError_Fragment
+  ) };
+
+export type RemoveDraftOrderLineMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  orderLineId: Scalars['ID'];
+}>;
+
+
+export type RemoveDraftOrderLineMutation = { removeDraftOrderLine: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) };
+
+export type SetCustomerForDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  customerId?: Maybe<Scalars['ID']>;
+  input?: Maybe<CreateCustomerInput>;
+}>;
+
+
+export type SetCustomerForDraftOrderMutation = { setCustomerForDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'EmailAddressConflictError' }
+    & ErrorResult_EmailAddressConflictError_Fragment
+  ) };
+
+export type SetDraftOrderShippingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderShippingAddressMutation = { setDraftOrderShippingAddress: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) };
+
+export type SetDraftOrderBillingAddressMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  input: CreateAddressInput;
+}>;
+
+
+export type SetDraftOrderBillingAddressMutation = { setDraftOrderBillingAddress: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) };
+
+export type ApplyCouponCodeToDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type ApplyCouponCodeToDraftOrderMutation = { applyCouponCodeToDraftOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'CouponCodeExpiredError' }
+    & ErrorResult_CouponCodeExpiredError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeInvalidError' }
+    & ErrorResult_CouponCodeInvalidError_Fragment
+  ) | (
+    { __typename?: 'CouponCodeLimitError' }
+    & ErrorResult_CouponCodeLimitError_Fragment
+  ) };
+
+export type RemoveCouponCodeFromDraftOrderMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  couponCode: Scalars['String'];
+}>;
+
+
+export type RemoveCouponCodeFromDraftOrderMutation = { removeCouponCodeFromDraftOrder?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  )> };
+
+export type DraftOrderEligibleShippingMethodsQueryVariables = Exact<{
+  orderId: Scalars['ID'];
+}>;
+
+
+export type DraftOrderEligibleShippingMethodsQuery = { eligibleShippingMethodsForDraftOrder: Array<(
+    { __typename?: 'ShippingMethodQuote' }
+    & Pick<ShippingMethodQuote, 'id' | 'name' | 'code' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+  )> };
+
+export type SetDraftOrderShippingMethodMutationVariables = Exact<{
+  orderId: Scalars['ID'];
+  shippingMethodId: Scalars['ID'];
+}>;
+
+
+export type SetDraftOrderShippingMethodMutation = { setDraftOrderShippingMethod: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'OrderModificationError' }
+    & ErrorResult_OrderModificationError_Fragment
+  ) | (
+    { __typename?: 'IneligibleShippingMethodError' }
+    & ErrorResult_IneligibleShippingMethodError_Fragment
+  ) | (
+    { __typename?: 'NoActiveOrderError' }
+    & ErrorResult_NoActiveOrderError_Fragment
+  ) };
+
 export type AssetFragment = (
   { __typename?: 'Asset' }
   & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'>
@@ -6904,6 +7457,16 @@ export type DeleteProductMutation = { deleteProduct: (
     { __typename?: 'DeletionResponse' }
     & Pick<DeletionResponse, 'result' | 'message'>
   ) };
+
+export type DeleteProductsMutationVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
+}>;
+
+
+export type DeleteProductsMutation = { deleteProducts: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> };
 
 export type CreateProductVariantsMutationVariables = Exact<{
   input: Array<CreateProductVariantInput> | CreateProductVariantInput;
@@ -7330,7 +7893,7 @@ export type GetProductVariantQueryVariables = Exact<{
 
 export type GetProductVariantQuery = { productVariant?: Maybe<(
     { __typename?: 'ProductVariant' }
-    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+    & Pick<ProductVariant, 'id' | 'name' | 'sku' | 'stockOnHand' | 'stockAllocated' | 'stockLevel' | 'useGlobalOutOfStockThreshold' | 'price' | 'priceWithTax'>
     & { featuredAsset?: Maybe<(
       { __typename?: 'Asset' }
       & Pick<Asset, 'id' | 'preview'>
@@ -8985,9 +9548,19 @@ type ErrorResult_EmptyOrderLineSelectionError_Fragment = (
   & Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_FacetInUseError_Fragment = (
+  { __typename?: 'FacetInUseError' }
+  & Pick<FacetInUseError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_FulfillmentStateTransitionError_Fragment = (
   { __typename?: 'FulfillmentStateTransitionError' }
   & Pick<FulfillmentStateTransitionError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_IneligibleShippingMethodError_Fragment = (
+  { __typename?: 'IneligibleShippingMethodError' }
+  & Pick<IneligibleShippingMethodError, 'errorCode' | 'message'>
 );
 
 type ErrorResult_InsufficientStockError_Fragment = (
@@ -9050,6 +9623,11 @@ type ErrorResult_NegativeQuantityError_Fragment = (
   & Pick<NegativeQuantityError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_NoActiveOrderError_Fragment = (
+  { __typename?: 'NoActiveOrderError' }
+  & Pick<NoActiveOrderError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_NoChangesSpecifiedError_Fragment = (
   { __typename?: 'NoChangesSpecifiedError' }
   & Pick<NoChangesSpecifiedError, 'errorCode' | 'message'>
@@ -9063,6 +9641,11 @@ type ErrorResult_NothingToRefundError_Fragment = (
 type ErrorResult_OrderLimitError_Fragment = (
   { __typename?: 'OrderLimitError' }
   & Pick<OrderLimitError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_OrderModificationError_Fragment = (
+  { __typename?: 'OrderModificationError' }
+  & Pick<OrderModificationError, 'errorCode' | 'message'>
 );
 
 type ErrorResult_OrderModificationStateError_Fragment = (
@@ -9120,7 +9703,7 @@ type ErrorResult_SettlePaymentError_Fragment = (
   & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }
@@ -9229,7 +9812,53 @@ export type TestEligibleShippingMethodsQuery = { testEligibleShippingMethods: Ar
     & Pick<ShippingMethodQuote, 'id' | 'name' | 'code' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
   )> };
 
+export type GetCustomerAddressesQueryVariables = Exact<{
+  customerId: Scalars['ID'];
+}>;
+
+
+export type GetCustomerAddressesQuery = { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id'>
+    & { addresses?: Maybe<Array<(
+      { __typename?: 'Address' }
+      & AddressFragment
+    )>> }
+  )> };
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
+
+export namespace GetProductsWithFacetValuesByIds {
+  export type Variables = GetProductsWithFacetValuesByIdsQueryVariables;
+  export type Query = GetProductsWithFacetValuesByIdsQuery;
+  export type Products = (NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>)['items']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>)['items']>)[number]>['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductsWithFacetValuesByIdsQuery['products']>)['items']>)[number]>['facetValues']>)[number]>['facet']>);
+}
+
+export namespace GetVariantsWithFacetValuesByIds {
+  export type Variables = GetVariantsWithFacetValuesByIdsQueryVariables;
+  export type Query = GetVariantsWithFacetValuesByIdsQuery;
+  export type ProductVariants = (NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>)['items']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>)['items']>)[number]>['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetVariantsWithFacetValuesByIdsQuery['productVariants']>)['items']>)[number]>['facetValues']>)[number]>['facet']>);
+}
+
+export namespace UpdateProductsBulk {
+  export type Variables = UpdateProductsBulkMutationVariables;
+  export type Mutation = UpdateProductsBulkMutation;
+  export type UpdateProducts = NonNullable<(NonNullable<UpdateProductsBulkMutation['updateProducts']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<UpdateProductsBulkMutation['updateProducts']>)[number]>['facetValues']>)[number]>;
+}
+
+export namespace UpdateVariantsBulk {
+  export type Variables = UpdateVariantsBulkMutationVariables;
+  export type Mutation = UpdateVariantsBulkMutation;
+  export type UpdateProductVariants = NonNullable<(NonNullable<UpdateVariantsBulkMutation['updateProductVariants']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<NonNullable<(NonNullable<UpdateVariantsBulkMutation['updateProductVariants']>)[number]>['facetValues']>)[number]>;
+}
 
 export namespace Role {
   export type Fragment = RoleFragment;
@@ -9443,6 +10072,7 @@ export namespace GetCollectionFilters {
 
 export namespace Collection {
   export type Fragment = CollectionFragment;
+  export type Breadcrumbs = NonNullable<(NonNullable<CollectionFragment['breadcrumbs']>)[number]>;
   export type FeaturedAsset = (NonNullable<CollectionFragment['featuredAsset']>);
   export type Assets = NonNullable<(NonNullable<CollectionFragment['assets']>)[number]>;
   export type Filters = NonNullable<(NonNullable<CollectionFragment['filters']>)[number]>;
@@ -9490,6 +10120,12 @@ export namespace DeleteCollection {
   export type DeleteCollection = (NonNullable<DeleteCollectionMutation['deleteCollection']>);
 }
 
+export namespace DeleteCollections {
+  export type Variables = DeleteCollectionsMutationVariables;
+  export type Mutation = DeleteCollectionsMutation;
+  export type DeleteCollections = NonNullable<(NonNullable<DeleteCollectionsMutation['deleteCollections']>)[number]>;
+}
+
 export namespace GetCollectionContents {
   export type Variables = GetCollectionContentsQueryVariables;
   export type Query = GetCollectionContentsQuery;
@@ -9503,6 +10139,18 @@ export namespace PreviewCollectionContents {
   export type Query = PreviewCollectionContentsQuery;
   export type PreviewCollectionVariants = (NonNullable<PreviewCollectionContentsQuery['previewCollectionVariants']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<PreviewCollectionContentsQuery['previewCollectionVariants']>)['items']>)[number]>;
+}
+
+export namespace AssignCollectionsToChannel {
+  export type Variables = AssignCollectionsToChannelMutationVariables;
+  export type Mutation = AssignCollectionsToChannelMutation;
+  export type AssignCollectionsToChannel = NonNullable<(NonNullable<AssignCollectionsToChannelMutation['assignCollectionsToChannel']>)[number]>;
+}
+
+export namespace RemoveCollectionsFromChannel {
+  export type Variables = RemoveCollectionsFromChannelMutationVariables;
+  export type Mutation = RemoveCollectionsFromChannelMutation;
+  export type RemoveCollectionsFromChannel = NonNullable<(NonNullable<RemoveCollectionsFromChannelMutation['removeCollectionsFromChannel']>)[number]>;
 }
 
 export namespace Address {
@@ -9675,6 +10323,12 @@ export namespace DeleteFacet {
   export type DeleteFacet = (NonNullable<DeleteFacetMutation['deleteFacet']>);
 }
 
+export namespace DeleteFacets {
+  export type Variables = DeleteFacetsMutationVariables;
+  export type Mutation = DeleteFacetsMutation;
+  export type DeleteFacets = NonNullable<(NonNullable<DeleteFacetsMutation['deleteFacets']>)[number]>;
+}
+
 export namespace CreateFacetValues {
   export type Variables = CreateFacetValuesMutationVariables;
   export type Mutation = CreateFacetValuesMutation;
@@ -9704,6 +10358,20 @@ export namespace GetFacetWithValues {
   export type Variables = GetFacetWithValuesQueryVariables;
   export type Query = GetFacetWithValuesQuery;
   export type Facet = (NonNullable<GetFacetWithValuesQuery['facet']>);
+}
+
+export namespace AssignFacetsToChannel {
+  export type Variables = AssignFacetsToChannelMutationVariables;
+  export type Mutation = AssignFacetsToChannelMutation;
+  export type AssignFacetsToChannel = NonNullable<(NonNullable<AssignFacetsToChannelMutation['assignFacetsToChannel']>)[number]>;
+}
+
+export namespace RemoveFacetsFromChannel {
+  export type Variables = RemoveFacetsFromChannelMutationVariables;
+  export type Mutation = RemoveFacetsFromChannelMutation;
+  export type RemoveFacetsFromChannel = NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>;
+  export type FacetInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>, { __typename?: 'Facet' }>);
+  export type FacetInUseErrorInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<RemoveFacetsFromChannelMutation['removeFacetsFromChannel']>)[number]>, { __typename?: 'FacetInUseError' }>);
 }
 
 export namespace Discount {
@@ -9896,6 +10564,78 @@ export namespace AddManualPayment {
   export type AddManualPaymentToOrder = (NonNullable<AddManualPaymentMutation['addManualPaymentToOrder']>);
 }
 
+export namespace CreateDraftOrder {
+  export type Variables = CreateDraftOrderMutationVariables;
+  export type Mutation = CreateDraftOrderMutation;
+  export type CreateDraftOrder = (NonNullable<CreateDraftOrderMutation['createDraftOrder']>);
+}
+
+export namespace DeleteDraftOrder {
+  export type Variables = DeleteDraftOrderMutationVariables;
+  export type Mutation = DeleteDraftOrderMutation;
+  export type DeleteDraftOrder = (NonNullable<DeleteDraftOrderMutation['deleteDraftOrder']>);
+}
+
+export namespace AddItemToDraftOrder {
+  export type Variables = AddItemToDraftOrderMutationVariables;
+  export type Mutation = AddItemToDraftOrderMutation;
+  export type AddItemToDraftOrder = (NonNullable<AddItemToDraftOrderMutation['addItemToDraftOrder']>);
+}
+
+export namespace AdjustDraftOrderLine {
+  export type Variables = AdjustDraftOrderLineMutationVariables;
+  export type Mutation = AdjustDraftOrderLineMutation;
+  export type AdjustDraftOrderLine = (NonNullable<AdjustDraftOrderLineMutation['adjustDraftOrderLine']>);
+}
+
+export namespace RemoveDraftOrderLine {
+  export type Variables = RemoveDraftOrderLineMutationVariables;
+  export type Mutation = RemoveDraftOrderLineMutation;
+  export type RemoveDraftOrderLine = (NonNullable<RemoveDraftOrderLineMutation['removeDraftOrderLine']>);
+}
+
+export namespace SetCustomerForDraftOrder {
+  export type Variables = SetCustomerForDraftOrderMutationVariables;
+  export type Mutation = SetCustomerForDraftOrderMutation;
+  export type SetCustomerForDraftOrder = (NonNullable<SetCustomerForDraftOrderMutation['setCustomerForDraftOrder']>);
+}
+
+export namespace SetDraftOrderShippingAddress {
+  export type Variables = SetDraftOrderShippingAddressMutationVariables;
+  export type Mutation = SetDraftOrderShippingAddressMutation;
+  export type SetDraftOrderShippingAddress = (NonNullable<SetDraftOrderShippingAddressMutation['setDraftOrderShippingAddress']>);
+}
+
+export namespace SetDraftOrderBillingAddress {
+  export type Variables = SetDraftOrderBillingAddressMutationVariables;
+  export type Mutation = SetDraftOrderBillingAddressMutation;
+  export type SetDraftOrderBillingAddress = (NonNullable<SetDraftOrderBillingAddressMutation['setDraftOrderBillingAddress']>);
+}
+
+export namespace ApplyCouponCodeToDraftOrder {
+  export type Variables = ApplyCouponCodeToDraftOrderMutationVariables;
+  export type Mutation = ApplyCouponCodeToDraftOrderMutation;
+  export type ApplyCouponCodeToDraftOrder = (NonNullable<ApplyCouponCodeToDraftOrderMutation['applyCouponCodeToDraftOrder']>);
+}
+
+export namespace RemoveCouponCodeFromDraftOrder {
+  export type Variables = RemoveCouponCodeFromDraftOrderMutationVariables;
+  export type Mutation = RemoveCouponCodeFromDraftOrderMutation;
+  export type RemoveCouponCodeFromDraftOrder = (NonNullable<RemoveCouponCodeFromDraftOrderMutation['removeCouponCodeFromDraftOrder']>);
+}
+
+export namespace DraftOrderEligibleShippingMethods {
+  export type Variables = DraftOrderEligibleShippingMethodsQueryVariables;
+  export type Query = DraftOrderEligibleShippingMethodsQuery;
+  export type EligibleShippingMethodsForDraftOrder = NonNullable<(NonNullable<DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder']>)[number]>;
+}
+
+export namespace SetDraftOrderShippingMethod {
+  export type Variables = SetDraftOrderShippingMethodMutationVariables;
+  export type Mutation = SetDraftOrderShippingMethodMutation;
+  export type SetDraftOrderShippingMethod = (NonNullable<SetDraftOrderShippingMethodMutation['setDraftOrderShippingMethod']>);
+}
+
 export namespace Asset {
   export type Fragment = AssetFragment;
   export type FocalPoint = (NonNullable<AssetFragment['focalPoint']>);
@@ -9966,6 +10706,12 @@ export namespace DeleteProduct {
   export type Variables = DeleteProductMutationVariables;
   export type Mutation = DeleteProductMutation;
   export type DeleteProduct = (NonNullable<DeleteProductMutation['deleteProduct']>);
+}
+
+export namespace DeleteProducts {
+  export type Variables = DeleteProductsMutationVariables;
+  export type Mutation = DeleteProductsMutation;
+  export type DeleteProducts = NonNullable<(NonNullable<DeleteProductsMutation['deleteProducts']>)[number]>;
 }
 
 export namespace CreateProductVariants {
@@ -10763,4 +11509,11 @@ export namespace TestEligibleShippingMethods {
   export type Variables = TestEligibleShippingMethodsQueryVariables;
   export type Query = TestEligibleShippingMethodsQuery;
   export type TestEligibleShippingMethods = NonNullable<(NonNullable<TestEligibleShippingMethodsQuery['testEligibleShippingMethods']>)[number]>;
+}
+
+export namespace GetCustomerAddresses {
+  export type Variables = GetCustomerAddressesQueryVariables;
+  export type Query = GetCustomerAddressesQuery;
+  export type Customer = (NonNullable<GetCustomerAddressesQuery['customer']>);
+  export type Addresses = NonNullable<(NonNullable<(NonNullable<GetCustomerAddressesQuery['customer']>)['addresses']>)[number]>;
 }

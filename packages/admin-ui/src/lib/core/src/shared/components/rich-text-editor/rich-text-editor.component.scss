@@ -62,4 +62,14 @@
         cursor: default;
         max-width: 100%;
     }
+
+    .iframe-wrapper {
+        width: 100%;
+        text-align: center;
+        padding: 6px;
+        transition: background-color 0.3s;
+        &:hover {
+            background-color: var(--color-primary-100);
+        }
+    }
 }

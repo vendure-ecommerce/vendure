@@ -27,7 +27,10 @@ export class BraintreeResolver {
     ) {}
 
     @Query()
-    async generateBraintreeClientToken(@Ctx() ctx: RequestContext, @Args() { orderId }: { orderId?: ID }) {
+    async generateBraintreeClientToken(
+        @Ctx() ctx: RequestContext,
+        @Args() { orderId, includeCustomerId }: { orderId?: ID; includeCustomerId?: boolean },
+    ) {
         if (orderId) {
             Logger.warn(
                 `The orderId argument to the generateBraintreeClientToken mutation has been deprecated and may be omitted.`,
@@ -45,7 +48,9 @@ export class BraintreeResolver {
             const args = await this.getPaymentMethodArgs(ctx);
             const gateway = getGateway(args, this.options);
             try {
-                const result = await gateway.clientToken.generate({ customerId });
+                const result = await gateway.clientToken.generate({
+                    customerId: includeCustomerId === false ? undefined : customerId,
+                });
                 return result.clientToken;
             } catch (e) {
                 Logger.error(

@@ -281,7 +281,7 @@
                             <vdr-chip
                                 *ngIf="!isDefaultChannel(channel.code)"
                                 icon="times-circle"
-                                [title]="'catalog.remove-from-channel' | translate"
+                                [title]="'catalog.remove-from-channel' | translate: { channelCode: channel.code }"
                                 (iconClick)="
                                     removeFromChannel.emit({ channelId: channel.id, variant: variant })
                                 "

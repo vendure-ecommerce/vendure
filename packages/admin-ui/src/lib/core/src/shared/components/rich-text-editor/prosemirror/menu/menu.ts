@@ -1,15 +1,13 @@
 import { toggleMark } from 'prosemirror-commands';
+import { redo, undo } from 'prosemirror-history';
 import {
     blockTypeItem,
     Dropdown,
-    DropdownSubmenu,
     icons,
     joinUpItem,
     liftItem,
     MenuItem,
-    redoItem,
     selectParentNodeItem,
-    undoItem,
     wrapItem,
 } from 'prosemirror-menu';
 import { MarkType, NodeType, Schema } from 'prosemirror-model';
@@ -17,17 +15,24 @@ import { wrapInList } from 'prosemirror-schema-list';
 import { EditorState } from 'prosemirror-state';
 
 import { ModalService } from '../../../../../providers/modal/modal.service';
+import { insertImageItem } from '../plugins/image-plugin';
+import { addTable } from '../plugins/tables-plugin';
 
-import { insertImageItem } from './images';
 import { linkItem } from './links';
-import { canInsert, markActive } from './menu-common';
+import { canInsert, IconSize, markActive, renderClarityIcon, wrapInMenuItemWithIcon } from './menu-common';
+import { SubMenuWithIcon } from './sub-menu-with-icon';
 
 // Helpers to create specific types of items
 
-function cmdItem(cmd: (...args: any[]) => void, options: Record<string, any>) {
+type CmdItemOptions = Record<string, any> & { iconShape?: string };
+
+function cmdItem(cmd: (...args: any[]) => void, options: CmdItemOptions) {
     const passedOptions = {
         label: options.title,
         run: cmd,
+        render: options.iconShape
+            ? renderClarityIcon({ shape: options.iconShape, size: IconSize.Large })
+            : undefined,
     };
     // tslint:disable-next-line:forin
     for (const prop in options) {
@@ -40,7 +45,7 @@ function cmdItem(cmd: (...args: any[]) => void, options: Record<string, any>) {
     return new MenuItem(passedOptions as any);
 }
 
-function markItem(markType, options) {
+function markItem(markType, options: CmdItemOptions) {
     const passedOptions = {
         active(state) {
             return markActive(state, markType);
@@ -54,7 +59,7 @@ function markItem(markType, options) {
     return cmdItem(toggleMark(markType), passedOptions);
 }
 
-function wrapListItem(nodeType, options) {
+function wrapListItem(nodeType, options: CmdItemOptions) {
     return cmdItem(wrapInList(nodeType, options.attrs), options);
 }
 
@@ -121,10 +126,16 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
     let type: MarkType | NodeType;
     // tslint:disable:no-conditional-assignment
     if ((type = schema.marks.strong)) {
-        r.toggleStrong = markItem(type, { title: 'Toggle strong style', icon: icons.strong });
+        r.toggleStrong = markItem(type, {
+            title: 'Toggle strong style',
+            iconShape: 'bold',
+        });
     }
     if ((type = schema.marks.em)) {
-        r.toggleEm = markItem(type, { title: 'Toggle emphasis', icon: icons.em });
+        r.toggleEm = markItem(type, {
+            title: 'Toggle emphasis',
+            iconShape: 'italic',
+        });
     }
     if ((type = schema.marks.code)) {
         r.toggleCode = markItem(type, { title: 'Toggle code font', icon: icons.code });
@@ -139,31 +150,31 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
     if ((type = schema.nodes.bullet_list)) {
         r.wrapBulletList = wrapListItem(type, {
             title: 'Wrap in bullet list',
-            icon: icons.bulletList,
+            iconShape: 'bullet-list',
         });
     }
     if ((type = schema.nodes.ordered_list)) {
         r.wrapOrderedList = wrapListItem(type, {
             title: 'Wrap in ordered list',
-            icon: icons.orderedList,
+            iconShape: 'number-list',
         });
     }
     if ((type = schema.nodes.blockquote)) {
         r.wrapBlockQuote = wrapItem(type, {
             title: 'Wrap in block quote',
-            icon: icons.blockquote,
+            render: renderClarityIcon({ shape: 'block-quote', size: IconSize.Large }),
         });
     }
     if ((type = schema.nodes.paragraph)) {
         r.makeParagraph = blockTypeItem(type, {
             title: 'Change to paragraph',
-            label: 'Plain',
+            render: renderClarityIcon({ shape: 'text', label: 'Plain' }),
         });
     }
     if ((type = schema.nodes.code_block)) {
         r.makeCodeBlock = blockTypeItem(type, {
             title: 'Change to code block',
-            label: 'Code',
+            render: renderClarityIcon({ shape: 'code', label: 'Code' }),
         });
     }
     if ((type = schema.nodes.heading)) {
@@ -179,9 +190,13 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
         const hr = type;
         r.insertHorizontalRule = new MenuItem({
             title: 'Insert horizontal rule',
-            label: 'Horizontal rule',
-            class: '',
-            css: '',
+            render: view => {
+                const icon = document.createElement('div');
+                icon.classList.add('custom-icon', 'hr-icon');
+                const labelEl = document.createElement('span');
+                labelEl.textContent = 'Horizontal rule';
+                return wrapInMenuItemWithIcon(icon, labelEl);
+            },
             enable(state) {
                 return canInsert(state, hr);
             },
@@ -192,15 +207,40 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
     }
 
     const cut = <T>(arr: T[]): T[] => arr.filter(x => x);
-    r.insertMenu = new Dropdown(cut([r.insertImage, r.insertHorizontalRule]), { label: 'Insert' });
+    r.insertMenu = new Dropdown(
+        cut([
+            r.insertImage,
+            r.insertHorizontalRule,
+            new MenuItem({
+                run: (state, dispatch) => {
+                    addTable(state, dispatch, {
+                        rowsCount: 2,
+                        colsCount: 2,
+                        withHeaderRow: true,
+                        cellContent: '',
+                    });
+                },
+                render: renderClarityIcon({ shape: 'table', label: 'Table' }),
+            }),
+        ]),
+        { label: 'Insert' },
+    );
     r.typeMenu = new Dropdown(
         cut([
             r.makeParagraph,
             r.makeCodeBlock,
             r.makeHead1 &&
-                new DropdownSubmenu(
+                new SubMenuWithIcon(
                     cut([r.makeHead1, r.makeHead2, r.makeHead3, r.makeHead4, r.makeHead5, r.makeHead6]),
-                    { label: 'Heading' },
+                    {
+                        label: 'Heading',
+                        icon: () => {
+                            const icon = document.createElement('div');
+                            icon.textContent = 'H';
+                            icon.classList.add('custom-icon', 'h-icon');
+                            return icon;
+                        },
+                    },
                 ),
         ]),
         { label: 'Type...' },
@@ -218,7 +258,25 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
             selectParentNodeItem,
         ]),
     ];
-    r.fullMenu = [inlineMenu].concat([[r.insertMenu, r.typeMenu]], [[undoItem, redoItem]], r.blockMenu);
+    const undoRedo = [
+        new MenuItem({
+            title: 'Undo last change',
+            run: undo,
+            enable(state) {
+                return undo(state);
+            },
+            render: renderClarityIcon({ shape: 'undo', size: IconSize.Large }),
+        }),
+        new MenuItem({
+            title: 'Redo last undone change',
+            run: redo,
+            enable(state) {
+                return redo(state);
+            },
+            render: renderClarityIcon({ shape: 'redo', size: IconSize.Large }),
+        }),
+    ];
+    r.fullMenu = [inlineMenu].concat([[r.insertMenu, r.typeMenu]], [undoRedo], r.blockMenu);
 
     return r;
 }

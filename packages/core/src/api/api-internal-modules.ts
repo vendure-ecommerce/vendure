@@ -19,6 +19,7 @@ import { CollectionResolver } from './resolvers/admin/collection.resolver';
 import { CountryResolver } from './resolvers/admin/country.resolver';
 import { CustomerGroupResolver } from './resolvers/admin/customer-group.resolver';
 import { CustomerResolver } from './resolvers/admin/customer.resolver';
+import { DraftOrderResolver } from './resolvers/admin/draft-order.resolver';
 import { FacetResolver } from './resolvers/admin/facet.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 import { ImportResolver } from './resolvers/admin/import.resolver';
@@ -39,36 +40,21 @@ import { AdministratorEntityResolver } from './resolvers/entity/administrator-en
 import { AssetEntityResolver } from './resolvers/entity/asset-entity.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
 import { CountryEntityResolver } from './resolvers/entity/country-entity.resolver';
-import {
-    CustomerAdminEntityResolver,
-    CustomerEntityResolver,
-} from './resolvers/entity/customer-entity.resolver';
+import { CustomerAdminEntityResolver, CustomerEntityResolver, } from './resolvers/entity/customer-entity.resolver';
 import { CustomerGroupEntityResolver } from './resolvers/entity/customer-group-entity.resolver';
 import { FacetEntityResolver } from './resolvers/entity/facet-entity.resolver';
 import { FacetValueEntityResolver } from './resolvers/entity/facet-value-entity.resolver';
-import {
-    FulfillmentAdminEntityResolver,
-    FulfillmentEntityResolver,
-} from './resolvers/entity/fulfillment-entity.resolver';
+import { FulfillmentAdminEntityResolver, FulfillmentEntityResolver, } from './resolvers/entity/fulfillment-entity.resolver';
 import { JobEntityResolver } from './resolvers/entity/job-entity.resolver';
 import { OrderAdminEntityResolver, OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderItemEntityResolver } from './resolvers/entity/order-item-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
-import {
-    PaymentAdminEntityResolver,
-    PaymentEntityResolver,
-} from './resolvers/entity/payment-entity.resolver';
+import { PaymentAdminEntityResolver, PaymentEntityResolver, } from './resolvers/entity/payment-entity.resolver';
 import { PaymentMethodEntityResolver } from './resolvers/entity/payment-method-entity.resolver';
-import {
-    ProductAdminEntityResolver,
-    ProductEntityResolver,
-} from './resolvers/entity/product-entity.resolver';
+import { ProductAdminEntityResolver, ProductEntityResolver, } from './resolvers/entity/product-entity.resolver';
 import { ProductOptionEntityResolver } from './resolvers/entity/product-option-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
-import {
-    ProductVariantAdminEntityResolver,
-    ProductVariantEntityResolver,
-} from './resolvers/entity/product-variant-entity.resolver';
+import { ProductVariantAdminEntityResolver, ProductVariantEntityResolver, } from './resolvers/entity/product-variant-entity.resolver';
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { RoleEntityResolver } from './resolvers/entity/role-entity.resolver';
 import { ShippingLineEntityResolver } from './resolvers/entity/shipping-line-entity.resolver';
@@ -90,6 +76,7 @@ const adminResolvers = [
     CountryResolver,
     CustomerGroupResolver,
     CustomerResolver,
+    DraftOrderResolver,
     FacetResolver,
     GlobalSettingsResolver,
     ImportResolver,

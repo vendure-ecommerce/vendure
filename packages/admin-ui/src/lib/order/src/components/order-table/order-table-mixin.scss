@@ -18,6 +18,10 @@
         border-top-color: var(--color-grey-200);
     }
 
+    img {
+        border-radius: var(--border-radius-img);
+    }
+
     .order-line-custom-fields {
         display: flex;
         flex-wrap: wrap;
@@ -30,6 +34,10 @@
             margin-bottom: 6px;
             margin-right: 18px;
         }
+    }
+
+    .draft-qty {
+        max-width: 48px;
     }
 
     .order-line-custom-field {

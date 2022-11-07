@@ -10,13 +10,8 @@ import { Stream } from 'stream';
 import { format } from 'util';
 
 import { loggerCtx } from './constants';
-import {
-    EmailDetails,
-    EmailSender,
-    EmailTransportOptions,
-    SendmailTransportOptions,
-    SMTPTransportOptions,
-} from './types';
+import { EmailSender } from './email-sender';
+import { EmailDetails, EmailTransportOptions, SendmailTransportOptions, SMTPTransportOptions } from './types';
 
 export type StreamTransportInfo = {
     envelope: {

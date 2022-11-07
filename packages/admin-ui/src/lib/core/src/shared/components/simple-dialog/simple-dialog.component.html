@@ -1,5 +1,5 @@
 <ng-template vdrDialogTitle>{{ title | translate:translationVars }}</ng-template>
-{{ body | translate:translationVars }}
+<div style="white-space: pre-wrap;">{{ body | translate:translationVars }}</div>
 <ng-template vdrDialogButtons>
     <ng-container *ngFor="let button of buttons">
         <button
@@ -8,7 +8,7 @@
             [class.btn-danger]="button.type === 'danger'"
             (click)="resolveWith(button.returnValue)"
         >
-            {{ button.label | translate:translationVars }}
+            {{ button.label | translate: (button.translationVars || {}) }}
         </button>
     </ng-container>
 </ng-template>

@@ -7,6 +7,7 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
+import { Promotion } from '../../entity/index';
 import { Order } from '../../entity/order/order.entity';
 
 export type PromotionConditionState = Record<string, unknown>;
@@ -31,6 +32,7 @@ export type CheckPromotionConditionFn<T extends ConfigArgs, R extends CheckPromo
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
+    promotion: Promotion,
 ) => R | Promise<R>;
 
 /**
@@ -44,7 +46,7 @@ export type CheckPromotionConditionFn<T extends ConfigArgs, R extends CheckPromo
 export interface PromotionConditionConfig<
     T extends ConfigArgs,
     C extends string,
-    R extends CheckPromotionConditionResult
+    R extends CheckPromotionConditionResult,
 > extends ConfigurableOperationDefOptions<T> {
     code: C;
     check: CheckPromotionConditionFn<T, R>;
@@ -64,7 +66,7 @@ export interface PromotionConditionConfig<
 export class PromotionCondition<
     T extends ConfigArgs = ConfigArgs,
     C extends string = string,
-    R extends CheckPromotionConditionResult = any
+    R extends CheckPromotionConditionResult = any,
 > extends ConfigurableOperationDef<T> {
     /**
      * @description
@@ -92,7 +94,7 @@ export class PromotionCondition<
      * This is the function which contains the conditional logic to decide whether
      * a Promotion should apply to an Order. See {@link CheckPromotionConditionFn}.
      */
-    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<R> {
-        return this.checkFn(ctx, order, this.argsArrayToHash(args));
+    async check(ctx: RequestContext, order: Order, args: ConfigArg[], promotion: Promotion): Promise<R> {
+        return this.checkFn(ctx, order, this.argsArrayToHash(args), promotion);
     }
 }

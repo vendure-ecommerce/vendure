@@ -82,6 +82,7 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
                     .subscribe(() => {
                         this.notificationService.success(_('catalog.assign-product-to-channel-success'), {
                             channel: selectedChannel.code,
+                            count: this.productIds.length,
                         });
                         this.resolveWith(true);
                     });
@@ -95,6 +96,8 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
                     .subscribe(() => {
                         this.notificationService.success(_('catalog.assign-variant-to-channel-success'), {
                             channel: selectedChannel.code,
+                            // tslint:disable-next-line:no-non-null-assertion
+                            count: this.productVariantIds!.length,
                         });
                         this.resolveWith(true);
                     });

@@ -128,6 +128,18 @@ export class RoleService {
         channelId: ID,
         permission: Permission,
     ): Promise<boolean> {
+        return this.userHasAnyPermissionsOnChannel(ctx, channelId, [permission]);
+    }
+
+    /**
+     * @description
+     * Returns true if the User has any of the specified permission on that Channel
+     */
+    async userHasAnyPermissionsOnChannel(
+        ctx: RequestContext,
+        channelId: ID,
+        permissions: Permission[],
+    ): Promise<boolean> {
         if (ctx.activeUserId == null) {
             return false;
         }
@@ -139,7 +151,12 @@ export class RoleService {
         if (!channel) {
             return false;
         }
-        return channel.permissions.includes(permission);
+        for (const permission of permissions) {
+            if (channel.permissions.includes(permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     async create(ctx: RequestContext, input: CreateRoleInput): Promise<Role> {
@@ -229,8 +246,8 @@ export class RoleService {
     }
 
     private getRoleByCode(ctx: RequestContext | undefined, code: string) {
-        const repository = ctx 
-            ? this.connection.getRepository(ctx, Role) 
+        const repository = ctx
+            ? this.connection.getRepository(ctx, Role)
             : this.connection.rawConnection.getRepository(Role);
 
         return repository.findOne({

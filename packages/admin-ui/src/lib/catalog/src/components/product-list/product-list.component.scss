@@ -19,9 +19,9 @@
     display: flex;
     align-items: center;
     width: 100%;
-    margin-bottom: 6px;
+    //margin-bottom: 6px;
 }
-.search-input {
+vdr-product-search-input {
     min-width: 300px;
     @media screen and (max-width: $breakpoint-small){
         min-width: 100px;
@@ -49,4 +49,7 @@ td.disabled {
 }
 .edit-button {
     margin-right: 24px;
+}
+.sku {
+    color: var(--color-text-300);
 }

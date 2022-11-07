@@ -5,7 +5,7 @@
             name="emailSearchTerm"
             [formControl]="searchTerm"
             [placeholder]="'customer.search-by-group-name' | translate"
-            class="search-input ml3"
+            class="search-input"
         />
     </vdr-ab-left>
     <vdr-ab-right>
@@ -92,7 +92,7 @@
                         vdrDropdownTrigger
                         [disabled]="selectedCustomerIds.length === 0"
                     >
-                        {{ 'common.with-selected' | translate }}
+                        {{ 'common.with-selected' | translate: { count: selectedCustomerIds.length } }}
                         <clr-icon shape="caret down"></clr-icon>
                     </button>
                     <vdr-dropdown-menu vdrPosition="bottom-right">

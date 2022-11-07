@@ -1,18 +1,20 @@
 <vdr-action-bar>
     <vdr-ab-left>
-        <div class="flex center wrap">
-            <vdr-language-selector
-                [availableLanguageCodes]="availableLanguages$ | async"
-                [currentLanguageCode]="contentLanguage$ | async"
-                (languageCodeChange)="setLanguage($event)"
-            ></vdr-language-selector>
+        <div class="">
             <input
                 type="text"
                 name="searchTerm"
                 [formControl]="filterTermControl"
                 [placeholder]="'catalog.filter-by-name' | translate"
-                class="clr-input search-input ml4"
+                class="clr-input search-input"
             />
+            <div>
+                <vdr-language-selector
+                    [availableLanguageCodes]="availableLanguages$ | async"
+                    [currentLanguageCode]="contentLanguage$ | async"
+                    (languageCodeChange)="setLanguage($event)"
+                ></vdr-language-selector>
+            </div>
         </div>
     </vdr-ab-left>
     <vdr-ab-right>
@@ -35,7 +37,13 @@
     [currentPage]="currentPage$ | async"
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
+    [selectionManager]="selectionManager"
 >
+    <vdr-bulk-action-menu
+        locationId="facet-list"
+        [hostComponent]="this"
+        [selectionManager]="selectionManager"
+    ></vdr-bulk-action-menu>
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column [expand]="true">{{ 'catalog.values' | translate }}</vdr-dt-column>

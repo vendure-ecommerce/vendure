@@ -7,11 +7,14 @@ import {
     MutationCreateProductArgs,
     MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
+    MutationDeleteProductsArgs,
     MutationDeleteProductVariantArgs,
+    MutationDeleteProductVariantsArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationRemoveProductsFromChannelArgs,
     MutationRemoveProductVariantsFromChannelArgs,
     MutationUpdateProductArgs,
+    MutationUpdateProductsArgs,
     MutationUpdateProductVariantsArgs,
     Permission,
     QueryProductArgs,
@@ -126,12 +129,33 @@ export class ProductResolver {
 
     @Transaction()
     @Mutation()
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    async updateProducts(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateProductsArgs,
+    ): Promise<Array<Translated<Product>>> {
+        const { input } = args;
+        return await Promise.all(args.input.map(i => this.productService.update(ctx, i)));
+    }
+
+    @Transaction()
+    @Mutation()
     @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
     async deleteProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteProductArgs,
     ): Promise<DeletionResponse> {
         return this.productService.softDelete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProducts(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.productService.softDelete(ctx, id)));
     }
 
     @Transaction()
@@ -186,6 +210,16 @@ export class ProductResolver {
         @Args() args: MutationDeleteProductVariantArgs,
     ): Promise<DeletionResponse> {
         return this.productVariantService.softDelete(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductVariants(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteProductVariantsArgs,
+    ): Promise<DeletionResponse[]> {
+        return Promise.all(args.ids.map(id => this.productVariantService.softDelete(ctx, id)));
     }
 
     @Transaction()

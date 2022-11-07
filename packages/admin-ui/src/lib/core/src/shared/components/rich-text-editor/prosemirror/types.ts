@@ -7,7 +7,6 @@ export interface SetupOptions {
     menuBar?: boolean;
     history?: boolean;
     floatingMenu?: boolean;
-    menuContent?: MenuItem[][];
 }
 
 export type Keymap = Record<string, string | false>;

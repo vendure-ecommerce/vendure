@@ -30,6 +30,7 @@ import { AssetPreviewDialogComponent } from './components/asset-preview-dialog/a
 import { AssetPreviewLinksComponent } from './components/asset-preview-links/asset-preview-links.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { AssetSearchInputComponent } from './components/asset-search-input/asset-search-input.component';
+import { BulkActionMenuComponent } from './components/bulk-action-menu/bulk-action-menu.component';
 import { ChannelAssignmentControlComponent } from './components/channel-assignment-control/channel-assignment-control.component';
 import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.component';
 import { ChipComponent } from './components/chip/chip.component';
@@ -72,8 +73,12 @@ import { PaginationControlsComponent } from './components/pagination-controls/pa
 import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
 import { ProductSearchInputComponent } from './components/product-search-input/product-search-input.component';
 import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
+import { RadioCardFieldsetComponent } from './components/radio-card/radio-card-fieldset.component';
+import { RadioCardComponent } from './components/radio-card/radio-card.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
+import { ContextMenuComponent } from './components/rich-text-editor/prosemirror/context-menu/context-menu.component';
+import { RawHtmlDialogComponent } from './components/rich-text-editor/raw-html-dialog/raw-html-dialog.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
@@ -89,6 +94,7 @@ import { IfDefaultChannelActiveDirective } from './directives/if-default-channel
 import { IfMultichannelDirective } from './directives/if-multichannel.directive';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
+import { HtmlEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/html-editor-form-input.component';
 import { JsonEditorFormInputComponent } from './dynamic-form-inputs/code-editor-form-input/json-editor-form-input.component';
 import { CombinationModeFormInputComponent } from './dynamic-form-inputs/combination-mode-form-input/combination-mode-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
@@ -118,6 +124,7 @@ import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/te
 import { TextareaFormInputComponent } from './dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
+import { CustomFieldDescriptionPipe } from './pipes/custom-field-description.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
@@ -209,6 +216,7 @@ const DECLARATIONS = [
     IfDefaultChannelActiveDirective,
     ExtensionHostComponent,
     CustomFieldLabelPipe,
+    CustomFieldDescriptionPipe,
     FocalPointControlComponent,
     AssetPreviewPipe,
     LinkDialogComponent,
@@ -240,6 +248,11 @@ const DECLARATIONS = [
     AssetPreviewLinksComponent,
     ProductMultiSelectorDialogComponent,
     ProductSearchInputComponent,
+    ContextMenuComponent,
+    RawHtmlDialogComponent,
+    BulkActionMenuComponent,
+    RadioCardComponent,
+    RadioCardFieldsetComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -264,6 +277,7 @@ const DYNAMIC_FORM_INPUTS = [
     TextareaFormInputComponent,
     RichTextFormInputComponent,
     JsonEditorFormInputComponent,
+    HtmlEditorFormInputComponent,
     ProductMultiSelectorFormInputComponent,
     CombinationModeFormInputComponent,
 ];

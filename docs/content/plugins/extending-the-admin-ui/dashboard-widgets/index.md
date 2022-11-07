@@ -138,3 +138,31 @@ export class MySharedUiExtensionModule {}
 ```
 
 This defines the order of widgets with their default widths. The actual layout in terms of rows and columns will be calculated at run-time based on what will fit on each row.
+
+## Overriding default widgets
+
+The Admin UI comes with a set of default widgets, such as the order summary and latest orders widgets (they can be found in [the default-widgets.ts file](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/src/lib/dashboard/src/default-widgets.ts)).
+
+Sometimes you may wish to alter the permissions settings of the default widgets to better control which of your Administrators is able to access it.
+
+For example, the "order summary" widget has a default permission requirement of "ReadOrder". If you want to limit the availability to e.g. the SuperAdmin role, you can do so
+by overriding the definition like this:
+
+```TypeScript
+import { NgModule } from '@angular/core';
+import { registerDashboardWidget } from '@vendure/admin-ui/core';
+import { OrderSummaryWidgetComponent } from '@vendure/admin-ui/dashboard';
+
+@NgModule({
+  imports: [],
+  declarations: [],
+  providers: [
+    registerDashboardWidget('orderSummary', {
+      title: 'dashboard.orders-summary',
+      loadComponent: () => OrderSummaryWidgetComponent,
+      requiresPermissions: ['SuperAdmin'],
+    }),
+  ],
+})
+export class MySharedUiExtensionModule {}
+```

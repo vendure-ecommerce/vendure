@@ -7,6 +7,7 @@ export * from './helpers/fulfillment-state-machine/fulfillment-state';
 export * from './helpers/list-query-builder/list-query-builder';
 export * from './helpers/locale-string-hydrator/locale-string-hydrator';
 export * from './helpers/order-calculator/order-calculator';
+export * from './helpers/order-calculator/prorate';
 export * from './helpers/order-merger/order-merger';
 export * from './helpers/order-modifier/order-modifier';
 export * from './helpers/order-state-machine/order-state';

@@ -4,15 +4,20 @@
     display: flex;
     flex-direction: column;
     @media screen and (min-width: $breakpoint-small) {
-        flex-direction: row;
+        //flex-direction: row;
     }
     align-items: baseline;
     width: 100%;
+    max-width: 100vw;
     margin-bottom: 6px;
 }
 
+.filter-presets {
+    max-width: 90vw;
+    overflow-x: auto;
+}
+
 .search-input {
-    margin-left: 6px;
     margin-top: 6px;
     min-width: 300px;
 }

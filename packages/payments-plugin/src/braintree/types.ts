@@ -33,9 +33,12 @@ export interface BraintreePluginOptions {
     /**
      * @description
      * If set to `true`, a [Customer](https://developer.paypal.com/braintree/docs/guides/customers) object
-     * will be created in Braintree, which allows the secure storage of previously-used payment methods.
+     * will be created in Braintree, which allows the secure storage ("vaulting") of previously-used payment methods.
      * This is done by adding a custom field to the Customer entity to store the Braintree customer ID,
      * so switching this on will require a database migration / synchronization.
+     *
+     * Since v1.8, it is possible to override vaulting on a per-payment basis by passing `includeCustomerId: false` to the
+     * `generateBraintreeClientToken` mutation.
      *
      * @default false
      */

@@ -1,5 +1,5 @@
 import { PaymentStatus } from '@mollie/api-client';
-import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
+import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient, TestServer } from '@vendure/testing';
 import gql from 'graphql-tag';
 import nock from 'nock';
@@ -30,13 +30,35 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
         }
     }`;
 
+export const GET_MOLLIE_PAYMENT_METHODS = gql`
+    query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
+        molliePaymentMethods(input: $input) {
+            id
+            code
+            description
+            minimumAmount {
+                value
+                currency
+            }
+            maximumAmount {
+                value
+                currency
+            }
+            image {
+                size1x
+                size2x
+                svg
+            }
+        }
+    }`;
+
 describe('Mollie payments', () => {
     const mockData = {
         host: 'https://my-vendure.io',
         redirectUrl: 'https://my-storefront/order',
         apiKey: 'myApiKey',
         methodCode: `mollie-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
-        mollieResponse: {
+        molliePaymentResponse: {
             id: 'tr_mockId',
             _links: {
                 checkout: {
@@ -52,6 +74,46 @@ describe('Mollie payments', () => {
             authorizedAt: new Date(),
             paidAt: new Date(),
         },
+        molliePaymentMethodsResponse:{
+            count: 1,
+            _embedded: {
+                methods: [
+                    {
+                        resource: 'method',
+                        id: 'ideal',
+                        description: 'iDEAL',
+                        minimumAmount: {
+                            value: '0.01',
+                            currency: 'EUR'
+                        },
+                        maximumAmount: {
+                            value: '50000.00',
+                            currency: 'EUR'
+                        },
+                        image: {
+                            size1x: 'https://www.mollie.com/external/icons/payment-methods/ideal.png',
+                            size2x: 'https://www.mollie.com/external/icons/payment-methods/ideal%402x.png',
+                            svg: 'https://www.mollie.com/external/icons/payment-methods/ideal.svg'
+                        },
+                        _links: {
+                            self: {
+                                href: 'https://api.mollie.com/v2/methods/ideal',
+                                type: 'application/hal+json'
+                            }
+                        }
+                    }]
+            },
+            _links: {
+                self: {
+                    href: 'https://api.mollie.com/v2/methods',
+                    type: 'application/hal+json'
+                },
+                documentation: {
+                    href: 'https://docs.mollie.com/reference/v2/methods-api/list-methods',
+                    type: 'text/html'
+                }
+            }
+        }
     };
     let shopClient: SimpleGraphQLClient;
     let adminClient: SimpleGraphQLClient;
@@ -134,14 +196,26 @@ describe('Mollie payments', () => {
         expect(result.errorCode).toBe('ORDER_PAYMENT_STATE_ERROR');
     });
 
-    it('Should get payment url', async () => {
+    it('Should fail to create payment intent with invalid Mollie method', async () => {
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+        await setShipping(shopClient);
+        const { createMolliePaymentIntent: result } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            input: {
+                paymentMethodCode: mockData.methodCode,
+                molliePaymentMethodCode: 'invalid'
+            },
+        });
+        expect(result.errorCode).toBe('INELIGIBLE_PAYMENT_METHOD_ERROR');
+    });
+
+    it('Should get payment url without Mollie method', async () => {
         let mollieRequest;
         nock('https://api.mollie.com/')
             .post(/.*/, body => {
                 mollieRequest = body;
                 return true;
             })
-            .reply(200, mockData.mollieResponse);
+            .reply(200, mockData.molliePaymentResponse);
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         await setShipping(shopClient);
         const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
@@ -159,17 +233,36 @@ describe('Mollie payments', () => {
         expect(mollieRequest?.amount?.currency).toBeDefined();
     });
 
+    it('Should get payment url with Mollie method', async () => {
+        let mollieRequest;
+        nock('https://api.mollie.com/')
+            .post(/.*/, body => {
+                mollieRequest = body;
+                return true;
+            })
+            .reply(200, mockData.molliePaymentResponse);
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+        await setShipping(shopClient);
+        const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+            input: {
+                paymentMethodCode: mockData.methodCode,
+                molliePaymentMethodCode: 'ideal',
+            },
+        });
+        expect(createMolliePaymentIntent).toEqual({ url: 'https://www.mollie.com/payscreen/select-method/mock-payment' });
+    });
+
     it('Should settle payment for order', async () => {
         nock('https://api.mollie.com/')
             .get(/.*/)
             .reply(200, {
-                ...mockData.mollieResponse,
+                ...mockData.molliePaymentResponse,
                 status: PaymentStatus.paid,
                 metadata: { orderCode: order.code },
             });
         await fetch(`http://localhost:${serverPort}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`, {
             method: 'post',
-            body: JSON.stringify({ id: mockData.mollieResponse.id }),
+            body: JSON.stringify({ id: mockData.molliePaymentResponse.id }),
             headers: { 'Content-Type': 'application/json' },
         });
         const { orderByCode } = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
@@ -185,13 +278,13 @@ describe('Mollie payments', () => {
 
     it('Should have Mollie metadata on payment', async () => {
         const { order: { payments: [{ metadata }] } } = await adminClient.query(GET_ORDER_PAYMENTS, { id: order.id });
-        expect(metadata.mode).toBe(mockData.mollieResponse.mode);
-        expect(metadata.method).toBe(mockData.mollieResponse.method);
-        expect(metadata.profileId).toBe(mockData.mollieResponse.profileId);
-        expect(metadata.settlementAmount).toBe(mockData.mollieResponse.settlementAmount);
-        expect(metadata.customerId).toBe(mockData.mollieResponse.customerId);
-        expect(metadata.authorizedAt).toEqual(mockData.mollieResponse.authorizedAt.toISOString());
-        expect(metadata.paidAt).toEqual(mockData.mollieResponse.paidAt.toISOString());
+        expect(metadata.mode).toBe(mockData.molliePaymentResponse.mode);
+        expect(metadata.method).toBe(mockData.molliePaymentResponse.method);
+        expect(metadata.profileId).toBe(mockData.molliePaymentResponse.profileId);
+        expect(metadata.settlementAmount).toBe(mockData.molliePaymentResponse.settlementAmount);
+        expect(metadata.customerId).toBe(mockData.molliePaymentResponse.customerId);
+        expect(metadata.authorizedAt).toEqual(mockData.molliePaymentResponse.authorizedAt.toISOString());
+        expect(metadata.paidAt).toEqual(mockData.molliePaymentResponse.paidAt.toISOString());
     });
 
     it('Should fail to refund', async () => {
@@ -219,4 +312,22 @@ describe('Mollie payments', () => {
         expect(refund.total).toBe(155880);
         expect(refund.state).toBe('Settled');
     });
+
+    it('Should get available paymentMethods', async () => {
+        nock('https://api.mollie.com/')
+            .get(/.*/)
+            .reply(200, mockData.molliePaymentMethodsResponse);
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+        const { molliePaymentMethods } = await shopClient.query(GET_MOLLIE_PAYMENT_METHODS, {
+            input: {
+                paymentMethodCode: mockData.methodCode,
+            },
+        });
+        const method = molliePaymentMethods[0];
+        expect(method.code).toEqual('ideal');
+        expect(method.minimumAmount).toBeDefined()
+        expect(method.maximumAmount).toBeDefined()
+        expect(method.image).toBeDefined()
+    });
+
 });

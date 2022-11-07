@@ -201,7 +201,7 @@ export class OrderService {
                 channelId: ctx.channelId,
                 customPropertyMap: {
                     customerLastName: 'customer.lastName',
-                    transactionId: 'payment.transactionId',
+                    transactionId: 'payments.transactionId',
                 },
             })
             .getManyAndCount()
@@ -321,6 +321,7 @@ export class OrderService {
                 channelId: ctx.channelId,
                 ctx,
             })
+            .andWhere('order.state != :draftState', { draftState: 'Draft' })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
@@ -412,19 +413,7 @@ export class OrderService {
      * User's Customer account.
      */
     async create(ctx: RequestContext, userId?: ID): Promise<Order> {
-        const newOrder = new Order({
-            code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
-            state: this.orderStateMachine.getInitialState(),
-            lines: [],
-            surcharges: [],
-            couponCodes: [],
-            modifications: [],
-            shippingAddress: {},
-            billingAddress: {},
-            subTotal: 0,
-            subTotalWithTax: 0,
-            currencyCode: ctx.channel.currencyCode,
-        });
+        const newOrder = await this.createEmptyOrderEntity(ctx);
         if (userId) {
             const customer = await this.customerService.findOneByUserId(ctx, userId);
             if (customer) {
@@ -440,6 +429,36 @@ export class OrderService {
             throw transitionResult;
         }
         return transitionResult;
+    }
+
+    async createDraft(ctx: RequestContext) {
+        const newOrder = await this.createEmptyOrderEntity(ctx);
+        newOrder.active = false;
+        await this.channelService.assignToCurrentChannel(newOrder, ctx);
+        const order = await this.connection.getRepository(ctx, Order).save(newOrder);
+        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
+        const transitionResult = await this.transitionToState(ctx, order.id, 'Draft');
+        if (isGraphQlErrorResult(transitionResult)) {
+            // this should never occur, so we will throw rather than return
+            throw transitionResult;
+        }
+        return transitionResult;
+    }
+
+    private async createEmptyOrderEntity(ctx: RequestContext) {
+        return new Order({
+            code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
+            state: this.orderStateMachine.getInitialState(),
+            lines: [],
+            surcharges: [],
+            couponCodes: [],
+            modifications: [],
+            shippingAddress: {},
+            billingAddress: {},
+            subTotal: 0,
+            subTotalWithTax: 0,
+            currencyCode: ctx.channel.currencyCode,
+        });
     }
 
     /**
@@ -1686,10 +1705,10 @@ export class OrderService {
     }
 
     /**
-     * Returns error if the Order is not in the "AddingItems" state.
+     * Returns error if the Order is not in the "AddingItems" or "Draft" state.
      */
     private assertAddingItemsState(order: Order) {
-        if (order.state !== 'AddingItems') {
+        if (order.state !== 'AddingItems' && order.state !== 'Draft') {
             return new OrderModificationError();
         }
     }
@@ -1728,6 +1747,9 @@ export class OrderService {
         order: Order,
         updatedOrderLines?: OrderLine[],
     ): Promise<Order> {
+        const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
+        const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+
         if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =
                 this.configService.orderOptions;
@@ -1741,6 +1763,7 @@ export class OrderService {
                     ctx,
                     variant,
                     updatedOrderLine.customFields || {},
+                    order,
                 );
                 const initialListPrice =
                     updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
@@ -1750,6 +1773,7 @@ export class OrderService {
                         ctx,
                         priceResult,
                         updatedOrderLine.items,
+                        order,
                     );
                 }
                 for (const item of updatedOrderLine.items) {
@@ -1761,16 +1785,6 @@ export class OrderService {
                 }
             }
         }
-
-        const promotions = await this.connection
-            .getRepository(ctx, Promotion)
-            .createQueryBuilder('promotion')
-            .leftJoin('promotion.channels', 'channel')
-            .where('channel.id = :channelId', { channelId: ctx.channelId })
-            .andWhere('promotion.deletedAt IS NULL')
-            .andWhere('promotion.enabled = :enabled', { enabled: true })
-            .orderBy('promotion.priorityScore', 'ASC')
-            .getMany();
 
         const updatedItems = await this.orderCalculator.applyPriceAdjustments(
             ctx,
@@ -1799,7 +1813,9 @@ export class OrderService {
             .execute();
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
-        return order;
+        await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
+
+        return assertFound(this.findOne(ctx, order.id));
     }
 
     private async getOrderWithFulfillments(ctx: RequestContext, orderId: ID): Promise<Order> {

@@ -135,19 +135,19 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
                 if (this.isOrderItemArg(args)) {
                     const { orderItem, orderLine } = args;
                     amount += Math.round(
-                        await promotionAction.execute(ctx, orderItem, orderLine, action.args, state),
+                        await promotionAction.execute(ctx, orderItem, orderLine, action.args, state, this),
                     );
                 }
             } else if (promotionAction instanceof PromotionOrderAction) {
                 if (this.isOrderArg(args)) {
                     const { order } = args;
-                    amount += Math.round(await promotionAction.execute(ctx, order, action.args, state));
+                    amount += Math.round(await promotionAction.execute(ctx, order, action.args, state, this));
                 }
             } else if (promotionAction instanceof PromotionShippingAction) {
                 if (this.isShippingArg(args)) {
                     const { shippingLine, order } = args;
                     amount += Math.round(
-                        await promotionAction.execute(ctx, shippingLine, order, action.args, state),
+                        await promotionAction.execute(ctx, shippingLine, order, action.args, state, this),
                     );
                 }
             }
@@ -178,7 +178,12 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
             if (!promotionCondition) {
                 return false;
             }
-            const applicableOrConditionState = await promotionCondition.check(ctx, order, condition.args);
+            const applicableOrConditionState = await promotionCondition.check(
+                ctx,
+                order,
+                condition.args,
+                this,
+            );
             if (!applicableOrConditionState) {
                 return false;
             }
@@ -188,6 +193,21 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
         return promotionState;
     }
+
+    async activate(ctx: RequestContext, order: Order) {
+        for (const action of this.actions) {
+            const promotionAction = this.allActions[action.code];
+            await promotionAction.onActivate(ctx, order, action.args, this);
+        }
+    }
+
+    async deactivate(ctx: RequestContext, order: Order) {
+        for (const action of this.actions) {
+            const promotionAction = this.allActions[action.code];
+            await promotionAction.onDeactivate(ctx, order, action.args, this);
+        }
+    }
+
     private isShippingAction(
         value: PromotionItemAction | PromotionOrderAction | PromotionShippingAction,
     ): value is PromotionItemAction {

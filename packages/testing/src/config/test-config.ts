@@ -2,6 +2,7 @@ import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/lib/shared-consta
 import {
     DefaultAssetNamingStrategy,
     defaultConfig,
+    DefaultLogger,
     mergeConfig,
     NoopLogger,
     VendureConfig,
@@ -13,6 +14,8 @@ import { TestingEntityIdStrategy } from './testing-entity-id-strategy';
 
 export const E2E_DEFAULT_CHANNEL_TOKEN = 'e2e-default-channel';
 
+const logger = process.env.LOG ? new DefaultLogger() : new NoopLogger();
+
 /**
  * @description
  * A {@link VendureConfig} object used for e2e tests. This configuration uses sqljs as the database
@@ -23,6 +26,16 @@ export const E2E_DEFAULT_CHANNEL_TOKEN = 'e2e-default-channel';
  * * `logger: new NoopLogger()` Do no output logs by default
  * * `assetStorageStrategy: new TestingAssetStorageStrategy()` This strategy does not actually persist any binary data to disk.
  * * `assetPreviewStrategy: new TestingAssetPreviewStrategy()` This strategy is a no-op.
+ *
+ * ## Logging
+ * By default, the testConfig does not output any log messages. This is most desirable to keep a clean CI output.
+ * However, for debugging purposes, it can make it hard to figure out why tests fail.
+ *
+ * You can enable default logging behaviour with the environment variable `LOG`:
+ *
+ * ```
+ * LOG=true yarn e2e
+ * ```
  *
  * @docsCategory testing
  */
@@ -54,7 +67,7 @@ export const testConfig: Required<VendureConfig> = mergeConfig(defaultConfig, {
     paymentOptions: {
         paymentMethodHandlers: [],
     },
-    logger: new NoopLogger(),
+    logger,
     importExportOptions: {},
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
