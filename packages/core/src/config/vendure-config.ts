@@ -26,6 +26,7 @@ import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-proce
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
+import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
 import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
@@ -557,6 +558,18 @@ export interface OrderOptions {
      * @default DefaultOrderPlacedStrategy
      */
     orderPlacedStrategy?: OrderPlacedStrategy;
+    /**
+     * @description
+     * Defines the strategy used to determine the active Order when interacting with Shop API operations
+     * such as `activeOrder` and `addItemToOrder`. By default, the strategy uses the active Session.
+     *
+     * Note that if multiple strategies are defined, they will be checked in order and the first one that
+     * returns an Order will be used.
+     *
+     * @since 1.9.0
+     * @default DefaultActiveOrderStrategy
+     */
+    activeOrderStrategy?: ActiveOrderStrategy | ActiveOrderStrategy[];
 }
 
 /**

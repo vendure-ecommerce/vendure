@@ -22,6 +22,7 @@ import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
 import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
+import { generateActiveOrderTypes } from './generate-active-order-types';
 import { generateAuthenticationTypes } from './generate-auth-types';
 import { generateErrorCodeEnum } from './generate-error-code-enum';
 import { generateListOptions } from './generate-list-options';
@@ -158,6 +159,7 @@ async function createGraphQLOptions(
         }
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
+            schema = generateActiveOrderTypes(schema, configService.orderOptions.activeOrderStrategy);
         }
         schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
 

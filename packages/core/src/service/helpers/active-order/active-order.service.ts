@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { InternalServerError } from '../../../common/error/errors';
-import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { InternalServerError, UserInputError } from '../../../common/index';
+import { ConfigService } from '../../../config/index';
+import { TransactionalConnection } from '../../../connection/index';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderService } from '../../services/order.service';
 import { SessionService } from '../../services/session.service';
@@ -19,6 +20,7 @@ export class ActiveOrderService {
         private sessionService: SessionService,
         private orderService: OrderService,
         private connection: TransactionalConnection,
+        private configService: ConfigService,
     ) {}
 
     /**
@@ -28,6 +30,8 @@ export class ActiveOrderService {
      *
      * Intended to be used at the Resolver layer for those resolvers that depend upon an active Order
      * being present.
+     *
+     * @deprecated From v1.9.0, use the `getActiveOrder` method which uses any configured ActiveOrderStrategies
      */
     async getOrderFromContext(ctx: RequestContext): Promise<Order | undefined>;
     async getOrderFromContext(ctx: RequestContext, createIfNotExists: true): Promise<Order>;
@@ -60,6 +64,61 @@ export class ActiveOrderService {
             }
 
             if (order) {
+                await this.sessionService.setActiveOrder(ctx, ctx.session, order);
+            }
+        }
+        return order || undefined;
+    }
+
+    /**
+     * @description
+     * Retrieves the active Order based on the configured {@link ActiveOrderStrategy}.
+     *
+     * @since 1.9.0
+     */
+    async getActiveOrder(
+        ctx: RequestContext,
+        input: { [strategyName: string]: any } | undefined,
+    ): Promise<Order | undefined>;
+    async getActiveOrder(
+        ctx: RequestContext,
+        input: { [strategyName: string]: any } | undefined,
+        createIfNotExists: true,
+    ): Promise<Order>;
+    async getActiveOrder(
+        ctx: RequestContext,
+        input: { [strategyName: string]: any } | undefined,
+        createIfNotExists = false,
+    ): Promise<Order | undefined> {
+        let order: any;
+        if (!order) {
+            const { activeOrderStrategy } = this.configService.orderOptions;
+            const strategyArray = Array.isArray(activeOrderStrategy)
+                ? activeOrderStrategy
+                : [activeOrderStrategy];
+            for (const strategy of strategyArray) {
+                const strategyInput = input?.[strategy.name] ?? {};
+                order = await strategy.determineActiveOrder(ctx, strategyInput);
+                if (order) {
+                    break;
+                }
+                if (createIfNotExists && typeof strategy.createActiveOrder === 'function') {
+                    order = await strategy.createActiveOrder(ctx, input);
+                }
+                if (order) {
+                    break;
+                }
+            }
+
+            if (!order && createIfNotExists) {
+                // No order has been found, and none could be created, which indicates that
+                // none of the configured strategies have a `createActiveOrder` method defined.
+                // In this case, we should throw an error because it is assumed that such a configuration
+                // indicates that an external order creation mechanism should be defined.
+                throw new UserInputError('error.order-could-not-be-determined-or-created');
+            }
+
+            if (order && ctx.session) {
                 await this.sessionService.setActiveOrder(ctx, ctx.session, order);
             }
         }
