@@ -48,9 +48,7 @@ export class LoginComponent {
 
     loadImage() {
         this.httpClient
-            .get('https://login-image.vendure.io', {
-                params: new HttpParams().append('domain', window.location.hostname),
-            })
+            .get('https://login-image.vendure.io')
             .toPromise()
             .then(res => {
                 this.updateImage(res);
