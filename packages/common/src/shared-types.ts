@@ -306,6 +306,8 @@ export interface AdminUiConfig {
     /**
      * @description
      * The custom login image
+     *
+     * @since 1.9.0
      */
     loginImage?: string;
     /**

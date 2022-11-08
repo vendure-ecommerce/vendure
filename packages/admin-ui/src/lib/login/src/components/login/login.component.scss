@@ -17,6 +17,8 @@
         justify-content: flex-start;
         align-items: stretch;
         position: relative;
+        border-radius: 3px;
+        overflow: hidden;
 
         @media (max-width: $breakpoint-medium) {
             flex-direction: column;
