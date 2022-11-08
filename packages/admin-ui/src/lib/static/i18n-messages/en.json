@@ -286,7 +286,9 @@
     "username": "Username",
     "view-next-month": "View next month",
     "view-previous-month": "View previous month",
-    "with-selected": "With {count} selected..."
+    "with-selected": "With {count} selected...",
+    "login-title": "Log in to Vendure",
+    "login-image-title": "Hi! Welcome back. Good to see you."
   },
   "customer": {
     "add-customer-to-group": "Add customer to group",

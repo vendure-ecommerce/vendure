@@ -305,6 +305,13 @@ export interface AdminUiConfig {
     hideVersion?: boolean;
     /**
      * @description
+     * The custom login image
+     *
+     * @since 1.9.0
+     */
+    loginImage?: string;
+    /**
+     * @description
      * Allows you to provide default reasons for a refund or cancellation. This will be used in the
      * refund/cancel dialog. The values can be literal strings (e.g. "Not in stock") or translation
      * tokens (see [Adding Admin UI Translations](/docs/plugins/extending-the-admin-ui/adding-ui-translations/)).
