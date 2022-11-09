@@ -223,7 +223,7 @@ export class OrderModifier {
                 ]);
             }
         } else if (quantity < currentQuantity) {
-            if (order.active) {
+            if (order.active || order.state === 'Draft') {
                 // When an Order is still active, it is fine to just delete
                 // any OrderItems that are no longer needed
                 const keepItems = orderLine.items.slice(0, quantity);
