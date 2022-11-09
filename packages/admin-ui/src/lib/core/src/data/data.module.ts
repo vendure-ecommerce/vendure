@@ -39,6 +39,13 @@ export function createApollo(
                     },
                 },
             },
+            Facet: {
+                fields: {
+                    values: {
+                        merge: (existing, incoming) => incoming,
+                    },
+                },
+            },
         },
     });
     apolloCache.writeQuery({
