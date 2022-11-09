@@ -35,6 +35,6 @@
   "dependencies": {
     "file-type": "^16.2.0",
     "fs-extra": "^10.0.0",
-    "sharp": "~0.30.7"
+    "sharp": "~0.31.2"
   }
 }
