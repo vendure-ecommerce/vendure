@@ -120,7 +120,7 @@
     "facet-force-deleted": "The Facet was deleted and its FacetValues were removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-used": "The Facet \"{ facetCode }\" includes FacetValues which are assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-value-force-deleted": "The selected FacetValue was removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}} and deleted",
-    "facet-value-used": "The selected FacetValue is assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
+    "facet-value-used": "The FacetValue \"{ facetValueCode }\" is assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "payment-method-used-in-channels": "The selected PaymentMethod is assigned to the following Channels: { channelCodes }. Set \"force: true\" to delete from all Channels.",
     "product-option-used": "Cannot delete the option \"{code}\" as it is being used by {count, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "zone-used-in-channels": "The selected Zone cannot be deleted as it used as a default in the following Channels: { channelCodes }",

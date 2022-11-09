@@ -144,11 +144,16 @@ export class FacetValueService {
 
         const isInUse = !!(productCount || variantCount);
         const both = !!(productCount && variantCount) ? 'both' : 'single';
-        const i18nVars = { products: productCount, variants: variantCount, both };
         let message = '';
         let result: DeletionResult;
 
         const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
+        const i18nVars = {
+            products: productCount,
+            variants: variantCount,
+            both,
+            facetValueCode: facetValue.code,
+        };
         // Create a new facetValue so that the id is still available
         // after deletion (the .remove() method sets it to undefined)
         const deletedFacetValue = new FacetValue(facetValue);
