@@ -82,30 +82,8 @@ export class OrderStateMachine {
             const modifications = await this.connection
                 .getRepository(data.ctx, OrderModification)
                 .find({ where: { order: data.order }, relations: ['refund', 'payment'] });
-            if (toState === 'ArrangingAdditionalPayment') {
-                if (0 < modifications.length && modifications.every(modification => modification.isSettled)) {
-                    return `message.cannot-transition-no-additional-payments-needed`;
-                }
-            } else {
-                if (modifications.some(modification => !modification.isSettled)) {
-                    return `message.cannot-transition-without-modification-payment`;
-                }
-            }
-        }
-        if (fromState === 'ArrangingAdditionalPayment') {
-            if (toState === 'Cancelled') {
-                return;
-            }
-            const existingPayments = await this.connection.getRepository(data.ctx, Payment).find({
-                relations: ['refunds'],
-                where: {
-                    order: { id: data.order.id },
-                },
-            });
-            data.order.payments = existingPayments;
-            const deficit = data.order.totalWithTax - totalCoveredByPayments(data.order);
-            if (0 < deficit) {
-                return `message.cannot-transition-from-arranging-additional-payment`;
+            if (modifications.some(modification => !modification.isSettled)) {
+                return `message.cannot-transition-without-modification-payment`;
             }
         }
         if (fromState === 'AddingItems' && toState !== 'Cancelled' && data.order.lines.length > 0) {
@@ -145,30 +123,6 @@ export class OrderStateMachine {
         if (toState === 'Cancelled' && fromState !== 'AddingItems' && fromState !== 'ArrangingPayment') {
             if (!orderItemsAreAllCancelled(data.order)) {
                 return `message.cannot-transition-unless-all-cancelled`;
-            }
-        }
-        if (toState === 'PartiallyShipped') {
-            const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
-            if (!orderItemsArePartiallyShipped(orderWithFulfillments)) {
-                return `message.cannot-transition-unless-some-order-items-shipped`;
-            }
-        }
-        if (toState === 'Shipped') {
-            const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
-            if (!orderItemsAreShipped(orderWithFulfillments)) {
-                return `message.cannot-transition-unless-all-order-items-shipped`;
-            }
-        }
-        if (toState === 'PartiallyDelivered') {
-            const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
-            if (!orderItemsArePartiallyDelivered(orderWithFulfillments)) {
-                return `message.cannot-transition-unless-some-order-items-delivered`;
-            }
-        }
-        if (toState === 'Delivered') {
-            const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
-            if (!orderItemsAreDelivered(orderWithFulfillments)) {
-                return `message.cannot-transition-unless-all-order-items-delivered`;
             }
         }
     }

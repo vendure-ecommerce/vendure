@@ -395,7 +395,7 @@ export class CustomerService {
         if (customFields?.referralCode) {
             const referringUser = await this.getCustomerByPhoneNumber(ctx, customFields.referralCode);
             if (referringUser) {
-                customFields.referredBy = referringUser.id;
+                customFields.referredBy = referringUser.id.toString();
                 customFields.isReferralCompleted = false;
             }
         }

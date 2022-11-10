@@ -38,6 +38,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { print } from 'graphql';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -898,9 +899,11 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
+        console.log(fromState, state);
         try {
             await this.orderStateMachine.transition(ctx, order, state);
         } catch (e) {
+            console.log(e);
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new OrderStateTransitionError(transitionError, fromState, state);
         }
@@ -1076,7 +1079,7 @@ export class OrderService {
      * 1. the Order is in the `ArrangingPayment` state or
      * 2. the Order's current state can transition to `PaymentAuthorized` and `PaymentSettled`
      */
-    private canAddPaymentToOrder(order: Order): boolean {
+    canAddPaymentToOrder(order: Order): boolean {
         if (order.state === 'ArrangingPayment') {
             return true;
         }
@@ -1091,7 +1094,7 @@ export class OrderService {
         return canTransitionToPaymentAuthorized && canTransitionToPaymentSettled;
     }
 
-    private async transitionOrderIfTotalIsCovered(
+    async transitionOrderIfTotalIsCovered(
         ctx: RequestContext,
         order: Order,
     ): Promise<Order | OrderStateTransitionError> {
@@ -1679,7 +1682,7 @@ export class OrderService {
         return order;
     }
 
-    private async getOrderOrThrow(ctx: RequestContext, orderId: ID): Promise<Order> {
+    async getOrderOrThrow(ctx: RequestContext, orderId: ID): Promise<Order> {
         const order = await this.findOne(ctx, orderId);
         if (!order) {
             throw new EntityNotFoundError('Order', orderId);

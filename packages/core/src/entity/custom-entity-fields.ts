@@ -1,5 +1,3 @@
-import { ID } from '../../dist';
-
 import { Customer } from '.';
 
 export class CustomAddressFields {
@@ -21,7 +19,7 @@ export class CustomCollectionFieldsTranslation {}
 export class CustomCountryFields {}
 export class CustomCountryFieldsTranslation {}
 export class CustomCustomerFields {
-    referredBy?: ID;
+    referredBy?: string;
     isReferralCompleted?: boolean;
     loyaltyPoints: number;
     referralCode?: string;
