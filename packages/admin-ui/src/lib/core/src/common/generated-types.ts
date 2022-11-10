@@ -6672,7 +6672,7 @@ export type OrderFragment = (
   & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'orderPlacedAt' | 'code' | 'state' | 'nextStates' | 'total' | 'totalWithTax' | 'currencyCode'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
-    & Pick<Customer, 'id' | 'firstName' | 'lastName'>
+    & Pick<Customer, 'id' | 'firstName' | 'lastName' | 'phoneNumber'>
   )>, shippingLines: Array<(
     { __typename?: 'ShippingLine' }
     & { shippingMethod: (
@@ -6721,7 +6721,7 @@ export type OrderDetailFragment = (
   & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'couponCodes' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax' | 'currencyCode' | 'shipping' | 'shippingWithTax'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
-    & Pick<Customer, 'id' | 'firstName' | 'lastName'>
+    & Pick<Customer, 'id' | 'firstName' | 'lastName' | 'phoneNumber'>
   )>, lines: Array<(
     { __typename?: 'OrderLine' }
     & OrderLineFragment

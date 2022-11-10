@@ -1,14 +1,23 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "types": ["jest", "node"],
-    "lib": ["es2015"],
-    "skipLibCheck": true,
-    "inlineSourceMap": false,
-    "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "allowJs": false,
-    "diagnostics": false
-  }
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs",
+        "noLib": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "target": "es2017",
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "newLine": "LF",
+        "resolveJsonModule": true,
+        "types": ["jest", "node"],
+        "lib": ["es2015"],
+        "skipLibCheck": true,
+        "inlineSourceMap": false,
+        "sourceMap": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "allowJs": false,
+        "diagnostics": false
+    }
 }

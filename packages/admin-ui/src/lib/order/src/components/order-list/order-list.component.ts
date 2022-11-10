@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
@@ -8,12 +8,14 @@ import {
     GetOrderList,
     LocalStorageService,
     LogicalOperator,
+    ModalService,
+    NotificationService,
     OrderListOptions,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
-import { merge, Observable } from 'rxjs';
+import { EMPTY, merge, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 
 interface OrderFilterConfig {
@@ -35,8 +37,9 @@ interface FilterPreset {
 })
 export class OrderListComponent
     extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
-    implements OnInit
+    implements OnInit, OnDestroy
 {
+    refreshInterval: any;
     searchControl = new FormControl('');
     searchOrderCodeControl = new FormControl('');
     searchLastNameControl = new FormControl('');
@@ -44,10 +47,9 @@ export class OrderListComponent
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
     filterPresets: FilterPreset[] = [
         {
-            name: 'open',
+            name: 'open', // have this show everything
             label: _('order.filter-preset-open'),
             config: {
-                active: false,
                 states: this.orderStates.filter(
                     s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped' && s !== 'Draft',
                 ),
@@ -65,8 +67,7 @@ export class OrderListComponent
             name: 'completed',
             label: _('order.filter-preset-completed'),
             config: {
-                active: false,
-                states: ['Delivered', 'Cancelled'],
+                states: ['Finished', 'Cancelled'],
             },
         },
         {
@@ -94,6 +95,8 @@ export class OrderListComponent
         private localStorageService: LocalStorageService,
         router: Router,
         route: ActivatedRoute,
+        private modalService: ModalService,
+        private notificationService: NotificationService,
     ) {
         super(router, route);
         super.setQueryFn(
@@ -144,6 +147,38 @@ export class OrderListComponent
             placedAtStart: new FormControl(queryParamMap.get('placedAtStart')),
             placedAtEnd: new FormControl(queryParamMap.get('placedAtEnd')),
         });
+        this.setItemsPerPage(50); // default to 50
+        this.refreshInterval = setInterval(() => {
+            this.refresh();
+        }, 10000);
+    }
+
+    toNextState(order: Order) {
+        return this.modalService
+            .dialog({
+                title: 'Proceed to Next State',
+                body: `Are you sure you want to proceed to '${order.nextStates[0]}'`,
+                buttons: [
+                    { type: 'secondary', label: _('common.cancel') },
+                    { type: 'primary', label: 'Confirm', returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap(res =>
+                    res
+                        ? this.dataService.order.transitionToState(order.id.toString(), order.nextStates[0])
+                        : EMPTY,
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success('Successfully Updated Order State');
+                    this.refresh();
+                },
+                err => {
+                    this.notificationService.error('Error Updating Order State');
+                },
+            );
     }
 
     selectFilterPreset(presetName: string) {
@@ -258,6 +293,12 @@ export class OrderListComponent
             return order.shippingLines.map(shippingLine => shippingLine.shippingMethod.name).join(', ');
         } else {
             return '';
+        }
+    }
+
+    ngOnDestroy(): void {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
         }
     }
 }

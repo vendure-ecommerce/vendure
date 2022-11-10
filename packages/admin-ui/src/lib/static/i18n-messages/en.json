@@ -692,7 +692,6 @@
         "error": "Error",
         "failed": "Failed",
         "modifying": "Modifying",
-        "partially-delivered": "Partially delivered",
         "partially-shipped": "Partially shipped",
         "payment-authorized": "Payment authorized",
         "payment-settled": "Payment settled",
@@ -718,4 +717,9 @@
         "job-result": "Job result",
         "job-state": "Job state"
     }
+        "partially-delivered": "Partially delivered",
+    "received": "Received",
+    "processing": "Processing",
+    "ready-for-pickup": "Ready For Pickup",
+    "completed": "Completed"
 }

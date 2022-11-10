@@ -122,6 +122,7 @@ export class FacetValueService {
                 }
             },
         });
+
         const facetValueWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
             FacetValue,

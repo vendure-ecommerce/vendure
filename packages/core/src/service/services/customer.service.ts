@@ -146,6 +146,30 @@ export class CustomerService {
 
     /**
      * @description
+     * Returns the Customer entity associated with the given userId, if one exists.
+     * Setting `filterOnChannel` to `true` will limit the results to Customers which are assigned
+     * to the current active Channel only.
+     */
+    findOneByPhoneNumber(
+        ctx: RequestContext,
+        phoneNumber: string,
+        filterOnChannel = true,
+    ): Promise<Customer | undefined> {
+        let query = this.connection
+            .getRepository(ctx, Customer)
+            .createQueryBuilder('customer')
+            .leftJoin('customer.channels', 'channel')
+            .leftJoinAndSelect('customer.user', 'user')
+            .where('user.phoneNumber = :phoneNumber', { phoneNumber })
+            .andWhere('customer.deletedAt is null');
+        if (filterOnChannel) {
+            query = query.andWhere('channel.id = :channelId', { channelId: ctx.channelId });
+        }
+        return query.getOne();
+    }
+
+    /**
+     * @description
      * Returns all {@link Address} entities associated with the specified Customer.
      */
     findAddressesByCustomerId(ctx: RequestContext, customerId: ID): Promise<Address[]> {

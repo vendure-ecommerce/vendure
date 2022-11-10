@@ -897,6 +897,34 @@ export class OrderService {
         state: OrderState,
     ): Promise<Order | OrderStateTransitionError> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        // check if this is the transition after which the loyalty points should apply
+        if (
+            order.customer &&
+            !order.customer.customFields.isReferralCompleted &&
+            state === 'Completed' &&
+            order.customer &&
+            order.customer.customFields.referredBy
+        ) {
+            const referringCustomer = await this.customerService.findOneByPhoneNumber(
+                ctx,
+                order.customer.customFields.referredBy, // phone number
+            );
+            if (referringCustomer) {
+                this.customerService.update(ctx, {
+                    id: order.customer.id,
+                    customFields: {
+                        isReferralCompleted: true,
+                    },
+                });
+                this.customerService.update(ctx, {
+                    id: referringCustomer.id,
+                    customFields: {
+                        loyaltyPoints: order.customer.customFields.loyaltyPoints + 10, // Where should it come from?
+                    },
+                });
+            }
+        }
+
         order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
         console.log(fromState, state);
@@ -989,23 +1017,6 @@ export class OrderService {
 
         const transitionOrderIfStateAvailable = (state: OrderState) =>
             nextOrderStates.includes(state) && this.transitionToState(ctx, order.id, state);
-
-        if (toState === 'Shipped') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
-            if (orderItemsAreShipped(orderWithFulfillment)) {
-                await transitionOrderIfStateAvailable('Shipped');
-            } else {
-                await transitionOrderIfStateAvailable('PartiallyShipped');
-            }
-        }
-        if (toState === 'Delivered') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
-            if (orderItemsAreDelivered(orderWithFulfillment)) {
-                await transitionOrderIfStateAvailable('Delivered');
-            } else {
-                await transitionOrderIfStateAvailable('PartiallyDelivered');
-            }
-        }
     }
 
     /**
@@ -1122,7 +1133,7 @@ export class OrderService {
         input: ManualPaymentInput,
     ): Promise<ErrorResultUnion<AddManualPaymentToOrderResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, input.orderId);
-        if (order.state !== 'ArrangingAdditionalPayment' && order.state !== 'ArrangingPayment') {
+        if (order.state !== 'ArrangingPayment') {
             return new ManualPaymentStateError();
         }
         const existingPayments = await this.getOrderPayments(ctx, order.id);

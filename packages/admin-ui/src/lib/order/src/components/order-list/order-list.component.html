@@ -84,6 +84,7 @@
 </vdr-action-bar>
 
 <vdr-data-table
+    [customRowHeight]="5"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
     [totalItems]="totalItems$ | async"
@@ -112,6 +113,12 @@
         <td class="left align-middle">{{ order.orderPlacedAt | localeDate: 'medium' }}</td>
         <td class="left align-middle">{{ getShippingNames(order) }}</td>
         <td class="right align-middle">
+            <vdr-table-row-action
+                *ngIf="order.nextStates.length > 0"
+                iconShape="step-forward-2"
+                [label]="'Next State'"
+                (click)="toNextState(order)"
+            ></vdr-table-row-action>
             <vdr-table-row-action
                 iconShape="shopping-cart"
                 [label]="'common.open' | translate"
