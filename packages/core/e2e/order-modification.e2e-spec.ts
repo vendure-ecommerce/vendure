@@ -87,7 +87,7 @@ import {
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
-import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
 const SHIPPING_GB = 500;
 const SHIPPING_US = 1000;
@@ -1387,7 +1387,9 @@ describe('Order modification', () => {
             );
             orderGuard.assertSuccess(modifyOrder);
 
-            expect(modifyOrder?.payments?.find(p => p.id === additionalPaymentId)?.refunds).toEqual([
+            expect(
+                modifyOrder?.payments?.find(p => p.id === additionalPaymentId)?.refunds.sort(sortById),
+            ).toEqual([
                 {
                     id: 'T_4',
                     paymentId: additionalPaymentId,
