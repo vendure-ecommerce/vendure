@@ -244,6 +244,10 @@ export class FacetDetailComponent
             )
             .subscribe(
                 () => {
+                    const valuesFormArray = this.detailForm.get('values') as FormArray | null;
+                    if (valuesFormArray) {
+                        valuesFormArray.removeAt(index);
+                    }
                     this.notificationService.success(_('common.notify-delete-success'), {
                         entity: 'FacetValue',
                     });

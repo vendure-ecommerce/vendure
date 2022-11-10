@@ -113,7 +113,7 @@ describe('Draft Orders resolver', () => {
         draftOrder = addItemToDraftOrder;
     });
 
-    it('adjustDraftOrderLine', async () => {
+    it('adjustDraftOrderLine up', async () => {
         const { adjustDraftOrderLine } = await adminClient.query<
             Codegen.AdjustDraftOrderLineMutation,
             Codegen.AdjustDraftOrderLineMutationVariables
@@ -127,6 +127,22 @@ describe('Draft Orders resolver', () => {
 
         orderGuard.assertSuccess(adjustDraftOrderLine);
         expect(adjustDraftOrderLine.lines[0].quantity).toBe(5);
+    });
+
+    it('adjustDraftOrderLine down', async () => {
+        const { adjustDraftOrderLine } = await adminClient.query<
+            Codegen.AdjustDraftOrderLineMutation,
+            Codegen.AdjustDraftOrderLineMutationVariables
+        >(ADJUST_DRAFT_ORDER_LINE, {
+            orderId: draftOrder.id,
+            input: {
+                orderLineId: draftOrder.lines[0]!.id,
+                quantity: 2,
+            },
+        });
+
+        orderGuard.assertSuccess(adjustDraftOrderLine);
+        expect(adjustDraftOrderLine.lines[0].quantity).toBe(2);
     });
 
     it('removeDraftOrderLine', async () => {

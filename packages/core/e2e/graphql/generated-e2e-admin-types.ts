@@ -6937,6 +6937,24 @@ export type TransitionPaymentToStateMutationVariables = Exact<{
 
 export type TransitionPaymentToStateMutation = { transitionPaymentToState: PaymentFragment | Pick<PaymentStateTransitionError, 'errorCode' | 'message' | 'transitionError'> };
 
+export type GetProductVariantListQueryVariables = Exact<{
+  options?: Maybe<ProductVariantListOptions>;
+  productId?: Maybe<Scalars['ID']>;
+}>;
+
+
+export type GetProductVariantListQuery = { productVariants: (
+    Pick<ProductVariantList, 'totalItems'>
+    & { items: Array<Pick<ProductVariant, 'id' | 'name' | 'sku' | 'price' | 'priceWithTax'>> }
+  ) };
+
+export type DeletePromotionMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeletePromotionMutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
+
 export type CancelJobMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -7265,17 +7283,6 @@ export type GetProductVariantQueryVariables = Exact<{
 
 export type GetProductVariantQuery = { productVariant?: Maybe<Pick<ProductVariant, 'id' | 'name'>> };
 
-export type GetProductVariantListQueryVariables = Exact<{
-  options?: Maybe<ProductVariantListOptions>;
-  productId?: Maybe<Scalars['ID']>;
-}>;
-
-
-export type GetProductVariantListQuery = { productVariants: (
-    Pick<ProductVariantList, 'totalItems'>
-    & { items: Array<Pick<ProductVariant, 'id' | 'name' | 'sku' | 'price' | 'priceWithTax'>> }
-  ) };
-
 export type GetProductWithVariantListQueryVariables = Exact<{
   id?: Maybe<Scalars['ID']>;
   variantListOptions?: Maybe<ProductVariantListOptions>;
@@ -7289,13 +7296,6 @@ export type GetProductWithVariantListQuery = { product?: Maybe<(
       & { items: Array<ProductVariantFragment> }
     ) }
   )> };
-
-export type DeletePromotionMutationVariables = Exact<{
-  id: Scalars['ID'];
-}>;
-
-
-export type DeletePromotionMutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
 export type GetPromotionListQueryVariables = Exact<{
   options?: Maybe<PromotionListOptions>;
@@ -7622,6 +7622,17 @@ export type GetZoneQueryVariables = Exact<{
 
 
 export type GetZoneQuery = { zone?: Maybe<ZoneFragment> };
+
+export type GetActiveChannelWithZoneMembersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveChannelWithZoneMembersQuery = { activeChannel: (
+    Pick<Channel, 'id'>
+    & { defaultShippingZone?: Maybe<(
+      Pick<Zone, 'id'>
+      & { members: Array<Pick<Country, 'name'>> }
+    )> }
+  ) };
 
 export type CreateZoneMutationVariables = Exact<{
   input: CreateZoneInput;
@@ -8989,6 +9000,19 @@ export namespace TransitionPaymentToState {
   export type PaymentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>), { __typename?: 'PaymentStateTransitionError' }>);
 }
 
+export namespace GetProductVariantList {
+  export type Variables = GetProductVariantListQueryVariables;
+  export type Query = GetProductVariantListQuery;
+  export type ProductVariants = (NonNullable<GetProductVariantListQuery['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>;
+}
+
+export namespace DeletePromotion {
+  export type Variables = DeletePromotionMutationVariables;
+  export type Mutation = DeletePromotionMutation;
+  export type DeletePromotion = (NonNullable<DeletePromotionMutation['deletePromotion']>);
+}
+
 export namespace CancelJob {
   export type Variables = CancelJobMutationVariables;
   export type Mutation = CancelJobMutation;
@@ -9268,25 +9292,12 @@ export namespace GetProductVariant {
   export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
 }
 
-export namespace GetProductVariantList {
-  export type Variables = GetProductVariantListQueryVariables;
-  export type Query = GetProductVariantListQuery;
-  export type ProductVariants = (NonNullable<GetProductVariantListQuery['productVariants']>);
-  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>;
-}
-
 export namespace GetProductWithVariantList {
   export type Variables = GetProductWithVariantListQueryVariables;
   export type Query = GetProductWithVariantListQuery;
   export type Product = (NonNullable<GetProductWithVariantListQuery['product']>);
   export type VariantList = (NonNullable<(NonNullable<GetProductWithVariantListQuery['product']>)['variantList']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductWithVariantListQuery['product']>)['variantList']>)['items']>)[number]>;
-}
-
-export namespace DeletePromotion {
-  export type Variables = DeletePromotionMutationVariables;
-  export type Mutation = DeletePromotionMutation;
-  export type DeletePromotion = (NonNullable<DeletePromotionMutation['deletePromotion']>);
 }
 
 export namespace GetPromotionList {
@@ -9580,6 +9591,14 @@ export namespace GetZone {
   export type Variables = GetZoneQueryVariables;
   export type Query = GetZoneQuery;
   export type Zone = (NonNullable<GetZoneQuery['zone']>);
+}
+
+export namespace GetActiveChannelWithZoneMembers {
+  export type Variables = GetActiveChannelWithZoneMembersQueryVariables;
+  export type Query = GetActiveChannelWithZoneMembersQuery;
+  export type ActiveChannel = (NonNullable<GetActiveChannelWithZoneMembersQuery['activeChannel']>);
+  export type DefaultShippingZone = (NonNullable<(NonNullable<GetActiveChannelWithZoneMembersQuery['activeChannel']>)['defaultShippingZone']>);
+  export type Members = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetActiveChannelWithZoneMembersQuery['activeChannel']>)['defaultShippingZone']>)['members']>)[number]>;
 }
 
 export namespace CreateZone {

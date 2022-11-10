@@ -136,9 +136,10 @@ export class TaxRateService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const taxRate = await this.connection.getEntityOrThrow(ctx, TaxRate, id);
+        const deletedTaxRate = new TaxRate(taxRate);
         try {
             await this.connection.getRepository(ctx, TaxRate).remove(taxRate);
-            this.eventBus.publish(new TaxRateEvent(ctx, taxRate, 'deleted', id));
+            this.eventBus.publish(new TaxRateEvent(ctx, deletedTaxRate, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };

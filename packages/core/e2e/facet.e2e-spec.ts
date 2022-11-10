@@ -314,7 +314,7 @@ describe('Facet resolver', () => {
             expect(result1.deleteFacetValues).toEqual([
                 {
                     result: DeletionResult.NOT_DELETED,
-                    message: `The selected FacetValue is assigned to 1 Product, 1 ProductVariant`,
+                    message: `The FacetValue "compact" is assigned to 1 Product, 1 ProductVariant`,
                 },
             ]);
 

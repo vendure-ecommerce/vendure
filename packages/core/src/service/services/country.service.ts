@@ -130,8 +130,9 @@ export class CountryService {
                 message: ctx.translate('message.country-used-in-addresses', { count: addressesUsingCountry }),
             };
         } else {
+            const deletedCountry = new Country(country);
             await this.connection.getRepository(ctx, Country).remove(country);
-            this.eventBus.publish(new CountryEvent(ctx, country, 'deleted', id));
+            this.eventBus.publish(new CountryEvent(ctx, deletedCountry, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
                 message: '',

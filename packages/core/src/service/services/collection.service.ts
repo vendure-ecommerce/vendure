@@ -494,13 +494,15 @@ export class CollectionService implements OnModuleInit {
         const collection = await this.connection.getEntityOrThrow(ctx, Collection, id, {
             channelId: ctx.channelId,
         });
+        const deletedCollection = new Collection(collection);
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
             const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
+            const deletedColl = new Collection(coll);
             await this.connection.getRepository(ctx, Collection).remove(coll);
-            this.eventBus.publish(new CollectionModificationEvent(ctx, coll, affectedVariantIds));
+            this.eventBus.publish(new CollectionModificationEvent(ctx, deletedColl, affectedVariantIds));
         }
-        this.eventBus.publish(new CollectionEvent(ctx, collection, 'deleted', id));
+        this.eventBus.publish(new CollectionEvent(ctx, deletedCollection, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

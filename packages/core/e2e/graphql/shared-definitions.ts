@@ -972,3 +972,26 @@ export const TRANSITION_PAYMENT_TO_STATE = gql`
     }
     ${PAYMENT_FRAGMENT}
 `;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantLIST($options: ProductVariantListOptions, $productId: ID) {
+        productVariants(options: $options, productId: $productId) {
+            items {
+                id
+                name
+                sku
+                price
+                priceWithTax
+            }
+            totalItems
+        }
+    }
+`;
+
+export const DELETE_PROMOTION = gql`
+    mutation DeletePromotion($id: ID!) {
+        deletePromotion(id: $id) {
+            result
+        }
+    }
+`;

@@ -14,7 +14,11 @@ The bare minimum requirements are:
 
 A typical pattern is to run the Vendure app on the server, e.g. at `http://localhost:3000` and then use [nginx as a reverse proxy](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) to direct requests from the Internet to the Vendure application.
 
-Here is a good guide to setting up a production-ready server for an app such as Vendure: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
+Here is a [general guide to setting up a production-ready server](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04) for an app such as Vendure.
+
+{{< alert >}}
+You can find more information & discussion about platform-specific deployments in our [GitHub Discussions Deployment category](https://github.com/vendure-ecommerce/vendure/discussions/categories/deployment).
+{{< /alert >}}
 
 ## Database Timezone
 

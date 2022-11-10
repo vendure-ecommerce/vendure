@@ -125,8 +125,9 @@ export class CustomerGroupService {
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const group = await this.connection.getEntityOrThrow(ctx, CustomerGroup, id);
         try {
+            const deletedGroup = new CustomerGroup(group);
             await this.connection.getRepository(ctx, CustomerGroup).remove(group);
-            this.eventBus.publish(new CustomerGroupEntityEvent(ctx, group, 'deleted', id));
+            this.eventBus.publish(new CustomerGroupEntityEvent(ctx, deletedGroup, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };
