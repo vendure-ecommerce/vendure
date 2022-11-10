@@ -1,25 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import {
-    CancelPaymentResult,
-    ManualPaymentInput,
-    RefundOrderInput,
-    SettlePaymentResult,
-} from '@vendure/common/lib/generated-types';
+import { ManualPaymentInput, RefundOrderInput } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../api/common/request-context';
-import { ErrorResultUnion } from '../../common/error/error-result';
 import { InternalServerError } from '../../common/error/errors';
 import {
     PaymentStateTransitionError,
     RefundStateTransitionError,
-    SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
+import { Logger, PaymentMethodHandler } from '../../config/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { PaymentMethod } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
@@ -275,10 +270,7 @@ export class PaymentService {
             return summate(nonFailedRefunds, 'total');
         }
 
-        const existingNonFailedRefunds =
-            orderWithRefunds.payments
-                ?.reduce((refunds, p) => [...refunds, ...p.refunds], [] as Refund[])
-                .filter(refund => refund.state !== 'Failed') ?? [];
+        const refundsCreated: Refund[] = [];
         const refundablePayments = orderWithRefunds.payments.filter(p => {
             return paymentRefundTotal(p) < p.amount;
         });
@@ -314,19 +306,32 @@ export class PaymentService {
                 state: 'Pending',
                 metadata: {},
             });
-            const { paymentMethod, handler } = await this.paymentMethodService.getMethodAndOperations(
-                ctx,
-                paymentToRefund.method,
-            );
-            const createRefundResult = await handler.createRefund(
-                ctx,
-                input,
-                total,
-                order,
-                paymentToRefund,
-                paymentMethod.handler.args,
-                paymentMethod,
-            );
+            let paymentMethod: PaymentMethod | undefined;
+            let handler: PaymentMethodHandler | undefined;
+            try {
+                const methodAndHandler = await this.paymentMethodService.getMethodAndOperations(
+                    ctx,
+                    paymentToRefund.method,
+                );
+                paymentMethod = methodAndHandler.paymentMethod;
+                handler = methodAndHandler.handler;
+            } catch (e) {
+                Logger.warn(
+                    `Could not find a corresponding PaymentMethodHandler when creating a refund for the Payment with method "${paymentToRefund.method}"`,
+                );
+            }
+            const createRefundResult =
+                paymentMethod && handler
+                    ? await handler.createRefund(
+                          ctx,
+                          input,
+                          total,
+                          order,
+                          paymentToRefund,
+                          paymentMethod.handler.args,
+                          paymentMethod,
+                      )
+                    : false;
             if (createRefundResult) {
                 refund.transactionId = createRefundResult.transactionId || '';
                 refund.metadata = createRefundResult.metadata || {};
@@ -347,9 +352,9 @@ export class PaymentService {
             if (primaryRefund == null) {
                 primaryRefund = refund;
             }
-            existingNonFailedRefunds.push(refund);
+            refundsCreated.push(refund);
             refundedPaymentIds.push(paymentToRefund.id);
-            refundOutstanding = refundTotal - summate(existingNonFailedRefunds, 'total');
+            refundOutstanding = refundTotal - summate(refundsCreated, 'total');
         } while (0 < refundOutstanding);
         // tslint:disable-next-line:no-non-null-assertion
         return primaryRefund!;
