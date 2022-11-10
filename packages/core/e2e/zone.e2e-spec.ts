@@ -11,6 +11,7 @@ import {
     CreateZone,
     DeleteZone,
     DeletionResult,
+    GetActiveChannelWithZoneMembersQuery,
     GetCountryList,
     GetZone,
     GetZones,
@@ -58,6 +59,14 @@ describe('Zone resolver', () => {
         });
 
         expect(result.zone!.name).toBe('Oceania');
+    });
+
+    it('zone.members field resolver', async () => {
+        const { activeChannel } = await adminClient.query<GetActiveChannelWithZoneMembersQuery>(
+            GET_ACTIVE_CHANNEL_WITH_ZONE_MEMBERS,
+        );
+
+        expect(activeChannel.defaultShippingZone?.members.length).toBe(2);
     });
 
     it('updateZone', async () => {
@@ -216,6 +225,20 @@ export const GET_ZONE = gql`
         }
     }
     ${ZONE_FRAGMENT}
+`;
+
+export const GET_ACTIVE_CHANNEL_WITH_ZONE_MEMBERS = gql`
+    query GetActiveChannelWithZoneMembers {
+        activeChannel {
+            id
+            defaultShippingZone {
+                id
+                members {
+                    name
+                }
+            }
+        }
+    }
 `;
 
 export const CREATE_ZONE = gql`
