@@ -125,13 +125,14 @@ describe('Facet resolver', () => {
     });
 
     it('updateFacetValues', async () => {
+        const portableFacetValue = speakerTypeFacet.values.find(v => v.code === 'portable')!;
         const result = await adminClient.query<
             Codegen.UpdateFacetValuesMutation,
             Codegen.UpdateFacetValuesMutationVariables
         >(UPDATE_FACET_VALUES, {
             input: [
                 {
-                    id: speakerTypeFacet.values[0].id,
+                    id: portableFacetValue.id,
                     code: 'compact',
                 },
             ],
@@ -229,13 +230,15 @@ describe('Facet resolver', () => {
                 GET_PRODUCTS_LIST_WITH_VARIANTS,
             );
             products = result1.products.items;
+            const pcFacetValue = speakerTypeFacet.values.find(v => v.code === 'pc')!;
+            const hifiFacetValue = speakerTypeFacet.values.find(v => v.code === 'hi-fi')!;
 
             await adminClient.query<Codegen.UpdateProductMutation, Codegen.UpdateProductMutationVariables>(
                 UPDATE_PRODUCT,
                 {
                     input: {
                         id: products[0].id,
-                        facetValueIds: [speakerTypeFacet.values[0].id],
+                        facetValueIds: [pcFacetValue.id],
                     },
                 },
             );
@@ -247,7 +250,7 @@ describe('Facet resolver', () => {
                 input: [
                     {
                         id: products[0].variants[0].id,
-                        facetValueIds: [speakerTypeFacet.values[0].id],
+                        facetValueIds: [pcFacetValue.id],
                     },
                 ],
             });
@@ -257,14 +260,14 @@ describe('Facet resolver', () => {
                 {
                     input: {
                         id: products[1].id,
-                        facetValueIds: [speakerTypeFacet.values[1].id],
+                        facetValueIds: [hifiFacetValue.id],
                     },
                 },
             );
         });
 
         it('deleteFacetValues deletes unused facetValue', async () => {
-            const facetValueToDelete = speakerTypeFacet.values[2];
+            const facetValueToDelete = speakerTypeFacet.values.find(v => v.code === 'compact')!;
             const result1 = await adminClient.query<
                 Codegen.DeleteFacetValuesMutation,
                 Codegen.DeleteFacetValuesMutationVariables
@@ -290,7 +293,7 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacetValues for FacetValue in use returns NOT_DELETED', async () => {
-            const facetValueToDelete = speakerTypeFacet.values[0];
+            const facetValueToDelete = speakerTypeFacet.values.find(v => v.code === 'pc')!;
             const result1 = await adminClient.query<
                 Codegen.DeleteFacetValuesMutation,
                 Codegen.DeleteFacetValuesMutationVariables
@@ -308,7 +311,7 @@ describe('Facet resolver', () => {
             expect(result1.deleteFacetValues).toEqual([
                 {
                     result: DeletionResult.NOT_DELETED,
-                    message: `The FacetValue "compact" is assigned to 1 Product, 1 ProductVariant`,
+                    message: `The FacetValue "pc" is assigned to 1 Product, 1 ProductVariant`,
                 },
             ]);
 
@@ -316,7 +319,7 @@ describe('Facet resolver', () => {
         });
 
         it('deleteFacetValues for FacetValue in use can be force deleted', async () => {
-            const facetValueToDelete = speakerTypeFacet.values[0];
+            const facetValueToDelete = speakerTypeFacet.values.find(v => v.code === 'pc')!;
             const result1 = await adminClient.query<
                 Codegen.DeleteFacetValuesMutation,
                 Codegen.DeleteFacetValuesMutationVariables
@@ -675,7 +678,9 @@ describe('Facet resolver', () => {
             ]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
+            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
+                GET_FACET_LIST_SIMPLE,
+            );
             expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
         });
 
@@ -701,7 +706,9 @@ describe('Facet resolver', () => {
             expect(removeFacetsFromChannel).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
+            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
+                GET_FACET_LIST_SIMPLE,
+            );
             expect(after.items).toEqual([]);
         });
 
@@ -726,7 +733,9 @@ describe('Facet resolver', () => {
             expect(assignFacetsToChannel).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
+            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
+                GET_FACET_LIST_SIMPLE,
+            );
             expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
         });
     });

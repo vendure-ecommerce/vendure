@@ -5,6 +5,7 @@ import {
     GraphQLInputFieldConfigMap,
     GraphQLInputObjectType,
     GraphQLSchema,
+    GraphQLObjectType,
     isInputObjectType,
 } from 'graphql';
 
@@ -90,7 +91,9 @@ export function generateActiveOrderTypes(
                 `Could not find a GraphQL type definition for the field ${operation.name}`,
             );
         }
-        field.args.push({
+
+        // TODO: Figure out a non-hacky way to do this!
+        (field.args as any).push({
             name: ACTIVE_ORDER_INPUT_FIELD_NAME,
             type: activeOrderInput,
             description,
