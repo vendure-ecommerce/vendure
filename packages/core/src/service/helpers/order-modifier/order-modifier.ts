@@ -211,7 +211,7 @@ export class OrderModifier {
             newOrderItems.forEach((item, i) => (item.id = identifiers[i].id));
             orderLine.items = await this.connection
                 .getRepository(ctx, OrderItem)
-                .find({ where: { line: orderLine } });
+                .find({ where: { line: orderLine }, order: { createdAt: 'DESC' } });
             if (!order.active && order.state !== 'Draft') {
                 await this.stockMovementService.createAllocationsForOrderLines(ctx, [
                     {
