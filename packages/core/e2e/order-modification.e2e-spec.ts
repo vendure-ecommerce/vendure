@@ -6,10 +6,8 @@ import {
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     freeShipping,
-    manualFulfillmentHandler,
     mergeConfig,
     minimumOrderAmount,
-    orderFixedDiscount,
     orderPercentageDiscount,
     productsPercentageDiscount,
     ShippingCalculator,
@@ -19,7 +17,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
@@ -63,7 +61,7 @@ import {
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
-import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
 const SHIPPING_GB = 500;
 const SHIPPING_US = 1000;
@@ -1312,7 +1310,10 @@ describe('Order modification', () => {
         let additionalPaymentId: string;
 
         beforeAll(async () => {
-            await adminClient.query<Codegen.CreatePromotionMutation, Codegen.CreatePromotionMutationVariables>(CREATE_PROMOTION, {
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
                 input: {
                     name: '$5 off',
                     couponCode: '5OFF',
@@ -1339,16 +1340,16 @@ describe('Order modification', () => {
 
             const transitionOrderToState = await adminTransitionOrderToState(orderId2, 'Modifying');
             orderGuard.assertSuccess(transitionOrderToState);
-            const { modifyOrder } = await adminClient.query<Codegen.ModifyOrderMutation, Codegen.ModifyOrderMutationVariables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: orderId2,
-                        adjustOrderLines: [{ orderLineId, quantity: 2 }],
-                    },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: orderId2,
+                    adjustOrderLines: [{ orderLineId, quantity: 2 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             await adminTransitionOrderToState(orderId2, 'ArrangingAdditionalPayment');
@@ -1378,20 +1379,20 @@ describe('Order modification', () => {
         it('apply couponCode to create first refund', async () => {
             const transitionOrderToState = await adminTransitionOrderToState(orderId2, 'Modifying');
             orderGuard.assertSuccess(transitionOrderToState);
-            const { modifyOrder } = await adminClient.query<Codegen.ModifyOrderMutation, Codegen.ModifyOrderMutationVariables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: orderId2,
-                        couponCodes: ['5OFF'],
-                        refund: {
-                            paymentId: additionalPaymentId,
-                            reason: 'test',
-                        },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: orderId2,
+                    couponCodes: ['5OFF'],
+                    refund: {
+                        paymentId: additionalPaymentId,
+                        reason: 'test',
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
             expect(modifyOrder.payments?.length).toBe(2);
@@ -1407,23 +1408,25 @@ describe('Order modification', () => {
         });
 
         it('reduce quantity to create second refund', async () => {
-            const { modifyOrder } = await adminClient.query<Codegen.ModifyOrderMutation, Codegen.ModifyOrderMutationVariables>(
-                MODIFY_ORDER,
-                {
-                    input: {
-                        dryRun: false,
-                        orderId: orderId2,
-                        adjustOrderLines: [{ orderLineId, quantity: 1 }],
-                        refund: {
-                            paymentId: additionalPaymentId,
-                            reason: 'test 2',
-                        },
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: false,
+                    orderId: orderId2,
+                    adjustOrderLines: [{ orderLineId, quantity: 1 }],
+                    refund: {
+                        paymentId: additionalPaymentId,
+                        reason: 'test 2',
                     },
                 },
-            );
+            });
             orderGuard.assertSuccess(modifyOrder);
 
-            expect(modifyOrder?.payments?.find(p => p.id === additionalPaymentId)?.refunds).toEqual([
+            expect(
+                modifyOrder?.payments?.find(p => p.id === additionalPaymentId)?.refunds.sort(sortById),
+            ).toEqual([
                 {
                     id: 'T_4',
                     paymentId: additionalPaymentId,
@@ -1709,12 +1712,12 @@ describe('Order modification', () => {
             });
 
             afterAll(async () => {
-                await adminClient.query<Codegen.DeletePromotionMutation, Codegen.DeletePromotionMutationVariables>(
-                    DELETE_PROMOTION,
-                    {
-                        id: promoId,
-                    },
-                );
+                await adminClient.query<
+                    Codegen.DeletePromotionMutation,
+                    Codegen.DeletePromotionMutationVariables
+                >(DELETE_PROMOTION, {
+                    id: promoId,
+                });
             });
 
             it('refund handling when order-level promotion becomes invalid on modification', async () => {
@@ -1752,20 +1755,20 @@ describe('Order modification', () => {
 
                 expect(transitionOrderToState.state).toBe('Modifying');
 
-                const { modifyOrder } = await adminClient.query<Codegen.ModifyOrderMutation, Codegen.ModifyOrderMutationVariables>(
-                    MODIFY_ORDER,
-                    {
-                        input: {
-                            dryRun: false,
-                            orderId: order.id,
-                            adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
-                            refund: {
-                                paymentId: order.payments![0].id,
-                                reason: 'requested',
-                            },
+                const { modifyOrder } = await adminClient.query<
+                    Codegen.ModifyOrderMutation,
+                    Codegen.ModifyOrderMutationVariables
+                >(MODIFY_ORDER, {
+                    input: {
+                        dryRun: false,
+                        orderId: order.id,
+                        adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
+                        refund: {
+                            paymentId: order.payments![0].id,
+                            reason: 'requested',
                         },
                     },
-                );
+                });
                 orderGuard.assertSuccess(modifyOrder);
 
                 const expectedNewTotal = order.lines[0].unitPriceWithTax + shippingPrice;
