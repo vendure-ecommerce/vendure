@@ -24,7 +24,6 @@ import {
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
-import { AdjustmentSource } from '../../../common/types/adjustment-source';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
@@ -36,7 +35,6 @@ import { OrderModification } from '../../../entity/order-modification/order-modi
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { EventBus } from '../../../event-bus/event-bus';
@@ -465,9 +463,15 @@ export class OrderModifier {
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
-        await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
-            recalculateShipping: input.options?.recalculateShipping,
-        });
+        const updatedOrderItems = await this.orderCalculator.applyPriceAdjustments(
+            ctx,
+            order,
+            promotions,
+            updatedOrderLines,
+            {
+                recalculateShipping: input.options?.recalculateShipping,
+            },
+        );
 
         const orderCustomFields = (input as any).customFields;
         if (orderCustomFields) {
@@ -491,11 +495,7 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 refundInput.shipping = shippingDelta * -1;
             }
-            refundInput.adjustment += await this.getAdjustmentFromNewlyAppliedPromotions(
-                ctx,
-                order,
-                activePromotionsPre,
-            );
+            refundInput.adjustment += this.calculateRefundAdjustment(delta, refundInput);
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
             if (payment) {
@@ -526,9 +526,10 @@ export class OrderModifier {
             await this.connection.getRepository(ctx, OrderItem).save(orderItems, { reload: false });
         } else {
             // Otherwise, just save those OrderItems that were specifically added/removed
+            // or updated when applying `OrderCalculator.applyPriceAdjustments()`
             await this.connection
                 .getRepository(ctx, OrderItem)
-                .save(modification.orderItems, { reload: false });
+                .save([...modification.orderItems, ...updatedOrderItems], { reload: false });
         }
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return { order, modification: createdModification };
@@ -546,35 +547,21 @@ export class OrderModifier {
         return noChanges;
     }
 
-    private async getAdjustmentFromNewlyAppliedPromotions(
-        ctx: RequestContext,
-        order: Order,
-        promotionsPre: Promotion[],
-    ) {
-        const newPromotionDiscounts = order.discounts
-            .filter(discount => {
-                const promotionId = AdjustmentSource.decodeSourceId(discount.adjustmentSource).id;
-                return !promotionsPre.find(p => idsAreEqual(p.id, promotionId));
-            })
-            .filter(discount => {
-                // Filter out any discounts that originate from ShippingLine discounts,
-                // since they are already correctly accounted for in the refund calculation.
-                for (const shippingLine of order.shippingLines) {
-                    if (
-                        shippingLine.discounts.find(
-                            shippingDiscount =>
-                                shippingDiscount.adjustmentSource === discount.adjustmentSource,
-                        )
-                    ) {
-                        return false;
-                    }
-                }
-                return true;
-            });
-        if (newPromotionDiscounts.length) {
-            return -summate(newPromotionDiscounts, 'amountWithTax');
-        }
-        return 0;
+    /**
+     * @description
+     * Because a Refund's amount is calculated based on the orderItems changed, plus shipping change,
+     * we need to make sure the amount gets adjusted to match any changes caused by other factors,
+     * i.e. promotions that were previously active but are no longer.
+     */
+    private calculateRefundAdjustment(
+        delta: number,
+        refundInput: RefundOrderInput & { orderItems: OrderItem[] },
+    ): number {
+        const existingAdjustment = refundInput.adjustment;
+        const itemAmount = summate(refundInput.orderItems, 'proratedUnitPriceWithTax');
+        const calculatedDelta = itemAmount + refundInput.shipping + existingAdjustment;
+        const absDelta = Math.abs(delta);
+        return absDelta !== calculatedDelta ? absDelta - calculatedDelta : 0;
     }
 
     private getOrderPayments(ctx: RequestContext, orderId: ID): Promise<Payment[]> {
