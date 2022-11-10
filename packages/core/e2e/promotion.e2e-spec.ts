@@ -19,6 +19,7 @@ import {
     ASSIGN_PROMOTIONS_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_PROMOTION,
+    DELETE_PROMOTION,
     REMOVE_PROMOTIONS_FROM_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -382,14 +383,6 @@ function generateTestAction(code: string): PromotionAction<any> {
         },
     });
 }
-
-const DELETE_PROMOTION = gql`
-    mutation DeletePromotion($id: ID!) {
-        deletePromotion(id: $id) {
-            result
-        }
-    }
-`;
 
 export const GET_PROMOTION_LIST = gql`
     query GetPromotionList($options: PromotionListOptions) {

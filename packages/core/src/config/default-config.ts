@@ -22,6 +22,7 @@ import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-str
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
+import { DefaultActiveOrderStrategy } from './order/default-active-order-strategy';
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
@@ -113,6 +114,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     entityOptions: {
         channelCacheTtl: 30000,
         zoneCacheTtl: 30000,
+        taxRateCacheTtl: 30000,
         metadataModifiers: [],
     },
     promotionOptions: {
@@ -137,6 +139,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         orderByCodeAccessStrategy: new DefaultOrderByCodeAccessStrategy('2h'),
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
+        activeOrderStrategy: new DefaultActiveOrderStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

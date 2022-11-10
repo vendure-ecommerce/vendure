@@ -1,7 +1,6 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { DefaultLogger } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -22,6 +21,7 @@ import {
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
+    GET_PRODUCT_VARIANT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_CHANNEL,
     UPDATE_GLOBAL_SETTINGS,
@@ -2122,21 +2122,6 @@ export const GET_PRODUCT_VARIANT = gql`
         productVariant(id: $id) {
             id
             name
-        }
-    }
-`;
-
-export const GET_PRODUCT_VARIANT_LIST = gql`
-    query GetProductVariantLIST($options: ProductVariantListOptions, $productId: ID) {
-        productVariants(options: $options, productId: $productId) {
-            items {
-                id
-                name
-                sku
-                price
-                priceWithTax
-            }
-            totalItems
         }
     }
 `;

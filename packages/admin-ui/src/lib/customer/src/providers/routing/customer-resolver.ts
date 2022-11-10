@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver, CustomerFragment, DataService } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, CustomerFragment, DataService, SortOrder } from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
@@ -22,7 +22,10 @@ export class CustomerResolver extends BaseEntityResolver<CustomerFragment> {
                 addresses: null,
                 user: null,
             },
-            id => dataService.customer.getCustomer(id).mapStream(data => data.customer),
+            id =>
+                dataService.customer
+                    .getCustomer(id, { sort: { orderPlacedAt: SortOrder.DESC } })
+                    .mapStream(data => data.customer),
         );
     }
 }

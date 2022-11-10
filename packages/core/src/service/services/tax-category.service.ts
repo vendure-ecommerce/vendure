@@ -81,8 +81,9 @@ export class TaxCategoryService {
         }
 
         try {
+            const deletedTaxCategory = new TaxCategory(taxCategory);
             await this.connection.getRepository(ctx, TaxCategory).remove(taxCategory);
-            this.eventBus.publish(new TaxCategoryEvent(ctx, taxCategory, 'deleted', id));
+            this.eventBus.publish(new TaxCategoryEvent(ctx, deletedTaxCategory, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };

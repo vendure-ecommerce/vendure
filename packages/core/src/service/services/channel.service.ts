@@ -263,12 +263,13 @@ export class ChannelService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
+        const deletedChannel = new Channel(channel);
         await this.connection.getRepository(ctx, Session).delete({ activeChannelId: id });
         await this.connection.getRepository(ctx, Channel).delete(id);
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,
         });
-        this.eventBus.publish(new ChannelEvent(ctx, channel, 'deleted', id));
+        this.eventBus.publish(new ChannelEvent(ctx, deletedChannel, 'deleted', id));
 
         return {
             result: DeletionResult.DELETED,

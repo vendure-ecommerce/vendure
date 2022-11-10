@@ -137,8 +137,11 @@ export class PaymentMethodService {
                 return { result, message };
             }
             try {
+                const deletedPaymentMethod = new PaymentMethod(paymentMethod);
                 await this.connection.getRepository(ctx, PaymentMethod).remove(paymentMethod);
-                this.eventBus.publish(new PaymentMethodEvent(ctx, paymentMethod, 'deleted', paymentMethodId));
+                this.eventBus.publish(
+                    new PaymentMethodEvent(ctx, deletedPaymentMethod, 'deleted', paymentMethodId),
+                );
                 return {
                     result: DeletionResult.DELETED,
                 };

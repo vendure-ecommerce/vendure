@@ -113,7 +113,7 @@ export class ZoneService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const zone = await this.connection.getEntityOrThrow(ctx, Zone, id);
-
+        const deletedZone = new Zone(zone);
         const channelsUsingZone = await this.connection
             .getRepository(ctx, Channel)
             .createQueryBuilder('channel')
@@ -146,7 +146,7 @@ export class ZoneService {
         } else {
             await this.connection.getRepository(ctx, Zone).remove(zone);
             await this.zones.refresh(ctx);
-            this.eventBus.publish(new ZoneEvent(ctx, zone, 'deleted', id));
+            this.eventBus.publish(new ZoneEvent(ctx, deletedZone, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
                 message: '',

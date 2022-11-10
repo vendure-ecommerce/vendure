@@ -1,3 +1,22 @@
+## <small>1.8.3 (2022-11-10)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix critical FacetValue deletion issue ([1e443e2](https://github.com/vendure-ecommerce/vendure/commit/1e443e2))
+* **asset-server-plugin** Better error message for s3 bucket errors ([adf58b4](https://github.com/vendure-ecommerce/vendure/commit/adf58b4))
+* **asset-server-plugin** Update Sharp version to fix mac m1 issue ([b76515b](https://github.com/vendure-ecommerce/vendure/commit/b76515b)), closes [#1866](https://github.com/vendure-ecommerce/vendure/issues/1866)
+* **core** Add resolver for `Zone.members` field ([3b67e61](https://github.com/vendure-ecommerce/vendure/commit/3b67e61))
+* **core** Allow ext. auth to find customer on any channel ([2445a89](https://github.com/vendure-ecommerce/vendure/commit/2445a89)), closes [#961](https://github.com/vendure-ecommerce/vendure/issues/961)
+* **core** Ensure deleted entities in events include ids ([265bb15](https://github.com/vendure-ecommerce/vendure/commit/265bb15))
+* **core** Fix foreign key violation error when removing draft order line ([403ab2c](https://github.com/vendure-ecommerce/vendure/commit/403ab2c)), closes [#1855](https://github.com/vendure-ecommerce/vendure/issues/1855)
+* **core** Fix multiple refunds bug when modifying orders ([f18fedd](https://github.com/vendure-ecommerce/vendure/commit/f18fedd)), closes [#1753](https://github.com/vendure-ecommerce/vendure/issues/1753)
+* **core** Fix order incorrect refund amount when modifying Order ([b1486e8](https://github.com/vendure-ecommerce/vendure/commit/b1486e8)), closes [#1865](https://github.com/vendure-ecommerce/vendure/issues/1865)
+* **core** Fix regression from OrderItem ordering change ([1d552b3](https://github.com/vendure-ecommerce/vendure/commit/1d552b3))
+* **core** Improved feedback on FacetValue deletion confirmation ([03419cb](https://github.com/vendure-ecommerce/vendure/commit/03419cb))
+* **core** Make order modification items deterministic ([14d0a22](https://github.com/vendure-ecommerce/vendure/commit/14d0a22)), closes [#1760](https://github.com/vendure-ecommerce/vendure/issues/1760)
+* **core** Publish event when deleting FacetValue ([0ece03b](https://github.com/vendure-ecommerce/vendure/commit/0ece03b))
+
 ## <small>1.8.2 (2022-11-01)</small>
 
 

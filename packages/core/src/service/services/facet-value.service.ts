@@ -14,7 +14,7 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Product, ProductVariant } from '../../entity';
+import { Asset, Product, ProductVariant } from '../../entity';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
@@ -144,18 +144,27 @@ export class FacetValueService {
 
         const isInUse = !!(productCount || variantCount);
         const both = !!(productCount && variantCount) ? 'both' : 'single';
-        const i18nVars = { products: productCount, variants: variantCount, both };
         let message = '';
         let result: DeletionResult;
 
+        const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
+        const i18nVars = {
+            products: productCount,
+            variants: variantCount,
+            both,
+            facetValueCode: facetValue.code,
+        };
+        // Create a new facetValue so that the id is still available
+        // after deletion (the .remove() method sets it to undefined)
+        const deletedFacetValue = new FacetValue(facetValue);
+
         if (!isInUse) {
-            const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
+            this.eventBus.publish(new FacetValueEvent(ctx, deletedFacetValue, 'deleted', id));
             result = DeletionResult.DELETED;
         } else if (force) {
-            const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
-            this.eventBus.publish(new FacetValueEvent(ctx, facetValue, 'deleted', id));
+            this.eventBus.publish(new FacetValueEvent(ctx, deletedFacetValue, 'deleted', id));
             message = ctx.translate('message.facet-value-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
         } else {

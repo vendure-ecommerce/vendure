@@ -262,8 +262,9 @@ export class HistoryService {
 
     async deleteOrderHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
         const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, id);
+        const deletedEntry = new OrderHistoryEntry(entry);
         await this.connection.getRepository(ctx, OrderHistoryEntry).remove(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'deleted', 'order', id));
+        this.eventBus.publish(new HistoryEntryEvent(ctx, deletedEntry, 'deleted', 'order', id));
     }
 
     async updateCustomerHistoryEntry<T extends keyof CustomerHistoryEntryData>(
@@ -288,8 +289,9 @@ export class HistoryService {
 
     async deleteCustomerHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
         const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, id);
+        const deletedEntry = new CustomerHistoryEntry(entry);
         await this.connection.getRepository(ctx, CustomerHistoryEntry).remove(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'deleted', 'customer', id));
+        this.eventBus.publish(new HistoryEntryEvent(ctx, deletedEntry, 'deleted', 'customer', id));
     }
 
     private async getAdministratorFromContext(ctx: RequestContext): Promise<Administrator | undefined> {

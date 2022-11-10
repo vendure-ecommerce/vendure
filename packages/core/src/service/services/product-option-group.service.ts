@@ -133,6 +133,7 @@ export class ProductOptionGroupService {
         const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
             relations: ['options', 'product'],
         });
+        const deletedOptionGroup = new ProductOptionGroup(optionGroup);
         const inUseByActiveProducts = await this.isInUseByOtherProducts(ctx, optionGroup, productId);
         if (0 < inUseByActiveProducts) {
             return {
@@ -180,7 +181,7 @@ export class ProductOptionGroupService {
                 Logger.error(e.message, undefined, e.stack);
             }
         }
-        this.eventBus.publish(new ProductOptionGroupEvent(ctx, optionGroup, 'deleted', id));
+        this.eventBus.publish(new ProductOptionGroupEvent(ctx, deletedOptionGroup, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

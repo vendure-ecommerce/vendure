@@ -70,7 +70,7 @@
     "NO_ACTIVE_ORDER_ERROR": "Es gibt keine aktive Bestellung in der aktuellen Sitzung",
     "NOTHING_TO_REFUND_ERROR": "Es gibt nichts zurückzuerstatten",
     "NOT_VERIFIED_ERROR": "Bitte bestätige deine E-Mail-Adresse, bevor du dich anmeldest",
-    "ORDER_LIMIT_ERROR": "Der Artikel konnte nicht hinzugefügt werden. Eine Bestellung kann maximal { maxItems } Artikel enthalten", 
+    "ORDER_LIMIT_ERROR": "Der Artikel konnte nicht hinzugefügt werden. Eine Bestellung kann maximal { maxItems } Artikel enthalten",
     "ORDER_MODIFICATION_ERROR": "Der Inhalt der Bestellung kann nur im Status \"AddingItems\" geändert werden",
     "ORDER_PAYMENT_STATE_ERROR": "Eine Zahlung kann nur im Status \"ArrangingPayment\" hinzugefügt werden",
     "ORDER_STATE_TRANSITION_ERROR": "Der Status der Bestellung kan nicht von \"{ fromState }\" zu \"{ toState }\" geändert werden",
@@ -108,7 +108,7 @@
     "facet-force-deleted": "Die Facette wurde gelöscht und ihre FacetValues wurden von {products, plural, =0 {} one {einem Produkt} other {# Produkten}}{both, select, both { und } single {}}{variants, plural, =0 {} one {einer Produktvariante} other {# Produktvariantem}} entfernt",
     "facet-used": "Die ausgewählte Facette enthält FacetValues, die {products, plural, =0 {} one {einem Produkt} other {# Produkten}}{both, select, both { und } single {}}{variants, plural, =0 {} one {einer Produktvariante} other {# Produktvarianten}} zugewiesen sind",
     "facet-value-force-deleted": "Der gewählte FacetValue wurde von {products, plural, =0 {} one {einem Produkt} other {# Produkten}}{both, select, both { und } single {}}{variants, plural, =0 {} one {einer Produktvariante} other {# Produktvarianten}} entfernt und gelöscht",
-    "facet-value-used": "Der gewählte FacetValue wurde {products, plural, =0 {} one {einem Produkt} other {# Produkten}}{both, select, both { und } single {}}{variants, plural, =0 {} one {einer Produktvariante} other {# Produktvarianten}} zugewiesen",
+    "facet-value-used": "Der FacetValue \"{ facetValueCode }\" wurde {products, plural, =0 {} one {einem Produkt} other {# Produkten}}{both, select, both { und } single {}}{variants, plural, =0 {} one {einer Produktvariante} other {# Produktvarianten}} zugewiesen",
     "payment-method-used-in-channels": "Die gewählte Zahlungsmethode wird von den folgenden Kanälen verwendet: { channelCodes }. Mit \"force: true\" wird sie von allen Kanälen entfernt.",
     "zone-used-in-channels": "Die ausgewählte Zone kann nicht gelöscht werden, da sie als Standard in den folgenden Kanälen verwendet wird: { channelCodes }",
     "zone-used-in-tax-rates": "Die ausgewählte Zone kann nicht gelöscht werden, da sie in den folgenden Steuersätzen verwendet wird: { taxRateNames }"

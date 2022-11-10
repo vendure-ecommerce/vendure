@@ -508,6 +508,7 @@ export class CustomerDetailComponent
             .getCustomer(this.id, {
                 take: this.ordersPerPage,
                 skip: (this.currentOrdersPage - 1) * this.ordersPerPage,
+                sort: { orderPlacedAt: SortOrder.DESC },
             })
             .single$.pipe(
                 map(data => data.customer),

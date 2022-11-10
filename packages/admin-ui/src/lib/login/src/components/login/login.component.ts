@@ -1,3 +1,4 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ADMIN_UI_VERSION, AuthService, AUTH_REDIRECT_PARAM, getAppConfig } from '@vendure/admin-ui/core';
@@ -16,8 +17,18 @@ export class LoginComponent {
     brand = getAppConfig().brand;
     hideVendureBranding = getAppConfig().hideVendureBranding;
     hideVersion = getAppConfig().hideVersion;
+    customImageUrl = getAppConfig().loginImage;
+    imageUrl = '';
+    imageLocation = '';
+    imageCreator = '';
 
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private authService: AuthService, private router: Router, private httpClient: HttpClient) {
+        if (this.customImageUrl) {
+            this.imageUrl = this.customImageUrl;
+        } else {
+            this.loadImage();
+        }
+    }
 
     logIn(): void {
         this.errorMessage = undefined;
@@ -33,6 +44,24 @@ export class LoginComponent {
                     break;
             }
         });
+    }
+
+    loadImage() {
+        this.httpClient
+            .get('https://login-image.vendure.io')
+            .toPromise()
+            .then(res => {
+                this.updateImage(res);
+            });
+    }
+
+    updateImage(res) {
+        const user: any = (res as any).user;
+        const location: any = (res as any).location;
+
+        this.imageUrl = (res as any).urls.regular;
+        this.imageCreator = user.name;
+        this.imageLocation = location.name;
     }
 
     /**

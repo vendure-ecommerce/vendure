@@ -201,15 +201,17 @@ export class FacetService {
         const i18nVars = { products: productCount, variants: variantCount, both, facetCode: facet.code };
         let message = '';
         let result: DeletionResult;
+        const deletedFacet = new Facet(facet);
 
         if (!isInUse) {
             await this.connection.getRepository(ctx, Facet).remove(facet);
+            this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             result = DeletionResult.DELETED;
         } else if (force) {
             await this.connection.getRepository(ctx, Facet).remove(facet);
+            this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             message = ctx.translate('message.facet-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
-            this.eventBus.publish(new FacetEvent(ctx, facet, 'deleted', id));
         } else {
             message = ctx.translate('message.facet-used', i18nVars);
             result = DeletionResult.NOT_DELETED;

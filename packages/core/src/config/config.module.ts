@@ -86,6 +86,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             orderCodeStrategy,
             orderByCodeAccessStrategy,
             stockAllocationStrategy,
+            activeOrderStrategy,
         } = this.configService.orderOptions;
         const { customFulfillmentProcess } = this.configService.shippingOptions;
         const { customPaymentProcess } = this.configService.paymentOptions;
@@ -120,6 +121,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockDisplayStrategy,
             ...healthChecks,
             assetImportStrategy,
+            ...(Array.isArray(activeOrderStrategy) ? activeOrderStrategy : [activeOrderStrategy]),
         ];
     }
 

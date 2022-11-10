@@ -771,9 +771,10 @@ export class CustomerService {
                 address: addressToLine(address),
             },
         });
+        const deletedAddress = new Address(address);
         await this.connection.getRepository(ctx, Address).remove(address);
         address.customer = customer;
-        this.eventBus.publish(new CustomerAddressEvent(ctx, address, 'deleted', id));
+        this.eventBus.publish(new CustomerAddressEvent(ctx, deletedAddress, 'deleted', id));
         return true;
     }
 

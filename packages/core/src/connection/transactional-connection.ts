@@ -113,18 +113,18 @@ export class TransactionalConnection {
      * @example
      * ```TypeScript
      * private async transferCredit(outerCtx: RequestContext, fromId: ID, toId: ID, amount: number) {
-     *   await this.connection.withTransaction(outerCtx, ctx => {
-     *     await this.giftCardService.updateCustomerCredit(fromId, -amount);
-     *
-     *     // Note you must not use outerCtx here, instead use ctx. Otherwise this query
+     *   await this.connection.withTransaction(outerCtx, async ctx => {
+     *     // Note you must not use `outerCtx` here, instead use `ctx`. Otherwise, this query
      *     // will be executed outside of transaction
+     *     await this.giftCardService.updateCustomerCredit(ctx, fromId, -amount);
+     *
      *     await this.connection.getRepository(ctx, GiftCard).update(fromId, { transferred: true })
      *
      *     // If some intermediate logic here throws an Error,
      *     // then all DB transactions will be rolled back and neither Customer's
      *     // credit balance will have changed.
      *
-     *     await this.giftCardService.updateCustomerCredit(toId, amount);
+     *     await this.giftCardService.updateCustomerCredit(ctx, toId, amount);
      *   })
      * }
      * ```
