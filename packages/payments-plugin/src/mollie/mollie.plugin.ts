@@ -23,6 +23,7 @@ export interface MolliePluginOptions {
     vendureHost: string;
 }
 
+// TODO: Describe flow for pay later. Important: if a pay-later order is never shipped, the payment is never settled (= the shopowner never gets paid!)
 /**
  * @description
  * Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).

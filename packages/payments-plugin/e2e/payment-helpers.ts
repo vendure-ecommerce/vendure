@@ -15,6 +15,7 @@ import {
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from './graphql/shop-queries';
+import gql from 'graphql-tag';
 
 
 export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
@@ -63,3 +64,38 @@ export async function refundOne(
     );
     return refundOrder as RefundFragment;
 }
+
+export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
+    mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {
+        createMolliePaymentIntent(input: $input) {
+            ... on MolliePaymentIntent {
+                url
+            }
+            ... on MolliePaymentIntentError {
+                errorCode
+                message
+            }
+        }
+    }`;
+
+export const GET_MOLLIE_PAYMENT_METHODS = gql`
+    query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
+        molliePaymentMethods(input: $input) {
+            id
+            code
+            description
+            minimumAmount {
+                value
+                currency
+            }
+            maximumAmount {
+                value
+                currency
+            }
+            image {
+                size1x
+                size2x
+                svg
+            }
+        }
+    }`;

@@ -15,42 +15,7 @@ import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, GET_ORDER_PAYMENTS } from './
 import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './graphql/generated-admin-types';
 import { AddItemToOrder, GetOrderByCode, TestOrderFragmentFragment } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER, GET_ORDER_BY_CODE } from './graphql/shop-queries';
-import { refundOne, setShipping } from './payment-helpers';
-
-export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
-    mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {
-        createMolliePaymentIntent(input: $input) {
-            ... on MolliePaymentIntent {
-                url
-            }
-            ... on MolliePaymentIntentError {
-                errorCode
-                message
-            }
-        }
-    }`;
-
-export const GET_MOLLIE_PAYMENT_METHODS = gql`
-    query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
-        molliePaymentMethods(input: $input) {
-            id
-            code
-            description
-            minimumAmount {
-                value
-                currency
-            }
-            maximumAmount {
-                value
-                currency
-            }
-            image {
-                size1x
-                size2x
-                svg
-            }
-        }
-    }`;
+import { CREATE_MOLLIE_PAYMENT_INTENT, GET_MOLLIE_PAYMENT_METHODS, refundOne, setShipping } from './payment-helpers';
 
 describe('Mollie payments', () => {
     const mockData = {
