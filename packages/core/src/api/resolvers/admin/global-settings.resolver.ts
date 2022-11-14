@@ -82,7 +82,7 @@ export class GlobalSettingsResolver {
         const { availableLanguages } = args.input;
         if (availableLanguages) {
             const channels = await this.channelService.findAll(ctx);
-            const unavailableDefaults = channels.filter(
+            const unavailableDefaults = channels.items.filter(
                 c => !availableLanguages.includes(c.defaultLanguageCode),
             );
             if (unavailableDefaults.length) {

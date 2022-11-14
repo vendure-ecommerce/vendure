@@ -9,7 +9,7 @@ import {
     UpdateChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { ID, Type } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -17,7 +17,7 @@ import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error
 import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
-import { ChannelAware } from '../../common/types/common-types';
+import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -32,8 +32,9 @@ import { ChangeChannelEvent } from '../../event-bus/events/change-channel-event'
 import { ChannelEvent } from '../../event-bus/events/channel-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-
 import { GlobalSettingsService } from './global-settings.service';
+import { RelationPaths } from '../../api';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 
 /**
  * @description
@@ -51,6 +52,7 @@ export class ChannelService {
         private globalSettingsService: GlobalSettingsService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /**
@@ -73,7 +75,13 @@ export class ChannelService {
         return createSelfRefreshingCache({
             name: 'ChannelService.allChannels',
             ttl: this.configService.entityOptions.channelCacheTtl,
-            refresh: { fn: ctx => this.findAll(ctx), defaultArgs: [RequestContext.empty()] },
+            refresh: {
+                fn: async (ctx) => {
+                    const { items } = await this.findAll(ctx);
+                    return items
+                },
+                defaultArgs: [RequestContext.empty()]
+            },
         });
     }
 
@@ -185,10 +193,21 @@ export class ChannelService {
         return defaultChannel;
     }
 
-    findAll(ctx: RequestContext): Promise<Channel[]> {
-        return this.connection
-            .getRepository(ctx, Channel)
-            .find({ relations: ['defaultShippingZone', 'defaultTaxZone'] });
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<Channel>,
+        relations?: RelationPaths<Channel>
+    ): Promise<PaginatedList<Channel>> {
+        return this.listQueryBuilder
+            .build(Channel, options, {
+                relations: relations ?? ['defaultShippingZone', 'defaultTaxZone'],
+                ctx,
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
