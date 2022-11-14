@@ -8,13 +8,14 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
-import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { idsAreEqual } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
+import { Role } from '../../entity/index';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { AdministratorEvent } from '../../event-bus/events/administrator-event';
@@ -22,6 +23,7 @@ import { RoleChangeEvent } from '../../event-bus/events/role-change-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
+import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { RoleService } from './role.service';
@@ -113,6 +115,7 @@ export class AdministratorService {
      * Create a new Administrator.
      */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
+        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
         const administrator = new Administrator(input);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
         let createdAdministrator = await this.connection
@@ -139,6 +142,9 @@ export class AdministratorService {
         const administrator = await this.findOne(ctx, input.id);
         if (!administrator) {
             throw new EntityNotFoundError('Administrator', input.id);
+        }
+        if (input.roleIds) {
+            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
         }
         let updatedAdministrator = patchEntity(administrator, input);
         await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
@@ -187,6 +193,28 @@ export class AdministratorService {
         );
         this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
         return updatedAdministrator;
+    }
+
+    /**
+     * @description
+     * Checks that the active user is allowed to grant the specified Roles when creating or
+     * updating an Administrator.
+     */
+    private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]) {
+        const roles = await this.connection
+            .getRepository(ctx, Role)
+            .findByIds(roleIds, { relations: ['channels'] });
+        const permissionsRequired = getChannelPermissions(roles);
+        for (const channelPermissions of permissionsRequired) {
+            const activeUserHasRequiredPermissions = await this.roleService.userHasAllPermissionsOnChannel(
+                ctx,
+                channelPermissions.id,
+                channelPermissions.permissions,
+            );
+            if (!activeUserHasRequiredPermissions) {
+                throw new UserInputError('error.active-user-does-not-have-sufficient-permissions');
+            }
+        }
     }
 
     /**
@@ -274,19 +302,20 @@ export class AdministratorService {
                 roleIds: [superAdminRole.id],
             });
         } else {
-            const superAdministrator = await this.connection.rawConnection.getRepository(Administrator).findOne({
-                where: {
-                    user: superAdminUser,
-                },
-            });
+            const superAdministrator = await this.connection.rawConnection
+                .getRepository(Administrator)
+                .findOne({
+                    where: {
+                        user: superAdminUser,
+                    },
+                });
             if (!superAdministrator) {
                 const administrator = new Administrator({
                     emailAddress: superadminCredentials.identifier,
                     firstName: 'Super',
                     lastName: 'Admin',
                 });
-                const createdAdministrator = await this.connection
-                    .rawConnection
+                const createdAdministrator = await this.connection.rawConnection
                     .getRepository(Administrator)
                     .save(administrator);
                 createdAdministrator.user = superAdminUser;

@@ -1,5 +1,6 @@
 {
   "error": {
+    "active-user-does-not-have-sufficient-permissions": "Active user does not have sufficient permissions",
     "cannot-delete-role": "The role '{ roleCode }' cannot be deleted",
     "cannot-delete-sole-superadmin": "The sole SuperAdmin cannot be deleted",
     "cannot-locate-customer-for-user": "Cannot locate a Customer for the user",
