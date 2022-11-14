@@ -79,7 +79,10 @@ export class AdminDetailComponent
             .getRoles(999)
             .mapStream(item => item.roles.items.filter(i => i.code !== CUSTOMER_ROLE_CODE));
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
-            if (!userStatus.permissions.includes(Permission.UpdateAdministrator)) {
+            if (
+                !userStatus.permissions.includes(Permission.CreateAdministrator) &&
+                !userStatus.permissions.includes(Permission.UpdateAdministrator)
+            ) {
                 const rolesSelect = this.detailForm.get('roles');
                 if (rolesSelect) {
                     rolesSelect.disable();
