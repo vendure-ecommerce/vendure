@@ -10,13 +10,14 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
+    OrderDataService,
     OrderListOptions,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { EMPTY, merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs/operators';
 
 interface OrderFilterConfig {
     active?: boolean;
@@ -50,24 +51,16 @@ export class OrderListComponent
             name: 'open', // have this show everything
             label: _('order.filter-preset-open'),
             config: {
-                states: this.orderStates.filter(
-                    s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped' && s !== 'Draft',
-                ),
-            },
-        },
-        {
-            name: 'shipped',
-            label: _('order.filter-preset-shipped'),
-            config: {
                 active: false,
-                states: ['Shipped'],
+                states: this.orderStates.filter(s => s !== 'Completed' && s !== 'Cancelled' && s !== 'Draft'),
             },
         },
+
         {
             name: 'completed',
             label: _('order.filter-preset-completed'),
             config: {
-                states: ['Finished', 'Cancelled'],
+                states: ['Completed', 'Cancelled'],
             },
         },
         {
@@ -152,23 +145,73 @@ export class OrderListComponent
             this.refresh();
         }, 10000);
     }
+    getNextState(order: Order) {
+        const settledCashPayment = order.payments?.filter(
+            p => p.state === 'Settled' && p.method === 'cash',
+        )[0];
+        if (order.state === 'PaymentSettled') {
+            if (settledCashPayment) {
+                return 'Completed';
+            } else {
+                return 'Received';
+            }
+        }
+        if (order.state === 'Received') {
+            return 'Processing';
+        }
+        if (order.state === 'Processing') {
+            return 'ReadyToPickup';
+        }
+        if (order.state === 'ReadyToPickup') {
+            if (order.shippingLines[0].shippingMethod.code === 'delivery') {
+                return 'Delivering';
+            }
+            if (settledCashPayment) {
+                return 'PaymentSettled';
+            } else {
+                return 'Completed';
+            }
+        }
+        if (order.state === 'Delivering') {
+            if (settledCashPayment) {
+                return 'PaymentSettled';
+            } else {
+                return 'Completed';
+            }
+        }
 
+        return 'Received';
+    }
     toNextState(order: Order) {
         return this.modalService
             .dialog({
-                title: 'Proceed to Next State',
-                body: `Are you sure you want to proceed to '${order.nextStates[0]}'`,
+                title: `Proceed to ${this.getNextState(order)}?`,
+                body: `Are you sure you want to proceed to '${this.getNextState(order)}'?`,
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
                     { type: 'primary', label: 'Confirm', returnValue: true },
                 ],
             })
             .pipe(
-                switchMap(res =>
-                    res
-                        ? this.dataService.order.transitionToState(order.id.toString(), order.nextStates[0])
-                        : EMPTY,
-                ),
+                switchMap(async res => {
+                    if (res) {
+                        if (this.getNextState(order) === 'PaymentSettled') {
+                            const settledCashPayment = order.payments?.filter(
+                                p => p.state === 'Settled' && p.method === 'cash',
+                            )[0];
+                            if (settledCashPayment) {
+                                await this.dataService.order
+                                    .settlePayment(settledCashPayment?.id.toString())
+                                    .toPromise();
+                            }
+                        }
+                        await this.dataService.order
+                            .transitionToState(order.id.toString(), this.getNextState(order))
+                            .toPromise();
+                        return true;
+                    }
+                    return EMPTY;
+                }),
             )
             .subscribe(
                 () => {

@@ -697,7 +697,12 @@
         "payment-settled": "Payment settled",
         "pending": "Pending",
         "settled": "Settled",
-        "shipped": "Shipped"
+        "shipped": "Shipped",
+        "received": "Received",
+        "processing": "Processing",
+        "delivering": "Delivering",
+        "ready-for-pickup": "Ready For Pickup",
+        "completed": "Completed"
     },
     "system": {
         "all-job-queues": "All job queues",
@@ -717,9 +722,4 @@
         "job-result": "Job result",
         "job-state": "Job state"
     }
-        "partially-delivered": "Partially delivered",
-    "received": "Received",
-    "processing": "Processing",
-    "ready-for-pickup": "Ready For Pickup",
-    "completed": "Completed"
 }

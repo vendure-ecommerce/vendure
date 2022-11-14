@@ -128,9 +128,15 @@ export class PayhereController {
         if (payment.state === 'Declined') {
             return new PaymentDeclinedError(payment.errorMessage || '');
         }
-        if (order.state !== 'PaymentSettled') {
-            return this.orderService.transitionToState(ctx, order.id, 'PaymentSettled');
+        if (payment.state === 'Cancelled') {
+            return new PaymentDeclinedError('Payment Cancelled!' || '');
         }
+        await this.orderService.addSurchargeToOrder(ctx, order.id, {
+            description: 'Payhere Fee',
+            sku: 'payhere-fee',
+            price: order.totalWithTax * 0.03,
+        });
+        return this.orderService.transitionOrderIfTotalIsCovered(ctx, order);
     }
 }
 

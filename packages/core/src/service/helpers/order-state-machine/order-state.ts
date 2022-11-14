@@ -50,7 +50,7 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PaymentSettled', 'Cancelled', 'Modifying', 'Received'],
     },
     PaymentSettled: {
-        to: ['Cancelled', 'Modifying', 'Received', 'Completed'],
+        to: ['Received', 'Cancelled', 'Modifying', 'Completed'],
     },
     Received: {
         to: ['Processing', 'Cancelled'],

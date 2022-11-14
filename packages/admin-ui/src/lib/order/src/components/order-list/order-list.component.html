@@ -1,7 +1,10 @@
 <vdr-action-bar>
     <vdr-ab-left>
         <div class="search-form">
-            <div class="filter-presets btn-group btn-outline-primary" *ngIf="activePreset$ | async as activePreset">
+            <div
+                class="filter-presets btn-group btn-outline-primary"
+                *ngIf="activePreset$ | async as activePreset"
+            >
                 <button
                     class="btn"
                     *ngFor="let preset of filterPresets"
@@ -75,7 +78,11 @@
     <vdr-ab-right>
         <vdr-action-bar-items locationId="order-list"></vdr-action-bar-items>
         <ng-container *ngIf="canCreateDraftOrder">
-            <a class="btn btn-primary mt1" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
+            <a
+                class="btn btn-primary mt1"
+                *vdrIfPermissions="['CreateOrder']"
+                [routerLink]="['./draft/create']"
+            >
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-draft-order' | translate }}
             </a>
@@ -116,7 +123,7 @@
             <vdr-table-row-action
                 *ngIf="order.nextStates.length > 0"
                 iconShape="step-forward-2"
-                [label]="'Next State'"
+                [label]="getNextState(order)"
                 (click)="toNextState(order)"
             ></vdr-table-row-action>
             <vdr-table-row-action
