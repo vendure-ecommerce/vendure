@@ -11,7 +11,13 @@ import { format } from 'util';
 
 import { loggerCtx } from './constants';
 import { EmailSender } from './email-sender';
-import { EmailDetails, EmailTransportOptions, SendmailTransportOptions, SMTPTransportOptions } from './types';
+import {
+    EmailDetails,
+    EmailTransportOptions,
+    SendmailTransportOptions,
+    SESTransportOptions,
+    SMTPTransportOptions,
+} from './types'
 
 export type StreamTransportInfo = {
     envelope: {
@@ -32,6 +38,7 @@ export type StreamTransportInfo = {
 export class NodemailerEmailSender implements EmailSender {
     private _smtpTransport: Mail | undefined;
     private _sendMailTransport: Mail | undefined;
+    private _sesTransport: Mail |undefined
 
     async send(email: EmailDetails, options: EmailTransportOptions) {
         switch (options.type) {
@@ -53,6 +60,9 @@ export class NodemailerEmailSender implements EmailSender {
             case 'sendmail':
                 await this.sendMail(email, this.getSendMailTransport(options));
                 break;
+            case 'ses':
+                await this.sendMail(email, this.getSesTransport(options));
+                break;
             case 'smtp':
                 await this.sendMail(email, this.getSmtpTransport(options));
                 break;
@@ -70,6 +80,13 @@ export class NodemailerEmailSender implements EmailSender {
             this._smtpTransport = createTransport(options);
         }
         return this._smtpTransport;
+    }
+
+    private getSesTransport(options: SESTransportOptions) {
+        if (!this._sesTransport) {
+            this._sesTransport = createTransport(options);
+        }
+        return this._sesTransport;
     }
 
     private getSendMailTransport(options: SendmailTransportOptions) {
