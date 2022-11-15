@@ -1,4 +1,4 @@
-import createMollieClient, { PaymentStatus } from '@mollie/api-client';
+import createMollieClient, { PaymentMethod as MollieClientMethod, PaymentStatus } from '@mollie/api-client';
 import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
@@ -23,8 +23,8 @@ import {
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
 import { MolliePluginOptions } from './mollie.plugin';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/parameters';
-import { PaymentMethod as MollieClientMethod } from '@mollie/api-client';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
+import { getLocale, getRequiredAddress, toMollieOrderLines } from './mollie.helpers';
 
 interface SettlePaymentInput {
     channelToken: string;
@@ -39,7 +39,7 @@ class PaymentIntentError implements MolliePaymentIntentError {
     }
 }
 
-class InvalidInput implements MolliePaymentIntentError {
+class InvalidInputError implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
 
     constructor(public message: string) {
@@ -68,16 +68,16 @@ export class MollieService {
     ): Promise<MolliePaymentIntentResult> {
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
-            return new InvalidInput(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
+            return new InvalidInputError(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
         }
         const [order, paymentMethod] = await Promise.all([
-            this.activeOrderService.getOrderFromContext(ctx),
+            this.activeOrderService.getActiveOrder(ctx, undefined),
             this.getPaymentMethod(ctx, paymentMethodCode),
         ]);
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order, { relations: ['lines', 'customer', 'shippingLines'] });
+        await this.entityHydrator.hydrate(ctx, order, { relations: ['customer', 'lines', 'lines.productVariant', 'shippingLines', 'shippingLines.shippingMethod'] });
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }
@@ -101,7 +101,12 @@ export class MollieService {
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const paymentInput: CreateParameters = {
+        const billingAddress = getRequiredAddress(order.billingAddress) || getRequiredAddress(order.shippingAddress);
+        if (!billingAddress) {
+            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed.`);
+        }
+        const orderInput: CreateParameters = {
+            orderNumber: order.code,
             amount: {
                 value: `${(order.totalWithTax / 100).toFixed(2)}`,
                 currency: order.currencyCode,
@@ -109,17 +114,28 @@ export class MollieService {
             metadata: {
                 orderCode: order.code,
             },
-            description: `Order ${order.code}`,
             redirectUrl: `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
+            billingAddress: {
+                streetAndNumber: `${billingAddress.streetLine1} ${billingAddress.streetLine2 || ''}`,
+                postalCode: billingAddress.postalCode,
+                city: billingAddress.city,
+                country: billingAddress.countryCode,
+                givenName: order.customer.firstName,
+                familyName: order.customer.lastName,
+                email: order.customer.emailAddress,
+            },
+            locale: getLocale(billingAddress.countryCode, ctx.languageCode),
+            lines: toMollieOrderLines(order),
         };
         if (molliePaymentMethodCode) {
-            paymentInput.method = molliePaymentMethodCode as MollieClientMethod;
+            orderInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
-        const payment = await mollieClient.payments.create(paymentInput);
-        const url = payment.getCheckoutUrl();
+        const mollieOrder = await mollieClient.orders.create(orderInput);
+        Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
+        const url = mollieOrder.getCheckoutUrl();
         if (!url) {
-            throw Error(`Unable to getCheckoutUrl() from Mollie payment`);
+            throw Error(`Unable to getCheckoutUrl() from Mollie order`);
         }
         return {
             url,
