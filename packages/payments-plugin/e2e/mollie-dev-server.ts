@@ -75,6 +75,7 @@ import gql from 'graphql-tag';
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
             paymentMethodCode: 'mollie',
+//            molliePaymentMethodCode: 'klarnapaylater'
         },
     });
     if (createMolliePaymentIntent.errorCode) {
