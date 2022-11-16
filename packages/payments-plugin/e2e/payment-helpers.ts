@@ -25,7 +25,7 @@ export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void
             streetLine1: '12 the street',
             city: 'Leeuwarden',
             postalCode: '123456',
-            countryCode: 'NL',
+            countryCode: 'AT',
         },
     });
     const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(

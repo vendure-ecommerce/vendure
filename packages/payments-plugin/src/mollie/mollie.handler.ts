@@ -1,4 +1,4 @@
-import createMollieClient, { RefundStatus } from '@mollie/api-client';
+import createMollieClient, { OrderStatus, RefundStatus } from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentErrorResult,
@@ -46,19 +46,21 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         args,
         metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
-        // Creating a payment immediately settles the payment in Mollie flow, so only Admins and internal calls should be allowed to do this
+        // Only Admins and internal calls should be allowed to settle and authorize payments
         if (ctx.apiType !== 'admin') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
+        const state = metadata.status === OrderStatus.paid ? 'Settled' : 'Authorized';
+        Logger.info(`Payment for order ${order.code} created with state '${state}'`, loggerCtx);
         return {
             amount,
-            state: 'Settled' as const,
-            transactionId: metadata.paymentId,
+            state,
+            transactionId: metadata.orderId, // The plugin now only supports 1 payment per order, so we can use mollie orderId
             metadata // Store all given metadata on a payment
         };
     },
     settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
-        // this should never be called
+        Logger.info(`Settled payment for ${order.code}`, loggerCtx);
         return { success: true };
     },
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
