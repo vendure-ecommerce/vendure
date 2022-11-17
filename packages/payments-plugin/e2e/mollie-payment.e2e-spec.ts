@@ -295,4 +295,12 @@ describe('Mollie payments', () => {
         expect(method.image).toBeDefined()
     });
 
+    // TODO
+    // Paid
+    // Authorized
+    // Captured
+    // Refund
+    // Authorized & autoCapture > captured
+
+
 });

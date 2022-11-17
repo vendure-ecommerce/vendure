@@ -61,6 +61,7 @@ import gql from 'graphql-tag';
                     { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1` },
                     // tslint:disable-next-line:no-non-null-assertion
                     { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
+                    /*{ name: 'autoCapture', value: false },*/
                 ],
             },
         },
