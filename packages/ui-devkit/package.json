@@ -1,6 +1,6 @@
 {
   "name": "@vendure/ui-devkit",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
