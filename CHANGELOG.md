@@ -4,6 +4,7 @@
 #### Fixes
 
 * **admin-ui** Fix critical FacetValue deletion issue ([1e443e2](https://github.com/vendure-ecommerce/vendure/commit/1e443e2))
+* **admin-ui** Sort orders on customer details page ([d67e1ff](https://github.com/vendure-ecommerce/vendure/commit/d67e1ff)), closes [#1827](https://github.com/vendure-ecommerce/vendure/issues/1827)
 * **asset-server-plugin** Better error message for s3 bucket errors ([adf58b4](https://github.com/vendure-ecommerce/vendure/commit/adf58b4))
 * **asset-server-plugin** Update Sharp version to fix mac m1 issue ([b76515b](https://github.com/vendure-ecommerce/vendure/commit/b76515b)), closes [#1866](https://github.com/vendure-ecommerce/vendure/issues/1866)
 * **core** Add resolver for `Zone.members` field ([3b67e61](https://github.com/vendure-ecommerce/vendure/commit/3b67e61))

@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
 import {
@@ -19,7 +19,7 @@ import {
     UpdateActiveAdministrator,
     UpdateAdministrator,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR } from './graphql/shared-definitions';
+import { CREATE_ADMINISTRATOR, UPDATE_ADMINISTRATOR } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
@@ -277,15 +277,6 @@ export const GET_ACTIVE_ADMINISTRATOR = gql`
 export const UPDATE_ACTIVE_ADMINISTRATOR = gql`
     mutation UpdateActiveAdministrator($input: UpdateActiveAdministratorInput!) {
         updateActiveAdministrator(input: $input) {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const UPDATE_ADMINISTRATOR = gql`
-    mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
-        updateAdministrator(input: $input) {
             ...Administrator
         }
     }

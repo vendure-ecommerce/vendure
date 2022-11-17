@@ -10,7 +10,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -36,6 +36,7 @@ import {
     CREATE_ADMINISTRATOR,
     CREATE_CHANNEL,
     CREATE_ROLE,
+    GET_CHANNELS,
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     ME,
@@ -250,6 +251,7 @@ describe('Channels', () => {
     });
 
     it('createRole with no channelId implicitly uses active channel', async () => {
+        await adminClient.asSuperAdmin();
         const { createRole } = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(
             CREATE_ROLE,
             {
@@ -359,16 +361,6 @@ describe('Channels', () => {
         expect(product!.channels.map(c => c.id)).toEqual(['T_1']);
     });
 });
-
-const GET_CHANNELS = gql`
-    query GetChannels {
-        channels {
-            id
-            code
-            token
-        }
-    }
-`;
 
 const DELETE_CHANNEL = gql`
     mutation DeleteChannel($id: ID!) {
