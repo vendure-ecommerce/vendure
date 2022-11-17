@@ -1537,6 +1537,33 @@ export type FacetValueFilterInput = {
   or?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type FacetValueFilterParameter = {
+  id?: Maybe<IdOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
+};
+
+export type FacetValueList = PaginatedList & {
+  items: Array<FacetValue>;
+  totalItems: Scalars['Int'];
+};
+
+export type FacetValueListOptions = {
+  /** Skips the first n results, for use in pagination */
+  skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
+  take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: Maybe<FacetValueSortParameter>;
+  /** Allows the results to be filtered */
+  filter?: Maybe<FacetValueFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
+};
+
 /**
  * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
@@ -1544,6 +1571,14 @@ export type FacetValueFilterInput = {
 export type FacetValueResult = {
   facetValue: FacetValue;
   count: Scalars['Int'];
+};
+
+export type FacetValueSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
 };
 
 export type FacetValueTranslation = {
@@ -4218,6 +4253,7 @@ export type Query = {
   customer?: Maybe<Customer>;
   facets: FacetList;
   facet?: Maybe<Facet>;
+  facetValues: FacetValueList;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobs: JobList;
@@ -4347,6 +4383,11 @@ export type QueryFacetsArgs = {
 
 export type QueryFacetArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryFacetValuesArgs = {
+  options?: Maybe<FacetValueListOptions>;
 };
 
 
@@ -5435,13 +5476,6 @@ export type UpdateActiveAdministratorMutationVariables = Exact<{
 
 export type UpdateActiveAdministratorMutation = { updateActiveAdministrator: AdministratorFragment };
 
-export type UpdateAdministratorMutationVariables = Exact<{
-  input: UpdateAdministratorInput;
-}>;
-
-
-export type UpdateAdministratorMutation = { updateAdministrator: AdministratorFragment };
-
 export type DeleteAdministratorMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -5510,11 +5544,6 @@ export type GetCustomerUserAuthQuery = { customer?: Maybe<(
       & { authenticationMethods: Array<Pick<AuthenticationMethod, 'id' | 'strategy'>> }
     )> }
   )> };
-
-export type GetChannelsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetChannelsQuery = { channels: Array<Pick<Channel, 'id' | 'code' | 'token'>> };
 
 export type DeleteChannelMutationVariables = Exact<{
   id: Scalars['ID'];
@@ -6955,6 +6984,18 @@ export type DeletePromotionMutationVariables = Exact<{
 
 export type DeletePromotionMutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
+export type GetChannelsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetChannelsQuery = { channels: Array<Pick<Channel, 'id' | 'code' | 'token'>> };
+
+export type UpdateAdministratorMutationVariables = Exact<{
+  input: UpdateAdministratorInput;
+}>;
+
+
+export type UpdateAdministratorMutation = { updateAdministrator: AdministratorFragment };
+
 export type CancelJobMutationVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -7691,12 +7732,6 @@ export namespace UpdateActiveAdministrator {
   export type UpdateActiveAdministrator = (NonNullable<UpdateActiveAdministratorMutation['updateActiveAdministrator']>);
 }
 
-export namespace UpdateAdministrator {
-  export type Variables = UpdateAdministratorMutationVariables;
-  export type Mutation = UpdateAdministratorMutation;
-  export type UpdateAdministrator = (NonNullable<UpdateAdministratorMutation['updateAdministrator']>);
-}
-
 export namespace DeleteAdministrator {
   export type Variables = DeleteAdministratorMutationVariables;
   export type Mutation = DeleteAdministratorMutation;
@@ -7765,12 +7800,6 @@ export namespace GetCustomerUserAuth {
   export type Customer = (NonNullable<GetCustomerUserAuthQuery['customer']>);
   export type User = (NonNullable<(NonNullable<GetCustomerUserAuthQuery['customer']>)['user']>);
   export type AuthenticationMethods = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCustomerUserAuthQuery['customer']>)['user']>)['authenticationMethods']>)[number]>;
-}
-
-export namespace GetChannels {
-  export type Variables = GetChannelsQueryVariables;
-  export type Query = GetChannelsQuery;
-  export type Channels = NonNullable<(NonNullable<GetChannelsQuery['channels']>)[number]>;
 }
 
 export namespace DeleteChannel {
@@ -9011,6 +9040,18 @@ export namespace DeletePromotion {
   export type Variables = DeletePromotionMutationVariables;
   export type Mutation = DeletePromotionMutation;
   export type DeletePromotion = (NonNullable<DeletePromotionMutation['deletePromotion']>);
+}
+
+export namespace GetChannels {
+  export type Variables = GetChannelsQueryVariables;
+  export type Query = GetChannelsQuery;
+  export type Channels = NonNullable<(NonNullable<GetChannelsQuery['channels']>)[number]>;
+}
+
+export namespace UpdateAdministrator {
+  export type Variables = UpdateAdministratorMutationVariables;
+  export type Mutation = UpdateAdministratorMutation;
+  export type UpdateAdministrator = (NonNullable<UpdateAdministratorMutation['updateAdministrator']>);
 }
 
 export namespace CancelJob {

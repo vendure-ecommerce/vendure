@@ -1537,6 +1537,33 @@ export type FacetValueFilterInput = {
   or?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type FacetValueFilterParameter = {
+  id?: Maybe<IdOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
+};
+
+export type FacetValueList = PaginatedList & {
+  items: Array<FacetValue>;
+  totalItems: Scalars['Int'];
+};
+
+export type FacetValueListOptions = {
+  /** Skips the first n results, for use in pagination */
+  skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
+  take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: Maybe<FacetValueSortParameter>;
+  /** Allows the results to be filtered */
+  filter?: Maybe<FacetValueFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
+};
+
 /**
  * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
@@ -1544,6 +1571,14 @@ export type FacetValueFilterInput = {
 export type FacetValueResult = {
   facetValue: FacetValue;
   count: Scalars['Int'];
+};
+
+export type FacetValueSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
 };
 
 export type FacetValueTranslation = {
@@ -4218,6 +4253,7 @@ export type Query = {
   customer?: Maybe<Customer>;
   facets: FacetList;
   facet?: Maybe<Facet>;
+  facetValues: FacetValueList;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobs: JobList;
@@ -4347,6 +4383,11 @@ export type QueryFacetsArgs = {
 
 export type QueryFacetArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryFacetValuesArgs = {
+  options?: Maybe<FacetValueListOptions>;
 };
 
 
