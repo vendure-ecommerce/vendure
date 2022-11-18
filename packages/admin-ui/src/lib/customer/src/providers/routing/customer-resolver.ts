@@ -26,7 +26,7 @@ export class CustomerResolver extends BaseEntityResolver<Customer.Fragment> {
             },
             id =>
                 dataService.customer
-                    .getCustomer(id, { sort: { orderPlacedAt: SortOrder.DESC } })
+                    .getCustomer(id, { take: 10, sort: { orderPlacedAt: SortOrder.DESC } })
                     .mapStream(data => data.customer),
         );
     }
