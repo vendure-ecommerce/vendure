@@ -21,7 +21,7 @@ export const initialData: InitialData = {
         { name: 'China', code: 'CN', zone: 'Asia' },
         { name: 'South Africa', code: 'ZA', zone: 'Africa' },
         { name: 'United Kingdom', code: 'GB', zone: 'Europe' },
-        { name: 'United States of America', code: 'US', zone: 'Americas' }
+        { name: 'United States of America', code: 'US', zone: 'Americas' },
     ],
     collections: [
         {

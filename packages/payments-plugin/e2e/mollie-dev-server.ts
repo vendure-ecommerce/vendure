@@ -1,21 +1,24 @@
-import { ChannelService, DefaultLogger, Logger, LogLevel, mergeConfig, PaymentMethodService } from '@vendure/core';
-import { MolliePlugin } from '../package/mollie';
-import localtunnel from 'localtunnel';
-import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
-import { initialData } from '../../../e2e-common/e2e-initial-data';
-import path from 'path';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
-import { AddItemToOrder } from './graphql/generated-shop-types';
-import { molliePaymentHandler } from '../package/mollie/mollie.handler';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
-import { CreatePaymentMethod } from './graphql/generated-admin-types';
-import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
+import { ChannelService, DefaultLogger, Logger, LogLevel, mergeConfig, PaymentMethodService } from '@vendure/core';
+import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
 import gql from 'graphql-tag';
+import localtunnel from 'localtunnel';
+import path from 'path';
+
+import { initialData } from '../../../e2e-common/e2e-initial-data';
+import { MolliePlugin } from '../package/mollie';
+import { molliePaymentHandler } from '../package/mollie/mollie.handler';
+
+import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
+import { CreatePaymentMethod } from './graphql/generated-admin-types';
+import { AddItemToOrder } from './graphql/generated-shop-types';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
+import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
 
 /**
  * This should only be used to locally test the Mollie payment plugin
  */
+/* tslint:disable:no-floating-promises */
 (async () => {
     require('dotenv').config();
 

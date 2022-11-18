@@ -3,6 +3,7 @@ import createMollieClient, {
     OrderStatus,
     PaymentMethod as MollieClientMethod,
 } from '@mollie/api-client';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
@@ -27,9 +28,8 @@ import {
     MolliePaymentIntentResult,
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
-import { MolliePluginOptions } from './mollie.plugin';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
+import { MolliePluginOptions } from './mollie.plugin';
 
 interface OrderStatusInput {
     channelToken: string;

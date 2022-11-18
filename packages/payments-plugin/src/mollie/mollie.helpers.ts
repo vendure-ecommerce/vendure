@@ -1,7 +1,8 @@
-import { Customer, Order } from '@vendure/core';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { OrderAddress as MollieOrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
+import { Customer, Order } from '@vendure/core';
+
 import { OrderAddress } from './graphql/generated-shop-types';
 
 /**
@@ -26,7 +27,6 @@ export function toMollieAddress(address: OrderAddress, customer: Customer): Moll
  * Map all order and shipping lines to a single array of Mollie order lines
  */
 export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
-    // TODO Dont like recreating logic, but its a common use case (also for fulfilment handlers). Maybe a helper function on an order? order.getCompleteOrderLines()
     const lines: CreateParameters['lines'] = order.lines.map(line => ({
         name: line.productVariant.name,
         quantity: line.quantity,

@@ -1,12 +1,17 @@
 import { OrderStatus, PaymentStatus } from '@mollie/api-client';
 import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
+import {
+    SettlePaymentMutation,
+    SettlePaymentMutationVariables,
+} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
+import { SETTLE_PAYMENT } from '@vendure/core/e2e/graphql/shared-definitions';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient, TestServer } from '@vendure/testing';
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
@@ -15,11 +20,6 @@ import { CreatePaymentMethod, GetCustomerList, GetCustomerListQuery } from './gr
 import { AddItemToOrder, GetOrderByCode, TestOrderFragmentFragment } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER, GET_ORDER_BY_CODE } from './graphql/shop-queries';
 import { CREATE_MOLLIE_PAYMENT_INTENT, GET_MOLLIE_PAYMENT_METHODS, refundOne, setShipping } from './payment-helpers';
-import {
-    SettlePaymentMutation,
-    SettlePaymentMutationVariables,
-} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
-import { SETTLE_PAYMENT } from '@vendure/core/e2e/graphql/shared-definitions';
 
 describe('Mollie payments', () => {
     const mockData = {

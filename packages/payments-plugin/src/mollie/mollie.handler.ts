@@ -72,7 +72,6 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         const mollieOrder = await mollieClient.orders.get(payment.transactionId);
         // Order could have been completed via Mollie dashboard, then we can just settle
         if (!mollieOrder.isCompleted()) {
-            console.log('NOT COMPLETE', payment.transactionId)
             await mollieClient.orders_shipments.create({orderId: payment.transactionId}); // Creating a shipment captures the payment
         }
         Logger.info(`Settled payment for ${order.code}`, loggerCtx);

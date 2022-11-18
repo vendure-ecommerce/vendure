@@ -1,5 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { SimpleGraphQLClient } from '@vendure/testing';
+import gql from 'graphql-tag';
 
 import { REFUND_ORDER } from './graphql/admin-queries';
 import { RefundFragment, RefundOrder } from './graphql/generated-admin-types';
@@ -15,7 +16,6 @@ import {
     SET_SHIPPING_METHOD,
     TRANSITION_TO_STATE,
 } from './graphql/shop-queries';
-import gql from 'graphql-tag';
 
 
 export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
