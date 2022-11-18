@@ -136,7 +136,7 @@ export class MollieService {
     }
 
     /**
-     * Handle Vendure payments and order status based on the incoming Mollie order
+     * Update Vendure payments and order status based on the incoming Mollie order
      */
     async handleMollieStatusUpdate({ channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
         const ctx = await this.createContext(channelToken);
