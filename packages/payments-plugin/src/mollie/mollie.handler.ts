@@ -1,4 +1,4 @@
-import createMollieClient, { OrderStatus, PaymentStatus, RefundStatus } from '@mollie/api-client';
+import createMollieClient, { OrderEmbed, OrderStatus, PaymentStatus, RefundStatus } from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentErrorResult,
@@ -36,9 +36,9 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         autoCapture: {
             type: 'boolean',
             label: [{ languageCode: LanguageCode.en, value: 'Auto capture payments' }],
-            defaultValue: true,
+            defaultValue: false,
             description: [
-                { languageCode: LanguageCode.en, value: 'Automatically capture payments for pay-later methods. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.' },
+                { languageCode: LanguageCode.en, value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.' },
             ],
         },
     },
@@ -70,8 +70,9 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         const { apiKey } = args;
         const mollieClient = createMollieClient({ apiKey });
         const mollieOrder = await mollieClient.orders.get(payment.transactionId);
+        // Order could have been completed via Mollie dashboard, then we can just settle
         if (!mollieOrder.isCompleted()) {
-            // Order could have been completed via Mollie, then we can just settle
+            console.log('NOT COMPLETE', payment.transactionId)
             await mollieClient.orders_shipments.create({orderId: payment.transactionId}); // Creating a shipment captures the payment
         }
         Logger.info(`Settled payment for ${order.code}`, loggerCtx);
@@ -80,7 +81,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
         const { apiKey } = args;
         const mollieClient = createMollieClient({ apiKey });
-        const mollieOrder = await mollieClient.orders.get(payment.transactionId);
+        const mollieOrder = await mollieClient.orders.get(payment.transactionId, {embed: [OrderEmbed.payments]});
         const molliePayments = await mollieOrder.getPayments();
         const molliePayment = molliePayments.find(p => p.status === PaymentStatus.paid); // Only one paid payment should be there
         if (!molliePayment) {

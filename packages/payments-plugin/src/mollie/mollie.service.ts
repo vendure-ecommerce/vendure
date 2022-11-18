@@ -110,7 +110,7 @@ export class MollieService {
             : this.options.vendureHost; // remove appending slash
         const billingAddress = toMollieAddress(order.billingAddress, order.customer) || toMollieAddress(order.shippingAddress, order.customer);
         if (!billingAddress) {
-            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed.`);
+            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.`);
         }
         const orderInput: CreateParameters = {
             orderNumber: order.code,
@@ -147,7 +147,7 @@ export class MollieService {
             return Logger.warn(`No paymentMethod found with id ${paymentMethodId}`, loggerCtx);
         }
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
-        const autoCapture = !!paymentMethod.handler.args.find(a => a.name === 'autoCapture')?.value;
+        const autoCapture = paymentMethod.handler.args.find(a => a.name === 'autoCapture')?.value === 'true';
         if (!apiKey) {
             throw Error(`No apiKey found for payment ${paymentMethod.id} for channel ${channelToken}`);
         }
