@@ -11,6 +11,7 @@ import {
 
 import { loggerCtx } from './constants';
 import { MollieService } from './mollie.service';
+import { PaymentState } from '@vendure/core/src';
 
 let mollieService: MollieService;
 export const molliePaymentHandler = new PaymentMethodHandler({
@@ -56,7 +57,15 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         if (ctx.apiType !== 'admin') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
-        const state = metadata.status === OrderStatus.paid ? 'Settled' : 'Authorized';
+        let state: Exclude<PaymentState, 'Error'> | undefined;
+        if (metadata.status === OrderStatus.paid) {
+            state = 'Settled';
+        } else if (metadata.status === OrderStatus.authorized) {
+            state = 'Authorized';
+        }
+        if (!state) {
+            throw Error(`Cannot create payment for Mollie state ${metadata.status} for order ${order.code}`);
+        }
         Logger.info(`Payment for order ${order.code} created with state '${state}'`, loggerCtx);
         return {
             amount,
