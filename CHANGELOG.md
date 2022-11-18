@@ -1,3 +1,22 @@
+## <small>1.8.4 (2022-11-18)</small>
+
+
+#### Fixes
+
+* **admin-ui** Allow creation of Administrator without update permission ([8ea8e47](https://github.com/vendure-ecommerce/vendure/commit/8ea8e47)), closes [#1875](https://github.com/vendure-ecommerce/vendure/issues/1875)
+* **admin-ui** Fix edge case errors when facet value detail editing ([3e56f06](https://github.com/vendure-ecommerce/vendure/commit/3e56f06))
+* **core** AuthGuard correctly handles subscriptions ([96d10b3](https://github.com/vendure-ecommerce/vendure/commit/96d10b3))
+* **core** Fix creation of superadmin ([5fee35b](https://github.com/vendure-ecommerce/vendure/commit/5fee35b))
+* **core** Fix injectable hooks on TaxLineCalculationStrategy (#1882) ([77163eb](https://github.com/vendure-ecommerce/vendure/commit/77163eb)), closes [#1882](https://github.com/vendure-ecommerce/vendure/issues/1882) [#1871](https://github.com/vendure-ecommerce/vendure/issues/1871)
+* **core** Fix permission escalation when creating Roles/Admins ([8f12142](https://github.com/vendure-ecommerce/vendure/commit/8f12142)), closes [#1874](https://github.com/vendure-ecommerce/vendure/issues/1874)
+* **payments-plugin** Return 200 on Stripe payment failed event (#1878) ([ec205ea](https://github.com/vendure-ecommerce/vendure/commit/ec205ea)), closes [#1878](https://github.com/vendure-ecommerce/vendure/issues/1878)
+* **ui-devkit** Update scaffolding to use correct eslib (#1886) ([30f79af](https://github.com/vendure-ecommerce/vendure/commit/30f79af)), closes [#1886](https://github.com/vendure-ecommerce/vendure/issues/1886) [#1859](https://github.com/vendure-ecommerce/vendure/issues/1859)
+
+#### Perf
+
+* **admin-ui** Load only first page of customer orders ([0c9b60e](https://github.com/vendure-ecommerce/vendure/commit/0c9b60e)), closes [#1769](https://github.com/vendure-ecommerce/vendure/issues/1769)
+* **core** Trim payload of Job type to omit verbose ctx data ([c25a1e3](https://github.com/vendure-ecommerce/vendure/commit/c25a1e3)), closes [#1376](https://github.com/vendure-ecommerce/vendure/issues/1376)
+
 ## <small>1.8.3 (2022-11-10)</small>
 
 
