@@ -58,19 +58,13 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         if (ctx.apiType !== 'admin') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
-        let state: Exclude<PaymentState, 'Error'> | undefined;
-        if (metadata.status === OrderStatus.paid) {
-            state = 'Settled';
-        } else if (metadata.status === OrderStatus.authorized) {
-            state = 'Authorized';
+        if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {
+            throw Error(`Cannot create payment for status ${metadata.status} for order ${order.code}. Only Authorized or Settled are allowed.`);
         }
-        if (!state) {
-            throw Error(`Cannot create payment for Mollie state ${metadata.status} for order ${order.code}`);
-        }
-        Logger.info(`Payment for order ${order.code} created with state '${state}'`, loggerCtx);
+        Logger.info(`Payment for order ${order.code} created with state '${metadata.status}'`, loggerCtx);
         return {
             amount,
-            state,
+            state: metadata.status,
             transactionId: metadata.orderId, // The plugin now only supports 1 payment per order, so a mollie order equals a payment
             metadata, // Store all given metadata on a payment
         };

@@ -160,11 +160,11 @@ export class MollieService {
         }
         if (mollieOrder.status === OrderStatus.paid ) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
-            await this.addPayment(ctx, order, mollieOrder, paymentMethod.code);
+            await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Settled');
             return;
         }
         if (order.state === 'AddingItems' && mollieOrder.status === OrderStatus.authorized) {
-            order = await this.addPayment(ctx, order, mollieOrder, paymentMethod.code);
+            order = await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Authorized');
             if (autoCapture && mollieOrder.status === OrderStatus.authorized) {
                 // Immediately capture payment if autoCapture is set
                 Logger.info(`Auto capturing payment for order ${order.code}`, loggerCtx);
@@ -186,7 +186,7 @@ export class MollieService {
     /**
      * Add payment to order. Can be settled or authorized depending on the payment method.
      */
-    async addPayment(ctx: RequestContext, order: Order, mollieOrder: MollieOrder, paymentMethodCode: string): Promise<Order> {
+    async addPayment(ctx: RequestContext, order: Order, mollieOrder: MollieOrder, paymentMethodCode: string, status: 'Authorized' | 'Settled'): Promise<Order> {
         if (order.state !== 'ArrangingPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
                 ctx,
@@ -201,7 +201,7 @@ export class MollieService {
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
             method: paymentMethodCode,
             metadata: {
-                status: mollieOrder.status,
+                status,
                 orderId: mollieOrder.id,
                 mode: mollieOrder.mode,
                 method: mollieOrder.method,
