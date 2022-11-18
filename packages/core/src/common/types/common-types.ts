@@ -115,10 +115,12 @@ export interface StringOperators {
     in?: string[];
     notIn?: string[];
     regex?: string;
+    isNull?: boolean;
 }
 
 export interface BooleanOperators {
     eq?: boolean;
+    isNull?: boolean;
 }
 
 export interface NumberRange {
@@ -133,6 +135,7 @@ export interface NumberOperators {
     gt?: number;
     gte?: number;
     between?: NumberRange;
+    isNull?: boolean;
 }
 
 export interface DateRange {
@@ -145,6 +148,7 @@ export interface DateOperators {
     before?: Date;
     after?: Date;
     between?: DateRange;
+    isNull?: boolean;
 }
 
 export interface ListOperators {

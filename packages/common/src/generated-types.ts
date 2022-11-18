@@ -306,6 +306,7 @@ export type BooleanListOperators = {
 /** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
   eq?: Maybe<Scalars['Boolean']>;
+  isNull?: Maybe<Scalars['Boolean']>;
 };
 
 /** Returned if an attempting to cancel lines from an Order which is still active */
@@ -1358,6 +1359,7 @@ export type DateOperators = {
   before?: Maybe<Scalars['DateTime']>;
   after?: Maybe<Scalars['DateTime']>;
   between?: Maybe<DateRange>;
+  isNull?: Maybe<Scalars['Boolean']>;
 };
 
 export type DateRange = {
@@ -1799,6 +1801,7 @@ export type IdOperators = {
   notEq?: Maybe<Scalars['String']>;
   in?: Maybe<Array<Scalars['String']>>;
   notIn?: Maybe<Array<Scalars['String']>>;
+  isNull?: Maybe<Scalars['Boolean']>;
 };
 
 export type ImportInfo = {
@@ -3370,6 +3373,7 @@ export type NumberOperators = {
   gt?: Maybe<Scalars['Float']>;
   gte?: Maybe<Scalars['Float']>;
   between?: Maybe<NumberRange>;
+  isNull?: Maybe<Scalars['Boolean']>;
 };
 
 export type NumberRange = {
@@ -5126,6 +5130,7 @@ export type StringOperators = {
   in?: Maybe<Array<Scalars['String']>>;
   notIn?: Maybe<Array<Scalars['String']>>;
   regex?: Maybe<Scalars['String']>;
+  isNull?: Maybe<Scalars['Boolean']>;
 };
 
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
