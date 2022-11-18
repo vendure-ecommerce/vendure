@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { GraphQLError } from 'graphql';
 import i18next, { TFunction } from 'i18next';
 import i18nextMiddleware from 'i18next-express-middleware';
+// @ts-ignore
 import Backend from 'i18next-fs-backend';
 import ICU from 'i18next-icu';
 import path from 'path';

@@ -30,7 +30,7 @@ export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
     const lines: CreateParameters['lines'] = order.lines.map(line => ({
         name: line.productVariant.name,
         quantity: line.quantity,
-        unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
+        unitPrice: toAmount(line.proratedUnitPriceWithTax, order.currencyCode), // totalAmount has to match unitPrice * quantity
         totalAmount: toAmount(line.proratedLinePriceWithTax, order.currencyCode),
         vatRate: String(line.taxRate),
         vatAmount: toAmount(line.lineTax, order.currencyCode),

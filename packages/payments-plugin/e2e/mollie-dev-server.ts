@@ -1,5 +1,5 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { ChannelService, DefaultLogger, Logger, LogLevel, mergeConfig, PaymentMethodService } from '@vendure/core';
+import { DefaultLogger, Logger, LogLevel, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
 import gql from 'graphql-tag';
 import localtunnel from 'localtunnel';
@@ -31,11 +31,11 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
                 route: 'admin',
                 port: 5001,
             }),
-            MolliePlugin.init({ vendureHost: tunnel.url })
+            MolliePlugin.init({ vendureHost: tunnel.url }),
         ],
-        logger: new DefaultLogger({level: LogLevel.Debug})
+        logger: new DefaultLogger({ level: LogLevel.Debug }),
     });
-    const {server, shopClient, adminClient} = createTestEnvironment(config as any);
+    const { server, shopClient, adminClient } = createTestEnvironment(config as any);
     await server.init({
         initialData,
         productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
@@ -44,12 +44,12 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     // Set EUR as currency for Mollie
     await adminClient.asSuperAdmin();
     await adminClient.query(gql`
-            mutation {
-              updateChannel(input: {id: "T_1", currencyCode: EUR}) {
+        mutation {
+            updateChannel(input: {id: "T_1", currencyCode: EUR}) {
                 __typename
-              }
             }
-        `);
+        }
+    `);
     // Create method
     await adminClient.query<CreatePaymentMethod.Mutation,
         CreatePaymentMethod.Variables>(CREATE_PAYMENT_METHOD, {
@@ -85,6 +85,6 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     if (createMolliePaymentIntent.errorCode) {
         throw createMolliePaymentIntent;
     }
-    Logger.info(`Mollie payment link: ${createMolliePaymentIntent.url}`, 'Mollie DevServer')
+    Logger.info(`Mollie payment link: ${createMolliePaymentIntent.url}`, 'Mollie DevServer');
 })();
 
