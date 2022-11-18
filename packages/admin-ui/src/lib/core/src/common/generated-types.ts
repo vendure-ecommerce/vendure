@@ -1594,6 +1594,34 @@ export type FacetValueFilterInput = {
   or?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type FacetValueFilterParameter = {
+  id?: Maybe<IdOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
+};
+
+export type FacetValueList = PaginatedList & {
+  __typename?: 'FacetValueList';
+  items: Array<FacetValue>;
+  totalItems: Scalars['Int'];
+};
+
+export type FacetValueListOptions = {
+  /** Skips the first n results, for use in pagination */
+  skip?: Maybe<Scalars['Int']>;
+  /** Takes n results, for use in pagination */
+  take?: Maybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: Maybe<FacetValueSortParameter>;
+  /** Allows the results to be filtered */
+  filter?: Maybe<FacetValueFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: Maybe<LogicalOperator>;
+};
+
 /**
  * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
@@ -1602,6 +1630,14 @@ export type FacetValueResult = {
   __typename?: 'FacetValueResult';
   facetValue: FacetValue;
   count: Scalars['Int'];
+};
+
+export type FacetValueSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
 };
 
 export type FacetValueTranslation = {
@@ -4400,6 +4436,7 @@ export type Query = {
   /** Returns a list of eligible shipping methods for the draft Order */
   eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
   facet?: Maybe<Facet>;
+  facetValues: FacetValueList;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
   globalSettings: GlobalSettings;
@@ -4528,6 +4565,11 @@ export type QueryEligibleShippingMethodsForDraftOrderArgs = {
 
 export type QueryFacetArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryFacetValuesArgs = {
+  options?: Maybe<FacetValueListOptions>;
 };
 
 
@@ -6611,6 +6653,20 @@ export type GetFacetListQuery = { facets: (
     & { items: Array<(
       { __typename?: 'Facet' }
       & FacetWithValuesFragment
+    )> }
+  ) };
+
+export type GetFacetValueListQueryVariables = Exact<{
+  options?: Maybe<FacetValueListOptions>;
+}>;
+
+
+export type GetFacetValueListQuery = { facetValues: (
+    { __typename?: 'FacetValueList' }
+    & Pick<FacetValueList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'FacetValue' }
+      & FacetValueFragment
     )> }
   ) };
 
@@ -10352,6 +10408,13 @@ export namespace GetFacetList {
   export type Query = GetFacetListQuery;
   export type Facets = (NonNullable<GetFacetListQuery['facets']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetFacetListQuery['facets']>)['items']>)[number]>;
+}
+
+export namespace GetFacetValueList {
+  export type Variables = GetFacetValueListQueryVariables;
+  export type Query = GetFacetValueListQuery;
+  export type FacetValues = (NonNullable<GetFacetValueListQuery['facetValues']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetFacetValueListQuery['facetValues']>)['items']>)[number]>;
 }
 
 export namespace GetFacetWithValues {

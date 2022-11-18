@@ -4,19 +4,14 @@ import {
     Component,
     EventEmitter,
     Input,
-    OnChanges,
     OnDestroy,
     OnInit,
     Output,
-    SimpleChanges,
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
 import {
     CustomFieldConfig,
     DataService,
-    FacetValue,
-    FacetWithValues,
-    flattenFacetValues,
     GlobalFlag,
     LanguageCode,
     ModalService,
@@ -24,15 +19,16 @@ import {
     ProductDetail,
     ProductOptionFragment,
     ProductVariant,
+    ProductVariantFragment,
     TaxCategory,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { PaginationInstance } from 'ngx-pagination';
+import { unique } from '@vendure/common/lib/unique';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
+import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 import { AssetChange } from '../assets/assets.component';
 import {
     PaginationConfig,
@@ -51,18 +47,18 @@ export interface VariantAssetChange extends AssetChange {
     styleUrls: ['./product-variants-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestroy {
+export class ProductVariantsListComponent implements OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
     @Input() variants: ProductVariant.Fragment[];
     @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
     @Input() taxCategories: TaxCategory[];
-    @Input() facets: FacetWithValues.Fragment[];
     @Input() optionGroups: ProductDetail.OptionGroups[];
     @Input() customFields: CustomFieldConfig[];
     @Input() customOptionFields: CustomFieldConfig[];
     @Input() activeLanguage: LanguageCode;
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
+    @Input() pendingFacetValueChanges: { [variantId: string]: ProductVariantFragment['facetValues'] };
     @Output() assignToChannel = new EventEmitter<ProductVariant.Fragment>();
     @Output() removeFromChannel = new EventEmitter<{
         channelId: string;
@@ -70,7 +66,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     }>();
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
-    @Output() selectFacetValueClick = new EventEmitter<string[]>();
     @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput & { autoUpdate: boolean }>();
     selectedVariantIds: string[] = [];
     formGroupMap = new Map<string, FormGroup>();
@@ -78,7 +73,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateProduct];
-    private facetValues: FacetValue.Fragment[];
     private subscription: Subscription;
 
     constructor(
@@ -108,12 +102,6 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         );
 
         this.buildFormGroupMap();
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if ('facets' in changes && !!changes['facets'].currentValue) {
-            this.facetValues = flattenFacetValues(this.facets);
-        }
     }
 
     ngOnDestroy() {
@@ -209,27 +197,35 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return translation.name;
     }
 
-    pendingFacetValues(variant: ProductVariant.Fragment) {
-        if (this.facets) {
-            const formFacetValueIds = this.getFacetValueIds(variant.id);
-            const variantFacetValueIds = variant.facetValues.map(fv => fv.id);
-            return formFacetValueIds
-                .filter(x => !variantFacetValueIds.includes(x))
-                .map(id => this.facetValues.find(fv => fv.id === id))
-                .filter(notNullOrUndefined);
-        } else {
-            return [];
-        }
+    currentOrPendingFacetValues(variant: ProductVariant.Fragment) {
+        return this.pendingFacetValueChanges[variant.id] ?? variant.facetValues;
     }
 
-    existingFacetValues(variant: ProductVariant.Fragment) {
-        const formFacetValueIds = this.getFacetValueIds(variant.id);
-        const intersection = [...formFacetValueIds].filter(x =>
-            variant.facetValues.map(fv => fv.id).includes(x),
-        );
-        return intersection
-            .map(id => variant.facetValues.find(fv => fv.id === id))
-            .filter(notNullOrUndefined);
+    selectFacetValue(variant: ProductVariantFragment) {
+        return this.modalService
+            .fromComponent(ApplyFacetDialogComponent, {
+                size: 'md',
+                closable: true,
+            })
+            .subscribe(facetValues => {
+                if (facetValues) {
+                    const existingFacetValueIds = variant ? variant.facetValues.map(fv => fv.id) : [];
+                    const variantFormGroup = this.formArray.controls.find(c => c.value.id === variant.id);
+                    if (variantFormGroup) {
+                        const uniqueFacetValueIds = unique([
+                            ...existingFacetValueIds,
+                            ...facetValues.map(fv => fv.id),
+                        ]);
+                        variantFormGroup.patchValue({ facetValueIds: uniqueFacetValueIds });
+                        variantFormGroup.markAsDirty();
+                        if (!this.pendingFacetValueChanges[variant.id]) {
+                            this.pendingFacetValueChanges[variant.id] = variant.facetValues.slice(0);
+                        }
+                        this.pendingFacetValueChanges[variant.id].push(...facetValues);
+                    }
+                    this.changeDetector.markForCheck();
+                }
+            });
     }
 
     removeFacetValue(variant: ProductVariant.Fragment, facetValueId: string) {
@@ -242,6 +238,12 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                 facetValueIds: newValue,
             });
             formGroup.markAsDirty();
+            if (!this.pendingFacetValueChanges[variant.id]) {
+                this.pendingFacetValueChanges[variant.id] = variant.facetValues.slice(0);
+            }
+            this.pendingFacetValueChanges[variant.id] = this.pendingFacetValueChanges[variant.id].filter(
+                fv => fv.id !== facetValueId,
+            );
         }
     }
 

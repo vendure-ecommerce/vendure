@@ -1,9 +1,9 @@
+import { WatchQueryFetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
 
 import {
     AssignFacetsToChannel,
     AssignFacetsToChannelInput,
-    AssignProductsToChannelInput,
     CreateFacet,
     CreateFacetInput,
     CreateFacetValueInput,
@@ -11,7 +11,10 @@ import {
     DeleteFacet,
     DeleteFacets,
     DeleteFacetValues,
+    FacetValueListOptions,
     GetFacetList,
+    GetFacetValueListQuery,
+    GetFacetValueListQueryVariables,
     GetFacetWithValues,
     RemoveFacetsFromChannel,
     RemoveFacetsFromChannelInput,
@@ -25,9 +28,10 @@ import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
     DELETE_FACET,
-    DELETE_FACET_VALUES,
     DELETE_FACETS,
+    DELETE_FACET_VALUES,
     GET_FACET_LIST,
+    GET_FACET_VALUE_LIST,
     GET_FACET_WITH_VALUES,
     REMOVE_FACETS_FROM_CHANNEL,
     UPDATE_FACET,
@@ -46,6 +50,14 @@ export class FacetDataService {
                 skip,
             },
         });
+    }
+
+    getFacetValues(options: FacetValueListOptions, fetchPolicy?: WatchQueryFetchPolicy) {
+        return this.baseDataService.query<GetFacetValueListQuery, GetFacetValueListQueryVariables>(
+            GET_FACET_VALUE_LIST,
+            { options },
+            fetchPolicy,
+        );
     }
 
     getAllFacets() {
