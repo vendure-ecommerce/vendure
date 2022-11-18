@@ -1,32 +1,49 @@
+/* tslint:disable:no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import {
     CUSTOMER_ROLE_CODE,
     DEFAULT_CHANNEL_CODE,
     SUPER_ADMIN_ROLE_CODE,
 } from '@vendure/common/lib/shared-constants';
-import { createTestEnvironment } from '@vendure/testing';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ROLE_FRAGMENT } from './graphql/fragments';
 import {
     ChannelFragment,
+    CreateAdministratorMutation,
+    CreateAdministratorMutationVariables,
     CreateChannel,
     CreateRole,
+    CreateRoleMutation,
+    CreateRoleMutationVariables,
     CurrencyCode,
     DeleteRole,
     DeletionResult,
+    GetChannelsQuery,
     GetRole,
     GetRoles,
     LanguageCode,
     Permission,
     Role,
+    UpdateAdministratorMutation,
+    UpdateAdministratorMutationVariables,
     UpdateRole,
+    UpdateRoleMutation,
+    UpdateRoleMutationVariables,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_CHANNEL, CREATE_ROLE, UPDATE_ROLE } from './graphql/shared-definitions';
+import {
+    CREATE_ADMINISTRATOR,
+    CREATE_CHANNEL,
+    CREATE_ROLE,
+    GET_CHANNELS,
+    UPDATE_ADMINISTRATOR,
+    UPDATE_ROLE,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
@@ -400,6 +417,212 @@ describe('Role resolver', () => {
                 },
             ]);
         });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1874
+    describe('role escalation', () => {
+        let defaultChannel: GetChannelsQuery['channels'][number];
+        let secondChannel: GetChannelsQuery['channels'][number];
+        let limitedAdmin: CreateAdministratorMutation['createAdministrator'];
+        let orderReaderRole: CreateRoleMutation['createRole'];
+        let adminCreatorRole: CreateRoleMutation['createRole'];
+        let adminCreatorAdministrator: CreateAdministratorMutation['createAdministrator'];
+
+        beforeAll(async () => {
+            const { channels } = await adminClient.query<GetChannelsQuery>(GET_CHANNELS);
+            defaultChannel = channels.find(c => c.token === E2E_DEFAULT_CHANNEL_TOKEN)!;
+            secondChannel = channels.find(c => c.token !== E2E_DEFAULT_CHANNEL_TOKEN)!;
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            await adminClient.asSuperAdmin();
+            const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
+                CREATE_ROLE,
+                {
+                    input: {
+                        code: 'second-channel-admin-manager',
+                        description: '',
+                        channelIds: [secondChannel.id],
+                        permissions: [
+                            Permission.CreateAdministrator,
+                            Permission.ReadAdministrator,
+                            Permission.UpdateAdministrator,
+                            Permission.DeleteAdministrator,
+                        ],
+                    },
+                },
+            );
+
+            const { createAdministrator } = await adminClient.query<
+                CreateAdministratorMutation,
+                CreateAdministratorMutationVariables
+            >(CREATE_ADMINISTRATOR, {
+                input: {
+                    firstName: 'channel2',
+                    lastName: 'admin manager',
+                    emailAddress: 'channel2@test.com',
+                    roleIds: [createRole.id],
+                    password: 'test',
+                },
+            });
+            limitedAdmin = createAdministrator;
+
+            const { createRole: createRole2 } = await adminClient.query<
+                CreateRoleMutation,
+                CreateRoleMutationVariables
+            >(CREATE_ROLE, {
+                input: {
+                    code: 'second-channel-order-manager',
+                    description: '',
+                    channelIds: [secondChannel.id],
+                    permissions: [Permission.ReadOrder],
+                },
+            });
+
+            orderReaderRole = createRole2;
+
+            adminClient.setChannelToken(secondChannel.token);
+            await adminClient.asUserWithCredentials(limitedAdmin.emailAddress, 'test');
+        });
+
+        it(
+            'limited admin cannot create Role with SuperAdmin permission',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(CREATE_ROLE, {
+                    input: {
+                        code: 'evil-superadmin',
+                        description: '',
+                        channelIds: [secondChannel.id],
+                        permissions: [Permission.SuperAdmin],
+                    },
+                });
+            }, 'The permission "SuperAdmin" may not be assigned'),
+        );
+
+        it(
+            'limited admin cannot create Administrator with SuperAdmin role',
+            assertThrowsWithMessage(async () => {
+                const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE)!;
+                await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
+                    CREATE_ADMINISTRATOR,
+                    {
+                        input: {
+                            firstName: 'Dr',
+                            lastName: 'Evil',
+                            emailAddress: 'drevil@test.com',
+                            roleIds: [superAdminRole.id],
+                            password: 'test',
+                        },
+                    },
+                );
+            }, 'Active user does not have sufficient permissions'),
+        );
+
+        it(
+            'limited admin cannot create Role with permissions it itself does not have',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(CREATE_ROLE, {
+                    input: {
+                        code: 'evil-order-manager',
+                        description: '',
+                        channelIds: [secondChannel.id],
+                        permissions: [Permission.ReadOrder],
+                    },
+                });
+            }, 'Active user does not have sufficient permissions'),
+        );
+
+        it(
+            'limited admin cannot create Role on channel it does not have permissions on',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(CREATE_ROLE, {
+                    input: {
+                        code: 'evil-order-manager',
+                        description: '',
+                        channelIds: [defaultChannel.id],
+                        permissions: [Permission.CreateAdministrator],
+                    },
+                });
+            }, 'You are not currently authorized to perform this action'),
+        );
+
+        it(
+            'limited admin cannot create Administrator with a Role with greater permissions than they themselves have',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
+                    CREATE_ADMINISTRATOR,
+                    {
+                        input: {
+                            firstName: 'Dr',
+                            lastName: 'Evil',
+                            emailAddress: 'drevil@test.com',
+                            roleIds: [orderReaderRole.id],
+                            password: 'test',
+                        },
+                    },
+                );
+            }, 'Active user does not have sufficient permissions'),
+        );
+
+        it('limited admin can create Role with permissions it itself has', async () => {
+            const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
+                CREATE_ROLE,
+                {
+                    input: {
+                        code: 'good-admin-creator',
+                        description: '',
+                        channelIds: [secondChannel.id],
+                        permissions: [Permission.CreateAdministrator],
+                    },
+                },
+            );
+
+            expect(createRole.code).toBe('good-admin-creator');
+            adminCreatorRole = createRole;
+        });
+
+        it('limited admin can create Administrator with permissions it itself has', async () => {
+            const { createAdministrator } = await adminClient.query<
+                CreateAdministratorMutation,
+                CreateAdministratorMutationVariables
+            >(CREATE_ADMINISTRATOR, {
+                input: {
+                    firstName: 'Admin',
+                    lastName: 'Creator',
+                    emailAddress: 'admincreator@test.com',
+                    roleIds: [adminCreatorRole.id],
+                    password: 'test',
+                },
+            });
+
+            expect(createAdministrator.emailAddress).toBe('admincreator@test.com');
+            adminCreatorAdministrator = createAdministrator;
+        });
+
+        it(
+            'limited admin cannot update Role with permissions it itself lacks',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateRoleMutation, UpdateRoleMutationVariables>(UPDATE_ROLE, {
+                    input: {
+                        id: adminCreatorRole.id,
+                        permissions: [Permission.ReadOrder],
+                    },
+                });
+            }, 'Active user does not have sufficient permissions'),
+        );
+
+        it(
+            'limited admin cannot update Administrator with Role containing permissions it itself lacks',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateAdministratorMutation, UpdateAdministratorMutationVariables>(
+                    UPDATE_ADMINISTRATOR,
+                    {
+                        input: {
+                            id: adminCreatorAdministrator.id,
+                            roleIds: [adminCreatorRole.id, orderReaderRole.id],
+                        },
+                    },
+                );
+            }, 'Active user does not have sufficient permissions'),
+        );
     });
 });
 

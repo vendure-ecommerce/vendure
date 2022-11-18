@@ -1,43 +1,40 @@
 {
-  "name": "@vendure/payments-plugin",
-  "version": "1.8.3",
-  "license": "MIT",
-  "main": "package/index.js",
-  "types": "package/index.d.ts",
-  "files": [
-    "package/**/*"
-  ],
-  "private": false,
-  "scripts": {
-    "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf package && tsc -p ./tsconfig.build.json",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payments-plugin",
-    "lint": "tslint --fix --project ./",
-    "ci": "yarn build",
-    "dev-server:mollie": "yarn build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts"
-  },
-  "homepage": "https://www.vendure.io/",
-  "funding": "https://github.com/sponsors/michaelbromley",
-  "publishConfig": {
-    "access": "public"
-  },
-  "peerDependencies": {
-    "@mollie/api-client": "3.x",
-    "braintree": "3.x",
-    "stripe": "8.x"
-  },
-  "devDependencies": {
-    "@mollie/api-client": "^3.6.0",
-    "@types/braintree": "^2.22.15",
-    "@types/localtunnel": "^2.0.1",
-    "@vendure/common": "^1.8.3",
-    "@vendure/core": "^1.8.3",
-    "@vendure/testing": "^1.8.3",
-    "braintree": "^3.0.0",
-    "localtunnel": "^2.0.2",
-    "nock": "^13.1.4",
-    "rimraf": "^3.0.2",
-    "stripe": "^8.197.0",
-    "typescript": "4.3.5"
-  }
+    "name": "@vendure/payments-plugin",
+    "version": "1.8.4",
+    "license": "MIT",
+    "main": "package/index.js",
+    "types": "package/index.d.ts",
+    "files": [
+        "package/**/*"
+    ],
+    "private": false,
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "build": "rimraf package && tsc -p ./tsconfig.build.json",
+        "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payments-plugin",
+        "lint": "tslint --fix --project ./",
+        "ci": "yarn build"
+    },
+    "homepage": "https://www.vendure.io/",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "@mollie/api-client": "3.x",
+        "braintree": "3.x",
+        "stripe": "8.x"
+    },
+    "devDependencies": {
+        "@mollie/api-client": "^3.6.0",
+        "@types/braintree": "^2.22.15",
+        "@vendure/common": "^1.8.4",
+        "@vendure/core": "^1.8.4",
+        "@vendure/testing": "^1.8.4",
+        "braintree": "^3.0.0",
+        "nock": "^13.1.4",
+        "rimraf": "^3.0.2",
+        "stripe": "^8.197.0",
+        "typescript": "4.3.5"
+    }
 }

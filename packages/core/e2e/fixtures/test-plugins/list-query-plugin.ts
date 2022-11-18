@@ -91,6 +91,21 @@ export class TestEntity extends VendureEntity implements Translatable {
     @OneToOne(type => Order)
     @JoinColumn()
     orderRelation: Order;
+
+    @Column({ nullable: true })
+    nullableString: string;
+
+    @Column({ nullable: true })
+    nullableBoolean: boolean;
+
+    @Column({ nullable: true })
+    nullableNumber: number;
+
+    @Column('varchar', { nullable: true })
+    nullableId: ID;
+
+    @Column({ nullable: true })
+    nullableDate: Date;
 }
 
 @Entity()
@@ -193,6 +208,11 @@ const apiExtensions = gql`
         ownerId: ID!
         translations: [TestEntityTranslation!]!
         orderRelation: Order
+        nullableString: String
+        nullableBoolean: Boolean
+        nullableNumber: Int
+        nullableId: ID
+        nullableDate: DateTime
     }
 
     type TestEntityList implements PaginatedList {
@@ -247,6 +267,11 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     active: true,
                     order: 0,
                     ownerId: 10,
+                    nullableString: 'lorem',
+                    nullableBoolean: true,
+                    nullableNumber: 42,
+                    nullableId: 123,
+                    nullableDate: new Date('2022-01-05T10:00:00.000Z'),
                 }),
                 new TestEntity({
                     label: 'B',
@@ -263,6 +288,11 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     active: false,
                     order: 2,
                     ownerId: 12,
+                    nullableString: 'lorem',
+                    nullableBoolean: true,
+                    nullableNumber: 42,
+                    nullableId: 123,
+                    nullableDate: new Date('2022-01-05T10:00:00.000Z'),
                 }),
                 new TestEntity({
                     label: 'D',
@@ -279,6 +309,11 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     active: false,
                     order: 4,
                     ownerId: 14,
+                    nullableString: 'lorem',
+                    nullableBoolean: true,
+                    nullableNumber: 42,
+                    nullableId: 123,
+                    nullableDate: new Date('2022-01-05T10:00:00.000Z'),
                 }),
                 new TestEntity({
                     label: 'F',

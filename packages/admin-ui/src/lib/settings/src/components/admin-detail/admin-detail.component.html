@@ -31,7 +31,7 @@
             id="emailAddress"
             type="text"
             formControlName="emailAddress"
-            [readonly]="!('UpdateAdministrator' | hasPermission)"
+            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.first-name' | translate" for="firstName">
@@ -39,7 +39,7 @@
             id="firstName"
             type="text"
             formControlName="firstName"
-            [readonly]="!('UpdateAdministrator' | hasPermission)"
+            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field [label]="'settings.last-name' | translate" for="lastName">
@@ -47,14 +47,14 @@
             id="lastName"
             type="text"
             formControlName="lastName"
-            [readonly]="!('UpdateAdministrator' | hasPermission)"
+            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
         />
     </vdr-form-field>
     <vdr-form-field *ngIf="isNew$ | async" [label]="'settings.password' | translate" for="password">
         <input id="password" type="password" formControlName="password" />
     </vdr-form-field>
     <vdr-form-field
-        *ngIf="!(isNew$ | async) && ('UpdateAdministrator' | hasPermission)"
+        *ngIf="!(isNew$ | async) && (['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
         [label]="'settings.password' | translate"
         for="password"
         [readOnlyToggle]="true"
@@ -67,7 +67,7 @@
             entityName="Administrator"
             [customFields]="customFields"
             [customFieldsFormGroup]="detailForm.get('customFields')"
-            [readonly]="!('UpdateAdministrator' | hasPermission)"
+            [readonly]="!(['CreateAdministrator', 'UpdateAdministrator'] | hasPermission)"
         ></vdr-tabbed-custom-fields>
     </section>
     <vdr-custom-detail-component-host

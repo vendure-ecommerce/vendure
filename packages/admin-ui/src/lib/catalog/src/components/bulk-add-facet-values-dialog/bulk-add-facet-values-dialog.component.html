@@ -8,7 +8,6 @@
             {{ 'catalog.add-facet-value' | translate }}
         </div>
         <vdr-facet-value-selector
-            [facets]="facets"
             (selectedValuesChange)="selectedValues = $event"
         ></vdr-facet-value-selector>
     </div>

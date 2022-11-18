@@ -51,7 +51,6 @@ export class BulkAddFacetValuesDialogComponent
     /* provided by call to ModalService */
     mode: 'product' | 'variant' = 'product';
     ids?: string[];
-    facets: FacetWithValuesFragment[] = [];
     state: 'loading' | 'ready' | 'saving' = 'loading';
 
     selectedValues: FacetWithValuesFragment[] = [];

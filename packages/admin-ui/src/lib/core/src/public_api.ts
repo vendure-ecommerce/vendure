@@ -16,7 +16,6 @@ export * from './common/utilities/bulk-action-utils';
 export * from './common/utilities/configurable-operation-utils';
 export * from './common/utilities/create-updated-translatable';
 export * from './common/utilities/find-translation';
-export * from './common/utilities/flatten-facet-values';
 export * from './common/utilities/get-default-ui-language';
 export * from './common/utilities/interpolate-description';
 export * from './common/utilities/selection-manager';

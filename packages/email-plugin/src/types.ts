@@ -7,6 +7,7 @@ import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { EmailGenerator } from './email-generator';
 import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-handler';
+import SESTransport from 'nodemailer/lib/ses-transport'
 
 /**
  * @description
@@ -112,6 +113,7 @@ export type EmailTransportOptions =
     | SendmailTransportOptions
     | FileTransportOptions
     | NoopTransportOptions
+    | SESTransportOptions
     | TestingTransportOptions;
 
 /**
@@ -131,6 +133,47 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
      * @default false
      */
     logging?: boolean;
+}
+
+/**
+ * @description
+ * The SES transport options of [Nodemailer](https://nodemailer.com/transports/ses//)
+ *
+ * See [Nodemailers's SES docs](https://nodemailer.com/transports/ses/) for more details
+ *
+ * @example
+ * ```TypeScript
+ *  import { SES, SendRawEmailCommand } from '\@aws-sdk/client-ses'
+ *
+ *  const ses = new SES({
+ *     apiVersion: '2010-12-01',
+ *     region: 'eu-central-1',
+ *     credentials: {
+ *         accessKeyId: process.env.SES_ACCESS_KEY || '',
+ *         secretAccessKey: process.env.SES_SECRET_KEY || '',
+ *     },
+ *  })
+ *
+ *  const config: VendureConfig = {
+ *   // Add an instance of the plugin to the plugins array
+ *   plugins: [
+ *     EmailPlugin.init({
+ *       handlers: defaultEmailHandlers,
+ *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       transport: {
+ *         type: 'ses',
+ *         SES: { ses, aws: { SendRawEmailCommand } },
+ *         sendingRate: 10, // optional messages per second sending rate
+ *       },
+ *     }),
+ *   ],
+ * };
+ *  ```
+ * @docsCategory EmailPlugin
+ * @docsPage Transport Options
+ */
+export interface SESTransportOptions extends SESTransport.Options {
+    type: 'ses';
 }
 
 /**

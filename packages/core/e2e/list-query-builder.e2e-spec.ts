@@ -248,6 +248,34 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E', 'F']);
         });
 
+        it('isNull true', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableString: {
+                            isNull: true,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'F']);
+        });
+
+        it('isNull false', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableString: {
+                            isNull: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E']);
+        });
+
         describe('regex', () => {
             it('simple substring', async () => {
                 const { testEntities } = await adminClient.query(GET_LIST, {
@@ -378,6 +406,34 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['B', 'C', 'D', 'E']);
         });
 
+        it('isNull true', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableId: {
+                            isNull: true,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'F']);
+        });
+
+        it('isNull false', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableId: {
+                            isNull: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E']);
+        });
+
         describe('regex', () => {
             it('simple substring', async () => {
                 const { testEntities } = await adminClient.query(GET_LIST, {
@@ -464,6 +520,34 @@ describe('ListQueryBuilder', () => {
             });
 
             expect(getItemLabels(testEntities.items)).toEqual(['C', 'E', 'F']);
+        });
+
+        it('isNull true', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableBoolean: {
+                            isNull: true,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'F']);
+        });
+
+        it('isNull false', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableBoolean: {
+                            isNull: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E']);
         });
     });
 
@@ -554,6 +638,34 @@ describe('ListQueryBuilder', () => {
 
             expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
         });
+
+        it('isNull true', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableNumber: {
+                            isNull: true,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'F']);
+        });
+
+        it('isNull false', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableNumber: {
+                            isNull: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E']);
+        });
     });
 
     describe('date filtering', () => {
@@ -628,6 +740,34 @@ describe('ListQueryBuilder', () => {
             });
 
             expect(getItemLabels(testEntities.items)).toEqual(['B']);
+        });
+
+        it('isNull true', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableDate: {
+                            isNull: true,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'F']);
+        });
+
+        it('isNull false', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        nullableDate: {
+                            isNull: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E']);
         });
     });
 
