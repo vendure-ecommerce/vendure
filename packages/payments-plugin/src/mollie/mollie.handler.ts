@@ -12,6 +12,7 @@ import {
 import { loggerCtx } from './constants';
 import { MollieService } from './mollie.service';
 import { PaymentState } from '@vendure/core/src';
+import { toAmount } from './mollie.helpers';
 
 let mollieService: MollieService;
 export const molliePaymentHandler = new PaymentMethodHandler({
@@ -98,10 +99,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         const refund = await mollieClient.payments_refunds.create({
             paymentId: molliePayment.id,
             description: input.reason,
-            amount: {
-                value: (amount / 100).toFixed(2),
-                currency: order.currencyCode,
-            },
+            amount: toAmount(amount, order.currencyCode)
         });
         if (refund.status === RefundStatus.failed) {
             Logger.error(
