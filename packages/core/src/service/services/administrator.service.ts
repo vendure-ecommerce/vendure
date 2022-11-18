@@ -23,6 +23,7 @@ import { RoleChangeEvent } from '../../event-bus/events/role-change-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
+import { RequestContextService } from '../helpers/request-context/request-context.service';
 import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -46,6 +47,7 @@ export class AdministratorService {
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private requestContextService: RequestContextService,
     ) {}
 
     /** @internal */
@@ -293,14 +295,22 @@ export class AdministratorService {
         });
 
         if (!superAdminUser) {
+            const ctx = await this.requestContextService.create({ apiType: 'admin' });
             const superAdminRole = await this.roleService.getSuperAdminRole();
-            const administrator = await this.create(RequestContext.empty(), {
+            const administrator = new Administrator({
                 emailAddress: superadminCredentials.identifier,
-                password: superadminCredentials.password,
                 firstName: 'Super',
                 lastName: 'Admin',
-                roleIds: [superAdminRole.id],
             });
+            administrator.user = await this.userService.createAdminUser(
+                ctx,
+                superadminCredentials.identifier,
+                superadminCredentials.password,
+            );
+            const createdAdministrator = await this.connection
+                .getRepository(ctx, Administrator)
+                .save(administrator);
+            await this.assignRole(ctx, createdAdministrator.id, superAdminRole.id);
         } else {
             const superAdministrator = await this.connection.rawConnection
                 .getRepository(Administrator)
