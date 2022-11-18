@@ -8,11 +8,11 @@ import {
     PaymentMethodHandler,
     SettlePaymentResult,
 } from '@vendure/core';
+import { PaymentState } from '@vendure/core/src';
 
 import { loggerCtx } from './constants';
-import { MollieService } from './mollie.service';
-import { PaymentState } from '@vendure/core/src';
 import { toAmount } from './mollie.helpers';
+import { MollieService } from './mollie.service';
 
 let mollieService: MollieService;
 export const molliePaymentHandler = new PaymentMethodHandler({

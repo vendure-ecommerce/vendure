@@ -186,7 +186,13 @@ export class MollieService {
     /**
      * Add payment to order. Can be settled or authorized depending on the payment method.
      */
-    async addPayment(ctx: RequestContext, order: Order, mollieOrder: MollieOrder, paymentMethodCode: string, status: 'Authorized' | 'Settled'): Promise<Order> {
+    async addPayment(
+        ctx: RequestContext,
+        order: Order,
+        mollieOrder: MollieOrder,
+        paymentMethodCode: string,
+        status: 'Authorized' | 'Settled'
+    ): Promise<Order> {
         if (order.state !== 'ArrangingPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
                 ctx,
