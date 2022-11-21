@@ -140,6 +140,16 @@ const profileType = gql`
             eager: true, // needs to be eager to enable indexing of profile attributes like name, etc.
         });
 
+        config.customFields.Order.push({
+            name: 'productOwner',
+            nullable: true,
+            type: 'relation',
+            entity: User,
+            public: false,
+            eager: true,
+            readonly: true,
+        });
+
         return config;
     },
 })
