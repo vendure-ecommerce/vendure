@@ -200,6 +200,14 @@
                     ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
                 >
             </ng-container>
+            <ng-container *ngSwitchDefault>
+                <div class="title">
+                    {{ entry.type | translate }}
+                </div>
+                <vdr-history-entry-detail *ngIf="entry.data">
+                    <vdr-object-tree [value]="entry.data"></vdr-object-tree>
+                </vdr-history-entry-detail>
+            </ng-container>
         </ng-container>
     </vdr-timeline-entry>
     <vdr-timeline-entry [isLast]="true" [createdAt]="order.createdAt" [featured]="true">

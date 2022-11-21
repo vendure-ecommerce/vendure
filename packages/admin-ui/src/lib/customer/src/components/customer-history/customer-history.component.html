@@ -26,8 +26,8 @@
                 </ng-container>
                 <ng-template #namedStrategy>
                     {{
-                    'customer.history-using-external-auth-strategy'
-                        | translate: { strategy: entry.data.strategy }
+                        'customer.history-using-external-auth-strategy'
+                            | translate: { strategy: entry.data.strategy }
                     }}
                 </ng-template>
             </ng-container>
@@ -152,6 +152,14 @@
                         </vdr-dropdown-menu>
                     </vdr-dropdown>
                 </div>
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+                <div class="title">
+                    {{ entry.type | translate }}
+                </div>
+                <vdr-history-entry-detail *ngIf="entry.data">
+                    <vdr-object-tree [value]="entry.data"></vdr-object-tree>
+                </vdr-history-entry-detail>
             </ng-container>
         </ng-container>
     </vdr-timeline-entry>

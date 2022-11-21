@@ -100,7 +100,7 @@ export class OrderHistoryComponent {
             case HistoryEntryType.ORDER_MODIFIED:
                 return true;
             default:
-                return false;
+                return true;
         }
     }
 
