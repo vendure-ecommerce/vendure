@@ -35,10 +35,10 @@ import { Logger } from '../config/index';
  * TODO: Ideally create a minimal reproduction case and report in the TypeORM repo for an upstream fix.
  */
 
-export function removeCustomFieldsWithEagerRelations(
+export function removeCustomFieldsWithEagerRelations<T extends string>(
     qb: SelectQueryBuilder<any>,
-    relations: string[] = [],
-): string[] {
+    relations: T[] = [],
+): T[] {
     let resultingRelations = relations;
     const mainAlias = qb.expressionMap.mainAlias;
     const customFieldsMetadata = mainAlias?.metadata.embeddeds.find(
