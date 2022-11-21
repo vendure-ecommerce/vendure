@@ -46,7 +46,7 @@ export class GoogleAuthenticationStrategy implements AuthenticationStrategy<Goog
         if (!payload || !payload.email) {
             return false;
         }
-        const user = await this.externalAuthenticationService.findCustomerUser(this.name, payload.sub);
+        const user = await this.externalAuthenticationService.findCustomerUser(ctx, this.name, payload.sub);
         if (user) {
             return user;
         }
