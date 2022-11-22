@@ -600,6 +600,9 @@ export class CollectionService implements OnModuleInit {
 
         try {
             // First we remove variants that are no longer in the collection
+            Logger.debug(
+                `We need to remove ${toDeleteIds.length} variants from ${collection.id} collection`
+            )
             const chunkedDeleteIds = this.chunkArray(toDeleteIds, 500)
             let chunkDeleteVariant = 0
 
@@ -613,6 +616,9 @@ export class CollectionService implements OnModuleInit {
               }
 
             // Then we add variants have been added
+            Logger.debug(
+                `We need to add ${toAddIds.length} variants from ${collection.id} collection`
+            )
             const chunkedAddIds = this.chunkArray(toAddIds, 500)
             let chunkVariant = 0
 
