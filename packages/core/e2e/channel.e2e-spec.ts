@@ -26,6 +26,7 @@ import {
     CREATE_ADMINISTRATOR,
     CREATE_CHANNEL,
     CREATE_ROLE,
+    GET_CHANNELS,
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     ME,
@@ -242,6 +243,7 @@ describe('Channels', () => {
     });
 
     it('createRole with no channelId implicitly uses active channel', async () => {
+        await adminClient.asSuperAdmin();
         const { createRole } = await adminClient.query<
             Codegen.CreateRoleMutation,
             Codegen.CreateRoleMutationVariables
@@ -351,16 +353,6 @@ describe('Channels', () => {
         expect(product!.channels.map(c => c.id)).toEqual(['T_1']);
     });
 });
-
-const GET_CHANNELS = gql`
-    query GetChannels {
-        channels {
-            id
-            code
-            token
-        }
-    }
-`;
 
 const DELETE_CHANNEL = gql`
     mutation DeleteChannel($id: ID!) {

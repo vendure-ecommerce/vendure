@@ -190,6 +190,7 @@
       "CustomerGroupList",
       "CustomerList",
       "FacetList",
+      "FacetValueList",
       "HistoryEntryList",
       "JobList",
       "OrderList",

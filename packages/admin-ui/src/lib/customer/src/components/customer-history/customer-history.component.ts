@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import {
     CustomerFragment,
     GetCustomerHistoryQuery,
-    HistoryEntry,
+    HistoryEntryComponentService,
     HistoryEntryType,
     TimelineDisplayType,
+    TimelineHistoryEntry,
 } from '@vendure/admin-ui/core';
-
-type HistoryItem = NonNullable<GetCustomerHistoryQuery['customer']>['history']['items'][number];
 
 @Component({
     selector: 'vdr-customer-history',
@@ -17,14 +16,21 @@ type HistoryItem = NonNullable<GetCustomerHistoryQuery['customer']>['history']['
 })
 export class CustomerHistoryComponent {
     @Input() customer: CustomerFragment;
-    @Input() history: HistoryItem[];
+    @Input() history: TimelineHistoryEntry[];
     @Output() addNote = new EventEmitter<{ note: string }>();
-    @Output() updateNote = new EventEmitter<HistoryEntry>();
-    @Output() deleteNote = new EventEmitter<HistoryEntry>();
+    @Output() updateNote = new EventEmitter<TimelineHistoryEntry>();
+    @Output() deleteNote = new EventEmitter<TimelineHistoryEntry>();
     note = '';
+    expanded = false;
     readonly type = HistoryEntryType;
 
-    getDisplayType(entry: HistoryItem): TimelineDisplayType {
+    constructor(private historyEntryComponentService: HistoryEntryComponentService) {}
+
+    hasCustomComponent(type: string): boolean {
+        return !!this.historyEntryComponentService.getComponent(type);
+    }
+
+    getDisplayType(entry: TimelineHistoryEntry): TimelineDisplayType {
         switch (entry.type) {
             case HistoryEntryType.CUSTOMER_VERIFIED:
             case HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED:
@@ -39,7 +45,7 @@ export class CustomerHistoryComponent {
         }
     }
 
-    getTimelineIcon(entry: HistoryItem): string | [string, string] | undefined {
+    getTimelineIcon(entry: TimelineHistoryEntry): string | [string, string] | undefined {
         switch (entry.type) {
             case HistoryEntryType.CUSTOMER_REGISTERED:
                 return 'user';
@@ -53,7 +59,7 @@ export class CustomerHistoryComponent {
         }
     }
 
-    isFeatured(entry: HistoryItem): boolean {
+    isFeatured(entry: TimelineHistoryEntry): boolean {
         switch (entry.type) {
             case HistoryEntryType.CUSTOMER_REGISTERED:
             case HistoryEntryType.CUSTOMER_VERIFIED:
@@ -63,7 +69,7 @@ export class CustomerHistoryComponent {
         }
     }
 
-    getName(entry: HistoryItem): string {
+    getName(entry: TimelineHistoryEntry): string {
         const { administrator } = entry;
         if (administrator) {
             return `${administrator.firstName} ${administrator.lastName}`;

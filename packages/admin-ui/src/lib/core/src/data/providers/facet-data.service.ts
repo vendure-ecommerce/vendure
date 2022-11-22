@@ -1,3 +1,4 @@
+import { WatchQueryFetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
 
 import * as Codegen from '../../common/generated-types';
@@ -6,9 +7,10 @@ import {
     CREATE_FACET,
     CREATE_FACET_VALUES,
     DELETE_FACET,
-    DELETE_FACET_VALUES,
     DELETE_FACETS,
+    DELETE_FACET_VALUES,
     GET_FACET_LIST,
+    GET_FACET_VALUE_LIST,
     GET_FACET_WITH_VALUES,
     REMOVE_FACETS_FROM_CHANNEL,
     UPDATE_FACET,
@@ -29,6 +31,14 @@ export class FacetDataService {
                     skip,
                 },
             },
+        );
+    }
+
+    getFacetValues(options: Codegen.FacetValueListOptions, fetchPolicy?: WatchQueryFetchPolicy) {
+        return this.baseDataService.query<Codegen.GetFacetValueListQuery, Codegen.GetFacetValueListQueryVariables>(
+            GET_FACET_VALUE_LIST,
+            { options },
+            fetchPolicy,
         );
     }
 

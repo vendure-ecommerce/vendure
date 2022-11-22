@@ -1000,3 +1000,22 @@ export const DELETE_PROMOTION = gql`
         }
     }
 `;
+
+export const GET_CHANNELS = gql`
+    query GetChannels {
+        channels {
+            id
+            code
+            token
+        }
+    }
+`;
+
+export const UPDATE_ADMINISTRATOR = gql`
+    mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
+        updateAdministrator(input: $input) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;

@@ -7,9 +7,11 @@ import {
     LanguageCode,
     UpdateFacetValueInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/index';
+import { ListQueryOptions } from '../../common/index';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -21,6 +23,7 @@ import { Facet } from '../../entity/facet/facet.entity';
 import { EventBus } from '../../event-bus';
 import { FacetValueEvent } from '../../event-bus/events/facet-value-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -43,6 +46,7 @@ export class FacetValueService {
         private channelService: ChannelService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /**
@@ -67,6 +71,32 @@ export class FacetValueService {
             .then(facetValues =>
                 facetValues.map(facetValue => translateDeep(facetValue, languageCode, ['facet'])),
             );
+    }
+
+    /**
+     * @description
+     * Returns a PaginatedList of FacetValues.
+     *
+     * TODO: in v2 this should replace the `findAll()` method.
+     * A separate method was created just to avoid a breaking change in v1.9.
+     */
+    findAllList(
+        ctx: RequestContext,
+        options?: ListQueryOptions<FacetValue>,
+        relations?: RelationPaths<FacetValue>,
+    ): Promise<PaginatedList<Translated<FacetValue>>> {
+        return this.listQueryBuilder
+            .build(FacetValue, options, {
+                relations: relations ?? ['facet'],
+                channelId: ctx.channelId,
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['facet'])),
+                    totalItems,
+                };
+            });
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<FacetValue> | undefined> {

@@ -13,6 +13,7 @@ import {
     Permission,
     QueryFacetArgs,
     QueryFacetsArgs,
+    QueryFacetValuesArgs,
     RemoveFacetFromChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
@@ -57,6 +58,16 @@ export class FacetResolver {
         @Relations(Facet) relations: RelationPaths<Facet>,
     ): Promise<Translated<Facet> | undefined> {
         return this.facetService.findOne(ctx, args.id, relations);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct, Permission.ReadFacet)
+    facetValues(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryFacetValuesArgs,
+        @Relations(FacetValue) relations: RelationPaths<FacetValue>,
+    ): Promise<PaginatedList<Translated<FacetValue>>> {
+        return this.facetValueService.findAllList(ctx, args.options || undefined, relations);
     }
 
     @Transaction()

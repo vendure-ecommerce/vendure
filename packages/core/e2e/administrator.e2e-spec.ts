@@ -10,7 +10,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { AdministratorFragment, DeletionResult } from './graphql/generated-e2e-admin-types';
-import { CREATE_ADMINISTRATOR } from './graphql/shared-definitions';
+import { CREATE_ADMINISTRATOR, UPDATE_ADMINISTRATOR } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Administrator resolver', () => {
@@ -269,15 +269,6 @@ export const GET_ACTIVE_ADMINISTRATOR = gql`
 export const UPDATE_ACTIVE_ADMINISTRATOR = gql`
     mutation UpdateActiveAdministrator($input: UpdateActiveAdministratorInput!) {
         updateActiveAdministrator(input: $input) {
-            ...Administrator
-        }
-    }
-    ${ADMINISTRATOR_FRAGMENT}
-`;
-
-export const UPDATE_ADMINISTRATOR = gql`
-    mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
-        updateAdministrator(input: $input) {
             ...Administrator
         }
     }

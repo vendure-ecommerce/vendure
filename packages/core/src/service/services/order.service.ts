@@ -77,6 +77,7 @@ import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { removeCustomFieldsWithEagerRelations } from '../../connection/remove-custom-fields-with-eager-relations';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
@@ -219,7 +220,7 @@ export class OrderService {
         relations?: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         const qb = this.connection.getRepository(ctx, Order).createQueryBuilder('order');
-        const effectiveRelations = relations ?? [
+        let effectiveRelations = relations ?? [
             'channels',
             'customer',
             'customer.user',
@@ -242,6 +243,7 @@ export class OrderService {
         ) {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
+        effectiveRelations = removeCustomFieldsWithEagerRelations(qb, effectiveRelations);
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: effectiveRelations,
         });

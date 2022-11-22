@@ -304,29 +304,29 @@ export class FacetDetailComponent
 
         const currentValuesFormArray = this.detailForm.get('values') as FormArray;
         this.values = [...facet.values];
-        facet.values.forEach((value, i) => {
+        facet.values.forEach(value => {
             const valueTranslation = findTranslation(value, languageCode);
             const group = {
                 id: value.id,
                 code: value.code,
                 name: valueTranslation ? valueTranslation.name : '',
             };
-            const valueControl = currentValuesFormArray.at(i);
+            let valueControl = currentValuesFormArray.controls.find(
+                control => control.value.id === value.id,
+            ) as FormGroup | undefined;
             if (valueControl) {
                 valueControl.get('id')?.setValue(group.id);
                 valueControl.get('code')?.setValue(group.code);
                 valueControl.get('name')?.setValue(group.name);
             } else {
-                currentValuesFormArray.insert(i, this.formBuilder.group(group));
+                valueControl = this.formBuilder.group(group);
+                currentValuesFormArray.push(valueControl);
             }
             if (this.customValueFields.length) {
-                let customValueFieldsGroup = this.detailForm.get(['values', i, 'customFields']) as FormGroup;
+                let customValueFieldsGroup = valueControl.get(['customFields']) as FormGroup | undefined;
                 if (!customValueFieldsGroup) {
                     customValueFieldsGroup = new FormGroup({});
-                    (this.detailForm.get(['values', i]) as FormGroup).addControl(
-                        'customFields',
-                        customValueFieldsGroup,
-                    );
+                    valueControl.addControl('customFields', customValueFieldsGroup);
                 }
 
                 if (customValueFieldsGroup) {

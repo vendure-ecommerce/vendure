@@ -1,25 +1,21 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
+    OnDestroy,
     OnInit,
     Output,
     ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { concat, merge, Observable, of, Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, mapTo, switchMap, tap } from 'rxjs/operators';
 
-import { FacetValueFragment, FacetWithValuesFragment } from '../../../common/generated-types';
-import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
+import { FacetValue, FacetValueFragment } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
-
-export type FacetValueSeletorItem = {
-    name: string;
-    facetName: string;
-    id: string;
-    value: FacetValueFragment;
-};
 
 /**
  * @description
@@ -56,30 +52,71 @@ export type FacetValueSeletorItem = {
         },
     ],
 })
-export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor {
+export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {
     @Output() selectedValuesChange = new EventEmitter<FacetValueFragment[]>();
-    @Input() facets: FacetWithValuesFragment[];
     @Input() readonly = false;
-    @Input() transformControlValueAccessorValue: (value: FacetValueSeletorItem[]) => any[] = value => value;
+    @Input() transformControlValueAccessorValue: (value: FacetValueFragment[]) => any[] = value => value;
+    searchInput$ = new Subject<string>();
+    searchLoading = false;
+    searchResults$: Observable<FacetValueFragment[]>;
+    selectedIds$ = new Subject<string[]>();
 
     @ViewChild(NgSelectComponent) private ngSelect: NgSelectComponent;
 
-    facetValues: FacetValueSeletorItem[] = [];
     onChangeFn: (val: any) => void;
     onTouchFn: () => void;
     disabled = false;
     value: Array<string | FacetValueFragment>;
-    constructor(private dataService: DataService) {}
+    private subscription: Subscription;
+    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {}
 
-    ngOnInit() {
-        this.facetValues = flattenFacetValues(this.facets).map(this.toSelectorItem);
+    ngOnInit(): void {
+        this.initSearchResults();
     }
 
-    onChange(selected: FacetValueSeletorItem[]) {
+    private initSearchResults() {
+        const searchItems$ = this.searchInput$.pipe(
+            debounceTime(200),
+            distinctUntilChanged(),
+            tap(() => (this.searchLoading = true)),
+            switchMap(term => {
+                if (!term) {
+                    return of([]);
+                }
+                return this.dataService.facet
+                    .getFacetValues({ take: 10, filter: { name: { contains: term } } })
+                    .mapSingle(result => result.facetValues.items);
+            }),
+            tap(() => (this.searchLoading = false)),
+        );
+        this.subscription = this.selectedIds$
+            .pipe(
+                switchMap(ids => {
+                    if (!ids.length) {
+                        return of([]);
+                    }
+                    return this.dataService.facet
+                        .getFacetValues({ take: 10, filter: { id: { in: ids } } }, 'cache-first')
+                        .mapSingle(result => result.facetValues.items);
+                }),
+            )
+            .subscribe(val => {
+                this.value = val;
+                this.changeDetectorRef.markForCheck();
+            });
+
+        const clear$ = this.selectedValuesChange.pipe(mapTo([]));
+        this.searchResults$ = concat(of([]), merge(searchItems$, clear$));
+    }
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
+    }
+
+    onChange(selected: FacetValueFragment[]) {
         if (this.readonly) {
             return;
         }
-        this.selectedValuesChange.emit(selected.map(s => s.value));
+        this.selectedValuesChange.emit(selected);
         if (this.onChangeFn) {
             const transformedValue = this.transformControlValueAccessorValue(selected);
             this.onChangeFn(transformedValue);
@@ -103,11 +140,12 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
     }
 
     writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null): void {
+        let valueIds: string[] | undefined;
         if (typeof obj === 'string') {
             try {
-                const facetIds = JSON.parse(obj) as string[];
-                this.value = facetIds;
-            } catch (err: any) {
+                const facetValueIds = JSON.parse(obj) as string[];
+                valueIds = facetValueIds;
+            } catch (err) {
                 // TODO: log error
                 throw err;
             }
@@ -115,19 +153,14 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
             const isIdArray = (input: unknown[]): input is Array<string | number> =>
                 input.every(i => typeof i === 'number' || typeof i === 'string');
             if (isIdArray(obj)) {
-                this.value = obj.map(fv => fv.toString());
+                valueIds = obj.map(fv => fv.toString());
             } else {
-                this.value = obj.map(fv => fv.id);
+                valueIds = obj.map(fv => fv.id);
             }
         }
+        if (valueIds) {
+            // this.value = valueIds;
+            this.selectedIds$.next(valueIds);
+        }
     }
-
-    private toSelectorItem = (facetValue: FacetValueFragment): FacetValueSeletorItem => {
-        return {
-            name: facetValue.name,
-            facetName: facetValue.facet.name,
-            id: facetValue.id,
-            value: facetValue,
-        };
-    };
 }

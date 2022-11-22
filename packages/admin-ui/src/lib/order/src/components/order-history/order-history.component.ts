@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
     GetOrderHistoryQuery,
-    HistoryEntry,
+    HistoryEntryComponentService,
     HistoryEntryType,
     OrderDetailFragment,
     TimelineDisplayType,
+    TimelineHistoryEntry,
 } from '@vendure/admin-ui/core';
-
-type OrderHistoryItem = NonNullable<GetOrderHistoryQuery['order']>['history']['items'][number];
 
 @Component({
     selector: 'vdr-order-history',
@@ -17,16 +16,22 @@ type OrderHistoryItem = NonNullable<GetOrderHistoryQuery['order']>['history']['i
 })
 export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
-    @Input() history: OrderHistoryItem[];
+    @Input() history: TimelineHistoryEntry[];
     @Output() addNote = new EventEmitter<{ note: string; isPublic: boolean }>();
-    @Output() updateNote = new EventEmitter<HistoryEntry>();
-    @Output() deleteNote = new EventEmitter<HistoryEntry>();
+    @Output() updateNote = new EventEmitter<TimelineHistoryEntry>();
+    @Output() deleteNote = new EventEmitter<TimelineHistoryEntry>();
     note = '';
     noteIsPrivate = true;
     expanded = false;
     readonly type = HistoryEntryType;
 
-    getDisplayType(entry: OrderHistoryItem): TimelineDisplayType {
+    constructor(private historyEntryComponentService: HistoryEntryComponentService) {}
+
+    hasCustomComponent(type: string): boolean {
+        return !!this.historyEntryComponentService.getComponent(type);
+    }
+
+    getDisplayType(entry: TimelineHistoryEntry): TimelineDisplayType {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
             if (entry.data.to === 'Delivered') {
                 return 'success';
@@ -54,7 +59,7 @@ export class OrderHistoryComponent {
         return 'default';
     }
 
-    getTimelineIcon(entry: OrderHistoryItem) {
+    getTimelineIcon(entry: TimelineHistoryEntry) {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
             if (entry.data.to === 'Delivered') {
                 return ['success-standard', 'is-solid'];
@@ -84,7 +89,7 @@ export class OrderHistoryComponent {
         }
     }
 
-    isFeatured(entry: OrderHistoryItem): boolean {
+    isFeatured(entry: TimelineHistoryEntry): boolean {
         switch (entry.type) {
             case HistoryEntryType.ORDER_STATE_TRANSITION: {
                 return (
@@ -105,9 +110,7 @@ export class OrderHistoryComponent {
         }
     }
 
-    getFulfillment(
-        entry: OrderHistoryItem,
-    ): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined {
+    getFulfillment(entry: TimelineHistoryEntry): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined {
         if (
             (entry.type === HistoryEntryType.ORDER_FULFILLMENT ||
                 entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) &&
@@ -117,13 +120,13 @@ export class OrderHistoryComponent {
         }
     }
 
-    getPayment(entry: OrderHistoryItem): NonNullable<OrderDetailFragment['payments']>[number] | undefined {
+    getPayment(entry: TimelineHistoryEntry): NonNullable<OrderDetailFragment['payments']>[number] | undefined {
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION && this.order.payments) {
             return this.order.payments.find(p => p.id === entry.data.paymentId);
         }
     }
 
-    getCancelledItems(entry: OrderHistoryItem): Array<{ name: string; quantity: number }> {
+    getCancelledItems(entry: TimelineHistoryEntry): Array<{ name: string; quantity: number }> {
         const itemMap = new Map<string, number>();
         const cancelledItemIds: string[] = entry.data.orderItemIds;
         for (const line of this.order.lines) {
@@ -145,7 +148,7 @@ export class OrderHistoryComponent {
         return this.order.modifications.find(m => m.id === id);
     }
 
-    getName(entry: OrderHistoryItem): string {
+    getName(entry: TimelineHistoryEntry): string {
         const { administrator } = entry;
         if (administrator) {
             return `${administrator.firstName} ${administrator.lastName}`;

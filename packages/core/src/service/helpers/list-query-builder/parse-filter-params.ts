@@ -160,6 +160,11 @@ function buildWhereCondition(
                     [`arg${argIndex}_b`]: convertDate(operand.end),
                 },
             };
+        case 'isNull':
+            return {
+                clause: operand === true ? `${fieldName} IS NULL` : `${fieldName} IS NOT NULL`,
+                parameters: {},
+            };
         default:
             assertNever(operator);
     }

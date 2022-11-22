@@ -33,10 +33,6 @@ import { replaceLast } from './replace-last';
 export class ProductDetailService {
     constructor(private dataService: DataService) {}
 
-    getFacets(): Observable<FacetWithValuesFragment[]> {
-        return this.dataService.facet.getAllFacets().mapSingle(data => data.facets.items);
-    }
-
     getTaxCategories() {
         return this.dataService.settings
             .getTaxCategories()

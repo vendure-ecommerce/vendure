@@ -65,6 +65,7 @@ export class StripeController {
         if (event.type === 'payment_intent.payment_failed') {
             const message = paymentIntent.last_payment_error?.message;
             Logger.warn(`Payment for order ${orderCode} failed: ${message}`, loggerCtx);
+            response.status(HttpStatus.OK).send('Ok');
             return;
         }
 

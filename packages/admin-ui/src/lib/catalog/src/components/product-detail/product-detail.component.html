@@ -251,7 +251,7 @@
                         [variants]="variants$ | async"
                         [paginationConfig]="paginationConfig$ | async"
                         [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
-                        [facets]="facets$ | async"
+                        [pendingFacetValueChanges]="variantFacetValueChanges"
                         [optionGroups]="product.optionGroups"
                         [productVariantsFormArray]="detailForm.get('variants')"
                         [taxCategories]="taxCategories$ | async"
@@ -264,7 +264,6 @@
                         (assetChange)="variantAssetChange($event)"
                         (updateProductOption)="updateProductOption($event)"
                         (selectionChange)="selectedVariantIds = $event"
-                        (selectFacetValueClick)="selectVariantFacetValue($event)"
                     ></vdr-product-variants-list>
                 </section>
                 <div class="pagination-row mt4" *ngIf="10 < (paginationConfig$ | async)?.totalItems">

@@ -181,21 +181,14 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<SearchItem, Produ
             mode === 'product'
                 ? unique(selection.map(p => p.productId))
                 : unique(selection.map(p => p.productVariantId));
-        return dataService.facet
-            .getAllFacets()
-            .mapSingle(data => data.facets.items)
-            .pipe(
-                switchMap(facets =>
-                    modalService.fromComponent(BulkAddFacetValuesDialogComponent, {
-                        size: 'xl',
-                        locals: {
-                            facets,
-                            mode,
-                            ids,
-                        },
-                    }),
-                ),
-            )
+        return modalService
+            .fromComponent(BulkAddFacetValuesDialogComponent, {
+                size: 'xl',
+                locals: {
+                    mode,
+                    ids,
+                },
+            })
             .subscribe(result => {
                 if (result) {
                     notificationService.success(_('common.notify-bulk-update-success'), {

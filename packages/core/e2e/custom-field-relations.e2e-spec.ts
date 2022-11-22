@@ -645,6 +645,30 @@ describe('Custom field relations', () => {
 
                 assertCustomFieldIds(setOrderCustomFields.customFields, 'T_1', ['T_1', 'T_2']);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/1664#issuecomment-1320872627
+            it('admin order query with eager-loaded custom field relation', async () => {
+                const { order } = await adminClient.query(gql`
+                    query {
+                        order(id: 1) {
+                            id
+                            customFields {
+                                productOwner {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                // we're just making sure it does not throw here.
+                expect(order).toEqual({
+                    customFields: {
+                        productOwner: null,
+                    },
+                    id: 'T_1',
+                });
+            });
         });
 
         describe('OrderLine entity', () => {

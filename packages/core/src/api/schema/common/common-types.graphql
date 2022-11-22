@@ -82,6 +82,7 @@ input StringOperators {
     in: [String!]
     notIn: [String!]
     regex: String
+    isNull: Boolean
 }
 
 "Operators for filtering on an ID field"
@@ -90,11 +91,13 @@ input IDOperators {
     notEq: String
     in: [String!]
     notIn: [String!]
+    isNull: Boolean
 }
 
 "Operators for filtering on a Boolean field"
 input BooleanOperators {
     eq: Boolean
+    isNull: Boolean
 }
 
 input NumberRange {
@@ -110,6 +113,7 @@ input NumberOperators {
     gt: Float
     gte: Float
     between: NumberRange
+    isNull: Boolean
 }
 
 input DateRange {
@@ -123,6 +127,7 @@ input DateOperators {
     before: DateTime
     after: DateTime
     between: DateRange
+    isNull: Boolean
 }
 
 "Operators for filtering on a list of String fields"

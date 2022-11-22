@@ -12,7 +12,7 @@ import {
     FulfillmentLineSummary,
     GetOrderHistoryQuery,
     GetOrderQuery,
-    HistoryEntry,
+    HistoryEntryType,
     ModalService,
     NotificationService,
     Order,
@@ -22,6 +22,7 @@ import {
     RefundOrderMutation,
     ServerConfigService,
     SortOrder,
+    TimelineHistoryEntry,
 } from '@vendure/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
@@ -468,7 +469,7 @@ export class OrderDetailComponent
             });
     }
 
-    updateNote(entry: HistoryEntry) {
+    updateNote(entry: TimelineHistoryEntry) {
         this.modalService
             .fromComponent(EditNoteDialogComponent, {
                 closable: true,
@@ -499,7 +500,7 @@ export class OrderDetailComponent
             });
     }
 
-    deleteNote(entry: HistoryEntry) {
+    deleteNote(entry: TimelineHistoryEntry) {
         return this.modalService
             .dialog({
                 title: _('common.confirm-delete-note'),

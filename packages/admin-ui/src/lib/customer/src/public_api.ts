@@ -6,6 +6,7 @@ export * from './components/customer-detail/customer-detail.component';
 export * from './components/customer-group-detail-dialog/customer-group-detail-dialog.component';
 export * from './components/customer-group-list/customer-group-list.component';
 export * from './components/customer-group-member-list/customer-group-member-list.component';
+export * from './components/customer-history/customer-history-entry-host.component';
 export * from './components/customer-history/customer-history.component';
 export * from './components/customer-list/customer-list.component';
 export * from './components/customer-status-label/customer-status-label.component';

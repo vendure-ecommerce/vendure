@@ -20,7 +20,6 @@ import { ProductOptionInUseError } from '../../common/error/generated-graphql-ad
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { removeCustomFieldsWithEagerRelations } from '../../connection/remove-custom-fields-with-eager-relations';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
