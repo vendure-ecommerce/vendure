@@ -936,6 +936,8 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
+                // add an additional check for the collection filters unitary to update
+                await awaitRunningJobs(adminClient);
                 const result1 = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
 
                 expect(result1.search.items.map(i => i.productName)).toEqual([
