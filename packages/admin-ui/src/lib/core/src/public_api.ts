@@ -77,6 +77,8 @@ export * from './providers/component-registry/component-registry.service';
 export * from './providers/custom-detail-component/custom-detail-component-types';
 export * from './providers/custom-detail-component/custom-detail-component.service';
 export * from './providers/custom-field-component/custom-field-component.service';
+export * from './providers/custom-history-entry-component/history-entry-component-types';
+export * from './providers/custom-history-entry-component/history-entry-component.service';
 export * from './providers/dashboard-widget/dashboard-widget-types';
 export * from './providers/dashboard-widget/dashboard-widget.service';
 export * from './providers/dashboard-widget/register-dashboard-widget';

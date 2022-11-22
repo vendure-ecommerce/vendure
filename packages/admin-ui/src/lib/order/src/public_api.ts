@@ -15,6 +15,7 @@ export * from './components/order-custom-fields-card/order-custom-fields-card.co
 export * from './components/order-detail/order-detail.component';
 export * from './components/order-editor/order-editor.component';
 export * from './components/order-edits-preview-dialog/order-edits-preview-dialog.component';
+export * from './components/order-history/order-history-entry-host.component';
 export * from './components/order-history/order-history.component';
 export * from './components/order-list/order-list.component';
 export * from './components/order-payment-card/order-payment-card.component';

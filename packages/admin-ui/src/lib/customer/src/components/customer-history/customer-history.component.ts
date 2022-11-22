@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import {
     Customer,
     GetCustomerHistory,
-    HistoryEntry,
     HistoryEntryType,
     TimelineDisplayType,
+    TimelineHistoryEntry,
 } from '@vendure/admin-ui/core';
 
 @Component({
@@ -17,8 +17,8 @@ export class CustomerHistoryComponent {
     @Input() customer: Customer.Fragment;
     @Input() history: GetCustomerHistory.Items[];
     @Output() addNote = new EventEmitter<{ note: string }>();
-    @Output() updateNote = new EventEmitter<HistoryEntry>();
-    @Output() deleteNote = new EventEmitter<HistoryEntry>();
+    @Output() updateNote = new EventEmitter<TimelineHistoryEntry>();
+    @Output() deleteNote = new EventEmitter<TimelineHistoryEntry>();
     note = '';
     readonly type = HistoryEntryType;
 
