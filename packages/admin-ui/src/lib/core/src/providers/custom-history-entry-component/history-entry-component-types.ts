@@ -16,7 +16,7 @@ export type TimelineHistoryEntry = NonNullable<GetOrderHistoryQuery['order']>['h
 export interface HistoryEntryComponent {
     /**
      * @description
-     * The HistoryEntry item itself.
+     * The HistoryEntry data.
      */
     entry: TimelineHistoryEntry;
     /**
@@ -26,21 +26,21 @@ export interface HistoryEntryComponent {
     getDisplayType: (entry: TimelineHistoryEntry) => TimelineDisplayType;
     /**
      * @description
-     * Returns the name of the entry, as displayed in the timeline next to the date. Can be
-     * a translation token which will get passed through the `translate` pipe.
-     */
-    getName: (entry: TimelineHistoryEntry) => string;
-    /**
-     * @description
      * Featured entries are always expanded. Non-featured entries start of collapsed and can be clicked
      * to expand.
      */
     isFeatured: (entry: TimelineHistoryEntry) => boolean;
     /**
      * @description
+     * Returns the name of the person who did this action. For example, it could be the Customer's name
+     * or "Administrator".
+     */
+    getName?: (entry: TimelineHistoryEntry) => string | undefined;
+    /**
+     * @description
      * Optional Clarity icon shape to display with the entry. Examples: `'note'`, `['success-standard', 'is-solid']`
      */
-    getIconShape?: (entry: TimelineHistoryEntry) => string | readonly [string, string] | undefined;
+    getIconShape?: (entry: TimelineHistoryEntry) => string | string[] | undefined;
 }
 
 /**

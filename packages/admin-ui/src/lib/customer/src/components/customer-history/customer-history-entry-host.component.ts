@@ -12,14 +12,14 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import {
+    CustomerFragment,
+    CustomerHistoryEntryComponent,
     HistoryEntryComponentService,
-    OrderDetailFragment,
-    OrderHistoryEntryComponent,
     TimelineHistoryEntry,
 } from '@vendure/admin-ui/core';
 
 @Component({
-    selector: 'vdr-order-history-entry-host',
+    selector: 'vdr-customer-history-entry-host',
     template: ` <vdr-timeline-entry
         [displayType]="instance.getDisplayType(entry)"
         [iconShape]="instance.getIconShape && instance.getIconShape(entry)"
@@ -33,14 +33,14 @@ import {
     </vdr-timeline-entry>`,
     exportAs: 'historyEntry',
 })
-export class OrderHistoryEntryHostComponent implements OnInit, OnDestroy {
+export class CustomerHistoryEntryHostComponent implements OnInit, OnDestroy {
     @Input() entry: TimelineHistoryEntry;
-    @Input() order: OrderDetailFragment;
+    @Input() customer: CustomerFragment;
     @Input() expanded: boolean;
     @Output() expandClick = new EventEmitter<void>();
     @ViewChild('portal', { static: true, read: ViewContainerRef }) portalRef: ViewContainerRef;
-    instance: OrderHistoryEntryComponent;
-    private componentRef: ComponentRef<OrderHistoryEntryComponent>;
+    instance: CustomerHistoryEntryComponent;
+    private componentRef: ComponentRef<CustomerHistoryEntryComponent>;
 
     constructor(
         private componentFactoryResolver: ComponentFactoryResolver,
@@ -50,12 +50,12 @@ export class OrderHistoryEntryHostComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         const componentType = this.historyEntryComponentService.getComponent(
             this.entry.type,
-        ) as Type<OrderHistoryEntryComponent>;
+        ) as Type<CustomerHistoryEntryComponent>;
 
         const factory = this.componentFactoryResolver.resolveComponentFactory(componentType);
         const componentRef = this.portalRef.createComponent(factory);
         componentRef.instance.entry = this.entry;
-        componentRef.instance.order = this.order;
+        componentRef.instance.customer = this.customer;
         this.instance = componentRef.instance;
         this.componentRef = componentRef;
     }

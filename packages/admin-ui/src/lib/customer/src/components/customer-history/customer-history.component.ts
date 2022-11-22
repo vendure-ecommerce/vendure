@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import {
     Customer,
     GetCustomerHistory,
+    HistoryEntryComponentService,
     HistoryEntryType,
     TimelineDisplayType,
     TimelineHistoryEntry,
@@ -20,7 +21,14 @@ export class CustomerHistoryComponent {
     @Output() updateNote = new EventEmitter<TimelineHistoryEntry>();
     @Output() deleteNote = new EventEmitter<TimelineHistoryEntry>();
     note = '';
+    expanded = false;
     readonly type = HistoryEntryType;
+
+    constructor(private historyEntryComponentService: HistoryEntryComponentService) {}
+
+    hasCustomComponent(type: string): boolean {
+        return !!this.historyEntryComponentService.getComponent(type);
+    }
 
     getDisplayType(entry: GetCustomerHistory.Items): TimelineDisplayType {
         switch (entry.type) {
