@@ -1,4 +1,4 @@
-import createMollieClient, { OrderEmbed, OrderStatus, PaymentStatus, RefundStatus } from '@mollie/api-client';
+import createMollieClient, { OrderEmbed, PaymentStatus, RefundStatus } from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentErrorResult,
@@ -8,7 +8,6 @@ import {
     PaymentMethodHandler,
     SettlePaymentResult,
 } from '@vendure/core';
-import { PaymentState } from '@vendure/core/src';
 
 import { loggerCtx } from './constants';
 import { toAmount } from './mollie.helpers';

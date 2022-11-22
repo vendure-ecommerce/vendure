@@ -14,11 +14,11 @@ import {
     Logger,
     Order,
     OrderService,
+    OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
-import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import {
