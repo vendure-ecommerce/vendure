@@ -230,6 +230,10 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  *   }
  * }
  * ```
+ * {{% alert %}}
+ * It is also possible to define a UI component to display custom history entry types. See the
+ * [Custom History Timeline Components guide]({{< relref "custom-timeline-components" >}}).
+ * {{% /alert %}}
  *
  * @docsCategory services
  */
