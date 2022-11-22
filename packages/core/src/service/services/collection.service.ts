@@ -56,6 +56,12 @@ export type ApplyCollectionFiltersJobData = {
     applyToChangedVariantsOnly?: boolean;
 };
 
+export type ApplyCollectionFiltersUnitaryJobData = {
+    ctx: SerializedRequestContext
+    collectionId: ID
+    applyToChangedVariantsOnly?: boolean
+  }
+
 /**
  * @description
  * Contains methods relating to {@link Collection} entities.
@@ -66,6 +72,7 @@ export type ApplyCollectionFiltersJobData = {
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
+    private applyFiltersUnitaryQueue: JobQueue<ApplyCollectionFiltersUnitaryJobData>
 
     constructor(
         private connection: TransactionalConnection,
@@ -105,6 +112,43 @@ export class CollectionService implements OnModuleInit {
                 });
             });
 
+        this.applyFiltersUnitaryQueue = await this.jobQueueService.createQueue({
+            name: 'apply-collection-filters-unitary',
+            process: async (job) => {
+                const ctx = RequestContext.deserialize(job.data.ctx)
+                const collectionId = job.data.collectionId
+
+                let collection: Collection | undefined
+                try {
+                    collection = await this.connection.getEntityOrThrow(
+                      ctx,
+                      Collection,
+                      collectionId,
+                      {
+                        retries: 5,
+                        retryDelay: 50,
+                      }
+                    )
+                } catch (err) {
+                    Logger.warn(
+                        `Could not find Collection with id ${collectionId}`
+                    )
+                    return
+                }
+          
+                if (collection) {
+                    const affectedVariantIds = await this.applyCollectionFiltersInternal(
+                        collection,
+                        job.data.applyToChangedVariantsOnly
+                    )
+                    job.setProgress(100)
+                    this.eventBus.publish(
+                        new CollectionModificationEvent(ctx, collection, affectedVariantIds)
+                    )
+                }
+            },
+        })
+
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
             process: async job => {
@@ -113,36 +157,15 @@ export class CollectionService implements OnModuleInit {
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 let completed = 0;
                 for (const collectionId of job.data.collectionIds) {
-                    let collection: Collection | undefined;
-                    try {
-                        collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {
-                            retries: 5,
-                            retryDelay: 50,
-                        });
-                    } catch (err) {
-                        Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
-                    }
-                    completed++;
-                    if (collection) {
-                        let affectedVariantIds: ID[] = [];
-                        try {
-                            affectedVariantIds = await this.applyCollectionFiltersInternal(
-                                collection,
-                                job.data.applyToChangedVariantsOnly,
-                            );
-                        } catch (e) {
-                            const translatedCollection = await this.translator.translate(collection, ctx);
-                            Logger.error(
-                                `An error occurred when processing the filters for the collection "${translatedCollection.name}" (id: ${collection.id})`,
-                            );
-                            Logger.error(e.message);
-                            continue;
-                        }
-                        job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
-                        this.eventBus.publish(
-                            new CollectionModificationEvent(ctx, collection, affectedVariantIds),
-                        );
-                    }
+                    await this.applyFiltersUnitaryQueue.add({
+                        ctx: ctx.serialize(),
+                        collectionId: collectionId,
+                      })
+            
+                      completed++
+                      job.setProgress(
+                        Math.ceil((completed / job.data.collectionIds.length) * 100)
+                      )
                 }
             },
         });
