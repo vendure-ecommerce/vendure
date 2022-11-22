@@ -84,7 +84,7 @@ export class MollieService {
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order, { relations: ['customer', 'lines', 'lines.productVariant', 'shippingLines', 'shippingLines.shippingMethod'] });
+        await this.entityHydrator.hydrate(ctx, order, { relations: ['customer', 'lines.productVariant', 'shippingLines.shippingMethod'] });
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }
