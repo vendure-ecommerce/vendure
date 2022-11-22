@@ -57,10 +57,10 @@ export type ApplyCollectionFiltersJobData = {
 };
 
 export type ApplyCollectionFiltersUnitaryJobData = {
-    ctx: SerializedRequestContext
-    collectionId: ID
-    applyToChangedVariantsOnly?: boolean
-  }
+    ctx: SerializedRequestContext;
+    collectionId: ID;
+    applyToChangedVariantsOnly?: boolean;
+};
 
 /**
  * @description
@@ -72,7 +72,7 @@ export type ApplyCollectionFiltersUnitaryJobData = {
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
-    private applyFiltersUnitaryQueue: JobQueue<ApplyCollectionFiltersUnitaryJobData>
+    private applyFiltersUnitaryQueue: JobQueue<ApplyCollectionFiltersUnitaryJobData>;
 
     constructor(
         private connection: TransactionalConnection,
@@ -114,40 +114,33 @@ export class CollectionService implements OnModuleInit {
 
         this.applyFiltersUnitaryQueue = await this.jobQueueService.createQueue({
             name: 'apply-collection-filters-unitary',
-            process: async (job) => {
-                const ctx = RequestContext.deserialize(job.data.ctx)
-                const collectionId = job.data.collectionId
+            process: async job => {
+                const ctx = RequestContext.deserialize(job.data.ctx);
+                const collectionId = job.data.collectionId;
 
-                let collection: Collection | undefined
+                let collection: Collection | undefined;
                 try {
-                    collection = await this.connection.getEntityOrThrow(
-                      ctx,
-                      Collection,
-                      collectionId,
-                      {
+                    collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {
                         retries: 5,
                         retryDelay: 50,
-                      }
-                    )
+                    });
                 } catch (err) {
-                    Logger.warn(
-                        `Could not find Collection with id ${collectionId}`
-                    )
-                    return
+                    Logger.warn(`Could not find Collection with id ${collectionId}`);
+                    return;
                 }
-          
+
                 if (collection) {
                     const affectedVariantIds = await this.applyCollectionFiltersInternal(
                         collection,
-                        job.data.applyToChangedVariantsOnly
-                    )
-                    job.setProgress(100)
+                        job.data.applyToChangedVariantsOnly,
+                    );
+                    job.setProgress(100);
                     this.eventBus.publish(
-                        new CollectionModificationEvent(ctx, collection, affectedVariantIds)
-                    )
+                        new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                    );
                 }
             },
-        })
+        });
 
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
@@ -159,13 +152,11 @@ export class CollectionService implements OnModuleInit {
                 for (const collectionId of job.data.collectionIds) {
                     await this.applyFiltersUnitaryQueue.add({
                         ctx: ctx.serialize(),
-                        collectionId: collectionId,
-                      })
-            
-                      completed++
-                      job.setProgress(
-                        Math.ceil((completed / job.data.collectionIds.length) * 100)
-                      )
+                        collectionId,
+                    });
+
+                    completed++;
+                    job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                 }
             },
         });
@@ -583,13 +574,13 @@ export class CollectionService implements OnModuleInit {
     }
 
     private chunkArray = <T>(array: T[], chunkSize: number): T[][] => {
-        const results = []
+        const results = [];
         for (let i = 0; i < array.length; i += chunkSize) {
-          results.push(array.slice(i, i + chunkSize))
+            results.push(array.slice(i, i + chunkSize));
         }
-      
-        return results
-      }
+
+        return results;
+    };
 
     /**
      * Applies the CollectionFilters
@@ -618,42 +609,36 @@ export class CollectionService implements OnModuleInit {
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);
 
-        const toDeleteIds = preIds.filter((id) => !postIdsSet.has(id))
-        const toAddIds = postIds.filter((id) => !preIdsSet.has(id))
+        const toDeleteIds = preIds.filter(id => !postIdsSet.has(id));
+        const toAddIds = postIds.filter(id => !preIdsSet.has(id));
 
         try {
             // First we remove variants that are no longer in the collection
-            Logger.debug(
-                `We need to remove ${toDeleteIds.length} variants from ${collection.id} collection`
-            )
-            const chunkedDeleteIds = this.chunkArray(toDeleteIds, 500)
+            Logger.debug(`We need to remove ${toDeleteIds.length} variants from ${collection.id} collection`);
+            const chunkedDeleteIds = this.chunkArray(toDeleteIds, 500);
 
             for (const chunkedDeleteId of chunkedDeleteIds) {
                 await this.connection.rawConnection
-                  .createQueryBuilder()
-                  .relation(Collection, 'productVariants')
-                  .of(collection)
-                  .remove(chunkedDeleteId)
-              }
-
-            // Then we add variants have been added
-            Logger.debug(
-                `We need to add ${toAddIds.length} variants from ${collection.id} collection`
-            )
-            const chunkedAddIds = this.chunkArray(toAddIds, 500)
-
-            for (const chunkedAddId of chunkedAddIds) {
-            await this.connection.rawConnection
-                .createQueryBuilder()
-                .relation(Collection, 'productVariants')
-                .of(collection)
-                .add(chunkedAddId)
+                    .createQueryBuilder()
+                    .relation(Collection, 'productVariants')
+                    .of(collection)
+                    .remove(chunkedDeleteId);
             }
 
+            // Then we add variants have been added
+            Logger.debug(`We need to add ${toAddIds.length} variants from ${collection.id} collection`);
+            const chunkedAddIds = this.chunkArray(toAddIds, 500);
+
+            for (const chunkedAddId of chunkedAddIds) {
+                await this.connection.rawConnection
+                    .createQueryBuilder()
+                    .relation(Collection, 'productVariants')
+                    .of(collection)
+                    .add(chunkedAddId);
+            }
         } catch (e) {
             Logger.error(e);
         }
-        
 
         if (applyToChangedVariantsOnly) {
             return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds.filter(id => !preIdsSet.has(id))];
