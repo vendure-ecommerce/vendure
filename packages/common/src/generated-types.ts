@@ -306,8 +306,8 @@ export type BooleanListOperators = {
 
 /** Operators for filtering on a Boolean field */
 export type BooleanOperators = {
-  eq?: Maybe<Scalars['Boolean']>;
-  isNull?: Maybe<Scalars['Boolean']>;
+  eq?: InputMaybe<Scalars['Boolean']>;
+  isNull?: InputMaybe<Scalars['Boolean']>;
 };
 
 /** Returned if an attempting to cancel lines from an Order which is still active */
@@ -1359,11 +1359,11 @@ export type DateListOperators = {
 
 /** Operators for filtering on a DateTime field */
 export type DateOperators = {
-  eq?: Maybe<Scalars['DateTime']>;
-  before?: Maybe<Scalars['DateTime']>;
-  after?: Maybe<Scalars['DateTime']>;
-  between?: Maybe<DateRange>;
-  isNull?: Maybe<Scalars['Boolean']>;
+  after?: InputMaybe<Scalars['DateTime']>;
+  before?: InputMaybe<Scalars['DateTime']>;
+  between?: InputMaybe<DateRange>;
+  eq?: InputMaybe<Scalars['DateTime']>;
+  isNull?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type DateRange = {
@@ -1592,12 +1592,12 @@ export type FacetValueFilterInput = {
 };
 
 export type FacetValueFilterParameter = {
-  id?: Maybe<IdOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  code?: Maybe<StringOperators>;
+  code?: InputMaybe<StringOperators>;
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  languageCode?: InputMaybe<StringOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
 };
 
 export type FacetValueList = PaginatedList & {
@@ -1607,16 +1607,16 @@ export type FacetValueList = PaginatedList & {
 };
 
 export type FacetValueListOptions = {
-  /** Skips the first n results, for use in pagination */
-  skip?: Maybe<Scalars['Int']>;
-  /** Takes n results, for use in pagination */
-  take?: Maybe<Scalars['Int']>;
-  /** Specifies which properties to sort the results by */
-  sort?: Maybe<FacetValueSortParameter>;
   /** Allows the results to be filtered */
-  filter?: Maybe<FacetValueFilterParameter>;
+  filter?: InputMaybe<FacetValueFilterParameter>;
   /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
-  filterOperator?: Maybe<LogicalOperator>;
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<FacetValueSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
 };
 
 /**
@@ -1630,11 +1630,11 @@ export type FacetValueResult = {
 };
 
 export type FacetValueSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
+  code?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type FacetValueTranslation = {
@@ -1800,11 +1800,11 @@ export type IdListOperators = {
 
 /** Operators for filtering on an ID field */
 export type IdOperators = {
-  eq?: Maybe<Scalars['String']>;
-  notEq?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Scalars['String']>>;
-  notIn?: Maybe<Array<Scalars['String']>>;
-  isNull?: Maybe<Scalars['Boolean']>;
+  eq?: InputMaybe<Scalars['String']>;
+  in?: InputMaybe<Array<Scalars['String']>>;
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  notEq?: InputMaybe<Scalars['String']>;
+  notIn?: InputMaybe<Array<Scalars['String']>>;
 };
 
 export type ImportInfo = {
@@ -3369,13 +3369,13 @@ export type NumberListOperators = {
 
 /** Operators for filtering on a Int or Float field */
 export type NumberOperators = {
-  eq?: Maybe<Scalars['Float']>;
-  lt?: Maybe<Scalars['Float']>;
-  lte?: Maybe<Scalars['Float']>;
-  gt?: Maybe<Scalars['Float']>;
-  gte?: Maybe<Scalars['Float']>;
-  between?: Maybe<NumberRange>;
-  isNull?: Maybe<Scalars['Boolean']>;
+  between?: InputMaybe<NumberRange>;
+  eq?: InputMaybe<Scalars['Float']>;
+  gt?: InputMaybe<Scalars['Float']>;
+  gte?: InputMaybe<Scalars['Float']>;
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  lt?: InputMaybe<Scalars['Float']>;
+  lte?: InputMaybe<Scalars['Float']>;
 };
 
 export type NumberRange = {
@@ -4507,13 +4507,13 @@ export type QueryFacetArgs = {
 };
 
 
-export type QueryFacetsArgs = {
-  options?: InputMaybe<FacetListOptions>;
+export type QueryFacetValuesArgs = {
+  options?: InputMaybe<FacetValueListOptions>;
 };
 
 
-export type QueryFacetValuesArgs = {
-  options?: Maybe<FacetValueListOptions>;
+export type QueryFacetsArgs = {
+  options?: InputMaybe<FacetListOptions>;
 };
 
 
@@ -5126,14 +5126,14 @@ export type StringListOperators = {
 
 /** Operators for filtering on a String field */
 export type StringOperators = {
-  eq?: Maybe<Scalars['String']>;
-  notEq?: Maybe<Scalars['String']>;
-  contains?: Maybe<Scalars['String']>;
-  notContains?: Maybe<Scalars['String']>;
-  in?: Maybe<Array<Scalars['String']>>;
-  notIn?: Maybe<Array<Scalars['String']>>;
-  regex?: Maybe<Scalars['String']>;
-  isNull?: Maybe<Scalars['Boolean']>;
+  contains?: InputMaybe<Scalars['String']>;
+  eq?: InputMaybe<Scalars['String']>;
+  in?: InputMaybe<Array<Scalars['String']>>;
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  notContains?: InputMaybe<Scalars['String']>;
+  notEq?: InputMaybe<Scalars['String']>;
+  notIn?: InputMaybe<Array<Scalars['String']>>;
+  regex?: InputMaybe<Scalars['String']>;
 };
 
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
