@@ -671,6 +671,9 @@ describe('Elasticsearch plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
+                // add an additional check for the collection filters unitary to update
+                await awaitRunningJobs(adminClient);
+
                 const result1 = await doAdminSearchQuery(adminClient, {
                     collectionId: 'T_2',
                     groupByProduct: true,
