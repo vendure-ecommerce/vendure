@@ -601,10 +601,8 @@ export class CollectionService implements OnModuleInit {
         try {
             // First we remove variants that are no longer in the collection
             const chunkedDeleteIds = this.chunkArray(toDeleteIds, 500)
-            let chunkDeleteVariant = 0
 
             for (const chunkedDeleteId of chunkedDeleteIds) {
-                chunkDeleteVariant++
                 await this.connection.rawConnection
                   .createQueryBuilder()
                   .relation(Collection, 'productVariants')
@@ -614,10 +612,8 @@ export class CollectionService implements OnModuleInit {
 
             // Then we add variants have been added
             const chunkedAddIds = this.chunkArray(toAddIds, 500)
-            let chunkVariant = 0
 
             for (const chunkedAddId of chunkedAddIds) {
-            chunkVariant++
             await this.connection.rawConnection
                 .createQueryBuilder()
                 .relation(Collection, 'productVariants')
