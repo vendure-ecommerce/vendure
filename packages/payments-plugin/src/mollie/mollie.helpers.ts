@@ -27,6 +27,7 @@ export function toMollieAddress(address: OrderAddress, customer: Customer): Moll
  * Map all order and shipping lines to a single array of Mollie order lines
  */
 export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
+    // Add order lines
     const lines: CreateParameters['lines'] = order.lines.map(line => ({
         name: line.productVariant.name,
         quantity: line.quantity,
@@ -44,12 +45,20 @@ export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
         vatRate: String(line.taxRate),
         vatAmount: toAmount(line.discountedPriceWithTax - line.discountedPrice, order.currencyCode),
     })));
+    // Add surcharges
+    lines.push(...order.surcharges.map(surcharge => ({
+        name: surcharge.description,
+        quantity: 1,
+        unitPrice: toAmount(surcharge.price, order.currencyCode),
+        totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
+        vatRate: String(surcharge.taxRate),
+        vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
+    })));
     return lines;
 }
 
 /**
  * Stringify and fixed decimals
- * @param value
  */
 export function toAmount(value: number, orderCurrency: string): Amount {
     return {
@@ -65,12 +74,12 @@ export function toAmount(value: number, orderCurrency: string): Amount {
 export function getLocale(countryCode: string, channelLanguage: string): string {
     const allowedLocales = ['en_US', 'en_GB', 'nl_NL', 'nl_BE', 'fr_FR', 'fr_BE', 'de_DE', 'de_AT', 'de_CH', 'es_ES', 'ca_ES', 'pt_PT', 'it_IT', 'nb_NO', 'sv_SE', 'fi_FI', 'da_DK', 'is_IS', 'hu_HU', 'pl_PL', 'lv_LV', 'lt_LT'];
     // Prefer order locale if possible
-    const orderLocale = allowedLocales.find(locale => (locale.toLowerCase()).indexOf(countryCode.toLowerCase()) > -1 );
+    const orderLocale = allowedLocales.find(locale => (locale.toLowerCase()).indexOf(countryCode.toLowerCase()) > -1);
     if (orderLocale) {
         return orderLocale;
     }
     // If no order locale, try channel default
-    const channelLocale = allowedLocales.find(locale => (locale.toLowerCase()).indexOf(channelLanguage.toLowerCase()) > -1 );
+    const channelLocale = allowedLocales.find(locale => (locale.toLowerCase()).indexOf(channelLanguage.toLowerCase()) > -1);
     if (channelLocale) {
         return channelLocale;
     }

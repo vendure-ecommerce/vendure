@@ -1,5 +1,5 @@
-import { OrderStatus, PaymentStatus } from '@mollie/api-client';
-import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
+import { OrderStatus } from '@mollie/api-client';
+import { ChannelService, mergeConfig, OrderService, RequestContext } from '@vendure/core';
 import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables,
@@ -11,7 +11,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
 
@@ -40,7 +40,7 @@ describe('Mollie payments', () => {
                     id: 'tr_mockPayment',
                     status: 'paid',
                     resource: 'payment',
-                }]
+                }],
             },
             resource: 'order',
             mode: 'test',
@@ -51,7 +51,7 @@ describe('Mollie payments', () => {
             authorizedAt: new Date(),
             paidAt: new Date(),
         },
-        molliePaymentMethodsResponse:{
+        molliePaymentMethodsResponse: {
             count: 1,
             _embedded: {
                 methods: [
@@ -61,36 +61,36 @@ describe('Mollie payments', () => {
                         description: 'iDEAL',
                         minimumAmount: {
                             value: '0.01',
-                            currency: 'EUR'
+                            currency: 'EUR',
                         },
                         maximumAmount: {
                             value: '50000.00',
-                            currency: 'EUR'
+                            currency: 'EUR',
                         },
                         image: {
                             size1x: 'https://www.mollie.com/external/icons/payment-methods/ideal.png',
                             size2x: 'https://www.mollie.com/external/icons/payment-methods/ideal%402x.png',
-                            svg: 'https://www.mollie.com/external/icons/payment-methods/ideal.svg'
+                            svg: 'https://www.mollie.com/external/icons/payment-methods/ideal.svg',
                         },
                         _links: {
                             self: {
                                 href: 'https://api.mollie.com/v2/methods/ideal',
-                                type: 'application/hal+json'
-                            }
-                        }
-                    }]
+                                type: 'application/hal+json',
+                            },
+                        },
+                    }],
             },
             _links: {
                 self: {
                     href: 'https://api.mollie.com/v2/methods',
-                    type: 'application/hal+json'
+                    type: 'application/hal+json',
                 },
                 documentation: {
                     href: 'https://docs.mollie.com/reference/v2/methods-api/list-methods',
-                    type: 'text/html'
-                }
-            }
-        }
+                    type: 'text/html',
+                },
+            },
+        },
     };
     let shopClient: SimpleGraphQLClient;
     let adminClient: SimpleGraphQLClient;
@@ -142,6 +142,17 @@ describe('Mollie payments', () => {
             quantity: 2,
         });
         order = addItemToOrder as TestOrderFragmentFragment;
+        // Add surcharge
+        const ctx = new RequestContext({
+            apiType: 'admin',
+            isAuthorized: true,
+            authorizedAsOwnerOnly: false,
+            channel: await server.app.get(ChannelService).getDefaultChannel(),
+        });
+        await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
+            description: 'Negative test surcharge',
+            listPrice: -20000,
+        });
         expect(order.code).toBeDefined();
     });
 
@@ -182,7 +193,7 @@ describe('Mollie payments', () => {
         const { createMolliePaymentIntent: result } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
             input: {
                 paymentMethodCode: mockData.methodCode,
-                molliePaymentMethodCode: 'invalid'
+                molliePaymentMethodCode: 'invalid',
             },
         });
         expect(result.errorCode).toBe('INELIGIBLE_PAYMENT_METHOD_ERROR');
@@ -209,8 +220,14 @@ describe('Mollie payments', () => {
         expect(mollieRequest?.webhookUrl).toEqual(
             `${mockData.host}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`,
         );
-        expect(mollieRequest?.amount?.value).toBe('3127.60');
+        expect(mollieRequest?.amount?.value).toBe('2927.60');
         expect(mollieRequest?.amount?.currency).toBeDefined();
+        let totalLineAmount = 0;
+        for (const line of mollieRequest.lines) {
+            totalLineAmount += Number(line.totalAmount.value);
+        }
+        // Sum of lines should equal order total
+        expect(mollieRequest.amount.value).toEqual(totalLineAmount.toFixed(2));
     });
 
     it('Should get payment url with Mollie method', async () => {
@@ -270,7 +287,7 @@ describe('Mollie payments', () => {
         nock('https://api.mollie.com/')
             .get('/v2/orders/ord_mockId?embed=payments')
             .twice()
-            .reply(200, mockData.mollieOrderResponse)
+            .reply(200, mockData.mollieOrderResponse);
         nock('https://api.mollie.com/')
             .post(/.*/, body => {
                 mollieRequest = body;
@@ -307,9 +324,9 @@ describe('Mollie payments', () => {
         });
         const method = molliePaymentMethods[0];
         expect(method.code).toEqual('ideal');
-        expect(method.minimumAmount).toBeDefined()
-        expect(method.maximumAmount).toBeDefined()
-        expect(method.image).toBeDefined()
+        expect(method.minimumAmount).toBeDefined();
+        expect(method.maximumAmount).toBeDefined();
+        expect(method.image).toBeDefined();
     });
 
     it('Should prepare a new order', async () => {

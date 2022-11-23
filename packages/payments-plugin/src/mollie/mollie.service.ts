@@ -64,8 +64,6 @@ export class MollieService {
     ) {
     }
 
-    // TODO subscribe to status changes and push to Mollie
-
     /**
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
      */
@@ -84,7 +82,7 @@ export class MollieService {
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order, { relations: ['customer', 'lines.productVariant', 'shippingLines.shippingMethod'] });
+        await this.entityHydrator.hydrate(ctx, order, { relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod'] });
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }

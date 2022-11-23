@@ -1,5 +1,14 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { DefaultLogger, Logger, LogLevel, mergeConfig } from '@vendure/core';
+import {
+    ChannelService,
+    DefaultLogger,
+    Logger,
+    LogLevel,
+    mergeConfig,
+    Order,
+    OrderService,
+    RequestContext,
+} from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
 import gql from 'graphql-tag';
 import localtunnel from 'localtunnel';
@@ -71,9 +80,19 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     });
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-    await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+    await shopClient.query<AddItemToOrder.Order, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
         productVariantId: '1',
         quantity: 2,
+    });
+    const ctx = new RequestContext({
+        apiType: 'admin',
+        isAuthorized: true,
+        authorizedAsOwnerOnly: false,
+        channel: await server.app.get(ChannelService).getDefaultChannel()
+    });
+    await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
+        description: 'Negative test surcharge',
+        listPrice: -20000,
     });
     await setShipping(shopClient);
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
