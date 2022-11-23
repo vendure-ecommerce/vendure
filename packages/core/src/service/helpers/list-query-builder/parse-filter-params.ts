@@ -20,7 +20,7 @@ import { getCalculatedColumns } from './get-calculated-columns';
 
 export interface WhereCondition {
     clause: string;
-    parameters: { [param: string]: string | number };
+    parameters: { [param: string]: string | number | string[] };
 }
 
 type AllOperators = StringOperators & BooleanOperators & NumberOperators & DateOperators & ListOperators;
@@ -87,6 +87,7 @@ function buildWhereCondition(
     argIndex: number,
     dbType: ConnectionOptions['type'],
 ): WhereCondition {
+    const emptySetPlaceholder = '___empty_set_placeholder___';
     switch (operator) {
         case 'eq':
             return {
@@ -118,12 +119,18 @@ function buildWhereCondition(
         case 'in':
             return {
                 clause: `${fieldName} IN (:...arg${argIndex})`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: {
+                    [`arg${argIndex}`]:
+                        Array.isArray(operand) && operand.length ? operand : [emptySetPlaceholder],
+                },
             };
         case 'notIn':
             return {
                 clause: `${fieldName} NOT IN (:...arg${argIndex})`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: {
+                    [`arg${argIndex}`]:
+                        Array.isArray(operand) && operand.length ? operand : [emptySetPlaceholder],
+                },
             };
         case 'regex':
             return {

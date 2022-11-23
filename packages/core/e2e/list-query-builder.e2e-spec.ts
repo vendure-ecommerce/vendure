@@ -364,6 +364,20 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'F']);
         });
 
+        it('in with empty set', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        ownerId: {
+                            in: [],
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual([]);
+        });
+
         it('notIn', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
                 options: {
@@ -376,6 +390,20 @@ describe('ListQueryBuilder', () => {
             });
 
             expect(getItemLabels(testEntities.items)).toEqual(['B', 'C', 'D', 'E']);
+        });
+
+        it('notIn with empty set', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        ownerId: {
+                            notIn: [],
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
         });
 
         describe('regex', () => {
