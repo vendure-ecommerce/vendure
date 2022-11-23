@@ -1,5 +1,4 @@
 import { PluginCommonModule, RuntimeVendureConfig, VendurePlugin } from '@vendure/core';
-import { gql } from 'graphql-tag';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { shopSchema } from './mollie-shop-schema';
@@ -111,14 +110,13 @@ export interface MolliePluginOptions {
  * After completing payment on the Mollie platform,
  * the user is redirected to the configured redirect url + orderCode: `https://storefront/order/CH234X5`
  *
- * ## Local development
+ * ## Pay later methods
+ * Mollie supports pay-later methods like 'Klarna Pay Later'. For pay-later methods, the status of an order is
+ * 'PaymentAuthorized' after the Mollie hosted checkout. You need to manually settle the payment via the admin ui to capture the payment!
+ * Make sure you capture a payment within 28 days, because this is the Klarna expiry time
  *
- * Use something like [localtunnel](https://github.com/localtunnel/localtunnel) to test on localhost.
- *
- * ```bash
- * npx localtunnel --port 3000 --subdomain my-shop-local-dev
- * > your url is: https://my-shop-local-dev.loca.lt     <- use this as the vendureHost for local dev.
- * ```
+ * If you don't want this behaviour (Authorized first), you can set 'autoCapture=true' on the payment method. This option will immediately
+ * capture the payment after a customer authorizes the payment.
  *
  * @docsCategory payments-plugin
  * @docsPage MolliePlugin
