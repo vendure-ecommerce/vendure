@@ -28,9 +28,9 @@
     "devDependencies": {
         "@mollie/api-client": "^3.6.0",
         "@types/braintree": "^2.22.15",
-        "@vendure/common": "^1.8.4",
-        "@vendure/core": "^1.8.4",
-        "@vendure/testing": "^1.8.4",
+        "@vendure/common": "*",
+        "@vendure/core": "*",
+        "@vendure/testing": "*",
         "braintree": "^3.0.0",
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
