@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperationInput, LanguageCode } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { defaultShippingCalculator, defaultShippingEligibilityChecker, Logger } from '../../../config';
+import {
+    ConfigService,
+    defaultShippingCalculator,
+    defaultShippingEligibilityChecker,
+    Logger,
+} from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
-import { Channel, Collection, FacetValue, TaxCategory } from '../../../entity';
+import { TransactionalConnection } from '../../../connection/index';
+import { Channel, Collection, FacetValue, TaxCategory, User } from '../../../entity';
 import {
     CollectionService,
     FacetValueService,
     PaymentMethodService,
+    RequestContextService,
     RoleService,
     ShippingMethodService,
 } from '../../../service';
@@ -52,6 +59,9 @@ export class Populator {
         private searchService: SearchService,
         private assetImporter: AssetImporter,
         private roleService: RoleService,
+        private configService: ConfigService,
+        private connection: TransactionalConnection,
+        private requestContextService: RequestContextService,
     ) {}
 
     /**
@@ -190,12 +200,17 @@ export class Populator {
     }
 
     private async createRequestContext(data: InitialData, channel?: Channel) {
-        const ctx = new RequestContext({
+        const { superadminCredentials } = this.configService.authOptions;
+        const superAdminUser = await this.connection.rawConnection.getRepository(User).findOne({
+            where: {
+                identifier: superadminCredentials.identifier,
+            },
+        });
+        const ctx = await this.requestContextService.create({
+            user: superAdminUser,
             apiType: 'admin',
-            isAuthorized: true,
-            authorizedAsOwnerOnly: false,
-            channel: channel ?? (await this.channelService.getDefaultChannel()),
             languageCode: data.defaultLanguage,
+            channelOrToken: channel ?? (await this.channelService.getDefaultChannel()),
         });
         return ctx;
     }
