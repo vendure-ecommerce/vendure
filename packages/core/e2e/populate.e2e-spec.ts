@@ -57,7 +57,10 @@ describe('populate() function', () => {
                     type: 'localeString',
                 },
             ],
-            ProductVariant: [{ type: 'int', name: 'weight' }],
+            ProductVariant: [
+                { type: 'boolean', name: 'valid' },
+                { type: 'int', name: 'weight' },
+            ],
         },
     });
 
