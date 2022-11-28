@@ -1,3 +1,19 @@
+## <small>1.8.5 (2022-11-28)</small>
+
+
+#### Fixes
+
+* **admin-ui** Do not display form errors for pristine fields ([f15028a](https://github.com/vendure-ecommerce/vendure/commit/f15028a)), closes [#1901](https://github.com/vendure-ecommerce/vendure/issues/1901)
+* **core** Fix error when populating initial roles ([41cfaf8](https://github.com/vendure-ecommerce/vendure/commit/41cfaf8)), closes [#1905](https://github.com/vendure-ecommerce/vendure/issues/1905)
+* **core** Fix loading eager custom fields for `order` query ([93b8601](https://github.com/vendure-ecommerce/vendure/commit/93b8601)), closes [#1664](https://github.com/vendure-ecommerce/vendure/issues/1664)
+* **core** ListQueryBuilder handles empty in operator ([229afff](https://github.com/vendure-ecommerce/vendure/commit/229afff))
+* **core** Make order of OrderLine from OrderService.findOne deterministic (#1904) ([2d06390](https://github.com/vendure-ecommerce/vendure/commit/2d06390)), closes [#1904](https://github.com/vendure-ecommerce/vendure/issues/1904)
+
+#### Perf
+
+* **core** Improve speed & memory usage when running collection filters ([464dcea](https://github.com/vendure-ecommerce/vendure/commit/464dcea)), closes [#1893](https://github.com/vendure-ecommerce/vendure/issues/1893)
+* **core** Use TypeORM relation query builder when filtering collection ([8aa7201](https://github.com/vendure-ecommerce/vendure/commit/8aa7201)), closes [#1893](https://github.com/vendure-ecommerce/vendure/issues/1893)
+
 ## <small>1.8.4 (2022-11-18)</small>
 
 
