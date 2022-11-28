@@ -251,7 +251,9 @@ export class OrderService {
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
         if (effectiveRelations.includes('lines') && effectiveRelations.includes('lines.items')) {
-            qb.addOrderBy('order__lines.createdAt', 'ASC').addOrderBy('order__lines__items.createdAt', 'ASC');
+            qb.addOrderBy('order__lines.createdAt', 'ASC')
+                .addOrderBy('order__lines__items.createdAt', 'ASC')
+                .addOrderBy('order__lines.productVariantId', 'ASC');
         }
 
         // tslint:disable-next-line:no-non-null-assertion

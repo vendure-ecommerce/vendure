@@ -52,7 +52,8 @@ export class FormFieldComponent implements OnInit {
         if (!this.formFieldControl || !this.formFieldControl.formControlName) {
             return;
         }
-        const errors = this.formFieldControl.formControlName.errors;
+        const errors =
+            this.formFieldControl.formControlName.dirty && this.formFieldControl.formControlName.errors;
         if (errors) {
             for (const errorKey of Object.keys(errors)) {
                 if (this.errors[errorKey]) {
