@@ -126,7 +126,7 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
                 union CustomMappings = CustomProductMappings | CustomProductVariantMappings
 
                 extend type SearchResult {
-                    customMappings: CustomMappings!
+                    customMappings: CustomMappings! @deprecated(reason: "Use customProductMappings or customProductVariantMappings")
                     customProductMappings: CustomProductMappings!
                     customProductVariantMappings: CustomProductVariantMappings!
                 }
@@ -134,14 +134,14 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
         } else if (productMappings.length) {
             sdl += `
                 extend type SearchResult {
-                    customMappings: CustomProductMappings!
+                    customMappings: CustomProductMappings! @deprecated(reason: "Use customProductMappings or customProductVariantMappings")
                     customProductMappings: CustomProductMappings!
                 }
             `;
         } else if (variantMappings.length) {
             sdl += `
                 extend type SearchResult {
-                    customMappings: CustomProductVariantMappings!
+                    customMappings: CustomProductVariantMappings! @deprecated(reason: "Use customProductMappings or customProductVariantMappings")
                     customProductVariantMappings: CustomProductVariantMappings!
                 }
             `;
