@@ -3,8 +3,6 @@ import { InternalServerError } from '../../common/error/errors';
 import { Injector } from '../../common/injector';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Order } from '../../entity/order/order.entity';
-// import { OrderService } from '../../service/services/order.service';
-// import { SessionService } from '../../service/services/session.service';
 
 import { ActiveOrderStrategy } from './active-order-strategy';
 
@@ -15,6 +13,7 @@ import { ActiveOrderStrategy } from './active-order-strategy';
  * session which is part of the RequestContext.
  *
  * @since 1.9.0
+ * @docsCategory orders
  */
 export class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
     private connection: TransactionalConnection;
