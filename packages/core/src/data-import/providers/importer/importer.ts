@@ -364,11 +364,13 @@ export class Importer {
     }
 
     private processCustomFieldValues(customFields: { [field: string]: string }, config: CustomFieldConfig[]) {
-        const processed: { [field: string]: string | string[] | undefined } = {};
+        const processed: { [field: string]: string | string[] | boolean | undefined } = {};
         for (const fieldDef of config) {
             const value = customFields[fieldDef.name];
             if (fieldDef.list === true) {
                 processed[fieldDef.name] = value?.split('|').filter(val => val.trim() !== '');
+            } else if (fieldDef.type === 'boolean') {
+                processed[fieldDef.name] = value ? value.toLowerCase() === 'true' : undefined;
             } else {
                 processed[fieldDef.name] = value ? value : undefined;
             }
