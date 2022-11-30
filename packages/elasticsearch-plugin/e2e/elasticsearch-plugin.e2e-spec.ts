@@ -1355,9 +1355,18 @@ describe('Elasticsearch plugin', () => {
             search(input: { take: 1, groupByProduct: false, sort: { name: ASC } }) {
                 items {
                   productVariantName
+                  customProductVariantMappings {
+                    inStock
+                  }
+                  customProductMappings {
+                    answer
+                  }
                   customMappings {
                     ...on CustomProductVariantMappings {
                       inStock
+                    }
+                    ...on CustomProductMappings {
+                        answer
                     }
                   }
                 }
@@ -1367,6 +1376,12 @@ describe('Elasticsearch plugin', () => {
 
             expect(search.items[0]).toEqual({
                 productVariantName: 'Bonsai Tree',
+                customProductVariantMappings: {
+                    inStock: false,
+                },
+                customProductMappings: {
+                    answer: 42,
+                },
                 customMappings: {
                     inStock: false,
                 },

@@ -505,6 +505,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         ElasticsearchService.addCustomMappings(
             result,
             source,
+            this.options.customProductMappings,
             this.options.customProductVariantMappings,
             false,
         );
@@ -547,7 +548,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             inStock: source.productInStock,
             score: hit._score || 0,
         };
-        ElasticsearchService.addCustomMappings(result, source, this.options.customProductMappings, true);
+        ElasticsearchService.addCustomMappings(
+            result,
+            source,
+            this.options.customProductMappings,
+            this.options.customProductVariantMappings,
+            true,
+        );
         ElasticsearchService.addScriptMappings(
             result,
             fields,
@@ -581,18 +588,31 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     private static addCustomMappings(
         result: any,
         source: any,
-        mappings: { [fieldName: string]: CustomMapping<any> },
+        productMappings: { [fieldName: string]: CustomMapping<any> },
+        variantMappings: { [fieldName: string]: CustomMapping<any> },
         groupByProduct: boolean,
     ): any {
-        const customMappings = Object.keys(mappings);
-        if (customMappings.length) {
+        const productCustomMappings = Object.keys(productMappings);
+        if (productCustomMappings.length) {
             const customMappingsResult: any = {};
-            for (const name of customMappings) {
-                customMappingsResult[name] = (source as any)[
-                    groupByProduct ? `product-${name}` : `variant-${name}`
-                ];
+            for (const name of productCustomMappings) {
+                customMappingsResult[name] = (source as any)[`product-${name}`];
             }
-            (result as any).customMappings = customMappingsResult;
+            (result as any).customProductMappings = customMappingsResult;
+            if (groupByProduct) {
+                (result as any).customMappings = customMappingsResult;
+            }
+        }
+        const variantCustomMappings = Object.keys(variantMappings);
+        if (variantCustomMappings.length) {
+            const customMappingsResult: any = {};
+            for (const name of variantCustomMappings) {
+                customMappingsResult[name] = (source as any)[`variant-${name}`];
+            }
+            (result as any).customProductVariantMappings = customMappingsResult;
+            if (!groupByProduct) {
+                (result as any).customMappings = customMappingsResult;
+            }
         }
         return result;
     }

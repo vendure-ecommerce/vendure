@@ -127,18 +127,22 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
 
                 extend type SearchResult {
                     customMappings: CustomMappings!
+                    customProductMappings: CustomProductMappings!
+                    customProductVariantMappings: CustomProductVariantMappings!
                 }
             `;
         } else if (productMappings.length) {
             sdl += `
                 extend type SearchResult {
                     customMappings: CustomProductMappings!
+                    customProductMappings: CustomProductMappings!
                 }
             `;
         } else if (variantMappings.length) {
             sdl += `
                 extend type SearchResult {
                     customMappings: CustomProductVariantMappings!
+                    customProductVariantMappings: CustomProductVariantMappings!
                 }
             `;
         }
