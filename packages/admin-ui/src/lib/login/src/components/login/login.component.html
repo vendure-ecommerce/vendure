@@ -6,7 +6,7 @@
                     {{ 'common.login-image-title' | translate }}
                 </div>
                 <div class="login-wrapper-image-copyright">
-                    <p *ngIf="imageCreator" class="creator">Photo by  {{ imageCreator }} on Unsplash</p>
+                    <p *ngIf="imageCreator" class="creator">Photo by  <a [href]="imageCreatorUrl" target="_blank">{{ imageCreator }}</a> on <a [href]="imageUnsplashUrl" target="_blank">Unsplash</a></p>
                     <p *ngIf="imageLocation" class="location">{{ imageLocation }}</p>
                 </div>
             </div>
