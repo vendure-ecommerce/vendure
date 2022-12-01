@@ -87,7 +87,7 @@ export class ActiveOrderService {
     ): Promise<Order>;
     async getActiveOrder(
         ctx: RequestContext,
-        input: { [strategyName: string]: any } | undefined,
+        input: { [strategyName: string]: Record<string, any> | undefined } | undefined,
         createIfNotExists = false,
     ): Promise<Order | undefined> {
         let order: any;
@@ -103,7 +103,7 @@ export class ActiveOrderService {
                     break;
                 }
                 if (createIfNotExists && typeof strategy.createActiveOrder === 'function') {
-                    order = await strategy.createActiveOrder(ctx, input);
+                    order = await strategy.createActiveOrder(ctx, strategyInput);
                 }
                 if (order) {
                     break;

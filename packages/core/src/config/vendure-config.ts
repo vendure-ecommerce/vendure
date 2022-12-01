@@ -569,7 +569,7 @@ export interface OrderOptions {
      * @since 1.9.0
      * @default DefaultActiveOrderStrategy
      */
-    activeOrderStrategy?: ActiveOrderStrategy | ActiveOrderStrategy[];
+    activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
 }
 
 /**

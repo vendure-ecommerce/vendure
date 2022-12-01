@@ -12,10 +12,9 @@ import {
     RequestContext,
     Transaction,
     TransactionalConnection,
+    UserInputError,
     VendurePlugin,
 } from '@vendure/core';
-import { CustomOrderFields } from '@vendure/core/dist/entity/custom-entity-fields';
-import { UserInputError } from 'apollo-server-express';
 import gql from 'graphql-tag';
 
 declare module '@vendure/core/dist/entity/custom-entity-fields' {
@@ -24,7 +23,7 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
     }
 }
 
-class TokenActiveOrderStrategy implements ActiveOrderStrategy {
+class TokenActiveOrderStrategy implements ActiveOrderStrategy<{ token: string }> {
     readonly name = 'orderToken';
 
     private connection: TransactionalConnection;

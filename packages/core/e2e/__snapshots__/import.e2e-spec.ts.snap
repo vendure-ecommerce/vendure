@@ -49,6 +49,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": null,
         "weight": 100,
       },
       "featuredAsset": null,
@@ -69,6 +70,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": null,
         "weight": 100,
       },
       "featuredAsset": null,
@@ -89,6 +91,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": null,
         "weight": 100,
       },
       "featuredAsset": null,
@@ -137,6 +140,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": null,
         "weight": 300,
       },
       "featuredAsset": null,
@@ -198,6 +202,7 @@ Object {
         },
       ],
       "customFields": Object {
+        "valid": null,
         "weight": 200,
       },
       "featuredAsset": Object {
@@ -230,6 +235,7 @@ Object {
         },
       ],
       "customFields": Object {
+        "valid": null,
         "weight": 200,
       },
       "featuredAsset": Object {
@@ -291,6 +297,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": true,
         "weight": 500,
       },
       "featuredAsset": null,
@@ -311,6 +318,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": false,
         "weight": 500,
       },
       "featuredAsset": null,
@@ -331,6 +339,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": null,
         "weight": 500,
       },
       "featuredAsset": null,
@@ -351,6 +360,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": true,
         "weight": 500,
       },
       "featuredAsset": null,
@@ -371,6 +381,7 @@ Object {
     Object {
       "assets": Array [],
       "customFields": Object {
+        "valid": false,
         "weight": null,
       },
       "featuredAsset": null,

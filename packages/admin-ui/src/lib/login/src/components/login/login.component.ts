@@ -17,10 +17,12 @@ export class LoginComponent {
     brand = getAppConfig().brand;
     hideVendureBranding = getAppConfig().hideVendureBranding;
     hideVersion = getAppConfig().hideVersion;
-    customImageUrl = getAppConfig().loginImage;
+    customImageUrl = getAppConfig().loginImageUrl;
     imageUrl = '';
+    imageUnsplashUrl = '';
     imageLocation = '';
     imageCreator = '';
+    imageCreatorUrl = '';
 
     constructor(private authService: AuthService, private router: Router, private httpClient: HttpClient) {
         if (this.customImageUrl) {
@@ -55,13 +57,15 @@ export class LoginComponent {
             });
     }
 
-    updateImage(res) {
+    updateImage(res: any) {
         const user: any = (res as any).user;
         const location: any = (res as any).location;
 
-        this.imageUrl = (res as any).urls.regular;
+        this.imageUrl = res.urls.regular;
         this.imageCreator = user.name;
         this.imageLocation = location.name;
+        this.imageCreatorUrl = user.links.html;
+        this.imageUnsplashUrl = res.links.html;
     }
 
     /**
