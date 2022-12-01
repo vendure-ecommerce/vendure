@@ -21,7 +21,7 @@
                 {{ createdAt | localeDate: 'short' }}
             </div>
             <div class="name">
-                {{ name }}
+                {{ name || '' }}
             </div>
         </div>
         <div [class.featured-entry]="featured">

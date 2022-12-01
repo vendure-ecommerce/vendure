@@ -1,5 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { SimpleGraphQLClient } from '@vendure/testing';
+import gql from 'graphql-tag';
 
 import { REFUND_ORDER } from './graphql/admin-queries';
 import { RefundFragment, RefundOrder } from './graphql/generated-admin-types';
@@ -22,9 +23,9 @@ export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void
         input: {
             fullName: 'name',
             streetLine1: '12 the street',
-            city: 'foo',
+            city: 'Leeuwarden',
             postalCode: '123456',
-            countryCode: 'US',
+            countryCode: 'AT',
         },
     });
     const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
@@ -63,3 +64,38 @@ export async function refundOne(
     );
     return refundOrder as RefundFragment;
 }
+
+export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
+    mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {
+        createMolliePaymentIntent(input: $input) {
+            ... on MolliePaymentIntent {
+                url
+            }
+            ... on MolliePaymentIntentError {
+                errorCode
+                message
+            }
+        }
+    }`;
+
+export const GET_MOLLIE_PAYMENT_METHODS = gql`
+    query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
+        molliePaymentMethods(input: $input) {
+            id
+            code
+            description
+            minimumAmount {
+                value
+                currency
+            }
+            maximumAmount {
+                value
+                currency
+            }
+            image {
+                size1x
+                size2x
+                svg
+            }
+        }
+    }`;

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
     GetOrderHistory,
-    HistoryEntry,
+    HistoryEntryComponentService,
     HistoryEntryType,
     OrderDetail,
     OrderDetailFragment,
     TimelineDisplayType,
+    TimelineHistoryEntry,
 } from '@vendure/admin-ui/core';
 
 @Component({
@@ -18,12 +19,18 @@ export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
     @Input() history: GetOrderHistory.Items[];
     @Output() addNote = new EventEmitter<{ note: string; isPublic: boolean }>();
-    @Output() updateNote = new EventEmitter<HistoryEntry>();
-    @Output() deleteNote = new EventEmitter<HistoryEntry>();
+    @Output() updateNote = new EventEmitter<TimelineHistoryEntry>();
+    @Output() deleteNote = new EventEmitter<TimelineHistoryEntry>();
     note = '';
     noteIsPrivate = true;
     expanded = false;
     readonly type = HistoryEntryType;
+
+    constructor(private historyEntryComponentService: HistoryEntryComponentService) {}
+
+    hasCustomComponent(type: string): boolean {
+        return !!this.historyEntryComponentService.getComponent(type);
+    }
 
     getDisplayType(entry: GetOrderHistory.Items): TimelineDisplayType {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
@@ -100,7 +107,7 @@ export class OrderHistoryComponent {
             case HistoryEntryType.ORDER_MODIFIED:
                 return true;
             default:
-                return false;
+                return true;
         }
     }
 

@@ -286,7 +286,9 @@
     "username": "Benutzername",
     "view-next-month": "Nächsten Monat anzeigen",
     "view-previous-month": "Vorherigen Monat anzeigen",
-    "with-selected": "Auswahl..."
+    "with-selected": "Auswahl...",
+    "login-title": "Anmelden bei Vendure",
+    "login-image-title": "Hallo! Willkommen zurück. Schön, dich zu sehen."
   },
   "customer": {
     "add-customer-to-group": "Kunde zu Gruppe hinzufügen",

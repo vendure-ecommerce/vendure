@@ -1,8 +1,9 @@
 <ng-select
-    [items]="facetValues"
+    [items]="searchResults$ | async"
     [addTag]="false"
     [hideSelected]="true"
-    bindValue="id"
+    [loading]="searchLoading"
+    [typeahead]="searchInput$"
     multiple="true"
     appendTo="body"
     bindLabel="name"
@@ -12,8 +13,8 @@
 >
     <ng-template ng-label-tmp let-item="item" let-clear="clear">
         <vdr-facet-value-chip
-            *ngIf="item.value; else facetNotFound"
-            [facetValue]="item.value"
+            *ngIf="item; else facetNotFound"
+            [facetValue]="item"
             [removable]="!readonly"
             (remove)="clear(item)"
         ></vdr-facet-value-chip>
@@ -24,6 +25,6 @@
         </ng-template>
     </ng-template>
     <ng-template ng-option-tmp let-item="item">
-        <vdr-facet-value-chip [facetValue]="item.value" [removable]="false"></vdr-facet-value-chip>
+        <vdr-facet-value-chip [facetValue]="item" [removable]="false"></vdr-facet-value-chip>
     </ng-template>
 </ng-select>

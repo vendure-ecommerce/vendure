@@ -225,3 +225,9 @@ query OrderByCode($code: String!) {
   }
 }
 ```
+
+## ActiveOrderStrategy
+
+In the above examples, the active Order is always associated with the current session and is therefore implicit - which is why there is no need to pass an ID to each of the above operations.
+
+Sometimes you _do_ want to be able to explicitly specify the Order you wish to operate on. In this case you need to define a custom [ActiveOrderStrategy]({{< relref "active-order-strategy" >}}).

@@ -1,18 +1,24 @@
-import createMollieClient, { PaymentStatus } from '@mollie/api-client';
+import createMollieClient, {
+    Order as MollieOrder,
+    OrderStatus,
+    PaymentMethod as MollieClientMethod,
+} from '@mollie/api-client';
+import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Inject, Injectable } from '@nestjs/common';
 import {
     ActiveOrderService,
     ChannelService,
     EntityHydrator,
+    ErrorResult,
     LanguageCode,
     Logger,
     Order,
     OrderService,
+    OrderStateTransitionError,
     PaymentMethod,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
-import { OrderStateTransitionError } from '@vendure/core/dist/common/error/generated-graphql-shop-errors';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import {
@@ -22,14 +28,13 @@ import {
     MolliePaymentIntentResult,
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
+import { getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
-import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/payments/parameters';
-import { PaymentMethod as MollieClientMethod } from '@mollie/api-client';
 
-interface SettlePaymentInput {
+interface OrderStatusInput {
     channelToken: string;
     paymentMethodId: string;
-    paymentId: string;
+    orderId: string;
 }
 
 class PaymentIntentError implements MolliePaymentIntentError {
@@ -39,7 +44,7 @@ class PaymentIntentError implements MolliePaymentIntentError {
     }
 }
 
-class InvalidInput implements MolliePaymentIntentError {
+class InvalidInputError implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
 
     constructor(public message: string) {
@@ -68,16 +73,18 @@ export class MollieService {
     ): Promise<MolliePaymentIntentResult> {
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
-            return new InvalidInput(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
+            return new InvalidInputError(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
         }
         const [order, paymentMethod] = await Promise.all([
-            this.activeOrderService.getOrderFromContext(ctx),
+            this.activeOrderService.getActiveOrder(ctx, undefined),
             this.getPaymentMethod(ctx, paymentMethodCode),
         ]);
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order, { relations: ['lines', 'customer', 'shippingLines'] });
+        await this.entityHydrator.hydrate(ctx, order,
+            { relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod'] }
+        );
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }
@@ -101,25 +108,27 @@ export class MollieService {
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const paymentInput: CreateParameters = {
-            amount: {
-                value: `${(order.totalWithTax / 100).toFixed(2)}`,
-                currency: order.currencyCode,
-            },
-            metadata: {
-                orderCode: order.code,
-            },
-            description: `Order ${order.code}`,
+        const billingAddress = toMollieAddress(order.billingAddress, order.customer) || toMollieAddress(order.shippingAddress, order.customer);
+        if (!billingAddress) {
+            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.`);
+        }
+        const orderInput: CreateParameters = {
+            orderNumber: order.code,
+            amount: toAmount(order.totalWithTax, order.currencyCode),
             redirectUrl: `${redirectUrl}/${order.code}`,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
+            billingAddress,
+            locale: getLocale(billingAddress.country, ctx.languageCode),
+            lines: toMollieOrderLines(order),
         };
         if (molliePaymentMethodCode) {
-            paymentInput.method = molliePaymentMethodCode as MollieClientMethod;
+            orderInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
-        const payment = await mollieClient.payments.create(paymentInput);
-        const url = payment.getCheckoutUrl();
+        const mollieOrder = await mollieClient.orders.create(orderInput);
+        Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`);
+        const url = mollieOrder.getCheckoutUrl();
         if (!url) {
-            throw Error(`Unable to getCheckoutUrl() from Mollie payment`);
+            throw Error(`Unable to getCheckoutUrl() from Mollie order`);
         }
         return {
             url,
@@ -127,40 +136,63 @@ export class MollieService {
     }
 
     /**
-     * Makes a request to Mollie to verify the given payment by id
+     * Update Vendure payments and order status based on the incoming Mollie order
      */
-    async settlePayment({ channelToken, paymentMethodId, paymentId }: SettlePaymentInput): Promise<void> {
+    async handleMollieStatusUpdate({ channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
         const ctx = await this.createContext(channelToken);
-        Logger.info(`Received payment for ${channelToken}`, loggerCtx);
+        Logger.info(`Received status update for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
             return Logger.warn(`No paymentMethod found with id ${paymentMethodId}`, loggerCtx);
         }
         const apiKey = paymentMethod.handler.args.find(a => a.name === 'apiKey')?.value;
+        const autoCapture = paymentMethod.handler.args.find(a => a.name === 'autoCapture')?.value === 'true';
         if (!apiKey) {
             throw Error(`No apiKey found for payment ${paymentMethod.id} for channel ${channelToken}`);
         }
         const client = createMollieClient({ apiKey });
-        const molliePayment = await client.payments.get(paymentId);
-        const orderCode = molliePayment.metadata.orderCode;
-        if (molliePayment.status !== PaymentStatus.paid) {
-            return Logger.warn(
-                `Received payment for ${channelToken} for order ${orderCode} with status ${molliePayment.status}`,
-                loggerCtx,
-            );
-        }
-        if (!orderCode) {
-            throw Error(`Molliepayment does not have metadata.orderCode, unable to settle payment ${molliePayment.id}!`);
-        }
-        Logger.info(
-            `Received payment ${molliePayment.id} for order ${orderCode} with status ${molliePayment.status}`,
-            loggerCtx,
-        );
-        const order = await this.orderService.findOneByCode(ctx, orderCode);
+        const mollieOrder = await client.orders.get(orderId);
+        Logger.info(`Processing status '${mollieOrder.status}' for order ${mollieOrder.orderNumber} for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
+        let order = await this.orderService.findOneByCode(ctx, mollieOrder.orderNumber, ['payments']);
         if (!order) {
-            throw Error(`Unable to find order ${orderCode}, unable to settle payment ${molliePayment.id}!`);
+            throw Error(`Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`);
         }
+        if (mollieOrder.status === OrderStatus.paid ) {
+            // Paid is only used by 1-step payments without Authorized state. This will settle immediately
+            await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Settled');
+            return;
+        }
+        if (order.state === 'AddingItems' && mollieOrder.status === OrderStatus.authorized) {
+            order = await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Authorized');
+            if (autoCapture && mollieOrder.status === OrderStatus.authorized) {
+                // Immediately capture payment if autoCapture is set
+                Logger.info(`Auto capturing payment for order ${order.code}`, loggerCtx);
+                await this.settleExistingPayment(ctx, order, mollieOrder.id);
+            }
+            return;
+        }
+        if (order.state === 'PaymentAuthorized' && mollieOrder.status === OrderStatus.completed) {
+            return this.settleExistingPayment(ctx, order, mollieOrder.id);
+        }
+        if (order.state === 'PaymentAuthorized' || order.state === 'PaymentSettled') {
+            Logger.info(`Order ${order.code} is '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`, loggerCtx);
+            return;
+        }
+        // Any other combination of Mollie status and Vendure status indicates something is wrong.
+        throw Error(`Unhandled incoming Mollie status '${mollieOrder.status}' for order ${order.code} with status '${order.state}'`);
+    }
+
+    /**
+     * Add payment to order. Can be settled or authorized depending on the payment method.
+     */
+    async addPayment(
+        ctx: RequestContext,
+        order: Order,
+        mollieOrder: MollieOrder,
+        paymentMethodCode: string,
+        status: 'Authorized' | 'Settled'
+    ): Promise<Order> {
         if (order.state !== 'ArrangingPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
                 ctx,
@@ -173,24 +205,39 @@ export class MollieService {
             }
         }
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
-            method: paymentMethod.code,
+            method: paymentMethodCode,
             metadata: {
-                paymentId: molliePayment.id,
-                mode: molliePayment.mode,
-                method: molliePayment.method,
-                profileId: molliePayment.profileId,
-                settlementAmount: molliePayment.settlementAmount,
-                customerId: molliePayment.customerId,
-                authorizedAt: molliePayment.authorizedAt,
-                paidAt: molliePayment.paidAt,
+                status,
+                orderId: mollieOrder.id,
+                mode: mollieOrder.mode,
+                method: mollieOrder.method,
+                profileId: mollieOrder.profileId,
+                settlementAmount: mollieOrder.amount,
+                authorizedAt: mollieOrder.authorizedAt,
+                paidAt: mollieOrder.paidAt,
             },
         });
         if (!(addPaymentToOrderResult instanceof Order)) {
             throw Error(
-                `Error adding payment to order ${orderCode}: ${addPaymentToOrderResult.message}`,
+                `Error adding payment to order ${order.code}: ${addPaymentToOrderResult.message}`,
             );
         }
-        Logger.info(`Payment for order ${molliePayment.metadata.orderCode} settled`, loggerCtx);
+        return addPaymentToOrderResult;
+    }
+
+    /**
+     * Settle an existing payment based on the given mollieOrder
+     */
+    async settleExistingPayment(ctx: RequestContext, order: Order, mollieOrderId: string): Promise<void> {
+        const payment = order.payments.find(p => p.transactionId === mollieOrderId);
+        if (!payment) {
+            throw Error(`Cannot find payment ${mollieOrderId} for ${order.code}. Unable to settle this payment`);
+        }
+        const result = await this.orderService.settlePayment(ctx, payment.id);
+        if ((result as ErrorResult).message) {
+            throw Error(
+                `Error settling payment ${payment.id} for order ${order.code}: ${(result as ErrorResult).errorCode} - ${(result as ErrorResult).message}`);
+        }
     }
 
     async getEnabledPaymentMethods(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentMethod[]> {

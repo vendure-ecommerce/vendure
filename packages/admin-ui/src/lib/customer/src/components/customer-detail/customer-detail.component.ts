@@ -17,7 +17,7 @@ import {
     GetCustomer,
     GetCustomerHistory,
     GetCustomerQuery,
-    HistoryEntry,
+    TimelineHistoryEntry,
     ModalService,
     NotificationService,
     ServerConfigService,
@@ -404,7 +404,7 @@ export class CustomerDetailComponent
         });
     }
 
-    updateNote(entry: HistoryEntry) {
+    updateNote(entry: TimelineHistoryEntry) {
         this.modalService
             .fromComponent(EditNoteDialogComponent, {
                 closable: true,
@@ -433,7 +433,7 @@ export class CustomerDetailComponent
             });
     }
 
-    deleteNote(entry: HistoryEntry) {
+    deleteNote(entry: TimelineHistoryEntry) {
         return this.modalService
             .dialog({
                 title: _('common.confirm-delete-note'),

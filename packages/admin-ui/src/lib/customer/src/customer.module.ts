@@ -9,6 +9,7 @@ import { CustomerDetailComponent } from './components/customer-detail/customer-d
 import { CustomerGroupDetailDialogComponent } from './components/customer-group-detail-dialog/customer-group-detail-dialog.component';
 import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';
 import { CustomerGroupMemberListComponent } from './components/customer-group-member-list/customer-group-member-list.component';
+import { CustomerHistoryEntryHostComponent } from './components/customer-history/customer-history-entry-host.component';
 import { CustomerHistoryComponent } from './components/customer-history/customer-history.component';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerStatusLabelComponent } from './components/customer-status-label/customer-status-label.component';
@@ -29,6 +30,7 @@ import { customerRoutes } from './customer.routes';
         SelectCustomerGroupDialogComponent,
         CustomerHistoryComponent,
         AddressDetailDialogComponent,
+        CustomerHistoryEntryHostComponent,
     ],
     exports: [AddressCardComponent],
 })

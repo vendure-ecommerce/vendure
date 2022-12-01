@@ -1,4 +1,4 @@
-import createMollieClient, { RefundStatus } from '@mollie/api-client';
+import createMollieClient, { OrderEmbed, PaymentStatus, RefundStatus } from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentErrorResult,
@@ -6,12 +6,11 @@ import {
     CreateRefundResult,
     Logger,
     PaymentMethodHandler,
-    PaymentMethodService,
     SettlePaymentResult,
 } from '@vendure/core';
-import { Permission } from '@vendure/core';
 
-import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
+import { loggerCtx } from './constants';
+import { toAmount } from './mollie.helpers';
 import { MollieService } from './mollie.service';
 
 let mollieService: MollieService;
@@ -35,6 +34,14 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
             ],
         },
+        autoCapture: {
+            type: 'boolean',
+            label: [{ languageCode: LanguageCode.en, value: 'Auto capture payments' }],
+            defaultValue: false,
+            description: [
+                { languageCode: LanguageCode.en, value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.' },
+            ],
+        },
     },
     init(injector) {
         mollieService = injector.get(MollieService);
@@ -46,36 +53,51 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         args,
         metadata,
     ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
-        // Creating a payment immediately settles the payment in Mollie flow, so only Admins and internal calls should be allowed to do this
+        // Only Admins and internal calls should be allowed to settle and authorize payments
         if (ctx.apiType !== 'admin') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
+        if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {
+            throw Error(`Cannot create payment for status ${metadata.status} for order ${order.code}. Only Authorized or Settled are allowed.`);
+        }
+        Logger.info(`Payment for order ${order.code} created with state '${metadata.status}'`, loggerCtx);
         return {
             amount,
-            state: 'Settled' as const,
-            transactionId: metadata.paymentId,
-            metadata // Store all given metadata on a payment
+            state: metadata.status,
+            transactionId: metadata.orderId, // The plugin now only supports 1 payment per order, so a mollie order equals a payment
+            metadata, // Store all given metadata on a payment
         };
     },
     settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
-        // this should never be called
+        // Called for Authorized payments
+        const { apiKey } = args;
+        const mollieClient = createMollieClient({ apiKey });
+        const mollieOrder = await mollieClient.orders.get(payment.transactionId);
+        // Order could have been completed via Mollie dashboard, then we can just settle
+        if (!mollieOrder.isCompleted()) {
+            await mollieClient.orders_shipments.create({orderId: payment.transactionId}); // Creating a shipment captures the payment
+        }
+        Logger.info(`Settled payment for ${order.code}`, loggerCtx);
         return { success: true };
     },
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
         const { apiKey } = args;
         const mollieClient = createMollieClient({ apiKey });
+        const mollieOrder = await mollieClient.orders.get(payment.transactionId, {embed: [OrderEmbed.payments]});
+        const molliePayments = await mollieOrder.getPayments();
+        const molliePayment = molliePayments.find(p => p.status === PaymentStatus.paid); // Only one paid payment should be there
+        if (!molliePayment) {
+            throw Error(`No payment with status 'paid' was found in Mollie for order ${order.code} (Mollie order ${mollieOrder.id})`);
+        }
         const refund = await mollieClient.payments_refunds.create({
-            paymentId: payment.transactionId,
+            paymentId: molliePayment.id,
             description: input.reason,
-            amount: {
-                value: (amount / 100).toFixed(2),
-                currency: order.currencyCode,
-            },
+            amount: toAmount(amount, order.currencyCode)
         });
         if (refund.status === RefundStatus.failed) {
             Logger.error(
                 `Failed to create refund of ${amount.toFixed()} for order ${order.code} for transaction ${
-                    payment.transactionId
+                    molliePayment.id
                 }`,
                 loggerCtx,
             );
