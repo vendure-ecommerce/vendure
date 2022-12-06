@@ -98,6 +98,8 @@ export * from './shared/components/action-bar-items/action-bar-items.component';
 export * from './shared/components/address-form/address-form.component';
 export * from './shared/components/affixed-input/affixed-input.component';
 export * from './shared/components/affixed-input/percentage-suffix-input.component';
+export * from './shared/components/angular-cd-timer/angular-cd-timer.component';
+export * from './shared/components/angular-cd-timer/angular-cd-timer.interface';
 export * from './shared/components/asset-file-input/asset-file-input.component';
 export * from './shared/components/asset-gallery/asset-gallery.component';
 export * from './shared/components/asset-picker-dialog/asset-picker-dialog.component';
@@ -149,6 +151,7 @@ export * from './shared/components/modal-dialog/dialog-component-outlet.componen
 export * from './shared/components/modal-dialog/dialog-title.directive';
 export * from './shared/components/modal-dialog/modal-dialog.component';
 export * from './shared/components/object-tree/object-tree.component';
+export * from './shared/components/order-label/order-label.component';
 export * from './shared/components/order-state-label/order-state-label.component';
 export * from './shared/components/pagination-controls/pagination-controls.component';
 export * from './shared/components/product-multi-selector-dialog/product-multi-selector-dialog.component';

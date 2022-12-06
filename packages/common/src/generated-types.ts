@@ -1538,7 +1538,8 @@ export enum ErrorCode {
   COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
   ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
   INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
-  NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR'
+  NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
+  SHOP_CLOSED_ERROR = 'SHOP_CLOSED_ERROR'
 }
 
 export type ErrorResult = {
@@ -5080,6 +5081,12 @@ export type ShippingMethodTranslationInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type ShopClosedError = ErrorResult & {
+  __typename?: 'ShopClosedError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
 /** The price value where the result has a single price */
 export type SinglePrice = {
   __typename?: 'SinglePrice';
@@ -5534,7 +5541,7 @@ export type UpdateOrderInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
+export type UpdateOrderItemsResult = Order | ShopClosedError | OrderModificationError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
 
 export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];

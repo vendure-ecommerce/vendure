@@ -56,7 +56,6 @@ type ConfigurableOperationDefinition {
     description: String!
 }
 
-
 type DeletionResponse {
     result: DeletionResult!
     message: String
@@ -247,6 +246,7 @@ type PaymentMethodQuote {
 
 union UpdateOrderItemsResult =
       Order
+    | ShopClosedError
     | OrderModificationError
     | OrderLimitError
     | NegativeQuantityError
@@ -258,4 +258,3 @@ union SetOrderShippingMethodResult =
     | IneligibleShippingMethodError
     | NoActiveOrderError
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
-

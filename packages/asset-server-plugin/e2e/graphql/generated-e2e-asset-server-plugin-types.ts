@@ -1514,6 +1514,7 @@ export enum ErrorCode {
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
+    SHOP_CLOSED_ERROR = 'SHOP_CLOSED_ERROR',
 }
 
 export type ErrorResult = {
@@ -4810,6 +4811,11 @@ export type ShippingMethodTranslationInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type ShopClosedError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
 /** The price value where the result has a single price */
 export type SinglePrice = {
     value: Scalars['Int'];
@@ -5251,6 +5257,7 @@ export type UpdateOrderInput = {
 
 export type UpdateOrderItemsResult =
     | Order
+    | ShopClosedError
     | OrderModificationError
     | OrderLimitError
     | NegativeQuantityError

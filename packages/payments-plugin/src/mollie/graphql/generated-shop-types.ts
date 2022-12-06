@@ -931,6 +931,7 @@ export enum ErrorCode {
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
+    SHOP_CLOSED_ERROR = 'SHOP_CLOSED_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
     INELIGIBLE_PAYMENT_METHOD_ERROR = 'INELIGIBLE_PAYMENT_METHOD_ERROR',
     PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
@@ -946,7 +947,6 @@ export enum ErrorCode {
     PASSWORD_RESET_TOKEN_INVALID_ERROR = 'PASSWORD_RESET_TOKEN_INVALID_ERROR',
     PASSWORD_RESET_TOKEN_EXPIRED_ERROR = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR',
     NOT_VERIFIED_ERROR = 'NOT_VERIFIED_ERROR',
-    SHOP_CLOSED_ERROR = 'SHOP_CLOSED_ERROR',
 }
 
 export type ErrorResult = {
@@ -3218,7 +3218,7 @@ export type TextCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']>;
 };
 
-export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
+export type TransitionOrderToStateResult = Order | OrderStateTransitionError | ShopClosedError;
 
 export type UpdateAddressCustomFieldsInput = {
     first_name?: Maybe<Scalars['String']>;
@@ -3274,6 +3274,7 @@ export type UpdateOrderInput = {
 
 export type UpdateOrderItemsResult =
     | Order
+    | ShopClosedError
     | OrderModificationError
     | OrderLimitError
     | NegativeQuantityError
