@@ -158,7 +158,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
             variantId,
             ...event,
         });
-        const index = this.variants.findIndex(v => v.id === variantId);
+        const index = this.formArray.controls.findIndex(c => c.value.id === variantId);
         this.formArray.at(index).markAsDirty();
     }
 
