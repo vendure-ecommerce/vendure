@@ -1,3 +1,31 @@
+## 1.9.0 (2022-12-01)
+
+
+#### Fixes
+
+* **admin-ui** Add links according to Unsplash guidelines (#1911) ([e703304](https://github.com/vendure-ecommerce/vendure/commit/e703304)), closes [#1911](https://github.com/vendure-ecommerce/vendure/issues/1911)
+* **core** Fix creation of superadmin ([416e03a](https://github.com/vendure-ecommerce/vendure/commit/416e03a))
+* **core** Importing custom boolean field works as intended (#1908) ([5114563](https://github.com/vendure-ecommerce/vendure/commit/5114563)), closes [#1908](https://github.com/vendure-ecommerce/vendure/issues/1908)
+
+#### Features
+
+* **admin-ui** Add default component for custom history entries ([cd8d5a2](https://github.com/vendure-ecommerce/vendure/commit/cd8d5a2)), closes [#1694](https://github.com/vendure-ecommerce/vendure/issues/1694)
+* **admin-ui** Allow custom components for Customer history timeline ([eeba323](https://github.com/vendure-ecommerce/vendure/commit/eeba323)), closes [#1694](https://github.com/vendure-ecommerce/vendure/issues/1694) [#432](https://github.com/vendure-ecommerce/vendure/issues/432)
+* **admin-ui** Allow custom components for Order history timeline ([fc7bcf1](https://github.com/vendure-ecommerce/vendure/commit/fc7bcf1)), closes [#1694](https://github.com/vendure-ecommerce/vendure/issues/1694) [#432](https://github.com/vendure-ecommerce/vendure/issues/432)
+* **admin-ui** Login UI refresh (#1862) ([72febce](https://github.com/vendure-ecommerce/vendure/commit/72febce)), closes [#1862](https://github.com/vendure-ecommerce/vendure/issues/1862)
+* **core** Add facetValues list query ([ddab719](https://github.com/vendure-ecommerce/vendure/commit/ddab719)), closes [#1404](https://github.com/vendure-ecommerce/vendure/issues/1404)
+* **core** Custom Order/Customer history entries can be defined ([d9e1770](https://github.com/vendure-ecommerce/vendure/commit/d9e1770)), closes [#1694](https://github.com/vendure-ecommerce/vendure/issues/1694) [#432](https://github.com/vendure-ecommerce/vendure/issues/432)
+* **core** Expose config for internal TaxRate cache ([454e905](https://github.com/vendure-ecommerce/vendure/commit/454e905)), closes [#1856](https://github.com/vendure-ecommerce/vendure/issues/1856)
+* **core** Implement ActiveOrderStrategy ([e62009f](https://github.com/vendure-ecommerce/vendure/commit/e62009f)), closes [#1858](https://github.com/vendure-ecommerce/vendure/issues/1858)
+* **core** Implement null filters on PaginatedList queries ([3906cbf](https://github.com/vendure-ecommerce/vendure/commit/3906cbf)), closes [#1490](https://github.com/vendure-ecommerce/vendure/issues/1490)
+* **elasticsearch-plugin** Independently access customMappings (#1909) ([6c1c83a](https://github.com/vendure-ecommerce/vendure/commit/6c1c83a)), closes [#1909](https://github.com/vendure-ecommerce/vendure/issues/1909)
+* **email-plugin** Add support for AWS SES transport (#1877) ([e516660](https://github.com/vendure-ecommerce/vendure/commit/e516660)), closes [#1877](https://github.com/vendure-ecommerce/vendure/issues/1877)
+* **payments-plugin** Use Mollie's Order API (#1884) ([56b8646](https://github.com/vendure-ecommerce/vendure/commit/56b8646)), closes [#1884](https://github.com/vendure-ecommerce/vendure/issues/1884)
+
+#### Perf
+
+* **admin-ui** Lazy-load facet values for selector component ([3350608](https://github.com/vendure-ecommerce/vendure/commit/3350608)), closes [#1404](https://github.com/vendure-ecommerce/vendure/issues/1404)
+
 ## <small>1.8.5 (2022-11-28)</small>
 
 

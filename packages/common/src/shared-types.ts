@@ -305,11 +305,11 @@ export interface AdminUiConfig {
     hideVersion?: boolean;
     /**
      * @description
-     * The custom login image
+     * A url of a custom image to be used on the login screen, to override the images provided by Vendure's login image server.
      *
      * @since 1.9.0
      */
-    loginImage?: string;
+    loginImageUrl?: string;
     /**
      * @description
      * Allows you to provide default reasons for a refund or cancellation. This will be used in the

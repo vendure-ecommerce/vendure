@@ -246,7 +246,7 @@ export class AdminUiPlugin implements NestModule {
                 'hideVersion',
                 AdminUiPlugin.options.adminUiConfig?.hideVersion || false,
             ),
-            loginImage: AdminUiPlugin.options.adminUiConfig?.loginImage,
+            loginImageUrl: AdminUiPlugin.options.adminUiConfig?.loginImageUrl,
             cancellationReasons: propOrDefault('cancellationReasons', undefined),
         };
     }

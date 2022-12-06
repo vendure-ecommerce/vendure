@@ -17,7 +17,7 @@ export class LoginComponent {
     brand = getAppConfig().brand;
     hideVendureBranding = getAppConfig().hideVendureBranding;
     hideVersion = getAppConfig().hideVersion;
-    customImageUrl = getAppConfig().loginImage;
+    customImageUrl = getAppConfig().loginImageUrl;
     imageUrl = '';
     imageUnsplashUrl = '';
     imageLocation = '';
