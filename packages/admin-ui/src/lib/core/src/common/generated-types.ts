@@ -61,7 +61,16 @@ export type Address = Node & {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<AddressCustomFields>;
+};
+
+export type AddressCustomFields = {
+  __typename?: 'AddressCustomFields';
+  first_name?: Maybe<Scalars['String']>;
+  uuid?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
 };
 
 export type AdjustDraftOrderLineInput = {
@@ -362,7 +371,16 @@ export type Channel = Node & {
   defaultLanguageCode: LanguageCode;
   currencyCode: CurrencyCode;
   pricesIncludeTax: Scalars['Boolean'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ChannelCustomFields>;
+};
+
+export type ChannelCustomFields = {
+  __typename?: 'ChannelCustomFields';
+  isOpen?: Maybe<Scalars['Boolean']>;
+  latitude?: Maybe<Scalars['Float']>;
+  longitude?: Maybe<Scalars['Float']>;
+  name?: Maybe<Scalars['String']>;
+  location?: Maybe<Scalars['String']>;
 };
 
 /**
@@ -617,6 +635,14 @@ export type CouponCodeLimitError = ErrorResult & {
   limit: Scalars['Int'];
 };
 
+export type CreateAddressCustomFieldsInput = {
+  first_name?: Maybe<Scalars['String']>;
+  uuid?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+};
+
 export type CreateAddressInput = {
   fullName?: Maybe<Scalars['String']>;
   company?: Maybe<Scalars['String']>;
@@ -629,7 +655,7 @@ export type CreateAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateAddressCustomFieldsInput>;
 };
 
 export type CreateAdministratorInput = {
@@ -649,6 +675,14 @@ export type CreateAssetInput = {
 
 export type CreateAssetResult = Asset | MimeTypeError;
 
+export type CreateChannelCustomFieldsInput = {
+  isOpen?: Maybe<Scalars['Boolean']>;
+  latitude?: Maybe<Scalars['Float']>;
+  longitude?: Maybe<Scalars['Float']>;
+  name?: Maybe<Scalars['String']>;
+  location?: Maybe<Scalars['String']>;
+};
+
 export type CreateChannelInput = {
   code: Scalars['String'];
   token: Scalars['String'];
@@ -657,7 +691,7 @@ export type CreateChannelInput = {
   currencyCode: CurrencyCode;
   defaultTaxZoneId: Scalars['ID'];
   defaultShippingZoneId: Scalars['ID'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateChannelCustomFieldsInput>;
 };
 
 export type CreateChannelResult = Channel | LanguageNotAvailableError;
@@ -687,6 +721,10 @@ export type CreateCountryInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type CreateCustomerCustomFieldsInput = {
+  referralCode?: Maybe<Scalars['String']>;
+};
+
 export type CreateCustomerGroupInput = {
   name: Scalars['String'];
   customerIds?: Maybe<Array<Scalars['ID']>>;
@@ -699,24 +737,34 @@ export type CreateCustomerInput = {
   lastName: Scalars['String'];
   phoneNumber?: Maybe<Scalars['String']>;
   emailAddress: Scalars['String'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateCustomerCustomFieldsInput>;
 };
 
 export type CreateCustomerResult = Customer | EmailAddressConflictError;
+
+export type CreateFacetCustomFieldsInput = {
+  color1?: Maybe<Scalars['String']>;
+  color2?: Maybe<Scalars['String']>;
+};
 
 export type CreateFacetInput = {
   code: Scalars['String'];
   isPrivate: Scalars['Boolean'];
   translations: Array<FacetTranslationInput>;
   values?: Maybe<Array<CreateFacetValueWithFacetInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateFacetCustomFieldsInput>;
+};
+
+export type CreateFacetValueCustomFieldsInput = {
+  color1?: Maybe<Scalars['String']>;
+  color2?: Maybe<Scalars['String']>;
 };
 
 export type CreateFacetValueInput = {
   facetId: Scalars['ID'];
   code: Scalars['String'];
   translations: Array<FacetValueTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateFacetValueCustomFieldsInput>;
 };
 
 export type CreateFacetValueWithFacetInput = {
@@ -770,6 +818,10 @@ export type CreateProductOptionInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type CreateProductVariantCustomFieldsInput = {
+  pre_discount_price?: Maybe<Scalars['Int']>;
+};
+
 export type CreateProductVariantInput = {
   productId: Scalars['ID'];
   translations: Array<ProductVariantTranslationInput>;
@@ -784,7 +836,7 @@ export type CreateProductVariantInput = {
   outOfStockThreshold?: Maybe<Scalars['Int']>;
   useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
   trackInventory?: Maybe<GlobalFlag>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateProductVariantCustomFieldsInput>;
 };
 
 export type CreateProductVariantOptionInput = {
@@ -1252,7 +1304,7 @@ export type Customer = Node & {
   addresses?: Maybe<Array<Address>>;
   orders: OrderList;
   user?: Maybe<User>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CustomerCustomFields>;
 };
 
 
@@ -1265,6 +1317,12 @@ export type CustomerOrdersArgs = {
   options?: Maybe<OrderListOptions>;
 };
 
+export type CustomerCustomFields = {
+  __typename?: 'CustomerCustomFields';
+  referralCode?: Maybe<Scalars['String']>;
+  loyaltyPoints?: Maybe<Scalars['Int']>;
+};
+
 export type CustomerFilterParameter = {
   postalCode?: Maybe<StringOperators>;
   id?: Maybe<IdOperators>;
@@ -1275,6 +1333,8 @@ export type CustomerFilterParameter = {
   lastName?: Maybe<StringOperators>;
   phoneNumber?: Maybe<StringOperators>;
   emailAddress?: Maybe<StringOperators>;
+  referralCode?: Maybe<StringOperators>;
+  loyaltyPoints?: Maybe<NumberOperators>;
 };
 
 export type CustomerGroup = Node & {
@@ -1353,6 +1413,8 @@ export type CustomerSortParameter = {
   lastName?: Maybe<SortOrder>;
   phoneNumber?: Maybe<SortOrder>;
   emailAddress?: Maybe<SortOrder>;
+  referralCode?: Maybe<SortOrder>;
+  loyaltyPoints?: Maybe<SortOrder>;
 };
 
 /** Operators for filtering on a list of Date fields */
@@ -1503,7 +1565,13 @@ export type Facet = Node & {
   code: Scalars['String'];
   values: Array<FacetValue>;
   translations: Array<FacetTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<FacetCustomFields>;
+};
+
+export type FacetCustomFields = {
+  __typename?: 'FacetCustomFields';
+  color1?: Maybe<Scalars['String']>;
+  color2?: Maybe<Scalars['String']>;
 };
 
 export type FacetFilterParameter = {
@@ -1514,6 +1582,8 @@ export type FacetFilterParameter = {
   languageCode?: Maybe<StringOperators>;
   name?: Maybe<StringOperators>;
   code?: Maybe<StringOperators>;
+  color1?: Maybe<StringOperators>;
+  color2?: Maybe<StringOperators>;
 };
 
 export type FacetInUseError = ErrorResult & {
@@ -1550,6 +1620,8 @@ export type FacetSortParameter = {
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
   code?: Maybe<SortOrder>;
+  color1?: Maybe<SortOrder>;
+  color2?: Maybe<SortOrder>;
 };
 
 export type FacetTranslation = {
@@ -1578,7 +1650,13 @@ export type FacetValue = Node & {
   name: Scalars['String'];
   code: Scalars['String'];
   translations: Array<FacetValueTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<FacetValueCustomFields>;
+};
+
+export type FacetValueCustomFields = {
+  __typename?: 'FacetValueCustomFields';
+  color1?: Maybe<Scalars['String']>;
+  color2?: Maybe<Scalars['String']>;
 };
 
 /**
@@ -3481,7 +3559,7 @@ export type OrderAddress = {
   country?: Maybe<Scalars['String']>;
   countryCode?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<AddressCustomFields>;
 };
 
 export type OrderFilterParameter = {
@@ -4232,12 +4310,17 @@ export type ProductVariant = Node & {
   options: Array<ProductOption>;
   facetValues: Array<FacetValue>;
   translations: Array<ProductVariantTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductVariantCustomFields>;
 };
 
 
 export type ProductVariantStockMovementsArgs = {
   options?: Maybe<StockMovementListOptions>;
+};
+
+export type ProductVariantCustomFields = {
+  __typename?: 'ProductVariantCustomFields';
+  pre_discount_price?: Maybe<Scalars['Int']>;
 };
 
 export type ProductVariantFilterParameter = {
@@ -4258,6 +4341,7 @@ export type ProductVariantFilterParameter = {
   currencyCode?: Maybe<StringOperators>;
   priceWithTax?: Maybe<NumberOperators>;
   stockLevel?: Maybe<StringOperators>;
+  pre_discount_price?: Maybe<NumberOperators>;
 };
 
 export type ProductVariantList = PaginatedList & {
@@ -4292,6 +4376,7 @@ export type ProductVariantSortParameter = {
   price?: Maybe<SortOrder>;
   priceWithTax?: Maybe<SortOrder>;
   stockLevel?: Maybe<SortOrder>;
+  pre_discount_price?: Maybe<SortOrder>;
 };
 
 export type ProductVariantTranslation = {
@@ -5355,6 +5440,14 @@ export type UpdateActiveAdministratorInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateAddressCustomFieldsInput = {
+  first_name?: Maybe<Scalars['String']>;
+  uuid?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+};
+
 export type UpdateAddressInput = {
   id: Scalars['ID'];
   fullName?: Maybe<Scalars['String']>;
@@ -5368,7 +5461,7 @@ export type UpdateAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateAddressCustomFieldsInput>;
 };
 
 export type UpdateAdministratorInput = {
@@ -5389,6 +5482,14 @@ export type UpdateAssetInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateChannelCustomFieldsInput = {
+  isOpen?: Maybe<Scalars['Boolean']>;
+  latitude?: Maybe<Scalars['Float']>;
+  longitude?: Maybe<Scalars['Float']>;
+  name?: Maybe<Scalars['String']>;
+  location?: Maybe<Scalars['String']>;
+};
+
 export type UpdateChannelInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
@@ -5398,7 +5499,7 @@ export type UpdateChannelInput = {
   currencyCode?: Maybe<CurrencyCode>;
   defaultTaxZoneId?: Maybe<Scalars['ID']>;
   defaultShippingZoneId?: Maybe<Scalars['ID']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateChannelCustomFieldsInput>;
 };
 
 export type UpdateChannelResult = Channel | LanguageNotAvailableError;
@@ -5431,6 +5532,10 @@ export type UpdateCountryInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerCustomFieldsInput = {
+  referralCode?: Maybe<Scalars['String']>;
+};
+
 export type UpdateCustomerGroupInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
@@ -5444,7 +5549,7 @@ export type UpdateCustomerInput = {
   lastName?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateCustomerCustomFieldsInput>;
 };
 
 export type UpdateCustomerNoteInput = {
@@ -5454,19 +5559,29 @@ export type UpdateCustomerNoteInput = {
 
 export type UpdateCustomerResult = Customer | EmailAddressConflictError;
 
+export type UpdateFacetCustomFieldsInput = {
+  color1?: Maybe<Scalars['String']>;
+  color2?: Maybe<Scalars['String']>;
+};
+
 export type UpdateFacetInput = {
   id: Scalars['ID'];
   isPrivate?: Maybe<Scalars['Boolean']>;
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<FacetTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateFacetCustomFieldsInput>;
+};
+
+export type UpdateFacetValueCustomFieldsInput = {
+  color1?: Maybe<Scalars['String']>;
+  color2?: Maybe<Scalars['String']>;
 };
 
 export type UpdateFacetValueInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<FacetValueTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateFacetValueCustomFieldsInput>;
 };
 
 export type UpdateGlobalSettingsInput = {
@@ -5488,6 +5603,7 @@ export type UpdateOrderAddressInput = {
   postalCode?: Maybe<Scalars['String']>;
   countryCode?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
+  customFields?: Maybe<UpdateAddressCustomFieldsInput>;
 };
 
 export type UpdateOrderInput = {
@@ -5538,6 +5654,10 @@ export type UpdateProductOptionInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateProductVariantCustomFieldsInput = {
+  pre_discount_price?: Maybe<Scalars['Int']>;
+};
+
 export type UpdateProductVariantInput = {
   id: Scalars['ID'];
   enabled?: Maybe<Scalars['Boolean']>;
@@ -5552,7 +5672,7 @@ export type UpdateProductVariantInput = {
   outOfStockThreshold?: Maybe<Scalars['Int']>;
   useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
   trackInventory?: Maybe<GlobalFlag>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateProductVariantCustomFieldsInput>;
 };
 
 export type UpdatePromotionInput = {

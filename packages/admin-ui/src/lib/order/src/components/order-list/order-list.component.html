@@ -103,12 +103,14 @@
     <vdr-dt-column>{{ 'order.customer' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.state' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.placed-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.time-left' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.shipping' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-order="item">
-        <td class="left align-middle">{{ order.code }}</td>
+        <td class="left align-middle">
+            <vdr-order-label [order]="order"></vdr-order-label>
+        </td>
         <td class="left align-middle">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
         </td>
@@ -116,17 +118,22 @@
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
         </td>
         <td class="left align-middle">{{ order.totalWithTax | localeCurrency: order.currencyCode }}</td>
-        <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
-        <td class="left align-middle">{{ order.orderPlacedAt | localeDate: 'medium' }}</td>
+        <td class="left align-middle">
+            {{ formatTime(order.orderPlacedAt) }}<br />{{ formatDate(order.orderPlacedAt) }}
+        </td>
+        <td class="left align-middle" style="font-size: 16px">
+            <vdr-cd-timer [autoStart] [placedTime]="order.orderPlacedAt" format="ms"></vdr-cd-timer>
+        </td>
         <td class="left align-middle">{{ getShippingNames(order) }}</td>
         <td class="right align-middle">
             <vdr-table-row-action
+                [large]="true"
                 *ngIf="order.nextStates.length > 0"
                 iconShape="step-forward-2"
                 [label]="getNextState(order)"
                 (click)="toNextState(order)"
             ></vdr-table-row-action>
-            <vdr-table-row-action
+            <!-- <vdr-table-row-action
                 iconShape="shopping-cart"
                 [label]="'common.open' | translate"
                 [linkTo]="
@@ -136,7 +143,7 @@
                         ? ['./draft', order.id]
                         : ['./', order.id]
                 "
-            ></vdr-table-row-action>
+            ></vdr-table-row-action> -->
         </td>
     </ng-template>
 </vdr-data-table>

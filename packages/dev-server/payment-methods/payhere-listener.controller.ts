@@ -49,6 +49,7 @@ export class PayhereController {
     @Post()
     async settlePayment(@Ctx() ctx: RequestContext) {
         const body = ctx.req?.body as PayhereResponseDTO;
+        console.log(body);
         const {
             merchant_id,
             order_id,
@@ -134,7 +135,8 @@ export class PayhereController {
         await this.orderService.addSurchargeToOrder(ctx, order.id, {
             description: 'Payhere Fee',
             sku: 'payhere-fee',
-            price: order.totalWithTax * 0.03,
+            listPrice: Math.floor(order.totalWithTax * 0.03),
+            listPriceIncludesTax: true,
         });
         return this.orderService.transitionOrderIfTotalIsCovered(ctx, order);
     }

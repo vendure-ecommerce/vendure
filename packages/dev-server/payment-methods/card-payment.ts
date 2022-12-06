@@ -12,32 +12,25 @@ import {
  * payment provider, who provide a Node SDK which we use to
  * interact with their APIs.
  */
-const cashPaymentHandler = new PaymentMethodHandler({
-    code: 'cash',
+const cardPaymentHandler = new PaymentMethodHandler({
+    code: 'card',
     description: [
         {
             languageCode: LanguageCode.en,
-            value: 'Cash Payment',
+            value: 'Card Payment',
         },
     ],
     args: {},
 
     /** This is called when the `addPaymentToOrder` mutation is executed */
     createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
-        try {
-            return {
-                amount: order.total,
-                state: 'Authorized' as const,
-            };
-        } catch (err: any) {
-            return {
-                amount: order.total,
-                state: 'Declined' as const,
-                metadata: {
-                    errorMessage: err.message,
-                },
-            };
-        }
+        return {
+            amount: order.total,
+            state: 'Declined' as const,
+            metadata: {
+                errorMessage: 'This endpoint should not be called!',
+            },
+        };
     },
 
     /** This is called when the `settlePayment` mutation is executed */
@@ -47,14 +40,10 @@ const cashPaymentHandler = new PaymentMethodHandler({
         payment,
         args,
     ): Promise<SettlePaymentResult | SettlePaymentErrorResult> => {
-        try {
-            return { success: true };
-        } catch (err: any) {
-            return {
-                success: false,
-                errorMessage: err.message,
-            };
-        }
+        return {
+            success: false,
+            errorMessage: 'This endpoint should not be called!',
+        };
     },
 });
-export default cashPaymentHandler;
+export default cardPaymentHandler;

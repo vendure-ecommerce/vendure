@@ -13,6 +13,7 @@
 }
 
 table.table {
+    color: black;
     max-width: 100vw;
     overflow-x: auto;
 }
@@ -25,8 +26,9 @@ table.no-select {
     height: 5rem;
 }
 
-.order-status-PaymentAuthorized {
-    background: rgb(236, 126, 255);
+.order-status-PaymentAuthorized,
+.order-status-PaymentSettled {
+    background: rgb(255, 171, 143);
 }
 
 .order-status-Received {
@@ -70,26 +72,26 @@ thead.items-selected tr th {
     margin-top: 6px;
 }
 
-.tall-row{
+.tall-row {
     height: 5rem;
 }
 
-.order-status-PaymentAuthorized{
+.order-status-PaymentAuthorized {
     background: rgb(236, 126, 255);
 }
 
-.order-status-Received{
+.order-status-Received {
     background: rgb(235, 187, 97);
 }
 
-.order-status-Processing{
+.order-status-Processing {
     background: rgb(255, 255, 202);
 }
 
-.order-status-ReadyForPickup{
+.order-status-ReadyForPickup {
     background: rgb(121, 240, 135);
 }
 
-.order-status-Finished{
+.order-status-Finished {
     background: rgb(110, 190, 246);
 }

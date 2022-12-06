@@ -1,6 +1,6 @@
 import { customAlphabet } from 'nanoid';
 
-const nanoid = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 16);
+const nanoid = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 7);
 
 /**
  * Generates a random, human-readable string of numbers and upper-case letters

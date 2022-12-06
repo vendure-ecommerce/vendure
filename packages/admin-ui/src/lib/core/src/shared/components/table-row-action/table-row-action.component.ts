@@ -9,6 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
     styleUrls: ['./table-row-action.component.scss'],
 })
 export class TableRowActionComponent {
+    @Input() large = false;
     @Input() linkTo: any[];
     @Input() label: string;
     @Input() iconShape: string;

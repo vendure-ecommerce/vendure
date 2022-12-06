@@ -23,6 +23,7 @@ import {
 import { AddressFormComponent } from './components/address-form/address-form.component';
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
+import { CdTimerComponent } from './components/angular-cd-timer/angular-cd-timer.component';
 import { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
 import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
@@ -68,6 +69,7 @@ import { DialogComponentOutletComponent } from './components/modal-dialog/dialog
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
 import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
+import { OrderLabelComponent } from './components/order-label/order-label.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 import { ProductMultiSelectorDialogComponent } from './components/product-multi-selector-dialog/product-multi-selector-dialog.component';
@@ -165,6 +167,8 @@ const DECLARATIONS = [
     ChipComponent,
     CurrencyInputComponent,
     LocaleCurrencyNamePipe,
+    OrderLabelComponent,
+    CdTimerComponent,
     CustomerLabelComponent,
     CustomFieldControlComponent,
     DataTableComponent,

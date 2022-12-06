@@ -16,6 +16,7 @@ import {
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
+import dayjs from 'dayjs';
 import { EMPTY, merge, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs/operators';
 
@@ -143,7 +144,13 @@ export class OrderListComponent
         this.setItemsPerPage(50); // default to 50
         this.refreshInterval = setInterval(() => {
             this.refresh();
-        }, 10000);
+        }, 15000);
+    }
+    formatTime(date: Date) {
+        return dayjs(date).format('hh:mm A');
+    }
+    formatDate(date: Date) {
+        return dayjs(date).format('DD/MMM');
     }
     getNextState(order: Order) {
         const settledCashPayment = order.payments?.filter(
@@ -153,16 +160,13 @@ export class OrderListComponent
             if (settledCashPayment) {
                 return 'Completed';
             } else {
-                return 'Received';
+                return 'Processing';
             }
         }
-        if (order.state === 'Received') {
-            return 'Processing';
-        }
         if (order.state === 'Processing') {
-            return 'ReadyToPickup';
+            return 'ReadyForPickup';
         }
-        if (order.state === 'ReadyToPickup') {
+        if (order.state === 'ReadyForPickup') {
             if (order.shippingLines[0].shippingMethod.code === 'delivery') {
                 return 'Delivering';
             }
@@ -180,8 +184,9 @@ export class OrderListComponent
             }
         }
 
-        return 'Received';
+        return 'Processing';
     }
+
     toNextState(order: Order) {
         return this.modalService
             .dialog({

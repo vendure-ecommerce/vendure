@@ -79,6 +79,7 @@ export class ProductService {
         options?: ListQueryOptions<Product>,
         relations?: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
+        console.log(ctx.channel);
         return this.listQueryBuilder
             .build(Product, options, {
                 relations: relations || this.relations,

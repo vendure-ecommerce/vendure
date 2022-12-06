@@ -19,6 +19,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { CustomerChannelsPlugin } from './customer-channels/cutomer-channels.module';
 import { nanoid } from './nanoid';
+import cardPaymentHandler from './payment-methods/card-payment';
 import cashPaymentHandler from './payment-methods/cash-payment';
 import { RestPlugin } from './payment-methods/payhere-listener.controller';
 
@@ -59,10 +60,16 @@ export const devConfig: VendureConfig = {
         ...getDbConfig(),
     },
     paymentOptions: {
-        paymentMethodHandlers: [cashPaymentHandler],
+        paymentMethodHandlers: [cashPaymentHandler, cardPaymentHandler],
     },
     customFields: {
         Channel: [
+            {
+                name: 'isOpen',
+                type: 'boolean',
+                defaultValue: true,
+                public: true,
+            },
             {
                 name: 'latitude',
                 type: 'float',
@@ -87,6 +94,22 @@ export const devConfig: VendureConfig = {
                 public: true,
                 defaultValue:
                     'https://www.google.com/maps/dir/?api=1&destination=Crepe+Runner+-+Mount+Lavinia',
+            },
+        ],
+        ProductVariant: [
+            {
+                name: 'pre_discount_price',
+                type: 'int',
+                nullable: true,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Pre discount price (this price will be slashed out in the UI)',
+                    },
+                ],
+                ui: {
+                    component: 'currency-form-input',
+                },
             },
         ],
         Address: [

@@ -112,3 +112,8 @@ type NotVerifiedError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
 }
+
+type ShopClosedError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
