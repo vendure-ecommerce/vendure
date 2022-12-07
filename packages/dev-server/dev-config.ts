@@ -154,18 +154,15 @@ export const devConfig: VendureConfig = {
             {
                 name: 'isReferralCompleted',
                 type: 'boolean',
-                internal: true,
-                nullable: true,
-            },
-            {
-                name: 'referralCode',
-                type: 'string',
+                public: false,
+                readonly: true,
                 nullable: true,
             },
             {
                 name: 'loyaltyPoints',
                 type: 'int',
                 readonly: true,
+                public: true,
                 defaultValue: 0,
                 nullable: false,
             },

@@ -1319,6 +1319,7 @@ export type CustomerOrdersArgs = {
 
 export type CustomerCustomFields = {
   __typename?: 'CustomerCustomFields';
+  isReferralCompleted?: Maybe<Scalars['Boolean']>;
   referralCode?: Maybe<Scalars['String']>;
   loyaltyPoints?: Maybe<Scalars['Int']>;
 };
@@ -1333,6 +1334,7 @@ export type CustomerFilterParameter = {
   lastName?: Maybe<StringOperators>;
   phoneNumber?: Maybe<StringOperators>;
   emailAddress?: Maybe<StringOperators>;
+  isReferralCompleted?: Maybe<BooleanOperators>;
   referralCode?: Maybe<StringOperators>;
   loyaltyPoints?: Maybe<NumberOperators>;
 };
@@ -1413,6 +1415,7 @@ export type CustomerSortParameter = {
   lastName?: Maybe<SortOrder>;
   phoneNumber?: Maybe<SortOrder>;
   emailAddress?: Maybe<SortOrder>;
+  isReferralCompleted?: Maybe<SortOrder>;
   referralCode?: Maybe<SortOrder>;
   loyaltyPoints?: Maybe<SortOrder>;
 };

@@ -6,6 +6,7 @@ export class CustomAddressFields {
     email: string;
     phone: string;
 }
+
 export class CustomAdministratorFields {}
 export class CustomAssetFields {}
 export class CustomChannelFields {
@@ -13,6 +14,7 @@ export class CustomChannelFields {
     latitude: number;
     location: string;
     name: string;
+    isOpen: boolean;
 }
 export class CustomCollectionFields {}
 export class CustomCollectionFieldsTranslation {}

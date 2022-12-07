@@ -61,7 +61,7 @@ export class DefaultOrderByCodeAccessStrategy implements OrderByCodeAccessStrate
         // For guest Customers, allow access to the Order for the following
         // time period
         const anonymousAccessPermitted = () => {
-            const anonymousAccessLimit = ms(this.anonymousAccessDuration);
+            const anonymousAccessLimit: number = ms(this.anonymousAccessDuration);
             const orderPlaced = order.orderPlacedAt ? +order.orderPlacedAt : 0;
             const now = Date.now();
             return now - orderPlaced < anonymousAccessLimit;

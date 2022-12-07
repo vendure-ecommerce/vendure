@@ -914,13 +914,13 @@ export class OrderService {
                     id: order.customer.id,
                     customFields: {
                         isReferralCompleted: true,
-                    },
+                    } as any,
                 });
                 this.customerService.update(ctx, {
                     id: referringCustomer.id,
                     customFields: {
                         loyaltyPoints: order.customer.customFields.loyaltyPoints + 10, // Where should it come from?
-                    },
+                    } as any,
                 });
             }
         }
