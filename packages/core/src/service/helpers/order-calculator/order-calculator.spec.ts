@@ -155,6 +155,37 @@ describe('OrderCalculator', () => {
             expect(order.totalWithTax).toBe(order.subTotalWithTax + 500);
             assertOrderTotalsAddUp(order);
         });
+
+        it('multiple shipping lines', async () => {
+            const ctx = createRequestContext({ pricesIncludeTax: false });
+            const order = createOrder({
+                ctx,
+                lines: [
+                    {
+                        listPrice: 100,
+                        taxCategory: taxCategoryStandard,
+                        quantity: 1,
+                    },
+                ],
+            });
+            order.shippingLines = [
+                new ShippingLine({
+                    shippingMethodId: mockShippingMethodId,
+                }),
+                new ShippingLine({
+                    shippingMethodId: mockShippingMethodId,
+                }),
+            ];
+            await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+            expect(order.shippingLines.length).toBe(2);
+            expect(order.subTotal).toBe(100);
+            expect(order.shipping).toBe(1000);
+            expect(order.shippingWithTax).toBe(1200);
+            expect(order.total).toBe(order.subTotal + 1000);
+            expect(order.totalWithTax).toBe(order.subTotalWithTax + 1200);
+            assertOrderTotalsAddUp(order);
+        });
     });
 
     describe('promotions', () => {
