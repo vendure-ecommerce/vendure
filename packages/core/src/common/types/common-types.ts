@@ -86,7 +86,7 @@ export type SortOrder = 'ASC' | 'DESC';
 
 // prettier-ignore
 export type PrimitiveFields<T extends VendureEntity> = {
-    [K in keyof T]: T[K] extends LocaleString | number | string | boolean | Date ? K : never
+    [K in keyof T]: NonNullable<T[K]> extends LocaleString | number | string | boolean | Date ? K : never
 }[keyof T];
 
 // prettier-ignore
