@@ -154,8 +154,12 @@ export const devConfig: VendureConfig = {
             {
                 name: 'isReferralCompleted',
                 type: 'boolean',
-                public: false,
-                readonly: true,
+                internal: true,
+                nullable: true,
+            },
+            {
+                name: 'referralCode',
+                type: 'string',
                 nullable: true,
             },
             {
