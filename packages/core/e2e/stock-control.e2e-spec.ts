@@ -4,7 +4,6 @@ import {
     manualFulfillmentHandler,
     mergeConfig,
     Order,
-    OrderPlacedStrategy,
     OrderState,
     RequestContext,
 } from '@vendure/core';
@@ -28,28 +27,36 @@ import {
     GlobalFlag,
     SettlePayment,
     StockMovementType,
-    TransitFulfillment,
     TransitionFulfillmentToState,
     UpdateGlobalSettings,
     UpdateProductVariantInput,
     UpdateProductVariants,
     UpdateStock,
+    UpdateStockMutation,
+    UpdateStockMutationVariables,
     VariantWithStockFragment,
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
     AddPaymentToOrder,
     AdjustItemQuantity,
     ErrorCode,
     GetActiveOrder,
     GetProductStockLevel,
     GetShippingMethods,
+    GetShippingMethodsQuery,
     PaymentInput,
     SetShippingAddress,
+    SetShippingAddressMutation,
+    SetShippingAddressMutationVariables,
     SetShippingMethod,
     TestOrderFragmentFragment,
     TestOrderWithPaymentsFragment,
     TransitionToState,
+    TransitionToStateMutation,
+    TransitionToStateMutationVariables,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
@@ -1401,6 +1408,98 @@ describe('Stock control', () => {
 
             expect(variant2_2.stockAllocated).toBe(0);
             expect(variant2_2.stockOnHand).toBe(1);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/1738
+    describe('going out of stock after being added to order', () => {
+        const variantId = 'T_1';
+
+        beforeAll(async () => {
+            const { updateProductVariants } = await adminClient.query<
+                UpdateStockMutation,
+                UpdateStockMutationVariables
+            >(UPDATE_STOCK_ON_HAND, {
+                input: [
+                    {
+                        id: variantId,
+                        stockOnHand: 1,
+                        trackInventory: GlobalFlag.TRUE,
+                        useGlobalOutOfStockThreshold: false,
+                        outOfStockThreshold: 0,
+                    },
+                ] as UpdateProductVariantInput[],
+            });
+        });
+
+        it('prevents checkout if no saleable stock', async () => {
+            // First customer adds to order
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            const { addItemToOrder: add1 } = await shopClient.query<
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: variantId,
+                quantity: 1,
+            });
+            orderGuard.assertSuccess(add1);
+
+            // Second customer adds to order
+            await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
+            const { addItemToOrder: add2 } = await shopClient.query<
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: variantId,
+                quantity: 1,
+            });
+            orderGuard.assertSuccess(add2);
+
+            // first customer can check out
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            await proceedToArrangingPayment(shopClient);
+            const result1 = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            orderGuard.assertSuccess(result1);
+
+            const product1 = await getProductWithStockMovement('T_1');
+            const variant = product1?.variants.find(v => v.id === variantId);
+            expect(variant!.stockOnHand).toBe(1);
+            expect(variant!.stockAllocated).toBe(1);
+
+            // second customer CANNOT check out
+            await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
+            await shopClient.query<SetShippingAddressMutation, SetShippingAddressMutationVariables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        fullName: 'name',
+                        streetLine1: '12 the street',
+                        city: 'foo',
+                        postalCode: '123456',
+                        countryCode: 'US',
+                    },
+                },
+            );
+
+            const { eligibleShippingMethods } = await shopClient.query<GetShippingMethodsQuery>(
+                GET_ELIGIBLE_SHIPPING_METHODS,
+            );
+            const { setOrderShippingMethod } = await shopClient.query<
+                SetShippingMethod.Mutation,
+                SetShippingMethod.Variables
+            >(SET_SHIPPING_METHOD, {
+                id: eligibleShippingMethods[1].id,
+            });
+            orderGuard.assertSuccess(setOrderShippingMethod);
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToStateMutation,
+                TransitionToStateMutationVariables
+            >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
+            orderGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.transitionError).toBe(
+                'Cannot transition Order to the "ArrangingPayment" state due to insufficient stock of Laptop 13 inch 8GB',
+            );
         });
     });
 });

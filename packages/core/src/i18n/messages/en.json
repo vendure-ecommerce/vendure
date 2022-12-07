@@ -108,6 +108,7 @@
     "cannot-transition-order-from-to": "Cannot transition Order from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-no-additional-payments-needed": "Cannot transition Order to the \"ArrangingAdditionalPayment\" state as no additional payments are needed",
     "cannot-transition-to-shipping-when-order-is-empty": "Cannot transition Order to the \"ArrangingShipping\" state when it is empty",
+    "cannot-transition-to-payment-due-to-insufficient-stock": "Cannot transition Order to the \"ArrangingPayment\" state due to insufficient stock of { productVariantNames }",
     "cannot-transition-to-payment-without-customer": "Cannot transition Order to the \"ArrangingPayment\" state without Customer details",
     "cannot-transition-to-payment-without-shipping-method": "Cannot transition Order to the \"ArrangingPayment\" state without a ShippingMethod",
     "cannot-transition-unless-all-cancelled": "Cannot transition Order to the \"Cancelled\" state unless all OrderItems are cancelled",
