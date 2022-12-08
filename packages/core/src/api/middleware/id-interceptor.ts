@@ -1,5 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { IdOperators } from '@vendure/common/lib/generated-types';
 import { VariableValues } from 'apollo-server-core';
 import { GraphQLNamedType, GraphQLSchema, OperationDefinitionNode } from 'graphql';
 import { Observable } from 'rxjs';
@@ -55,8 +56,14 @@ export class IdInterceptor implements NestInterceptor {
     ) {
         const typeTree = graphqlValueTransformer.getInputTypeTree(definition);
         graphqlValueTransformer.transformValues(typeTree, variables, (value, type) => {
-            const isIdType = type && type.name === 'ID';
-            return isIdType ? this.idCodecService.decode(value) : value;
+            if (type?.name === 'ID') {
+                return this.idCodecService.decode(value);
+            }
+            if (type?.name === 'IDOperators') {
+                const keys: Array<keyof IdOperators> = ['eq', 'notEq', 'in', 'notIn'];
+                return this.idCodecService.decode(value, keys);
+            }
+            return value;
         });
         return variables;
     }

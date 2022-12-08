@@ -355,7 +355,7 @@ describe('ListQueryBuilder', () => {
                 options: {
                     filter: {
                         ownerId: {
-                            eq: '13',
+                            eq: 'T_13',
                         },
                     },
                 },
@@ -369,7 +369,7 @@ describe('ListQueryBuilder', () => {
                 options: {
                     filter: {
                         ownerId: {
-                            notEq: '13',
+                            notEq: 'T_13',
                         },
                     },
                 },
@@ -383,7 +383,7 @@ describe('ListQueryBuilder', () => {
                 options: {
                     filter: {
                         ownerId: {
-                            in: ['10', '15'],
+                            in: ['T_10', 'T_15'],
                         },
                     },
                 },
@@ -411,7 +411,7 @@ describe('ListQueryBuilder', () => {
                 options: {
                     filter: {
                         ownerId: {
-                            notIn: ['10', '15'],
+                            notIn: ['T_10', 'T_15'],
                         },
                     },
                 },
