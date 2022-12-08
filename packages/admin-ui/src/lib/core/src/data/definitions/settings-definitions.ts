@@ -337,6 +337,9 @@ export const CHANNEL_FRAGMENT = gql`
             id
             name
         }
+        customFields {
+            isOpen
+        }
     }
 `;
 

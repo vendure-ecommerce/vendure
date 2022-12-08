@@ -1,10 +1,24 @@
 <clr-main-container>
-    <clr-header>
+    <clr-header [ngStyle]="{ 'background' : openCloseToggle.checked ? '#47e347' : '#ff3535' }">
         <div class="branding">
             <a [routerLink]="['/']"><img src="assets/logo-75px.png" class="logo" /><span class="wordmark" *ngIf="!hideVendureBranding">vendure</span></a>
         </div>
         <div class="header-nav"></div>
         <div class="header-actions">
+            <clr-toggle-wrapper>
+                <input
+                    #openCloseToggle
+                    type="checkbox"
+                    (change)="toggleChannelOpenClosedSwitch(openCloseToggle.checked)"
+                    [checked]="isChannelOpen$ | async"
+                    clrToggle
+                    name="enabled"
+                />
+                <label class="visible-toggle">
+                    <ng-container *ngIf="openCloseToggle.checked; else closed"><span style="color: white">Open</span></ng-container>
+                    <ng-template #closed><span style="color: white">Closed</span></ng-template>
+                </label>
+            </clr-toggle-wrapper>
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
             <vdr-user-menu [userName]="userName$ | async"
                            [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"

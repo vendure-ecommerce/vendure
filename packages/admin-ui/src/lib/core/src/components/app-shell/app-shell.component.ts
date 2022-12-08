@@ -4,7 +4,7 @@ import { EMPTY, Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
 import { getAppConfig } from '../../app.config';
-import { LanguageCode } from '../../common/generated-types';
+import { LanguageCode, UpdateChannelInput } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { AuthService } from '../../providers/auth/auth.service';
 import { I18nService } from '../../providers/i18n/i18n.service';
@@ -22,6 +22,7 @@ export class AppShellComponent implements OnInit {
     uiLanguageAndLocale$: Observable<[LanguageCode, string | undefined]>;
     availableLanguages: LanguageCode[] = [];
     hideVendureBranding = getAppConfig().hideVendureBranding;
+    isChannelOpen$: Observable<boolean>;
 
     constructor(
         private authService: AuthService,
@@ -40,6 +41,9 @@ export class AppShellComponent implements OnInit {
             .uiState()
             .stream$.pipe(map(({ uiState }) => [uiState.language, uiState.locale ?? undefined]));
         this.availableLanguages = this.i18nService.availableLanguages;
+        this.isChannelOpen$ = this.dataService.settings
+            .getActiveChannel()
+            .single$.pipe(map((data: any) => data.activeChannel.customFields.isOpen));
     }
 
     selectUiLanguage() {
@@ -68,6 +72,21 @@ export class AppShellComponent implements OnInit {
                     this.localStorageService.set('uiLocale', result.setUiLocale ?? undefined);
                 }
             });
+    }
+
+    toggleChannelOpenClosedSwitch(isOpen: boolean) {
+        const activeChannelId$ = this.dataService.client
+            .userStatus()
+            .mapSingle(({ userStatus }) => userStatus.activeChannelId);
+        activeChannelId$.subscribe(activeChannelId => {
+            const input = {
+                id: activeChannelId,
+                customFields: {
+                    isOpen,
+                },
+            } as UpdateChannelInput;
+            this.dataService.settings.updateChannel(input).subscribe();
+        });
     }
 
     logOut() {
