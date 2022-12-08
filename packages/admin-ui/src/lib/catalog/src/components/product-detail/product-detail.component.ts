@@ -10,7 +10,6 @@ import {
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
-    FacetValueFragment,
     findTranslation,
     getChannelCodeFromUserStatus,
     GetProductWithVariants,
@@ -40,7 +39,6 @@ import { BehaviorSubject, combineLatest, concat, EMPTY, from, merge, Observable 
 import {
     debounceTime,
     distinctUntilChanged,
-    filter,
     map,
     mergeMap,
     shareReplay,
@@ -52,7 +50,6 @@ import {
     take,
     takeUntil,
     tap,
-    withLatestFrom,
 } from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
@@ -164,24 +161,17 @@ export class ProductDetailComponent
     ngOnInit() {
         this.init();
         this.product$ = this.entity$;
-        this.totalItems$ = this.product$.pipe(map(product => product.variantList.totalItems));
-        this.paginationConfig$ = combineLatest(this.totalItems$, this.itemsPerPage$, this.currentPage$).pipe(
-            map(([totalItems, itemsPerPage, currentPage]) => ({
-                totalItems,
-                itemsPerPage,
-                currentPage,
-            })),
-        );
-        const variants$ = this.product$.pipe(map(product => product.variantList.items));
         const filterTerm$ = this.filterInput.valueChanges.pipe(
             startWith(''),
             debounceTime(200),
             shareReplay(),
+            tap(() => this.currentPage$.next(1)),
         );
         const initialVariants$ = this.product$.pipe(map(p => p.variantList.items));
-        const updatedVariants$ = combineLatest(filterTerm$, this.currentPage$, this.itemsPerPage$).pipe(
+        const variantsList$ = combineLatest(filterTerm$, this.currentPage$, this.itemsPerPage$).pipe(
             skipUntil(initialVariants$),
             skip(1),
+            debounceTime(100),
             switchMap(([term, currentPage, itemsPerPage]) => {
                 return this.dataService.product
                     .getProductVariants(
@@ -195,16 +185,28 @@ export class ProductDetailComponent
                         },
                         this.id,
                     )
-                    .mapStream(({ productVariants }) => productVariants.items);
+                    .mapStream(({ productVariants }) => productVariants);
             }),
             shareReplay({ bufferSize: 1, refCount: true }),
         );
+        const updatedVariants$ = variantsList$.pipe(map(result => result.items));
         this.variants$ = merge(initialVariants$, updatedVariants$).pipe(
             tap(variants => {
                 for (const variant of variants) {
                     this.productVariantMap.set(variant.id, variant);
                 }
             }),
+        );
+        this.totalItems$ = merge(
+            this.product$.pipe(map(product => product.variantList.totalItems)),
+            variantsList$.pipe(map(result => result.totalItems)),
+        );
+        this.paginationConfig$ = combineLatest(this.totalItems$, this.itemsPerPage$, this.currentPage$).pipe(
+            map(([totalItems, itemsPerPage, currentPage]) => ({
+                totalItems,
+                itemsPerPage,
+                currentPage,
+            })),
         );
         this.taxCategories$ = this.productDetailService.getTaxCategories().pipe(takeUntil(this.destroy$));
         this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
