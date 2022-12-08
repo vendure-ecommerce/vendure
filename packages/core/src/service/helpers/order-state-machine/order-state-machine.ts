@@ -19,6 +19,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { OrderPlacedEvent } from '../../../event-bus/events/order-placed-event';
 import { EventBus } from '../../../event-bus/index';
 import { HistoryService } from '../../services/history.service';
+import { ProductVariantService } from '../../services/product-variant.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import {
@@ -45,6 +46,7 @@ export class OrderStateMachine {
         private historyService: HistoryService,
         private promotionService: PromotionService,
         private eventBus: EventBus,
+        private productVariantService: ProductVariantService,
     ) {
         this.config = this.initConfig();
     }
@@ -131,6 +133,21 @@ export class OrderStateMachine {
             }
             if (!data.order.shippingLines || data.order.shippingLines.length === 0) {
                 return `message.cannot-transition-to-payment-without-shipping-method`;
+            }
+            const variantsWithInsufficientSaleableStock: ProductVariant[] = [];
+            for (const line of data.order.lines) {
+                const availableStock = await this.productVariantService.getSaleableStockLevel(
+                    data.ctx,
+                    line.productVariant,
+                );
+                if (line.quantity > availableStock) {
+                    variantsWithInsufficientSaleableStock.push(line.productVariant);
+                }
+            }
+            if (variantsWithInsufficientSaleableStock.length) {
+                return data.ctx.translate('message.cannot-transition-to-payment-due-to-insufficient-stock', {
+                    productVariantNames: variantsWithInsufficientSaleableStock.map(v => v.name).join(', '),
+                });
             }
         }
         if (toState === 'PaymentAuthorized') {

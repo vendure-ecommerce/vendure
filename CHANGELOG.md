@@ -1,3 +1,18 @@
+## <small>1.9.1 (2022-12-08)</small>
+
+
+#### Fixes
+
+* **admin-ui** Attribution via utm parameters for Unsplash production approval (#1917) ([d3c76d3](https://github.com/vendure-ecommerce/vendure/commit/d3c76d3)), closes [#1917](https://github.com/vendure-ecommerce/vendure/issues/1917)
+* **admin-ui** Fix bug in setting variant assets ([ed988d3](https://github.com/vendure-ecommerce/vendure/commit/ed988d3))
+* **admin-ui** Update variant pagination controls when filtering ([0a4f330](https://github.com/vendure-ecommerce/vendure/commit/0a4f330))
+* **core** Call lifecycle hooks on ChangedPriceHandlingStrategy ([75a695e](https://github.com/vendure-ecommerce/vendure/commit/75a695e)), closes [#1916](https://github.com/vendure-ecommerce/vendure/issues/1916)
+* **core** Correctly decode list query ID operators ([9f9b0e6](https://github.com/vendure-ecommerce/vendure/commit/9f9b0e6)), closes [#1922](https://github.com/vendure-ecommerce/vendure/issues/1922)
+* **core** Fix postgres error when filtering list with empty set ([10c05cf](https://github.com/vendure-ecommerce/vendure/commit/10c05cf))
+* **core** ListQueryOptions type detects nullable fields on entity ([d6e5696](https://github.com/vendure-ecommerce/vendure/commit/d6e5696)), closes [#1834](https://github.com/vendure-ecommerce/vendure/issues/1834)
+* **core** Order calculator supports multiple shipping lines ([06e2be2](https://github.com/vendure-ecommerce/vendure/commit/06e2be2)), closes [#1897](https://github.com/vendure-ecommerce/vendure/issues/1897)
+* **core** Prevent out of stock variants from being purchased ([eb3964c](https://github.com/vendure-ecommerce/vendure/commit/eb3964c)), closes [#1738](https://github.com/vendure-ecommerce/vendure/issues/1738)
+
 ## 1.9.0 (2022-12-01)
 
 

@@ -61,10 +61,10 @@ export class LoginComponent {
         const user: any = (res as any).user;
         const location: any = (res as any).location;
 
-        this.imageUrl = res.urls.regular;
+        this.imageUrl = res.urls.regular + '?utm_source=Vendure+Login+Image&utm_medium=referral';
         this.imageCreator = user.name;
         this.imageLocation = location.name;
-        this.imageCreatorUrl = user.links.html;
+        this.imageCreatorUrl = user.links.html + '?utm_source=Vendure+Login+Image&utm_medium=referral';
         this.imageUnsplashUrl = res.links.html;
     }
 

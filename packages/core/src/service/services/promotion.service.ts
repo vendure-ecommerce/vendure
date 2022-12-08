@@ -165,12 +165,7 @@ export class PromotionService {
         }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
-        await this.customFieldRelationService.updateRelations(
-            ctx,
-            Promotion,
-            input,
-            updatedPromotion,
-        );
+        await this.customFieldRelationService.updateRelations(ctx, Promotion, input, updatedPromotion);
         this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }

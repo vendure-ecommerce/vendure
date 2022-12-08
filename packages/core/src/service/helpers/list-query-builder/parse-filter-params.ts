@@ -87,7 +87,6 @@ function buildWhereCondition(
     argIndex: number,
     dbType: ConnectionOptions['type'],
 ): WhereCondition {
-    const emptySetPlaceholder = '___empty_set_placeholder___';
     switch (operator) {
         case 'eq':
             return {
@@ -116,22 +115,34 @@ function buildWhereCondition(
                 parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
             };
         }
-        case 'in':
-            return {
-                clause: `${fieldName} IN (:...arg${argIndex})`,
-                parameters: {
-                    [`arg${argIndex}`]:
-                        Array.isArray(operand) && operand.length ? operand : [emptySetPlaceholder],
-                },
-            };
-        case 'notIn':
-            return {
-                clause: `${fieldName} NOT IN (:...arg${argIndex})`,
-                parameters: {
-                    [`arg${argIndex}`]:
-                        Array.isArray(operand) && operand.length ? operand : [emptySetPlaceholder],
-                },
-            };
+        case 'in': {
+            if (Array.isArray(operand) && operand.length) {
+                return {
+                    clause: `${fieldName} IN (:...arg${argIndex})`,
+                    parameters: { [`arg${argIndex}`]: operand },
+                };
+            } else {
+                // "in" with an empty set should always return nothing
+                return {
+                    clause: '1 = 0',
+                    parameters: {},
+                };
+            }
+        }
+        case 'notIn': {
+            if (Array.isArray(operand) && operand.length) {
+                return {
+                    clause: `${fieldName} NOT IN (:...arg${argIndex})`,
+                    parameters: { [`arg${argIndex}`]: operand },
+                };
+            } else {
+                // "notIn" with an empty set should always return all
+                return {
+                    clause: '1 = 1',
+                    parameters: {},
+                };
+            }
+        }
         case 'regex':
             return {
                 clause: getRegexpClause(fieldName, argIndex, dbType),
