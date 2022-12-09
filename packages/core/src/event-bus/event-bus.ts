@@ -3,7 +3,6 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { Observable, Subject } from 'rxjs';
 import { filter, mergeMap, takeUntil } from 'rxjs/operators';
 import { EntityManager } from 'typeorm';
-
 import { notNullOrUndefined } from '../../../common/lib/shared-utils';
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
