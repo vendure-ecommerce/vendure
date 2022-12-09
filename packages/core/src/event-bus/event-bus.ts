@@ -3,8 +3,8 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { Observable, Subject } from 'rxjs';
 import { filter, mergeMap, takeUntil } from 'rxjs/operators';
 import { EntityManager } from 'typeorm';
-import { notNullOrUndefined } from '../../../common/lib/shared-utils';
 
+import { notNullOrUndefined } from '../../../common/lib/shared-utils';
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { TransactionSubscriber, TransactionSubscriberError } from '../connection/transaction-subscriber';
@@ -81,9 +81,9 @@ export class EventBus implements OnModuleDestroy {
     ofType<T extends VendureEvent>(type: Type<T>): Observable<T> {
         return this.eventStream.asObservable().pipe(
             takeUntil(this.destroy$),
-            filter(e => (e as any).constructor === type),
+            filter(e => e instanceof type),
             mergeMap(event => this.awaitActiveTransactions(event)),
-            filter(notNullOrUndefined)
+            filter(notNullOrUndefined),
         ) as Observable<T>;
     }
 
@@ -119,7 +119,7 @@ export class EventBus implements OnModuleDestroy {
         }
 
         const [key, ctx]: [string, RequestContext] = entry;
-        
+
         const transactionManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
         if (!transactionManager?.queryRunner) {
             return event;
@@ -134,7 +134,7 @@ export class EventBus implements OnModuleDestroy {
             delete (newContext as any)[TRANSACTION_MANAGER_KEY];
 
             // Reassign new context
-            (event as any)[key] = newContext
+            (event as any)[key] = newContext;
 
             return event;
         } catch (e: any) {
