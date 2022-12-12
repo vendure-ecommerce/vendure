@@ -61,6 +61,10 @@ export class EventBus implements OnModuleDestroy {
 
     constructor(private transactionSubscriber: TransactionSubscriber) {}
 
+    get allEvents() {
+        return this.eventStream.asObservable();
+    }
+
     /**
      * @description
      * Publish an event which any subscribers can react to.
