@@ -56,7 +56,7 @@ import { VendureEvent } from './vendure-event';
  * */
 @Injectable()
 export class EventBus implements OnModuleDestroy {
-    eventStream = new Subject<VendureEvent>();
+    private eventStream = new Subject<VendureEvent>();
     private destroy$ = new Subject();
 
     constructor(private transactionSubscriber: TransactionSubscriber) {}
@@ -100,6 +100,24 @@ export class EventBus implements OnModuleDestroy {
         return this.eventStream.asObservable().pipe(
             takeUntil(this.destroy$),
             filter(e => e instanceof type),
+            mergeMap(event => this.awaitActiveTransactions(event)),
+            filter(notNullOrUndefined),
+        ) as Observable<T>;
+    }
+
+    /**
+     * @description
+     * Returns an RxJS Observable stream of events of the given instance including its superclasses.
+     * If the event contains a {@link RequestContext} object, the subscriber
+     * will only get called after any active database transactions are complete.
+     *
+     * This means that the subscriber function can safely access all updated
+     * data related to the event.
+     */
+    filter<T extends VendureEvent>(predicate: (event: VendureEvent) => boolean): Observable<T> {
+        return this.eventStream.asObservable().pipe(
+            takeUntil(this.destroy$),
+            filter(e => predicate(e)),
             mergeMap(event => this.awaitActiveTransactions(event)),
             filter(notNullOrUndefined),
         ) as Observable<T>;
