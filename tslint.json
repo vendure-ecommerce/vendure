@@ -26,7 +26,7 @@
         "member-ordering": false,
         "interface-name": false,
         "array-type": [true, "array-simple"],
-        "no-non-null-assertion": true,
+        "no-non-null-assertion": false,
         "no-empty-interface": false,
         "no-switch-case-fall-through": true,
         "arrow-parens": false,
