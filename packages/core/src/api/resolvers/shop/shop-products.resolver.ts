@@ -48,6 +48,9 @@ export class ShopProductsResolver {
                 enabled: { eq: true },
             },
         };
+        if (ctx.channel.customFields.isOpen === false) {
+            return [] as any;
+        }
         return this.productService.findAll(ctx, options, relations);
     }
 

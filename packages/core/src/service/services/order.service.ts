@@ -127,12 +127,14 @@ import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
 import { FulfillmentService } from './fulfillment.service';
+import { GlobalSettingsService } from './global-settings.service';
 import { HistoryService } from './history.service';
 import { PaymentMethodService } from './payment-method.service';
 import { PaymentService } from './payment.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
+import { ZoneService } from './zone.service';
 
 /**
  * @description
@@ -143,6 +145,7 @@ import { StockMovementService } from './stock-movement.service';
 @Injectable()
 export class OrderService {
     constructor(
+        private globalSettingsService: GlobalSettingsService,
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private productVariantService: ProductVariantService,
@@ -162,6 +165,7 @@ export class OrderService {
         private historyService: HistoryService,
         private promotionService: PromotionService,
         private eventBus: EventBus,
+        private zoneService: ZoneService,
         private channelService: ChannelService,
         private orderModifier: OrderModifier,
         private customFieldRelationService: CustomFieldRelationService,
@@ -699,7 +703,7 @@ export class OrderService {
         if (isGraphQlErrorResult(validationResult)) {
             return validationResult;
         }
-        order.couponCodes.push(couponCode);
+        order.couponCodes = [couponCode];
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId: order.id,
@@ -896,33 +900,48 @@ export class OrderService {
         orderId: ID,
         state: OrderState,
     ): Promise<Order | OrderStateTransitionError> {
+        // console.log(ctx, orderId, state);
         const order = await this.getOrderOrThrow(ctx, orderId);
         // check if this is the transition after which the loyalty points should apply
         if (
             order.customer &&
             !order.customer.customFields.isReferralCompleted &&
             state === 'Completed' &&
-            order.customer &&
             order.customer.customFields.referredBy
         ) {
-            const referringCustomer = await this.customerService.findOneByPhoneNumber(
+            const referringCustomer = await this.customerService.findOne(
                 ctx,
                 order.customer.customFields.referredBy, // phone number
             );
             if (referringCustomer) {
-                this.customerService.update(ctx, {
+                const pointsToAdd = (await this.globalSettingsService.getSettings(ctx)).customFields
+                    .referralLoyaltyPoints;
+                const output = await this.customerService.update(ctx, {
                     id: order.customer.id,
+                    firstName: 'blah blah',
                     customFields: {
                         isReferralCompleted: true,
+                        loyaltyPoints: referringCustomer.customFields.loyaltyPoints + pointsToAdd,
                     } as any,
                 });
-                this.customerService.update(ctx, {
+                await this.customerService.update(ctx, {
                     id: referringCustomer.id,
                     customFields: {
-                        loyaltyPoints: order.customer.customFields.loyaltyPoints + 10, // Where should it come from?
+                        loyaltyPoints: order.customer.customFields.loyaltyPoints + pointsToAdd, // Where should it come from?
                     } as any,
                 });
             }
+        }
+        if (state === 'Completed' && order.customer) {
+            await this.customerService.update(ctx, {
+                id: order.customer.id,
+                customFields: {
+                    loyaltyPoints:
+                        order.customer.customFields.loyaltyPoints +
+                        (order.totalWithTax / 100) *
+                            ctx.channel.defaultTaxZone.customFields.loyaltyPointsPercentage,
+                } as any,
+            });
         }
 
         order.payments = await this.getOrderPayments(ctx, orderId);
@@ -930,12 +949,13 @@ export class OrderService {
         console.log(fromState, state);
         try {
             await this.orderStateMachine.transition(ctx, order, state);
-        } catch (e) {
+        } catch (e: any) {
             console.log(e);
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new OrderStateTransitionError(transitionError, fromState, state);
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
     }

@@ -1,10 +1,11 @@
 <clr-main-container>
-    <clr-header [ngStyle]="{ 'background' : openCloseToggle.checked ? '#47e347' : '#ff3535' }">
+    <clr-header [ngStyle]="{ background: openCloseToggle.checked ? '#02b302' : '#ff3535' }">
         <div class="branding">
-            <a [routerLink]="['/']"><img src="assets/logo-75px.png" class="logo" /><span class="wordmark" *ngIf="!hideVendureBranding">vendure</span></a>
+            <a [routerLink]="['/']"><img src="assets/crepe_runner_logo.png" class="logo" /></a>
         </div>
         <div class="header-nav"></div>
         <div class="header-actions">
+            <!-- <vdr-datetime-picker></vdr-datetime-picker> -->
             <clr-toggle-wrapper>
                 <input
                     #openCloseToggle
@@ -15,16 +16,20 @@
                     name="enabled"
                 />
                 <label class="visible-toggle">
-                    <ng-container *ngIf="openCloseToggle.checked; else closed"><span style="color: white">Open</span></ng-container>
+                    <ng-container *ngIf="openCloseToggle.checked; else closed"
+                        ><span style="color: white">Open</span></ng-container
+                    >
                     <ng-template #closed><span style="color: white">Closed</span></ng-template>
                 </label>
             </clr-toggle-wrapper>
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
-            <vdr-user-menu [userName]="userName$ | async"
-                           [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"
-                           [availableLanguages]="availableLanguages"
-                           (selectUiLanguage)="selectUiLanguage()"
-                           (logOut)="logOut()"></vdr-user-menu>
+            <vdr-user-menu
+                [userName]="userName$ | async"
+                [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"
+                [availableLanguages]="availableLanguages"
+                (selectUiLanguage)="selectUiLanguage()"
+                (logOut)="logOut()"
+            ></vdr-user-menu>
         </div>
     </clr-header>
     <nav class="subnav"><vdr-breadcrumb></vdr-breadcrumb></nav>

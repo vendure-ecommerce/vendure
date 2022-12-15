@@ -26,8 +26,10 @@ export class CdTimerComponent implements AfterViewInit, OnDestroy {
     private hours: number;
     private days: number;
 
+    @Input() scheduledTime?: Date;
     @Input() startTime: number;
     @Input() endTime: number;
+    @Input() processingTime: number;
     @Input() countdown: boolean;
     @Input() autoStart: boolean;
     @Input() maxTimeUnit: string;
@@ -52,13 +54,15 @@ export class CdTimerComponent implements AfterViewInit, OnDestroy {
         const ngContentNode = this.elt.nativeElement.lastChild; // Get last child, defined by user or span
         this.ngContentSchema = ngContentNode ? ngContentNode.nodeValue : '';
         if (this.autoStart === undefined || this.autoStart === true) {
-            const fifteen = 60 * 15;
+            const fifteen = 60 * this.processingTime;
             const dayPlacedTime = dayjs(this.placedTime);
+            const scheduledTime = this.scheduledTime ? dayjs(this.scheduledTime) : undefined;
+            const diffFromScheduledTime = scheduledTime?.diff(Date.now(), 'seconds');
             const diffFromNow = dayPlacedTime.diff(Date.now(), 'seconds');
             // console.log(dayPlacedTime);
-            console.log(diffFromNow);
-            const diff = fifteen + diffFromNow;
-            if (diff < 0) {
+            const diff = diffFromScheduledTime ?? fifteen + diffFromNow;
+            console.log(diff);
+            if (diff < 0 || isNaN(diff)) {
                 this.startTime = 0;
                 this.renderer.setProperty(this.elt.nativeElement, 'innerHTML', 'Time up');
             } else {

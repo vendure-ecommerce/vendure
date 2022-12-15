@@ -11,6 +11,7 @@ import {
     ModalService,
     NotificationService,
     OrderDataService,
+    OrderItem,
     OrderListOptions,
     ServerConfigService,
     SortOrder,
@@ -18,7 +19,16 @@ import {
 import { Order } from '@vendure/common/lib/generated-types';
 import dayjs from 'dayjs';
 import { EMPTY, merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    pairwise,
+    startWith,
+    switchMap,
+    takeUntil,
+} from 'rxjs/operators';
 
 interface OrderFilterConfig {
     active?: boolean;
@@ -41,7 +51,11 @@ export class OrderListComponent
     extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
     implements OnInit, OnDestroy
 {
+    itemList: GetOrderList.Items[] = [];
+    audioElem: HTMLAudioElement;
     refreshInterval: any;
+    processingTime: number;
+    audioOn = false;
     searchControl = new FormControl('');
     searchOrderCodeControl = new FormControl('');
     searchLastNameControl = new FormControl('');
@@ -119,12 +133,15 @@ export class OrderListComponent
         }
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         super.ngOnInit();
         this.activePreset$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('filter') || 'open'),
             distinctUntilChanged(),
         );
+        this.dataService.settings.getActiveChannel().single$.subscribe(channel => {
+            this.processingTime = (channel.activeChannel as any)['customFields']['processingTime'];
+        });
         const searchTerms$ = merge(this.searchControl.valueChanges).pipe(
             filter(value => 2 < value.length || value.length === 0),
             debounceTime(250),
@@ -143,8 +160,49 @@ export class OrderListComponent
         });
         this.setItemsPerPage(50); // default to 50
         this.refreshInterval = setInterval(() => {
+            // const currentList = await this.items$.toPromise();
             this.refresh();
+            // const newList = await this.items$.toPromise();
+            // console.log(newList.length, currentList.length);
         }, 15000);
+
+        this.audioElem = document.getElementById('audio_player') as HTMLAudioElement;
+        this.audioElem.muted = true;
+        this.audioElem.addEventListener(
+            'play',
+            () => {
+                this.audioOn = true;
+                this.audioElem!.addEventListener('ended', () => {
+                    this.audioOn = true;
+                    this.audioElem!.muted = false;
+                });
+            },
+            { once: true },
+        );
+
+        this.audioElem.play().then(() => {
+            this.audioOn = true;
+        });
+        this.items$.subscribe(value => {
+            if (this.itemList.length !== 0 && this.itemList.length < value.length) {
+                this.playAudio();
+            }
+            this.itemList = value;
+            // console.log(previousValue?.length, currentValue?.length);
+            /** Do something */
+        });
+        // await this.refreshInterval();
+    }
+    toggleAudio() {
+        if (!this.audioOn) {
+            this.audioElem.play();
+        } else {
+            this.audioOn = !this.audioOn;
+            this.audioElem!.muted = !this.audioOn;
+        }
+    }
+    playAudio() {
+        this.audioElem?.play();
     }
     formatTime(date: Date) {
         return dayjs(date).format('hh:mm A');
@@ -152,33 +210,30 @@ export class OrderListComponent
     formatDate(date: Date) {
         return dayjs(date).format('DD/MMM');
     }
-    getNextState(order: Order) {
-        const settledCashPayment = order.payments?.filter(
-            p => p.state === 'Settled' && p.method === 'cash',
+
+    getNextState(order: Order, buttonText: boolean = false) {
+        const authorizedCashPayment = order.payments?.filter(
+            p => p.state === 'Authorized' && p.method === 'cash',
         )[0];
-        if (order.state === 'PaymentSettled') {
-            if (settledCashPayment) {
-                return 'Completed';
-            } else {
-                return 'Processing';
-            }
+        if (order.state === 'PaymentSettled' || order.state === 'PaymentAuthorized') {
+            return 'Processing';
         }
         if (order.state === 'Processing') {
-            return 'ReadyForPickup';
+            return buttonText ? 'Ready For Pickup' : 'ReadyForPickup';
         }
         if (order.state === 'ReadyForPickup') {
             if (order.shippingLines[0].shippingMethod.code === 'delivery') {
                 return 'Delivering';
             }
-            if (settledCashPayment) {
-                return 'PaymentSettled';
+            if (authorizedCashPayment) {
+                return buttonText ? 'Collect Cash' : 'Completed';
             } else {
                 return 'Completed';
             }
         }
         if (order.state === 'Delivering') {
-            if (settledCashPayment) {
-                return 'PaymentSettled';
+            if (authorizedCashPayment) {
+                return buttonText ? 'Collect Cash' : 'Completed';
             } else {
                 return 'Completed';
             }
@@ -190,8 +245,8 @@ export class OrderListComponent
     toNextState(order: Order) {
         return this.modalService
             .dialog({
-                title: `Proceed to ${this.getNextState(order)}?`,
-                body: `Are you sure you want to proceed to '${this.getNextState(order)}'?`,
+                title: `Proceed to ${this.getNextState(order, true)}?`,
+                body: `Are you sure you want to proceed to '${this.getNextState(order, true)}'?`,
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
                     { type: 'primary', label: 'Confirm', returnValue: true },
@@ -200,13 +255,13 @@ export class OrderListComponent
             .pipe(
                 switchMap(async res => {
                     if (res) {
-                        if (this.getNextState(order) === 'PaymentSettled') {
-                            const settledCashPayment = order.payments?.filter(
-                                p => p.state === 'Settled' && p.method === 'cash',
+                        if (this.getNextState(order) === 'Completed') {
+                            const authorizedCashPayment = order.payments?.filter(
+                                p => p.state === 'Authorized' && p.method === 'cash',
                             )[0];
-                            if (settledCashPayment) {
-                                await this.dataService.order
-                                    .settlePayment(settledCashPayment?.id.toString())
+                            if (authorizedCashPayment) {
+                                const output = await this.dataService.order
+                                    .settlePayment(authorizedCashPayment?.id.toString())
                                     .toPromise();
                             }
                         }

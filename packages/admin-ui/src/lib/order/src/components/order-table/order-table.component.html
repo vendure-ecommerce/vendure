@@ -4,7 +4,7 @@
             <th></th>
             <th>{{ 'order.product-name' | translate }}</th>
             <th>{{ 'order.product-sku' | translate }}</th>
-            <th>{{ 'order.unit-price' | translate }}</th>
+            <th>Is Cone</th>
             <th>{{ 'order.quantity' | translate }}</th>
             <th>{{ 'order.total' | translate }}</th>
         </tr>
@@ -18,10 +18,10 @@
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
                 <td class="align-middle unit-price">
-                    {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
-                    <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ line.customFields.isCone ? 'Yes' : 'No' }}
+                    <!-- <div class="net-price" [title]="'order.net-price' | translate">
                         {{ line.unitPrice | localeCurrency: order.currencyCode }}
-                    </div>
+                    </div> -->
                 </td>
                 <td class="align-middle quantity">
                     <ng-container *ngIf="!isDraft; else draft">
@@ -73,7 +73,7 @@
                     </ng-container>
                 </td>
             </tr>
-            <ng-container *ngIf="customFieldsForLine[line.id] as customFields">
+            <!-- <ng-container *ngIf="customFieldsForLine[line.id] as customFields">
                 <tr *ngIf="customFields.length">
                     <td colspan="6" class="custom-fields-row">
                         <div class="order-line-custom-fields">
@@ -88,7 +88,7 @@
                         </div>
                     </td>
                 </tr>
-            </ng-container>
+            </ng-container> -->
         </ng-container>
         <tr class="surcharge" *ngFor="let surcharge of order.surcharges">
             <td class="align-middle name left" colspan="2">{{ surcharge.description }}</td>

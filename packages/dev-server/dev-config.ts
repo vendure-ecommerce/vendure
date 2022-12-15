@@ -3,6 +3,7 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
@@ -65,9 +66,41 @@ export const devConfig: VendureConfig = {
     customFields: {
         Channel: [
             {
+                name: 'openingTime',
+                type: 'datetime',
+                public: true,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Opening Time',
+                    },
+                ],
+                ui: {
+                    component: 'time-form-input',
+                },
+            },
+            {
                 name: 'isOpen',
                 type: 'boolean',
                 defaultValue: true,
+                public: true,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Shop is Open',
+                    },
+                ],
+            },
+            {
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Processing Time (minutes)',
+                    },
+                ],
+                name: 'processingTime',
+                type: 'int',
+                defaultValue: 15,
                 public: true,
             },
             {
@@ -94,6 +127,58 @@ export const devConfig: VendureConfig = {
                 public: true,
                 defaultValue:
                     'https://www.google.com/maps/dir/?api=1&destination=Crepe+Runner+-+Mount+Lavinia',
+            },
+        ],
+        Zone: [
+            {
+                name: 'loyaltyPointsLimit',
+                type: 'int',
+                public: true,
+                nullable: false,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+
+                        value: 'Loyalty Points Limit',
+                    },
+                ],
+                defaultValue: 1000,
+            },
+
+            {
+                name: 'loyaltyPointsPercentage',
+                type: 'float',
+                public: false,
+                nullable: false,
+                defaultValue: 0.1,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Loyalty Points Percentage',
+                    },
+                ],
+            },
+        ],
+        GlobalSettings: [
+            {
+                name: 'referralLoyaltyPoints',
+                type: 'int',
+                public: false,
+                nullable: false,
+                defaultValue: 250,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Referral Loyalty Points',
+                    },
+                ],
+            },
+        ],
+        OrderLine: [
+            {
+                name: 'isCone',
+                type: 'boolean',
+                nullable: true,
             },
         ],
         ProductVariant: [
@@ -144,6 +229,19 @@ export const devConfig: VendureConfig = {
                 defaultValue: '0771234567',
             },
         ],
+        Order: [
+            {
+                name: 'scheduledTime',
+                type: 'datetime',
+                nullable: true,
+                label: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Scheduled Time',
+                    },
+                ],
+            },
+        ],
         Customer: [
             {
                 name: 'referredBy',
@@ -171,29 +269,51 @@ export const devConfig: VendureConfig = {
                 nullable: false,
             },
         ],
+        Promotion: [
+            {
+                name: 'image',
+                type: 'relation',
+                entity: Asset,
+                // may be omitted if the entity name matches the GraphQL type name,
+                // which is true for all built-in entities.
+                graphQLType: 'Asset',
+                // Whether to "eagerly" load the relation
+                // See https://typeorm.io/#/eager-and-lazy-relations
+                eager: true,
+            },
+            {
+                name: 'description',
+                type: 'string',
+                nullable: false,
+                defaultValue: '',
+                ui: {
+                    component: 'textarea-form-input',
+                },
+            },
+        ],
         Facet: [
-            {
-                name: 'color1',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Color 1' }],
-                validate: (value: string) => {
-                    const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
-                    if (!regex.test(value)) {
-                        return 'Invalid color code';
-                    }
-                },
-            },
-            {
-                name: 'color2',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Color 2' }],
-                validate: (value: string) => {
-                    const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
-                    if (!regex.test(value)) {
-                        return 'Invalid color code';
-                    }
-                },
-            },
+            // {
+            //     name: 'color1',
+            //     type: 'string',
+            //     label: [{ languageCode: LanguageCode.en, value: 'Color 1' }],
+            //     validate: (value: string) => {
+            //         const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
+            //         if (!regex.test(value)) {
+            //             return 'Invalid color code';
+            //         }
+            //     },
+            // },
+            // {
+            //     name: 'color2',
+            //     type: 'string',
+            //     label: [{ languageCode: LanguageCode.en, value: 'Color 2' }],
+            //     validate: (value: string) => {
+            //         const regex: RegExp = /^#[0-9a-fA-F]{6}$/;
+            //         if (!regex.test(value)) {
+            //             return 'Invalid color code';
+            //         }
+            //     },
+            // },
         ],
         FacetValue: [
             {

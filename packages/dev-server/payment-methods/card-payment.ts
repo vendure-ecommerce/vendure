@@ -25,7 +25,7 @@ const cardPaymentHandler = new PaymentMethodHandler({
     /** This is called when the `addPaymentToOrder` mutation is executed */
     createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Declined' as const,
             metadata: {
                 errorMessage: 'This endpoint should not be called!',

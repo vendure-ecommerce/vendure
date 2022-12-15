@@ -26,12 +26,12 @@ const cashPaymentHandler = new PaymentMethodHandler({
     createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
         try {
             return {
-                amount: order.total,
+                amount: order.totalWithTax,
                 state: 'Authorized' as const,
             };
         } catch (err: any) {
             return {
-                amount: order.total,
+                amount: order.totalWithTax,
                 state: 'Declined' as const,
                 metadata: {
                     errorMessage: err.message,

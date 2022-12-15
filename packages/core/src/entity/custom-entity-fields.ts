@@ -38,7 +38,9 @@ export class CustomFacetValueFields {
 }
 export class CustomFacetValueFieldsTranslation {}
 export class CustomFulfillmentFields {}
-export class CustomGlobalSettingsFields {}
+export class CustomGlobalSettingsFields {
+    referralLoyaltyPoints: number;
+}
 export class CustomOrderFields {}
 export class CustomOrderLineFields {}
 export class CustomPaymentMethodFields {}
@@ -56,4 +58,7 @@ export class CustomShippingMethodFieldsTranslation {}
 export class CustomTaxCategoryFields {}
 export class CustomTaxRateFields {}
 export class CustomUserFields {}
-export class CustomZoneFields {}
+export class CustomZoneFields {
+    loyaltyPointsLimit: number;
+    loyaltyPointsPercentage: number;
+}

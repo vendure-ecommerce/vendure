@@ -1,3 +1,15 @@
+<audio src="assets/notification.mp3" id="audio_player"></audio>
+<clr-toggle-wrapper>
+    <input
+        id="audioToggle"
+        type="checkbox"
+        (change)="toggleAudio()"
+        [checked]="audioOn"
+        clrToggle
+        name="enabled"
+    />
+    <label class="visible-toggle"> <span>Play Notification Sound</span></label></clr-toggle-wrapper
+>
 <vdr-action-bar>
     <vdr-ab-left>
         <div class="search-form">
@@ -122,7 +134,14 @@
             {{ formatTime(order.orderPlacedAt) }}<br />{{ formatDate(order.orderPlacedAt) }}
         </td>
         <td class="left align-middle" style="font-size: 16px">
-            <vdr-cd-timer [autoStart] [placedTime]="order.orderPlacedAt" format="ms"></vdr-cd-timer>
+            <vdr-cd-timer
+                [autoStart]
+                [scheduledTime]="order.customFields.scheduledTime"
+                [processingTime]="processingTime"
+                [placedTime]="order.orderPlacedAt"
+                format="ms"
+                maxTimeUnit="hour"
+            ></vdr-cd-timer>
         </td>
         <td class="left align-middle">{{ getShippingNames(order) }}</td>
         <td class="right align-middle">
@@ -130,7 +149,7 @@
                 [large]="true"
                 *ngIf="order.nextStates.length > 0"
                 iconShape="step-forward-2"
-                [label]="getNextState(order)"
+                [label]="getNextState(order, true)"
                 (click)="toNextState(order)"
             ></vdr-table-row-action>
             <!-- <vdr-table-row-action

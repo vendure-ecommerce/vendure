@@ -1,10 +1,10 @@
-@import "variables";
+@import 'variables';
 
 .branding {
     min-width: 0;
 }
 .logo {
-    width: 40px;
+    width: 120px;
 }
 .wordmark {
     font-weight: bold;
@@ -13,7 +13,7 @@
     color: var(--color-primary-500);
 }
 vdr-breadcrumb {
-    @media screen and (min-width: $breakpoint-small){
+    @media screen and (min-width: $breakpoint-small) {
         margin-left: $clr-sidenav-width;
     }
 }
@@ -26,6 +26,10 @@ vdr-breadcrumb {
 
 ::ng-deep {
     .header {
-        background-image: linear-gradient(to right, var(--color-header-gradient-from), var(--color-header-gradient-to));
+        background-image: linear-gradient(
+            to right,
+            var(--color-header-gradient-from),
+            var(--color-header-gradient-to)
+        );
     }
 }

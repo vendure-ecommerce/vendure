@@ -60,6 +60,11 @@ export const ORDER_FRAGMENT = gql`
         state
         nextStates
         total
+        payments {
+            id
+            method
+            state
+        }
         totalWithTax
         currencyCode
         customer {
@@ -72,6 +77,9 @@ export const ORDER_FRAGMENT = gql`
             shippingMethod {
                 name
             }
+        }
+        customFields {
+            scheduledTime
         }
     }
 `;

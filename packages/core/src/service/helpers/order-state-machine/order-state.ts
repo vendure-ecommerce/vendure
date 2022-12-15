@@ -55,7 +55,7 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['ReadyForPickup', 'Cancelled'],
     },
     ReadyForPickup: {
-        to: ['Delivering', 'Cancelled', 'Completed'],
+        to: ['Delivering', 'Cancelled', 'Completed', 'PaymentSettled'],
     },
     Delivering: {
         to: ['Completed', 'Cancelled'],

@@ -8543,6 +8543,9 @@ export type ChannelFragment = (
   )>, defaultTaxZone?: Maybe<(
     { __typename?: 'Zone' }
     & Pick<Zone, 'id' | 'name'>
+  )>, customFields?: Maybe<(
+    { __typename?: 'ChannelCustomFields' }
+    & Pick<ChannelCustomFields, 'isOpen'>
   )> }
 );
 
@@ -11339,6 +11342,7 @@ export namespace Channel {
   export type Fragment = ChannelFragment;
   export type DefaultShippingZone = (NonNullable<ChannelFragment['defaultShippingZone']>);
   export type DefaultTaxZone = (NonNullable<ChannelFragment['defaultTaxZone']>);
+  export type CustomFields = (NonNullable<ChannelFragment['customFields']>);
 }
 
 export namespace GetChannels {
