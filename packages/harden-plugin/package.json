@@ -1,0 +1,23 @@
+{
+  "name": "@vendure/harden-plugin",
+  "version": "1.9.1",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
+    "watch": "tsc -p ./tsconfig.build.json --watch",
+    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+    "lint": "tslint --fix --project ./"
+  },
+  "homepage": "https://www.vendure.io/",
+  "funding": "https://github.com/sponsors/michaelbromley",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "graphql-query-complexity": "^0.12.0"
+  }
+}
