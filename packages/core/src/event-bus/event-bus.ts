@@ -61,10 +61,6 @@ export class EventBus implements OnModuleDestroy {
 
     constructor(private transactionSubscriber: TransactionSubscriber) {}
 
-    get allEvents() {
-        return this.eventStream.asObservable();
-    }
-
     /**
      * @description
      * Publish an event which any subscribers can react to.
@@ -86,24 +82,6 @@ export class EventBus implements OnModuleDestroy {
         return this.eventStream.asObservable().pipe(
             takeUntil(this.destroy$),
             filter(e => e.constructor === type),
-            mergeMap(event => this.awaitActiveTransactions(event)),
-            filter(notNullOrUndefined),
-        ) as Observable<T>;
-    }
-
-    /**
-     * @description
-     * Returns an RxJS Observable stream of events of the given instance including its superclasses.
-     * If the event contains a {@link RequestContext} object, the subscriber
-     * will only get called after any active database transactions are complete.
-     *
-     * This means that the subscriber function can safely access all updated
-     * data related to the event.
-     */
-    ofInstance<T extends VendureEvent>(type: Type<T>): Observable<T> {
-        return this.eventStream.asObservable().pipe(
-            takeUntil(this.destroy$),
-            filter(e => e instanceof type),
             mergeMap(event => this.awaitActiveTransactions(event)),
             filter(notNullOrUndefined),
         ) as Observable<T>;
