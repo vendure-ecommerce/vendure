@@ -19,5 +19,9 @@
   },
   "dependencies": {
     "graphql-query-complexity": "^0.12.0"
+  },
+  "devDependencies": {
+    "@vendure/common": "^1.9.1",
+    "@vendure/core": "^1.9.1"
   }
 }
