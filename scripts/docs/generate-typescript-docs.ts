@@ -26,6 +26,7 @@ const sections: DocsSectionConfig[] = [
             'packages/job-queue-plugin/src/',
             'packages/payments-plugin/src/',
             'packages/testing/src/',
+            'packages/harden-plugin/src/',
         ],
         exclude: [/generated-shop-types/],
         outputPath: 'typescript-api',

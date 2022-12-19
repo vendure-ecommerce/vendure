@@ -54,14 +54,14 @@ import { hostExternalFrame } from '@vendure/admin-ui/core';
     RouterModule.forChild([
       hostExternalFrame({
         path: '',
-          
+
         // You can also use parameters which allow the app
         // to have dynamic routing, e.g.
         // path: ':slug'
         // Then you can use the getActivatedRoute() function from the
         // UiDevkitClient in order to access the value of the "slug"
         // parameter.
-          
+
         breadcrumbLabel: 'React App',
         // This is the URL to the compiled React app index.
         // The next step will explain the "assets/react-app" path.
@@ -105,10 +105,10 @@ export const config: VendureConfig = {
             {
               // We want to lazy-load our extension...
               type: 'lazy',
-              // ...when the `/admin/extensions/react-ui` 
-              // route is activated 
+              // ...when the `/admin/extensions/react-ui`
+              // route is activated
               route: 'react-ui',
-              // The filename of the extension module 
+              // The filename of the extension module
               // relative to the `extensionPath` above
               ngModuleFileName: 'react-extension.module.ts',
               // The name of the extension module class exported
@@ -213,7 +213,7 @@ const disableProduct = (id: string) => {
 
 If your extension does not have a build step, you can still include the UiDevkitClient as a local resource, which will expose a `VendureUiClient` global object:
 
-```HTML 
+```HTML
 <!-- src/ui-extension/plain-js-app/index.html -->
 <head>
   <script src="../devkit/ui-devkit.js"></script>
@@ -231,10 +231,10 @@ If your extension does not have a build step, you can still include the UiDevkit
          message: 'Updated Product',
        });
     })
-  } 
+  }
 </script>
 ```
 
 ## Next Steps
 
-Now you have created your extension, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../adding-navigation-items" >}})
+Now you have created your extension, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../modifying-navigation-items" >}})
