@@ -132,4 +132,4 @@ Now go to the Admin UI app in your browser and log in. You should now be able to
 
 ## Next Steps
 
-Now you have created your new route, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../adding-navigation-items" >}})
+Now you have created your new route, you need a way for your admin to access it. See [Adding Navigation Items]({{< relref "../modifying-navigation-items" >}})

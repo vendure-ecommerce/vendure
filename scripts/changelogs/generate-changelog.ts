@@ -33,6 +33,7 @@ const VALID_SCOPES: string[] = [
     'payments-plugin',
     'testing',
     'ui-devkit',
+    'harden-plugin',
 ];
 
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');
