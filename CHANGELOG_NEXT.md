@@ -1,3 +1,11 @@
+## 2.0.0-next.27 (2022-12-22)
+
+
+#### Features
+
+* **core** Add filter method to EventBus (#1930) ([7eabaa7](https://github.com/vendure-ecommerce/vendure/commit/7eabaa7)), closes [#1930](https://github.com/vendure-ecommerce/vendure/issues/1930)
+* **core** Expose tags on Assets for shop api (#1754) ([d9316df](https://github.com/vendure-ecommerce/vendure/commit/d9316df)), closes [#1754](https://github.com/vendure-ecommerce/vendure/issues/1754)
+
 ## 2.0.0-next.26 (2022-12-08)
 
 * Includes all fixes from v1.9.1
