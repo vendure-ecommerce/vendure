@@ -38,3 +38,23 @@ export class RestPlugin {}
 {{< /alert >}}
 
 Side note: since this uses no Vendure-specific metadata, it could also be written using the Nestjs `@Module()` decorator rather than the `@VendurePlugin()` decorator.
+
+## Controlling access to REST endpoints
+
+You can use the [Allow decorator]({{< relref "allow-decorator" >}}) to declare the permissions required to access a REST endpoint:
+
+```TypeScript {hl_lines=[8]}
+import { Controller, Get } from '@nestjs/common';
+import { Allow, Permission, Ctx, ProductService, RequestContext } from '@vendure/core'; 
+
+@Controller('products')
+export class ProductsController {
+  constructor(private productService: ProductService) {}
+    
+  @Allow(Permission.ReadProduct)  
+  @Get()
+  findAll(@Ctx() ctx: RequestContext) {
+    return this.productService.findAll(ctx);
+  }
+}
+```
