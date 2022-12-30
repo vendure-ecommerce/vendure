@@ -12,6 +12,7 @@ import {
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { FioBankPlugin } from '@vendure/fio-bank-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
@@ -90,6 +91,7 @@ export const devConfig: VendureConfig = {
             route: 'admin',
             port: 5001,
         }),
+        FioBankPlugin.init(),
     ],
 };
 
