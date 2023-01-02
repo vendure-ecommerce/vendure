@@ -308,8 +308,8 @@ describe('Mollie payments', () => {
             })
             .reply(200, { status: 'pending', resource: 'payment' });
         const refund = await refundOne(adminClient, order.lines[0].id, order.payments[0].id);
-        expect(mollieRequest?.amount.value).toBe('1558.80');
-        expect(refund.total).toBe(155880);
+        expect(mollieRequest?.amount.value).toBe('119.99');
+        expect(refund.total).toBe(11999);
         expect(refund.state).toBe('Settled');
     });
 
