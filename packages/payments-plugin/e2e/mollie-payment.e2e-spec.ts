@@ -138,8 +138,8 @@ describe('Mollie payments', () => {
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: 'T_1',
-            quantity: 2,
+            productVariantId: '5',
+            quantity: 10,
         });
         order = addItemToOrder as TestOrderFragmentFragment;
         // Add surcharge
@@ -220,9 +220,11 @@ describe('Mollie payments', () => {
         expect(mollieRequest?.webhookUrl).toEqual(
             `${mockData.host}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`,
         );
-        expect(mollieRequest?.amount?.value).toBe('2927.60');
-        expect(mollieRequest?.amount?.currency).toBeDefined();
+        expect(mollieRequest?.amount?.value).toBe('1009.90');
+        expect(mollieRequest?.amount?.currency).toBe('USD');
+        expect(mollieRequest.lines[0].vatAmount.value).toEqual('199.98');
         let totalLineAmount = 0;
+        console.log(mollieRequest.lines)
         for (const line of mollieRequest.lines) {
             totalLineAmount += Number(line.totalAmount.value);
         }

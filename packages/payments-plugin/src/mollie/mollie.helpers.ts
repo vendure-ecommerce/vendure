@@ -31,16 +31,19 @@ export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
     const lines: CreateParameters['lines'] = order.lines.map(line => ({
         name: line.productVariant.name,
         quantity: line.quantity,
-        unitPrice: toAmount(line.proratedUnitPriceWithTax, order.currencyCode), // totalAmount has to match unitPrice * quantity
+        unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
         totalAmount: toAmount(line.proratedLinePriceWithTax, order.currencyCode),
         vatRate: String(line.taxRate),
-        vatAmount: toAmount(line.lineTax, order.currencyCode),
+        vatAmount: toAmount(
+            calculateLineTaxAmount(line.taxRate, line.proratedLinePriceWithTax),
+            order.currencyCode
+        ),
     }));
     // Add shippingLines
     lines.push(...order.shippingLines.map(line => ({
         name: line.shippingMethod?.name || 'Shipping',
         quantity: 1,
-        unitPrice: toAmount(line.priceWithTax, order.currencyCode),
+        unitPrice: toAmount(line.discountedPriceWithTax, order.currencyCode),
         totalAmount: toAmount(line.discountedPriceWithTax, order.currencyCode),
         vatRate: String(line.taxRate),
         vatAmount: toAmount(line.discountedPriceWithTax - line.discountedPrice, order.currencyCode),
@@ -49,7 +52,7 @@ export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
     lines.push(...order.surcharges.map(surcharge => ({
         name: surcharge.description,
         quantity: 1,
-        unitPrice: toAmount(surcharge.price, order.currencyCode),
+        unitPrice: toAmount(surcharge.priceWithTax, order.currencyCode),
         totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
         vatRate: String(surcharge.taxRate),
         vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
@@ -65,6 +68,15 @@ export function toAmount(value: number, orderCurrency: string): Amount {
         value: (value / 100).toFixed(2),
         currency: orderCurrency,
     };
+}
+
+/**
+ * Calculate tax amount per order line instead of per unit for Mollie
+ */
+export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: number): number {
+    const taxMultiplier = taxRate / 100;
+    return orderLinePriceWithTax * (taxMultiplier / (1+taxMultiplier)); // I.E. €99,99 * (0,2 ÷ 1,2) with a 20% taxrate
+
 }
 
 /**
