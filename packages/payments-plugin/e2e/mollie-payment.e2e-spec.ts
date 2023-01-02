@@ -138,7 +138,7 @@ describe('Mollie payments', () => {
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
         const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-            productVariantId: '5',
+            productVariantId: 'T_5',
             quantity: 10,
         });
         order = addItemToOrder as TestOrderFragmentFragment;
@@ -224,7 +224,6 @@ describe('Mollie payments', () => {
         expect(mollieRequest?.amount?.currency).toBe('USD');
         expect(mollieRequest.lines[0].vatAmount.value).toEqual('199.98');
         let totalLineAmount = 0;
-        console.log(mollieRequest.lines)
         for (const line of mollieRequest.lines) {
             totalLineAmount += Number(line.totalAmount.value);
         }

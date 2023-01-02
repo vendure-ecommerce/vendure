@@ -71,7 +71,9 @@ export function toAmount(value: number, orderCurrency: string): Amount {
 }
 
 /**
- * Calculate tax amount per order line instead of per unit for Mollie
+ * Recalculate tax amount per order line instead of per unit for Mollie.
+ * Vendure calculates tax per unit, but Mollie expects the tax to be calculated per order line (the total of the quantities).
+ * See https://github.com/vendure-ecommerce/vendure/issues/1939#issuecomment-1362962133 for more information on the rounding issue.
  */
 export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: number): number {
     const taxMultiplier = taxRate / 100;

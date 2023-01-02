@@ -80,7 +80,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query<AddItemToOrder.Order, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-        productVariantId: '5',
+        productVariantId: 'T_5',
         quantity: 10,
     });
     const ctx = new RequestContext({
