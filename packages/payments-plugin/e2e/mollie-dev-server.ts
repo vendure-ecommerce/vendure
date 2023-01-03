@@ -5,7 +5,6 @@ import {
     Logger,
     LogLevel,
     mergeConfig,
-    Order,
     OrderService,
     RequestContext,
 } from '@vendure/core';
@@ -81,8 +80,8 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query<AddItemToOrder.Order, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
-        productVariantId: '1',
-        quantity: 2,
+        productVariantId: 'T_5',
+        quantity: 10,
     });
     const ctx = new RequestContext({
         apiType: 'admin',
@@ -90,7 +89,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         authorizedAsOwnerOnly: false,
         channel: await server.app.get(ChannelService).getDefaultChannel()
     });
-    await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
+   await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
         description: 'Negative test surcharge',
         listPrice: -20000,
     });
