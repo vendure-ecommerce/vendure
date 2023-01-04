@@ -148,7 +148,6 @@ export const devConfig: VendureConfig = {
             {
                 name: 'loyaltyPointsPercentage',
                 type: 'float',
-                public: false,
                 nullable: false,
                 defaultValue: 0.1,
                 label: [

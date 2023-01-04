@@ -12,14 +12,16 @@ class CustomerChannelsResolver {
     @Query()
     async customerChannels(@Ctx() ctx: RequestContext, @Args() args: any) {
         const channels = await this.channelService.findAll(ctx);
-        const strippedChannels = channels.map((channel: Channel) => {
-            return {
-                ...channel,
-                defaultShippingZone: null,
-                defaultTaxZone: null,
-                pricesIncludeTax: true,
-            } as unknown as Channel;
-        });
+        const strippedChannels = channels
+            .map((channel: Channel) => {
+                return {
+                    ...channel,
+                    defaultShippingZone: null,
+                    defaultTaxZone: null,
+                    pricesIncludeTax: true,
+                } as unknown as Channel;
+            })
+            .filter(value => value.code !== '__default_channel__');
         return strippedChannels;
     }
 }

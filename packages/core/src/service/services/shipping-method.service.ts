@@ -116,7 +116,12 @@ export class ShippingMethodService {
                 method.calculator = this.configArgService.parseInput('ShippingCalculator', input.calculator);
             },
         });
-        await this.channelService.assignToCurrentChannel(shippingMethod, ctx);
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (ctx.channelId === defaultChannel.id) {
+            await this.channelService.assignToAllChannels(shippingMethod, ctx);
+        } else {
+            await this.channelService.assignToCurrentChannel(shippingMethod, ctx);
+        }
         const newShippingMethod = await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(shippingMethod);

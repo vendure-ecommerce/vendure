@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     ActiveOrderResult,
@@ -45,12 +46,14 @@ import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
 import { SessionService } from '../../../service/services/session.service';
 import { RequestContext } from '../../common/request-context';
+import { ShopClosedGuard } from '../../common/shop-closed.guard';
 import { Allow } from '../../decorators/allow.decorator';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
+@UseGuards(ShopClosedGuard)
 export class ShopOrderResolver {
     constructor(
         private orderService: OrderService,

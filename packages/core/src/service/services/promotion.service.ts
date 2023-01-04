@@ -130,7 +130,12 @@ export class PromotionService {
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
             return new MissingConditionsError();
         }
-        await this.channelService.assignToCurrentChannel(promotion, ctx);
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (ctx.channelId === defaultChannel.id) {
+            await this.channelService.assignToAllChannels(promotion, ctx);
+        } else {
+            await this.channelService.assignToCurrentChannel(promotion, ctx);
+        }
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
         const promotionWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
@@ -165,12 +170,7 @@ export class PromotionService {
         }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
-        await this.customFieldRelationService.updateRelations(
-            ctx,
-            Promotion,
-            input,
-            updatedPromotion,
-        );
+        await this.customFieldRelationService.updateRelations(ctx, Promotion, input, updatedPromotion);
         this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }

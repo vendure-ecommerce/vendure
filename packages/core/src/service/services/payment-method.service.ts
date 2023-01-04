@@ -82,7 +82,12 @@ export class PaymentMethodService {
                 input.checker,
             );
         }
-        await this.channelService.assignToCurrentChannel(paymentMethod, ctx);
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (ctx.channelId === defaultChannel.id) {
+            await this.channelService.assignToAllChannels(paymentMethod, ctx);
+        } else {
+            await this.channelService.assignToCurrentChannel(paymentMethod, ctx);
+        }
         const savedPaymentMethod = await this.connection
             .getRepository(ctx, PaymentMethod)
             .save(paymentMethod);

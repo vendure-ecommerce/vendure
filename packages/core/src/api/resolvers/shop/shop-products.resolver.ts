@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     QueryCollectionArgs,
@@ -22,10 +23,12 @@ import { FacetValueService } from '../../../service/services/facet-value.service
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
 import { RequestContext } from '../../common/request-context';
+import { ShopClosedGuard } from '../../common/shop-closed.guard';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
+@UseGuards(ShopClosedGuard)
 export class ShopProductsResolver {
     constructor(
         private productService: ProductService,
