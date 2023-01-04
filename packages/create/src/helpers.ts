@@ -247,6 +247,7 @@ export function getDependencies(
         `@vendure/email-plugin${vendurePkgVersion}`,
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
+        `@vendure/fio-bank-plugin${vendurePkgVersion}`,
         'dotenv',
         dbDriverPackage(dbType),
         `typescript@${TYPESCRIPT_VERSION}`,

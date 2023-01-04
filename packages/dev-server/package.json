@@ -20,6 +20,7 @@
     "@vendure/core": "^1.9.1",
     "@vendure/elasticsearch-plugin": "^1.9.1",
     "@vendure/email-plugin": "^1.9.1",
+    "@vendure/fio-bank-plugin": "^1.0.0",
     "typescript": "4.3.5"
   },
   "devDependencies": {
