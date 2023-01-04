@@ -9,7 +9,6 @@
   ],
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
     "e2e": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --package=elasticsearch-plugin"

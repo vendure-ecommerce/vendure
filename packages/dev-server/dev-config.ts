@@ -12,9 +12,7 @@ import {
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
-import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
@@ -267,6 +265,16 @@ export const devConfig: VendureConfig = {
                 defaultValue: 0,
                 nullable: false,
             },
+            {
+                name: 'dob',
+                type: 'datetime',
+                nullable: true,
+            },
+            {
+                name: 'gender',
+                type: 'string',
+                nullable: true,
+            },
         ],
         Promotion: [
             {
@@ -417,7 +425,7 @@ function getDbConfig(): ConnectionOptions {
                 port: 3306,
                 username: 'root',
                 password: 'root',
-                database: 'vendure',
+                database: 'vendure-dev',
             };
     }
 }

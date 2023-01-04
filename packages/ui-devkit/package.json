@@ -28,7 +28,6 @@
   "scripts": {
     "build:client": "rimraf ./client && rollup -c rollup.config.js --configProduction",
     "build:compiler": "rimraf ./compiler && tsc -p tsconfig.compiler.json",
-    "build": "yarn build:client && yarn build:compiler",
     "watch": "rimraf ./lib && rollup -c rollup.config.js -w",
     "lint": "tslint --fix --project ./"
   },
