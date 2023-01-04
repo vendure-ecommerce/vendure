@@ -417,7 +417,7 @@ function getDbConfig(): ConnectionOptions {
                 port: 3306,
                 username: 'root',
                 password: 'root',
-                database: 'vendure-dev',
+                database: 'vendure',
             };
     }
 }
