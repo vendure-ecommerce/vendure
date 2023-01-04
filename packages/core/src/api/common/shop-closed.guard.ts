@@ -7,7 +7,6 @@ import { REQUEST_CONTEXT_KEY, REQUEST_CONTEXT_MAP_KEY } from '../../common/const
 @Injectable()
 export class ShopClosedGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean {
-        const ctx = GqlExecutionContext.create(context);
         const venctx: RequestContext = getCtx(context);
         if (!venctx.channel.customFields.isOpen) {
             throw new Error('This store is closed');

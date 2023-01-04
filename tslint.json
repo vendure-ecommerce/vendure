@@ -34,7 +34,8 @@
         "no-unused-expression": true,
         "max-classes-per-file": [false],
         "variable-name": [false],
-        "no-floating-promises": true
+        "no-floating-promises": true,
+        "ban-types": false
     },
     "rulesDirectory": []
 }
