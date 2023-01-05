@@ -1,8 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Channel, RequestContext } from '@vendure/core';
-import express, { Router } from 'express';
+import { Request, Router } from 'express';
 import fs from 'fs-extra';
-import http from 'http';
 import path from 'path';
 
 import { EmailEventHandler } from './event-handler';
@@ -19,7 +18,7 @@ export class DevMailbox {
 
     serve(options: EmailPluginDevModeOptions): Router {
         const { outputPath, handlers } = options;
-        const server = express.Router();
+        const server = Router();
         server.get('/', (req, res) => {
             res.sendFile(path.join(__dirname, '../../dev-mailbox.html'));
         });
@@ -43,7 +42,7 @@ export class DevMailbox {
                 try {
                     await this.handleMockEventFn(handler, {
                         ...handler.mockEvent,
-                        ctx: this.createRequestContext(languageCode as LanguageCode),
+                        ctx: this.createRequestContext(languageCode as LanguageCode, req),
                     } as EventWithContext);
                     res.send({ success: true });
                 } catch (e) {
@@ -112,9 +111,10 @@ export class DevMailbox {
         return content;
     }
 
-    private createRequestContext(languageCode: LanguageCode): RequestContext {
+    private createRequestContext(languageCode: LanguageCode, req: Request): RequestContext {
         return new RequestContext({
             languageCode,
+            req,
             apiType: 'admin',
             session: {} as any,
             isAuthorized: false,
