@@ -499,7 +499,8 @@ export class CollectionService implements OnModuleInit {
         for (const coll of [...descendants.reverse(), collection]) {
             const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
             const deletedColl = new Collection(coll);
-            // To avoid perfomance issues on huge collection, we first delete the links between the product variants and the collection by chunks
+            // To avoid performance issues on huge collections, we first delete the links
+            // between the product variants and the collection by chunks
             const chunkedDeleteIds = this.chunkArray(affectedVariantIds, 500);
             for (const chunkedDeleteId of chunkedDeleteIds) {
                 await this.connection.rawConnection
