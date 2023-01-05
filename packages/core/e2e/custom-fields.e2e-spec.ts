@@ -181,6 +181,7 @@ const customConfig = mergeConfig(testConfig(), {
                 readonly: true,
             },
         ],
+        OrderLine: [{ name: 'validateInt', type: 'int', min: 0, max: 10 }],
     } as CustomFields,
 });
 
@@ -686,6 +687,89 @@ describe('Custom fields', () => {
                     }
                 }
             `);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1953
+        describe('validation of OrderLine custom fields', () => {
+            it('addItemToOrder', async () => {
+                try {
+                    const { addItemToOrder } = await shopClient.query(gql`
+                        mutation {
+                            addItemToOrder(
+                                productVariantId: 1
+                                quantity: 1
+                                customFields: { validateInt: 11 }
+                            ) {
+                                ... on Order {
+                                    id
+                                }
+                            }
+                        }
+                    `);
+                    fail('Should have thrown');
+                } catch (e) {
+                    expect(e.message).toContain(
+                        `The custom field 'validateInt' value [11] is greater than the maximum [10]`,
+                    );
+                }
+
+                const { addItemToOrder: result } = await shopClient.query(gql`
+                    mutation {
+                        addItemToOrder(productVariantId: 1, quantity: 1, customFields: { validateInt: 9 }) {
+                            ... on Order {
+                                id
+                                lines {
+                                    customFields {
+                                        validateInt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(result.lines[0].customFields).toEqual({ validateInt: 9 });
+            });
+
+            it('adjustOrderLine', async () => {
+                try {
+                    const { adjustOrderLine } = await shopClient.query(gql`
+                        mutation {
+                            adjustOrderLine(
+                                orderLineId: "T_1"
+                                quantity: 1
+                                customFields: { validateInt: 11 }
+                            ) {
+                                ... on Order {
+                                    id
+                                }
+                            }
+                        }
+                    `);
+                    fail('Should have thrown');
+                } catch (e) {
+                    expect(e.message).toContain(
+                        `The custom field 'validateInt' value [11] is greater than the maximum [10]`,
+                    );
+                }
+
+                const { adjustOrderLine: result } = await shopClient.query(gql`
+                    mutation {
+                        adjustOrderLine(orderLineId: "T_1", quantity: 1, customFields: { validateInt: 2 }) {
+                            ... on Order {
+                                id
+                                lines {
+                                    customFields {
+                                        validateInt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `);
+
+                expect(result.lines[0].customFields).toEqual({ validateInt: 2 });
+            });
         });
     });
 
