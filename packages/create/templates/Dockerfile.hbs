@@ -4,6 +4,6 @@ WORKDIR /usr/src/app
 
 COPY package.json ./
 COPY {{#if useYarn}}yarn.lock{{else}}package-lock.json{{/if}} ./
-RUN {{#if useYarn}}yarn{{else}}npm install{{/if}}
+RUN {{#if useYarn}}yarn{{else}}npm install{{/if}} --production
 COPY . .
 RUN {{#if useYarn}}yarn{{else}}npm run{{/if}} build

@@ -35,6 +35,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
             inputs.add(`Update${entityName}Input`);
             return inputs;
         }, new Set<string>());
+        this.inputsWithCustomFields.add('OrderLineCustomFieldsInput');
     }
 
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
@@ -77,7 +78,16 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         if (variableValues) {
             const entityName = typeName.replace(/(Create|Update)(.+)Input/, '$2');
             const customFieldConfig = this.configService.customFields[entityName as keyof CustomFields];
-
+            if (typeName === 'OrderLineCustomFieldsInput') {
+                // special case needed to handle custom fields passed via addItemToOrder or adjustOrderLine
+                // mutations.
+                await this.validateCustomFieldsObject(
+                    this.configService.customFields.OrderLine,
+                    languageCode,
+                    variableValues,
+                    injector,
+                );
+            }
             if (variableValues.customFields) {
                 await this.validateCustomFieldsObject(
                     customFieldConfig,

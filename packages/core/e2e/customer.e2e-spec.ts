@@ -20,8 +20,11 @@ import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import { DeletionResult, ErrorCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
+    ActiveOrderCustomerFragment,
     AddItemToOrderMutation,
     AddItemToOrderMutationVariables,
+    SetCustomerForOrderMutation,
+    SetCustomerForOrderMutationVariables,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
@@ -37,7 +40,7 @@ import {
     UPDATE_CUSTOMER,
     UPDATE_CUSTOMER_NOTE,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
+import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
@@ -608,6 +611,41 @@ describe('Customer resolver', () => {
             expect(createCustomer.emailAddress).toBe(thirdCustomer.emailAddress);
             expect(createCustomer.firstName).toBe('Reusing Email');
             expect(createCustomer.user?.identifier).toBe(thirdCustomer.emailAddress);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/1960
+        it('delete a guest Customer', async () => {
+            const orderErrorGuard: ErrorResultGuard<ActiveOrderCustomerFragment> = createErrorResultGuard(
+                input => !!input.lines,
+            );
+
+            await shopClient.asAnonymousUser();
+            await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(
+                ADD_ITEM_TO_ORDER,
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            );
+            const { setCustomerForOrder } = await shopClient.query<
+                SetCustomerForOrderMutation,
+                SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    firstName: 'Guest',
+                    lastName: 'Customer',
+                    emailAddress: 'guest@test.com',
+                },
+            });
+
+            orderErrorGuard.assertSuccess(setCustomerForOrder);
+
+            const result = await adminClient.query<
+                Codegen.DeleteCustomerMutation,
+                Codegen.DeleteCustomerMutationVariables
+            >(DELETE_CUSTOMER, { id: setCustomerForOrder.customer!.id });
+
+            expect(result.deleteCustomer).toEqual({ result: DeletionResult.DELETED });
         });
     });
 
