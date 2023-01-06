@@ -52,4 +52,5 @@ export * from './services/tag.service';
 export * from './services/tax-category.service';
 export * from './services/tax-rate.service';
 export * from './services/user.service';
+export * from './services/vendor.service';
 export * from './services/zone.service';

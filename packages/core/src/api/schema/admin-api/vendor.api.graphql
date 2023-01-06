@@ -1,0 +1,29 @@
+type Query {
+  vendors(options: VendorListOptions): VendorList!
+  vendor(id: ID!): Vendor
+}
+
+type Mutation {
+  "Create a new Vendor"
+  createVendor(input: CreateVendorInput!): Vendor!
+  "Update an existing Vendor"
+  updateVendor(input: UpdateVendorInput!): Vendor!
+  "Delete a Vendor"
+  deleteVendor(id: ID!): DeletionResponse!
+}
+
+type VendorList implements PaginatedList {
+    items: [Vendor!]!
+    totalItems: Int!
+}
+
+input VendorListOptions
+
+input CreateVendorInput {
+    name: String!
+}
+
+input UpdateVendorInput {
+    id: ID!
+    name: String
+}

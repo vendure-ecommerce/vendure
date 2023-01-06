@@ -27,6 +27,7 @@ import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
+import { VendorOrder } from '../vendor-order/vendor-order.entity';
 
 /**
  * @description
@@ -54,6 +55,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @Column()
     @Index({ unique: true })
     code: string;
+
+    @OneToMany(type => VendorOrder, vendorOrder => vendorOrder.parent)
+    vendorOrders: VendorOrder[];
 
     @Column('varchar') state: OrderState;
 

@@ -23,6 +23,7 @@ input CreateChannelInput {
     currencyCode: CurrencyCode!
     defaultTaxZoneId: ID!
     defaultShippingZoneId: ID!
+    vendorId: ID
 }
 
 input UpdateChannelInput {
@@ -34,6 +35,7 @@ input UpdateChannelInput {
     currencyCode: CurrencyCode
     defaultTaxZoneId: ID
     defaultShippingZoneId: ID
+    vendorId: ID
 }
 
 "Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings"

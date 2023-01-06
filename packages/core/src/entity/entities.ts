@@ -58,6 +58,8 @@ import { Tag } from './tag/tag.entity';
 import { TaxCategory } from './tax-category/tax-category.entity';
 import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
+import { VendorOrder } from './vendor-order/vendor-order.entity';
+import { Vendor } from './vendor/vendor.entity';
 import { Zone } from './zone/zone.entity';
 
 /**
@@ -124,5 +126,7 @@ export const coreEntitiesMap = {
     TaxCategory,
     TaxRate,
     User,
+    Vendor,
+    VendorOrder,
     Zone,
 };

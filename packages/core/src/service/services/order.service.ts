@@ -82,7 +82,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Session } from '../../entity/index';
+import { Channel, Session } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
@@ -95,6 +95,7 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
+import { VendorOrder } from '../../entity/vendor-order/vendor-order.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CouponCodeEvent } from '../../event-bus/index';
 import { OrderEvent } from '../../event-bus/index';
@@ -538,6 +539,7 @@ export class OrderService {
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
+        await this.updateOrderChannels(ctx, order);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
         } else {
@@ -584,6 +586,7 @@ export class OrderService {
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+            await this.updateOrderChannels(ctx, order);
             this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
@@ -615,6 +618,7 @@ export class OrderService {
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        await this.updateOrderChannels(ctx, order);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
         this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
         return updatedOrder;
@@ -637,6 +641,22 @@ export class OrderService {
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         return updatedOrder;
+    }
+
+    private async updateOrderChannels(ctx: RequestContext, order: Order) {
+        const vendorOrders = await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('vendorOrders')
+            .of(order)
+            .loadMany();
+
+        const channelIds = new Set([ctx.channelId]);
+        for (const vendorOrder of vendorOrders) {
+            channelIds.add(vendorOrder.channelId);
+        }
+        order.channels = [...channelIds].map(id => new Channel({ id }));
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
     }
 
     /**

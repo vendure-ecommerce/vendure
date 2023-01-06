@@ -29,6 +29,7 @@ import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { Channel } from '../../../entity/index';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
@@ -37,6 +38,8 @@ import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
+import { VendorOrder } from '../../../entity/vendor-order/vendor-order.entity';
+import { Vendor } from '../../../entity/vendor/vendor.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { OrderLineEvent } from '../../../event-bus/index';
 import { CountryService } from '../../services/country.service';
@@ -166,9 +169,43 @@ export class OrderModifier {
             ctx,
         );
         order.lines.push(lineWithRelations);
+        await this.assignToVendorOrder(ctx, order, lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
         return lineWithRelations;
+    }
+
+    private async assignToVendorOrder(ctx: RequestContext, order: Order, orderLine: OrderLine) {
+        const { vendorSelectionStrategy } = this.configService.orderOptions;
+        const channelId = await vendorSelectionStrategy.selectChannelIdForVendorOrder(ctx, order, orderLine);
+        if (!channelId) {
+            return;
+        }
+        const channel = await this.connection.getEntityOrThrow(ctx, Channel, channelId);
+        const { vendorOrders } = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
+            relations: ['vendorOrders'],
+        });
+        let vendorOrder = vendorOrders.find(vo => idsAreEqual(vo.channelId, channelId));
+        if (!vendorOrder) {
+            vendorOrder = await this.connection.getRepository(ctx, VendorOrder).save(
+                new VendorOrder({
+                    code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx, channel),
+                    lines: [],
+                    surcharges: [],
+                    modifications: [],
+                    channel,
+                    parent: order,
+                }),
+            );
+            await this.connection
+                .getRepository(ctx, Order)
+                .createQueryBuilder()
+                .relation(Order, 'vendorOrders')
+                .of(order)
+                .add(vendorOrder);
+        }
+        vendorOrder.lines.push(orderLine);
+        await this.connection.getRepository(ctx, VendorOrder).save(vendorOrder);
     }
 
     /**

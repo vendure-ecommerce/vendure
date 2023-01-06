@@ -364,6 +364,7 @@ export type Channel = Node & {
   pricesIncludeTax: Scalars['Boolean'];
   token: Scalars['String'];
   updatedAt: Scalars['DateTime'];
+  vendor?: Maybe<Vendor>;
 };
 
 /**
@@ -661,6 +662,7 @@ export type CreateChannelInput = {
   defaultTaxZoneId: Scalars['ID'];
   pricesIncludeTax: Scalars['Boolean'];
   token: Scalars['String'];
+  vendorId?: InputMaybe<Scalars['ID']>;
 };
 
 export type CreateChannelResult = Channel | LanguageNotAvailableError;
@@ -845,6 +847,10 @@ export type CreateTaxRateInput = {
   name: Scalars['String'];
   value: Scalars['Float'];
   zoneId: Scalars['ID'];
+};
+
+export type CreateVendorInput = {
+  name: Scalars['String'];
 };
 
 export type CreateZoneInput = {
@@ -2486,6 +2492,8 @@ export type Mutation = {
   createTaxCategory: TaxCategory;
   /** Create a new TaxRate */
   createTaxRate: TaxRate;
+  /** Create a new Vendor */
+  createVendor: Vendor;
   /** Create a new Zone */
   createZone: Zone;
   /** Delete an Administrator */
@@ -2541,6 +2549,8 @@ export type Mutation = {
   deleteTaxCategory: DeletionResponse;
   /** Delete a TaxRate */
   deleteTaxRate: DeletionResponse;
+  /** Delete a Vendor */
+  deleteVendor: DeletionResponse;
   /** Delete a Zone */
   deleteZone: DeletionResponse;
   flushBufferedJobs: Success;
@@ -2643,6 +2653,8 @@ export type Mutation = {
   updateTaxCategory: TaxCategory;
   /** Update an existing TaxRate */
   updateTaxRate: TaxRate;
+  /** Update an existing Vendor */
+  updateVendor: Vendor;
   /** Update an existing Zone */
   updateZone: Zone;
 };
@@ -2868,6 +2880,11 @@ export type MutationCreateTaxRateArgs = {
 };
 
 
+export type MutationCreateVendorArgs = {
+  input: CreateVendorInput;
+};
+
+
 export type MutationCreateZoneArgs = {
   input: CreateZoneInput;
 };
@@ -3013,6 +3030,11 @@ export type MutationDeleteTaxCategoryArgs = {
 
 
 export type MutationDeleteTaxRateArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteVendorArgs = {
   id: Scalars['ID'];
 };
 
@@ -3306,6 +3328,11 @@ export type MutationUpdateTaxCategoryArgs = {
 
 export type MutationUpdateTaxRateArgs = {
   input: UpdateTaxRateInput;
+};
+
+
+export type MutationUpdateVendorArgs = {
+  input: UpdateVendorInput;
 };
 
 
@@ -3874,6 +3901,8 @@ export enum Permission {
   CreateTaxCategory = 'CreateTaxCategory',
   /** Grants permission to create TaxRate */
   CreateTaxRate = 'CreateTaxRate',
+  /** Grants permission to create Vendor */
+  CreateVendor = 'CreateVendor',
   /** Grants permission to create Zone */
   CreateZone = 'CreateZone',
   /** Grants permission to delete Administrator */
@@ -3914,6 +3943,8 @@ export enum Permission {
   DeleteTaxCategory = 'DeleteTaxCategory',
   /** Grants permission to delete TaxRate */
   DeleteTaxRate = 'DeleteTaxRate',
+  /** Grants permission to delete Vendor */
+  DeleteVendor = 'DeleteVendor',
   /** Grants permission to delete Zone */
   DeleteZone = 'DeleteZone',
   /** Owner means the user owns this entity, e.g. a Customer's own Order */
@@ -3958,6 +3989,8 @@ export enum Permission {
   ReadTaxCategory = 'ReadTaxCategory',
   /** Grants permission to read TaxRate */
   ReadTaxRate = 'ReadTaxRate',
+  /** Grants permission to read Vendor */
+  ReadVendor = 'ReadVendor',
   /** Grants permission to read Zone */
   ReadZone = 'ReadZone',
   /** SuperAdmin has unrestricted access to all operations */
@@ -4002,6 +4035,8 @@ export enum Permission {
   UpdateTaxCategory = 'UpdateTaxCategory',
   /** Grants permission to update TaxRate */
   UpdateTaxRate = 'UpdateTaxRate',
+  /** Grants permission to update Vendor */
+  UpdateVendor = 'UpdateVendor',
   /** Grants permission to update Zone */
   UpdateZone = 'UpdateZone'
 }
@@ -4426,6 +4461,8 @@ export type Query = {
   taxRates: TaxRateList;
   testEligibleShippingMethods: Array<ShippingMethodQuote>;
   testShippingMethod: TestShippingMethodResult;
+  vendor?: Maybe<Vendor>;
+  vendors: VendorList;
   zone?: Maybe<Zone>;
   zones: Array<Zone>;
 };
@@ -4662,6 +4699,16 @@ export type QueryTestEligibleShippingMethodsArgs = {
 
 export type QueryTestShippingMethodArgs = {
   input: TestShippingMethodInput;
+};
+
+
+export type QueryVendorArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryVendorsArgs = {
+  options?: InputMaybe<VendorListOptions>;
 };
 
 
@@ -5372,6 +5419,7 @@ export type UpdateChannelInput = {
   id: Scalars['ID'];
   pricesIncludeTax?: InputMaybe<Scalars['Boolean']>;
   token?: InputMaybe<Scalars['String']>;
+  vendorId?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateChannelResult = Channel | LanguageNotAvailableError;
@@ -5585,6 +5633,11 @@ export type UpdateTaxRateInput = {
   zoneId?: InputMaybe<Scalars['ID']>;
 };
 
+export type UpdateVendorInput = {
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateZoneInput = {
   customFields?: InputMaybe<Scalars['JSON']>;
   id: Scalars['ID'];
@@ -5602,6 +5655,47 @@ export type User = Node & {
   roles: Array<Role>;
   updatedAt: Scalars['DateTime'];
   verified: Scalars['Boolean'];
+};
+
+export type Vendor = Node & {
+  __typename?: 'Vendor';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type VendorFilterParameter = {
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type VendorList = PaginatedList & {
+  __typename?: 'VendorList';
+  items: Array<Vendor>;
+  totalItems: Scalars['Int'];
+};
+
+export type VendorListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<VendorFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<VendorSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type VendorSortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type Zone = Node & {

@@ -67,6 +67,7 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new CrudPermissionDefinition('TaxCategory'),
     new CrudPermissionDefinition('TaxRate'),
     new CrudPermissionDefinition('System'),
+    new CrudPermissionDefinition('Vendor'),
     new CrudPermissionDefinition('Zone'),
 ];
 

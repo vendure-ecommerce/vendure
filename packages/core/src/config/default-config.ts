@@ -27,6 +27,7 @@ import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-pri
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
+import { DefaultVendorSelectionStrategy } from './order/default-vendor-selection-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { DefaultOrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
@@ -140,6 +141,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
         activeOrderStrategy: new DefaultActiveOrderStrategy(),
+        vendorSelectionStrategy: new DefaultVendorSelectionStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

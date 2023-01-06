@@ -12,6 +12,7 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
+import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
@@ -26,15 +27,16 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { Session } from '../../entity/session/session.entity';
+import { Vendor } from '../../entity/vendor/vendor.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ChangeChannelEvent } from '../../event-bus/events/change-channel-event';
 import { ChannelEvent } from '../../event-bus/events/channel-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
-import { patchEntity } from '../helpers/utils/patch-entity';
-import { GlobalSettingsService } from './global-settings.service';
-import { RelationPaths } from '../../api';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { patchEntity } from '../helpers/utils/patch-entity';
+
+import { GlobalSettingsService } from './global-settings.service';
 
 /**
  * @description
@@ -76,11 +78,11 @@ export class ChannelService {
             name: 'ChannelService.allChannels',
             ttl: this.configService.entityOptions.channelCacheTtl,
             refresh: {
-                fn: async (ctx) => {
+                fn: async ctx => {
                     const { items } = await this.findAll(ctx);
-                    return items
+                    return items;
                 },
-                defaultArgs: [RequestContext.empty()]
+                defaultArgs: [RequestContext.empty()],
             },
         });
     }
@@ -196,7 +198,7 @@ export class ChannelService {
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Channel>,
-        relations?: RelationPaths<Channel>
+        relations?: RelationPaths<Channel>,
     ): Promise<PaginatedList<Channel>> {
         return this.listQueryBuilder
             .build(Channel, options, {
@@ -240,10 +242,15 @@ export class ChannelService {
             );
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
+        if (input.vendorId) {
+            const vendor = await this.connection.getEntityOrThrow(ctx, Vendor, input.vendorId);
+            newChannel.vendor = vendor;
+            await this.connection.getRepository(ctx, Channel).save(newChannel);
+        }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
         await this.allChannels.refresh(ctx);
         this.eventBus.publish(new ChannelEvent(ctx, newChannel, 'created', input));
-        return channel;
+        return newChannel;
     }
 
     async update(
@@ -272,6 +279,10 @@ export class ChannelService {
                 Zone,
                 input.defaultShippingZoneId,
             );
+        }
+        if (input.vendorId) {
+            const vendor = await this.connection.getEntityOrThrow(ctx, Vendor, input.vendorId);
+            updatedChannel.vendor = vendor;
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
