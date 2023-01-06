@@ -27,6 +27,7 @@ import {
     OrderLineInput,
     OrderListOptions,
     OrderProcessState,
+    OrderType,
     RefundOrderInput,
     RefundOrderResult,
     SettlePaymentResult,
@@ -37,7 +38,6 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -72,7 +72,6 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
-import { EntityRelationPaths, EntityRelations } from '../../common/index';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -82,7 +81,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Session } from '../../entity/index';
+import { Channel, Session } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
@@ -96,17 +95,20 @@ import { Allocation } from '../../entity/stock-movement/allocation.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CouponCodeEvent } from '../../event-bus/index';
-import { OrderEvent } from '../../event-bus/index';
-import { OrderStateTransitionEvent } from '../../event-bus/index';
-import { RefundStateTransitionEvent } from '../../event-bus/index';
-import { OrderLineEvent } from '../../event-bus/index';
+import {
+    CouponCodeEvent,
+    OrderEvent,
+    OrderLineEvent,
+    OrderStateTransitionEvent,
+    RefundStateTransitionEvent,
+} from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderModifier } from '../helpers/order-modifier/order-modifier';
+import { OrderSplitter } from '../helpers/order-splitter/order-splitter';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
@@ -152,6 +154,7 @@ export class OrderService {
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
+        private orderSplitter: OrderSplitter,
         private paymentService: PaymentService,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
@@ -385,6 +388,32 @@ export class OrderService {
         });
     }
 
+    getSellerOrders(ctx: RequestContext, order: Order): Promise<Order[]> {
+        return this.connection.getRepository(ctx, Order).find({
+            where: {
+                aggregateOrderId: order.id,
+            },
+            relations: ['channels'],
+        });
+    }
+
+    async getAggregateOrder(ctx: RequestContext, order: Order): Promise<Order | undefined> {
+        return order.aggregateOrderId == null
+            ? undefined
+            : this.connection
+                  .getRepository(ctx, Order)
+                  .findOne(order.aggregateOrderId, { relations: ['channels', 'lines'] });
+    }
+
+    getOrderChannels(ctx: RequestContext, order: Order): Promise<Channel[]> {
+        return this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .relation('channels')
+            .of(order)
+            .loadMany();
+    }
+
     /**
      * @description
      * Returns any Order associated with the specified User's Customer account
@@ -451,6 +480,7 @@ export class OrderService {
 
     private async createEmptyOrderEntity(ctx: RequestContext) {
         return new Order({
+            type: OrderType.Regular,
             code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
@@ -853,38 +883,68 @@ export class OrderService {
     async setShippingMethod(
         ctx: RequestContext,
         orderId: ID,
-        shippingMethodId: ID,
+        shippingMethodIds: ID[],
     ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const validationError = this.assertAddingItemsState(order);
         if (validationError) {
             return validationError;
         }
-        const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
-            ctx,
-            order,
-            shippingMethodId,
-        );
-        if (!shippingMethod) {
-            return new IneligibleShippingMethodError();
-        }
-        let shippingLine: ShippingLine | undefined = order.shippingLines[0];
-        if (shippingLine) {
-            shippingLine.shippingMethod = shippingMethod;
-        } else {
-            shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
-                new ShippingLine({
-                    shippingMethod,
-                    order,
-                    adjustments: [],
-                    listPrice: 0,
-                    listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-                    taxLines: [],
-                }),
+        for (const [i, shippingMethodId] of shippingMethodIds.entries()) {
+            const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
+                ctx,
+                order,
+                shippingMethodId,
             );
-            order.shippingLines = [shippingLine];
+            if (!shippingMethod) {
+                return new IneligibleShippingMethodError();
+            }
+            let shippingLine: ShippingLine | undefined = order.shippingLines[i];
+            if (shippingLine) {
+                shippingLine.shippingMethod = shippingMethod;
+            } else {
+                shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
+                    new ShippingLine({
+                        shippingMethod,
+                        order,
+                        adjustments: [],
+                        listPrice: 0,
+                        listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                        taxLines: [],
+                    }),
+                );
+                if (order.shippingLines) {
+                    order.shippingLines.push(shippingLine);
+                } else {
+                    order.shippingLines = [shippingLine];
+                }
+            }
+
+            await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
         }
-        await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
+        // remove any now-unused ShippingLines
+        if (shippingMethodIds.length < order.shippingLines.length) {
+            const shippingLinesToDelete = order.shippingLines.splice(shippingMethodIds.length - 1);
+            await this.connection.getRepository(ctx, ShippingLine).remove(shippingLinesToDelete);
+        }
+        // assign the ShippingLines to the OrderLines
+        await this.connection
+            .getRepository(ctx, OrderLine)
+            .createQueryBuilder('line')
+            .update({ shippingLine: undefined })
+            .whereInIds(order.lines.map(l => l.id));
+        const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
+        for (const shippingLine of order.shippingLines) {
+            const orderLinesForShippingLine =
+                await shippingLineAssignmentStrategy.assignShippingLineToOrderLines(ctx, shippingLine, order);
+            await this.connection
+                .getRepository(ctx, OrderLine)
+                .createQueryBuilder('line')
+                .update({ shippingLine })
+                .whereInIds(orderLinesForShippingLine.map(l => l.id))
+                .execute();
+        }
+
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);
@@ -902,11 +962,17 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
+        const fromActiveStatus = order.active;
         try {
             await this.orderStateMachine.transition(ctx, order, state);
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new OrderStateTransitionError({ transitionError, fromState, toState: state });
+        }
+        if (fromActiveStatus === true && order.active === false) {
+            await this.orderSplitter.createSellerOrders(ctx, order, sellerOrder =>
+                this.applyPriceAdjustments(ctx, sellerOrder),
+            );
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
@@ -923,6 +989,9 @@ export class OrderService {
         fulfillmentId: ID,
         state: FulfillmentState,
     ): Promise<Fulfillment | FulfillmentStateTransitionError> {
+        // TODO: v2: Extract this into a user-configurable area, i.e. CustomFulfillmentProcess,
+        // so that users are able to opt-out of such hard-coded transformations that rely on
+        // the default order states
         const result = await this.fulfillmentService.transitionToState(ctx, fulfillmentId, state);
         if (isGraphQlErrorResult(result)) {
             return result;
@@ -1095,6 +1164,14 @@ export class OrderService {
         return canTransitionToPaymentAuthorized && canTransitionToPaymentSettled;
     }
 
+    /**
+     * TODO: v2: Extract this into a user-configurable area, i.e. CustomPaymentProcess,
+     * so that users are able to opt-out of such hard-coded transformations that rely on
+     * the default order states
+     * @param ctx
+     * @param order
+     * @private
+     */
     private async transitionOrderIfTotalIsCovered(
         ctx: RequestContext,
         order: Order,

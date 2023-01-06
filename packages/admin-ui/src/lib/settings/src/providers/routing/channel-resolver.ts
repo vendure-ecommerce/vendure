@@ -30,6 +30,7 @@ export class ChannelResolver extends BaseEntityResolver<ChannelFragment> {
                 defaultLanguageCode: getDefaultUiLanguage(),
                 defaultShippingZone: {} as any,
                 defaultTaxZone: {} as any,
+                seller: {} as any,
             },
             id => dataService.settings.getChannel(id).mapStream(data => data.channel),
         );

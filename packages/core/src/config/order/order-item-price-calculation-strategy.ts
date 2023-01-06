@@ -58,5 +58,6 @@ export interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
         productVariant: ProductVariant,
         orderLineCustomFields: { [key: string]: any },
         order: Order,
+        // TODO: v2 - pass the quantity to allow bulk discounts
     ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }

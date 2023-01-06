@@ -35,6 +35,7 @@ import { RefundStateLabelComponent } from './components/refund-state-label/refun
 import { SelectAddressDialogComponent } from './components/select-address-dialog/select-address-dialog.component';
 import { SelectCustomerDialogComponent } from './components/select-customer-dialog/select-customer-dialog.component';
 import { SelectShippingMethodDialogComponent } from './components/select-shipping-method-dialog/select-shipping-method-dialog.component';
+import { SellerOrdersCardComponent } from './components/seller-orders-card/seller-orders-card.component';
 import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
 import { orderRoutes } from './order.routes';
@@ -77,6 +78,7 @@ import { orderRoutes } from './order.routes';
         CouponCodeSelectorComponent,
         SelectShippingMethodDialogComponent,
         OrderHistoryEntryHostComponent,
+        SellerOrdersCardComponent,
     ],
 })
 export class OrderModule {}

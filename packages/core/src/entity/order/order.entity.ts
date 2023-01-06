@@ -1,9 +1,9 @@
 import {
-    Adjustment,
     CurrencyCode,
     Discount,
     OrderAddress,
     OrderTaxSummary,
+    OrderType,
     TaxLine,
 } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
@@ -44,6 +44,18 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     constructor(input?: DeepPartial<Order>) {
         super(input);
     }
+
+    @Column('varchar')
+    type: OrderType;
+
+    @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
+    sellerOrders: Order[];
+
+    @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders)
+    aggregateOrder: Order;
+
+    @EntityId({ nullable: true })
+    aggregateOrderId: ID;
 
     /**
      * @description

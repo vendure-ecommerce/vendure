@@ -9,6 +9,7 @@ import {
     CurrencyCode,
     CustomFieldConfig,
     DataService,
+    GetSellersQuery,
     GetZonesQuery,
     LanguageCode,
     NotificationService,
@@ -32,6 +33,7 @@ export class ChannelDetailComponent
 {
     customFields: CustomFieldConfig[];
     zones$: Observable<GetZonesQuery['zones']>;
+    sellers$: Observable<GetSellersQuery['sellers']['items']>;
     detailForm: FormGroup;
     currencyCodes = Object.values(CurrencyCode);
     availableLanguageCodes$: Observable<LanguageCode[]>;
@@ -56,6 +58,7 @@ export class ChannelDetailComponent
             defaultShippingZoneId: ['', Validators.required],
             defaultLanguageCode: [],
             defaultTaxZoneId: ['', Validators.required],
+            sellerId: ['', Validators.required],
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
@@ -65,6 +68,8 @@ export class ChannelDetailComponent
     ngOnInit() {
         this.init();
         this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
+        // TODO: make this lazy-loaded autocomplete
+        this.sellers$ = this.dataService.settings.getSellers().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();
     }
 
@@ -90,6 +95,7 @@ export class ChannelDetailComponent
             defaultShippingZoneId: formValue.defaultShippingZoneId,
             defaultTaxZoneId: formValue.defaultTaxZoneId,
             customFields: formValue.customFields,
+            sellerId: formValue.sellerId,
         };
         this.dataService.settings
             .createChannel(input)
@@ -143,6 +149,7 @@ export class ChannelDetailComponent
                         defaultLanguageCode: formValue.defaultLanguageCode,
                         defaultTaxZoneId: formValue.defaultTaxZoneId,
                         customFields: formValue.customFields,
+                        sellerId: formValue.sellerId,
                     } as UpdateChannelInput;
                     return this.dataService.settings.updateChannel(input);
                 }),
@@ -171,9 +178,10 @@ export class ChannelDetailComponent
             token: entity.token || this.generateToken(),
             pricesIncludeTax: entity.pricesIncludeTax,
             currencyCode: entity.currencyCode,
-            defaultShippingZoneId: entity.defaultShippingZone ? entity.defaultShippingZone.id : '',
+            defaultShippingZoneId: entity.defaultShippingZone?.id ?? '',
             defaultLanguageCode: entity.defaultLanguageCode,
-            defaultTaxZoneId: entity.defaultTaxZone ? entity.defaultTaxZone.id : '',
+            defaultTaxZoneId: entity.defaultTaxZone?.id ?? '',
+            sellerId: entity.seller?.id ?? '',
         });
         if (this.customFields.length) {
             this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);

@@ -17,6 +17,7 @@ import { LocaleStringHydrator } from './helpers/locale-string-hydrator/locale-st
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
 import { OrderModifier } from './helpers/order-modifier/order-modifier';
+import { OrderSplitter } from './helpers/order-splitter/order-splitter';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCipher } from './helpers/password-cipher/password-cipher';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
@@ -53,6 +54,7 @@ import { ProductService } from './services/product.service';
 import { PromotionService } from './services/promotion.service';
 import { RoleService } from './services/role.service';
 import { SearchService } from './services/search.service';
+import { SellerService } from './services/seller.service';
 import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { StockMovementService } from './services/stock-movement.service';
@@ -87,6 +89,7 @@ const services = [
     PromotionService,
     RoleService,
     SearchService,
+    SellerService,
     SessionService,
     ShippingMethodService,
     StockMovementService,
@@ -105,6 +108,7 @@ const helpers = [
     FulfillmentStateMachine,
     OrderMerger,
     OrderModifier,
+    OrderSplitter,
     PaymentStateMachine,
     ListQueryBuilder,
     ShippingCalculator,

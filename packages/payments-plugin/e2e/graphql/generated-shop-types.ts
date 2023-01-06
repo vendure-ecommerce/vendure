@@ -73,6 +73,7 @@ export type Asset = Node & {
   name: Scalars['String'];
   preview: Scalars['String'];
   source: Scalars['String'];
+  tags: Array<Tag>;
   type: AssetType;
   updatedAt: Scalars['DateTime'];
   width: Scalars['Int'];
@@ -135,6 +136,7 @@ export type Channel = Node & {
   defaultTaxZone?: Maybe<Zone>;
   id: Scalars['ID'];
   pricesIncludeTax: Scalars['Boolean'];
+  seller?: Maybe<Seller>;
   token: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -1690,7 +1692,7 @@ export type MutationSetOrderShippingAddressArgs = {
 
 
 export type MutationSetOrderShippingMethodArgs = {
-  shippingMethodId: Scalars['ID'];
+  shippingMethodId: Array<Scalars['ID']>;
 };
 
 
@@ -1840,6 +1842,7 @@ export type Order = Node & {
   totalQuantity: Scalars['Int'];
   /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
   totalWithTax: Scalars['Int'];
+  type: OrderType;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -1877,6 +1880,7 @@ export type OrderFilterParameter = {
   total?: InputMaybe<NumberOperators>;
   totalQuantity?: InputMaybe<NumberOperators>;
   totalWithTax?: InputMaybe<NumberOperators>;
+  type?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -2054,6 +2058,12 @@ export type OrderTaxSummary = {
   taxTotal: Scalars['Int'];
 };
 
+export enum OrderType {
+  Aggregate = 'Aggregate',
+  Regular = 'Regular',
+  Seller = 'Seller'
+}
+
 export type PaginatedList = {
   items: Array<Node>;
   totalItems: Scalars['Int'];
@@ -2213,6 +2223,8 @@ export enum Permission {
   CreateProduct = 'CreateProduct',
   /** Grants permission to create Promotion */
   CreatePromotion = 'CreatePromotion',
+  /** Grants permission to create Seller */
+  CreateSeller = 'CreateSeller',
   /** Grants permission to create PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   CreateSettings = 'CreateSettings',
   /** Grants permission to create ShippingMethod */
@@ -2253,6 +2265,8 @@ export enum Permission {
   DeleteProduct = 'DeleteProduct',
   /** Grants permission to delete Promotion */
   DeletePromotion = 'DeletePromotion',
+  /** Grants permission to delete Seller */
+  DeleteSeller = 'DeleteSeller',
   /** Grants permission to delete PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   DeleteSettings = 'DeleteSettings',
   /** Grants permission to delete ShippingMethod */
@@ -2297,6 +2311,8 @@ export enum Permission {
   ReadProduct = 'ReadProduct',
   /** Grants permission to read Promotion */
   ReadPromotion = 'ReadPromotion',
+  /** Grants permission to read Seller */
+  ReadSeller = 'ReadSeller',
   /** Grants permission to read PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   ReadSettings = 'ReadSettings',
   /** Grants permission to read ShippingMethod */
@@ -2341,6 +2357,8 @@ export enum Permission {
   UpdateProduct = 'UpdateProduct',
   /** Grants permission to update Promotion */
   UpdatePromotion = 'UpdatePromotion',
+  /** Grants permission to update Seller */
+  UpdateSeller = 'UpdateSeller',
   /** Grants permission to update PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   UpdateSettings = 'UpdateSettings',
   /** Grants permission to update ShippingMethod */
@@ -2794,6 +2812,14 @@ export type SearchResultSortParameter = {
   price?: InputMaybe<SortOrder>;
 };
 
+export type Seller = Node & {
+  createdAt: Scalars['DateTime'];
+  customFields?: Maybe<Scalars['JSON']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
 export type SetCustomerForOrderResult = AlreadyLoggedInError | EmailAddressConflictError | NoActiveOrderError | Order;
 
 export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
@@ -3017,6 +3043,13 @@ export type User = Node & {
   verified: Scalars['Boolean'];
 };
 
+export type Vendor = Node & {
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
 /**
  * Returned if the verification token (used to verify a Customer's email address) is valid, but has
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
@@ -3075,7 +3108,7 @@ export type TransitionToStateMutationVariables = Exact<{
 export type TransitionToStateMutation = { transitionOrderToState?: { id: string } | { errorCode: ErrorCode, message: string, transitionError: string, fromState: string, toState: string } | null };
 
 export type SetShippingMethodMutationVariables = Exact<{
-  id: Scalars['ID'];
+  id: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 

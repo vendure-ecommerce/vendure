@@ -31,6 +31,7 @@ import { ProductResolver } from './resolvers/admin/product.resolver';
 import { PromotionResolver } from './resolvers/admin/promotion.resolver';
 import { RoleResolver } from './resolvers/admin/role.resolver';
 import { SearchResolver } from './resolvers/admin/search.resolver';
+import { SellerResolver } from './resolvers/admin/seller.resolver';
 import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolver';
 import { TagResolver } from './resolvers/admin/tag.resolver';
 import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
@@ -38,6 +39,7 @@ import { TaxRateResolver } from './resolvers/admin/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/admin/zone.resolver';
 import { AdministratorEntityResolver } from './resolvers/entity/administrator-entity.resolver';
 import { AssetEntityResolver } from './resolvers/entity/asset-entity.resolver';
+import { ChannelEntityResolver } from './resolvers/entity/channel-entity.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
 import { CountryEntityResolver } from './resolvers/entity/country-entity.resolver';
 import {
@@ -108,6 +110,7 @@ const adminResolvers = [
     TagResolver,
     TaxCategoryResolver,
     TaxRateResolver,
+    SellerResolver,
     ZoneResolver,
 ];
 
@@ -120,6 +123,7 @@ const shopResolvers = [
 ];
 
 export const entityResolvers = [
+    ChannelEntityResolver,
     CollectionEntityResolver,
     CountryEntityResolver,
     CustomerEntityResolver,

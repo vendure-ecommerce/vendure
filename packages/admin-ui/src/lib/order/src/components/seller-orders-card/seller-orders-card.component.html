@@ -1,0 +1,22 @@
+<div class="card">
+    <div class="card-header payment-header">
+        <div>
+            {{ 'order.seller-orders' | translate }}
+        </div>
+    </div>
+    <div class="card-block" *ngFor="let order of sellerOrders$ | async">
+
+        <vdr-labeled-data [label]="'common.code' | translate">
+            <a  [routerLink]="['seller-orders', order.id]">{{ order.code }}</a>
+        </vdr-labeled-data>
+        <vdr-labeled-data *ngIf="getSeller(order) as seller" [label]="'common.seller' | translate">
+            {{ seller.name }}
+        </vdr-labeled-data>
+        <vdr-labeled-data *ngIf="getSeller(order) as seller" [label]="'order.total' | translate">
+            {{ order.totalWithTax | localeCurrency:order.currencyCode }}
+        </vdr-labeled-data>
+        <vdr-labeled-data [label]="'order.state' | translate">
+            <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
+        </vdr-labeled-data>
+    </div>
+</div>

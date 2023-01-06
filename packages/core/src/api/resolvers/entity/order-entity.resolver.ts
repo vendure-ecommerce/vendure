@@ -1,7 +1,7 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/common/lib/generated-types';
 
-import { assertFound } from '../../../common/utils';
+import { assertFound, idsAreEqual } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { HistoryService } from '../../../service/services/history.service';
@@ -79,6 +79,14 @@ export class OrderAdminEntityResolver {
     constructor(private orderService: OrderService) {}
 
     @ResolveField()
+    async channels(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        const channels = order.channels ?? (await this.orderService.getOrderChannels(ctx, order));
+        return channels.filter(channel =>
+            ctx.session?.user?.channelPermissions.find(cp => idsAreEqual(cp.id, channel.id)),
+        );
+    }
+
+    @ResolveField()
     async modifications(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         if (order.modifications) {
             return order.modifications;
@@ -89,5 +97,26 @@ export class OrderAdminEntityResolver {
     @ResolveField()
     async nextStates(@Parent() order: Order) {
         return this.orderService.getNextOrderStates(order);
+    }
+
+    @ResolveField()
+    async sellerOrders(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        const sellerOrders = await this.orderService.getSellerOrders(ctx, order);
+        // Only return seller orders on those channels to which the active user has access.
+        const userChannelIds = ctx.session?.user?.channelPermissions.map(cp => cp.id) ?? [];
+        return sellerOrders.filter(sellerOrder =>
+            sellerOrder.channels.find(c => userChannelIds.includes(c.id)),
+        );
+    }
+
+    @ResolveField()
+    async aggregateOrder(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        const aggregateOrder = await this.orderService.getAggregateOrder(ctx, order);
+        const userChannelIds = ctx.session?.user?.channelPermissions.map(cp => cp.id) ?? [];
+        // Only return the aggregate order if the active user has permissions on that channel
+        return aggregateOrder &&
+            userChannelIds.find(id => aggregateOrder.channels.find(channel => idsAreEqual(channel.id, id)))
+            ? aggregateOrder
+            : undefined;
     }
 }

@@ -41,6 +41,7 @@ import { Product } from './product/product.entity';
 import { Promotion } from './promotion/promotion.entity';
 import { Refund } from './refund/refund.entity';
 import { Role } from './role/role.entity';
+import { Seller } from './seller/seller.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
@@ -124,5 +125,6 @@ export const coreEntitiesMap = {
     TaxCategory,
     TaxRate,
     User,
+    Seller,
     Zone,
 };

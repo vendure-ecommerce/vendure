@@ -35,6 +35,8 @@ export * from './components/select-address-dialog/select-address-dialog.componen
 export * from './components/select-address-dialog/select-address-dialog.graphql';
 export * from './components/select-customer-dialog/select-customer-dialog.component';
 export * from './components/select-shipping-method-dialog/select-shipping-method-dialog.component';
+export * from './components/seller-orders-card/seller-orders-card.component';
+export * from './components/seller-orders-card/seller-orders-card.graphql';
 export * from './components/settle-refund-dialog/settle-refund-dialog.component';
 export * from './components/simple-item-list/simple-item-list.component';
 export * from './order.module';

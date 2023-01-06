@@ -9,6 +9,7 @@ import {
     detailBreadcrumb,
     PaymentMethodFragment,
     Role,
+    Seller,
     ShippingMethodFragment,
     TaxCategoryFragment,
     TaxRateFragment,
@@ -26,6 +27,8 @@ import { PaymentMethodListComponent } from './components/payment-method-list/pay
 import { ProfileComponent } from './components/profile/profile.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
+import { SellerDetailComponent } from './components/seller-detail/seller-detail.component';
+import { SellerListComponent } from './components/seller-list/seller-list.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
 import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
 import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax-category-detail.component';
@@ -40,6 +43,7 @@ import { GlobalSettingsResolver } from './providers/routing/global-settings-reso
 import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
 import { ProfileResolver } from './providers/routing/profile-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
+import { SellerResolver } from './providers/routing/seller-resolver';
 import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
 import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
@@ -81,6 +85,20 @@ export const settingsRoutes: Route[] = [
         resolve: createResolveData(ChannelResolver),
         canDeactivate: [CanDeactivateDetailGuard],
         data: { breadcrumb: channelBreadcrumb },
+    },
+    {
+        path: 'sellers',
+        component: SellerListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.sellers'),
+        },
+    },
+    {
+        path: 'sellers/:id',
+        component: SellerDetailComponent,
+        resolve: createResolveData(SellerResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: { breadcrumb: sellerBreadcrumb },
     },
     {
         path: 'roles',
@@ -211,6 +229,16 @@ export function channelBreadcrumb(data: any, params: any) {
         breadcrumbKey: 'breadcrumb.channels',
         getName: channel => channel.code,
         route: 'channels',
+    });
+}
+
+export function sellerBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<Seller>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.sellers',
+        getName: seller => seller.name,
+        route: 'sellers',
     });
 }
 
