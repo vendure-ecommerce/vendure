@@ -46,6 +46,7 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomPromotionFields,
+    CustomSellerFields,
     CustomShippingMethodFields,
     CustomShippingMethodFieldsTranslation,
     CustomTaxCategoryFields,
@@ -286,6 +287,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'TaxRate', CustomTaxRateFields);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
+    registerCustomFieldsForEntity(config, 'Seller', CustomSellerFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Zone', CustomZoneFields);

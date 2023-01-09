@@ -53,6 +53,7 @@ import { ProductService } from './services/product.service';
 import { PromotionService } from './services/promotion.service';
 import { RoleService } from './services/role.service';
 import { SearchService } from './services/search.service';
+import { SellerService } from './services/seller.service';
 import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { StockMovementService } from './services/stock-movement.service';
@@ -60,7 +61,6 @@ import { TagService } from './services/tag.service';
 import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
-import { VendorService } from './services/vendor.service';
 import { ZoneService } from './services/zone.service';
 
 const services = [
@@ -88,6 +88,7 @@ const services = [
     PromotionService,
     RoleService,
     SearchService,
+    SellerService,
     SessionService,
     ShippingMethodService,
     StockMovementService,
@@ -95,7 +96,6 @@ const services = [
     TaxCategoryService,
     TaxRateService,
     UserService,
-    VendorService,
     ZoneService,
 ];
 

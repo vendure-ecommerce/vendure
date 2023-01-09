@@ -37,7 +37,6 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -72,7 +71,6 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
-import { EntityRelationPaths, EntityRelations } from '../../common/index';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -82,7 +80,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Channel, Session } from '../../entity/index';
+import { Session } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
@@ -95,13 +93,14 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
-import { VendorOrder } from '../../entity/vendor-order/vendor-order.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CouponCodeEvent } from '../../event-bus/index';
-import { OrderEvent } from '../../event-bus/index';
-import { OrderStateTransitionEvent } from '../../event-bus/index';
-import { RefundStateTransitionEvent } from '../../event-bus/index';
-import { OrderLineEvent } from '../../event-bus/index';
+import {
+    CouponCodeEvent,
+    OrderEvent,
+    OrderLineEvent,
+    OrderStateTransitionEvent,
+    RefundStateTransitionEvent,
+} from '../../event-bus/index';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -539,7 +538,6 @@ export class OrderService {
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
-        await this.updateOrderChannels(ctx, order);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
         } else {
@@ -586,7 +584,6 @@ export class OrderService {
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-            await this.updateOrderChannels(ctx, order);
             this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
@@ -618,7 +615,6 @@ export class OrderService {
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
-        await this.updateOrderChannels(ctx, order);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
         this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
         return updatedOrder;
@@ -641,22 +637,6 @@ export class OrderService {
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         return updatedOrder;
-    }
-
-    private async updateOrderChannels(ctx: RequestContext, order: Order) {
-        const vendorOrders = await this.connection
-            .getRepository(ctx, Order)
-            .createQueryBuilder()
-            .relation('vendorOrders')
-            .of(order)
-            .loadMany();
-
-        const channelIds = new Set([ctx.channelId]);
-        for (const vendorOrder of vendorOrders) {
-            channelIds.add(vendorOrder.channelId);
-        }
-        order.channels = [...channelIds].map(id => new Channel({ id }));
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
     }
 
     /**

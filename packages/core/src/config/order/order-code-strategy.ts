@@ -1,8 +1,6 @@
 import { RequestContext } from '../../api/common/request-context';
 import { generatePublicId } from '../../common/generate-public-id';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
-import { Channel } from '../../entity/index';
-import { Vendor } from '../../entity/vendor/vendor.entity';
 
 /**
  * @description
@@ -36,7 +34,7 @@ export interface OrderCodeStrategy extends InjectableStrategy {
      * @description
      * Generates the order code.
      */
-    generate(ctx: RequestContext, channel?: Channel): string | Promise<string>;
+    generate(ctx: RequestContext): string | Promise<string>;
 }
 
 /**

@@ -2,7 +2,9 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity } from 'typeorm';
 
 import { SoftDeletable } from '../../common/types/common-types';
+import { HasCustomFields } from '../../config/index';
 import { VendureEntity } from '../base/base.entity';
+import { CustomSellerFields } from '../custom-entity-fields';
 
 /**
  * @description
@@ -11,8 +13,8 @@ import { VendureEntity } from '../base/base.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Vendor extends VendureEntity implements SoftDeletable /*, HasCustomFields*/ {
-    constructor(input?: DeepPartial<Vendor>) {
+export class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
+    constructor(input?: DeepPartial<Seller>) {
         super(input);
     }
 
@@ -21,6 +23,6 @@ export class Vendor extends VendureEntity implements SoftDeletable /*, HasCustom
 
     @Column() name: string;
 
-    // @Column(type => CustomAdministratorFields)
-    // customFields: CustomAdministratorFields;
+    @Column(type => CustomSellerFields)
+    customFields: CustomSellerFields;
 }

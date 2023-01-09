@@ -362,9 +362,9 @@ export type Channel = Node & {
   defaultTaxZone?: Maybe<Zone>;
   id: Scalars['ID'];
   pricesIncludeTax: Scalars['Boolean'];
+  seller: Seller;
   token: Scalars['String'];
   updatedAt: Scalars['DateTime'];
-  vendor?: Maybe<Vendor>;
 };
 
 /**
@@ -820,6 +820,11 @@ export type CreateRoleInput = {
   permissions: Array<Permission>;
 };
 
+export type CreateSellerInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  name: Scalars['String'];
+};
+
 export type CreateShippingMethodInput = {
   calculator: ConfigurableOperationInput;
   checker: ConfigurableOperationInput;
@@ -1233,6 +1238,7 @@ export type CustomFields = {
   ProductOptionGroup: Array<CustomFieldConfig>;
   ProductVariant: Array<CustomFieldConfig>;
   Promotion: Array<CustomFieldConfig>;
+  Seller: Array<CustomFieldConfig>;
   ShippingMethod: Array<CustomFieldConfig>;
   TaxCategory: Array<CustomFieldConfig>;
   TaxRate: Array<CustomFieldConfig>;
@@ -2484,6 +2490,8 @@ export type Mutation = {
   createPromotion: CreatePromotionResult;
   /** Create a new Role */
   createRole: Role;
+  /** Create a new Seller */
+  createSeller: Seller;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
   /** Create a new Tag */
@@ -2541,6 +2549,8 @@ export type Mutation = {
   deletePromotion: DeletionResponse;
   /** Delete an existing Role */
   deleteRole: DeletionResponse;
+  /** Delete a Seller */
+  deleteSeller: DeletionResponse;
   /** Delete a ShippingMethod */
   deleteShippingMethod: DeletionResponse;
   /** Delete an existing Tag */
@@ -2645,6 +2655,8 @@ export type Mutation = {
   updatePromotion: UpdatePromotionResult;
   /** Update an existing Role */
   updateRole: Role;
+  /** Update an existing Seller */
+  updateSeller: Seller;
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod;
   /** Update an existing Tag */
@@ -2860,6 +2872,11 @@ export type MutationCreateRoleArgs = {
 };
 
 
+export type MutationCreateSellerArgs = {
+  input: CreateSellerInput;
+};
+
+
 export type MutationCreateShippingMethodArgs = {
   input: CreateShippingMethodInput;
 };
@@ -3010,6 +3027,11 @@ export type MutationDeletePromotionArgs = {
 
 
 export type MutationDeleteRoleArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteSellerArgs = {
   id: Scalars['ID'];
 };
 
@@ -3308,6 +3330,11 @@ export type MutationUpdatePromotionArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput;
+};
+
+
+export type MutationUpdateSellerArgs = {
+  input: UpdateSellerInput;
 };
 
 
@@ -3889,6 +3916,8 @@ export enum Permission {
   CreateProduct = 'CreateProduct',
   /** Grants permission to create Promotion */
   CreatePromotion = 'CreatePromotion',
+  /** Grants permission to create Seller */
+  CreateSeller = 'CreateSeller',
   /** Grants permission to create PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   CreateSettings = 'CreateSettings',
   /** Grants permission to create ShippingMethod */
@@ -3901,8 +3930,6 @@ export enum Permission {
   CreateTaxCategory = 'CreateTaxCategory',
   /** Grants permission to create TaxRate */
   CreateTaxRate = 'CreateTaxRate',
-  /** Grants permission to create Vendor */
-  CreateVendor = 'CreateVendor',
   /** Grants permission to create Zone */
   CreateZone = 'CreateZone',
   /** Grants permission to delete Administrator */
@@ -3931,6 +3958,8 @@ export enum Permission {
   DeleteProduct = 'DeleteProduct',
   /** Grants permission to delete Promotion */
   DeletePromotion = 'DeletePromotion',
+  /** Grants permission to delete Seller */
+  DeleteSeller = 'DeleteSeller',
   /** Grants permission to delete PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   DeleteSettings = 'DeleteSettings',
   /** Grants permission to delete ShippingMethod */
@@ -3943,8 +3972,6 @@ export enum Permission {
   DeleteTaxCategory = 'DeleteTaxCategory',
   /** Grants permission to delete TaxRate */
   DeleteTaxRate = 'DeleteTaxRate',
-  /** Grants permission to delete Vendor */
-  DeleteVendor = 'DeleteVendor',
   /** Grants permission to delete Zone */
   DeleteZone = 'DeleteZone',
   /** Owner means the user owns this entity, e.g. a Customer's own Order */
@@ -3977,6 +4004,8 @@ export enum Permission {
   ReadProduct = 'ReadProduct',
   /** Grants permission to read Promotion */
   ReadPromotion = 'ReadPromotion',
+  /** Grants permission to read Seller */
+  ReadSeller = 'ReadSeller',
   /** Grants permission to read PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   ReadSettings = 'ReadSettings',
   /** Grants permission to read ShippingMethod */
@@ -3989,8 +4018,6 @@ export enum Permission {
   ReadTaxCategory = 'ReadTaxCategory',
   /** Grants permission to read TaxRate */
   ReadTaxRate = 'ReadTaxRate',
-  /** Grants permission to read Vendor */
-  ReadVendor = 'ReadVendor',
   /** Grants permission to read Zone */
   ReadZone = 'ReadZone',
   /** SuperAdmin has unrestricted access to all operations */
@@ -4023,6 +4050,8 @@ export enum Permission {
   UpdateProduct = 'UpdateProduct',
   /** Grants permission to update Promotion */
   UpdatePromotion = 'UpdatePromotion',
+  /** Grants permission to update Seller */
+  UpdateSeller = 'UpdateSeller',
   /** Grants permission to update PaymentMethods, ShippingMethods, TaxCategories, TaxRates, Zones, Countries, System & GlobalSettings */
   UpdateSettings = 'UpdateSettings',
   /** Grants permission to update ShippingMethod */
@@ -4035,8 +4064,6 @@ export enum Permission {
   UpdateTaxCategory = 'UpdateTaxCategory',
   /** Grants permission to update TaxRate */
   UpdateTaxRate = 'UpdateTaxRate',
-  /** Grants permission to update Vendor */
-  UpdateVendor = 'UpdateVendor',
   /** Grants permission to update Zone */
   UpdateZone = 'UpdateZone'
 }
@@ -4449,6 +4476,8 @@ export type Query = {
   role?: Maybe<Role>;
   roles: RoleList;
   search: SearchResponse;
+  seller?: Maybe<Seller>;
+  sellers: SellerList;
   shippingCalculators: Array<ConfigurableOperationDefinition>;
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
   shippingMethod?: Maybe<ShippingMethod>;
@@ -4654,6 +4683,16 @@ export type QueryRolesArgs = {
 
 export type QuerySearchArgs = {
   input: SearchInput;
+};
+
+
+export type QuerySellerArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QuerySellersArgs = {
+  options?: InputMaybe<SellerListOptions>;
 };
 
 
@@ -4962,6 +5001,48 @@ export type SearchResultPrice = PriceRange | SinglePrice;
 export type SearchResultSortParameter = {
   name?: InputMaybe<SortOrder>;
   price?: InputMaybe<SortOrder>;
+};
+
+export type Seller = Node & {
+  __typename?: 'Seller';
+  createdAt: Scalars['DateTime'];
+  customFields?: Maybe<Scalars['JSON']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type SellerFilterParameter = {
+  createdAt?: InputMaybe<DateOperators>;
+  id?: InputMaybe<IdOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type SellerList = PaginatedList & {
+  __typename?: 'SellerList';
+  items: Array<Seller>;
+  totalItems: Scalars['Int'];
+};
+
+export type SellerListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<SellerFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<SellerSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type SellerSortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ServerConfig = {
@@ -5598,6 +5679,12 @@ export type UpdateRoleInput = {
   description?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   permissions?: InputMaybe<Array<Permission>>;
+};
+
+export type UpdateSellerInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateShippingMethodInput = {

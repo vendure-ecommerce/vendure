@@ -27,7 +27,7 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { Session } from '../../entity/session/session.entity';
-import { Vendor } from '../../entity/vendor/vendor.entity';
+import { Seller } from '../../entity/seller/seller.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ChangeChannelEvent } from '../../event-bus/events/change-channel-event';
@@ -243,8 +243,8 @@ export class ChannelService {
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
         if (input.vendorId) {
-            const vendor = await this.connection.getEntityOrThrow(ctx, Vendor, input.vendorId);
-            newChannel.vendor = vendor;
+            const vendor = await this.connection.getEntityOrThrow(ctx, Seller, input.vendorId);
+            newChannel.seller = vendor;
             await this.connection.getRepository(ctx, Channel).save(newChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
@@ -281,8 +281,8 @@ export class ChannelService {
             );
         }
         if (input.vendorId) {
-            const vendor = await this.connection.getEntityOrThrow(ctx, Vendor, input.vendorId);
-            updatedChannel.vendor = vendor;
+            const vendor = await this.connection.getEntityOrThrow(ctx, Seller, input.vendorId);
+            updatedChannel.seller = vendor;
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
@@ -335,25 +335,33 @@ export class ChannelService {
      */
     private async ensureDefaultChannelExists() {
         const { defaultChannelToken } = this.configService;
-        const defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
+        let defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
             where: {
                 code: DEFAULT_CHANNEL_CODE,
             },
+            relations: ['seller'],
         });
 
         if (!defaultChannel) {
-            const newDefaultChannel = new Channel({
+            defaultChannel = new Channel({
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: this.configService.defaultLanguageCode,
                 pricesIncludeTax: false,
                 currencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
-            await this.connection.rawConnection
-                .getRepository(Channel)
-                .save(newDefaultChannel, { reload: false });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
+            await this.connection.rawConnection
+                .getRepository(Channel)
+                .save(defaultChannel, { reload: false });
+        }
+        if (!defaultChannel.seller) {
+            const seller = await this.connection.rawConnection.getRepository(Seller).find();
+            if (seller.length === 0) {
+                throw new InternalServerError('No Sellers were found. Could not initialize default Channel.');
+            }
+            defaultChannel.seller = seller[0];
             await this.connection.rawConnection
                 .getRepository(Channel)
                 .save(defaultChannel, { reload: false });

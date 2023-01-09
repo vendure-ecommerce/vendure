@@ -173,6 +173,7 @@
       "Return",
       "Role",
       "Sale",
+      "Seller",
       "ShippingMethod",
       "StockAdjustment",
       "Surcharge",
@@ -180,6 +181,7 @@
       "TaxCategory",
       "TaxRate",
       "User",
+      "Vendor",
       "Zone"
     ],
     "PaginatedList": [
@@ -199,9 +201,11 @@
       "ProductVariantList",
       "PromotionList",
       "RoleList",
+      "SellerList",
       "ShippingMethodList",
       "TagList",
-      "TaxRateList"
+      "TaxRateList",
+      "VendorList"
     ],
     "RefundOrderResult": [
       "AlreadyRefundedError",

@@ -1,20 +1,17 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Channel } from '../../../entity/channel/channel.entity';
-import { Vendor } from '../../../entity/vendor/vendor.entity';
-import { VendorService } from '../../../service/index';
+import { Seller } from '../../../entity/seller/seller.entity';
+import { SellerService } from '../../../service/index';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Channel')
 export class ChannelEntityResolver {
-    constructor(private vendorService: VendorService) {}
+    constructor(private sellerService: SellerService) {}
 
     @ResolveField()
-    async vendor(@Ctx() ctx: RequestContext, @Parent() channel: Channel): Promise<Vendor | undefined> {
-        if (!channel.vendorId) {
-            return;
-        }
-        return channel.vendor ?? (await this.vendorService.findOne(ctx, channel.vendorId));
+    async seller(@Ctx() ctx: RequestContext, @Parent() channel: Channel): Promise<Seller | undefined> {
+        return channel.seller ?? (await this.sellerService.findOne(ctx, channel.sellerId));
     }
 }

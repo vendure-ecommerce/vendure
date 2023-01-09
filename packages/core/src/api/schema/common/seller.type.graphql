@@ -1,4 +1,4 @@
-type Vendor implements Node {
+type Seller implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
