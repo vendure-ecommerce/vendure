@@ -2,19 +2,21 @@ import { FetchPolicy, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
 
 import * as Codegen from '../../common/generated-types';
-import { JobListOptions, JobState } from '../../common/generated-types';
+import { JobListOptions, JobState, SellerListOptions } from '../../common/generated-types';
 import {
     ADD_MEMBERS_TO_ZONE,
     CANCEL_JOB,
     CREATE_CHANNEL,
     CREATE_COUNTRY,
     CREATE_PAYMENT_METHOD,
+    CREATE_SELLER,
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
     DELETE_CHANNEL,
     DELETE_COUNTRY,
     DELETE_PAYMENT_METHOD,
+    DELETE_SELLER,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
     DELETE_ZONE,
@@ -32,6 +34,8 @@ import {
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_PAYMENT_METHOD_OPERATIONS,
+    GET_SELLER,
+    GET_SELLERS,
     GET_TAX_CATEGORIES,
     GET_TAX_CATEGORY,
     GET_TAX_RATE,
@@ -43,6 +47,7 @@ import {
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PAYMENT_METHOD,
+    UPDATE_SELLER,
     UPDATE_TAX_CATEGORY,
     UPDATE_TAX_RATE,
     UPDATE_ZONE,
@@ -279,6 +284,49 @@ export class SettingsDataService {
                 id,
             },
         );
+    }
+
+    getSellers(options?: SellerListOptions) {
+        return this.baseDataService.query<Codegen.GetSellersQuery, Codegen.GetSellersQueryVariables>(
+            GET_SELLERS,
+            { options },
+        );
+    }
+
+    getSeller(id: string) {
+        return this.baseDataService.query<Codegen.GetSellerQuery, Codegen.GetSellerQueryVariables>(
+            GET_SELLER,
+            {
+                id,
+            },
+        );
+    }
+
+    createSeller(input: Codegen.CreateSellerInput) {
+        return this.baseDataService.mutate<
+            Codegen.CreateSellerMutation,
+            Codegen.CreateSellerMutationVariables
+        >(CREATE_SELLER, {
+            input,
+        });
+    }
+
+    updateSeller(input: Codegen.UpdateSellerInput) {
+        return this.baseDataService.mutate<
+            Codegen.UpdateSellerMutation,
+            Codegen.UpdateSellerMutationVariables
+        >(UPDATE_SELLER, {
+            input,
+        });
+    }
+
+    deleteSeller(id: string) {
+        return this.baseDataService.mutate<
+            Codegen.DeleteSellerMutation,
+            Codegen.DeleteSellerMutationVariables
+        >(DELETE_SELLER, {
+            id,
+        });
     }
 
     getActiveChannel(fetchPolicy?: FetchPolicy) {

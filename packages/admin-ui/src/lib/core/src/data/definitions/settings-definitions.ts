@@ -340,6 +340,16 @@ export const CHANNEL_FRAGMENT = gql`
     }
 `;
 
+export const SELLER_FRAGMENT = gql`
+    fragment Seller on Seller {
+        id
+        createdAt
+        updatedAt
+        name
+    }
+`;
+
+// TODO v2: change this to paginated list
 export const GET_CHANNELS = gql`
     query GetChannels {
         channels {
@@ -356,6 +366,54 @@ export const GET_CHANNEL = gql`
         }
     }
     ${CHANNEL_FRAGMENT}
+`;
+
+export const GET_SELLERS = gql`
+    query GetSellers($options: SellerListOptions) {
+        sellers(options: $options) {
+            items {
+                ...Seller
+            }
+            totalItems
+        }
+    }
+    ${SELLER_FRAGMENT}
+`;
+
+export const GET_SELLER = gql`
+    query GetSeller($id: ID!) {
+        seller(id: $id) {
+            ...Seller
+        }
+    }
+    ${SELLER_FRAGMENT}
+`;
+
+export const CREATE_SELLER = gql`
+    mutation CreateSeller($input: CreateSellerInput!) {
+        createSeller(input: $input) {
+            ...Seller
+        }
+    }
+    ${SELLER_FRAGMENT}
+`;
+
+export const UPDATE_SELLER = gql`
+    mutation UpdateSeller($input: UpdateSellerInput!) {
+        updateSeller(input: $input) {
+            ...Seller
+        }
+    }
+    ${SELLER_FRAGMENT}
+`;
+
+export const DELETE_SELLER = gql`
+    mutation DeleteSeller($id: ID!) {
+        deleteSeller(id: $id) {
+            result
+            message
+        }
+    }
 `;
 
 export const GET_ACTIVE_CHANNEL = gql`
@@ -715,6 +773,9 @@ export const GET_SERVER_CONFIG = gql`
                         ...CustomFields
                     }
                     Promotion {
+                        ...CustomFields
+                    }
+                    Seller {
                         ...CustomFields
                     }
                     ShippingMethod {

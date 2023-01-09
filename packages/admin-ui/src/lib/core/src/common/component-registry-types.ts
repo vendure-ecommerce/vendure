@@ -104,6 +104,7 @@ export type CustomDetailComponentLocationId =
     | 'payment-method-detail'
     | 'product-detail'
     | 'promotion-detail'
+    | 'seller-detail'
     | 'shipping-method-detail'
     | 'tax-category-detail'
     | 'tax-rate-detail';
