@@ -7,14 +7,44 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    Injector,
     LogLevel,
+    Order,
+    OrderLine,
+    ProductVariant,
+    RequestContext,
+    TransactionalConnection,
     VendureConfig,
 } from '@vendure/core';
+import { VendorSelectionStrategy } from '@vendure/core/dist/config/order/vendor-selection-strategy';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
+
+class TestVendorSelectionStrategy implements VendorSelectionStrategy {
+    private connection: TransactionalConnection;
+
+    init(injector: Injector) {
+        this.connection = injector.get(TransactionalConnection);
+    }
+
+    async selectChannelIdForVendorOrder(ctx: RequestContext, order: Order, orderLine: OrderLine) {
+        const { channels } = await this.connection.getEntityOrThrow(
+            ctx,
+            ProductVariant,
+            orderLine.productVariant.id,
+            {
+                relations: ['channels', 'channels.vendor'],
+            },
+        );
+        const channelsWithVendor = channels.filter(channel => channel.vendor != null);
+        if (channelsWithVendor.length === 1) {
+            return channelsWithVendor[0]?.id;
+        }
+    }
+}
 
 /**
  * Config settings used during development
@@ -48,9 +78,12 @@ export const devConfig: VendureConfig = {
     },
     dbConnectionOptions: {
         synchronize: false,
-        logging: false,
+        logging: ['error'],
         migrations: [path.join(__dirname, 'migrations/*.ts')],
         ...getDbConfig(),
+    },
+    orderOptions: {
+        vendorSelectionStrategy: new TestVendorSelectionStrategy(),
     },
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
