@@ -19,6 +19,7 @@ import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { User } from '../../entity/user/user.entity';
+import { ExternalAuthenticationMethod } from '../../entity/authentication-method/external-authentication-method.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
@@ -87,7 +88,8 @@ export class AuthService {
             user.roles = userWithRoles?.roles || [];
         }
 
-        if (this.configService.authOptions.requireVerification && !user.verified) {
+        const extAuths = (user.authenticationMethods ?? []).filter(am => am instanceof ExternalAuthenticationMethod);
+        if (!extAuths.length && this.configService.authOptions.requireVerification && !user.verified) {
             return new NotVerifiedError();
         }
         if (ctx.session && ctx.session.activeOrderId) {

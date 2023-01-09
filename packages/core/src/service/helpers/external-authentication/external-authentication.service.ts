@@ -214,21 +214,16 @@ export class ExternalAuthenticationService {
         strategy: string,
         externalIdentifier: string,
     ): Promise<User | undefined> {
-        const usersWithMatchingIdentifier = await this.connection
+        const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
-            .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
+            .leftJoinAndSelect('user.authenticationMethods', 'aums')
+            .leftJoin('user.authenticationMethods', 'authMethod')
             .andWhere('authMethod.externalIdentifier = :externalIdentifier', { externalIdentifier })
+            .andWhere('authMethod.strategy = :strategy', { strategy })
             .andWhere('user.deletedAt IS NULL')
-            .getMany();
-
-        const matchingUser = usersWithMatchingIdentifier.find(user =>
-            user.authenticationMethods.find(
-                m => m instanceof ExternalAuthenticationMethod && m.strategy === strategy,
-            ),
-        );
-
-        return matchingUser;
+            .getOne();
+        return user;
     }
 
     private async findExistingCustomerUserByEmailAddress(ctx: RequestContext, emailAddress: string) {
