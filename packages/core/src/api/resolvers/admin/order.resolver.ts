@@ -28,18 +28,14 @@ import {
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
-import { idsAreEqual } from '../../../common/index';
 import { TransactionalConnection } from '../../../connection';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
-import { OrderInterface } from '../../../entity/order/base-order.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
-import { VendorOrder } from '../../../entity/vendor-order/vendor-order.entity';
 import { FulfillmentState } from '../../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { PaymentState } from '../../../service/helpers/payment-state-machine/payment-state';
-import { ChannelService } from '../../../service/index';
 import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
@@ -49,11 +45,7 @@ import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class OrderResolver {
-    constructor(
-        private orderService: OrderService,
-        private connection: TransactionalConnection,
-        private channelService: ChannelService,
-    ) {}
+    constructor(private orderService: OrderService, private connection: TransactionalConnection) {}
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -71,28 +63,8 @@ export class OrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryOrderArgs,
         @Relations(Order) relations: RelationPaths<Order>,
-    ): Promise<OrderInterface | undefined> {
-        const order = await this.orderService.findOne(ctx, args.id, relations);
-        const defaultChannelId = (await this.channelService.getDefaultChannel()).id;
-        const isDefaultChannel = idsAreEqual(ctx.channelId, defaultChannelId);
-        if (!order) {
-            return;
-        }
-        if (isDefaultChannel) {
-            return order;
-        } else {
-            const orderWithVendorOrders = await this.connection.getRepository(ctx, VendorOrder).findOne({
-                where: {
-                    channelId: ctx.channelId,
-                    parentId: order.id,
-                },
-                relations: ['lines', 'surcharges', 'payments', 'modifications', 'shippingLines'],
-            });
-            if (orderWithVendorOrders) {
-                orderWithVendorOrders.parent = order;
-                return orderWithVendorOrders;
-            }
-        }
+    ): Promise<Order | undefined> {
+        return this.orderService.findOne(ctx, args.id, relations);
     }
 
     @Transaction()

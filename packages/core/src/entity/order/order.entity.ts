@@ -1,4 +1,5 @@
 import {
+    Adjustment,
     CurrencyCode,
     Discount,
     OrderAddress,

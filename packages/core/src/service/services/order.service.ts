@@ -264,16 +264,14 @@ export class OrderService {
         if (order) {
             if (effectiveRelations.includes('lines.productVariant')) {
                 for (const line of order.lines) {
-                    try {
-                        const withPrice = await this.productVariantService.applyChannelPriceAndTax(
+                    line.productVariant = this.translator.translate(
+                        await this.productVariantService.applyChannelPriceAndTax(
                             line.productVariant,
                             ctx,
                             order,
-                        );
-                        line.productVariant = this.translator.translate(withPrice, ctx);
-                    } catch (e: any) {
-                        // ignore
-                    }
+                        ),
+                        ctx,
+                    );
                 }
             }
             return order;
