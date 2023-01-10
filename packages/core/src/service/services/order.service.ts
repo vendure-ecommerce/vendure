@@ -107,6 +107,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderModifier } from '../helpers/order-modifier/order-modifier';
+import { OrderSplitter } from '../helpers/order-splitter/order-splitter';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
@@ -152,6 +153,7 @@ export class OrderService {
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
+        private orderSplitter: OrderSplitter,
         private paymentService: PaymentService,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
@@ -451,6 +453,7 @@ export class OrderService {
 
     private async createEmptyOrderEntity(ctx: RequestContext) {
         return new Order({
+            type: 'regular',
             code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
@@ -902,11 +905,18 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
+        const fromActiveStatus = order.active;
         try {
             await this.orderStateMachine.transition(ctx, order, state);
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new OrderStateTransitionError({ transitionError, fromState, toState: state });
+        }
+        if (fromActiveStatus === true && order.active === false) {
+            const sellerOrders = await this.orderSplitter.createSellerOrders(ctx, order);
+            for (const sellerOrder of sellerOrders) {
+                await this.applyPriceAdjustments(ctx, sellerOrder);
+            }
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));

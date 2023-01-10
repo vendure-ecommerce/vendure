@@ -17,6 +17,7 @@ import { LocaleStringHydrator } from './helpers/locale-string-hydrator/locale-st
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
 import { OrderModifier } from './helpers/order-modifier/order-modifier';
+import { OrderSplitter } from './helpers/order-splitter/order-splitter';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCipher } from './helpers/password-cipher/password-cipher';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
@@ -107,6 +108,7 @@ const helpers = [
     FulfillmentStateMachine,
     OrderMerger,
     OrderModifier,
+    OrderSplitter,
     PaymentStateMachine,
     ListQueryBuilder,
     ShippingCalculator,

@@ -10,6 +10,7 @@ export * from './helpers/order-calculator/order-calculator';
 export * from './helpers/order-calculator/prorate';
 export * from './helpers/order-merger/order-merger';
 export * from './helpers/order-modifier/order-modifier';
+export * from './helpers/order-splitter/order-splitter';
 export * from './helpers/order-state-machine/order-state';
 export * from './helpers/password-cipher/password-cipher';
 export * from './helpers/payment-state-machine/payment-state';

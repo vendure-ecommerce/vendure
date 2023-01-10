@@ -24,9 +24,7 @@ import { OrderHistoryEntry } from './history-entry/order-history-entry.entity';
 import { OrderItem } from './order-item/order-item.entity';
 import { OrderLine } from './order-line/order-line.entity';
 import { OrderModification } from './order-modification/order-modification.entity';
-import { AggregateOrder } from './order/aggregate-order.entity';
 import { Order } from './order/order.entity';
-import { SellerOrder } from './order/seller-order.entity';
 import { PaymentMethod } from './payment-method/payment-method.entity';
 import { Payment } from './payment/payment.entity';
 import { ProductOptionGroupTranslation } from './product-option-group/product-option-group-translation.entity';
@@ -43,6 +41,7 @@ import { Product } from './product/product.entity';
 import { Promotion } from './promotion/promotion.entity';
 import { Refund } from './refund/refund.entity';
 import { Role } from './role/role.entity';
+import { Seller } from './seller/seller.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
@@ -60,7 +59,6 @@ import { Tag } from './tag/tag.entity';
 import { TaxCategory } from './tax-category/tax-category.entity';
 import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
-import { Seller } from './seller/seller.entity';
 import { Zone } from './zone/zone.entity';
 
 /**
@@ -69,7 +67,6 @@ import { Zone } from './zone/zone.entity';
 export const coreEntitiesMap = {
     Address,
     Administrator,
-    AggregateOrder,
     Allocation,
     AnonymousSession,
     Asset,
@@ -117,7 +114,6 @@ export const coreEntitiesMap = {
     Release,
     Role,
     Sale,
-    SellerOrder,
     Session,
     ShippingLine,
     ShippingMethod,

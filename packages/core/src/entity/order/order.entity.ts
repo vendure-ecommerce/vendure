@@ -1,5 +1,4 @@
 import {
-    Adjustment,
     CurrencyCode,
     Discount,
     OrderAddress,
@@ -8,16 +7,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import {
-    Column,
-    Entity,
-    Index,
-    JoinTable,
-    ManyToMany,
-    ManyToOne,
-    OneToMany,
-    TableInheritance,
-} from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { InternalServerError } from '../../common/error/errors';
@@ -37,6 +27,8 @@ import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
 
+export type OrderType = 'regular' | 'seller' | 'aggregate';
+
 /**
  * @description
  * An Order is created whenever a {@link Customer} adds an item to the cart. It contains all the
@@ -49,11 +41,19 @@ import { Surcharge } from '../surcharge/surcharge.entity';
  * @docsCategory entities
  */
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'discriminator' } })
 export class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     constructor(input?: DeepPartial<Order>) {
         super(input);
     }
+
+    @Column('varchar')
+    type: OrderType;
+
+    @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
+    sellerOrders: Order[];
+
+    @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders)
+    aggregateOrder: Order;
 
     /**
      * @description

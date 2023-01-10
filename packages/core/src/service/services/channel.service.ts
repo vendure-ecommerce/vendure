@@ -26,8 +26,8 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
-import { Session } from '../../entity/session/session.entity';
 import { Seller } from '../../entity/seller/seller.entity';
+import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ChangeChannelEvent } from '../../event-bus/events/change-channel-event';
@@ -242,9 +242,9 @@ export class ChannelService {
             );
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
-        if (input.vendorId) {
-            const vendor = await this.connection.getEntityOrThrow(ctx, Seller, input.vendorId);
-            newChannel.seller = vendor;
+        if (input.sellerId) {
+            const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.sellerId);
+            newChannel.seller = seller;
             await this.connection.getRepository(ctx, Channel).save(newChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
@@ -280,9 +280,9 @@ export class ChannelService {
                 input.defaultShippingZoneId,
             );
         }
-        if (input.vendorId) {
-            const vendor = await this.connection.getEntityOrThrow(ctx, Seller, input.vendorId);
-            updatedChannel.seller = vendor;
+        if (input.sellerId) {
+            const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.sellerId);
+            updatedChannel.seller = seller;
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);

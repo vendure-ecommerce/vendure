@@ -34,6 +34,7 @@ import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { OrderPlacedStrategy } from './order/order-placed-strategy';
+import { OrderSplitStrategy } from './order/order-split-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { CustomPaymentProcess } from './payment/custom-payment-process';
 import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
@@ -570,6 +571,7 @@ export interface OrderOptions {
      * @default DefaultActiveOrderStrategy
      */
     activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
+    orderSplitStrategy?: OrderSplitStrategy;
 }
 
 /**
