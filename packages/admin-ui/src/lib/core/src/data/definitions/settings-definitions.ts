@@ -337,6 +337,10 @@ export const CHANNEL_FRAGMENT = gql`
             id
             name
         }
+        seller {
+            id
+            name
+        }
     }
 `;
 

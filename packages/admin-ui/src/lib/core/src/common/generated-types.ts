@@ -661,8 +661,8 @@ export type CreateChannelInput = {
   defaultShippingZoneId: Scalars['ID'];
   defaultTaxZoneId: Scalars['ID'];
   pricesIncludeTax: Scalars['Boolean'];
+  sellerId?: InputMaybe<Scalars['ID']>;
   token: Scalars['String'];
-  vendorId?: InputMaybe<Scalars['ID']>;
 };
 
 export type CreateChannelResult = Channel | LanguageNotAvailableError;
@@ -5575,8 +5575,8 @@ export type UpdateChannelInput = {
   defaultTaxZoneId?: InputMaybe<Scalars['ID']>;
   id: Scalars['ID'];
   pricesIncludeTax?: InputMaybe<Scalars['Boolean']>;
+  sellerId?: InputMaybe<Scalars['ID']>;
   token?: InputMaybe<Scalars['String']>;
-  vendorId?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateChannelResult = Channel | LanguageNotAvailableError;
@@ -7203,21 +7203,21 @@ export type DeleteTaxRateMutationVariables = Exact<{
 
 export type DeleteTaxRateMutation = { deleteTaxRate: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
-export type ChannelFragment = { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null };
+export type ChannelFragment = { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller: { __typename?: 'Seller', id: string, name: string } };
 
 export type SellerFragment = { __typename?: 'Seller', id: string, createdAt: any, updatedAt: any, name: string };
 
 export type GetChannelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetChannelsQuery = { channels: Array<{ __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null }> };
+export type GetChannelsQuery = { channels: Array<{ __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller: { __typename?: 'Seller', id: string, name: string } }> };
 
 export type GetChannelQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type GetChannelQuery = { channel?: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null } | null };
+export type GetChannelQuery = { channel?: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller: { __typename?: 'Seller', id: string, name: string } } | null };
 
 export type GetSellersQueryVariables = Exact<{
   options?: InputMaybe<SellerListOptions>;
@@ -7257,21 +7257,21 @@ export type DeleteSellerMutation = { deleteSeller: { __typename?: 'DeletionRespo
 export type GetActiveChannelQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetActiveChannelQuery = { activeChannel: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null } };
+export type GetActiveChannelQuery = { activeChannel: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller: { __typename?: 'Seller', id: string, name: string } } };
 
 export type CreateChannelMutationVariables = Exact<{
   input: CreateChannelInput;
 }>;
 
 
-export type CreateChannelMutation = { createChannel: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null } | { __typename?: 'LanguageNotAvailableError', errorCode: ErrorCode, message: string } };
+export type CreateChannelMutation = { createChannel: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller: { __typename?: 'Seller', id: string, name: string } } | { __typename?: 'LanguageNotAvailableError', errorCode: ErrorCode, message: string } };
 
 export type UpdateChannelMutationVariables = Exact<{
   input: UpdateChannelInput;
 }>;
 
 
-export type UpdateChannelMutation = { updateChannel: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null } | { __typename?: 'LanguageNotAvailableError', errorCode: ErrorCode, message: string } };
+export type UpdateChannelMutation = { updateChannel: { __typename?: 'Channel', id: string, createdAt: any, updatedAt: any, code: string, token: string, pricesIncludeTax: boolean, currencyCode: CurrencyCode, defaultLanguageCode: LanguageCode, defaultShippingZone?: { __typename?: 'Zone', id: string, name: string } | null, defaultTaxZone?: { __typename?: 'Zone', id: string, name: string } | null, seller: { __typename?: 'Seller', id: string, name: string } } | { __typename?: 'LanguageNotAvailableError', errorCode: ErrorCode, message: string } };
 
 export type DeleteChannelMutationVariables = Exact<{
   id: Scalars['ID'];
