@@ -661,8 +661,8 @@ export type CreateChannelInput = {
   defaultShippingZoneId: Scalars['ID'];
   defaultTaxZoneId: Scalars['ID'];
   pricesIncludeTax: Scalars['Boolean'];
+  sellerId?: InputMaybe<Scalars['ID']>;
   token: Scalars['String'];
-  vendorId?: InputMaybe<Scalars['ID']>;
 };
 
 export type CreateChannelResult = Channel | LanguageNotAvailableError;
@@ -5499,8 +5499,8 @@ export type UpdateChannelInput = {
   defaultTaxZoneId?: InputMaybe<Scalars['ID']>;
   id: Scalars['ID'];
   pricesIncludeTax?: InputMaybe<Scalars['Boolean']>;
+  sellerId?: InputMaybe<Scalars['ID']>;
   token?: InputMaybe<Scalars['String']>;
-  vendorId?: InputMaybe<Scalars['ID']>;
 };
 
 export type UpdateChannelResult = Channel | LanguageNotAvailableError;

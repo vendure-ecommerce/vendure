@@ -69,7 +69,7 @@ type Mutation {
     "Allows any custom fields to be set for the active order"
     setOrderCustomFields(input: UpdateOrderInput!): ActiveOrderResult!
     "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
-    setOrderShippingMethod(shippingMethodId: ID!): SetOrderShippingMethodResult!
+    setOrderShippingMethod(shippingMethodId: [ID!]!): SetOrderShippingMethodResult!
     "Add a Payment to the Order"
     addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult!
     "Set the Customer for the Order. Required only if the Customer is not currently logged in"

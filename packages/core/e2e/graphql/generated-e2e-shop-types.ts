@@ -1692,7 +1692,7 @@ export type MutationSetOrderShippingAddressArgs = {
 
 
 export type MutationSetOrderShippingMethodArgs = {
-  shippingMethodId: Scalars['ID'];
+  shippingMethodId: Array<Scalars['ID']>;
 };
 
 
@@ -3216,7 +3216,7 @@ export type GetShippingMethodsQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetShippingMethodsQuery = { eligibleShippingMethods: Array<{ id: string, code: string, price: number, name: string, description: string }> };
 
 export type SetShippingMethodMutationVariables = Exact<{
-  id: Scalars['ID'];
+  id: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 

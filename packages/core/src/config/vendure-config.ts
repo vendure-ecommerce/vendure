@@ -34,7 +34,7 @@ import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { OrderPlacedStrategy } from './order/order-placed-strategy';
-import { OrderSplitStrategy } from './order/order-split-strategy';
+import { OrderSellerStrategy } from './order/order-seller-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { CustomPaymentProcess } from './payment/custom-payment-process';
 import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
@@ -44,6 +44,7 @@ import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
+import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
@@ -571,7 +572,7 @@ export interface OrderOptions {
      * @default DefaultActiveOrderStrategy
      */
     activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
-    orderSplitStrategy?: OrderSplitStrategy;
+    orderSellerStrategy?: OrderSellerStrategy;
 }
 
 /**
@@ -689,7 +690,7 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
-
+    shippingLineAssignmentStrategy?: ShippingLineAssignmentStrategy;
     /**
      * @description
      * Allows the definition of custom states and transition logic for the fulfillment process state machine.

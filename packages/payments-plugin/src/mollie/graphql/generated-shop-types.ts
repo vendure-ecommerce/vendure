@@ -1798,7 +1798,7 @@ export type MutationSetOrderShippingAddressArgs = {
 
 
 export type MutationSetOrderShippingMethodArgs = {
-  shippingMethodId: Scalars['ID'];
+  shippingMethodId: Array<Scalars['ID']>;
 };
 
 

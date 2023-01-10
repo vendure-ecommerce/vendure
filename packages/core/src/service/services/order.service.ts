@@ -856,38 +856,68 @@ export class OrderService {
     async setShippingMethod(
         ctx: RequestContext,
         orderId: ID,
-        shippingMethodId: ID,
+        shippingMethodIds: ID[],
     ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const validationError = this.assertAddingItemsState(order);
         if (validationError) {
             return validationError;
         }
-        const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
-            ctx,
-            order,
-            shippingMethodId,
-        );
-        if (!shippingMethod) {
-            return new IneligibleShippingMethodError();
-        }
-        let shippingLine: ShippingLine | undefined = order.shippingLines[0];
-        if (shippingLine) {
-            shippingLine.shippingMethod = shippingMethod;
-        } else {
-            shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
-                new ShippingLine({
-                    shippingMethod,
-                    order,
-                    adjustments: [],
-                    listPrice: 0,
-                    listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-                    taxLines: [],
-                }),
+        for (const [i, shippingMethodId] of shippingMethodIds.entries()) {
+            const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
+                ctx,
+                order,
+                shippingMethodId,
             );
-            order.shippingLines = [shippingLine];
+            if (!shippingMethod) {
+                return new IneligibleShippingMethodError();
+            }
+            let shippingLine: ShippingLine | undefined = order.shippingLines[i];
+            if (shippingLine) {
+                shippingLine.shippingMethod = shippingMethod;
+            } else {
+                shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
+                    new ShippingLine({
+                        shippingMethod,
+                        order,
+                        adjustments: [],
+                        listPrice: 0,
+                        listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                        taxLines: [],
+                    }),
+                );
+                if (order.shippingLines) {
+                    order.shippingLines.push(shippingLine);
+                } else {
+                    order.shippingLines = [shippingLine];
+                }
+            }
+
+            await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
         }
-        await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
+        // remove any now-unused ShippingLines
+        if (shippingMethodIds.length < order.shippingLines.length) {
+            const shippingLinesToDelete = order.shippingLines.splice(shippingMethodIds.length - 1);
+            await this.connection.getRepository(ctx, ShippingLine).remove(shippingLinesToDelete);
+        }
+        // assign the ShippingLines to the OrderLines
+        await this.connection
+            .getRepository(ctx, OrderLine)
+            .createQueryBuilder('line')
+            .update({ shippingLine: undefined })
+            .whereInIds(order.lines.map(l => l.id));
+        const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
+        for (const shippingLine of order.shippingLines) {
+            const orderLinesForShippingLine =
+                await shippingLineAssignmentStrategy.assignShippingLineToOrderLines(ctx, shippingLine, order);
+            await this.connection
+                .getRepository(ctx, OrderLine)
+                .createQueryBuilder('line')
+                .update({ shippingLine })
+                .whereInIds(orderLinesForShippingLine.map(l => l.id))
+                .execute();
+        }
+
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);

@@ -2,7 +2,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/index';
 import { InjectableStrategy } from '../../common/index';
-import { Order, OrderLine, Payment, ShippingLine, Surcharge } from '../../entity/index';
+import { Order, OrderLine, OrderLineSellerData, Payment, ShippingLine, Surcharge } from '../../entity/index';
 import { OrderState } from '../../service/index';
 
 export interface PartialOrder {
@@ -14,6 +14,10 @@ export interface PartialOrder {
     shippingLines: ShippingLine[];
 }
 
-export interface OrderSplitStrategy extends InjectableStrategy {
+export interface OrderSellerStrategy extends InjectableStrategy {
+    setOrderLineSellerData?(
+        ctx: RequestContext,
+        orderLine: OrderLine,
+    ): OrderLineSellerData | Promise<OrderLineSellerData>;
     splitOrder?(ctx: RequestContext, order: Order): PartialOrder[] | Promise<PartialOrder[]>;
 }

@@ -208,6 +208,6 @@ export class DraftOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetDraftOrderShippingMethodArgs,
     ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
-        return this.orderService.setShippingMethod(ctx, args.orderId, args.shippingMethodId);
+        return this.orderService.setShippingMethod(ctx, args.orderId, [args.shippingMethodId]);
     }
 }

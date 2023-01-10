@@ -1,5 +1,5 @@
 import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
@@ -10,10 +10,17 @@ import { Logger } from '../../config/index';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomOrderLineFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { OrderItem } from '../order-item/order-item.entity';
 import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
+import { ShippingLine } from '../shipping-line/shipping-line.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
+
+export interface OrderLineSellerData {
+    channelId: ID;
+    sellerName: string;
+}
 
 /**
  * @description
@@ -26,6 +33,16 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<OrderLine>) {
         super(input);
     }
+
+    @Column('simple-json', { nullable: true })
+    sellerData: OrderLineSellerData;
+
+    @Index()
+    @ManyToOne(type => ShippingLine, { nullable: true, onDelete: 'SET NULL' })
+    shippingLine?: ShippingLine;
+
+    @EntityId({ nullable: true })
+    shippingLineId?: ID;
 
     @Index()
     @ManyToOne(type => ProductVariant)

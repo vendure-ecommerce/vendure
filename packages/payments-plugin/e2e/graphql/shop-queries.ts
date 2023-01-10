@@ -158,7 +158,7 @@ export const TRANSITION_TO_STATE = gql`
 `;
 
 export const SET_SHIPPING_METHOD = gql`
-    mutation SetShippingMethod($id: ID!) {
+    mutation SetShippingMethod($id: [ID!]!) {
         setOrderShippingMethod(shippingMethodId: $id) {
             ...TestOrderFragment
             ... on ErrorResult {

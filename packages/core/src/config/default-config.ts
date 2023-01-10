@@ -26,7 +26,7 @@ import { DefaultActiveOrderStrategy } from './order/default-active-order-strateg
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
-import { DefaultOrderSplitStrategy } from './order/default-order-split-strategy';
+import { DefaultOrderSellerStrategy } from './order/default-order-seller-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { DefaultOrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
@@ -36,6 +36,7 @@ import { defaultPromotionActions, defaultPromotionConditions } from './promotion
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
+import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
 import { DefaultTaxLineCalculationStrategy } from './tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { RuntimeVendureConfig } from './vendure-config';
@@ -125,6 +126,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     shippingOptions: {
         shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
         shippingCalculators: [defaultShippingCalculator],
+        shippingLineAssignmentStrategy: new DefaultShippingLineAssignmentStrategy(),
         customFulfillmentProcess: [],
         fulfillmentHandlers: [manualFulfillmentHandler],
     },
@@ -141,7 +143,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
         activeOrderStrategy: new DefaultActiveOrderStrategy(),
-        orderSplitStrategy: new DefaultOrderSplitStrategy(),
+        orderSellerStrategy: new DefaultOrderSellerStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

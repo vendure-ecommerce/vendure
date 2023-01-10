@@ -1692,7 +1692,7 @@ export type MutationSetOrderShippingAddressArgs = {
 
 
 export type MutationSetOrderShippingMethodArgs = {
-  shippingMethodId: Scalars['ID'];
+  shippingMethodId: Array<Scalars['ID']>;
 };
 
 
@@ -3100,7 +3100,7 @@ export type TransitionToStateMutationVariables = Exact<{
 export type TransitionToStateMutation = { transitionOrderToState?: { id: string } | { errorCode: ErrorCode, message: string, transitionError: string, fromState: string, toState: string } | null };
 
 export type SetShippingMethodMutationVariables = Exact<{
-  id: Scalars['ID'];
+  id: Array<Scalars['ID']> | Scalars['ID'];
 }>;
 
 

@@ -4,15 +4,15 @@ import { pick } from '@vendure/common/lib/pick';
 import { RequestContext } from '../../../api/index';
 import { ConfigService } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
-import { Order, OrderItem, OrderLine } from '../../../entity/index';
+import { Order, OrderItem, OrderLine, ShippingLine, Surcharge } from '../../../entity/index';
 
 @Injectable()
 export class OrderSplitter {
     constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
     async createSellerOrders(ctx: RequestContext, order: Order): Promise<Order[]> {
-        const { orderSplitStrategy } = this.configService.orderOptions;
-        const partialOrders = await orderSplitStrategy.splitOrder?.(ctx, order);
+        const { orderSellerStrategy } = this.configService.orderOptions;
+        const partialOrders = await orderSellerStrategy.splitOrder?.(ctx, order);
         if (!partialOrders || partialOrders.length === 0) {
             // No split is needed
             return [];
@@ -25,6 +25,14 @@ export class OrderSplitter {
             for (const line of partialOrder.lines) {
                 lines.push(await this.duplicateOrderLine(ctx, line));
             }
+            const shippingLines: ShippingLine[] = [];
+            for (const shippingLine of partialOrder.shippingLines) {
+                shippingLines.push(await this.duplicateShippingLine(ctx, shippingLine));
+            }
+            const surcharges: Surcharge[] = [];
+            for (const surcharge of partialOrder.surcharges) {
+                surcharges.push(await this.duplicateSurcharge(ctx, surcharge));
+            }
             const sellerOrder = await this.connection.getRepository(ctx, Order).save(
                 new Order({
                     type: 'seller',
@@ -36,8 +44,8 @@ export class OrderSplitter {
                     channels: [{ id: partialOrder.channelId }],
                     state: partialOrder.state,
                     lines,
-                    surcharges: partialOrder.surcharges,
-                    shippingLines: partialOrder.shippingLines,
+                    surcharges,
+                    shippingLines,
                     couponCodes: order.couponCodes,
                     modifications: [],
                     shippingAddress: order.shippingAddress,
@@ -56,7 +64,13 @@ export class OrderSplitter {
     private async duplicateOrderLine(ctx: RequestContext, line: OrderLine): Promise<OrderLine> {
         const newLine = await this.connection.getRepository(ctx, OrderLine).save(
             new OrderLine({
-                ...pick(line, ['productVariant', 'taxCategory', 'featuredAsset', 'customFields']),
+                ...pick(line, [
+                    'productVariant',
+                    'taxCategory',
+                    'featuredAsset',
+                    'shippingLine',
+                    'customFields',
+                ]),
                 items: [],
             }),
         );
@@ -76,5 +90,39 @@ export class OrderSplitter {
         );
         await this.connection.getRepository(ctx, OrderItem).save(newLine.items);
         return newLine;
+    }
+
+    private async duplicateShippingLine(
+        ctx: RequestContext,
+        shippingLine: ShippingLine,
+    ): Promise<ShippingLine> {
+        return await this.connection.getRepository(ctx, ShippingLine).save(
+            new ShippingLine({
+                ...pick(shippingLine, [
+                    'shippingMethodId',
+                    'order',
+                    'listPrice',
+                    'listPriceIncludesTax',
+                    'adjustments',
+                    'taxLines',
+                ]),
+            }),
+        );
+    }
+
+    private async duplicateSurcharge(ctx: RequestContext, surcharge: Surcharge): Promise<Surcharge> {
+        return await this.connection.getRepository(ctx, Surcharge).save(
+            new Surcharge({
+                ...pick(surcharge, [
+                    'description',
+                    'listPrice',
+                    'listPriceIncludesTax',
+                    'sku',
+                    'taxLines',
+                    'order',
+                    'orderModification',
+                ]),
+            }),
+        );
     }
 }
