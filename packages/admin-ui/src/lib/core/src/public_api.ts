@@ -73,6 +73,7 @@ export * from './providers/auth/auth.service';
 export * from './providers/bulk-action-registry/bulk-action-registry.service';
 export * from './providers/bulk-action-registry/bulk-action-types';
 export * from './providers/bulk-action-registry/register-bulk-action';
+export * from './providers/channel/channel.service';
 export * from './providers/component-registry/component-registry.service';
 export * from './providers/custom-detail-component/custom-detail-component-types';
 export * from './providers/custom-detail-component/custom-detail-component.service';

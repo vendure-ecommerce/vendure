@@ -99,6 +99,10 @@
 <div *ngIf="entity$ | async as order">
     <div class="clr-row">
         <div class="clr-col-lg-8">
+            <vdr-seller-orders-card
+                *ngIf="order.sellerOrders.length"
+                [orderId]="order.id"
+            ></vdr-seller-orders-card>
             <vdr-order-table
                 [order]="order"
                 [orderLineCustomFields]="orderLineCustomFields"

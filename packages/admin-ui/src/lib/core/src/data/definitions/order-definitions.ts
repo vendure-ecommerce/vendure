@@ -55,6 +55,7 @@ export const ORDER_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        type
         orderPlacedAt
         code
         state
@@ -135,6 +136,19 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        type
+        aggregateOrder {
+            id
+            code
+        }
+        sellerOrders {
+            id
+            code
+            channels {
+                id
+                code
+            }
+        }
         code
         state
         nextStates
