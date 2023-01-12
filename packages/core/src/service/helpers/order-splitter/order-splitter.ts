@@ -1,14 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { OrderType } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 
 import { RequestContext } from '../../../api/index';
 import { ConfigService } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
 import { Order, OrderItem, OrderLine, ShippingLine, Surcharge } from '../../../entity/index';
+import { ChannelService } from '../../services/channel.service';
 
 @Injectable()
 export class OrderSplitter {
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private configService: ConfigService,
+        private channelService: ChannelService,
+    ) {}
 
     async createSellerOrders(ctx: RequestContext, order: Order): Promise<Order[]> {
         const { orderSellerStrategy } = this.configService.orderOptions;
@@ -17,8 +23,9 @@ export class OrderSplitter {
             // No split is needed
             return [];
         }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
 
-        order.type = 'aggregate';
+        order.type = OrderType.Aggregate;
         order.sellerOrders = [];
         for (const partialOrder of partialOrders) {
             const lines: OrderLine[] = [];
@@ -35,13 +42,13 @@ export class OrderSplitter {
             }
             const sellerOrder = await this.connection.getRepository(ctx, Order).save(
                 new Order({
-                    type: 'seller',
+                    type: OrderType.Seller,
                     aggregateOrder: order,
                     code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
                     active: false,
                     orderPlacedAt: new Date(),
                     customer: order.customer,
-                    channels: [{ id: partialOrder.channelId }],
+                    channels: [{ id: partialOrder.channelId }, defaultChannel],
                     state: partialOrder.state,
                     lines,
                     surcharges,

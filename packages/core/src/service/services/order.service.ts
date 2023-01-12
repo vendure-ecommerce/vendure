@@ -27,6 +27,7 @@ import {
     OrderLineInput,
     OrderListOptions,
     OrderProcessState,
+    OrderType,
     RefundOrderInput,
     RefundOrderResult,
     SettlePaymentResult,
@@ -80,7 +81,7 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Session } from '../../entity/index';
+import { Channel, Session } from '../../entity/index';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
@@ -387,6 +388,32 @@ export class OrderService {
         });
     }
 
+    getSellerOrders(ctx: RequestContext, order: Order): Promise<Order[]> {
+        return this.connection.getRepository(ctx, Order).find({
+            where: {
+                aggregateOrderId: order.id,
+            },
+            relations: ['channels'],
+        });
+    }
+
+    async getAggregateOrder(ctx: RequestContext, order: Order): Promise<Order | undefined> {
+        return order.aggregateOrderId == null
+            ? undefined
+            : this.connection
+                  .getRepository(ctx, Order)
+                  .findOne(order.aggregateOrderId, { relations: ['channels'] });
+    }
+
+    getOrderChannels(ctx: RequestContext, order: Order): Promise<Channel[]> {
+        return this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .relation('channels')
+            .of(order)
+            .loadMany();
+    }
+
     /**
      * @description
      * Returns any Order associated with the specified User's Customer account
@@ -453,7 +480,7 @@ export class OrderService {
 
     private async createEmptyOrderEntity(ctx: RequestContext) {
         return new Order({
-            type: 'regular',
+            type: OrderType.Regular,
             code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],

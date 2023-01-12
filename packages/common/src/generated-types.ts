@@ -3441,7 +3441,10 @@ export type Order = Node & {
   __typename?: 'Order';
   /** An order is active as long as the payment process has not been completed */
   active: Scalars['Boolean'];
+  aggregateOrder?: Maybe<Order>;
+  aggregateOrderId?: Maybe<Scalars['ID']>;
   billingAddress?: Maybe<OrderAddress>;
+  channels: Array<Channel>;
   /** A unique code for the Order */
   code: Scalars['String'];
   /** An array of all coupon codes applied to the Order */
@@ -3465,6 +3468,7 @@ export type Order = Node & {
   payments?: Maybe<Array<Payment>>;
   /** Promotions applied to the order. Only gets populated after the payment process has completed. */
   promotions: Array<Promotion>;
+  sellerOrders?: Maybe<Array<Order>>;
   shipping: Scalars['Int'];
   shippingAddress?: Maybe<OrderAddress>;
   shippingLines: Array<ShippingLine>;
@@ -3493,6 +3497,7 @@ export type Order = Node & {
   totalQuantity: Scalars['Int'];
   /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
   totalWithTax: Scalars['Int'];
+  type: OrderType;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -3518,6 +3523,7 @@ export type OrderAddress = {
 
 export type OrderFilterParameter = {
   active?: InputMaybe<BooleanOperators>;
+  aggregateOrderId?: InputMaybe<IdOperators>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   currencyCode?: InputMaybe<StringOperators>;
@@ -3533,6 +3539,7 @@ export type OrderFilterParameter = {
   totalQuantity?: InputMaybe<NumberOperators>;
   totalWithTax?: InputMaybe<NumberOperators>;
   transactionId?: InputMaybe<StringOperators>;
+  type?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -3702,6 +3709,7 @@ export type OrderProcessState = {
 };
 
 export type OrderSortParameter = {
+  aggregateOrderId?: InputMaybe<SortOrder>;
   code?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
   customerLastName?: InputMaybe<SortOrder>;
@@ -3744,6 +3752,12 @@ export type OrderTaxSummary = {
   /** The total tax being applied to the Order at this taxRate */
   taxTotal: Scalars['Int'];
 };
+
+export enum OrderType {
+  Aggregate = 'Aggregate',
+  Regular = 'Regular',
+  Seller = 'Seller'
+}
 
 export type PaginatedList = {
   items: Array<Node>;

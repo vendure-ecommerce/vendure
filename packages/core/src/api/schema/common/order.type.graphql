@@ -1,7 +1,14 @@
+enum OrderType {
+    Regular
+    Seller
+    Aggregate
+}
+
 type Order implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    type: OrderType!
     """
     The date & time that the Order was placed, i.e. the Customer
     completed the checkout and the Order is no longer "active"

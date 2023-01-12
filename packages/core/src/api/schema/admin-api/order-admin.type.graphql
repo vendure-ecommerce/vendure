@@ -1,6 +1,10 @@
 type Order {
     nextStates: [String!]!
     modifications: [OrderModification!]!
+    sellerOrders: [Order!]
+    aggregateOrder: Order
+    aggregateOrderId: ID
+    channels: [Channel!]!
 }
 
 type Fulfillment {

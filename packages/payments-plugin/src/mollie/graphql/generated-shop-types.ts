@@ -1953,6 +1953,7 @@ export type Order = Node & {
   totalQuantity: Scalars['Int'];
   /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
   totalWithTax: Scalars['Int'];
+  type: OrderType;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -1991,6 +1992,7 @@ export type OrderFilterParameter = {
   total?: InputMaybe<NumberOperators>;
   totalQuantity?: InputMaybe<NumberOperators>;
   totalWithTax?: InputMaybe<NumberOperators>;
+  type?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -2175,6 +2177,12 @@ export type OrderTaxSummary = {
   /** The total tax being applied to the Order at this taxRate */
   taxTotal: Scalars['Int'];
 };
+
+export enum OrderType {
+  Aggregate = 'Aggregate',
+  Regular = 'Regular',
+  Seller = 'Seller'
+}
 
 export type PaginatedList = {
   items: Array<Node>;

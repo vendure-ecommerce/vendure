@@ -3,6 +3,7 @@ import {
     Discount,
     OrderAddress,
     OrderTaxSummary,
+    OrderType,
     TaxLine,
 } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
@@ -26,8 +27,6 @@ import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
-
-export type OrderType = 'regular' | 'seller' | 'aggregate';
 
 /**
  * @description
@@ -54,6 +53,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
 
     @ManyToOne(type => Order, aggregateOrder => aggregateOrder.sellerOrders)
     aggregateOrder: Order;
+
+    @EntityId({ nullable: true })
+    aggregateOrderId: ID;
 
     /**
      * @description
