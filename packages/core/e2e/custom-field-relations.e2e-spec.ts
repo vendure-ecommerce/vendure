@@ -61,6 +61,7 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'ProductOptionGroup',
     'ProductVariant',
     'Promotion',
+    'Seller',
     'ShippingMethod',
     'TaxCategory',
     'TaxRate',

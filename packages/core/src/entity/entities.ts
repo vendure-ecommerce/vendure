@@ -125,6 +125,6 @@ export const coreEntitiesMap = {
     TaxCategory,
     TaxRate,
     User,
-    Vendor: Seller,
+    Seller,
     Zone,
 };

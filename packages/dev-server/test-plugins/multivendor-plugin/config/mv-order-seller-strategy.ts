@@ -123,7 +123,7 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
                 method: paymentMethod.code,
                 metadata: {
                     transfer_group: aggregateOrder.code,
-                    connectedAccountId: sellerChannel.seller.customFields.connectedAccountId,
+                    connectedAccountId: sellerChannel.seller?.customFields.connectedAccountId,
                 },
             });
             if (isGraphQlErrorResult(result)) {

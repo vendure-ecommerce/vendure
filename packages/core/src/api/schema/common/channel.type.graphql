@@ -9,5 +9,5 @@ type Channel implements Node {
     defaultLanguageCode: LanguageCode!
     currencyCode: CurrencyCode!
     pricesIncludeTax: Boolean!
-    seller: Seller!
+    seller: Seller
 }

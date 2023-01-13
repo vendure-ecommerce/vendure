@@ -155,7 +155,7 @@ export type Channel = Node & {
     defaultTaxZone?: Maybe<Zone>;
     id: Scalars['ID'];
     pricesIncludeTax: Scalars['Boolean'];
-    seller: Seller;
+    seller?: Maybe<Seller>;
     token: Scalars['String'];
     updatedAt: Scalars['DateTime'];
 };

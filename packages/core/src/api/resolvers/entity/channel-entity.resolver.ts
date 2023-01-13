@@ -12,6 +12,8 @@ export class ChannelEntityResolver {
 
     @ResolveField()
     async seller(@Ctx() ctx: RequestContext, @Parent() channel: Channel): Promise<Seller | undefined> {
-        return channel.seller ?? (await this.sellerService.findOne(ctx, channel.sellerId));
+        return channel.sellerId
+            ? channel.seller ?? (await this.sellerService.findOne(ctx, channel.sellerId))
+            : undefined;
     }
 }

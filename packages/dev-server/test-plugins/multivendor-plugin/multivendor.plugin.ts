@@ -11,7 +11,8 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
-import { mvOrderProcess } from './config/mv-order-process';
+import { multivendorFulfillmentProcess } from './config/mv-fulfillment-process';
+import { multivendorOrderProcess } from './config/mv-order-process';
 import { MultivendorSellerStrategy } from './config/mv-order-seller-strategy';
 import { multivendorPaymentMethodHandler } from './config/mv-payment-handler';
 import { MultivendorShippingLineAssignmentStrategy } from './config/mv-shipping-line-assignment-strategy';
@@ -30,7 +31,8 @@ import { CONNECTED_PAYMENT_METHOD_CODE } from './constants';
             public: false,
         });
         config.paymentOptions.paymentMethodHandlers.push(multivendorPaymentMethodHandler);
-        config.orderOptions.process.push(mvOrderProcess);
+        config.shippingOptions.customFulfillmentProcess.push(multivendorFulfillmentProcess);
+        config.orderOptions.process.push(multivendorOrderProcess);
         config.orderOptions.orderSellerStrategy = new MultivendorSellerStrategy();
         config.shippingOptions.shippingLineAssignmentStrategy =
             new MultivendorShippingLineAssignmentStrategy();

@@ -402,7 +402,7 @@ export class OrderService {
             ? undefined
             : this.connection
                   .getRepository(ctx, Order)
-                  .findOne(order.aggregateOrderId, { relations: ['channels'] });
+                  .findOne(order.aggregateOrderId, { relations: ['channels', 'lines'] });
     }
 
     getOrderChannels(ctx: RequestContext, order: Order): Promise<Channel[]> {

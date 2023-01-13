@@ -362,7 +362,7 @@ export type Channel = Node & {
   defaultTaxZone?: Maybe<Zone>;
   id: Scalars['ID'];
   pricesIncludeTax: Scalars['Boolean'];
-  seller: Seller;
+  seller?: Maybe<Seller>;
   token: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
@@ -820,8 +820,12 @@ export type CreateRoleInput = {
   permissions: Array<Permission>;
 };
 
+export type CreateSellerCustomFieldsInput = {
+  connectedAccountId?: InputMaybe<Scalars['String']>;
+};
+
 export type CreateSellerInput = {
-  customFields?: InputMaybe<Scalars['JSON']>;
+  customFields?: InputMaybe<CreateSellerCustomFieldsInput>;
   name: Scalars['String'];
 };
 
@@ -5020,13 +5024,19 @@ export type SearchResultSortParameter = {
 export type Seller = Node & {
   __typename?: 'Seller';
   createdAt: Scalars['DateTime'];
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<SellerCustomFields>;
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
 
+export type SellerCustomFields = {
+  __typename?: 'SellerCustomFields';
+  connectedAccountId?: Maybe<Scalars['String']>;
+};
+
 export type SellerFilterParameter = {
+  connectedAccountId?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   name?: InputMaybe<StringOperators>;
@@ -5053,6 +5063,7 @@ export type SellerListOptions = {
 };
 
 export type SellerSortParameter = {
+  connectedAccountId?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
@@ -5695,8 +5706,12 @@ export type UpdateRoleInput = {
   permissions?: InputMaybe<Array<Permission>>;
 };
 
+export type UpdateSellerCustomFieldsInput = {
+  connectedAccountId?: InputMaybe<Scalars['String']>;
+};
+
 export type UpdateSellerInput = {
-  customFields?: InputMaybe<Scalars['JSON']>;
+  customFields?: InputMaybe<UpdateSellerCustomFieldsInput>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
 };

@@ -34,10 +34,10 @@ export class Channel extends VendureEntity {
     description: string;
 
     @ManyToOne(type => Seller)
-    seller: Seller;
+    seller?: Seller;
 
-    @EntityId({ nullable: false })
-    sellerId: ID;
+    @EntityId({ nullable: true })
+    sellerId?: ID;
 
     @Column('varchar') defaultLanguageCode: LanguageCode;
 

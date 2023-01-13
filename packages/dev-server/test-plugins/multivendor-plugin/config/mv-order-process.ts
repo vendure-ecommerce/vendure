@@ -1,6 +1,6 @@
 import { CustomOrderProcess } from '@vendure/core';
 
-export const mvOrderProcess: CustomOrderProcess<any> = {
+export const multivendorOrderProcess: CustomOrderProcess<any> = {
     onTransitionStart(fromState, toState, data) {
         if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
             for (const line of data.order.lines) {
