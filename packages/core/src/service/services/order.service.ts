@@ -970,10 +970,9 @@ export class OrderService {
             return new OrderStateTransitionError({ transitionError, fromState, toState: state });
         }
         if (fromActiveStatus === true && order.active === false) {
-            const sellerOrders = await this.orderSplitter.createSellerOrders(ctx, order);
-            for (const sellerOrder of sellerOrders) {
-                await this.applyPriceAdjustments(ctx, sellerOrder);
-            }
+            await this.orderSplitter.createSellerOrders(ctx, order, sellerOrder =>
+                this.applyPriceAdjustments(ctx, sellerOrder),
+            );
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
@@ -990,6 +989,9 @@ export class OrderService {
         fulfillmentId: ID,
         state: FulfillmentState,
     ): Promise<Fulfillment | FulfillmentStateTransitionError> {
+        // TODO: v2: Extract this into a user-configurable area, i.e. CustomFulfillmentProcess,
+        // so that users are able to opt-out of such hard-coded transformations that rely on
+        // the default order states
         const result = await this.fulfillmentService.transitionToState(ctx, fulfillmentId, state);
         if (isGraphQlErrorResult(result)) {
             return result;
@@ -1162,6 +1164,14 @@ export class OrderService {
         return canTransitionToPaymentAuthorized && canTransitionToPaymentSettled;
     }
 
+    /**
+     * TODO: v2: Extract this into a user-configurable area, i.e. CustomPaymentProcess,
+     * so that users are able to opt-out of such hard-coded transformations that rely on
+     * the default order states
+     * @param ctx
+     * @param order
+     * @private
+     */
     private async transitionOrderIfTotalIsCovered(
         ctx: RequestContext,
         order: Order,

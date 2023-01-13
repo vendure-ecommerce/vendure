@@ -2,22 +2,27 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/index';
 import { InjectableStrategy } from '../../common/index';
-import { Order, OrderLine, OrderLineSellerData, Payment, ShippingLine, Surcharge } from '../../entity/index';
+import { Channel, Order, OrderLine, Payment, ShippingLine, Surcharge } from '../../entity/index';
 import { OrderState } from '../../service/index';
 
-export interface PartialOrder {
+export interface SplitOrderContents {
     channelId: ID;
     state: OrderState;
     lines: OrderLine[];
     surcharges: Surcharge[];
-    payments: Payment[];
     shippingLines: ShippingLine[];
 }
 
 export interface OrderSellerStrategy extends InjectableStrategy {
-    setOrderLineSellerData?(
+    setOrderLineSellerChannel?(
         ctx: RequestContext,
         orderLine: OrderLine,
-    ): OrderLineSellerData | Promise<OrderLineSellerData>;
-    splitOrder?(ctx: RequestContext, order: Order): PartialOrder[] | Promise<PartialOrder[]>;
+    ): Channel | undefined | Promise<Channel | undefined>;
+    splitOrder?(ctx: RequestContext, order: Order): SplitOrderContents[] | Promise<SplitOrderContents[]>;
+    createSurcharges?(ctx: RequestContext, sellerOrder: Order): Surcharge[] | Promise<Surcharge[]>;
+    afterSellerOrdersCreated?(
+        ctx: RequestContext,
+        aggregateOrder: Order,
+        sellerOrders: Order[],
+    ): void | Promise<void>;
 }

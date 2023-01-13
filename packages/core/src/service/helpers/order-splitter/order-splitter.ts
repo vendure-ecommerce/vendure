@@ -5,7 +5,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { RequestContext } from '../../../api/index';
 import { ConfigService } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
-import { Order, OrderItem, OrderLine, ShippingLine, Surcharge } from '../../../entity/index';
+import { Channel, Order, OrderItem, OrderLine, ShippingLine, Surcharge } from '../../../entity/index';
 import { ChannelService } from '../../services/channel.service';
 
 @Injectable()
@@ -16,7 +16,11 @@ export class OrderSplitter {
         private channelService: ChannelService,
     ) {}
 
-    async createSellerOrders(ctx: RequestContext, order: Order): Promise<Order[]> {
+    async createSellerOrders(
+        ctx: RequestContext,
+        order: Order,
+        afterSellerOrderCreated: (sellerOrder: Order) => Promise<any>,
+    ): Promise<Order[]> {
         const { orderSellerStrategy } = this.configService.orderOptions;
         const partialOrders = await orderSellerStrategy.splitOrder?.(ctx, order);
         if (!partialOrders || partialOrders.length === 0) {
@@ -48,7 +52,7 @@ export class OrderSplitter {
                     active: false,
                     orderPlacedAt: new Date(),
                     customer: order.customer,
-                    channels: [{ id: partialOrder.channelId }, defaultChannel],
+                    channels: [new Channel({ id: partialOrder.channelId }), defaultChannel],
                     state: partialOrder.state,
                     lines,
                     surcharges,
@@ -64,7 +68,9 @@ export class OrderSplitter {
             );
 
             order.sellerOrders.push(sellerOrder);
+            await afterSellerOrderCreated(sellerOrder);
         }
+        await orderSellerStrategy.afterSellerOrdersCreated?.(ctx, order, order.sellerOrders);
         return order.sellerOrders;
     }
 

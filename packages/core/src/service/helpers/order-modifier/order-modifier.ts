@@ -148,9 +148,14 @@ export class OrderModifier {
             }),
         );
         const { orderSellerStrategy } = this.configService.orderOptions;
-        if (typeof orderSellerStrategy.setOrderLineSellerData === 'function') {
-            orderLine.sellerData = await orderSellerStrategy.setOrderLineSellerData(ctx, orderLine);
-            await this.connection.getRepository(ctx, OrderLine).save(orderLine);
+        if (typeof orderSellerStrategy.setOrderLineSellerChannel === 'function') {
+            orderLine.sellerChannel = await orderSellerStrategy.setOrderLineSellerChannel(ctx, orderLine);
+            await this.connection
+                .getRepository(ctx, OrderLine)
+                .createQueryBuilder()
+                .relation('sellerChannel')
+                .of(orderLine)
+                .set(orderLine.sellerChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
         const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
