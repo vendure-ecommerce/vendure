@@ -141,7 +141,7 @@ export class RandomCatPlugin {}
 
 ### Step 6: Declare any providers used in the resolver
 
-In order that out resolver is able to use Nest's dependency injection to inject and instance of `CatFetcher`, we must add it to the `providers` array in our plugin:
+In order that our resolver is able to use Nest's dependency injection to inject an instance of `CatFetcher`, we must add it to the `providers` array in our plugin:
 
 ```TypeScript
 @VendurePlugin({
