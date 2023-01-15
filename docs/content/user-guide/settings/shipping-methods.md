@@ -42,7 +42,7 @@ By "fulfillment" we mean how do we physically get the goods into the hands of th
 * Collection by customer
 * Delivery via email for digital goods or licenses
 
-By default, Vendure comes with a "manual fulfillment handler", which allows you to manually enter the details of whatever actual method is used. For example, if you send the order by via courier, you can enter the courier name and parcel number manually when creating an order.
+By default, Vendure comes with a "manual fulfillment handler", which allows you to manually enter the details of whatever actual method is used. For example, if you send the order by courier, you can enter the courier name and parcel number manually when creating an order.
 
 Your developers can however create much more sophisticated fulfillment handlers, which can enable things like automated calls to courier APIs, automated label generation, and so on.
 
