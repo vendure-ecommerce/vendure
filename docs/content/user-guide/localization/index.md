@@ -10,6 +10,7 @@ Vendure supports localization by allowing you to define translations for the fol
 * Collections
 * Countries
 * Facets
+* Payment methods
 * Products
 * Shipping methods
 
