@@ -36,7 +36,7 @@ By default, Vendure comes with a simple flat-rate shipping calculator. Your deve
 
 ## Fulfillment handler
 
-By "fulfillment" we mean how do we physically get the goods into the hands of the customer? Common fulfillment methods include:
+By "fulfillment" we mean how do we physically get the goods into the hands of the customer. Common fulfillment methods include:
 
 * Courier services such as FedEx, DPD, DHL, etc.
 * Collection by customer
