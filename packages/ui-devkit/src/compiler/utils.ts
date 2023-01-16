@@ -10,6 +10,7 @@ import {
     AdminUiExtension,
     Extension,
     GlobalStylesExtension,
+    ModulePathMappingExtension,
     SassVariableOverridesExtension,
     StaticAssetDefinition,
     StaticAssetExtension,
@@ -110,4 +111,8 @@ export function isGlobalStylesExtension(input: Extension): input is GlobalStyles
 
 export function isSassVariableOverridesExtension(input: Extension): input is SassVariableOverridesExtension {
     return input.hasOwnProperty('sassVariableOverrides');
+}
+
+export function isModulePathMappingExtension(input: Extension): input is ModulePathMappingExtension {
+    return input.hasOwnProperty('modulePathMapping');
 }
