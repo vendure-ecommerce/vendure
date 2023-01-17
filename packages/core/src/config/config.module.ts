@@ -82,7 +82,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             mergeStrategy,
             checkoutMergeStrategy,
             orderItemPriceCalculationStrategy,
-            process,
+            process: orderProcess,
             orderCodeStrategy,
             orderByCodeAccessStrategy,
             stockAllocationStrategy,
@@ -90,8 +90,11 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             changedPriceHandlingStrategy,
             orderSellerStrategy,
         } = this.configService.orderOptions;
-        const { customFulfillmentProcess, shippingLineAssignmentStrategy } =
-            this.configService.shippingOptions;
+        const {
+            customFulfillmentProcess,
+            process: fulfillmentProcess,
+            shippingLineAssignmentStrategy,
+        } = this.configService.shippingOptions;
         const { customPaymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
@@ -118,8 +121,9 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...[entityIdStrategy].filter(notNullOrUndefined),
             productVariantPriceCalculationStrategy,
             orderItemPriceCalculationStrategy,
-            ...process,
+            ...orderProcess,
             ...customFulfillmentProcess,
+            ...fulfillmentProcess,
             ...customPaymentProcess,
             stockAllocationStrategy,
             stockDisplayStrategy,

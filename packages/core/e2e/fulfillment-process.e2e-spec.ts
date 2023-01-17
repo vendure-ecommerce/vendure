@@ -1,6 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import {
     CustomFulfillmentProcess,
+    defaultFulfillmentProcess,
     manualFulfillmentHandler,
     mergeConfig,
     TransactionalConnection,
@@ -79,7 +80,7 @@ describe('Fulfillment process', () => {
         mergeConfig(testConfig(), {
             shippingOptions: {
                 ...testConfig().shippingOptions,
-                customFulfillmentProcess: [customOrderProcess as any, customOrderProcess2 as any],
+                process: [defaultFulfillmentProcess, customOrderProcess as any, customOrderProcess2 as any],
             },
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],

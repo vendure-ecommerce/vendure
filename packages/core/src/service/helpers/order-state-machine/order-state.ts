@@ -24,7 +24,18 @@ export interface OrderStates {}
 /**
  * @description
  * These are the default states of the Order process. They can be augmented and
- * modified by using the {@link OrderOptions} `process` property.
+ * modified by using the {@link OrderOptions} `process` property, and by default
+ * the {@link defaultOrderProcess} will add the states
+ *
+ * - `ArrangingPayment`
+ * - `PaymentAuthorized`
+ * - `PaymentSettled`
+ * - `PartiallyShipped`
+ * - `Shipped`
+ * - `PartiallyDelivered`
+ * - `Delivered`
+ * - `Modifying`
+ * - `ArrangingAdditionalPayment`
  *
  * @docsCategory orders
  * @docsPage OrderProcess

@@ -20,6 +20,7 @@ import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
 import { DefaultActiveOrderStrategy } from './order/default-active-order-strategy';
@@ -129,6 +130,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         shippingCalculators: [defaultShippingCalculator],
         shippingLineAssignmentStrategy: new DefaultShippingLineAssignmentStrategy(),
         customFulfillmentProcess: [],
+        process: [defaultFulfillmentProcess],
         fulfillmentHandlers: [manualFulfillmentHandler],
     },
     orderOptions: {

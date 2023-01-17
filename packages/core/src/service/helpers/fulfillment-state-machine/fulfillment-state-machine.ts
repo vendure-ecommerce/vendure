@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -13,11 +12,7 @@ import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
 
-import {
-    FulfillmentState,
-    fulfillmentStateTransitions,
-    FulfillmentTransitionData,
-} from './fulfillment-state';
+import { FulfillmentState, FulfillmentTransitionData } from './fulfillment-state';
 
 @Injectable()
 export class FulfillmentStateMachine {
@@ -52,56 +47,14 @@ export class FulfillmentStateMachine {
         fulfillment.state = fsm.currentState;
     }
 
-    /**
-     * Specific business logic to be executed on Fulfillment state transitions.
-     */
-    private async onTransitionStart(
-        fromState: FulfillmentState,
-        toState: FulfillmentState,
-        data: FulfillmentTransitionData,
-    ) {
-        const { fulfillmentHandlers } = this.configService.shippingOptions;
-        const fulfillmentHandler = fulfillmentHandlers.find(h => h.code === data.fulfillment.handlerCode);
-        if (fulfillmentHandler) {
-            const result = await awaitPromiseOrObservable(
-                fulfillmentHandler.onFulfillmentTransition(fromState, toState, data),
-            );
-            if (result === false || typeof result === 'string') {
-                return result;
-            }
-        }
-    }
-
-    /**
-     * Specific business logic to be executed after Fulfillment state transition completes.
-     */
-    private async onTransitionEnd(
-        fromState: FulfillmentState,
-        toState: FulfillmentState,
-        data: FulfillmentTransitionData,
-    ) {
-        const historyEntryPromises = data.orders.map(order =>
-            this.historyService.createHistoryEntryForOrder({
-                orderId: order.id,
-                type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
-                ctx: data.ctx,
-                data: {
-                    fulfillmentId: data.fulfillment.id,
-                    from: fromState,
-                    to: toState,
-                },
-            }),
-        );
-        await Promise.all(historyEntryPromises);
-    }
-
     private initConfig(): StateMachineConfig<FulfillmentState, FulfillmentTransitionData> {
+        // TODO: remove once the customFulfillmentProcess option is removed
         const customProcesses = this.configService.shippingOptions.customFulfillmentProcess ?? [];
-
-        const allTransitions = customProcesses.reduce(
+        const processes = [...customProcesses, ...(this.configService.shippingOptions.process ?? [])];
+        const allTransitions = processes.reduce(
             (transitions, process) =>
                 mergeTransitionDefinitions(transitions, process.transitions as Transitions<any>),
-            fulfillmentStateTransitions,
+            {} as Transitions<FulfillmentState>,
         );
 
         const validationResult = validateTransitionDefinition(allTransitions, 'Pending');
@@ -109,7 +62,7 @@ export class FulfillmentStateMachine {
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {
-                for (const process of customProcesses) {
+                for (const process of processes) {
                     if (typeof process.onTransitionStart === 'function') {
                         const result = await awaitPromiseOrObservable(
                             process.onTransitionStart(fromState, toState, data),
@@ -119,18 +72,16 @@ export class FulfillmentStateMachine {
                         }
                     }
                 }
-                return this.onTransitionStart(fromState, toState, data);
             },
             onTransitionEnd: async (fromState, toState, data) => {
-                for (const process of customProcesses) {
+                for (const process of processes) {
                     if (typeof process.onTransitionEnd === 'function') {
                         await awaitPromiseOrObservable(process.onTransitionEnd(fromState, toState, data));
                     }
                 }
-                await this.onTransitionEnd(fromState, toState, data);
             },
             onError: async (fromState, toState, message) => {
-                for (const process of customProcesses) {
+                for (const process of processes) {
                     if (typeof process.onTransitionError === 'function') {
                         await awaitPromiseOrObservable(
                             process.onTransitionError(fromState, toState, message),
