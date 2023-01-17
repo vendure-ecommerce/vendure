@@ -36,9 +36,9 @@ import { OrderPlacedStrategy } from './order/order-placed-strategy';
 import { OrderProcess } from './order/order-process';
 import { OrderSellerStrategy } from './order/order-seller-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
-import { CustomPaymentProcess } from './payment/custom-payment-process';
 import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from './payment/payment-method-handler';
+import { PaymentProcess } from './payment/payment-process';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
@@ -705,6 +705,7 @@ export interface ShippingOptions {
      * Takes an array of objects implementing the {@link FulfillmentProcess} interface.
      *
      * @since 2.0.0
+     * @default defaultFulfillmentProcess
      */
     process?: Array<FulfillmentProcess<any>>;
     /**
@@ -757,11 +758,18 @@ export interface PaymentOptions {
      */
     paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
     /**
+     * @deprecated use `process`
+     */
+    customPaymentProcess?: Array<PaymentProcess<any>>;
+    /**
      * @description
      * Allows the definition of custom states and transition logic for the payment process state machine.
-     * Takes an array of objects implementing the {@link CustomPaymentProcess} interface.
+     * Takes an array of objects implementing the {@link PaymentProcess} interface.
+     *
+     * @default defaultPaymentProcess
+     * @since 2.0.0
      */
-    customPaymentProcess?: Array<CustomPaymentProcess<any>>;
+    process?: Array<PaymentProcess<any>>;
 }
 
 /**

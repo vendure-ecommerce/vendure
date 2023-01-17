@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -11,16 +10,15 @@ import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
-import { HistoryService } from '../../services/history.service';
 
-import { PaymentState, paymentStateTransitions, PaymentTransitionData } from './payment-state';
+import { PaymentState, PaymentTransitionData } from './payment-state';
 
 @Injectable()
 export class PaymentStateMachine {
     private readonly config: StateMachineConfig<PaymentState, PaymentTransitionData>;
     private readonly initialState: PaymentState = 'Created';
 
-    constructor(private configService: ConfigService, private historyService: HistoryService) {
+    constructor(private configService: ConfigService) {
         this.config = this.initConfig();
     }
 
@@ -43,42 +41,14 @@ export class PaymentStateMachine {
         payment.state = state;
     }
 
-    /**
-     * Specific business logic to be executed on Payment state transitions.
-     */
-    private async onTransitionStart(
-        fromState: PaymentState,
-        toState: PaymentState,
-        data: PaymentTransitionData,
-    ) {
-        /**/
-    }
-
-    private async onTransitionEnd(
-        fromState: PaymentState,
-        toState: PaymentState,
-        data: PaymentTransitionData,
-    ) {
-        await this.historyService.createHistoryEntryForOrder({
-            ctx: data.ctx,
-            orderId: data.order.id,
-            type: HistoryEntryType.ORDER_PAYMENT_TRANSITION,
-            data: {
-                paymentId: data.payment.id,
-                from: fromState,
-                to: toState,
-            },
-        });
-    }
-
     private initConfig(): StateMachineConfig<PaymentState, PaymentTransitionData> {
         const { paymentMethodHandlers } = this.configService.paymentOptions;
         const customProcesses = this.configService.paymentOptions.customPaymentProcess ?? [];
-
-        const allTransitions = customProcesses.reduce(
+        const processes = [...customProcesses, ...(this.configService.paymentOptions.process ?? [])];
+        const allTransitions = processes.reduce(
             (transitions, process) =>
                 mergeTransitionDefinitions(transitions, process.transitions as Transitions<any>),
-            paymentStateTransitions,
+            {} as Transitions<PaymentState>,
         );
 
         validateTransitionDefinition(allTransitions, this.initialState);
@@ -86,7 +56,7 @@ export class PaymentStateMachine {
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {
-                for (const process of customProcesses) {
+                for (const process of processes) {
                     if (typeof process.onTransitionStart === 'function') {
                         const result = await awaitPromiseOrObservable(
                             process.onTransitionStart(fromState, toState, data),
@@ -106,18 +76,16 @@ export class PaymentStateMachine {
                         }
                     }
                 }
-                return this.onTransitionStart(fromState, toState, data);
             },
             onTransitionEnd: async (fromState, toState, data) => {
-                for (const process of customProcesses) {
+                for (const process of processes) {
                     if (typeof process.onTransitionEnd === 'function') {
                         await awaitPromiseOrObservable(process.onTransitionEnd(fromState, toState, data));
                     }
                 }
-                await this.onTransitionEnd(fromState, toState, data);
             },
             onError: async (fromState, toState, message) => {
-                for (const process of customProcesses) {
+                for (const process of processes) {
                     if (typeof process.onTransitionError === 'function') {
                         await awaitPromiseOrObservable(
                             process.onTransitionError(fromState, toState, message),

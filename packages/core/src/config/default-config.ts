@@ -34,6 +34,7 @@ import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { DefaultOrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
+import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
@@ -152,6 +153,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         paymentMethodEligibilityCheckers: [],
         paymentMethodHandlers: [],
         customPaymentProcess: [],
+        process: [defaultPaymentProcess],
     },
     taxOptions: {
         taxZoneStrategy: new DefaultTaxZoneStrategy(),

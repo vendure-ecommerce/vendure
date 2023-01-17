@@ -95,7 +95,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             process: fulfillmentProcess,
             shippingLineAssignmentStrategy,
         } = this.configService.shippingOptions;
-        const { customPaymentProcess } = this.configService.paymentOptions;
+        const { customPaymentProcess, process: paymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
         const { healthChecks } = this.configService.systemOptions;
@@ -125,6 +125,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...customFulfillmentProcess,
             ...fulfillmentProcess,
             ...customPaymentProcess,
+            ...paymentProcess,
             stockAllocationStrategy,
             stockDisplayStrategy,
             ...healthChecks,
