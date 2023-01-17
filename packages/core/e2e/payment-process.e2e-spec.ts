@@ -3,6 +3,7 @@ import {
     CustomOrderProcess,
     CustomPaymentProcess,
     DefaultLogger,
+    defaultOrderProcess,
     LanguageCode,
     mergeConfig,
     Order,
@@ -124,7 +125,7 @@ describe('Payment process', () => {
         mergeConfig(testConfig(), {
             // logger: new DefaultLogger(),
             orderOptions: {
-                process: [customOrderProcess as any],
+                process: [defaultOrderProcess, customOrderProcess] as any,
                 orderPlacedStrategy: new TestOrderPlacedStrategy(),
             },
             paymentOptions: {

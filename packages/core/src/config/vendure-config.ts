@@ -28,12 +28,12 @@ import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
-import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { OrderPlacedStrategy } from './order/order-placed-strategy';
+import { OrderProcess } from './order/order-process';
 import { OrderSellerStrategy } from './order/order-seller-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { CustomPaymentProcess } from './payment/custom-payment-process';
@@ -490,11 +490,11 @@ export interface OrderOptions {
     /**
      * @description
      * Allows the definition of custom states and transition logic for the order process state machine.
-     * Takes an array of objects implementing the {@link CustomOrderProcess} interface.
+     * Takes an array of objects implementing the {@link OrderProcess} interface.
      *
      * @default []
      */
-    process?: Array<CustomOrderProcess<any>>;
+    process?: Array<OrderProcess<any>>;
     /**
      * @description
      * Determines the point of the order process at which stock gets allocated.

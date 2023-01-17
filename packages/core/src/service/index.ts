@@ -21,6 +21,7 @@ export * from './helpers/translatable-saver/translatable-saver';
 export * from './helpers/translator/translator.service';
 export * from './helpers/utils/patch-entity';
 export * from './helpers/utils/translate-entity';
+export * from './helpers/utils/order-utils';
 export * from './helpers/verification-token-generator/verification-token-generator';
 export * from './services/administrator.service';
 export * from './services/asset.service';
