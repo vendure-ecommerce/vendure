@@ -17,7 +17,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
@@ -2095,35 +2095,35 @@ describe('Order modification', () => {
         const CODE_FREE_SHIPPING = 'FREESHIP';
         let order: TestOrderWithPaymentsFragment;
         beforeAll(async () => {
-            await adminClient.query<CreatePromotionMutation, CreatePromotionMutationVariables>(
-                CREATE_PROMOTION,
-                {
-                    input: {
-                        name: '50% off',
-                        couponCode: CODE_50PC_OFF,
-                        enabled: true,
-                        conditions: [],
-                        actions: [
-                            {
-                                code: orderPercentageDiscount.code,
-                                arguments: [{ name: 'discount', value: '50' }],
-                            },
-                        ],
-                    },
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
+                input: {
+                    name: '50% off',
+                    couponCode: CODE_50PC_OFF,
+                    enabled: true,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: orderPercentageDiscount.code,
+                            arguments: [{ name: 'discount', value: '50' }],
+                        },
+                    ],
                 },
-            );
-            await adminClient.query<CreatePromotionMutation, CreatePromotionMutationVariables>(
-                CREATE_PROMOTION,
-                {
-                    input: {
-                        name: 'Free shipping',
-                        couponCode: CODE_FREE_SHIPPING,
-                        enabled: true,
-                        conditions: [],
-                        actions: [{ code: freeShipping.code, arguments: [] }],
-                    },
+            });
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
+                input: {
+                    name: 'Free shipping',
+                    couponCode: CODE_FREE_SHIPPING,
+                    enabled: true,
+                    conditions: [],
+                    actions: [{ code: freeShipping.code, arguments: [] }],
                 },
-            );
+            });
 
             // create an order and check out
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
@@ -2149,8 +2149,8 @@ describe('Order modification', () => {
 
         it('invalid coupon code returns ErrorResult', async () => {
             const { modifyOrder } = await adminClient.query<
-                ModifyOrderMutation,
-                ModifyOrderMutationVariables
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
@@ -2164,8 +2164,8 @@ describe('Order modification', () => {
 
         it('valid coupon code applies Promotion', async () => {
             const { modifyOrder } = await adminClient.query<
-                ModifyOrderMutation,
-                ModifyOrderMutationVariables
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
@@ -2182,8 +2182,8 @@ describe('Order modification', () => {
 
         it('adds order.discounts', async () => {
             const { order: orderWithModifications } = await adminClient.query<
-                GetOrderWithModificationsQuery,
-                GetOrderWithModificationsQueryVariables
+                Codegen.GetOrderWithModificationsQuery,
+                Codegen.GetOrderWithModificationsQueryVariables
             >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
             expect(orderWithModifications?.discounts.length).toBe(1);
             expect(orderWithModifications?.discounts[0].description).toBe('50% off');
@@ -2191,8 +2191,8 @@ describe('Order modification', () => {
 
         it('adds order.promotions', async () => {
             const { order: orderWithModifications } = await adminClient.query<
-                GetOrderWithModificationsQuery,
-                GetOrderWithModificationsQueryVariables
+                Codegen.GetOrderWithModificationsQuery,
+                Codegen.GetOrderWithModificationsQueryVariables
             >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
             expect(orderWithModifications?.promotions.length).toBe(1);
             expect(orderWithModifications?.promotions[0].name).toBe('50% off');
@@ -2200,8 +2200,8 @@ describe('Order modification', () => {
 
         it('creates correct refund amount', async () => {
             const { order: orderWithModifications } = await adminClient.query<
-                GetOrderWithModificationsQuery,
-                GetOrderWithModificationsQueryVariables
+                Codegen.GetOrderWithModificationsQuery,
+                Codegen.GetOrderWithModificationsQueryVariables
             >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
             expect(orderWithModifications?.payments![0].refunds.length).toBe(1);
             expect(orderWithModifications!.totalWithTax).toBe(
@@ -2214,8 +2214,8 @@ describe('Order modification', () => {
 
         it('creates history entry for applying couponCode', async () => {
             const { order: history } = await adminClient.query<
-                GetOrderHistory.Query,
-                GetOrderHistory.Variables
+                Codegen.GetOrderHistoryQuery,
+                Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, {
                 id: order.id,
                 options: { filter: { type: { eq: HistoryEntryType.ORDER_COUPON_APPLIED } } },
@@ -2231,8 +2231,8 @@ describe('Order modification', () => {
 
         it('removes coupon code', async () => {
             const { modifyOrder } = await adminClient.query<
-                ModifyOrderMutation,
-                ModifyOrderMutationVariables
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
@@ -2246,24 +2246,24 @@ describe('Order modification', () => {
 
         it('removes order.discounts', async () => {
             const { order: orderWithModifications } = await adminClient.query<
-                GetOrderWithModificationsQuery,
-                GetOrderWithModificationsQueryVariables
+                Codegen.GetOrderWithModificationsQuery,
+                Codegen.GetOrderWithModificationsQueryVariables
             >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
             expect(orderWithModifications?.discounts.length).toBe(0);
         });
 
         it('removes order.promotions', async () => {
             const { order: orderWithModifications } = await adminClient.query<
-                GetOrderWithModificationsQuery,
-                GetOrderWithModificationsQueryVariables
+                Codegen.GetOrderWithModificationsQuery,
+                Codegen.GetOrderWithModificationsQueryVariables
             >(GET_ORDER_WITH_MODIFICATIONS, { id: order.id });
             expect(orderWithModifications?.promotions.length).toBe(0);
         });
 
         it('creates history entry for removing couponCode', async () => {
             const { order: history } = await adminClient.query<
-                GetOrderHistory.Query,
-                GetOrderHistory.Variables
+                Codegen.GetOrderHistoryQuery,
+                Codegen.GetOrderHistoryQueryVariables
             >(GET_ORDER_HISTORY, {
                 id: order.id,
                 options: { filter: { type: { eq: HistoryEntryType.ORDER_COUPON_REMOVED } } },
@@ -2292,8 +2292,8 @@ describe('Order modification', () => {
             expect(result2.state).toBe('Modifying');
 
             const { modifyOrder } = await adminClient.query<
-                ModifyOrderMutation,
-                ModifyOrderMutationVariables
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
@@ -2363,12 +2363,12 @@ describe('Order modification', () => {
             id: testShippingMethodId,
         });
 
-        await shopClient.query<Codegen.TransitionToStateMutation, Codegen.TransitionToStateMutationVariables>(
-            TRANSITION_TO_STATE,
-            {
-                state: 'ArrangingPayment',
-            },
-        );
+        await shopClient.query<
+            CodegenShop.TransitionToStateMutation,
+            CodegenShop.TransitionToStateMutationVariables
+        >(TRANSITION_TO_STATE, {
+            state: 'ArrangingPayment',
+        });
 
         const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
         orderGuard.assertSuccess(order);

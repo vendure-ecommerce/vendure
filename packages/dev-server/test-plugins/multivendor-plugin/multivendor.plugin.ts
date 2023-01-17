@@ -2,6 +2,7 @@ import { OnApplicationBootstrap } from '@nestjs/common';
 import {
     Channel,
     ChannelService,
+    configureDefaultOrderProcess,
     LanguageCode,
     PaymentMethod,
     PaymentMethodService,
@@ -11,7 +12,6 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
-import { multivendorFulfillmentProcess } from './config/mv-fulfillment-process';
 import { multivendorOrderProcess } from './config/mv-order-process';
 import { MultivendorSellerStrategy } from './config/mv-order-seller-strategy';
 import { multivendorPaymentMethodHandler } from './config/mv-payment-handler';
@@ -31,8 +31,11 @@ import { CONNECTED_PAYMENT_METHOD_CODE } from './constants';
             public: false,
         });
         config.paymentOptions.paymentMethodHandlers.push(multivendorPaymentMethodHandler);
-        config.shippingOptions.customFulfillmentProcess.push(multivendorFulfillmentProcess);
-        config.orderOptions.process.push(multivendorOrderProcess);
+
+        const customDefaultOrderProcess = configureDefaultOrderProcess({
+            checkFulfillmentStates: false,
+        });
+        config.orderOptions.process = [customDefaultOrderProcess, multivendorOrderProcess];
         config.orderOptions.orderSellerStrategy = new MultivendorSellerStrategy();
         config.shippingOptions.shippingLineAssignmentStrategy =
             new MultivendorShippingLineAssignmentStrategy();

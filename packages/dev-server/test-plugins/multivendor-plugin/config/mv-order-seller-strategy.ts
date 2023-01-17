@@ -6,7 +6,6 @@ import {
     Injector,
     InternalServerError,
     isGraphQlErrorResult,
-    Logger,
     Order,
     OrderLine,
     OrderSellerStrategy,
