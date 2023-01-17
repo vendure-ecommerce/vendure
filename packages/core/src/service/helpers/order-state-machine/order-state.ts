@@ -1,5 +1,4 @@
 import { RequestContext } from '../../../api/common/request-context';
-import { Transitions } from '../../../common/finite-state-machine/types';
 import { Order } from '../../../entity/order/order.entity';
 
 /**

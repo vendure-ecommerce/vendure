@@ -209,15 +209,17 @@ export class FulfillmentService {
             .where('line.id IN (:...lineIds)', { lineIds })
             .getMany();
         const fromState = fulfillment.state;
+        let finalize: () => Promise<any>;
         try {
-            await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);
+            const result = await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);
+            finalize = result.finalize;
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new FulfillmentStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Fulfillment).save(fulfillment, { reload: false });
         this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
-
+        await finalize();
         return { fulfillment, orders, fromState, toState: state };
     }
 

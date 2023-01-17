@@ -1940,8 +1940,8 @@ describe('Orders resolver', () => {
             expect(onCancelPaymentSpy).not.toHaveBeenCalled();
 
             const { cancelPayment } = await adminClient.query<
-                CancelPaymentMutation,
-                CancelPaymentMutationVariables
+                Codegen.CancelPaymentMutation,
+                Codegen.CancelPaymentMutationVariables
             >(CANCEL_PAYMENT, {
                 paymentId,
             });
@@ -1962,20 +1962,20 @@ describe('Orders resolver', () => {
             const paymentId = order.payments![0].id;
 
             const { cancelPayment } = await adminClient.query<
-                CancelPaymentMutation,
-                CancelPaymentMutationVariables
+                Codegen.CancelPaymentMutation,
+                Codegen.CancelPaymentMutationVariables
             >(CANCEL_PAYMENT, {
                 paymentId,
             });
 
             paymentGuard.assertErrorResult(cancelPayment);
             expect(cancelPayment.message).toBe('Cancelling the payment failed');
-            const { order: checkorder } = await adminClient.query<GetOrderQuery, GetOrderQueryVariables>(
-                GET_ORDER,
-                {
-                    id: order.id,
-                },
-            );
+            const { order: checkorder } = await adminClient.query<
+                Codegen.GetOrderQuery,
+                Codegen.GetOrderQueryVariables
+            >(GET_ORDER, {
+                id: order.id,
+            });
             expect(checkorder!.payments![0].state).toBe('Authorized');
             expect(checkorder!.payments![0].metadata).toEqual({ cancellationData: 'foo' });
         });
@@ -2577,36 +2577,39 @@ describe('Orders resolver', () => {
             const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
             orderGuard.assertSuccess(order);
 
-            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
-                CREATE_FULFILLMENT,
-                {
-                    input: {
-                        lines: [
-                            {
-                                orderLineId: order.lines[0].id,
-                                quantity: 1,
-                            },
-                        ],
-                        handler: {
-                            code: manualFulfillmentHandler.code,
-                            arguments: [{ name: 'method', value: 'Test' }],
+            await adminClient.query<
+                Codegen.CreateFulfillmentMutation,
+                Codegen.CreateFulfillmentMutationVariables
+            >(CREATE_FULFILLMENT, {
+                input: {
+                    lines: [
+                        {
+                            orderLineId: order.lines[0].id,
+                            quantity: 1,
                         },
+                    ],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [{ name: 'method', value: 'Test' }],
                     },
                 },
-            );
+            });
 
-            const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(
-                CANCEL_ORDER,
-                {
-                    input: {
-                        orderId: order.id,
-                        lines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
-                    },
+            const { cancelOrder } = await adminClient.query<
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
+            >(CANCEL_ORDER, {
+                input: {
+                    orderId: order.id,
+                    lines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
                 },
-            );
+            });
             orderGuard.assertSuccess(cancelOrder);
 
-            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+            const { order: order2 } = await adminClient.query<
+                Codegen.GetOrderQuery,
+                Codegen.GetOrderQueryVariables
+            >(GET_ORDER, {
                 id: order.id,
             });
 

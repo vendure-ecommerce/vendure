@@ -9,6 +9,7 @@ import { validateTransitionDefinition } from '../../../common/finite-state-machi
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { OrderProcess } from '../../../config/index';
+import { TransactionalConnection } from '../../../connection/index';
 import { Order } from '../../../entity/order/order.entity';
 
 import { OrderState, OrderTransitionData } from './order-state';
@@ -18,7 +19,7 @@ export class OrderStateMachine {
     readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'Created';
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService, private connection: TransactionalConnection) {
         this.config = this.initConfig();
     }
 
@@ -37,8 +38,9 @@ export class OrderStateMachine {
 
     async transition(ctx: RequestContext, order: Order, state: OrderState) {
         const fsm = new FSM(this.config, order.state);
-        await fsm.transitionTo(state, { ctx, order });
+        const result = await fsm.transitionTo(state, { ctx, order });
         order.state = fsm.currentState;
+        return result;
     }
 
     private initConfig(): StateMachineConfig<OrderState, OrderTransitionData> {

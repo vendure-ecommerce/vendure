@@ -37,8 +37,9 @@ export class PaymentStateMachine {
 
     async transition(ctx: RequestContext, order: Order, payment: Payment, state: PaymentState) {
         const fsm = new FSM(this.config, payment.state);
-        await fsm.transitionTo(state, { ctx, order, payment });
+        const result = await fsm.transitionTo(state, { ctx, order, payment });
         payment.state = state;
+        return result;
     }
 
     private initConfig(): StateMachineConfig<PaymentState, PaymentTransitionData> {

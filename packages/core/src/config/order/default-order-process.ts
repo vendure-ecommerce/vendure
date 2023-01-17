@@ -160,6 +160,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
     let eventBus: import('../../event-bus/index').EventBus;
     let stockMovementService: import('../../service/index').StockMovementService;
     let historyService: import('../../service/index').HistoryService;
+    let orderSplitter: import('../../service/index').OrderSplitter;
 
     const orderProcess: OrderProcess<OrderState> = {
         transitions: {
@@ -234,6 +235,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                 m => m.StockMovementService,
             );
             const HistoryService = await import('../../service/index').then(m => m.HistoryService);
+            const OrderSplitter = await import('../../service/index').then(m => m.OrderSplitter);
             const ProductVariantService = await import('../../service/index').then(
                 m => m.ProductVariantService,
             );
@@ -243,6 +245,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
             eventBus = injector.get(EventBus);
             stockMovementService = injector.get(StockMovementService);
             historyService = injector.get(HistoryService);
+            orderSplitter = injector.get(OrderSplitter);
         },
 
         async onTransitionStart(fromState, toState, { ctx, order }) {
@@ -400,6 +403,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     order.active = false;
                     order.orderPlacedAt = new Date();
                     eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
+                    await orderSplitter.createSellerOrders(ctx, order);
                 }
             }
             const shouldAllocateStock = await stockAllocationStrategy.shouldAllocateStock(

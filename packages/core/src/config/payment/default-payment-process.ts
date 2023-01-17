@@ -1,7 +1,7 @@
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
-import { awaitPromiseOrObservable, Transitions } from '../../common/index';
-import { FulfillmentState, PaymentState } from '../../service/index';
+import { orderTotalIsCovered } from '../../service/helpers/utils/order-utils';
+import { PaymentState } from '../../service/index';
 
 import { PaymentProcess } from './payment-process';
 
@@ -14,6 +14,7 @@ declare module '../../service/helpers/payment-state-machine/payment-state' {
 }
 
 let configService: import('../config.service').ConfigService;
+let orderService: import('../../service/services/order.service').OrderService;
 let historyService: import('../../service/index').HistoryService;
 
 /**
@@ -48,13 +49,18 @@ export const defaultPaymentProcess: PaymentProcess<PaymentState> = {
         // due to this being used as part of the DefaultConfig
         const ConfigService = await import('../config.service').then(m => m.ConfigService);
         const HistoryService = await import('../../service/index').then(m => m.HistoryService);
+        const OrderService = await import('../../service/services/order.service').then(m => m.OrderService);
         configService = injector.get(ConfigService);
         historyService = injector.get(HistoryService);
+        orderService = injector.get(OrderService);
     },
     async onTransitionStart(fromState, toState, data) {
         // nothing here by default
     },
     async onTransitionEnd(fromState, toState, data) {
+        const { ctx, payment, order } = data;
+        order.payments = await orderService.getOrderPayments(ctx, order.id);
+
         await historyService.createHistoryEntryForOrder({
             ctx: data.ctx,
             orderId: data.order.id,
@@ -65,5 +71,12 @@ export const defaultPaymentProcess: PaymentProcess<PaymentState> = {
                 to: toState,
             },
         });
+
+        if (orderTotalIsCovered(order, 'Settled') && order.state !== 'PaymentSettled') {
+            await orderService.transitionToState(ctx, order.id, 'PaymentSettled');
+        }
+        if (orderTotalIsCovered(order, ['Authorized', 'Settled']) && order.state !== 'PaymentAuthorized') {
+            await orderService.transitionToState(ctx, order.id, 'PaymentAuthorized');
+        }
     },
 };

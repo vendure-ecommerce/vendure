@@ -125,11 +125,18 @@ export class PaymentService {
         const payment = await this.connection
             .getRepository(ctx, Payment)
             .save(new Payment({ ...result, method, state: initialState }));
-        await this.paymentStateMachine.transition(ctx, order, payment, result.state);
+        const { finalize } = await this.paymentStateMachine.transition(ctx, order, payment, result.state);
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('payments')
+            .of(order)
+            .add(payment);
         this.eventBus.publish(
             new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
+        await finalize();
         return payment;
     }
 
@@ -206,8 +213,10 @@ export class PaymentService {
             await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
             return payment;
         }
+        let finalize: () => Promise<any>;
         try {
-            await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
+            const result = await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
+            finalize = result.finalize;
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState });
             return new PaymentStateTransitionError({ transitionError, fromState, toState });
@@ -216,6 +225,7 @@ export class PaymentService {
         this.eventBus.publish(
             new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
         );
+        await finalize();
         return payment;
     }
 
@@ -240,9 +250,16 @@ export class PaymentService {
                 state: initialState,
             }),
         );
-        await this.paymentStateMachine.transition(ctx, order, payment, endState);
+        const { finalize } = await this.paymentStateMachine.transition(ctx, order, payment, endState);
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('payments')
+            .of(order)
+            .add(payment);
         this.eventBus.publish(new PaymentStateTransitionEvent(initialState, endState, ctx, payment, order));
+        await finalize();
         return payment;
     }
 
@@ -340,9 +357,16 @@ export class PaymentService {
             }
             refund = await this.connection.getRepository(ctx, Refund).save(refund);
             if (createRefundResult) {
+                let finalize: () => Promise<any>;
                 const fromState = refund.state;
                 try {
-                    await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+                    const result = await this.refundStateMachine.transition(
+                        ctx,
+                        order,
+                        refund,
+                        createRefundResult.state,
+                    );
+                    finalize = result.finalize;
                 } catch (e: any) {
                     return new RefundStateTransitionError({
                         transitionError: e.message,
@@ -351,6 +375,7 @@ export class PaymentService {
                     });
                 }
                 await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
+                await finalize();
                 this.eventBus.publish(
                     new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
                 );

@@ -8,6 +8,7 @@ import { StateMachineConfig, Transitions } from '../../../common/finite-state-ma
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
+import { TransactionalConnection } from '../../../connection/index';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 
@@ -18,7 +19,7 @@ export class FulfillmentStateMachine {
     readonly config: StateMachineConfig<FulfillmentState, FulfillmentTransitionData>;
     private readonly initialState: FulfillmentState = 'Created';
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService, private connection: TransactionalConnection) {
         this.config = this.initConfig();
     }
 
@@ -42,8 +43,9 @@ export class FulfillmentStateMachine {
         state: FulfillmentState,
     ) {
         const fsm = new FSM(this.config, fulfillment.state);
-        await fsm.transitionTo(state, { ctx, orders, fulfillment });
+        const result = await fsm.transitionTo(state, { ctx, orders, fulfillment });
         fulfillment.state = fsm.currentState;
+        return result;
     }
 
     private initConfig(): StateMachineConfig<FulfillmentState, FulfillmentTransitionData> {

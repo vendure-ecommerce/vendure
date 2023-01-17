@@ -7,6 +7,7 @@ import { ConfigService } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
 import { Channel, Order, OrderItem, OrderLine, ShippingLine, Surcharge } from '../../../entity/index';
 import { ChannelService } from '../../services/channel.service';
+import { OrderService } from '../../services/order.service';
 
 @Injectable()
 export class OrderSplitter {
@@ -14,13 +15,10 @@ export class OrderSplitter {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private channelService: ChannelService,
+        private orderService: OrderService,
     ) {}
 
-    async createSellerOrders(
-        ctx: RequestContext,
-        order: Order,
-        afterSellerOrderCreated: (sellerOrder: Order) => Promise<any>,
-    ): Promise<Order[]> {
+    async createSellerOrders(ctx: RequestContext, order: Order): Promise<Order[]> {
         const { orderSellerStrategy } = this.configService.orderOptions;
         const partialOrders = await orderSellerStrategy.splitOrder?.(ctx, order);
         if (!partialOrders || partialOrders.length === 0) {
@@ -68,7 +66,7 @@ export class OrderSplitter {
             );
 
             order.sellerOrders.push(sellerOrder);
-            await afterSellerOrderCreated(sellerOrder);
+            await this.orderService.applyPriceAdjustments(ctx, sellerOrder);
         }
         await orderSellerStrategy.afterSellerOrdersCreated?.(ctx, order, order.sellerOrders);
         return order.sellerOrders;

@@ -108,7 +108,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderModifier } from '../helpers/order-modifier/order-modifier';
-import { OrderSplitter } from '../helpers/order-splitter/order-splitter';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
@@ -116,13 +115,7 @@ import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-st
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
-import {
-    orderItemsAreAllCancelled,
-    orderItemsAreDelivered,
-    orderItemsAreShipped,
-    orderTotalIsCovered,
-    totalCoveredByPayments,
-} from '../helpers/utils/order-utils';
+import { orderItemsAreAllCancelled, totalCoveredByPayments } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -154,7 +147,6 @@ export class OrderService {
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
-        private orderSplitter: OrderSplitter,
         private paymentService: PaymentService,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
@@ -962,20 +954,18 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
-        const fromActiveStatus = order.active;
+        let finalize: () => Promise<any>;
         try {
-            await this.orderStateMachine.transition(ctx, order, state);
+            const result = await this.orderStateMachine.transition(ctx, order, state);
+            finalize = result.finalize;
         } catch (e: any) {
             const transitionError = ctx.translate(e.message, { fromState, toState: state });
             return new OrderStateTransitionError({ transitionError, fromState, toState: state });
         }
-        if (fromActiveStatus === true && order.active === false) {
-            await this.orderSplitter.createSellerOrders(ctx, order, sellerOrder =>
-                this.applyPriceAdjustments(ctx, sellerOrder),
-            );
-        }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
+        await finalize();
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         return order;
     }
 
@@ -989,23 +979,11 @@ export class OrderService {
         fulfillmentId: ID,
         state: FulfillmentState,
     ): Promise<Fulfillment | FulfillmentStateTransitionError> {
-        // TODO: v2: Extract this into a user-configurable area, i.e. CustomFulfillmentProcess,
-        // so that users are able to opt-out of such hard-coded transformations that rely on
-        // the default order states
         const result = await this.fulfillmentService.transitionToState(ctx, fulfillmentId, state);
         if (isGraphQlErrorResult(result)) {
             return result;
         }
-        const { fulfillment, fromState, toState, orders } = result;
-        if (toState === 'Cancelled') {
-            await this.stockMovementService.createCancellationsForOrderItems(ctx, fulfillment.orderItems);
-            const lines = await this.groupOrderItemsIntoLines(ctx, fulfillment.orderItems);
-            await this.stockMovementService.createAllocationsForOrderLines(ctx, lines);
-        }
-        await Promise.all(
-            orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order, fromState, toState)),
-        );
-        return fulfillment;
+        return result.fulfillment;
     }
 
     /**
@@ -1049,35 +1027,6 @@ export class OrderService {
         return this.getOrderOrThrow(ctx, input.orderId);
     }
 
-    private async handleFulfillmentStateTransitByOrder(
-        ctx: RequestContext,
-        order: Order,
-        fromState: FulfillmentState,
-        toState: FulfillmentState,
-    ): Promise<void> {
-        const nextOrderStates = this.getNextOrderStates(order);
-
-        const transitionOrderIfStateAvailable = (state: OrderState) =>
-            nextOrderStates.includes(state) && this.transitionToState(ctx, order.id, state);
-
-        if (toState === 'Shipped') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
-            if (orderItemsAreShipped(orderWithFulfillment)) {
-                await transitionOrderIfStateAvailable('Shipped');
-            } else {
-                await transitionOrderIfStateAvailable('PartiallyShipped');
-            }
-        }
-        if (toState === 'Delivered') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
-            if (orderItemsAreDelivered(orderWithFulfillment)) {
-                await transitionOrderIfStateAvailable('Delivered');
-            } else {
-                await transitionOrderIfStateAvailable('PartiallyDelivered');
-            }
-        }
-    }
-
     /**
      * @description
      * Transitions the given {@link Payment} to a new state. If the order totalWithTax price is then
@@ -1092,11 +1041,6 @@ export class OrderService {
         const result = await this.paymentService.transitionToState(ctx, paymentId, state);
         if (isGraphQlErrorResult(result)) {
             return result;
-        }
-        const order = await this.findOne(ctx, result.order.id);
-        if (order) {
-            order.payments = await this.getOrderPayments(ctx, order.id);
-            await this.transitionOrderIfTotalIsCovered(ctx, order);
         }
         return result;
     }
@@ -1129,9 +1073,12 @@ export class OrderService {
             return payment;
         }
 
-        const existingPayments = await this.getOrderPayments(ctx, orderId);
-        order.payments = [...existingPayments, payment];
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('payments')
+            .of(order)
+            .add(payment);
 
         if (payment.state === 'Error') {
             return new PaymentFailedError({ paymentErrorMessage: payment.errorMessage || '' });
@@ -1140,7 +1087,7 @@ export class OrderService {
             return new PaymentDeclinedError({ paymentErrorMessage: payment.errorMessage || '' });
         }
 
-        return this.transitionOrderIfTotalIsCovered(ctx, order);
+        return assertFound(this.findOne(ctx, order.id));
     }
 
     /**
@@ -1162,28 +1109,6 @@ export class OrderService {
             'PaymentSettled',
         );
         return canTransitionToPaymentAuthorized && canTransitionToPaymentSettled;
-    }
-
-    /**
-     * TODO: v2: Extract this into a user-configurable area, i.e. CustomPaymentProcess,
-     * so that users are able to opt-out of such hard-coded transformations that rely on
-     * the default order states
-     * @param ctx
-     * @param order
-     * @private
-     */
-    private async transitionOrderIfTotalIsCovered(
-        ctx: RequestContext,
-        order: Order,
-    ): Promise<Order | OrderStateTransitionError> {
-        const orderId = order.id;
-        if (orderTotalIsCovered(order, 'Settled') && order.state !== 'PaymentSettled') {
-            return this.transitionToState(ctx, orderId, 'PaymentSettled');
-        }
-        if (orderTotalIsCovered(order, ['Authorized', 'Settled']) && order.state !== 'PaymentAuthorized') {
-            return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
-        }
-        return order;
     }
 
     /**
@@ -1224,7 +1149,7 @@ export class OrderService {
             modification.payment = payment;
             await this.connection.getRepository(ctx, OrderModification).save(modification);
         }
-        return order;
+        return assertFound(this.findOne(ctx, order.id));
     }
 
     /**
@@ -1240,14 +1165,6 @@ export class OrderService {
         if (!isGraphQlErrorResult(payment)) {
             if (payment.state !== 'Settled') {
                 return new SettlePaymentError({ paymentErrorMessage: payment.errorMessage || '' });
-            }
-            const order = await this.findOne(ctx, payment.order.id);
-            if (order) {
-                order.payments = await this.getOrderPayments(ctx, order.id);
-                const orderTransitionResult = await this.transitionOrderIfTotalIsCovered(ctx, order);
-                if (isGraphQlErrorResult(orderTransitionResult)) {
-                    return orderTransitionResult;
-                }
             }
         }
         return payment;
@@ -1576,8 +1493,14 @@ export class OrderService {
         refund.transactionId = input.transactionId;
         const fromState = refund.state;
         const toState = 'Settled';
-        await this.refundStateMachine.transition(ctx, refund.payment.order, refund, toState);
+        const { finalize } = await this.refundStateMachine.transition(
+            ctx,
+            refund.payment.order,
+            refund,
+            toState,
+        );
         await this.connection.getRepository(ctx, Refund).save(refund);
+        await finalize();
         this.eventBus.publish(
             new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
         );
@@ -1899,12 +1822,6 @@ export class OrderService {
         return assertFound(this.findOne(ctx, order.id));
     }
 
-    private async getOrderWithFulfillments(ctx: RequestContext, orderId: ID): Promise<Order> {
-        return await this.connection.getEntityOrThrow(ctx, Order, orderId, {
-            relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
-        });
-    }
-
     private async getOrdersAndItemsFromLines(
         ctx: RequestContext,
         orderLinesInput: OrderLineInput[],
@@ -1963,30 +1880,5 @@ export class OrderService {
             merged.public = { ...m1.public, ...m2.public };
         }
         return merged;
-    }
-
-    private async groupOrderItemsIntoLines(
-        ctx: RequestContext,
-        orderItems: OrderItem[],
-    ): Promise<Array<{ orderLine: OrderLine; quantity: number }>> {
-        const orderLineIdQuantityMap = new Map<ID, number>();
-        for (const item of orderItems) {
-            const quantity = orderLineIdQuantityMap.get(item.lineId);
-            if (quantity == null) {
-                orderLineIdQuantityMap.set(item.lineId, 1);
-            } else {
-                orderLineIdQuantityMap.set(item.lineId, quantity + 1);
-            }
-        }
-        const orderLines = await this.connection
-            .getRepository(ctx, OrderLine)
-            .findByIds([...orderLineIdQuantityMap.keys()], {
-                relations: ['productVariant'],
-            });
-        return orderLines.map(orderLine => ({
-            orderLine,
-            // tslint:disable-next-line:no-non-null-assertion
-            quantity: orderLineIdQuantityMap.get(orderLine.id)!,
-        }));
     }
 }
