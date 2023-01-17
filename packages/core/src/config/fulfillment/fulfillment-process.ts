@@ -21,6 +21,7 @@ import {
  * For detailed description of the interface members, see the {@link StateMachineConfig} docs.
  *
  * @docsCategory fulfillment
+ * @since 2.0.0
  */
 export interface FulfillmentProcess<State extends keyof CustomFulfillmentStates | string>
     extends InjectableStrategy {

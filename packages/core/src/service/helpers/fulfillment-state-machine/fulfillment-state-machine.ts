@@ -10,7 +10,6 @@ import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
-import { HistoryService } from '../../services/history.service';
 
 import { FulfillmentState, FulfillmentTransitionData } from './fulfillment-state';
 
@@ -19,7 +18,7 @@ export class FulfillmentStateMachine {
     readonly config: StateMachineConfig<FulfillmentState, FulfillmentTransitionData>;
     private readonly initialState: FulfillmentState = 'Created';
 
-    constructor(private configService: ConfigService, private historyService: HistoryService) {
+    constructor(private configService: ConfigService) {
         this.config = this.initConfig();
     }
 

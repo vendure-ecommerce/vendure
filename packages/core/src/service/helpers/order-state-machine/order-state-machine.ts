@@ -9,13 +9,7 @@ import { validateTransitionDefinition } from '../../../common/finite-state-machi
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { OrderProcess } from '../../../config/index';
-import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Order } from '../../../entity/order/order.entity';
-import { EventBus } from '../../../event-bus/index';
-import { HistoryService } from '../../services/history.service';
-import { ProductVariantService } from '../../services/product-variant.service';
-import { PromotionService } from '../../services/promotion.service';
-import { StockMovementService } from '../../services/stock-movement.service';
 
 import { OrderState, OrderTransitionData } from './order-state';
 
@@ -24,15 +18,7 @@ export class OrderStateMachine {
     readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'Created';
 
-    constructor(
-        private connection: TransactionalConnection,
-        private configService: ConfigService,
-        private stockMovementService: StockMovementService,
-        private historyService: HistoryService,
-        private promotionService: PromotionService,
-        private eventBus: EventBus,
-        private productVariantService: ProductVariantService,
-    ) {
+    constructor(private configService: ConfigService) {
         this.config = this.initConfig();
     }
 
