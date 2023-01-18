@@ -572,6 +572,13 @@ export interface OrderOptions {
      * @default DefaultActiveOrderStrategy
      */
     activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
+    /**
+     * @description
+     * Defines how Orders will be split amongst multiple Channels in a multivendor scenario.
+     *
+     * @since 2.0.0
+     * @default DefaultOrderSellerStrategy
+     */
     orderSellerStrategy?: OrderSellerStrategy;
 }
 
@@ -690,6 +697,14 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
+    /**
+     * @description
+     * This strategy is used to assign a given {@link ShippingLine} to one or more {@link OrderLine}s of the Order.
+     * This allows you to set multiple shipping methods for a single order, each assigned a different subset of
+     * OrderLines.
+     *
+     * @since 2.0.0
+     */
     shippingLineAssignmentStrategy?: ShippingLineAssignmentStrategy;
     /**
      * @description

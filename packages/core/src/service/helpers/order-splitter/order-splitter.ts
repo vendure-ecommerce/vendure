@@ -28,7 +28,7 @@ export class OrderSplitter {
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
 
         order.type = OrderType.Aggregate;
-        order.sellerOrders = [];
+        const sellerOrders: Order[] = [];
         for (const partialOrder of partialOrders) {
             const lines: OrderLine[] = [];
             for (const line of partialOrder.lines) {
@@ -38,14 +38,10 @@ export class OrderSplitter {
             for (const shippingLine of partialOrder.shippingLines) {
                 shippingLines.push(await this.duplicateShippingLine(ctx, shippingLine));
             }
-            const surcharges: Surcharge[] = [];
-            for (const surcharge of partialOrder.surcharges) {
-                surcharges.push(await this.duplicateSurcharge(ctx, surcharge));
-            }
             const sellerOrder = await this.connection.getRepository(ctx, Order).save(
                 new Order({
                     type: OrderType.Seller,
-                    aggregateOrder: order,
+                    aggregateOrderId: order.id,
                     code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
                     active: false,
                     orderPlacedAt: new Date(),
@@ -53,7 +49,7 @@ export class OrderSplitter {
                     channels: [new Channel({ id: partialOrder.channelId }), defaultChannel],
                     state: partialOrder.state,
                     lines,
-                    surcharges,
+                    surcharges: [],
                     shippingLines,
                     couponCodes: order.couponCodes,
                     modifications: [],
@@ -65,10 +61,16 @@ export class OrderSplitter {
                 }),
             );
 
-            order.sellerOrders.push(sellerOrder);
+            await this.connection
+                .getRepository(ctx, Order)
+                .createQueryBuilder()
+                .relation('sellerOrders')
+                .of(order)
+                .add(sellerOrder);
             await this.orderService.applyPriceAdjustments(ctx, sellerOrder);
+            sellerOrders.push(sellerOrder);
         }
-        await orderSellerStrategy.afterSellerOrdersCreated?.(ctx, order, order.sellerOrders);
+        await orderSellerStrategy.afterSellerOrdersCreated?.(ctx, order, sellerOrders);
         return order.sellerOrders;
     }
 
@@ -96,7 +98,7 @@ export class OrderSplitter {
                         'taxLines',
                         'cancelled',
                     ]),
-                    line: newLine,
+                    lineId: newLine.id,
                 }),
         );
         await this.connection.getRepository(ctx, OrderItem).save(newLine.items);
@@ -116,22 +118,6 @@ export class OrderSplitter {
                     'listPriceIncludesTax',
                     'adjustments',
                     'taxLines',
-                ]),
-            }),
-        );
-    }
-
-    private async duplicateSurcharge(ctx: RequestContext, surcharge: Surcharge): Promise<Surcharge> {
-        return await this.connection.getRepository(ctx, Surcharge).save(
-            new Surcharge({
-                ...pick(surcharge, [
-                    'description',
-                    'listPrice',
-                    'listPriceIncludesTax',
-                    'sku',
-                    'taxLines',
-                    'order',
-                    'orderModification',
                 ]),
             }),
         );

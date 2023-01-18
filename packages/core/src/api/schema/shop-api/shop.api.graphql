@@ -68,7 +68,12 @@ type Mutation {
     setOrderBillingAddress(input: CreateAddressInput!): ActiveOrderResult!
     "Allows any custom fields to be set for the active order"
     setOrderCustomFields(input: UpdateOrderInput!): ActiveOrderResult!
-    "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
+    """
+    Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
+    An Order can have multiple shipping methods, in which case you can pass an array of ids. In this case,
+    you should configure a custom ShippingLineAssignmentStrategy in order to know which OrderLines each
+    shipping method will apply to.
+    """
     setOrderShippingMethod(shippingMethodId: [ID!]!): SetOrderShippingMethodResult!
     "Add a Payment to the Order"
     addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult!

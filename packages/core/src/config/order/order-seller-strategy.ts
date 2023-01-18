@@ -5,21 +5,58 @@ import { InjectableStrategy } from '../../common/index';
 import { Channel, Order, OrderLine, Payment, ShippingLine, Surcharge } from '../../entity/index';
 import { OrderState } from '../../service/index';
 
+/**
+ * @description
+ * The contents of the aggregate Order which make up a single seller Order.
+ *
+ * @since 2.0.0
+ * @docsCategory orders
+ * @docsPage OrderSellerStrategy
+ */
 export interface SplitOrderContents {
     channelId: ID;
     state: OrderState;
     lines: OrderLine[];
-    surcharges: Surcharge[];
     shippingLines: ShippingLine[];
 }
 
+/**
+ * @description
+ * This strategy defines how an Order can be split into multiple sub-orders for the use-case of
+ * a multivendor application.
+ *
+ * @since 2.0.0
+ * @docsCategory orders
+ * @docsPage OrderSellerStrategy
+ * @docsWeight 0
+ */
 export interface OrderSellerStrategy extends InjectableStrategy {
+    /**
+     * @description
+     * This method is called whenever a new OrderLine is added to the Order via the `addItemToOrder` mutation or the
+     * underlying `addItemToOrder()` method of the {@link OrderService}.
+     *
+     * It should return the ID of the Channel to which this OrderLine will be assigned, which will be used to set the
+     * {@link OrderLine} `sellerChannel` property.
+     */
     setOrderLineSellerChannel?(
         ctx: RequestContext,
         orderLine: OrderLine,
     ): Channel | undefined | Promise<Channel | undefined>;
+
+    /**
+     * @description
+     * Upon checkout (by default, when the Order moves from "active" to "inactive" according to the {@link OrderPlacedStrategy}),
+     * this method will be called in order to split the Order into multiple Orders, one for each Seller.
+     */
     splitOrder?(ctx: RequestContext, order: Order): SplitOrderContents[] | Promise<SplitOrderContents[]>;
-    createSurcharges?(ctx: RequestContext, sellerOrder: Order): Surcharge[] | Promise<Surcharge[]>;
+
+    /**
+     * @description
+     * This method is called after splitting the orders, including calculating the totals for each of the seller Orders.
+     * This method can be used to set platform fee surcharges on the seller Orders as well as perform any payment processing
+     * needed.
+     */
     afterSellerOrdersCreated?(
         ctx: RequestContext,
         aggregateOrder: Order,

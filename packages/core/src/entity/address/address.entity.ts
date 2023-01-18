@@ -9,7 +9,7 @@ import { Customer } from '../customer/customer.entity';
 
 /**
  * @description
- * Represent's a {@link Customer}'s address.
+ * Represents a {@link Customer}'s address.
  *
  * @docsCategory entities
  */
