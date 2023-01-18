@@ -32,6 +32,9 @@ export const multivendorOrderProcess: CustomOrderProcess<any> = {
             }
         }
 
+        // Aggregate orders are allowed to transition to these states without validating
+        // fulfillments, since aggregate orders do not have fulfillments, but will get
+        // transitioned based on the status of the sellerOrders' fulfillments.
         if (order.type !== OrderType.Aggregate) {
             if (toState === 'PartiallyShipped') {
                 const orderWithFulfillments = await findOrderWithFulfillments(ctx, order.id);
@@ -64,6 +67,8 @@ export const multivendorOrderProcess: CustomOrderProcess<any> = {
         if (order.type === OrderType.Seller) {
             const aggregateOrder = await orderService.getAggregateOrder(ctx, order);
             if (aggregateOrder) {
+                // This part is responsible for automatically updating the state of the aggregate Order
+                // based on the fulfillment state of all the the associated seller Orders.
                 const otherSellerOrders = (await orderService.getSellerOrders(ctx, aggregateOrder)).filter(
                     so => !idsAreEqual(so.id, order.id),
                 );

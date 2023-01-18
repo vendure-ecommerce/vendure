@@ -1,4 +1,5 @@
 /**
+ * @description
  * A fake payment API based loosely on the Stripe Connect multiparty payments flow
  * described here: https://stripe.com/docs/connect/charges-transfers
  */

@@ -19,7 +19,8 @@ import {
     TransactionalConnection,
 } from '@vendure/core';
 
-import { CONNECTED_PAYMENT_METHOD_CODE } from '../constants';
+import { CONNECTED_PAYMENT_METHOD_CODE, MULTIVENDOR_PLUGIN_OPTIONS } from '../constants';
+import { MultivendorPluginOptions } from '../types';
 
 declare module '@vendure/core/dist/entity/custom-entity-fields' {
     interface CustomSellerFields {
@@ -34,6 +35,7 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
     private paymentMethodService: PaymentMethodService;
     private connection: TransactionalConnection;
     private orderService: OrderService;
+    private options: MultivendorPluginOptions;
 
     init(injector: Injector) {
         this.entityHydrator = injector.get(EntityHydrator);
@@ -42,6 +44,7 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
         this.paymentMethodService = injector.get(PaymentMethodService);
         this.connection = injector.get(TransactionalConnection);
         this.orderService = injector.get(OrderService);
+        this.options = injector.get(MULTIVENDOR_PLUGIN_OPTIONS);
     }
 
     async setOrderLineSellerChannel(ctx: RequestContext, orderLine: OrderLine) {
@@ -67,7 +70,6 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
                     partialOrder = {
                         channelId: sellerChannelId,
                         shippingLines: [],
-                        surcharges: [],
                         lines: [],
                         state: 'ArrangingPayment',
                     };
@@ -76,6 +78,7 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
                 partialOrder.lines.push(line);
             }
         }
+
         for (const partialOrder of partialOrders.values()) {
             const shippingLineIds = new Set(partialOrder.lines.map(l => l.shippingLineId));
             partialOrder.shippingLines = order.shippingLines.filter(shippingLine =>
@@ -84,20 +87,6 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
         }
 
         return [...partialOrders.values()];
-    }
-
-    async createSurcharges(ctx: RequestContext, sellerOrder: Order) {
-        // Add the platform fee as a surcharge
-        const surcharge = await this.connection.getRepository(ctx, Surcharge).save(
-            new Surcharge({
-                taxLines: [],
-                sku: '',
-                listPrice: sellerOrder.totalWithTax,
-                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-                order: sellerOrder,
-            }),
-        );
-        return [surcharge];
     }
 
     async afterSellerOrdersCreated(ctx: RequestContext, aggregateOrder: Order, sellerOrders: Order[]) {
@@ -117,6 +106,8 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
                     `Could not determine Seller Channel for Order ${sellerOrder.code}`,
                 );
             }
+            sellerOrder.surcharges = [await this.createPlatformFeeSurcharge(ctx, sellerOrder)];
+            await this.orderService.applyPriceAdjustments(ctx, sellerOrder);
             await this.entityHydrator.hydrate(ctx, sellerChannel, { relations: ['seller'] });
             const result = await this.orderService.addPaymentToOrder(ctx, sellerOrder.id, {
                 method: paymentMethod.code,
@@ -129,5 +120,19 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
                 throw new InternalServerError(result.message);
             }
         }
+    }
+
+    private async createPlatformFeeSurcharge(ctx: RequestContext, sellerOrder: Order) {
+        const platformFee = Math.round(sellerOrder.totalWithTax * -(this.options.platformFeePercent / 100));
+        return this.connection.getRepository(ctx, Surcharge).save(
+            new Surcharge({
+                taxLines: [],
+                sku: this.options.platformFeeSKU,
+                description: 'Platform fee',
+                listPrice: platformFee,
+                listPriceIncludesTax: true,
+                order: sellerOrder,
+            }),
+        );
     }
 }
