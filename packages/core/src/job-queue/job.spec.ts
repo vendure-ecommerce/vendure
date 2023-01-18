@@ -94,5 +94,56 @@ describe('Job class', () => {
 
             expect(job.data).toEqual({ createdAt: date.toISOString() });
         });
+
+        it('handles objects with cycles', () => {
+            const parent = {
+                name: 'parent',
+                child: {
+                    name: 'child',
+                    parent: {} as any,
+                },
+            };
+            parent.child.parent = parent;
+
+            const job = new Job({
+                queueName: 'test',
+                data: parent,
+            });
+
+            expect(job.data).toEqual({
+                name: 'parent',
+                child: {
+                    name: 'child',
+                    parent: {
+                        child: {
+                            name: 'child',
+                            parent: {
+                                child: {
+                                    name: 'child',
+                                    parent: {
+                                        child: {
+                                            name: 'child',
+                                            parent: {
+                                                child: {
+                                                    name: 'child',
+                                                    parent: {
+                                                        child: '[max depth reached]',
+                                                        name: '[max depth reached]',
+                                                    },
+                                                },
+                                                name: 'parent',
+                                            },
+                                        },
+                                        name: 'parent',
+                                    },
+                                },
+                                name: 'parent',
+                            },
+                        },
+                        name: 'parent',
+                    },
+                },
+            });
+        });
     });
 });
