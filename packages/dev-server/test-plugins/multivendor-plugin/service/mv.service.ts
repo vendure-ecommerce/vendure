@@ -123,7 +123,7 @@ export class MultivendorService {
             description: `Administrator of ${input.shopName}`,
             permissions: [
                 Permission.CreateCatalog,
-                Permission.UpdateSeller,
+                Permission.UpdateCatalog,
                 Permission.ReadCatalog,
                 Permission.DeleteCatalog,
                 Permission.CreateOrder,

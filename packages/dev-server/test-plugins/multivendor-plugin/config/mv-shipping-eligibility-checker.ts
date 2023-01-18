@@ -17,6 +17,7 @@ export const multivendorShippingEligibilityChecker = new ShippingEligibilityChec
     },
     check: async (ctx, order, args, method) => {
         await entityHydrator.hydrate(ctx, method, { relations: ['channels'] });
+        await entityHydrator.hydrate(ctx, order, { relations: ['lines.sellerChannel'] });
         const sellerChannel = method.channels.find(c => c.code !== DEFAULT_CHANNEL_CODE);
         if (!sellerChannel) {
             return false;
