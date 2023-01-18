@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { SetActiveChannelMutation, UserStatusFragment } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
 
+import { UserStatusFragment } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 
