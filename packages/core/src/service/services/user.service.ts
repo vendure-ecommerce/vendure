@@ -179,8 +179,9 @@ export class UserService {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
-            .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethod')
-            .addSelect('authenticationMethod.passwordHash')
+            .leftJoinAndSelect('user.authenticationMethods', 'aums')
+            .leftJoin('user.authenticationMethods', 'authenticationMethod')
+            .addSelect('aums.passwordHash')
             .where('authenticationMethod.verificationToken = :verificationToken', { verificationToken })
             .getOne();
         if (user) {
@@ -222,7 +223,10 @@ export class UserService {
         if (!user) {
             return;
         }
-        const nativeAuthMethod = user.getNativeAuthenticationMethod();
+        const nativeAuthMethod = user.getNativeAuthenticationMethod(false);
+        if (!nativeAuthMethod) {
+            return undefined;
+        }
         nativeAuthMethod.passwordResetToken = this.verificationTokenGenerator.generateVerificationToken();
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
@@ -245,7 +249,8 @@ export class UserService {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
-            .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethod')
+            .leftJoinAndSelect('user.authenticationMethods', 'aums')
+            .leftJoin('user.authenticationMethods', 'authenticationMethod')
             .where('authenticationMethod.passwordResetToken = :passwordResetToken', { passwordResetToken })
             .getOne();
         if (!user) {
@@ -330,7 +335,8 @@ export class UserService {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
-            .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethod')
+            .leftJoinAndSelect('user.authenticationMethods', 'aums')
+            .leftJoin('user.authenticationMethods', 'authenticationMethod')
             .where('authenticationMethod.identifierChangeToken = :identifierChangeToken', {
                 identifierChangeToken: token,
             })
