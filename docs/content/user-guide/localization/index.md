@@ -15,9 +15,10 @@ Vendure supports **customer-facing** (Shop API) localization by allowing you to 
 * ProductOptions
 * ProductOptionGroups
 * ProductVariants
-* ShippingMethods
+* ShippingMethods  
 
 Vendure supports **admin-facing** (Admin API and Admin UI) localization by allowing you to define translations for labels and descriptions of the following objects:
+  
 * CustomFields
 * CollectionFilters
 * PaymentMethodHandlers
