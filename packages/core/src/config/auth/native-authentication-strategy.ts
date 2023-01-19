@@ -62,7 +62,7 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     private getUserFromIdentifier(ctx: RequestContext, identifier: string): Promise<User | undefined> {
         return this.connection.getRepository(ctx, User).findOne({
             where: { identifier, deletedAt: null },
-            relations: ['roles', 'roles.channels'],
+            relations: ['roles', 'roles.channels', 'authenticationMethods'],
         });
     }
 
@@ -76,7 +76,10 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
         if (!user) {
             return false;
         }
-        const nativeAuthMethod = user.getNativeAuthenticationMethod();
+        const nativeAuthMethod = user.getNativeAuthenticationMethod(false);
+        if (!nativeAuthMethod) {
+            return false;
+        }
         const pw =
             (
                 await this.connection

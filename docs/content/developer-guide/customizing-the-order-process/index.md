@@ -80,9 +80,9 @@ This way multiple custom states gets defined.
 
 ### Example: Intercepting a state transition
 
-Now we have defined out new `ValidatingCustomer` state, but there is as yet nothing to enforce that the tax ID is valid. To add this constraint, we'll use the [`onTransitionStart` state transition hook]({{< relref "state-machine-config" >}}#ontransitionstart).
+Now we have defined our new `ValidatingCustomer` state, but there is as yet nothing to enforce that the tax ID is valid. To add this constraint, we'll use the [`onTransitionStart` state transition hook]({{< relref "state-machine-config" >}}#ontransitionstart).
 
-This allows us to perform our custom logic and potentially prevent the transition from occurring. We will also assume that we have available a provider named `TaxIdService` which contains the logic to validate a tax ID.
+This allows us to perform our custom logic and potentially prevent the transition from occurring. We will also assume that we have a provider named `TaxIdService` available which contains the logic to validate a tax ID.
 
 ```TypeScript
 // customer-validation-process.ts

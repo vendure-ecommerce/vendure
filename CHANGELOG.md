@@ -1,3 +1,16 @@
+## <small>1.9.2 (2023-01-18)</small>
+
+
+#### Fixes
+
+* **core** Fix collection delete for big collection (#1966) ([6541975](https://github.com/vendure-ecommerce/vendure/commit/6541975)), closes [#1966](https://github.com/vendure-ecommerce/vendure/issues/1966) [#1961](https://github.com/vendure-ecommerce/vendure/issues/1961)
+* **core** Fix deletion of guest Customers ([cbc500f](https://github.com/vendure-ecommerce/vendure/commit/cbc500f)), closes [#1960](https://github.com/vendure-ecommerce/vendure/issues/1960)
+* **core** Fix interop issues between native and external auth (#1968) ([82f6b61](https://github.com/vendure-ecommerce/vendure/commit/82f6b61)), closes [#1968](https://github.com/vendure-ecommerce/vendure/issues/1968)
+* **core** Validate OrderLine custom fields in ShopAPI mutations ([d272255](https://github.com/vendure-ecommerce/vendure/commit/d272255)), closes [#1953](https://github.com/vendure-ecommerce/vendure/issues/1953)
+* **create** Improve example dockerfile & docs ([86770d1](https://github.com/vendure-ecommerce/vendure/commit/86770d1))
+* **email-plugin** Fix generation of test emails ([80da8e0](https://github.com/vendure-ecommerce/vendure/commit/80da8e0)), closes [#1931](https://github.com/vendure-ecommerce/vendure/issues/1931)
+* **payments-plugin** Calculate tax per order line instead of per unit for Mollie (#1958) ([16b17b6](https://github.com/vendure-ecommerce/vendure/commit/16b17b6)), closes [#1958](https://github.com/vendure-ecommerce/vendure/issues/1958) [#1939](https://github.com/vendure-ecommerce/vendure/issues/1939)
+
 ## <small>1.9.1 (2022-12-08)</small>
 
 
