@@ -8,13 +8,12 @@ import {
     GLOBAL_STYLES_OUTPUT_DIR,
     MODULES_OUTPUT_DIR,
     SHARED_EXTENSIONS_FILE,
-    STATIC_ASSETS_OUTPUT_DIR,
 } from './constants';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
-    AdminUiExtension,
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
+    AdminUiExtensionWithId,
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
@@ -35,10 +34,13 @@ import {
 
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
-    copyAdminUiSource(outputPath);
 
     const adminUiExtensions = extensions.filter(isAdminUiExtension);
     const normalizedExtensions = normalizeExtensions(adminUiExtensions);
+
+    const modulePathMapping = generateModulePathMapping(normalizedExtensions);
+    copyAdminUiSource(outputPath, modulePathMapping);
+
     await copyExtensionModules(outputPath, normalizedExtensions);
 
     const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
@@ -71,10 +73,29 @@ function deleteExistingExtensionModules(outputPath: string) {
 }
 
 /**
+ * Generates a module path mapping object for all extensions with a "pathAlias"
+ * property declared (if any).
+ */
+function generateModulePathMapping(extensions: Array<AdminUiExtensionWithId>) {
+    const extensionsWithAlias = extensions.filter(e => e.pathAlias);
+    if (extensionsWithAlias.length === 0) {
+        return undefined;
+    }
+
+    return extensionsWithAlias.reduce((acc, e) => {
+        // for imports from the index file if there is one
+        acc[e.pathAlias as string] = [`src/extensions/${e.id}`];
+        // direct access to files / deep imports
+        acc[`${e.pathAlias as string}/*`] = [`src/extensions/${e.id}/*`];
+        return acc;
+    }, {} as Record<string, string[]>);
+}
+
+/**
  * Copies all files from the extensionPaths of the configured extensions into the
  * admin-ui source tree.
  */
-async function copyExtensionModules(outputPath: string, extensions: Array<Required<AdminUiExtension>>) {
+async function copyExtensionModules(outputPath: string, extensions: Array<AdminUiExtensionWithId>) {
     const extensionRoutesSource = generateLazyExtensionRoutes(extensions);
     fs.writeFileSync(path.join(outputPath, EXTENSION_ROUTES_FILE), extensionRoutesSource, 'utf8');
     const sharedExtensionModulesSource = generateSharedExtensionModule(extensions);
@@ -142,9 +163,9 @@ export async function copyGlobalStyleFile(outputPath: string, stylePath: string)
     await fs.copyFile(stylePath, styleOutputPath);
 }
 
-function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension>>): string {
+function generateLazyExtensionRoutes(extensions: Array<AdminUiExtensionWithId>): string {
     const routes: string[] = [];
-    for (const extension of extensions as Array<Required<AdminUiExtension>>) {
+    for (const extension of extensions as Array<AdminUiExtensionWithId>) {
         for (const module of extension.ngModules) {
             if (module.type === 'lazy') {
                 routes.push(`  {
@@ -159,7 +180,7 @@ function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension
     return `export const extensionRoutes = [${routes.join(',\n')}];\n`;
 }
 
-function generateSharedExtensionModule(extensions: Array<Required<AdminUiExtension>>) {
+function generateSharedExtensionModule(extensions: Array<AdminUiExtensionWithId>) {
     return `import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ${extensions
@@ -193,15 +214,17 @@ function getModuleFilePath(
 }
 
 /**
- * Copy the Admin UI sources & static assets to the outputPath if it does not already
- * exists there.
+ * Copies the Admin UI sources & static assets to the outputPath if it does not already
+ * exist there.
  */
-function copyAdminUiSource(outputPath: string) {
-    const angularJsonFile = path.join(outputPath, 'angular.json');
-    const indexFile = path.join(outputPath, '/src/index.html');
-    if (fs.existsSync(angularJsonFile) && fs.existsSync(indexFile)) {
+function copyAdminUiSource(outputPath: string, modulePathMapping: Record<string, string[]> | undefined) {
+    const tsconfigFilePath = path.join(outputPath, 'tsconfig.json');
+    const indexFilePath = path.join(outputPath, '/src/index.html');
+    if (fs.existsSync(tsconfigFilePath) && fs.existsSync(indexFilePath)) {
+        configureModulePathMapping(tsconfigFilePath, modulePathMapping);
         return;
     }
+
     const scaffoldDir = path.join(__dirname, '../scaffold');
     const adminUiSrc = path.join(require.resolve('@vendure/admin-ui'), '../../static');
 
@@ -216,11 +239,28 @@ function copyAdminUiSource(outputPath: string) {
     fs.removeSync(outputPath);
     fs.ensureDirSync(outputPath);
     fs.copySync(scaffoldDir, outputPath);
+    configureModulePathMapping(tsconfigFilePath, modulePathMapping);
 
     // copy source files from admin-ui package
     const outputSrc = path.join(outputPath, 'src');
     fs.ensureDirSync(outputSrc);
     fs.copySync(adminUiSrc, outputSrc);
+}
+
+/**
+ * Adds module path mapping to the bundled tsconfig.json file if defined as a UI extension.
+ */
+function configureModulePathMapping(
+    tsconfigFilePath: string,
+    modulePathMapping: Record<string, string[]> | undefined,
+) {
+    if (!modulePathMapping) {
+        return;
+    }
+
+    const tsconfig = require(tsconfigFilePath);
+    tsconfig.compilerOptions.paths = modulePathMapping;
+    fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsconfig, null, 2));
 }
 
 /**
