@@ -298,7 +298,7 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
 /**
  * @description
  * A PaymentMethodHandler contains the code which is used to generate a Payment when a call to the
- * `addPaymentToOrder` mutation is made. If contains any necessary steps of interfacing with a
+ * `addPaymentToOrder` mutation is made. It contains any necessary steps of interfacing with a
  * third-party payment gateway before the Payment is created and can also define actions to fire
  * when the state of the payment is changed.
  *

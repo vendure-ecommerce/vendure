@@ -8,6 +8,7 @@ import * as path from 'path';
 import { STATIC_ASSETS_OUTPUT_DIR } from './constants';
 import {
     AdminUiExtension,
+    AdminUiExtensionWithId,
     Extension,
     GlobalStylesExtension,
     SassVariableOverridesExtension,
@@ -79,7 +80,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
  * If not defined by the user, a deterministic ID is generated
  * from a hash of the extension config.
  */
-export function normalizeExtensions(extensions?: AdminUiExtension[]): Array<Required<AdminUiExtension>> {
+export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExtensionWithId[] {
     return (extensions || []).map(e => {
         let id = e.id;
         if (!id) {
