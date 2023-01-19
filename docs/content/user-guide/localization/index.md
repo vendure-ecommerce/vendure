@@ -5,14 +5,26 @@ weight: 10
 
 # Localization
 
-Vendure supports localization by allowing you to define translations for the following objects:
+Vendure supports **customer-facing** (Shop API) localization by allowing you to define translations for the following objects:
 
 * Collections
 * Countries
 * Facets
-* Payment methods
+* FacetValue
 * Products
-* Shipping methods
+* ProductOptions
+* ProductOptionGroups
+* ProductVariants
+* ShippingMethods
+
+Vendure supports **admin-facing** (Admin API and Admin UI) localization by allowing you to define translations for labels and descriptions of the following objects:
+* CustomFields
+* CollectionFilters
+* PaymentMethodHandlers
+* PromotionActions
+* PromotionConditions
+* ShippingCalculators
+* ShippingEligibilityCheckers
 
 ## How to enable languages
 
