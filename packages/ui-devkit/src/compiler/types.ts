@@ -136,8 +136,8 @@ export interface AdminUiExtension
      * @example
      * ```ts
      * // packages/common-ui-module/src/ui/ui-shared.module.ts
-     * import { NgModule } from '@angular/core';
-     * import { SharedModule } from '@vendure/admin-ui/core';
+     * import { NgModule } from '\@angular/core';
+     * import { SharedModule } from '\@vendure/admin-ui/core';
      * import { CommonUiComponent } from './components/common-ui/common-ui.component';
      *
      * export { CommonUiComponent };
@@ -154,10 +154,10 @@ export interface AdminUiExtension
      * // packages/common-ui-module/src/index.ts
      * import path from 'path';
      *
-     * import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+     * import { AdminUiExtension } from '\@vendure/ui-devkit/compiler';
      *
      * export const uiExtensions: AdminUiExtension = {
-     *   pathAlias: '@common-ui-module',     // this is the important part
+     *   pathAlias: '\@common-ui-module',     // this is the important part
      *   extensionPath: path.join(__dirname, 'ui'),
      *   ngModules: [
      *     {
@@ -175,7 +175,7 @@ export interface AdminUiExtension
      *   "compilerOptions": {
      *     "baseUrl": ".",
      *     "paths": {
-     *       "@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
+     *       "\@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
      *     }
      *   }
      * }
@@ -183,11 +183,11 @@ export interface AdminUiExtension
      *
      * ```ts
      * // packages/sample-plugin/src/ui/ui-extension.module.ts
-     * import { NgModule } from '@angular/core';
-     * import { SharedModule } from '@vendure/admin-ui/core';
+     * import { NgModule } from '\@angular/core';
+     * import { SharedModule } from '\@vendure/admin-ui/core';
      * // the import below works both in the context of the custom Admin UI app as well as the main project
-     * // '@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
-     * import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui-shared.module';
+     * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
+     * import { CommonSharedUiModule, CommonUiComponent } from '\@common-ui-module/ui-shared.module';
      *
      * \@NgModule({
      *   imports: [
