@@ -5,8 +5,7 @@ export type Extension =
     | TranslationExtension
     | StaticAssetExtension
     | GlobalStylesExtension
-    | SassVariableOverridesExtension
-    | ModulePathMappingExtension;
+    | SassVariableOverridesExtension;
 
 /**
  * @description
@@ -85,138 +84,6 @@ export interface SassVariableOverridesExtension {
 
 /**
  * @description
- * Defines an extension which specifies module path mapping to allow an {@link AdminUiExtension} import code
- * from another AdminUiExtension.
- *
- * By default, Angular modules declared in an AdminUiExtension do not have access to code outside the directory
- * defined by the `extensionPath` property except for `node_modules`. A scenario in which that can be useful though
- * is on a monorepo codebase where a common NgModule is shared across different plugins, each defined in its own
- * package. An example can be found below - note that the main `tsconfig.json` also maps the target module but using
- * a path relative to the project's root folder. The UI module is not part of the main TypeScript build task as explained
- * in [Extending the Admin UI](https://www.vendure.io/docs/plugins/extending-the-admin-ui/) but having `paths`
- * properly configured helps with usual IDE code editing features such as code completion and quick navigation, as
- * well as linting.
- *
- * @example
- * ```json
- * // tsconfig.json
- * {
- *   "compilerOptions": {
- *     "baseUrl": ".",
- *     "paths": {
- *       "@common-ui-module/ui": ["packages/common-ui-module/src/ui/ui-shared.module.ts"]
- *     }
- *   }
- * }
- * ```
- *
- * ```ts
- * // packages/common-ui-module/src/ui/ui-shared.module.ts
- * import { NgModule } from '@angular/core';
- * import { SharedModule } from '@vendure/admin-ui/core';
- *
- * import { CommonUiComponent } from './components/common-ui/common-ui.component';
- *
- * export { CommonUiComponent };
- *
- * \@NgModule({
- *  imports: [SharedModule],
- *  exports: [CommonUiComponent],
- *  declarations: [CommonUiComponent],
- * })
- * export class CommonSharedUiModule {}
- * ```
- *
- * ```ts
- * // packages/common-ui-module/src/index.ts
- * import path from 'path';
- *
- * import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
- *
- * export const uiExtensions: AdminUiExtension = {
- *   id: 'common-ui',     // this is important
- *   extensionPath: path.join(__dirname, 'ui'),
- *   ngModules: [
- *     {
- *       type: 'shared' as const,
- *       ngModuleFileName: 'ui-shared.module.ts',
- *       ngModuleName: 'CommonSharedUiModule',
- *     },
- *   ],
- * };
- * ```
- *
- * ```ts
- * // packages/sample-plugin/src/ui/ui-extension.module.ts
- * import { NgModule } from '@angular/core';
- * import { SharedModule } from '@vendure/admin-ui/core';
- * import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui';
- *
- * \@NgModule({
- *   imports: [
- *     SharedModule,
- *     CommonSharedUiModule,
- *     RouterModule.forChild([
- *       {
- *         path: '',
- *         pathMatch: 'full',
- *         component: CommonUiComponent,
- *       },
- *     ]),
- *   ],
- * })
- * export class SampleUiExtensionModule {}
- * ```
- *
- * ```ts
- * // vendure-config.ts
- * import path from 'path';
- * import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
- * import { VendureConfig } from '@vendure/core';
- * import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
- * import { uiExtensions as commonUiExtensions } from '@common-ui-module/ui';
- *
- * export const config: VendureConfig = {
- *   // ...
- *   plugins: [
- *     AdminUiPlugin.init({
- *       app: compileUiExtensions({
- *         outputPath: path.join(__dirname, '../admin-ui'),
- *         extensions: [{
- *           modulePathMapping: {
- *             // 'common-ui' is the id given to the common-ui-module UI extension
- *             // 'ui-shared.module.ts' is the file in 'ui' directory that we want to import from
- *             '@common-module/ui': 'common-ui/ui-shared.module.ts',
- *           },
- *         }],
- *         commonUiExtensions,
- *         // UI extensions for SamplePlugin, which uses CommonSharedUiModule, should also be imported
- *         // and declared here
- *       }),
- *     }),
- *   ],
- * };
- * ```
- *
- * @docsCategory UiDevkit
- * @docsPage AdminUiExtension
- */
-export interface ModulePathMappingExtension {
-    /**
-     * @description
-     * Optional object which defines one or more module name mappings in a similar way to TypeScript's
-     * [path mapping](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping) with
-     * the following differences:
-     *
-     * * The path value is a single string instead of an array of strings
-     * * Paths are resolved relative to the "extensions" folder of the compiled Admin UI app and reference the id
-     *   property of the target AdminUiExtension
-     */
-    modulePathMapping: Record<string, string>;
-}
-
-/**
- * @description
  * Defines extensions to the Admin UI application by specifying additional
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
@@ -235,8 +102,7 @@ export interface AdminUiExtension
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
-     * import paths to your module or if {@link ModulePathMappingExtension} is defined.
-     * If not specified, a unique hash will be used as the id.
+     * import paths to your module. If not specified, a unique hash will be used as the id.
      */
     id?: string;
 
@@ -247,11 +113,99 @@ export interface AdminUiExtension
      * scss style sheets etc.
      */
     extensionPath: string;
+
     /**
      * @description
      * One or more Angular modules which extend the default Admin UI.
      */
     ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
+
+    /**
+     * @description
+     * An optional alias for the module so it can be referenced by other UI extension modules.
+     *
+     * By default, Angular modules declared in an AdminUiExtension do not have access to code outside the directory
+     * defined by the `extensionPath`. A scenario in which that can be useful though is in a monorepo codebase where
+     * a common NgModule is shared across different plugins, each defined in its own package. An example can be found
+     * below - note that the main `tsconfig.json` also maps the target module but using a path relative to the project's
+     * root folder. The UI module is not part of the main TypeScript build task as explained in
+     * [Extending the Admin UI](https://www.vendure.io/docs/plugins/extending-the-admin-ui/) but having `paths`
+     * properly configured helps with usual IDE code editing features such as code completion and quick navigation, as
+     * well as linting.
+     *
+     * @example
+     * ```ts
+     * // packages/common-ui-module/src/ui/ui-shared.module.ts
+     * import { NgModule } from '@angular/core';
+     * import { SharedModule } from '@vendure/admin-ui/core';
+     * import { CommonUiComponent } from './components/common-ui/common-ui.component';
+     *
+     * export { CommonUiComponent };
+     *
+     * \@NgModule({
+     *  imports: [SharedModule],
+     *  exports: [CommonUiComponent],
+     *  declarations: [CommonUiComponent],
+     * })
+     * export class CommonSharedUiModule {}
+     * ```
+     *
+     * ```ts
+     * // packages/common-ui-module/src/index.ts
+     * import path from 'path';
+     *
+     * import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+     *
+     * export const uiExtensions: AdminUiExtension = {
+     *   pathAlias: '@common-ui-module',     // this is the important part
+     *   extensionPath: path.join(__dirname, 'ui'),
+     *   ngModules: [
+     *     {
+     *       type: 'shared' as const,
+     *       ngModuleFileName: 'ui-shared.module.ts',
+     *       ngModuleName: 'CommonSharedUiModule',
+     *     },
+     *   ],
+     * };
+     * ```
+     *
+     * ```json
+     * // tsconfig.json
+     * {
+     *   "compilerOptions": {
+     *     "baseUrl": ".",
+     *     "paths": {
+     *       "@common-ui-module/*": ["packages/common-ui-module/src/ui/*"]
+     *     }
+     *   }
+     * }
+     * ```
+     *
+     * ```ts
+     * // packages/sample-plugin/src/ui/ui-extension.module.ts
+     * import { NgModule } from '@angular/core';
+     * import { SharedModule } from '@vendure/admin-ui/core';
+     * // the import below works both in the context of the custom Admin UI app as well as the main project
+     * // '@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
+     * import { CommonSharedUiModule, CommonUiComponent } from '@common-ui-module/ui-shared.module';
+     *
+     * \@NgModule({
+     *   imports: [
+     *     SharedModule,
+     *     CommonSharedUiModule,
+     *     RouterModule.forChild([
+     *       {
+     *         path: '',
+     *         pathMatch: 'full',
+     *         component: CommonUiComponent,
+     *       },
+     *     ]),
+     *   ],
+     * })
+     * export class SampleUiExtensionModule {}
+     * ```
+     */
+    pathAlias?: string;
 }
 
 /**
@@ -413,4 +367,8 @@ export interface BrandingOptions {
     smallLogoPath?: string;
     largeLogoPath?: string;
     faviconPath?: string;
+}
+
+export interface AdminUiExtensionWithId extends AdminUiExtension {
+    id: string;
 }
