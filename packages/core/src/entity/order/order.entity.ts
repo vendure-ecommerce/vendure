@@ -45,7 +45,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         super(input);
     }
 
-    @Column('varchar')
+    @Column('varchar', { default: OrderType.Regular })
     type: OrderType;
 
     @OneToMany(type => Order, sellerOrder => sellerOrder.aggregateOrder)
