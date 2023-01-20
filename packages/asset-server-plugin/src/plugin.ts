@@ -16,7 +16,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { getValidFormat } from './common';
-import { loggerCtx } from './constants';
+import { DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
 import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
 import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
@@ -232,6 +232,20 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 }
                 res.contentType(mimeType);
                 res.setHeader('content-security-policy', `default-src 'self'`);
+                // Configure Cache-Control header
+                const { cacheHeader } = AssetServerPlugin.options;
+                if (!cacheHeader) {
+                    res.setHeader('Cache-Control', DEFAULT_CACHE_HEADER);
+                } else {
+                    if (typeof cacheHeader === 'string') {
+                        res.setHeader('Cache-Control', cacheHeader);
+                    } else {
+                        const headerValue = [cacheHeader.restriction, `max-age: ${cacheHeader.maxAge}`]
+                            .filter(value => !!value)
+                            .join(', ');
+                        res.setHeader('Cache-Control', headerValue);
+                    }
+                }
                 res.send(file);
             } catch (e) {
                 const err = new Error('File not found');
