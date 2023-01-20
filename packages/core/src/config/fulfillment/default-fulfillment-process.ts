@@ -25,7 +25,14 @@ let stockMovementService: import('../../service/index').StockMovementService;
 
 /**
  * @description
- * The default {@link FulfillmentProcess}
+ * The default {@link FulfillmentProcess}. This process includes the following actions:
+ *
+ * - Executes the configured `FulfillmentHandler.onFulfillmentTransition()` before any state
+ *   transition.
+ * - On cancellation of a Fulfillment, creates the necessary {@link Cancellation} & {@link Allocation}
+ *   stock movement records.
+ * - When a Fulfillment transitions from the `Created` to `Pending` state, the necessary
+ *   {@link Sale} stock movements are created.
  *
  * @docsCategory fulfillment
  */
@@ -81,6 +88,9 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
             await stockMovementService.createCancellationsForOrderLines(ctx, orderLineInput);
             // const lines = await groupOrderItemsIntoLines(ctx, orderLineInput);
             await stockMovementService.createAllocationsForOrderLines(ctx, orderLineInput);
+        }
+        if (fromState === 'Created' && toState === 'Pending') {
+            await stockMovementService.createSalesForOrder(ctx, fulfillment.orderItems);
         }
         const historyEntryPromises = orders.map(order =>
             historyService.createHistoryEntryForOrder({
