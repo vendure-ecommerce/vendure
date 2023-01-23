@@ -145,5 +145,5 @@ export interface AssetServerOptions {
      * @default 'public, max-age=15552000'
      * @since 1.9.3
      */
-    cacheHeader: CacheConfig | string;
+    cacheHeader?: CacheConfig | string;
 }
