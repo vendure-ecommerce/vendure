@@ -13,6 +13,7 @@ import {
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
@@ -89,6 +90,11 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, '__admin-ui'),
+                extensions: [],
+                devMode: false,
+            }),
         }),
     ],
 };
