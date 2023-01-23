@@ -151,6 +151,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
     private static options: AssetServerOptions;
+    private cacheHeader: string;
 
     /**
      * @description
@@ -196,6 +197,20 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             }
         }
 
+        // Configure Cache-Control header
+        const { cacheHeader } = AssetServerPlugin.options;
+        if (!cacheHeader) {
+            this.cacheHeader = DEFAULT_CACHE_HEADER;
+        } else {
+            if (typeof cacheHeader === 'string') {
+                this.cacheHeader = cacheHeader;
+            } else {
+                this.cacheHeader = [cacheHeader.restriction, `max-age: ${cacheHeader.maxAge}`]
+                    .filter(value => !!value)
+                    .join(', ');
+            }
+        }
+
         const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
         fs.ensureDirSync(cachePath);
     }
@@ -232,20 +247,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 }
                 res.contentType(mimeType);
                 res.setHeader('content-security-policy', `default-src 'self'`);
-                // Configure Cache-Control header
-                const { cacheHeader } = AssetServerPlugin.options;
-                if (!cacheHeader) {
-                    res.setHeader('Cache-Control', DEFAULT_CACHE_HEADER);
-                } else {
-                    if (typeof cacheHeader === 'string') {
-                        res.setHeader('Cache-Control', cacheHeader);
-                    } else {
-                        const headerValue = [cacheHeader.restriction, `max-age: ${cacheHeader.maxAge}`]
-                            .filter(value => !!value)
-                            .join(', ');
-                        res.setHeader('Cache-Control', headerValue);
-                    }
-                }
+                res.setHeader('Cache-Control', this.cacheHeader);
                 res.send(file);
             } catch (e) {
                 const err = new Error('File not found');

@@ -51,10 +51,12 @@ export interface ImageTransformPreset {
  */
 export type CacheConfig = {
     /**
+     * @description
      * The max-age=N response directive indicates that the response remains fresh until N seconds after the response is generated.
      */
     maxAge: number;
     /**
+     * @description
      * The `private` response directive indicates that the response can be stored only in a private cache (e.g. local caches in browsers).
      * The `public` response directive indicates that the response can be stored in a shared cache.
      */
@@ -138,7 +140,9 @@ export interface AssetServerOptions {
     /**
      * @description
      * Configures the `Cache-Control` directive for response to control caching in browsers and shared caches (e.g. Proxies, CDNs).
+     * Defaults to publicly cached for 6 months.
      *
+     * @default 'public, max-age=15552000'
      * @since 1.9.3
      */
     cacheHeader: CacheConfig | string;
