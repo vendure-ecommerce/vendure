@@ -13,7 +13,6 @@ import {
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
