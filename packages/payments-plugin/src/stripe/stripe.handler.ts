@@ -8,7 +8,7 @@ import {
 } from '@vendure/core';
 import Stripe from 'stripe';
 
-import { getAmountFromStripeMinorUnits, getAmountInStripeMinorUnits } from './stripe-utils';
+import { getAmountFromStripeMinorUnits } from './stripe-utils';
 import { StripeService } from './stripe.service';
 
 const { StripeError } = Stripe.errors;

@@ -17,8 +17,8 @@ import { StripePluginOptions } from './types';
  *
  * 1. You will need to create a Stripe account and get your secret key in the dashboard.
  * 2. Create a webhook endpoint in the Stripe dashboard (Developers -> Webhooks, "Add an endpoint") which listens to the `payment_intent.succeeded`
- * and `payment_intent.payment_failed` events. The URL should be `https://my-shop.com/payments/stripe`, where
- * `my-shop.com` is the host of your storefront application. *Note:* for local development, you'll need to use
+ * and `payment_intent.payment_failed` events. The URL should be `https://my-server.com/payments/stripe`, where
+ * `my-server.com` is the host of your Vendure server. *Note:* for local development, you'll need to use
  * the Stripe CLI to test your webhook locally. See the _local development_ section below.
  * 3. Get the signing secret for the newly created webhook.
  * 4. Install the Payments plugin and the Stripe Node library:
