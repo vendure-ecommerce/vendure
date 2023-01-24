@@ -16,7 +16,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { getValidFormat } from './common';
-import { loggerCtx } from './constants';
+import { DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
 import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
 import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
@@ -151,6 +151,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
     private static options: AssetServerOptions;
+    private cacheHeader: string;
 
     /**
      * @description
@@ -196,6 +197,20 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             }
         }
 
+        // Configure Cache-Control header
+        const { cacheHeader } = AssetServerPlugin.options;
+        if (!cacheHeader) {
+            this.cacheHeader = DEFAULT_CACHE_HEADER;
+        } else {
+            if (typeof cacheHeader === 'string') {
+                this.cacheHeader = cacheHeader;
+            } else {
+                this.cacheHeader = [cacheHeader.restriction, `max-age: ${cacheHeader.maxAge}`]
+                    .filter(value => !!value)
+                    .join(', ');
+            }
+        }
+
         const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
         fs.ensureDirSync(cachePath);
     }
@@ -232,6 +247,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 }
                 res.contentType(mimeType);
                 res.setHeader('content-security-policy', `default-src 'self'`);
+                res.setHeader('Cache-Control', this.cacheHeader);
                 res.send(file);
             } catch (e) {
                 const err = new Error('File not found');
