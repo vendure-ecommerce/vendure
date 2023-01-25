@@ -20,6 +20,7 @@ import {
  */
 export class TypescriptDocsParser {
     private readonly atTokenPlaceholder = '__EscapedAtToken__';
+    private readonly commentBlockEndTokenPlaceholder = '__EscapedCommentBlockEndToken__'
 
     /**
      * Parses the TypeScript files given by the filePaths array and returns the
@@ -29,7 +30,7 @@ export class TypescriptDocsParser {
         const sourceFiles = filePaths.map(filePath => {
             return ts.createSourceFile(
                 filePath,
-                this.replaceEscapedAtTokens(fs.readFileSync(filePath).toString()),
+                this.replaceEscapedTokens(fs.readFileSync(filePath).toString()),
                 ts.ScriptTarget.ES2015,
                 true,
             );
@@ -288,7 +289,7 @@ export class TypescriptDocsParser {
                 const memberInfo: MemberInfo = {
                     fullText,
                     name,
-                    description: this.restoreAtTokens(description),
+                    description: this.restoreTokens(description),
                     type,
                     modifiers,
                     since,
@@ -383,7 +384,7 @@ export class TypescriptDocsParser {
             description: comment => (description += comment),
             example: comment => (description += this.formatExampleCode(comment)),
         });
-        return this.restoreAtTokens(description);
+        return this.restoreTokens(description);
     }
 
     /**
@@ -446,20 +447,23 @@ export class TypescriptDocsParser {
 
     /**
      * TypeScript from v3.5.1 interprets all '@' tokens in a tag comment as a new tag. This is a problem e.g.
-     * when a plugin includes in it's description some text like "install the @vendure/some-plugin package". Here,
+     * when a plugin includes in its description some text like "install the @vendure/some-plugin package". Here,
      * TypeScript will interpret "@vendure" as a JSDoc tag and remove it and all remaining text from the comment.
      *
      * The solution is to replace all escaped @ tokens ("\@") with a replacer string so that TypeScript treats them
      * as regular comment text, and then once it has parsed the statement, we replace them with the "@" character.
+     *
+     * Similarly, '/*' is interpreted as end of a comment block. However, it can be useful to specify a globstar
+     * pattern in descriptions and therefore it is supported as long as the leading '/' is escaped ("\/").
      */
-    private replaceEscapedAtTokens(content: string): string {
-        return content.replace(/\\@/g, this.atTokenPlaceholder);
+    private replaceEscapedTokens(content: string): string {
+        return content.replace(/\\@/g, this.atTokenPlaceholder).replace(/\\\/\*/g, this.commentBlockEndTokenPlaceholder);
     }
 
     /**
-     * Restores "@" tokens which were replaced by the replaceEscapedAtTokens() method.
+     * Restores "@" and "/*" tokens which were replaced by the replaceEscapedTokens() method.
      */
-    private restoreAtTokens(content: string): string {
-        return content.replace(new RegExp(this.atTokenPlaceholder, 'g'), '@');
+    private restoreTokens(content: string): string {
+        return content.replace(new RegExp(this.atTokenPlaceholder, 'g'), '@').replace(new RegExp(this.commentBlockEndTokenPlaceholder, 'g'), '/*');
     }
 }
