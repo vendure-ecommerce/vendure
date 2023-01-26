@@ -191,7 +191,8 @@ type OrderLine implements Node {
     "The proratedUnitPrice including tax"
     proratedUnitPriceWithTax: Int!
     quantity: Int!
-    items: [OrderItem!]!
+    "The quantity at the time the Order was placed"
+    orderPlacedQuantity: Int!
     taxRate: Float!
     """
     The total price of the line excluding tax and discounts.
@@ -218,7 +219,7 @@ type OrderLine implements Node {
     discounts: [Discount!]!
     taxLines: [TaxLine!]!
     order: Order!
-    fulfillments: [Fulfillment!]
+    fulfillmentLines: [FulfillmentLine!]
 }
 
 type Payment implements Node {
@@ -234,6 +235,14 @@ type Payment implements Node {
     metadata: JSON
 }
 
+type RefundLine {
+    orderLine: OrderLine!
+    orderLineId: ID!
+    quantity: Int!
+    refund: Refund!
+    refundId: ID!
+}
+
 type Refund implements Node {
     id: ID!
     createdAt: DateTime!
@@ -246,22 +255,25 @@ type Refund implements Node {
     state: String!
     transactionId: String
     reason: String
-    orderItems: [OrderItem!]!
+    lines: [RefundLine!]!
     paymentId: ID!
     metadata: JSON
 }
 
-type FulfillmentLineSummary {
+type FulfillmentLine {
     orderLine: OrderLine!
+    orderLineId: ID!
     quantity: Int!
+    fulfillment: Fulfillment!
+    fulfillmentId: ID!
 }
 
 type Fulfillment implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
-    orderItems: [OrderItem!]!
-    summary: [FulfillmentLineSummary!]!
+    lines: [FulfillmentLine!]!
+    summary: [FulfillmentLine!]! @deprecated(reason: "Use the `lines` field instead")
     state: String!
     method: String!
     trackingCode: String

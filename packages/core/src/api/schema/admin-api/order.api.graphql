@@ -161,7 +161,7 @@ input ModifyOrderInput {
     dryRun: Boolean!
     orderId: ID!
     addItems: [AddItemInput!]
-    adjustOrderLines: [AdjustOrderLineInput!]
+    adjustOrderLines: [OrderLineInput!]
     surcharges: [SurchargeInput!]
     updateShippingAddress: UpdateOrderAddressInput
     updateBillingAddress: UpdateOrderAddressInput
@@ -173,11 +173,6 @@ input ModifyOrderInput {
 
 input AddItemInput {
     productVariantId: ID!
-    quantity: Int!
-}
-
-input AdjustOrderLineInput {
-    orderLineId: ID!
     quantity: Int!
 }
 

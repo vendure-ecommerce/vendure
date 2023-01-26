@@ -16,13 +16,11 @@ import {
 import { PromotionCondition, PromotionConditionState } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { CustomPromotionFields } from '../custom-entity-fields';
-import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 
 export interface ApplyOrderItemActionArgs {
-    orderItem: OrderItem;
     orderLine: OrderLine;
 }
 
@@ -133,9 +131,9 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
             const promotionAction = this.allActions[action.code];
             if (promotionAction instanceof PromotionItemAction) {
                 if (this.isOrderItemArg(args)) {
-                    const { orderItem, orderLine } = args;
+                    const { orderLine } = args;
                     amount += Math.round(
-                        await promotionAction.execute(ctx, orderItem, orderLine, action.args, state, this),
+                        await promotionAction.execute(ctx, orderLine, action.args, state, this),
                     );
                 }
             } else if (promotionAction instanceof PromotionOrderAction) {
@@ -158,6 +156,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
                 type: this.type,
                 description: this.name,
                 adjustmentSource: this.getSourceId(),
+                data: {},
             };
         }
     }
@@ -223,7 +222,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     private isOrderItemArg(
         value: ApplyOrderItemActionArgs | ApplyOrderActionArgs | ApplyShippingActionArgs,
     ): value is ApplyOrderItemActionArgs {
-        return value.hasOwnProperty('orderItem');
+        return value.hasOwnProperty('orderLine');
     }
 
     private isShippingArg(

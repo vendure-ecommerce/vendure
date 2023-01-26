@@ -53,6 +53,7 @@ import {
     FulfillmentAdminEntityResolver,
     FulfillmentEntityResolver,
 } from './resolvers/entity/fulfillment-entity.resolver';
+import { FulfillmentLineEntityResolver } from './resolvers/entity/fulfillment-line-entity.resolver';
 import { JobEntityResolver } from './resolvers/entity/job-entity.resolver';
 import { OrderAdminEntityResolver, OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderItemEntityResolver } from './resolvers/entity/order-item-entity.resolver';
@@ -73,6 +74,7 @@ import {
     ProductVariantEntityResolver,
 } from './resolvers/entity/product-variant-entity.resolver';
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
+import { RefundLineEntityResolver } from './resolvers/entity/refund-line-entity.resolver';
 import { RoleEntityResolver } from './resolvers/entity/role-entity.resolver';
 import { ShippingLineEntityResolver } from './resolvers/entity/shipping-line-entity.resolver';
 import { ShippingMethodEntityResolver } from './resolvers/entity/shipping-method-entity.resolver';
@@ -131,6 +133,7 @@ export const entityResolvers = [
     FacetEntityResolver,
     FacetValueEntityResolver,
     FulfillmentEntityResolver,
+    FulfillmentLineEntityResolver,
     OrderEntityResolver,
     OrderItemEntityResolver,
     OrderLineEntityResolver,
@@ -140,6 +143,7 @@ export const entityResolvers = [
     ProductOptionGroupEntityResolver,
     ProductVariantEntityResolver,
     RefundEntityResolver,
+    RefundLineEntityResolver,
     RoleEntityResolver,
     ShippingLineEntityResolver,
     UserEntityResolver,

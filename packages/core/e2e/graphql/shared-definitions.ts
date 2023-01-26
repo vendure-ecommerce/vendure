@@ -720,11 +720,8 @@ export const CANCEL_ORDER = gql`
         id
         state
         lines {
+            id
             quantity
-            items {
-                id
-                cancelled
-            }
         }
     }
 `;

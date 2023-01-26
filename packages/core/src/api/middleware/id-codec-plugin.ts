@@ -42,6 +42,7 @@ export class IdCodecPlugin implements ApolloServerPlugin {
                     'paymentId',
                     'fulfillmentId',
                     'orderItemIds',
+                    'orderLineId',
                     'promotionId',
                     'refundId',
                     'groupId',

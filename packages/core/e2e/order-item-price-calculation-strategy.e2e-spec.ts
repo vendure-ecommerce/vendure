@@ -112,10 +112,6 @@ const ORDER_WITH_LINES_AND_ITEMS_FRAGMENT = gql`
             quantity
             unitPrice
             unitPriceWithTax
-            items {
-                unitPrice
-                unitPriceWithTax
-            }
         }
     }
 `;

@@ -31,12 +31,12 @@ export const defaultPromotionActions = [
     discountOnItemWithFacets,
     productsPercentageDiscount,
     freeShipping,
-    buyXGetYFreeAction,
+    // buyXGetYFreeAction,
 ];
 export const defaultPromotionConditions = [
     minimumOrderAmount,
     hasFacetValues,
     containsProducts,
     customerGroup,
-    buyXGetYFreeCondition,
+    // buyXGetYFreeCondition,
 ];

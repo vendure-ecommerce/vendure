@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
-import { Asset, Fulfillment, Order, OrderLine, ProductVariant } from '../../../entity';
+import { Asset, FulfillmentLine, Order, OrderLine, ProductVariant } from '../../../entity';
 import { AssetService, FulfillmentService, OrderService, ProductVariantService } from '../../../service';
 import { RequestContext } from '../../common/request-context';
 import { RelationPaths, Relations } from '../../decorators/relations.decorator';
@@ -48,13 +48,11 @@ export class OrderLineEntityResolver {
     }
 
     @ResolveField()
-    async fulfillments(
+    async fulfillmentLines(
         @Ctx() ctx: RequestContext,
         @Parent() orderLine: OrderLine,
         @Relations(Order) relations: RelationPaths<Order>,
-    ): Promise<Fulfillment[]> {
-        return this.fulfillmentService
-            .getFulfillmentsByOrderLineId(ctx, orderLine.id)
-            .then(results => results.map(r => r.fulfillment));
+    ): Promise<FulfillmentLine[]> {
+        return this.fulfillmentService.getFulfillmentsLinesForOrderLine(ctx, orderLine.id);
     }
 }

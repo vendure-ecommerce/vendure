@@ -335,8 +335,8 @@ describe('ShippingMethod resolver', () => {
     describe('argument ordering', () => {
         it('createShippingMethod corrects order of arguments', async () => {
             const { createShippingMethod } = await adminClient.query<
-                CreateShippingMethod.Mutation,
-                CreateShippingMethod.Variables
+                Codegen.CreateShippingMethodMutation,
+                Codegen.CreateShippingMethodMutationVariables
             >(CREATE_SHIPPING_METHOD, {
                 input: {
                     code: 'new-method',
@@ -374,8 +374,8 @@ describe('ShippingMethod resolver', () => {
 
         it('updateShippingMethod corrects order of arguments', async () => {
             const { updateShippingMethod } = await adminClient.query<
-                UpdateShippingMethod.Mutation,
-                UpdateShippingMethod.Variables
+                Codegen.UpdateShippingMethodMutation,
+                Codegen.UpdateShippingMethodMutationVariables
             >(UPDATE_SHIPPING_METHOD, {
                 input: {
                     id: 'T_4',
@@ -403,8 +403,8 @@ describe('ShippingMethod resolver', () => {
 
         it('get shippingMethod preserves correct ordering', async () => {
             const { shippingMethod } = await adminClient.query<
-                GetShippingMethod.Query,
-                GetShippingMethod.Variables
+                Codegen.GetShippingMethodQuery,
+                Codegen.GetShippingMethodQueryVariables
             >(GET_SHIPPING_METHOD, {
                 id: 'T_4',
             });
@@ -418,8 +418,8 @@ describe('ShippingMethod resolver', () => {
 
         it('testShippingMethod corrects order of arguments', async () => {
             const { testShippingMethod } = await adminClient.query<
-                TestShippingMethod.Query,
-                TestShippingMethod.Variables
+                Codegen.TestShippingMethodQuery,
+                Codegen.TestShippingMethodQueryVariables
             >(TEST_SHIPPING_METHOD, {
                 input: {
                     calculator: {

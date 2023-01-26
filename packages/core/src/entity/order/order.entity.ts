@@ -20,7 +20,7 @@ import { Channel } from '../channel/channel.entity';
 import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
-import { OrderItem } from '../order-item/order-item.entity';
+import { Fulfillment } from '../fulfillment/fulfillment.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { OrderModification } from '../order-modification/order-modification.entity';
 import { Payment } from '../payment/payment.entity';
@@ -128,6 +128,10 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
 
+    @ManyToMany(type => Fulfillment)
+    @JoinTable()
+    fulfillments: Fulfillment[];
+
     @Column('varchar')
     currencyCode: CurrencyCode;
 
@@ -178,7 +182,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @Column({ default: 0 })
     shippingWithTax: number;
 
-    @Calculated({ relations: ['lines', 'lines.items', 'shippingLines'] })
+    @Calculated({ relations: ['lines', 'shippingLines'] })
     get discounts(): Discount[] {
         this.throwIfLinesNotJoined('discounts');
         const groupedAdjustments = new Map<string, Discount>();
@@ -256,16 +260,15 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     }
 
     @Calculated({
-        relations: ['lines', 'lines.items'],
+        relations: ['lines'],
         query: qb => {
             qb.leftJoin(
                 qb1 => {
                     return qb1
                         .from(Order, 'order')
-                        .select('COUNT(DISTINCT items.id)', 'qty')
+                        .select('SUM(lines.quantity)', 'qty')
                         .addSelect('order.id', 'oid')
                         .leftJoin('order.lines', 'lines')
-                        .leftJoin('lines.items', 'items')
                         .groupBy('order.id');
                 },
                 't1',
@@ -283,7 +286,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * @description
      * A summary of the taxes being applied to this Order.
      */
-    @Calculated({ relations: ['lines', 'lines.items'] })
+    @Calculated({ relations: ['lines'] })
     get taxSummary(): OrderTaxSummary[] {
         this.throwIfLinesNotJoined('taxSummary');
         const taxRateMap = new Map<
@@ -322,13 +325,6 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
             taxBase: row.base,
             taxTotal: row.tax,
         }));
-    }
-
-    getOrderItems(): OrderItem[] {
-        this.throwIfLinesNotJoined('getOrderItems');
-        return this.lines.reduce((items, line) => {
-            return [...items, ...line.items];
-        }, [] as OrderItem[]);
     }
 
     private throwIfLinesNotJoined(propertyName: keyof Order) {

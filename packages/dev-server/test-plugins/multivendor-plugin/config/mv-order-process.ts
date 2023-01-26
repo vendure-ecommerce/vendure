@@ -68,7 +68,7 @@ export const multivendorOrderProcess: CustomOrderProcess<any> = {
             const aggregateOrder = await orderService.getAggregateOrder(ctx, order);
             if (aggregateOrder) {
                 // This part is responsible for automatically updating the state of the aggregate Order
-                // based on the fulfillment state of all the the associated seller Orders.
+                // based on the fulfillment state of all the associated seller Orders.
                 const otherSellerOrders = (await orderService.getSellerOrders(ctx, aggregateOrder)).filter(
                     so => !idsAreEqual(so.id, order.id),
                 );
@@ -89,6 +89,6 @@ export const multivendorOrderProcess: CustomOrderProcess<any> = {
 
 async function findOrderWithFulfillments(ctx: RequestContext, id: ID): Promise<Order> {
     return await connection.getEntityOrThrow(ctx, Order, id, {
-        relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
+        relations: ['lines', 'fulfillments', 'fulfillments.lines'],
     });
 }

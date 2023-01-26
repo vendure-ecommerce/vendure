@@ -9,6 +9,7 @@ import {
     discountOnItemWithFacets,
     hasFacetValues,
     manualFulfillmentHandler,
+    mergeConfig,
     minimumOrderAmount,
     orderPercentageDiscount,
     productsPercentageDiscount,
@@ -58,12 +59,14 @@ import {
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Promotions applied to Orders', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig(),
-        paymentOptions: {
-            paymentMethodHandlers: [testSuccessfulPaymentMethod],
-        },
-    });
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig(), {
+            dbConnectionOptions: { logging: true },
+            paymentOptions: {
+                paymentMethodHandlers: [testSuccessfulPaymentMethod],
+            },
+        }),
+    );
 
     const freeOrderAction = {
         code: orderPercentageDiscount.code,

@@ -11,7 +11,7 @@ import { CalculateTaxLinesArgs, TaxLineCalculationStrategy } from './tax-line-ca
  */
 export class DefaultTaxLineCalculationStrategy implements TaxLineCalculationStrategy {
     calculate(args: CalculateTaxLinesArgs): TaxLine[] {
-        const { orderItem, applicableTaxRate } = args;
-        return [applicableTaxRate.apply(orderItem.proratedUnitPrice)];
+        const { orderLine, applicableTaxRate } = args;
+        return [applicableTaxRate.apply(orderLine.proratedUnitPrice)];
     }
 }

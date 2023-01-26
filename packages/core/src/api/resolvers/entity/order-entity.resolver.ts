@@ -30,6 +30,9 @@ export class OrderEntityResolver {
 
     @ResolveField()
     async fulfillments(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.fulfillments) {
+            return order.fulfillments;
+        }
         return this.orderService.getOrderFulfillments(ctx, order);
     }
 

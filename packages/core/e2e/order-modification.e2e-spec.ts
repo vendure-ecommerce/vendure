@@ -522,7 +522,7 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax + order!.lines[0].unitPriceWithTax * 2;
-            expect(modifyOrder.lines[0].items.length).toBe(3);
+            expect(modifyOrder.lines[0].quantity).toBe(3);
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             await assertOrderIsUnchanged(order!);
         });
@@ -547,8 +547,7 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(modifyOrder);
 
             const expectedTotal = order!.totalWithTax - order!.lines[1].unitPriceWithTax;
-            expect(modifyOrder.lines[1].items.filter(i => i.cancelled).length).toBe(1);
-            expect(modifyOrder.lines[1].items.filter(i => !i.cancelled).length).toBe(1);
+            expect(modifyOrder.lines[1].quantity).toBe(1);
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             await assertOrderIsUnchanged(order!);
         });
@@ -572,9 +571,10 @@ describe('Order modification', () => {
             });
             orderGuard.assertSuccess(modifyOrder);
 
-            const expectedTotal = order!.totalWithTax - order!.lines[0].linePriceWithTax;
+            const expectedTotal =
+                order!.totalWithTax - order!.lines[0].unitPriceWithTax * order!.lines[0].quantity;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
-            expect(modifyOrder.lines[0].items.every(i => i.cancelled)).toBe(true);
+            expect(modifyOrder.lines[0].quantity).toBe(0);
             await assertOrderIsUnchanged(order!);
         });
 
@@ -736,9 +736,9 @@ describe('Order modification', () => {
             expect(modifyOrder.lines.length).toBe(order!.lines.length + 1);
             expect(modifyOrder.modifications.length).toBe(1);
             expect(modifyOrder.modifications[0].priceChange).toBe(priceDelta);
-            expect(modifyOrder.modifications[0].orderItems?.length).toBe(1);
-            expect(modifyOrder.modifications[0].orderItems?.map(i => i.id)).toEqual([
-                modifyOrder.lines[1].items[0].id,
+            expect(modifyOrder.modifications[0].lines.length).toBe(1);
+            expect(modifyOrder.modifications[0].lines).toEqual([
+                { orderLineId: modifyOrder.lines[1].id, quantity: 1 },
             ]);
 
             await assertModifiedOrderIsPersisted(modifyOrder);
@@ -769,12 +769,8 @@ describe('Order modification', () => {
             expect(modifyOrder.lines[0].quantity).toBe(2);
             expect(modifyOrder.modifications.length).toBe(1);
             expect(modifyOrder.modifications[0].priceChange).toBe(priceDelta);
-            expect(modifyOrder.modifications[0].orderItems?.length).toBe(1);
-            expect(
-                modifyOrder.lines[0].items
-                    .map(i => i.id)
-                    .includes(modifyOrder.modifications?.[0].orderItems?.[0].id as string),
-            ).toBe(true);
+            expect(modifyOrder.modifications[0].lines.length).toBe(1);
+            expect(modifyOrder.lines[0].id).toEqual(modifyOrder.modifications[0].lines[0].orderLineId);
             await assertModifiedOrderIsPersisted(modifyOrder);
         });
 
@@ -813,12 +809,8 @@ describe('Order modification', () => {
             expect(modifyOrder.modifications.length).toBe(1);
             expect(modifyOrder.modifications[0].priceChange).toBe(priceDelta);
             expect(modifyOrder.modifications[0].surcharges).toEqual(modifyOrder.surcharges.map(pick(['id'])));
-            expect(modifyOrder.modifications[0].orderItems?.length).toBe(1);
-            expect(
-                modifyOrder.lines[0].items
-                    .map(i => i.id)
-                    .includes(modifyOrder.modifications?.[0].orderItems?.[0].id as string),
-            ).toBe(true);
+            expect(modifyOrder.modifications[0].lines.length).toBe(1);
+            expect(modifyOrder.lines[0].id).toEqual(modifyOrder.modifications[0].lines[0].orderLineId);
             await assertModifiedOrderIsPersisted(modifyOrder);
         });
 
@@ -1440,12 +1432,18 @@ describe('Order modification', () => {
                     total: 16649,
                 },
             ]);
+            // Note: During the big refactor of the OrderItem entity, the "total" value in the following
+            // assertion was changed from `300` to `600`. This is due to a change in the way we calculate
+            // refunds on pro-rated discounts. Previously, the pro-ration was not recalculated prior to
+            // the refund being calculated, so the individual OrderItem had only 1/2 the full order discount
+            // applied to it (300). Now, the pro-ration is applied to the single remaining item and therefore the
+            // entire discount of 600 gets moved over to the remaining item.
             expect(modifyOrder?.payments?.find(p => p.id !== additionalPaymentId)?.refunds).toEqual([
                 {
                     id: 'T_6',
                     paymentId: 'T_15',
                     state: 'Pending',
-                    total: 300,
+                    total: 600,
                 },
             ]);
             expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
@@ -1678,7 +1676,7 @@ describe('Order modification', () => {
             expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
         });
 
-        // github.com/vendure-ecommerce/vendure/issues/1865
+        // https://github.com/vendure-ecommerce/vendure/issues/1865
         describe('issue 1865', () => {
             const promoDiscount = 5000;
             let promoId: string;
@@ -2401,10 +2399,13 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
         lines {
             id
             quantity
+            orderPlacedQuantity
             linePrice
             linePriceWithTax
+            unitPriceWithTax
             discountedLinePriceWithTax
             proratedLinePriceWithTax
+            proratedUnitPriceWithTax
             discounts {
                 description
                 amountWithTax
@@ -2412,13 +2413,6 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
             productVariant {
                 id
                 name
-            }
-            items {
-                id
-                createdAt
-                updatedAt
-                cancelled
-                unitPrice
             }
         }
         surcharges {
@@ -2448,8 +2442,9 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
             note
             priceChange
             isSettled
-            orderItems {
-                id
+            lines {
+                orderLineId
+                quantity
             }
             surcharges {
                 id

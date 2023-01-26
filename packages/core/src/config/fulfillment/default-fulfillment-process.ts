@@ -2,10 +2,8 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { awaitPromiseOrObservable } from '../../common/index';
+import { awaitPromiseOrObservable, InternalServerError, isGraphQlErrorResult } from '../../common/index';
 import { Fulfillment } from '../../entity/index';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { orderItemsAreDelivered, orderItemsAreShipped } from '../../service/helpers/utils/order-utils';
 import { FulfillmentState, OrderState } from '../../service/index';
@@ -79,9 +77,10 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
     },
     async onTransitionEnd(fromState, toState, { ctx, fulfillment, orders }) {
         if (toState === 'Cancelled') {
-            await stockMovementService.createCancellationsForOrderItems(ctx, fulfillment.orderItems);
-            const lines = await groupOrderItemsIntoLines(ctx, fulfillment.orderItems);
-            await stockMovementService.createAllocationsForOrderLines(ctx, lines);
+            const orderLineInput = fulfillment.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity }));
+            await stockMovementService.createCancellationsForOrderLines(ctx, orderLineInput);
+            // const lines = await groupOrderItemsIntoLines(ctx, orderLineInput);
+            await stockMovementService.createAllocationsForOrderLines(ctx, orderLineInput);
         }
         const historyEntryPromises = orders.map(order =>
             historyService.createHistoryEntryForOrder({
@@ -106,31 +105,6 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
     },
 };
 
-async function groupOrderItemsIntoLines(
-    ctx: RequestContext,
-    orderItems: OrderItem[],
-): Promise<Array<{ orderLine: OrderLine; quantity: number }>> {
-    const orderLineIdQuantityMap = new Map<ID, number>();
-    for (const item of orderItems) {
-        const quantity = orderLineIdQuantityMap.get(item.lineId);
-        if (quantity == null) {
-            orderLineIdQuantityMap.set(item.lineId, 1);
-        } else {
-            orderLineIdQuantityMap.set(item.lineId, quantity + 1);
-        }
-    }
-    const orderLines = await connection
-        .getRepository(ctx, OrderLine)
-        .findByIds([...orderLineIdQuantityMap.keys()], {
-            relations: ['productVariant'],
-        });
-    return orderLines.map(orderLine => ({
-        orderLine,
-        // tslint:disable-next-line:no-non-null-assertion
-        quantity: orderLineIdQuantityMap.get(orderLine.id)!,
-    }));
-}
-
 async function handleFulfillmentStateTransitByOrder(
     ctx: RequestContext,
     order: Order,
@@ -140,8 +114,14 @@ async function handleFulfillmentStateTransitByOrder(
 ): Promise<void> {
     const nextOrderStates = orderService.getNextOrderStates(order);
 
-    const transitionOrderIfStateAvailable = (state: OrderState) =>
-        nextOrderStates.includes(state) && orderService.transitionToState(ctx, order.id, state);
+    const transitionOrderIfStateAvailable = async (state: OrderState) => {
+        if (nextOrderStates.includes(state)) {
+            const result = await orderService.transitionToState(ctx, order.id, state);
+            if (isGraphQlErrorResult(result)) {
+                throw new InternalServerError(result.message);
+            }
+        }
+    };
 
     if (toState === 'Shipped') {
         const orderWithFulfillment = await getOrderWithFulfillments(ctx, order.id);
@@ -163,6 +143,6 @@ async function handleFulfillmentStateTransitByOrder(
 
 async function getOrderWithFulfillments(ctx: RequestContext, orderId: ID) {
     return await connection.getEntityOrThrow(ctx, Order, orderId, {
-        relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
+        relations: ['lines', 'fulfillments', 'fulfillments.lines', 'fulfillments.lines.fulfillment'],
     });
 }

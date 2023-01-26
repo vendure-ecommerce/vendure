@@ -26,6 +26,9 @@ describe('Draft Orders resolver', () => {
             paymentOptions: {
                 paymentMethodHandlers: [singleStageRefundablePaymentMethod],
             },
+            dbConnectionOptions: {
+                logging: true,
+            },
         }),
     );
     let customers: Codegen.GetCustomerListQuery['customers']['items'];
@@ -110,6 +113,7 @@ describe('Draft Orders resolver', () => {
         });
 
         orderGuard.assertSuccess(addItemToDraftOrder);
+
         expect(addItemToDraftOrder.lines.length).toBe(1);
         draftOrder = addItemToDraftOrder;
     });

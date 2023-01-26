@@ -21,7 +21,10 @@ import { GlobalSettings } from './global-settings/global-settings.entity';
 import { CustomerHistoryEntry } from './history-entry/customer-history-entry.entity';
 import { HistoryEntry } from './history-entry/history-entry.entity';
 import { OrderHistoryEntry } from './history-entry/order-history-entry.entity';
-import { OrderItem } from './order-item/order-item.entity';
+import { FulfillmentLine } from './order-line-reference/fulfillment-line.entity';
+import { OrderLineReference } from './order-line-reference/order-line-reference.entity';
+import { OrderModificationLine } from './order-line-reference/order-modification-line.entity';
+import { RefundLine } from './order-line-reference/refund-line.entity';
 import { OrderLine } from './order-line/order-line.entity';
 import { OrderModification } from './order-modification/order-modification.entity';
 import { Order } from './order/order.entity';
@@ -88,13 +91,15 @@ export const coreEntitiesMap = {
     FacetValue,
     FacetValueTranslation,
     Fulfillment,
+    FulfillmentLine,
     GlobalSettings,
     HistoryEntry,
+    OrderModificationLine,
     NativeAuthenticationMethod,
     Order,
     OrderHistoryEntry,
-    OrderItem,
     OrderLine,
+    OrderLineReference,
     OrderModification,
     Payment,
     PaymentMethod,
@@ -111,6 +116,7 @@ export const coreEntitiesMap = {
     ProductVariantTranslation,
     Promotion,
     Refund,
+    RefundLine,
     Release,
     Role,
     Sale,

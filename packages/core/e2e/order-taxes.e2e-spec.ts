@@ -150,9 +150,6 @@ describe('Order taxes', () => {
             expect(activeOrder?.lines[0].linePriceWithTax).toBe(240);
             expect(activeOrder?.lines[0].unitPrice).toBe(100);
             expect(activeOrder?.lines[0].unitPriceWithTax).toBe(120);
-            expect(activeOrder?.lines[0].items[0].unitPrice).toBe(100);
-            expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(120);
-            expect(activeOrder?.lines[0].items[0].taxRate).toBe(20);
             expect(activeOrder?.lines[0].taxLines).toEqual([
                 {
                     description: 'Standard Tax Europe',
@@ -197,9 +194,6 @@ describe('Order taxes', () => {
             expect(activeOrder?.lines[0].linePriceWithTax).toBe(200);
             expect(activeOrder?.lines[0].unitPrice).toBe(83);
             expect(activeOrder?.lines[0].unitPriceWithTax).toBe(100);
-            expect(activeOrder?.lines[0].items[0].unitPrice).toBe(83);
-            expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(100);
-            expect(activeOrder?.lines[0].items[0].taxRate).toBe(20);
             expect(activeOrder?.lines[0].taxLines).toEqual([
                 {
                     description: 'Standard Tax Europe',
@@ -249,9 +243,6 @@ describe('Order taxes', () => {
             expect(activeOrder?.lines[0].linePriceWithTax).toBe(166);
             expect(activeOrder?.lines[0].unitPrice).toBe(83);
             expect(activeOrder?.lines[0].unitPriceWithTax).toBe(83);
-            expect(activeOrder?.lines[0].items[0].unitPrice).toBe(83);
-            expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(83);
-            expect(activeOrder?.lines[0].items[0].taxRate).toBe(0);
             expect(activeOrder?.lines[0].taxLines).toEqual([
                 {
                     description: 'Standard Tax Asia',
@@ -286,9 +277,6 @@ describe('Order taxes', () => {
             expect(activeOrder?.lines[0].linePriceWithTax).toBe(200);
             expect(activeOrder?.lines[0].unitPrice).toBe(83);
             expect(activeOrder?.lines[0].unitPriceWithTax).toBe(100);
-            expect(activeOrder?.lines[0].items[0].unitPrice).toBe(83);
-            expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(100);
-            expect(activeOrder?.lines[0].items[0].taxRate).toBe(20);
             expect(activeOrder?.lines[0].taxLines).toEqual([
                 {
                     description: 'Standard Tax Americas',
