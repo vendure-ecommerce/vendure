@@ -1345,26 +1345,6 @@ export class OrderService {
         }
     }
 
-    // private async getAllocatedItems(ctx: RequestContext, items: OrderItem[]): Promise<OrderItem[]> {
-    //     const allocatedItems: OrderItem[] = [];
-    //     const allocationMap = new Map<ID, Allocation | false>();
-    //     for (const item of items) {
-    //         let allocation = allocationMap.get(item.lineId);
-    //         if (!allocation) {
-    //             allocation = await this.connection
-    //                 .getRepository(ctx, Allocation)
-    //                 .createQueryBuilder('allocation')
-    //                 .where('allocation.orderLine = :lineId', { lineId: item.lineId })
-    //                 .getOne();
-    //             allocationMap.set(item.lineId, allocation || false);
-    //         }
-    //         if (allocation && !item.fulfillment) {
-    //             allocatedItems.push(item);
-    //         }
-    //     }
-    //     return allocatedItems;
-    // }
-
     /**
      * @description
      * Creates a {@link Refund} against the order and in doing so invokes the `createRefund()` method of the
@@ -1384,30 +1364,6 @@ export class OrderService {
         if (1 < orders.length) {
             return new MultipleOrderError();
         }
-        // const refundLines = await this.connection
-        //     .getRepository(ctx, RefundLine)
-        //     .createQueryBuilder('refundLine')
-        //     .leftJoinAndSelect('refundLine.refund', 'refund')
-        //     .where('refundLine.orderLineId IN (:...orderLineIds)', {
-        //         orderLineIds: input.lines?.map(l => l.orderLineId) ?? [],
-        //     })
-        //     .andWhere('refund.state != :state', { state: 'Failed' })
-        //     .getMany();
-        // const orderLines = await this.connection
-        //     .getRepository(ctx, OrderLine)
-        //     .findByIds(input.lines?.map(l => l.orderLineId) ?? []);
-        // for (const lineInput of input.lines) {
-        //     const refundLinesForOrderLine = refundLines.filter(l =>
-        //         idsAreEqual(l.orderLineId, lineInput.orderLineId),
-        //     );
-        //     const orderLine = orderLines.find(l => idsAreEqual(l.id, lineInput.orderLineId));
-        //     const orderLineQuantity = orderLine ? orderLine.quantity - orderLine.cancelledCount : 0;
-        //     const quantityRefunded = summate(refundLinesForOrderLine, 'quantity');
-        //
-        //     if (orderLineQuantity - quantityRefunded < lineInput.quantity) {
-        //         return new QuantityTooGreatError();
-        //     }
-        // }
         const payment = await this.connection.getEntityOrThrow(ctx, Payment, input.paymentId, {
             relations: ['order'],
         });

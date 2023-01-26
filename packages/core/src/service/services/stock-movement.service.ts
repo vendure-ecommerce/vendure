@@ -158,19 +158,6 @@ export class StockMovementService {
     async createSalesForOrder(ctx: RequestContext, lines: OrderLineInput[]): Promise<Sale[]> {
         const sales: Sale[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        // const orderLinesMap = new Map<ID, { line: OrderLine; items: OrderItem[] }>();
-
-        // for (const orderItem of orderItems) {
-        //     let value = orderLinesMap.get(orderItem.lineId);
-        //     if (!value) {
-        //         const line = await this.connection.getEntityOrThrow(ctx, OrderLine, orderItem.lineId, {
-        //             relations: ['productVariant'],
-        //         });
-        //         value = { line, items: [] };
-        //         orderLinesMap.set(orderItem.lineId, value);
-        //     }
-        //     value.items.push(orderItem);
-        // }
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
             .findByIds(lines.map(line => line.orderLineId));
@@ -258,12 +245,6 @@ export class StockMovementService {
      * reduced, indicating that this stock is once again available to buy.
      */
     async createReleasesForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]): Promise<Release[]> {
-        // const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
-        //     items.map(i => i.id),
-        //     {
-        //         relations: ['line', 'line.productVariant'],
-        //     },
-        // );
         const releases: Release[] = [];
         const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
             lineInputs.map(line => line.orderLineId),

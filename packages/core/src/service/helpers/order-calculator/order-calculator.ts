@@ -5,13 +5,11 @@ import { AdjustmentType } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { InternalServerError } from '../../../common/error/errors';
-import { netPriceOf } from '../../../common/tax-utils';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
-import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
@@ -177,7 +175,7 @@ export class OrderCalculator {
      * @description
      * Applies promotions to OrderItems. This is a quite complex function, due to the inherent complexity
      * of applying the promotions, and also due to added complexity in the name of performance
-     * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
+     * optimization. Therefore, it is heavily annotated so that the purpose of each step is clear.
      */
     private async applyOrderItemPromotions(
         ctx: RequestContext,
@@ -188,21 +186,7 @@ export class OrderCalculator {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
             const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
-
-            // const lineHasExistingPromotions = !!line.adjustments?.find(
-            //     a => a.type === AdjustmentType.PROMOTION,
-            // );
-            // const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
-            //
-            // if (forceUpdateItems || lineHasExistingPromotions) {
             line.clearAdjustments();
-            // }
-            // if (forceUpdateItems) {
-            //     // This OrderLine contains Promotion adjustments for Promotions that are no longer
-            //     // applicable. So we know for sure we will need to update these OrderItems in the
-            //     // DB. Therefore add them to the `updatedOrderItems` set.
-            //     line.items.forEach(i => updatedOrderItems.add(i));
-            // }
 
             for (const promotion of applicablePromotions) {
                 let priceAdjusted = false;
@@ -226,45 +210,10 @@ export class OrderCalculator {
                     this.addPromotion(order, promotion);
                 }
             }
-            // const lineNoLongerHasPromotions = !line?.adjustments?.find(
-            //     a => a.type === AdjustmentType.PROMOTION,
-            // );
-            // if (lineHasExistingPromotions && lineNoLongerHasPromotions) {
-            //     line.items.forEach(i => updatedOrderItems.add(i));
-            // }
-
-            // if (forceUpdateItems) {
-            // If we are forcing an update, we need to ensure that totals get
-            // re-calculated *even if* there are no applicable promotions (i.e.
-            // the other call to `this.calculateOrderTotals()` inside the `for...of`
-            // loop was never invoked).
             this.calculateOrderTotals(order);
-            // }
         }
         return;
     }
-
-    /**
-     * @description
-     * An OrderLine may have promotion adjustments from Promotions which are no longer applicable.
-     * For example, a coupon code might have caused a discount to be applied, and now that code has
-     * been removed from the order. The adjustment will still be there on each OrderItem it was applied
-     * to, even though that Promotion is no longer found in the `applicablePromotions` array.
-     *
-     * We need to know about this because it means that all OrderItems in the OrderLine must be
-     * updated.
-     */
-    // private orderLineHasInapplicablePromotions(applicablePromotions: Promotion[], line: OrderLine) {
-    //     const applicablePromotionIds = applicablePromotions.map(p => p.getSourceId());
-    //
-    //     const linePromotionIds = line.adjustments
-    //         .filter(a => a.type === AdjustmentType.PROMOTION)
-    //         .map(a => a.adjustmentSource);
-    //     const hasPromotionsThatAreNoLongerApplicable = !linePromotionIds.every(id =>
-    //         applicablePromotionIds.includes(id),
-    //     );
-    //     return hasPromotionsThatAreNoLongerApplicable;
-    // }
 
     private async applyOrderPromotions(
         ctx: RequestContext,
@@ -282,7 +231,6 @@ export class OrderCalculator {
             // to be saved.
             order.lines.forEach(line => {
                 line.clearAdjustments(AdjustmentType.DISTRIBUTED_ORDER_PROMOTION);
-                // line.items.forEach(item => updatedItems.add(item));
             });
         }
 
