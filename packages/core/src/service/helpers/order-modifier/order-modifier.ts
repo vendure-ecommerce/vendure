@@ -481,14 +481,6 @@ export class OrderModifier {
                         orderLineId: orderLine.id,
                         quantity: qtyDelta,
                     });
-                    // const cancelledOrderItems = orderLine.items.filter(i => i.cancelled).slice(0, qtyDelta);
-                    // refundInput.orderItems.push(...cancelledOrderItems);
-                    // modification.orderItems.push(...cancelledOrderItems);
-                } else {
-                    // const addedOrderItems = orderLine.items
-                    //     .filter(i => !i.cancelled)
-                    //     .slice(initialLineQuantity);
-                    // modification.orderItems.push(...addedOrderItems);
                 }
             }
             updatedOrderLineIds.push(orderLine.id);
@@ -640,18 +632,6 @@ export class OrderModifier {
             .getRepository(ctx, OrderModification)
             .save(modification);
         await this.connection.getRepository(ctx, Order).save(order);
-        // if (input.couponCodes) {
-        //     // When coupon codes have changed, this will likely affect the adjustments applied to
-        //     // OrderItems. So in this case we need to save all of them.
-        //     const orderItems = order.lines.reduce((all, line) => all.concat(line.items), [] as OrderItem[]);
-        //     await this.connection.getRepository(ctx, OrderItem).save(orderItems, { reload: false });
-        // } else {
-        //     // Otherwise, just save those OrderItems that were specifically added/removed
-        //     // or updated when applying `OrderCalculator.applyPriceAdjustments()`
-        //     await this.connection
-        //         .getRepository(ctx, OrderItem)
-        //         .save([...modification.orderItems, ...updatedOrderItems], { reload: false });
-        // }
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return { order, modification: createdModification };
     }

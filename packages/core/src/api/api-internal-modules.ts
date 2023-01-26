@@ -56,7 +56,6 @@ import {
 import { FulfillmentLineEntityResolver } from './resolvers/entity/fulfillment-line-entity.resolver';
 import { JobEntityResolver } from './resolvers/entity/job-entity.resolver';
 import { OrderAdminEntityResolver, OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
-import { OrderItemEntityResolver } from './resolvers/entity/order-item-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
 import {
     PaymentAdminEntityResolver,
@@ -135,7 +134,6 @@ export const entityResolvers = [
     FulfillmentEntityResolver,
     FulfillmentLineEntityResolver,
     OrderEntityResolver,
-    OrderItemEntityResolver,
     OrderLineEntityResolver,
     PaymentEntityResolver,
     ProductEntityResolver,

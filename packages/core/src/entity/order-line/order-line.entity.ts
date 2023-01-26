@@ -228,24 +228,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         );
     }
 
-    /*@Calculated()
-    get quantity(): number {
-        return this.activeItems.length;
-    }*/
-
-    // @Calculated({relations: ['items']})
-    // get adjustments(): Adjustment[] {
-    //     return this.activeItems.reduce(
-    //         (adjustments, item) => [...adjustments, ...(item.adjustments || [])],
-    //         [] as Adjustment[],
-    //     );
-    // }
-
-    // @Calculated({relations: ['items']})
-    // get taxLines(): TaxLine[] {
-    //     return this.firstActiveItemPropOr('taxLines', []);
-    // }
-
     @Calculated()
     get taxRate(): number {
         return summate(this.taxLines, 'taxRate');
@@ -350,18 +332,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     get proratedLineTax(): number {
         return this.proratedUnitTax * this.quantity;
     }
-
-    /**
-     * Returns all non-cancelled OrderItems on this line.
-     */
-    // get activeItems(): OrderItem[] {
-    //     if (this.items == null) {
-    //         Logger.warn(
-    //             `Attempted to access OrderLine.items without first joining the relation: `,
-    //         );
-    //     }
-    //     return (this.items || []).filter(i => !i.cancelled);
-    // }
 
     addAdjustment(adjustment: Adjustment) {
         this.adjustments = this.adjustments.concat(adjustment);

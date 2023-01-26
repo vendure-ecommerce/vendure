@@ -1084,34 +1084,6 @@ describe('Orders resolver', () => {
                 { id: f3Id, method: 'Test3', state: 'Delivered', nextStates: ['Cancelled'] },
             ]);
         });
-
-        // it('order.fulfillments.orderItems resolver', async () => {
-        //     const { order } = await adminClient.query<
-        //         Codegen.GetOrderFulfillmentItemsQuery,
-        //         Codegen.GetOrderFulfillmentItemsQueryVariables
-        //     >(GET_ORDER_FULFILLMENT_ITEMS, {
-        //         id: orderId,
-        //     });
-        //     const sortedFulfillments = order!.fulfillments!.sort(sortById);
-        //     expect(sortedFulfillments[0].orderItems).toEqual([{ id: 'T_3' }]);
-        //     expect(sortedFulfillments[1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
-        //     expect(sortedFulfillments[2].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
-        // });
-
-        // it('order.line.items.fulfillment resolver', async () => {
-        //     const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
-        //         GET_ORDER,
-        //         {
-        //             id: orderId,
-        //         },
-        //     );
-        //     const { activeCustomer } = await shopClient.query<
-        //         CodegenShop.GetActiveCustomerOrderWithItemFulfillmentsQuery,
-        //         CodegenShop.GetActiveCustomerOrderWithItemFulfillmentsQueryVariables
-        //     >(GET_ACTIVE_ORDER_CUSTOMER_WITH_ITEM_FULFILLMENTS);
-        //     const firstCustomerOrder = activeCustomer!.orders.items[0]!;
-        //     expect(firstCustomerOrder.lines[0].items[0].fulfillment).not.toBeNull();
-        // });
     });
 
     describe('cancellation by orderId', () => {
@@ -2542,65 +2514,6 @@ describe('Orders resolver', () => {
                     .price,
             ).toBe(108720);
         });
-
-        // TODO: is this needed?
-        // https://github.com/vendure-ecommerce/vendure/issues/1558
-        // it('cancelling OrderItem avoids items that have been fulfilled', async () => {
-        //     await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
-        //     const { addItemToOrder } = await shopClient.query<
-        //         CodegenShop.AddItemToOrderMutation,
-        //         CodegenShop.AddItemToOrderMutationVariables
-        //     >(ADD_ITEM_TO_ORDER, {
-        //         productVariantId: 'T_1',
-        //         quantity: 2,
-        //     });
-        //
-        //     await proceedToArrangingPayment(shopClient);
-        //     const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
-        //     orderGuard.assertSuccess(order);
-        //
-        //     await adminClient.query<
-        //         Codegen.CreateFulfillmentMutation,
-        //         Codegen.CreateFulfillmentMutationVariables
-        //     >(CREATE_FULFILLMENT, {
-        //         input: {
-        //             lines: [
-        //                 {
-        //                     orderLineId: order.lines[0].id,
-        //                     quantity: 1,
-        //                 },
-        //             ],
-        //             handler: {
-        //                 code: manualFulfillmentHandler.code,
-        //                 arguments: [{ name: 'method', value: 'Test' }],
-        //             },
-        //         },
-        //     });
-        //
-        //     const { cancelOrder } = await adminClient.query<
-        //         Codegen.CancelOrderMutation,
-        //         Codegen.CancelOrderMutationVariables
-        //     >(CANCEL_ORDER, {
-        //         input: {
-        //             orderId: order.id,
-        //             lines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
-        //         },
-        //     });
-        //     orderGuard.assertSuccess(cancelOrder);
-        //
-        //     const { order: order2 } = await adminClient.query<
-        //         Codegen.GetOrderQuery,
-        //         Codegen.GetOrderQueryVariables
-        //     >(GET_ORDER, {
-        //         id: order.id,
-        //     });
-        //
-        //     const items = order2!.lines[0].items;
-        //     const itemWhichIsCancelledAndFulfilled = items.find(
-        //         i => i.cancelled === true && i.fulfillment != null,
-        //     );
-        //     expect(itemWhichIsCancelledAndFulfilled).toBeUndefined();
-        // });
     });
 });
 
