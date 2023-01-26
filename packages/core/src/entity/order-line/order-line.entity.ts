@@ -19,7 +19,8 @@ import { TaxCategory } from '../tax-category/tax-category.entity';
 
 /**
  * @description
- * A single line on an {@link Order} which contains one or more {@link OrderItem}s.
+ * A single line on an {@link Order} which contains information about the {@link ProductVariant} and
+ * quantity ordered, as well as the price and tax information.
  *
  * @docsCategory entities
  */
@@ -29,12 +30,21 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         super(input);
     }
 
+    /**
+     * @description
+     * The {@link Channel} of the {@link Seller} for a multivendor setup.
+     */
     @ManyToOne(type => Channel, { nullable: true, onDelete: 'SET NULL' })
     sellerChannel?: Channel;
 
     @EntityId({ nullable: true })
     sellerChannelId?: ID;
 
+    /**
+     * @description
+     * The {@link ShippingLine} to which this line has been assigned.
+     * This is determined by the configured {@link ShippingLineAssignmentStrategy}.
+     */
     @Index()
     @ManyToOne(type => ShippingLine, { nullable: true, onDelete: 'SET NULL' })
     shippingLine?: ShippingLine;
@@ -42,6 +52,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @EntityId({ nullable: true })
     shippingLineId?: ID;
 
+    /**
+     * @description
+     * The {@link ProductVariant} which is being ordered.
+     */
     @Index()
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
@@ -56,9 +70,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @Index()
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
-
-    // @OneToMany(type => OrderItem, item => item.line, { eager: true })
-    // items: OrderItem[];
 
     @Index()
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
@@ -76,8 +87,8 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     /**
      * @description
-     * The price as calculated when the OrderItem was first added to the Order. Usually will be identical to the
-     * `listPrice`, except when the ProductVariant price has changed in the mean time and a re-calculation of
+     * The price as calculated when the OrderLine was first added to the Order. Usually will be identical to the
+     * `listPrice`, except when the ProductVariant price has changed in the meantime and a re-calculation of
      * the Order has been performed.
      */
     @Column({ nullable: true })
@@ -93,8 +104,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     /**
      * @description
-     * Whether or not the listPrice includes tax, which depends on the settings
-     * of the current Channel.
+     * Whether the listPrice includes tax, which depends on the settings of the current Channel.
      */
     @Column()
     listPriceIncludesTax: boolean;
@@ -183,7 +193,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     /**
      * @description
      * The actual unit price, taking into account both item discounts _and_ prorated (proportionally-distributed)
-     * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+     * Order-level discounts. This value is the true economic value of the a single unit in this OrderLine, and is used in tax
      * and refund calculations.
      */
     @Calculated()
@@ -200,11 +210,23 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return Math.round(this._proratedUnitPriceWithTax());
     }
 
+    /**
+     * @description
+     * Calculates the prorated unit price, excluding tax. This function performs no
+     * rounding, so before being exposed publicly via the GraphQL API, the returned value
+     * needs to be rounded to ensure it is an integer.
+     */
     private _proratedUnitPrice(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
         return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
+    /**
+     * @description
+     * Calculates the prorated unit price, including tax. This function performs no
+     * rounding, so before being exposed publicly via the GraphQL API, the returned value
+     * needs to be rounded to ensure it is an integer.
+     */
     private _proratedUnitPriceWithTax(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
         return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
@@ -279,7 +301,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     get discounts(): Discount[] {
         const priceIncludesTax = this.listPriceIncludesTax;
         // Group discounts together, so that it does not list a new
-        // discount row for each OrderItem in the line
+        // discount row for each item in the line
         const groupedDiscounts = new Map<string, Discount>();
         for (const adjustment of this.adjustments) {
             const discountGroup = groupedDiscounts.get(adjustment.adjustmentSource);

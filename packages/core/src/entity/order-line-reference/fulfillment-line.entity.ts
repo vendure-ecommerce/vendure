@@ -8,10 +8,10 @@ import { OrderLineReference } from './order-line-reference.entity';
 
 /**
  * @description
- * This entity represents a fulfillment of an Order or part of it, i.e. the {@link OrderItem}s have been
- * delivered to the Customer after successful payment.
+ * This entity represents a line from an {@link Order} which has been fulfilled by a {@link Fulfillment}.
  *
  * @docsCategory entities
+ * @docsPage OrderLineReference
  */
 @ChildEntity()
 export class FulfillmentLine extends OrderLineReference {

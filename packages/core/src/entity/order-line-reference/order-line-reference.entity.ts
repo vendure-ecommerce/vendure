@@ -7,10 +7,10 @@ import { OrderLine } from '../order-line/order-line.entity';
 
 /**
  * @description
- * This entity represents a fulfillment of an Order or part of it, i.e. the {@link OrderItem}s have been
- * delivered to the Customer after successful payment.
+ * This is an abstract base class for entities which reference an {@link OrderLine}.
  *
  * @docsCategory entities
+ * @docsPage OrderLineReference
  */
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'discriminator' } })
