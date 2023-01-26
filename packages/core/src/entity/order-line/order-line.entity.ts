@@ -188,8 +188,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      */
     @Calculated()
     get proratedUnitPrice(): number {
-        const result = this.listPrice + this.getAdjustmentsTotal();
-        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
+        return Math.round(this._proratedUnitPrice());
     }
 
     /**
@@ -198,6 +197,15 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      */
     @Calculated()
     get proratedUnitPriceWithTax(): number {
+        return Math.round(this._proratedUnitPriceWithTax());
+    }
+
+    private _proratedUnitPrice(): number {
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
+    }
+
+    private _proratedUnitPriceWithTax(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
         return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
@@ -220,12 +228,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         if (!this.adjustments || this.quantity === 0) {
             return 0;
         }
-        return Math.round(
-            this.adjustments
-                .filter(adjustment => (type ? adjustment.type === type : true))
-                .map(adjustment => adjustment.amount / Math.max(this.orderPlacedQuantity, this.quantity))
-                .reduce((total, a) => total + a, 0),
-        );
+        return this.adjustments
+            .filter(adjustment => (type ? adjustment.type === type : true))
+            .map(adjustment => adjustment.amount / Math.max(this.orderPlacedQuantity, this.quantity))
+            .reduce((total, a) => total + a, 0);
     }
 
     @Calculated()
@@ -316,7 +322,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      */
     @Calculated()
     get proratedLinePrice(): number {
-        return this.proratedUnitPrice * this.quantity;
+        return this._proratedUnitPrice() * this.quantity;
     }
 
     /**
@@ -325,7 +331,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      */
     @Calculated()
     get proratedLinePriceWithTax(): number {
-        return this.proratedUnitPriceWithTax * this.quantity;
+        return this._proratedUnitPriceWithTax() * this.quantity;
     }
 
     @Calculated()

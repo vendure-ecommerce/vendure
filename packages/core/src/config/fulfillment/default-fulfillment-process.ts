@@ -3,7 +3,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { awaitPromiseOrObservable, InternalServerError, isGraphQlErrorResult } from '../../common/index';
-import { Fulfillment } from '../../entity/index';
+import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../entity/order/order.entity';
 import { orderItemsAreDelivered, orderItemsAreShipped } from '../../service/helpers/utils/order-utils';
 import { FulfillmentState, OrderState } from '../../service/index';

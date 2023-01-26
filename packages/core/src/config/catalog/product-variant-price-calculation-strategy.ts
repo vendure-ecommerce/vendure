@@ -1,7 +1,8 @@
 import { RequestContext } from '../../api/common/request-context';
 import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
-import { TaxCategory, Zone } from '../../entity/index';
+import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
+import { Zone } from '../../entity/zone/zone.entity';
 
 /**
  * @description

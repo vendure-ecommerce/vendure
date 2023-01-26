@@ -1,7 +1,8 @@
 import { RequestContext } from '../../api/index';
 import { InjectableStrategy } from '../../common/index';
-import { Order, OrderLine, ShippingLine } from '../../entity/index';
-
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
+import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 /**
  * @description
  * This strategy is used to assign a given {@link ShippingLine} to one or more {@link OrderLine}s of the Order.

@@ -27,7 +27,8 @@ import {
 
 import { ErrorResultUnion, isGraphQlErrorResult, UserInputError } from '../../../common/index';
 import { TransactionalConnection } from '../../../connection/index';
-import { Customer, Order } from '../../../entity/index';
+import { Customer } from '../../../entity/customer/customer.entity';
+import { Order } from '../../../entity/order/order.entity';
 import { CustomerService, OrderService } from '../../../service/index';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';

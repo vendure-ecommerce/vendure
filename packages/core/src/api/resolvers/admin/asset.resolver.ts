@@ -12,8 +12,8 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { Asset } from '../../../entity/asset/asset.entity';
-import { Administrator } from '../../../entity/index';
 import { AssetService } from '../../../service/services/asset.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';

@@ -1,7 +1,9 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { TransactionalConnection } from '../../../connection/index';
-import { OrderLine, Refund, RefundLine } from '../../../entity/index';
+import { RefundLine } from '../../../entity/order-line-reference/refund-line.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
+import { Refund } from '../../../entity/refund/refund.entity';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 

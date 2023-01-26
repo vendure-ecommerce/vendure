@@ -11,7 +11,7 @@ import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CachedSession, CachedSessionUser } from '../../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../../entity/channel/channel.entity';
-import { User } from '../../../entity/index';
+import { User } from '../../../entity/user/user.entity';
 import { ChannelService } from '../../services/channel.service';
 import { getUserChannelsPermissions } from '../utils/get-user-channels-permissions';
 

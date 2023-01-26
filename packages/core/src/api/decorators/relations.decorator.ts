@@ -6,7 +6,7 @@ import { getMetadataArgsStorage } from 'typeorm';
 
 import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../../common/calculated-decorator';
 import { EntityRelationPaths, InternalServerError, TtlCache } from '../../common/index';
-import { VendureEntity } from '../../entity/index';
+import { VendureEntity } from '../../entity/base/base.entity';
 
 // tslint:disable-next-line:no-var-requires
 const graphqlFields = require('graphql-fields');

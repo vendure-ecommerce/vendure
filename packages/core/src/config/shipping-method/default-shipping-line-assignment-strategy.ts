@@ -1,5 +1,7 @@
 import { RequestContext } from '../../api/index';
-import { Order, OrderLine, ShippingLine } from '../../entity/index';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
+import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 
 import { ShippingLineAssignmentStrategy } from './shipping-line-assignment-strategy';
 

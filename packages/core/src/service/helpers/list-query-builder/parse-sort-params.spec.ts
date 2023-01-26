@@ -4,7 +4,7 @@ import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
 import { SortParameter } from '../../../common/types/common-types';
-import { CustomFieldConfig } from '../../../config/index';
+import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { I18nError } from '../../../i18n/i18n-error';

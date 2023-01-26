@@ -8,8 +8,8 @@ import { StateMachineConfig, Transitions } from '../../../common/finite-state-ma
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderProcess } from '../../../config/index';
-import { TransactionalConnection } from '../../../connection/index';
+import { OrderProcess } from '../../../config/order/order-process';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Order } from '../../../entity/order/order.entity';
 
 import { OrderState, OrderTransitionData } from './order-state';
