@@ -384,9 +384,9 @@ export function addOrderLineCustomFieldsInput(
 
         extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
     }
-    if (schema.getType('AdjustOrderLineInput')) {
+    if (schema.getType('OrderLineInput')) {
         const customFieldTypeDefs = `
-            extend input AdjustOrderLineInput {
+            extend input OrderLineInput {
                 customFields: OrderLineCustomFieldsInput
             }
         `;

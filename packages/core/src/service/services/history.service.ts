@@ -3,6 +3,7 @@ import { UpdateCustomerInput as UpdateCustomerShopInput } from '@vendure/common/
 import {
     HistoryEntryListOptions,
     HistoryEntryType,
+    OrderLineInput,
     UpdateAddressInput,
     UpdateCustomerInput,
 } from '@vendure/common/lib/generated-types';
@@ -85,7 +86,7 @@ export interface OrderHistoryEntryData {
         fulfillmentId: ID;
     };
     [HistoryEntryType.ORDER_CANCELLATION]: {
-        orderItemIds: ID[];
+        lines: OrderLineInput[];
         shippingCancelled: boolean;
         reason?: string;
     };

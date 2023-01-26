@@ -2,7 +2,7 @@
 import {
     ChangedPriceHandlingStrategy,
     mergeConfig,
-    OrderItem,
+    OrderLine,
     PriceCalculationResult,
     RequestContext,
 } from '@vendure/core';
@@ -24,15 +24,15 @@ class TestChangedPriceStrategy implements ChangedPriceHandlingStrategy {
     handlePriceChange(
         ctx: RequestContext,
         current: PriceCalculationResult,
-        existingItems: OrderItem[],
+        orderLine: OrderLine,
     ): PriceCalculationResult {
         TestChangedPriceStrategy.spy(current);
         if (TestChangedPriceStrategy.useLatestPrice) {
             return current;
         } else {
             return {
-                price: existingItems[0].listPrice,
-                priceIncludesTax: existingItems[0].listPriceIncludesTax,
+                price: orderLine.listPrice,
+                priceIncludesTax: orderLine.listPriceIncludesTax,
             };
         }
     }
@@ -111,7 +111,6 @@ describe('ChangedPriceHandlingStrategy', () => {
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(activeOrder?.lines[0].unitPriceChangeSinceAdded).toBe(626);
             expect(activeOrder?.lines[0].unitPrice).toBe(6000);
-            expect(activeOrder?.lines[0].items.every(i => i.unitPrice === 6000)).toBe(true);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
 
             firstOrderLineId = activeOrder!.lines[0].id;
@@ -143,7 +142,6 @@ describe('ChangedPriceHandlingStrategy', () => {
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(activeOrder?.lines[0].unitPriceChangeSinceAdded).toBe(-2374);
             expect(activeOrder?.lines[0].unitPrice).toBe(3000);
-            expect(activeOrder?.lines[0].items.every(i => i.unitPrice === 3000)).toBe(true);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
         });
     });
@@ -190,7 +188,6 @@ describe('ChangedPriceHandlingStrategy', () => {
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(activeOrder?.lines[1].unitPriceChangeSinceAdded).toBe(0);
             expect(activeOrder?.lines[1].unitPrice).toBe(ORIGINAL_PRICE);
-            expect(activeOrder?.lines[1].items.every(i => i.unitPrice === ORIGINAL_PRICE)).toBe(true);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
 
             secondOrderLineId = activeOrder!.lines[1].id;
@@ -222,7 +219,6 @@ describe('ChangedPriceHandlingStrategy', () => {
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(activeOrder?.lines[1].unitPriceChangeSinceAdded).toBe(0);
             expect(activeOrder?.lines[1].unitPrice).toBe(ORIGINAL_PRICE);
-            expect(activeOrder?.lines[1].items.every(i => i.unitPrice === ORIGINAL_PRICE)).toBe(true);
             expect(TestChangedPriceStrategy.spy).toHaveBeenCalledTimes(1);
         });
     });

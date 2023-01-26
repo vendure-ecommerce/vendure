@@ -334,19 +334,6 @@ export const ORDER_FRAGMENT = gql`
     }
 `;
 
-export const ORDER_ITEM_FRAGMENT = gql`
-    fragment OrderItem on OrderItem {
-        id
-        cancelled
-        unitPrice
-        unitPriceWithTax
-        taxRate
-        fulfillment {
-            id
-        }
-    }
-`;
-
 export const PAYMENT_FRAGMENT = gql`
     fragment Payment on Payment {
         id
@@ -387,12 +374,16 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
                 name
                 sku
             }
+            taxLines {
+                description
+                taxRate
+            }
             unitPrice
             unitPriceWithTax
             quantity
-            items {
-                ...OrderItem
-            }
+            unitPrice
+            unitPriceWithTax
+            taxRate
             linePriceWithTax
         }
         surcharges {
@@ -425,10 +416,19 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         payments {
             ...Payment
         }
+        fulfillments {
+            id
+            state
+            method
+            trackingCode
+            lines {
+                orderLineId
+                quantity
+            }
+        }
         total
     }
     ${SHIPPING_ADDRESS_FRAGMENT}
-    ${ORDER_ITEM_FRAGMENT}
     ${PAYMENT_FRAGMENT}
 `;
 
@@ -521,8 +521,9 @@ export const FULFILLMENT_FRAGMENT = gql`
         nextStates
         method
         trackingCode
-        orderItems {
-            id
+        lines {
+            orderLineId
+            quantity
         }
     }
 `;

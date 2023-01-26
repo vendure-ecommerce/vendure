@@ -4,16 +4,16 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Order, Payment, ProductVariant } from '../../entity/index';
+import { Order, OrderLine, Payment, ProductVariant } from '../../entity/index';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { OrderPlacedEvent } from '../../event-bus/events/order-placed-event';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import {
-    orderItemsAreAllCancelled,
     orderItemsAreDelivered,
     orderItemsArePartiallyDelivered,
     orderItemsArePartiallyShipped,
     orderItemsAreShipped,
+    orderLinesAreAllCancelled,
     orderTotalIsCovered,
     totalCoveredByPayments,
 } from '../../service/helpers/utils/order-utils';
@@ -357,7 +357,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     fromState !== 'AddingItems' &&
                     fromState !== 'ArrangingPayment'
                 ) {
-                    if (!orderItemsAreAllCancelled(order)) {
+                    if (!orderLinesAreAllCancelled(order)) {
                         return `message.cannot-transition-unless-all-cancelled`;
                     }
                 }
@@ -402,6 +402,13 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                 if (shouldSetAsPlaced) {
                     order.active = false;
                     order.orderPlacedAt = new Date();
+                    await Promise.all(
+                        order.lines.map(line =>
+                            connection
+                                .getRepository(ctx, OrderLine)
+                                .update(line.id, { orderPlacedQuantity: line.quantity }),
+                        ),
+                    );
                     eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
                     await orderSplitter.createSellerOrders(ctx, order);
                 }
@@ -432,7 +439,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
 
     async function findOrderWithFulfillments(ctx: RequestContext, id: ID): Promise<Order> {
         return await connection.getEntityOrThrow(ctx, Order, id, {
-            relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
+            relations: ['lines', 'fulfillments', 'fulfillments.lines', 'fulfillments.lines.fulfillment'],
         });
     }
 

@@ -49,11 +49,6 @@ export const TEST_ORDER_FRAGMENT = gql`
                 description
                 type
             }
-            items {
-                id
-                unitPrice
-                unitPriceWithTax
-            }
         }
         shippingLines {
             shippingMethod {

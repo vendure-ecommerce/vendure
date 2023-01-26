@@ -9,7 +9,6 @@ import {
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { Promotion, PromotionState } from '../../entity';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
@@ -72,7 +71,6 @@ export type ConditionState<
  */
 export type ExecutePromotionItemActionFn<T extends ConfigArgs, U extends Array<PromotionCondition<any>>> = (
     ctx: RequestContext,
-    orderItem: OrderItem,
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
     state: ConditionState<U>,
@@ -332,7 +330,6 @@ export class PromotionItemAction<
     /** @internal */
     execute(
         ctx: RequestContext,
-        orderItem: OrderItem,
         orderLine: OrderLine,
         args: ConfigArg[],
         state: PromotionState,
@@ -346,7 +343,6 @@ export class PromotionItemAction<
             : {};
         return this.executeFn(
             ctx,
-            orderItem,
             orderLine,
             this.argsArrayToHash(args),
             actionState as ConditionState<U>,

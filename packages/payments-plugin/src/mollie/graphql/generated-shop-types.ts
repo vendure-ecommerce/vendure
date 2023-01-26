@@ -53,6 +53,7 @@ export type Adjustment = {
     __typename?: 'Adjustment';
     adjustmentSource: Scalars['String'];
     amount: Scalars['Int'];
+    data?: Maybe<Scalars['JSON']>;
     description: Scalars['String'];
     type: AdjustmentType;
 };
@@ -1042,17 +1043,21 @@ export type Fulfillment = Node & {
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
     id: Scalars['ID'];
+    lines: Array<FulfillmentLine>;
     method: Scalars['String'];
-    orderItems: Array<OrderItem>;
     state: Scalars['String'];
-    summary: Array<FulfillmentLineSummary>;
+    /** @deprecated Use the `lines` field instead */
+    summary: Array<FulfillmentLine>;
     trackingCode?: Maybe<Scalars['String']>;
     updatedAt: Scalars['DateTime'];
 };
 
-export type FulfillmentLineSummary = {
-    __typename?: 'FulfillmentLineSummary';
+export type FulfillmentLine = {
+    __typename?: 'FulfillmentLine';
+    fulfillment: Fulfillment;
+    fulfillmentId: Scalars['ID'];
     orderLine: OrderLine;
+    orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
 };
 
@@ -1681,7 +1686,12 @@ export type Mutation = {
     setOrderCustomFields: ActiveOrderResult;
     /** Sets the shipping address for this order */
     setOrderShippingAddress: ActiveOrderResult;
-    /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
+    /**
+     * Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
+     * An Order can have multiple shipping methods, in which case you can pass an array of ids. In this case,
+     * you should configure a custom ShippingLineAssignmentStrategy in order to know which OrderLines each
+     * shipping method will apply to.
+     */
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
@@ -2054,9 +2064,8 @@ export type OrderLine = Node & {
     discountedUnitPriceWithTax: Scalars['Int'];
     discounts: Array<Discount>;
     featuredAsset?: Maybe<Asset>;
-    fulfillments?: Maybe<Array<Fulfillment>>;
+    fulfillmentLines?: Maybe<Array<FulfillmentLine>>;
     id: Scalars['ID'];
-    items: Array<OrderItem>;
     /** The total price of the line excluding tax and discounts. */
     linePrice: Scalars['Int'];
     /** The total price of the line including tax but excluding discounts. */
@@ -2064,6 +2073,8 @@ export type OrderLine = Node & {
     /** The total tax on this line */
     lineTax: Scalars['Int'];
     order: Order;
+    /** The quantity at the time the Order was placed */
+    orderPlacedQuantity: Scalars['Int'];
     productVariant: ProductVariant;
     /**
      * The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
@@ -2824,9 +2835,9 @@ export type Refund = Node & {
     createdAt: Scalars['DateTime'];
     id: Scalars['ID'];
     items: Scalars['Int'];
+    lines: Array<RefundLine>;
     metadata?: Maybe<Scalars['JSON']>;
     method?: Maybe<Scalars['String']>;
-    orderItems: Array<OrderItem>;
     paymentId: Scalars['ID'];
     reason?: Maybe<Scalars['String']>;
     shipping: Scalars['Int'];
@@ -2834,6 +2845,15 @@ export type Refund = Node & {
     total: Scalars['Int'];
     transactionId?: Maybe<Scalars['String']>;
     updatedAt: Scalars['DateTime'];
+};
+
+export type RefundLine = {
+    __typename?: 'RefundLine';
+    orderLine: OrderLine;
+    orderLineId: Scalars['ID'];
+    quantity: Scalars['Int'];
+    refund: Refund;
+    refundId: Scalars['ID'];
 };
 
 export type RegisterCustomerAccountResult =
@@ -3233,14 +3253,6 @@ export type User = Node & {
     roles: Array<Role>;
     updatedAt: Scalars['DateTime'];
     verified: Scalars['Boolean'];
-};
-
-export type Vendor = Node & {
-    __typename?: 'Vendor';
-    createdAt: Scalars['DateTime'];
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    updatedAt: Scalars['DateTime'];
 };
 
 /**

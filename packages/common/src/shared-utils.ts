@@ -33,9 +33,19 @@ type NumericPropsOf<T> = {
     [K in keyof T]: T[K] extends number ? K : never;
 }[keyof T];
 
-type OnlyNumerics<T> = {
-    [K in NumericPropsOf<T>]: T[K];
+// homomorphic helper type
+// From https://stackoverflow.com/a/56140392/772859
+type NPO<T, KT extends keyof T> = {
+    [K in KT]: T[K] extends string | number | boolean
+        ? T[K]
+        : T[K] extends Array<infer A>
+        ? Array<OnlyNumerics<A>>
+        : OnlyNumerics<T[K]>;
 };
+
+// quick abort if T is a function or primitive
+// otherwise pass to a homomorphic helper type
+type OnlyNumerics<T> = NPO<T, NumericPropsOf<T>>;
 
 /**
  * Adds up all the values of a given numeric property of a list of objects.
@@ -44,7 +54,7 @@ export function summate<T extends OnlyNumerics<T>>(
     items: T[] | undefined | null,
     prop: keyof OnlyNumerics<T>,
 ): number {
-    return (items || []).reduce((sum, i) => sum + i[prop], 0);
+    return (items || []).reduce((sum, i) => sum + (i[prop] as unknown as number), 0);
 }
 
 /**

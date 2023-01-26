@@ -2052,8 +2052,8 @@ describe('Shop orders', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/1567
         it('allows transitioning to Cancelled with deleted variant', async () => {
             const { cancelOrder } = await adminClient.query<
-                CodegenShop.CancelOrderMutation,
-                CodegenShop.CancelOrderMutationVariables
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
             >(CANCEL_ORDER, {
                 input: {
                     orderId: orderWithDeletedProductVariantId,

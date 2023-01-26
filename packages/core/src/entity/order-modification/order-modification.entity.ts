@@ -1,24 +1,13 @@
-import { Adjustment, OrderAddress } from '@vendure/common/lib/generated-types';
+import { OrderAddress } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import {
-    Column,
-    Entity,
-    Index,
-    JoinColumn,
-    JoinTable,
-    ManyToMany,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
-import { OrderItem } from '../order-item/order-item.entity';
+import { OrderModificationLine } from '../order-line-reference/order-modification-line.entity';
 import { Order } from '../order/order.entity';
 import { Payment } from '../payment/payment.entity';
 import { Refund } from '../refund/refund.entity';
-import { Cancellation } from '../stock-movement/cancellation.entity';
 import { Surcharge } from '../surcharge/surcharge.entity';
 
 /**
@@ -41,9 +30,8 @@ export class OrderModification extends VendureEntity {
     @ManyToOne(type => Order, order => order.modifications, { onDelete: 'CASCADE' })
     order: Order;
 
-    @ManyToMany(type => OrderItem)
-    @JoinTable()
-    orderItems: OrderItem[];
+    @OneToMany(type => OrderModificationLine, line => line.modification)
+    lines: OrderModificationLine[];
 
     @OneToMany(type => Surcharge, surcharge => surcharge.orderModification)
     surcharges: Surcharge[];

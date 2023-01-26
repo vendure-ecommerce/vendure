@@ -5,7 +5,7 @@ import { pick } from '@vendure/common/lib/pick';
 import { RequestContext } from '../../../api/index';
 import { ConfigService } from '../../../config/index';
 import { TransactionalConnection } from '../../../connection/index';
-import { Channel, Order, OrderItem, OrderLine, ShippingLine, Surcharge } from '../../../entity/index';
+import { Channel, Order, OrderLine, ShippingLine } from '../../../entity/index';
 import { ChannelService } from '../../services/channel.service';
 import { OrderService } from '../../services/order.service';
 
@@ -78,6 +78,7 @@ export class OrderSplitter {
         const newLine = await this.connection.getRepository(ctx, OrderLine).save(
             new OrderLine({
                 ...pick(line, [
+                    'quantity',
                     'productVariant',
                     'taxCategory',
                     'featuredAsset',
@@ -86,25 +87,15 @@ export class OrderSplitter {
                     'customFields',
                     'sellerChannel',
                     'sellerChannelId',
+                    'initialListPrice',
+                    'listPrice',
+                    'listPriceIncludesTax',
+                    'adjustments',
+                    'taxLines',
+                    'orderPlacedQuantity',
                 ]),
-                items: [],
             }),
         );
-        newLine.items = line.items.map(
-            item =>
-                new OrderItem({
-                    ...pick(item, [
-                        'initialListPrice',
-                        'listPrice',
-                        'listPriceIncludesTax',
-                        'adjustments',
-                        'taxLines',
-                        'cancelled',
-                    ]),
-                    lineId: newLine.id,
-                }),
-        );
-        await this.connection.getRepository(ctx, OrderItem).save(newLine.items);
         return newLine;
     }
 

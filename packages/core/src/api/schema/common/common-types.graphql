@@ -22,6 +22,7 @@ type Adjustment {
     type: AdjustmentType!
     description: String!
     amount: Int!
+    data: JSON
 }
 
 type TaxLine {

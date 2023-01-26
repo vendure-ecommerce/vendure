@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultOrderPlacedStrategy,
     manualFulfillmentHandler,
@@ -462,19 +463,17 @@ describe('Stock control', () => {
             const product = await getProductWithStockMovement('T_2');
             const [variant1, variant2, variant3] = product!.variants;
 
-            expect(variant1.stockMovements.totalItems).toBe(5);
+            expect(variant1.stockMovements.totalItems).toBe(4);
             expect(variant1.stockMovements.items[3].type).toBe(StockMovementType.CANCELLATION);
-            expect(variant1.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant1.stockMovements.items[3].quantity).toBe(2);
 
-            expect(variant2.stockMovements.totalItems).toBe(6);
+            expect(variant2.stockMovements.totalItems).toBe(5);
             expect(variant2.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
-            expect(variant2.stockMovements.items[5].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant2.stockMovements.items[4].quantity).toBe(2);
 
-            expect(variant3.stockMovements.totalItems).toBe(7);
+            expect(variant3.stockMovements.totalItems).toBe(4);
             expect(variant3.stockMovements.items[3].type).toBe(StockMovementType.CANCELLATION);
-            expect(variant3.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
-            expect(variant3.stockMovements.items[5].type).toBe(StockMovementType.CANCELLATION);
-            expect(variant3.stockMovements.items[6].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant3.stockMovements.items[3].quantity).toBe(4);
         });
 
         // https://github.com/vendure-ecommerce/vendure/issues/1198
@@ -565,18 +564,17 @@ describe('Stock control', () => {
 
             expect(trackedVariant4.stockOnHand).toBe(5);
             expect(trackedVariant4.stockAllocated).toBe(1);
-            expect(trackedVariant4.stockMovements.items).toEqual([
-                { id: 'T_4', quantity: 5, type: 'ADJUSTMENT' },
-                { id: 'T_7', quantity: 3, type: 'ALLOCATION' },
-                { id: 'T_9', quantity: 1, type: 'RELEASE' },
-                { id: 'T_11', quantity: -2, type: 'SALE' },
-                { id: 'T_15', quantity: 1, type: 'CANCELLATION' },
-                { id: 'T_16', quantity: 1, type: 'CANCELLATION' },
-                { id: 'T_21', quantity: 1, type: 'ALLOCATION' },
-                { id: 'T_22', quantity: -1, type: 'SALE' },
+            expect(trackedVariant4.stockMovements.items.map(pick(['quantity', 'type']))).toEqual([
+                { quantity: 5, type: 'ADJUSTMENT' },
+                { quantity: 3, type: 'ALLOCATION' },
+                { quantity: 1, type: 'RELEASE' },
+                { quantity: -2, type: 'SALE' },
+                { quantity: 2, type: 'CANCELLATION' },
+                { quantity: 1, type: 'ALLOCATION' },
+                { quantity: -1, type: 'SALE' },
                 // This is the cancellation & allocation we are testing for
-                { id: 'T_23', quantity: 1, type: 'CANCELLATION' },
-                { id: 'T_24', quantity: 1, type: 'ALLOCATION' },
+                { quantity: 1, type: 'CANCELLATION' },
+                { quantity: 1, type: 'ALLOCATION' },
             ]);
 
             const { cancelOrder } = await adminClient.query<

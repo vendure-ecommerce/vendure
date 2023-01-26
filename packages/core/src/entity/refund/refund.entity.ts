@@ -5,7 +5,7 @@ import { PaymentMetadata } from '../../common/types/common-types';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
-import { OrderItem } from '../order-item/order-item.entity';
+import { RefundLine } from '../order-line-reference/refund-line.entity';
 import { Payment } from '../payment/payment.entity';
 
 @Entity()
@@ -30,9 +30,9 @@ export class Refund extends VendureEntity {
 
     @Column({ nullable: true }) transactionId: string;
 
-    @OneToMany(type => OrderItem, orderItem => orderItem.refund)
+    @OneToMany(type => RefundLine, line => line.refund)
     @JoinTable()
-    orderItems: OrderItem[];
+    lines: RefundLine[];
 
     @Index()
     @ManyToOne(type => Payment)

@@ -75,9 +75,9 @@ const cache = new TtlCache({ cacheSize: 500, ttl: 5 * 60 * 1000 });
  * then the value of `relations` will be
  *
  * ```
- * ['customer', 'lines', 'lines.items']
+ * ['customer', 'lines'']
  * ```
- * The `'customer'` comes from the fact that the query is nesting the "customer" object, and the `'lines'` & `'lines.items'` are taken
+ * The `'customer'` comes from the fact that the query is nesting the "customer" object, and the `'lines'` is taken
  * from the `Order` entity's `totalQuantity` property, which uses {@link Calculated} decorator and defines those relations as dependencies
  * for deriving the calculated value.
  *

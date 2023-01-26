@@ -1,8 +1,8 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { ChildEntity, Index, ManyToOne } from 'typeorm';
+import { ChildEntity, ManyToOne } from 'typeorm';
 
-import { OrderItem } from '../order-item/order-item.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 
 import { StockMovement } from './stock-movement.entity';
 
@@ -21,7 +21,6 @@ export class Cancellation extends StockMovement {
         super(input);
     }
 
-    // @Index() omitted as it would conflict with the orderItemId index from the Release entity
-    @ManyToOne(type => OrderItem, orderItem => orderItem.cancellation)
-    orderItem: OrderItem;
+    @ManyToOne(type => OrderLine)
+    orderLine: OrderLine;
 }

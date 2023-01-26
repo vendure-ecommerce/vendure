@@ -1,21 +1,20 @@
 import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
-import { Logger } from '../../config/index';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomOrderLineFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
-import { OrderItem } from '../order-item/order-item.entity';
 import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
+import { Cancellation } from '../stock-movement/cancellation.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 
 /**
@@ -47,6 +46,9 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant;
 
+    @EntityId()
+    productVariantId: ID;
+
     @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
@@ -55,12 +57,56 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @OneToMany(type => OrderItem, item => item.line, { eager: true })
-    items: OrderItem[];
+    // @OneToMany(type => OrderItem, item => item.line, { eager: true })
+    // items: OrderItem[];
 
     @Index()
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
+
+    @Column()
+    quantity: number;
+
+    /**
+     * @description
+     * The quantity of this OrderLine at the time the order was placed (as per the {@link OrderPlacedStrategy}).
+     */
+    @Column({ default: 0 })
+    orderPlacedQuantity: number;
+
+    /**
+     * @description
+     * The price as calculated when the OrderItem was first added to the Order. Usually will be identical to the
+     * `listPrice`, except when the ProductVariant price has changed in the mean time and a re-calculation of
+     * the Order has been performed.
+     */
+    @Column({ nullable: true })
+    initialListPrice: number;
+
+    /**
+     * @description
+     * This is the price as listed by the ProductVariant (and possibly modified by the {@link OrderItemPriceCalculationStrategy}),
+     * which, depending on the current Channel, may or may not include tax.
+     */
+    @Column()
+    listPrice: number;
+
+    /**
+     * @description
+     * Whether or not the listPrice includes tax, which depends on the settings
+     * of the current Channel.
+     */
+    @Column()
+    listPriceIncludesTax: boolean;
+
+    @Column('simple-json')
+    adjustments: Adjustment[];
+
+    @Column('simple-json')
+    taxLines: TaxLine[];
+
+    @OneToOne(type => Cancellation, cancellation => cancellation.orderLine)
+    cancellation: Cancellation;
 
     @Column(type => CustomOrderLineFields)
     customFields: CustomOrderLineFields;
@@ -69,31 +115,27 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The price of a single unit, excluding tax and discounts.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get unitPrice(): number {
-        return this.firstActiveItemPropOr('unitPrice', 0);
+        return this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice;
     }
 
     /**
      * @description
      * The price of a single unit, including tax but excluding discounts.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get unitPriceWithTax(): number {
-        return this.firstActiveItemPropOr('unitPriceWithTax', 0);
+        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
     }
 
     /**
      * @description
      * Non-zero if the `unitPrice` has changed since it was initially added to Order.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get unitPriceChangeSinceAdded(): number {
-        const firstItem = this.activeItems[0];
-        if (!firstItem) {
-            return 0;
-        }
-        const { initialListPrice, listPriceIncludesTax } = firstItem;
+        const { initialListPrice, listPriceIncludesTax } = this;
         const initialPrice = listPriceIncludesTax
             ? netPriceOf(initialListPrice, this.taxRate)
             : initialListPrice;
@@ -104,13 +146,9 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * Non-zero if the `unitPriceWithTax` has changed since it was initially added to Order.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get unitPriceWithTaxChangeSinceAdded(): number {
-        const firstItem = this.activeItems[0];
-        if (!firstItem) {
-            return 0;
-        }
-        const { initialListPrice, listPriceIncludesTax } = firstItem;
+        const { initialListPrice, listPriceIncludesTax } = this;
         const initialPriceWithTax = listPriceIncludesTax
             ? initialListPrice
             : grossPriceOf(initialListPrice, this.taxRate);
@@ -126,18 +164,20 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * correct price to display to customers to avoid confusion
      * about the internal handling of distributed Order-level discounts.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get discountedUnitPrice(): number {
-        return this.firstActiveItemPropOr('discountedUnitPrice', 0);
+        const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
     /**
      * @description
      * The price of a single unit including discounts and tax
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get discountedUnitPriceWithTax(): number {
-        return this.firstActiveItemPropOr('discountedUnitPriceWithTax', 0);
+        const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
 
     /**
@@ -146,91 +186,123 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
      * and refund calculations.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get proratedUnitPrice(): number {
-        return this.firstActiveItemPropOr('proratedUnitPrice', 0);
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
     /**
      * @description
      * The `proratedUnitPrice` including tax.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get proratedUnitPriceWithTax(): number {
-        return this.firstActiveItemPropOr('proratedUnitPriceWithTax', 0);
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
 
-    @Calculated({ relations: ['items'] })
-    get quantity(): number {
-        return this.activeItems.length;
+    @Calculated()
+    get unitTax(): number {
+        return this.unitPriceWithTax - this.unitPrice;
     }
 
-    @Calculated({ relations: ['items'] })
-    get adjustments(): Adjustment[] {
-        return this.activeItems.reduce(
-            (adjustments, item) => [...adjustments, ...(item.adjustments || [])],
-            [] as Adjustment[],
+    @Calculated()
+    get proratedUnitTax(): number {
+        return this.proratedUnitPriceWithTax - this.proratedUnitPrice;
+    }
+
+    /**
+     * @description
+     * The total of all price adjustments. Will typically be a negative number due to discounts.
+     */
+    private getAdjustmentsTotal(type?: AdjustmentType): number {
+        if (!this.adjustments || this.quantity === 0) {
+            return 0;
+        }
+        return Math.round(
+            this.adjustments
+                .filter(adjustment => (type ? adjustment.type === type : true))
+                .map(adjustment => adjustment.amount / Math.max(this.orderPlacedQuantity, this.quantity))
+                .reduce((total, a) => total + a, 0),
         );
     }
 
-    @Calculated({ relations: ['items'] })
-    get taxLines(): TaxLine[] {
-        return this.firstActiveItemPropOr('taxLines', []);
-    }
+    /*@Calculated()
+    get quantity(): number {
+        return this.activeItems.length;
+    }*/
 
-    @Calculated({ relations: ['items'] })
+    // @Calculated({relations: ['items']})
+    // get adjustments(): Adjustment[] {
+    //     return this.activeItems.reduce(
+    //         (adjustments, item) => [...adjustments, ...(item.adjustments || [])],
+    //         [] as Adjustment[],
+    //     );
+    // }
+
+    // @Calculated({relations: ['items']})
+    // get taxLines(): TaxLine[] {
+    //     return this.firstActiveItemPropOr('taxLines', []);
+    // }
+
+    @Calculated()
     get taxRate(): number {
-        return this.firstActiveItemPropOr('taxRate', 0);
+        return summate(this.taxLines, 'taxRate');
     }
 
     /**
      * @description
      * The total price of the line excluding tax and discounts.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get linePrice(): number {
-        return summate(this.activeItems, 'unitPrice');
+        return this.unitPrice * this.quantity;
     }
 
     /**
      * @description
      * The total price of the line including tax but excluding discounts.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get linePriceWithTax(): number {
-        return summate(this.activeItems, 'unitPriceWithTax');
+        return this.unitPriceWithTax * this.quantity;
     }
 
     /**
      * @description
      * The price of the line including discounts, excluding tax.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get discountedLinePrice(): number {
-        return summate(this.activeItems, 'discountedUnitPrice');
+        return this.discountedUnitPrice * this.quantity;
     }
 
     /**
      * @description
      * The price of the line including discounts and tax.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get discountedLinePriceWithTax(): number {
-        return summate(this.activeItems, 'discountedUnitPriceWithTax');
+        return this.discountedUnitPriceWithTax * this.quantity;
     }
 
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get discounts(): Discount[] {
-        const priceIncludesTax = this.items?.[0]?.listPriceIncludesTax ?? false;
+        const priceIncludesTax = this.listPriceIncludesTax;
         // Group discounts together, so that it does not list a new
         // discount row for each OrderItem in the line
         const groupedDiscounts = new Map<string, Discount>();
         for (const adjustment of this.adjustments) {
             const discountGroup = groupedDiscounts.get(adjustment.adjustmentSource);
-            const amount = priceIncludesTax ? netPriceOf(adjustment.amount, this.taxRate) : adjustment.amount;
+            const unitAdjustmentAmount =
+                (adjustment.amount / Math.max(this.orderPlacedQuantity, this.quantity)) * this.quantity;
+            const amount = priceIncludesTax
+                ? netPriceOf(unitAdjustmentAmount, this.taxRate)
+                : unitAdjustmentAmount;
             const amountWithTax = priceIncludesTax
-                ? adjustment.amount
-                : grossPriceOf(adjustment.amount, this.taxRate);
+                ? unitAdjustmentAmount
+                : grossPriceOf(unitAdjustmentAmount, this.taxRate);
             if (discountGroup) {
                 discountGroup.amount += amount;
                 discountGroup.amountWithTax += amountWithTax;
@@ -249,9 +321,9 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * @description
      * The total tax on this line.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get lineTax(): number {
-        return summate(this.activeItems, 'unitTax');
+        return this.unitTax * this.quantity;
     }
 
     /**
@@ -260,43 +332,39 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
      * and refund calculations.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get proratedLinePrice(): number {
-        return summate(this.activeItems, 'proratedUnitPrice');
+        return this.proratedUnitPrice * this.quantity;
     }
 
     /**
      * @description
      * The `proratedLinePrice` including tax.
      */
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get proratedLinePriceWithTax(): number {
-        return summate(this.activeItems, 'proratedUnitPriceWithTax');
+        return this.proratedUnitPriceWithTax * this.quantity;
     }
 
-    @Calculated({ relations: ['items'] })
+    @Calculated()
     get proratedLineTax(): number {
-        return summate(this.activeItems, 'proratedUnitTax');
+        return this.proratedUnitTax * this.quantity;
     }
 
     /**
      * Returns all non-cancelled OrderItems on this line.
      */
-    get activeItems(): OrderItem[] {
-        if (this.items == null) {
-            Logger.warn(
-                `Attempted to access OrderLine.items without first joining the relation: { relations: ['items'] }`,
-            );
-        }
-        return (this.items || []).filter(i => !i.cancelled);
-    }
+    // get activeItems(): OrderItem[] {
+    //     if (this.items == null) {
+    //         Logger.warn(
+    //             `Attempted to access OrderLine.items without first joining the relation: `,
+    //         );
+    //     }
+    //     return (this.items || []).filter(i => !i.cancelled);
+    // }
 
-    /**
-     * Returns the first OrderItems of the line (i.e. the one with the earliest
-     * `createdAt` property).
-     */
-    get firstItem(): OrderItem | undefined {
-        return (this.items ?? []).sort((a, b) => +a.createdAt - +b.createdAt)[0];
+    addAdjustment(adjustment: Adjustment) {
+        this.adjustments = this.adjustments.concat(adjustment);
     }
 
     /**
@@ -304,20 +372,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * is specified, then all adjustments are removed.
      */
     clearAdjustments(type?: AdjustmentType) {
-        this.items.forEach(item => item.clearAdjustments(type));
-    }
-
-    /**
-     * @description
-     * Fetches the specified property of the first active (non-cancelled) OrderItem.
-     * If all OrderItems are cancelled (e.g. in a full cancelled Order), then fetches from
-     * the first OrderItem.
-     */
-    private firstActiveItemPropOr<K extends keyof OrderItem>(
-        prop: K,
-        defaultVal: OrderItem[K],
-    ): OrderItem[K] {
-        const items = this.activeItems.length ? this.activeItems : this.items ?? [];
-        return items.length ? items[0][prop] : defaultVal;
+        if (!type) {
+            this.adjustments = [];
+        } else {
+            this.adjustments = this.adjustments ? this.adjustments.filter(a => a.type !== type) : [];
+        }
     }
 }

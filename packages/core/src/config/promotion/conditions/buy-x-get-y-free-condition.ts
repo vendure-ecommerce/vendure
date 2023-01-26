@@ -8,8 +8,7 @@ export const buyXGetYFreeCondition = new PromotionCondition({
     description: [
         {
             languageCode: LanguageCode.en,
-            value:
-                'Buy { amountX } of { variantIdsX } products, get { amountY } of { variantIdsY } products free',
+            value: 'Buy { amountX } of { variantIdsX } products, get { amountY } of { variantIdsY } products free',
         },
     ],
     args: {
@@ -38,15 +37,16 @@ export const buyXGetYFreeCondition = new PromotionCondition({
         const xIds = createIdentityMap(args.variantIdsX);
         const yIds = createIdentityMap(args.variantIdsY);
         let matches = 0;
-        const freeItemCandidates = [];
+        // TODO: fix me
+        const freeItemCandidates: any[] = [];
         for (const line of order.lines) {
             const variantId = line.productVariant.id;
             if (variantId in xIds) {
                 matches += line.quantity;
             }
-            if (variantId in yIds) {
-                freeItemCandidates.push(...line.items);
-            }
+            // if (variantId in yIds) {
+            //     freeItemCandidates.push(...line.items);
+            // }
         }
         const quantity = Math.floor(matches / args.amountX);
         if (!quantity || !freeItemCandidates.length) return false;

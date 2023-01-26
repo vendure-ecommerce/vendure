@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { GlobalFlag, StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import { GlobalFlag, OrderLineInput, StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
+import { idsAreEqual } from '../../common/index';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -101,7 +101,10 @@ export class StockMovementService {
         if (order.active !== false) {
             throw new InternalServerError('error.cannot-create-allocations-for-active-order');
         }
-        const lines = order.lines.map(orderLine => ({ orderLine, quantity: orderLine.quantity }));
+        const lines = order.lines.map(orderLine => ({
+            orderLineId: orderLine.id,
+            quantity: orderLine.quantity,
+        }));
         return this.createAllocationsForOrderLines(ctx, lines);
     }
 
@@ -113,15 +116,16 @@ export class StockMovementService {
      */
     async createAllocationsForOrderLines(
         ctx: RequestContext,
-        lines: Array<{ orderLine: OrderLine; quantity: number }>,
+        lines: OrderLineInput[],
     ): Promise<Allocation[]> {
         const allocations: Allocation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        for (const { orderLine, quantity } of lines) {
+        for (const { orderLineId, quantity } of lines) {
+            const orderLine = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLineId);
             const productVariant = await this.connection.getEntityOrThrow(
                 ctx,
                 ProductVariant,
-                orderLine.productVariant.id,
+                orderLine.productVariantId,
             );
             const allocation = new Allocation({
                 productVariant,
@@ -148,41 +152,48 @@ export class StockMovementService {
      * @description
      * Creates {@link Sale}s for each OrderLine in the Order. For ProductVariants
      * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
-     * reduced and the `stockOnHand` value is also reduced the the OrderLine quantity, indicating
+     * reduced and the `stockOnHand` value is also reduced by the OrderLine quantity, indicating
      * that the stock is no longer allocated, but is actually sold and no longer available.
      */
-    async createSalesForOrder(ctx: RequestContext, orderItems: OrderItem[]): Promise<Sale[]> {
+    async createSalesForOrder(ctx: RequestContext, lines: OrderLineInput[]): Promise<Sale[]> {
         const sales: Sale[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        const orderLinesMap = new Map<ID, { line: OrderLine; items: OrderItem[] }>();
+        // const orderLinesMap = new Map<ID, { line: OrderLine; items: OrderItem[] }>();
 
-        for (const orderItem of orderItems) {
-            let value = orderLinesMap.get(orderItem.lineId);
-            if (!value) {
-                const line = await this.connection.getEntityOrThrow(ctx, OrderLine, orderItem.lineId, {
-                    relations: ['productVariant'],
-                });
-                value = { line, items: [] };
-                orderLinesMap.set(orderItem.lineId, value);
+        // for (const orderItem of orderItems) {
+        //     let value = orderLinesMap.get(orderItem.lineId);
+        //     if (!value) {
+        //         const line = await this.connection.getEntityOrThrow(ctx, OrderLine, orderItem.lineId, {
+        //             relations: ['productVariant'],
+        //         });
+        //         value = { line, items: [] };
+        //         orderLinesMap.set(orderItem.lineId, value);
+        //     }
+        //     value.items.push(orderItem);
+        // }
+        const orderLines = await this.connection
+            .getRepository(ctx, OrderLine)
+            .findByIds(lines.map(line => line.orderLineId));
+        for (const lineRow of lines) {
+            const orderLine = orderLines.find(line => idsAreEqual(line.id, lineRow.orderLineId));
+            if (!orderLine) {
+                continue;
             }
-            value.items.push(orderItem);
-        }
-        for (const lineRow of orderLinesMap.values()) {
             const productVariant = await this.connection.getEntityOrThrow(
                 ctx,
                 ProductVariant,
-                lineRow.line.productVariant.id,
+                orderLine.productVariantId,
             );
             const sale = new Sale({
                 productVariant,
-                quantity: lineRow.items.length * -1,
-                orderLine: lineRow.line,
+                quantity: lineRow.quantity * -1,
+                orderLine,
             });
             sales.push(sale);
 
             if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
-                productVariant.stockOnHand -= lineRow.items.length;
-                productVariant.stockAllocated -= lineRow.items.length;
+                productVariant.stockOnHand -= lineRow.quantity;
+                productVariant.stockAllocated -= lineRow.quantity;
                 await this.connection
                     .getRepository(ctx, ProductVariant)
                     .save(productVariant, { reload: false });
@@ -201,38 +212,36 @@ export class StockMovementService {
      * which are configured to track stock levels, the `ProductVariant.stockOnHand` value is
      * increased for each Cancellation, allowing that stock to be sold again.
      */
-    async createCancellationsForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Cancellation[]> {
-        const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
-            items.map(i => i.id),
+    async createCancellationsForOrderLines(
+        ctx: RequestContext,
+        lineInputs: OrderLineInput[],
+    ): Promise<Cancellation[]> {
+        const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
+            lineInputs.map(line => line.orderLineId),
             {
-                relations: ['line', 'line.productVariant'],
+                relations: ['productVariant'],
             },
         );
+
         const cancellations: Cancellation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        const variantsMap = new Map<ID, ProductVariant>();
-        for (const item of orderItems) {
-            let productVariant: ProductVariant;
-            const productVariantId = item.line.productVariant.id;
-            if (variantsMap.has(productVariantId)) {
-                // tslint:disable-next-line:no-non-null-assertion
-                productVariant = variantsMap.get(productVariantId)!;
-            } else {
-                productVariant = item.line.productVariant;
-                variantsMap.set(productVariantId, productVariant);
+        for (const line of orderLines) {
+            const lineInput = lineInputs.find(l => idsAreEqual(l.orderLineId, line.id));
+            if (!lineInput) {
+                continue;
             }
             const cancellation = new Cancellation({
-                productVariant,
-                quantity: 1,
-                orderItem: item,
+                productVariant: line.productVariant,
+                quantity: lineInput.quantity,
+                orderLine: line,
             });
             cancellations.push(cancellation);
 
-            if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
-                productVariant.stockOnHand += 1;
+            if (this.trackInventoryForVariant(line.productVariant, globalTrackInventory)) {
+                line.productVariant.stockOnHand += lineInput.quantity;
                 await this.connection
                     .getRepository(ctx, ProductVariant)
-                    .save(productVariant, { reload: false });
+                    .save(line.productVariant, { reload: false });
             }
         }
         const savedCancellations = await this.connection.getRepository(ctx, Cancellation).save(cancellations);
@@ -248,38 +257,39 @@ export class StockMovementService {
      * which are configured to track stock levels, the `ProductVariant.stockAllocated` value is
      * reduced, indicating that this stock is once again available to buy.
      */
-    async createReleasesForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Release[]> {
-        const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
-            items.map(i => i.id),
+    async createReleasesForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]): Promise<Release[]> {
+        // const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
+        //     items.map(i => i.id),
+        //     {
+        //         relations: ['line', 'line.productVariant'],
+        //     },
+        // );
+        const releases: Release[] = [];
+        const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
+            lineInputs.map(line => line.orderLineId),
             {
-                relations: ['line', 'line.productVariant'],
+                relations: ['productVariant'],
             },
         );
-        const releases: Release[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const variantsMap = new Map<ID, ProductVariant>();
-        for (const item of orderItems) {
-            let productVariant: ProductVariant;
-            const productVariantId = item.line.productVariant.id;
-            if (variantsMap.has(productVariantId)) {
-                // tslint:disable-next-line:no-non-null-assertion
-                productVariant = variantsMap.get(productVariantId)!;
-            } else {
-                productVariant = item.line.productVariant;
-                variantsMap.set(productVariantId, productVariant);
+        for (const line of orderLines) {
+            const lineInput = lineInputs.find(l => idsAreEqual(l.orderLineId, line.id));
+            if (!lineInput) {
+                continue;
             }
             const release = new Release({
-                productVariant,
-                quantity: 1,
-                orderItem: item,
+                productVariant: line.productVariant,
+                quantity: lineInput.quantity,
+                orderLine: line,
             });
             releases.push(release);
 
-            if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
-                productVariant.stockAllocated -= 1;
+            if (this.trackInventoryForVariant(line.productVariant, globalTrackInventory)) {
+                line.productVariant.stockAllocated -= lineInput.quantity;
                 await this.connection
                     .getRepository(ctx, ProductVariant)
-                    .save(productVariant, { reload: false });
+                    .save(line.productVariant, { reload: false });
             }
         }
         const savedReleases = await this.connection.getRepository(ctx, Release).save(releases);

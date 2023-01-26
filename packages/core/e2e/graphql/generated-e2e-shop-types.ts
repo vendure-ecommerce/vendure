@@ -51,6 +51,7 @@ export type Address = Node & {
 export type Adjustment = {
     adjustmentSource: Scalars['String'];
     amount: Scalars['Int'];
+    data?: Maybe<Scalars['JSON']>;
     description: Scalars['String'];
     type: AdjustmentType;
 };
@@ -1001,16 +1002,20 @@ export type Fulfillment = Node & {
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
     id: Scalars['ID'];
+    lines: Array<FulfillmentLine>;
     method: Scalars['String'];
-    orderItems: Array<OrderItem>;
     state: Scalars['String'];
-    summary: Array<FulfillmentLineSummary>;
+    /** @deprecated Use the `lines` field instead */
+    summary: Array<FulfillmentLine>;
     trackingCode?: Maybe<Scalars['String']>;
     updatedAt: Scalars['DateTime'];
 };
 
-export type FulfillmentLineSummary = {
+export type FulfillmentLine = {
+    fulfillment: Fulfillment;
+    fulfillmentId: Scalars['ID'];
     orderLine: OrderLine;
+    orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
 };
 
@@ -1580,7 +1585,12 @@ export type Mutation = {
     setOrderCustomFields: ActiveOrderResult;
     /** Sets the shipping address for this order */
     setOrderShippingAddress: ActiveOrderResult;
-    /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
+    /**
+     * Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
+     * An Order can have multiple shipping methods, in which case you can pass an array of ids. In this case,
+     * you should configure a custom ShippingLineAssignmentStrategy in order to know which OrderLines each
+     * shipping method will apply to.
+     */
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
@@ -1940,9 +1950,8 @@ export type OrderLine = Node & {
     discountedUnitPriceWithTax: Scalars['Int'];
     discounts: Array<Discount>;
     featuredAsset?: Maybe<Asset>;
-    fulfillments?: Maybe<Array<Fulfillment>>;
+    fulfillmentLines?: Maybe<Array<FulfillmentLine>>;
     id: Scalars['ID'];
-    items: Array<OrderItem>;
     /** The total price of the line excluding tax and discounts. */
     linePrice: Scalars['Int'];
     /** The total price of the line including tax but excluding discounts. */
@@ -1950,6 +1959,8 @@ export type OrderLine = Node & {
     /** The total tax on this line */
     lineTax: Scalars['Int'];
     order: Order;
+    /** The quantity at the time the Order was placed */
+    orderPlacedQuantity: Scalars['Int'];
     productVariant: ProductVariant;
     /**
      * The actual line price, taking into account both item discounts _and_ prorated (proportionally-distributed)
@@ -2676,9 +2687,9 @@ export type Refund = Node & {
     createdAt: Scalars['DateTime'];
     id: Scalars['ID'];
     items: Scalars['Int'];
+    lines: Array<RefundLine>;
     metadata?: Maybe<Scalars['JSON']>;
     method?: Maybe<Scalars['String']>;
-    orderItems: Array<OrderItem>;
     paymentId: Scalars['ID'];
     reason?: Maybe<Scalars['String']>;
     shipping: Scalars['Int'];
@@ -2686,6 +2697,14 @@ export type Refund = Node & {
     total: Scalars['Int'];
     transactionId?: Maybe<Scalars['String']>;
     updatedAt: Scalars['DateTime'];
+};
+
+export type RefundLine = {
+    orderLine: OrderLine;
+    orderLineId: Scalars['ID'];
+    quantity: Scalars['Int'];
+    refund: Refund;
+    refundId: Scalars['ID'];
 };
 
 export type RegisterCustomerAccountResult =
@@ -3061,13 +3080,6 @@ export type User = Node & {
     verified: Scalars['Boolean'];
 };
 
-export type Vendor = Node & {
-    createdAt: Scalars['DateTime'];
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    updatedAt: Scalars['DateTime'];
-};
-
 /**
  * Returned if the verification token (used to verify a Customer's email address) is valid, but has
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
@@ -3132,6 +3144,7 @@ export type TestOrderFragmentFragment = {
         unitPriceWithTax: number;
         unitPriceChangeSinceAdded: number;
         unitPriceWithTaxChangeSinceAdded: number;
+        discountedUnitPriceWithTax: number;
         proratedUnitPriceWithTax: number;
         productVariant: { id: string };
         discounts: Array<{
@@ -3141,7 +3154,6 @@ export type TestOrderFragmentFragment = {
             description: string;
             type: AdjustmentType;
         }>;
-        items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
     }>;
     shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
     customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3440,6 +3452,7 @@ export type GetActiveOrderQuery = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -3449,7 +3462,6 @@ export type GetActiveOrderQuery = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3474,7 +3486,6 @@ export type GetActiveOrderWithPriceDataQuery = {
             linePrice: number;
             lineTax: number;
             linePriceWithTax: number;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number; taxRate: number }>;
             taxLines: Array<{ taxRate: number; description: string }>;
         }>;
         taxSummary: Array<{ description: string; taxRate: number; taxBase: number; taxTotal: number }>;
@@ -3518,6 +3529,7 @@ export type AdjustItemQuantityMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -3527,7 +3539,6 @@ export type AdjustItemQuantityMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3571,6 +3582,7 @@ export type RemoveItemFromOrderMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -3580,7 +3592,6 @@ export type RemoveItemFromOrderMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3637,6 +3648,7 @@ export type SetShippingMethodMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -3646,7 +3658,6 @@ export type SetShippingMethodMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3710,6 +3721,7 @@ export type GetOrderByCodeQuery = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -3719,7 +3731,6 @@ export type GetOrderByCodeQuery = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3760,6 +3771,7 @@ export type GetOrderShopQuery = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -3769,7 +3781,6 @@ export type GetOrderShopQuery = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3811,6 +3822,7 @@ export type GetOrderPromotionsByCodeQuery = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -3820,7 +3832,6 @@ export type GetOrderPromotionsByCodeQuery = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3866,6 +3877,7 @@ export type TransitionToStateMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -3875,7 +3887,6 @@ export type TransitionToStateMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -3971,6 +3982,7 @@ export type TestOrderWithPaymentsFragment = {
         unitPriceWithTax: number;
         unitPriceChangeSinceAdded: number;
         unitPriceWithTaxChangeSinceAdded: number;
+        discountedUnitPriceWithTax: number;
         proratedUnitPriceWithTax: number;
         productVariant: { id: string };
         discounts: Array<{
@@ -3980,7 +3992,6 @@ export type TestOrderWithPaymentsFragment = {
             description: string;
             type: AdjustmentType;
         }>;
-        items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
     }>;
     shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
     customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -4026,6 +4037,7 @@ export type GetActiveOrderWithPaymentsQuery = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -4035,7 +4047,6 @@ export type GetActiveOrderWithPaymentsQuery = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -4087,6 +4098,7 @@ export type AddPaymentToOrderMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -4096,7 +4108,6 @@ export type AddPaymentToOrderMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -4166,6 +4177,7 @@ export type GetOrderByCodeWithPaymentsQuery = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -4175,7 +4187,6 @@ export type GetOrderByCodeWithPaymentsQuery = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -4193,18 +4204,13 @@ export type GetActiveCustomerOrderWithItemFulfillmentsQuery = {
                 id: string;
                 code: string;
                 state: string;
-                lines: Array<{
+                lines: Array<{ id: string }>;
+                fulfillments?: Array<{
                     id: string;
-                    items: Array<{
-                        id: string;
-                        fulfillment?: {
-                            id: string;
-                            state: string;
-                            method: string;
-                            trackingCode?: string | null;
-                        } | null;
-                    }>;
-                }>;
+                    state: string;
+                    method: string;
+                    trackingCode?: string | null;
+                }> | null;
             }>;
         };
     } | null;
@@ -4274,6 +4280,7 @@ export type ApplyCouponCodeMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -4283,7 +4290,6 @@ export type ApplyCouponCodeMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -4324,6 +4330,7 @@ export type RemoveCouponCodeMutation = {
             unitPriceWithTax: number;
             unitPriceChangeSinceAdded: number;
             unitPriceWithTaxChangeSinceAdded: number;
+            discountedUnitPriceWithTax: number;
             proratedUnitPriceWithTax: number;
             productVariant: { id: string };
             discounts: Array<{
@@ -4333,7 +4340,6 @@ export type RemoveCouponCodeMutation = {
                 description: string;
                 type: AdjustmentType;
             }>;
-            items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
         }>;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
@@ -4373,6 +4379,7 @@ export type RemoveAllOrderLinesMutation = {
                   unitPriceWithTax: number;
                   unitPriceChangeSinceAdded: number;
                   unitPriceWithTaxChangeSinceAdded: number;
+                  discountedUnitPriceWithTax: number;
                   proratedUnitPriceWithTax: number;
                   productVariant: { id: string };
                   discounts: Array<{
@@ -4382,7 +4389,6 @@ export type RemoveAllOrderLinesMutation = {
                       description: string;
                       type: AdjustmentType;
                   }>;
-                  items: Array<{ id: string; unitPrice: number; unitPriceWithTax: number }>;
               }>;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;

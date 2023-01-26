@@ -14,8 +14,7 @@ import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
 import { Logger, PaymentMethodHandler } from '../../config/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { PaymentMethod } from '../../entity/index';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
+import { Fulfillment, FulfillmentLine, OrderLine, PaymentMethod, RefundLine } from '../../entity/index';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
@@ -277,7 +276,6 @@ export class PaymentService {
         ctx: RequestContext,
         input: RefundOrderInput,
         order: Order,
-        items: OrderItem[],
         selectedPayment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const orderWithRefunds = await this.connection.getEntityOrThrow(ctx, Order, order.id, {
@@ -293,10 +291,19 @@ export class PaymentService {
         const refundablePayments = orderWithRefunds.payments.filter(p => {
             return paymentRefundTotal(p) < p.amount;
         });
-        const itemAmount = summate(items, 'proratedUnitPriceWithTax');
+        let refundOrderLinesTotal = 0;
+        const orderLines = await this.connection
+            .getRepository(ctx, OrderLine)
+            .findByIds(input.lines.map(l => l.orderLineId));
+        for (const line of input.lines) {
+            const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
+            if (orderLine && 0 < orderLine.quantity) {
+                refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
+            }
+        }
         let primaryRefund: Refund | undefined;
         const refundedPaymentIds: ID[] = [];
-        const refundTotal = itemAmount + input.shipping + input.adjustment;
+        const refundTotal = refundOrderLinesTotal + input.shipping + input.adjustment;
         const refundMax =
             orderWithRefunds.payments
                 ?.map(p => p.amount - paymentRefundTotal(p))
@@ -316,8 +323,7 @@ export class PaymentService {
             let refund = new Refund({
                 payment: paymentToRefund,
                 total,
-                orderItems: items,
-                items: itemAmount,
+                items: refundOrderLinesTotal,
                 reason: input.reason,
                 adjustment: input.adjustment,
                 shipping: input.shipping,
@@ -356,6 +362,23 @@ export class PaymentService {
                 refund.metadata = createRefundResult.metadata || {};
             }
             refund = await this.connection.getRepository(ctx, Refund).save(refund);
+            const refundLines: RefundLine[] = [];
+            for (const { orderLineId, quantity } of input.lines) {
+                const refundLine = await this.connection.getRepository(ctx, RefundLine).save(
+                    new RefundLine({
+                        refund,
+                        orderLineId,
+                        quantity,
+                    }),
+                );
+                refundLines.push(refundLine);
+            }
+            await this.connection
+                .getRepository(ctx, Fulfillment)
+                .createQueryBuilder()
+                .relation('lines')
+                .of(refund)
+                .add(refundLines);
             if (createRefundResult) {
                 let finalize: () => Promise<any>;
                 const fromState = refund.state;

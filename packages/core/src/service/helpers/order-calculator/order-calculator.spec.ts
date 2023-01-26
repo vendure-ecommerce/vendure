@@ -15,7 +15,6 @@ import {
     TaxLineCalculationStrategy,
 } from '../../../config/tax/tax-line-calculation-strategy';
 import { Promotion } from '../../../entity';
-import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
