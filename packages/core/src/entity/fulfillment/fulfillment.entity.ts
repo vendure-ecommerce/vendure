@@ -9,7 +9,7 @@ import { FulfillmentLine } from '../order-line-reference/fulfillment-line.entity
 
 /**
  * @description
- * This entity represents a fulfillment of an Order or part of it, i.e. the {@link OrderItem}s have been
+ * This entity represents a fulfillment of an Order or part of it, i.e. which {@link OrderLine}s have been
  * delivered to the Customer after successful payment.
  *
  * @docsCategory entities
