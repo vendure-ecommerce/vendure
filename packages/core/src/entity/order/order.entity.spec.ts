@@ -25,8 +25,7 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(i => (i.taxLines = [{ taxRate: 5, description: 'tax a' }]));
-            order.lines[1].items.forEach(i => (i.taxLines = [{ taxRate: 5, description: 'tax a' }]));
+            order.lines.forEach(i => (i.taxLines = [{ taxRate: 5, description: 'tax a' }]));
 
             expect(order.taxSummary).toEqual([
                 {
@@ -56,8 +55,8 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(i => (i.taxLines = [{ taxRate: 5, description: 'tax a' }]));
-            order.lines[1].items.forEach(i => (i.taxLines = [{ taxRate: 7.5, description: 'tax b' }]));
+            order.lines[0].taxLines = [{ taxRate: 5, description: 'tax a' }];
+            order.lines[1].taxLines = [{ taxRate: 7.5, description: 'tax b' }];
 
             expect(order.taxSummary).toEqual([
                 {
@@ -93,20 +92,14 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(
-                i =>
-                    (i.taxLines = [
-                        { taxRate: 5, description: 'tax a' },
-                        { taxRate: 7.5, description: 'tax b' },
-                    ]),
-            );
-            order.lines[1].items.forEach(
-                i =>
-                    (i.taxLines = [
-                        { taxRate: 5, description: 'tax a' },
-                        { taxRate: 7.5, description: 'tax b' },
-                    ]),
-            );
+            order.lines[0].taxLines = [
+                { taxRate: 5, description: 'tax a' },
+                { taxRate: 7.5, description: 'tax b' },
+            ];
+            order.lines[1].taxLines = [
+                { taxRate: 5, description: 'tax a' },
+                { taxRate: 7.5, description: 'tax b' },
+            ];
 
             expect(order.taxSummary).toEqual([
                 {
@@ -142,34 +135,30 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(i => {
-                i.taxLines = [
-                    { taxRate: 5, description: 'tax a' },
-                    { taxRate: 7.5, description: 'tax b' },
-                ];
-                i.adjustments = [
-                    {
-                        amount: -30,
-                        adjustmentSource: 'some order discount',
-                        description: 'some order discount',
-                        type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
-                    },
-                ];
-            });
-            order.lines[1].items.forEach(i => {
-                i.taxLines = [
-                    { taxRate: 5, description: 'tax a' },
-                    { taxRate: 7.5, description: 'tax b' },
-                ];
-                i.adjustments = [
-                    {
-                        amount: -100,
-                        adjustmentSource: 'some order discount',
-                        description: 'some order discount',
-                        type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
-                    },
-                ];
-            });
+            order.lines[0].taxLines = [
+                { taxRate: 5, description: 'tax a' },
+                { taxRate: 7.5, description: 'tax b' },
+            ];
+            order.lines[0].adjustments = [
+                {
+                    amount: -60,
+                    adjustmentSource: 'some order discount',
+                    description: 'some order discount',
+                    type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+                },
+            ];
+            order.lines[1].taxLines = [
+                { taxRate: 5, description: 'tax a' },
+                { taxRate: 7.5, description: 'tax b' },
+            ];
+            order.lines[1].adjustments = [
+                {
+                    amount: -100,
+                    adjustmentSource: 'some order discount',
+                    description: 'some order discount',
+                    type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+                },
+            ];
 
             expect(order.taxSummary).toEqual([
                 {
@@ -205,40 +194,37 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(i => {
-                i.taxLines = [
-                    { taxRate: 5, description: 'tax a' },
-                    { taxRate: 7.5, description: 'tax b' },
-                ];
-                i.adjustments = [
-                    {
-                        amount: -30,
-                        adjustmentSource: 'some order discount',
-                        description: 'some order discount',
-                        type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
-                    },
-                    {
-                        amount: -125,
-                        adjustmentSource: 'some item discount',
-                        description: 'some item discount',
-                        type: AdjustmentType.PROMOTION,
-                    },
-                ];
-            });
-            order.lines[1].items.forEach(i => {
-                i.taxLines = [
-                    { taxRate: 5, description: 'tax a' },
-                    { taxRate: 7.5, description: 'tax b' },
-                ];
-                i.adjustments = [
-                    {
-                        amount: -100,
-                        adjustmentSource: 'some order discount',
-                        description: 'some order discount',
-                        type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
-                    },
-                ];
-            });
+            order.lines[0].taxLines = [
+                { taxRate: 5, description: 'tax a' },
+                { taxRate: 7.5, description: 'tax b' },
+            ];
+            order.lines[0].adjustments = [
+                {
+                    amount: -60,
+                    adjustmentSource: 'some order discount',
+                    description: 'some order discount',
+                    type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+                },
+                {
+                    amount: -250,
+                    adjustmentSource: 'some item discount',
+                    description: 'some item discount',
+                    type: AdjustmentType.PROMOTION,
+                },
+            ];
+
+            order.lines[1].taxLines = [
+                { taxRate: 5, description: 'tax a' },
+                { taxRate: 7.5, description: 'tax b' },
+            ];
+            order.lines[1].adjustments = [
+                {
+                    amount: -100,
+                    adjustmentSource: 'some order discount',
+                    description: 'some order discount',
+                    type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+                },
+            ];
 
             expect(order.taxSummary).toEqual([
                 {
@@ -269,7 +255,7 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(i => (i.taxLines = [{ taxRate: 0, description: 'zero-rate' }]));
+            order.lines[0].taxLines = [{ taxRate: 0, description: 'zero-rate' }];
 
             expect(order.taxSummary).toEqual([
                 {
@@ -299,8 +285,8 @@ describe('Order entity methods', () => {
                     },
                 ],
             });
-            order.lines[0].items.forEach(i => (i.taxLines = [{ taxRate: 5, description: 'tax a' }]));
-            order.lines[1].items.forEach(i => (i.taxLines = [{ taxRate: 5, description: 'tax a' }]));
+            order.lines[0].taxLines = [{ taxRate: 5, description: 'tax a' }];
+            order.lines[1].taxLines = [{ taxRate: 5, description: 'tax a' }];
             order.shippingLines = [
                 new ShippingLine({
                     listPrice: 500,

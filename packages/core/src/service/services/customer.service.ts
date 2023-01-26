@@ -47,7 +47,7 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { Order } from '../../entity/index';
+import { Order } from '../../entity/order/order.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';

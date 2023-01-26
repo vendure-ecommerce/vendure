@@ -2,10 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { OrderType } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 
-import { RequestContext } from '../../../api/index';
-import { ConfigService } from '../../../config/index';
-import { TransactionalConnection } from '../../../connection/index';
-import { Channel, Order, OrderLine, ShippingLine } from '../../../entity/index';
+import { RequestContext } from '../../../api/common/request-context';
+import { ConfigService } from '../../../config/config.service';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Channel } from '../../../entity/channel/channel.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
+import { Order } from '../../../entity/order/order.entity';
+import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { ChannelService } from '../../services/channel.service';
 import { OrderService } from '../../services/order.service';
 

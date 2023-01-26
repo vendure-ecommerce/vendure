@@ -239,7 +239,7 @@ describe('OrderCalculator', () => {
             code: 'percentage_item_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: { discount: { type: 'int' } },
-            async execute(ctx, orderItem, orderLine, args) {
+            async execute(ctx, orderLine, args) {
                 const unitPrice = ctx.channel.pricesIncludeTax
                     ? orderLine.unitPriceWithTax
                     : orderLine.unitPrice;
@@ -507,13 +507,7 @@ describe('OrderCalculator', () => {
 
                     // increase the quantity to 2, which will take the total over the minimum set by the
                     // condition.
-                    order.lines[0].items.push(
-                        new OrderItem({
-                            listPrice: 500,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                    );
+                    order.lines[0].quantity = 2;
 
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
@@ -545,14 +539,7 @@ describe('OrderCalculator', () => {
 
                     // increase the quantity to 2, which will take the total over the minimum set by the
                     // condition.
-                    order.lines[0].items.push(
-                        new OrderItem({
-                            listPrice: 500,
-                            listPriceIncludesTax: true,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                    );
+                    order.lines[0].quantity = 2;
 
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
@@ -866,7 +853,7 @@ describe('OrderCalculator', () => {
 
                 // increase the quantity to 3, which will trigger the first promotion and thus
                 // bring the order total below the threshold for the second promotion.
-                order.lines[0].items.push(new OrderItem({ listPrice: 500, taxLines: [], adjustments: [] }));
+                order.lines[0].quantity = 3;
 
                 await orderCalculator.applyPriceAdjustments(
                     ctx,
@@ -909,14 +896,7 @@ describe('OrderCalculator', () => {
                     assertOrderTotalsAddUp(order);
 
                     // increase the quantity to 3, which will trigger both promotions
-                    order.lines[0].items.push(
-                        new OrderItem({
-                            listPrice: 800,
-                            listPriceIncludesTax: false,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                    );
+                    order.lines[0].quantity = 3;
 
                     await orderCalculator.applyPriceAdjustments(
                         ctx,
@@ -1054,8 +1034,8 @@ describe('OrderCalculator', () => {
                     code: 'percentage_item_action',
                     description: [{ languageCode: LanguageCode.en, value: '' }],
                     args: { discount: { type: 'int' } },
-                    async execute(ctx, orderItem, orderLine, args) {
-                        if (orderItem.listPrice === 1000) {
+                    async execute(ctx, orderLine, args) {
+                        if (orderLine.listPrice === 1000) {
                             const unitPrice = ctx.channel.pricesIncludeTax
                                 ? orderLine.unitPriceWithTax
                                 : orderLine.unitPrice;
@@ -1600,12 +1580,7 @@ function createTestModule() {
  */
 function assertOrderTotalsAddUp(order: Order) {
     for (const line of order.lines) {
-        const itemUnitPriceSum = summate(line.items, 'unitPrice');
-        expect(line.linePrice).toBe(itemUnitPriceSum);
-        const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
-        expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
-
-        const pricesIncludeTax = line.firstItem?.listPriceIncludesTax;
+        const pricesIncludeTax = line.listPriceIncludesTax;
 
         if (pricesIncludeTax) {
             const lineDiscountsAmountWithTaxSum = summate(line.discounts, 'amountWithTax');

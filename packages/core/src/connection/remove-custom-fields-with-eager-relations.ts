@@ -1,6 +1,6 @@
 import { SelectQueryBuilder } from 'typeorm';
 
-import { Logger } from '../config/index';
+import { Logger } from '../config/logger/vendure-logger';
 
 /**
  * This is a work-around for this issue: https://github.com/vendure-ecommerce/vendure/issues/1664

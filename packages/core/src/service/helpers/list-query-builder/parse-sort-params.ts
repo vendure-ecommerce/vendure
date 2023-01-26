@@ -5,7 +5,7 @@ import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { UserInputError } from '../../../common/error/errors';
 import { NullOptionals, SortParameter } from '../../../common/types/common-types';
-import { CustomFieldConfig } from '../../../config/index';
+import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { escapeCalculatedColumnExpression, getColumnMetadata } from './connection-utils';

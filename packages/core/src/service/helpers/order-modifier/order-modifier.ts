@@ -36,7 +36,7 @@ import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
-import { FulfillmentLine } from '../../../entity/index';
+import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';

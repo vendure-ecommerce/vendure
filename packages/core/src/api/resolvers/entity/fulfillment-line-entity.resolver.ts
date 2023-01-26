@@ -2,7 +2,8 @@ import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { TransactionalConnection } from '../../../connection/index';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
-import { FulfillmentLine, OrderLine } from '../../../entity/index';
+import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 

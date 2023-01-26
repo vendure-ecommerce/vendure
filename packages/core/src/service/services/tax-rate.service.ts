@@ -8,12 +8,12 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError } from '../../common/error/errors';
-import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/index';
+import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
-import { ConfigService } from '../../config/index';
+import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';

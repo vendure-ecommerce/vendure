@@ -144,6 +144,7 @@ export function createOrder(
             new OrderLine({
                 taxCategory,
                 quantity,
+                orderPlacedQuantity: 0,
                 listPrice,
                 listPriceIncludesTax: orderConfig.ctx.channel.pricesIncludeTax,
                 taxLines: [],

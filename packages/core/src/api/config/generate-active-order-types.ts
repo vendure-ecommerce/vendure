@@ -5,12 +5,11 @@ import {
     GraphQLInputFieldConfigMap,
     GraphQLInputObjectType,
     GraphQLSchema,
-    GraphQLObjectType,
     isInputObjectType,
 } from 'graphql';
 
 import { InternalServerError } from '../../common/error/errors';
-import { ActiveOrderStrategy, ACTIVE_ORDER_INPUT_FIELD_NAME } from '../../config/index';
+import { ActiveOrderStrategy, ACTIVE_ORDER_INPUT_FIELD_NAME } from '../../config/order/active-order-strategy';
 
 /**
  * This function is responsible for constructing the `ActiveOrderInput` GraphQL input type.

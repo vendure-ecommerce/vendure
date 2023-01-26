@@ -12,10 +12,15 @@ import {
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { PaymentMetadata } from '../../common/types/common-types';
 import { idsAreEqual } from '../../common/utils';
-import { Logger, PaymentMethodHandler } from '../../config/index';
+import { Logger } from '../../config/logger/vendure-logger';
+import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Fulfillment, FulfillmentLine, OrderLine, PaymentMethod, RefundLine } from '../../entity/index';
+import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
+import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { RefundLine } from '../../entity/order-line-reference/refund-line.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';

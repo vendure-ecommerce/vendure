@@ -16,7 +16,7 @@ import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { EntityNotFoundError } from '../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../common/types/common-types';
-import { Logger } from '../config/index';
+import { Logger } from '../config/logger/vendure-logger';
 import { VendureEntity } from '../entity/base/base.entity';
 
 import { removeCustomFieldsWithEagerRelations } from './remove-custom-fields-with-eager-relations';
