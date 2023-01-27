@@ -59,6 +59,7 @@
                             <vdr-line-refunds [line]="line" [payments]="order.payments"></vdr-line-refunds>
                             <vdr-line-fulfillment
                                 [line]="line"
+                                [allOrderFulfillments]="order.fulfillments"
                                 [orderState]="order.state"
                             ></vdr-line-fulfillment>
                         </td>

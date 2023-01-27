@@ -3,7 +3,6 @@ import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     AddItemInput,
-    AdjustOrderLineInput,
     BaseDetailComponent,
     CustomFieldConfig,
     DataService,
@@ -16,6 +15,7 @@ import {
     NotificationService,
     OrderAddressFragment,
     OrderDetailFragment,
+    OrderLineInput,
     ProductSelectorSearchQuery,
     ServerConfigService,
     SortOrder,
@@ -24,16 +24,8 @@ import {
 } from '@vendure/admin-ui/core';
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
-import { concat, EMPTY, Observable, of, Subject } from 'rxjs';
-import {
-    distinctUntilChanged,
-    map,
-    mapTo,
-    shareReplay,
-    startWith,
-    switchMap,
-    takeUntil,
-} from 'rxjs/operators';
+import { EMPTY, Observable, of } from 'rxjs';
+import { mapTo, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
 import {
@@ -55,7 +47,7 @@ interface AddedLine {
 
 type ModifyOrderData = Omit<ModifyOrderInput, 'addItems' | 'adjustOrderLines'> & {
     addItems: Array<AddItemInput & { customFields?: any }>;
-    adjustOrderLines: Array<AdjustOrderLineInput & { customFields?: any }>;
+    adjustOrderLines: Array<OrderLineInput & { customFields?: any }>;
 };
 
 @Component({

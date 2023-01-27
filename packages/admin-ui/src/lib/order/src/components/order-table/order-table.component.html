@@ -43,7 +43,11 @@
                         </div>
                     </ng-template>
                     <vdr-line-refunds [line]="line" [payments]="order.payments"></vdr-line-refunds>
-                    <vdr-line-fulfillment [line]="line" [orderState]="order.state"></vdr-line-fulfillment>
+                    <vdr-line-fulfillment
+                        [line]="line"
+                        [orderState]="order.state"
+                        [allOrderFulfillments]="order.fulfillments"
+                    ></vdr-line-fulfillment>
                 </td>
                 <td class="align-middle total">
                     {{ line.linePriceWithTax | localeCurrency: order.currencyCode }}

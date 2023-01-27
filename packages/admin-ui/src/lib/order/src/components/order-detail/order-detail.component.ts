@@ -9,7 +9,6 @@ import {
     DataService,
     EditNoteDialogComponent,
     FulfillmentFragment,
-    FulfillmentLineSummary,
     GetOrderHistoryQuery,
     GetOrderQuery,
     HistoryEntryType,
@@ -255,14 +254,14 @@ export class OrderDetailComponent
     }
 
     canAddFulfillment(order: OrderDetailFragment): boolean {
-        const allFulfillmentSummaryRows: FulfillmentFragment['summary'] = (order.fulfillments ?? []).reduce(
-            (all, fulfillment) => [...all, ...fulfillment.summary],
-            [] as FulfillmentFragment['summary'],
+        const allFulfillmentLines: FulfillmentFragment['lines'] = (order.fulfillments ?? []).reduce(
+            (all, fulfillment) => [...all, ...fulfillment.lines],
+            [] as FulfillmentFragment['lines'],
         );
         let allItemsFulfilled = true;
         for (const line of order.lines) {
-            const totalFulfilledCount = allFulfillmentSummaryRows
-                .filter(row => row.orderLine.id === line.id)
+            const totalFulfilledCount = allFulfillmentLines
+                .filter(row => row.orderLineId === line.id)
                 .reduce((sum, row) => sum + row.quantity, 0);
             if (totalFulfilledCount < line.quantity) {
                 allItemsFulfilled = false;

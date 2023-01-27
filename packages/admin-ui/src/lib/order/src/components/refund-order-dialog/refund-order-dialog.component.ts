@@ -7,6 +7,7 @@ import {
     I18nService,
     OrderDetailFragment,
     OrderLineInput,
+    PaymentWithRefundsFragment,
     RefundOrderInput,
 } from '@vendure/admin-ui/core';
 import { summate } from '@vendure/common/lib/shared-utils';
@@ -65,23 +66,21 @@ export class RefundOrderDialogComponent
     }
 
     lineCanBeRefundedOrCancelled(line: OrderDetailFragment['lines'][number]): boolean {
-        const refunds =
-            this.order.payments?.reduce(
-                (all, payment) => [...all, ...payment.refunds],
-                [] as Payment['refunds'],
-            ) ?? [];
+        const refundedCount =
+            this.order.payments
+                ?.reduce(
+                    (all, payment) => [...all, ...payment.refunds],
+                    [] as PaymentWithRefundsFragment['refunds'],
+                )
+                .filter(refund => refund.state !== 'Failed')
+                .reduce(
+                    (all, refund) => [...all, ...refund.lines],
+                    [] as Array<{ orderLineId: string; quantity: number }>,
+                )
+                .filter(refundLine => refundLine.orderLineId === line.id)
+                .reduce((sum, refundLine) => sum + refundLine.quantity, 0) ?? 0;
 
-        const refundable = line.items.filter(i => {
-            if (i.cancelled) {
-                return false;
-            }
-            if (i.refundId == null) {
-                return true;
-            }
-            const refund = refunds.find(r => r.id === i.refundId);
-            return refund?.state === 'Failed';
-        });
-        return 0 < refundable.length;
+        return refundedCount < line.quantity;
     }
 
     ngOnInit() {
