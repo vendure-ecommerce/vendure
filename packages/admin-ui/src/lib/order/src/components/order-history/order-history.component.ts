@@ -110,7 +110,9 @@ export class OrderHistoryComponent {
         }
     }
 
-    getFulfillment(entry: TimelineHistoryEntry): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined {
+    getFulfillment(
+        entry: TimelineHistoryEntry,
+    ): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined {
         if (
             (entry.type === HistoryEntryType.ORDER_FULFILLMENT ||
                 entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) &&
@@ -120,25 +122,26 @@ export class OrderHistoryComponent {
         }
     }
 
-    getPayment(entry: TimelineHistoryEntry): NonNullable<OrderDetailFragment['payments']>[number] | undefined {
+    getPayment(
+        entry: TimelineHistoryEntry,
+    ): NonNullable<OrderDetailFragment['payments']>[number] | undefined {
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION && this.order.payments) {
             return this.order.payments.find(p => p.id === entry.data.paymentId);
         }
     }
 
+    getCancelledQuantity(entry: TimelineHistoryEntry): number {
+        return entry.data.lines.reduce((total, line) => total + line.quantity, 0);
+    }
+
     getCancelledItems(entry: TimelineHistoryEntry): Array<{ name: string; quantity: number }> {
         const itemMap = new Map<string, number>();
-        const cancelledItemIds: string[] = entry.data.orderItemIds;
+        const cancellationLines: Array<{ orderLineId: string; quantity: number }> = entry.data.lines;
         for (const line of this.order.lines) {
-            for (const item of line.items) {
-                if (cancelledItemIds.includes(item.id)) {
-                    const count = itemMap.get(line.productVariant.name);
-                    if (count != null) {
-                        itemMap.set(line.productVariant.name, count + 1);
-                    } else {
-                        itemMap.set(line.productVariant.name, 1);
-                    }
-                }
+            const cancellationLine = cancellationLines.find(l => l.orderLineId === line.id);
+            if (cancellationLine) {
+                const count = itemMap.get(line.productVariant.name);
+                itemMap.set(line.productVariant.name, cancellationLine.quantity);
             }
         }
         return Array.from(itemMap.entries()).map(([name, quantity]) => ({ name, quantity }));

@@ -111,7 +111,7 @@
                     <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
                         {{
                             'order.history-items-cancelled'
-                                | translate: { count: entry.data.orderItemIds.length }
+                                | translate: { count: getCancelledQuantity(entry) }
                         }}
                         <vdr-history-entry-detail *ngIf="getCancelledItems(entry) as items">
                             <vdr-labeled-data [label]="'order.cancellation-reason' | translate">

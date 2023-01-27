@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { OrderDetailFragment } from '@vendure/admin-ui/core';
+import { OrderDetailFragment, PaymentWithRefundsFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-line-refunds',
@@ -9,27 +9,23 @@ import { OrderDetailFragment } from '@vendure/admin-ui/core';
 })
 export class LineRefundsComponent {
     @Input() line: OrderDetailFragment['lines'][number];
-    @Input() payments: OrderDetailFragment['payments'];
+    @Input() payments: PaymentWithRefundsFragment[];
 
     getRefundedCount(): number {
-        const refunds =
-            this.payments?.reduce(
-                (all, payment) => [...all, ...payment.refunds],
-                [] as NonNullable<OrderDetailFragment['payments']>[number]['refunds'],
-            ) ?? [];
-        return this.line.items.filter(i => {
-            if (i.refundId === null && !i.cancelled) {
-                return false;
-            }
-            if (i.refundId) {
-                const refund = refunds.find(r => r.id === i.refundId);
-                if (refund?.state === 'Failed') {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-            return false;
-        }).length;
+        const refundLines =
+            this.payments
+                ?.reduce(
+                    (all, payment) => [...all, ...payment.refunds],
+                    [] as PaymentWithRefundsFragment['refunds'],
+                )
+                .filter(refund => refund.state !== 'Failed')
+                .reduce(
+                    (all, refund) => [...all, ...refund.lines],
+                    [] as Array<{ orderLineId: string; quantity: number }>,
+                ) ?? [];
+
+        return refundLines
+            .filter(i => i.orderLineId === this.line.id)
+            .reduce((sum, i) => sum + i.quantity, 0);
     }
 }

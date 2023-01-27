@@ -68,10 +68,10 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
 
     getUnfulfilledCount(line: OrderDetailFragment['lines'][number]): number {
         const fulfilled =
-            line.fulfillments
-                ?.map(f => f.summary)
+            this.order.fulfillments
+                ?.map(f => f.lines)
                 .flat()
-                .filter(row => row.orderLine.id === line.id)
+                .filter(row => row.orderLineId === line.id)
                 .reduce((sum, row) => sum + row.quantity, 0) ?? 0;
         return line.quantity - fulfilled;
     }
