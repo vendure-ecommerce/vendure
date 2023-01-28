@@ -227,12 +227,11 @@ export class CustomerService {
                 deletedAt: null,
             },
         });
-        const existingUser = await this.connection.getRepository(ctx, User).findOne({
-            where: {
-                identifier: input.emailAddress,
-                deletedAt: null,
-            },
-        });
+        const existingUser = await this.userService.getUserByEmailAddress(
+            ctx,
+            input.emailAddress,
+            'customer',
+        );
 
         if (existingCustomer && existingUser) {
             // Customer already exists, bring to this Channel
@@ -326,6 +325,7 @@ export class CustomerService {
                     const existingUserWithEmailAddress = await this.userService.getUserByEmailAddress(
                         ctx,
                         input.emailAddress,
+                        'customer',
                     );
 
                     if (

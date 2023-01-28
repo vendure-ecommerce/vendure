@@ -48,14 +48,23 @@ export class UserService {
         });
     }
 
-    async getUserByEmailAddress(ctx: RequestContext, emailAddress: string): Promise<User | undefined> {
-        return this.connection.getRepository(ctx, User).findOne({
-            where: {
-                identifier: emailAddress,
-                deletedAt: null,
-            },
-            relations: ['roles', 'roles.channels', 'authenticationMethods'],
-        });
+    async getUserByEmailAddress(
+        ctx: RequestContext,
+        emailAddress: string,
+        userType?: 'administrator' | 'customer',
+    ): Promise<User | undefined> {
+        const table = userType ?? ctx.apiType === 'admin' ? 'administrator' : 'customer';
+
+        return this.connection
+            .getRepository(ctx, User)
+            .createQueryBuilder('user')
+            .innerJoin(table, table, `${table}.userId = user.id`)
+            .leftJoinAndSelect('user.roles', 'roles')
+            .leftJoinAndSelect('roles.channels', 'channels')
+            .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethods')
+            .where('user.identifier = :identifier', { identifier: emailAddress })
+            .andWhere('user.deletedAt IS NULL')
+            .getOne();
     }
 
     /**
