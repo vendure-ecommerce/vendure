@@ -206,6 +206,18 @@ export interface AdminUiExtension
      * ```
      */
     pathAlias?: string;
+
+    /**
+     * @description
+     * Optional array specifying filenames or [glob](https://github.com/isaacs/node-glob) patterns that should
+     * be skipped when copying the directory defined by `extensionPath`.
+     *
+     * @example
+     * ```ts
+     * exclude: ['**\/*.spec.ts']
+     * ```
+     */
+    exclude?: string[];
 }
 
 /**
