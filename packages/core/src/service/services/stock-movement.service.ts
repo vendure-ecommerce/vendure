@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { GlobalFlag, OrderLineInput, StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import {
+    GlobalFlag,
+    OrderLineInput,
+    StockLevelInput,
+    StockMovementListOptions,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { idsAreEqual } from '../../common/index';
+import { ConfigService } from '../../config/index';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { StockLevel, StockLocation } from '../../entity/index';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -23,6 +30,8 @@ import { StockMovementEvent } from '../../event-bus/events/stock-movement-event'
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 
 import { GlobalSettingsService } from './global-settings.service';
+import { StockLevelService } from './stock-level.service';
+import { StockLocationService } from './stock-location.service';
 
 /**
  * @description
@@ -40,7 +49,10 @@ export class StockMovementService {
         private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
         private globalSettingsService: GlobalSettingsService,
+        private stockLevelService: StockLevelService,
         private eventBus: EventBus,
+        private stockLocationService: StockLocationService,
+        private configService: ConfigService,
     ) {}
 
     /**
@@ -73,22 +85,48 @@ export class StockMovementService {
     async adjustProductVariantStock(
         ctx: RequestContext,
         productVariantId: ID,
-        oldStockLevel: number,
-        newStockLevel: number,
-    ): Promise<StockAdjustment | undefined> {
-        if (oldStockLevel === newStockLevel) {
-            return;
+        stockOnHandNumberOrInput: number | StockLevelInput[],
+    ): Promise<StockAdjustment[]> {
+        let stockOnHandInputs: StockLevelInput[];
+        if (typeof stockOnHandNumberOrInput === 'number') {
+            const defaultStockLocation = await this.stockLocationService.defaultStockLocation(ctx);
+            stockOnHandInputs = [
+                { stockLocationId: defaultStockLocation.id, stockOnHand: stockOnHandNumberOrInput },
+            ];
+        } else {
+            stockOnHandInputs = stockOnHandNumberOrInput;
         }
-        const delta = newStockLevel - oldStockLevel;
+        const adjustments: StockAdjustment[] = [];
+        for (const input of stockOnHandInputs) {
+            const stockLevel = await this.stockLevelService.getStockLevel(
+                ctx,
+                productVariantId,
+                input.stockLocationId,
+            );
+            const oldStockLevel = stockLevel.stockOnHand;
+            const newStockLevel = input.stockOnHand;
+            if (oldStockLevel === newStockLevel) {
+                continue;
+            }
+            const delta = newStockLevel - oldStockLevel;
+            const adjustment = await this.connection.getRepository(ctx, StockAdjustment).save(
+                new StockAdjustment({
+                    quantity: delta,
+                    stockLocation: { id: input.stockLocationId },
+                    productVariant: { id: productVariantId },
+                }),
+            );
+            await this.stockLevelService.updateStockOnHandForLocation(
+                ctx,
+                productVariantId,
+                input.stockLocationId,
+                delta,
+            );
+            this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
+            adjustments.push(adjustment);
+        }
 
-        const adjustment = await this.connection.getRepository(ctx, StockAdjustment).save(
-            new StockAdjustment({
-                quantity: delta,
-                productVariant: { id: productVariantId },
-            }),
-        );
-        this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
-        return adjustment;
+        return adjustments;
     }
 
     /**
@@ -127,18 +165,28 @@ export class StockMovementService {
                 ProductVariant,
                 orderLine.productVariantId,
             );
-            const allocation = new Allocation({
-                productVariant,
-                quantity,
+            const allocationLocations = await this.stockLocationService.getAllocationLocations(
+                ctx,
                 orderLine,
-            });
-            allocations.push(allocation);
+                quantity,
+            );
+            for (const allocationLocation of allocationLocations) {
+                const allocation = new Allocation({
+                    productVariant: new ProductVariant({ id: orderLine.productVariantId }),
+                    stockLocation: allocationLocation.location,
+                    quantity: allocationLocation.quantity,
+                    orderLine,
+                });
+                allocations.push(allocation);
 
-            if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
-                productVariant.stockAllocated += quantity;
-                await this.connection
-                    .getRepository(ctx, ProductVariant)
-                    .save(productVariant, { reload: false });
+                if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
+                    await this.stockLevelService.updateStockAllocatedForLocation(
+                        ctx,
+                        orderLine.productVariantId,
+                        allocationLocation.location.id,
+                        allocationLocation.quantity,
+                    );
+                }
             }
         }
         const savedAllocations = await this.connection.getRepository(ctx, Allocation).save(allocations);
@@ -171,19 +219,34 @@ export class StockMovementService {
                 ProductVariant,
                 orderLine.productVariantId,
             );
-            const sale = new Sale({
-                productVariant,
-                quantity: lineRow.quantity * -1,
+            const saleLocations = await this.stockLocationService.getSaleLocations(
+                ctx,
                 orderLine,
-            });
-            sales.push(sale);
+                lineRow.quantity,
+            );
+            for (const saleLocation of saleLocations) {
+                const sale = new Sale({
+                    productVariant,
+                    quantity: lineRow.quantity * -1,
+                    orderLine,
+                    stockLocation: saleLocation.location,
+                });
+                sales.push(sale);
 
-            if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
-                productVariant.stockOnHand -= lineRow.quantity;
-                productVariant.stockAllocated -= lineRow.quantity;
-                await this.connection
-                    .getRepository(ctx, ProductVariant)
-                    .save(productVariant, { reload: false });
+                if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
+                    await this.stockLevelService.updateStockAllocatedForLocation(
+                        ctx,
+                        orderLine.productVariantId,
+                        saleLocation.location.id,
+                        -saleLocation.quantity,
+                    );
+                    await this.stockLevelService.updateStockOnHandForLocation(
+                        ctx,
+                        orderLine.productVariantId,
+                        saleLocation.location.id,
+                        -saleLocation.quantity,
+                    );
+                }
             }
         }
         const savedSales = await this.connection.getRepository(ctx, Sale).save(sales);
@@ -212,23 +275,33 @@ export class StockMovementService {
 
         const cancellations: Cancellation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
-        for (const line of orderLines) {
-            const lineInput = lineInputs.find(l => idsAreEqual(l.orderLineId, line.id));
+        for (const orderLine of orderLines) {
+            const lineInput = lineInputs.find(l => idsAreEqual(l.orderLineId, orderLine.id));
             if (!lineInput) {
                 continue;
             }
-            const cancellation = new Cancellation({
-                productVariant: line.productVariant,
-                quantity: lineInput.quantity,
-                orderLine: line,
-            });
-            cancellations.push(cancellation);
+            const cancellationLocations = await this.stockLocationService.getCancellationLocations(
+                ctx,
+                orderLine,
+                lineInput.quantity,
+            );
+            for (const cancellationLocation of cancellationLocations) {
+                const cancellation = new Cancellation({
+                    productVariant: orderLine.productVariant,
+                    quantity: lineInput.quantity,
+                    orderLine,
+                    stockLocation: cancellationLocation.location,
+                });
+                cancellations.push(cancellation);
 
-            if (this.trackInventoryForVariant(line.productVariant, globalTrackInventory)) {
-                line.productVariant.stockOnHand += lineInput.quantity;
-                await this.connection
-                    .getRepository(ctx, ProductVariant)
-                    .save(line.productVariant, { reload: false });
+                if (this.trackInventoryForVariant(orderLine.productVariant, globalTrackInventory)) {
+                    await this.stockLevelService.updateStockOnHandForLocation(
+                        ctx,
+                        orderLine.productVariantId,
+                        cancellationLocation.location.id,
+                        cancellationLocation.quantity,
+                    );
+                }
             }
         }
         const savedCancellations = await this.connection.getRepository(ctx, Cancellation).save(cancellations);
@@ -254,23 +327,32 @@ export class StockMovementService {
         );
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const variantsMap = new Map<ID, ProductVariant>();
-        for (const line of orderLines) {
-            const lineInput = lineInputs.find(l => idsAreEqual(l.orderLineId, line.id));
+        for (const orderLine of orderLines) {
+            const lineInput = lineInputs.find(l => idsAreEqual(l.orderLineId, orderLine.id));
             if (!lineInput) {
                 continue;
             }
-            const release = new Release({
-                productVariant: line.productVariant,
-                quantity: lineInput.quantity,
-                orderLine: line,
-            });
-            releases.push(release);
-
-            if (this.trackInventoryForVariant(line.productVariant, globalTrackInventory)) {
-                line.productVariant.stockAllocated -= lineInput.quantity;
-                await this.connection
-                    .getRepository(ctx, ProductVariant)
-                    .save(line.productVariant, { reload: false });
+            const releaseLocations = await this.stockLocationService.getReleaseLocations(
+                ctx,
+                orderLine,
+                lineInput.quantity,
+            );
+            for (const releaseLocation of releaseLocations) {
+                const release = new Release({
+                    productVariant: orderLine.productVariant,
+                    quantity: lineInput.quantity,
+                    orderLine,
+                    stockLocation: releaseLocation.location,
+                });
+                releases.push(release);
+                if (this.trackInventoryForVariant(orderLine.productVariant, globalTrackInventory)) {
+                    await this.stockLevelService.updateStockAllocatedForLocation(
+                        ctx,
+                        orderLine.productVariantId,
+                        releaseLocation.location.id,
+                        -releaseLocation.quantity,
+                    );
+                }
             }
         }
         const savedReleases = await this.connection.getRepository(ctx, Release).save(releases);

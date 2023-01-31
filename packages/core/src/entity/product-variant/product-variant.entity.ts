@@ -15,6 +15,7 @@ import { EntityId } from '../entity-id.decorator';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
+import { StockLevel } from '../stock-level/stock-level.entity';
 import { StockMovement } from '../stock-movement/stock-movement.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { TaxRate } from '../tax-rate/tax-rate.entity';
@@ -122,11 +123,11 @@ export class ProductVariant
     @EntityId({ nullable: true })
     productId: ID;
 
-    @Column({ default: 0 })
-    stockOnHand: number;
+    // @Column({ default: 0 })
+    // stockOnHand: number;
 
-    @Column({ default: 0 })
-    stockAllocated: number;
+    // @Column({ default: 0 })
+    // stockAllocated: number;
 
     /**
      * @description
@@ -146,6 +147,9 @@ export class ProductVariant
 
     @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
     trackInventory: GlobalFlag;
+
+    @OneToMany(type => StockLevel, stockLevel => stockLevel.productVariant)
+    stockLevels: StockLevel[];
 
     @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];

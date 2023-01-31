@@ -12,6 +12,7 @@ import { GlobalSettingsService } from './services/global-settings.service';
 import { RoleService } from './services/role.service';
 import { SellerService } from './services/seller.service';
 import { ShippingMethodService } from './services/shipping-method.service';
+import { StockLocationService } from './services/stock-location.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { ZoneService } from './services/zone.service';
 
@@ -32,6 +33,7 @@ export class InitializerService {
         private taxRateService: TaxRateService,
         private sellerService: SellerService,
         private eventBus: EventBus,
+        private stockLocationService: StockLocationService,
     ) {}
 
     async onModuleInit() {
@@ -50,6 +52,7 @@ export class InitializerService {
         await this.administratorService.initAdministrators();
         await this.shippingMethodService.initShippingMethods();
         await this.taxRateService.initTaxRates();
+        await this.stockLocationService.initStockLocations();
         this.eventBus.publish(new InitializerEvent());
     }
 

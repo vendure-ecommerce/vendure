@@ -10,6 +10,7 @@ import { Asset, Channel, FacetValue, Product, ProductOption, TaxRate } from '../
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
+import { StockLevelService } from '../../../service/index';
 import { AssetService } from '../../../service/services/asset.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
@@ -152,6 +153,7 @@ export class ProductVariantAdminEntityResolver {
     constructor(
         private productVariantService: ProductVariantService,
         private stockMovementService: StockMovementService,
+        private stockLevelService: StockLevelService,
     ) {}
 
     @ResolveField()
@@ -165,6 +167,26 @@ export class ProductVariantAdminEntityResolver {
             productVariant.id,
             args.options,
         );
+    }
+
+    @ResolveField()
+    async stockOnHand(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+        @Args() args: { options: StockMovementListOptions },
+    ): Promise<number> {
+        const { stockOnHand } = await this.stockLevelService.getAvailableStock(ctx, productVariant.id);
+        return stockOnHand;
+    }
+
+    @ResolveField()
+    async stockAllocated(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+        @Args() args: { options: StockMovementListOptions },
+    ): Promise<number> {
+        const { stockAllocated } = await this.stockLevelService.getAvailableStock(ctx, productVariant.id);
+        return stockAllocated;
     }
 
     @ResolveField()

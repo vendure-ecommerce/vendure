@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { RequestContextCacheService } from '../../cache/index';
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -24,6 +25,7 @@ export class GlobalSettingsService {
         private configService: ConfigService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private requestCache: RequestContextCacheService,
     ) {}
 
     /**
@@ -56,11 +58,13 @@ export class GlobalSettingsService {
      * Returns the GlobalSettings entity.
      */
     async getSettings(ctx: RequestContext): Promise<GlobalSettings> {
-        const settings = await this.connection.getRepository(ctx, GlobalSettings).findOne({
-            order: {
-                createdAt: 'ASC',
-            },
-        });
+        const settings = await this.requestCache.get(ctx, 'globalSettings', () =>
+            this.connection.getRepository(ctx, GlobalSettings).findOne({
+                order: {
+                    createdAt: 'ASC',
+                },
+            }),
+        );
         if (!settings) {
             throw new InternalServerError(`error.global-settings-not-found`);
         }

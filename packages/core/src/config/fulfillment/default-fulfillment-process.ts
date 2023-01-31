@@ -22,6 +22,7 @@ let configService: import('../config.service').ConfigService;
 let orderService: import('../../service/index').OrderService;
 let historyService: import('../../service/index').HistoryService;
 let stockMovementService: import('../../service/index').StockMovementService;
+let stockLevelService: import('../../service/index').StockLevelService;
 
 /**
  * @description
@@ -35,6 +36,8 @@ let stockMovementService: import('../../service/index').StockMovementService;
  *   {@link Sale} stock movements are created.
  *
  * @docsCategory fulfillment
+ * @docsPage FulfillmentProcess
+ * @since 2.0.0
  */
 export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
     transitions: {
@@ -64,11 +67,13 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
         const HistoryService = await import('../../service/index').then(m => m.HistoryService);
         const OrderService = await import('../../service/index').then(m => m.OrderService);
         const StockMovementService = await import('../../service/index').then(m => m.StockMovementService);
+        const StockLevelService = await import('../../service/index').then(m => m.StockLevelService);
         connection = injector.get(TransactionalConnection);
         configService = injector.get(ConfigService);
         orderService = injector.get(OrderService);
         historyService = injector.get(HistoryService);
         stockMovementService = injector.get(StockMovementService);
+        stockLevelService = injector.get(StockLevelService);
     },
     async onTransitionStart(fromState, toState, data) {
         const { fulfillmentHandlers } = configService.shippingOptions;
@@ -90,7 +95,7 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
             await stockMovementService.createAllocationsForOrderLines(ctx, orderLineInput);
         }
         if (fromState === 'Created' && toState === 'Pending') {
-            await stockMovementService.createSalesForOrder(ctx, fulfillment.orderItems);
+            await stockMovementService.createSalesForOrder(ctx, fulfillment.lines);
         }
         const historyEntryPromises = orders.map(order =>
             historyService.createHistoryEntryForOrder({

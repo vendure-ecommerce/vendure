@@ -23,9 +23,8 @@ import { ProductAsset } from '../../../entity/product/product-asset.entity';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
-import { RequestContextService } from '../../../service/index';
+import { RequestContextService, StockMovementService } from '../../../service/index';
 import { ChannelService } from '../../../service/services/channel.service';
-import { StockMovementService } from '../../../service/services/stock-movement.service';
 
 /**
  * @description
@@ -187,7 +186,6 @@ export class FastImporterService {
             await this.stockMovementService.adjustProductVariantStock(
                 this.importCtx,
                 createdVariant.id,
-                0,
                 input.stockOnHand,
             );
         }

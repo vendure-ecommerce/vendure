@@ -19,6 +19,7 @@ import { NativeAuthenticationStrategy } from './auth/native-authentication-strat
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
+import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
@@ -103,6 +104,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         collectionFilters: defaultCollectionFilters,
         productVariantPriceCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
+        stockLocationStrategy: new DefaultStockLocationStrategy(),
     },
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
@@ -193,6 +195,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         Promotion: [],
         Seller: [],
         ShippingMethod: [],
+        StockLocation: [],
         TaxCategory: [],
         TaxRate: [],
         User: [],

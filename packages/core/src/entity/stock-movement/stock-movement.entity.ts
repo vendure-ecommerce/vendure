@@ -1,8 +1,11 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
+import { EntityId } from '../entity-id.decorator';
 import { ProductVariant } from '../product-variant/product-variant.entity';
+import { StockLocation } from '../stock-location/stock-location.entity';
 
 /**
  * @description
@@ -22,6 +25,13 @@ export abstract class StockMovement extends VendureEntity {
     @Index()
     @ManyToOne(type => ProductVariant, variant => variant.stockMovements)
     productVariant: ProductVariant;
+
+    @Index()
+    @ManyToOne(type => StockLocation)
+    stockLocation: StockLocation;
+
+    @EntityId()
+    stockLocationId: ID;
 
     @Column()
     quantity: number;

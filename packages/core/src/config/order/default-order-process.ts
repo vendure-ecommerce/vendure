@@ -162,6 +162,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
     let configService: import('../config.service').ConfigService;
     let eventBus: import('../../event-bus/index').EventBus;
     let stockMovementService: import('../../service/index').StockMovementService;
+    let stockLevelService: import('../../service/index').StockLevelService;
     let historyService: import('../../service/index').HistoryService;
     let orderSplitter: import('../../service/index').OrderSplitter;
 
@@ -237,6 +238,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
             const StockMovementService = await import('../../service/index').then(
                 m => m.StockMovementService,
             );
+            const StockLevelService = await import('../../service/index').then(m => m.StockLevelService);
             const HistoryService = await import('../../service/index').then(m => m.HistoryService);
             const OrderSplitter = await import('../../service/index').then(m => m.OrderSplitter);
             const ProductVariantService = await import('../../service/index').then(
@@ -247,6 +249,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
             configService = injector.get(ConfigService);
             eventBus = injector.get(EventBus);
             stockMovementService = injector.get(StockMovementService);
+            stockLevelService = injector.get(StockLevelService);
             historyService = injector.get(HistoryService);
             orderSplitter = injector.get(OrderSplitter);
         },

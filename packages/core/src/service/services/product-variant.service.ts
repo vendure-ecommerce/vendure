@@ -15,7 +15,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
-import { ForbiddenError, InternalServerError, UserInputError } from '../../common/error/errors';
+import { ForbiddenError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
@@ -49,6 +49,7 @@ import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 import { GlobalSettingsService } from './global-settings.service';
 import { RoleService } from './role.service';
+import { StockLevelService } from './stock-level.service';
 import { StockMovementService } from './stock-movement.service';
 import { TaxCategoryService } from './tax-category.service';
 
@@ -71,6 +72,7 @@ export class ProductVariantService {
         private listQueryBuilder: ListQueryBuilder,
         private globalSettingsService: GlobalSettingsService,
         private stockMovementService: StockMovementService,
+        private stockLevelService: StockLevelService,
         private channelService: ChannelService,
         private roleService: RoleService,
         private customFieldRelationService: CustomFieldRelationService,
@@ -281,11 +283,7 @@ export class ProductVariantService {
      * as well as the local and global `outOfStockThreshold` settings.
      */
     async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
-        const { outOfStockThreshold, trackInventory } = await this.requestCache.get(
-            ctx,
-            'globalSettings',
-            () => this.globalSettingsService.getSettings(ctx),
-        );
+        const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
 
         const inventoryNotTracked =
             variant.trackInventory === GlobalFlag.FALSE ||
@@ -293,20 +291,19 @@ export class ProductVariantService {
         if (inventoryNotTracked) {
             return Number.MAX_SAFE_INTEGER;
         }
-
+        const { stockOnHand, stockAllocated } = await this.stockLevelService.getAvailableStock(
+            ctx,
+            variant.id,
+        );
         const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
             ? outOfStockThreshold
             : variant.outOfStockThreshold;
 
-        return variant.stockOnHand - variant.stockAllocated - effectiveOutOfStockThreshold;
+        return stockOnHand - stockAllocated - effectiveOutOfStockThreshold;
     }
 
     private async getOutOfStockThreshold(ctx: RequestContext, variant: ProductVariant): Promise<number> {
-        const { outOfStockThreshold, trackInventory } = await this.requestCache.get(
-            ctx,
-            'globalSettings',
-            () => this.globalSettingsService.getSettings(ctx),
-        );
+        const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
 
         const inventoryNotTracked =
             variant.trackInventory === GlobalFlag.FALSE ||
@@ -342,8 +339,8 @@ export class ProductVariantService {
         if (inventoryNotTracked) {
             return Number.MAX_SAFE_INTEGER;
         }
-
-        return variant.stockOnHand;
+        const { stockOnHand } = await this.stockLevelService.getAvailableStock(ctx, variant.id);
+        return stockOnHand;
     }
 
     async create(
@@ -416,12 +413,12 @@ export class ProductVariantService {
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, createdVariant);
         await this.assetService.updateEntityAssets(ctx, createdVariant, input);
-        if (input.stockOnHand != null && input.stockOnHand !== 0) {
+        if (input.stockOnHand != null || input.stockLevels) {
             await this.stockMovementService.adjustProductVariantStock(
                 ctx,
                 createdVariant.id,
-                0,
-                input.stockOnHand,
+                // tslint:disable-next-line:no-non-null-assertion
+                input.stockLevels || input.stockOnHand!,
             );
         }
 
@@ -475,12 +472,12 @@ export class ProductVariantService {
                         ...(await this.facetValueService.findByIds(ctx, input.facetValueIds)),
                     ];
                 }
-                if (input.stockOnHand != null) {
+                if (input.stockOnHand != null || input.stockLevels) {
                     await this.stockMovementService.adjustProductVariantStock(
                         ctx,
                         existingVariant.id,
-                        existingVariant.stockOnHand,
-                        input.stockOnHand,
+                        // tslint:disable-next-line:no-non-null-assertion
+                        input.stockLevels || input.stockOnHand!,
                     );
                 }
                 await this.assetService.updateFeaturedAsset(ctx, v, input);

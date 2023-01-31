@@ -6,10 +6,11 @@ type Product implements Node {
 type ProductVariant implements Node {
     enabled: Boolean!
     trackInventory: GlobalFlag!
-    stockOnHand: Int!
-    stockAllocated: Int!
+    stockOnHand: Int! @deprecated(reason: "use stockLevels")
+    stockAllocated: Int! @deprecated(reason: "use stockLevels")
     outOfStockThreshold: Int!
     useGlobalOutOfStockThreshold: Boolean!
+    stockLevels: [StockLevel!]!
     stockMovements(options: StockMovementListOptions): StockMovementList!
     channels: [Channel!]!
 }

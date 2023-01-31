@@ -19,6 +19,7 @@ import { PasswordValidationStrategy } from './auth/password-validation-strategy'
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
+import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
@@ -665,6 +666,16 @@ export interface CatalogOptions {
      * @default DefaultStockDisplayStrategy
      */
     stockDisplayStrategy?: StockDisplayStrategy;
+    /**
+     * @description
+     * Defines the strategy used to determine which StockLocation should be used when performing
+     * stock operations such as allocating and releasing stock as well as determining the
+     * amount of stock available for sale.
+     *
+     * @default DefaultStockLocationStrategy
+     * @since 2.0.0
+     */
+    stockLocationStrategy?: StockLocationStrategy;
 }
 
 /**

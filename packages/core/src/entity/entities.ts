@@ -51,6 +51,8 @@ import { Session } from './session/session.entity';
 import { ShippingLine } from './shipping-line/shipping-line.entity';
 import { ShippingMethodTranslation } from './shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
+import { StockLevel } from './stock-level/stock-level.entity';
+import { StockLocation } from './stock-location/stock-location.entity';
 import { Allocation } from './stock-movement/allocation.entity';
 import { Cancellation } from './stock-movement/cancellation.entity';
 import { Release } from './stock-movement/release.entity';
@@ -125,6 +127,8 @@ export const coreEntitiesMap = {
     ShippingMethod,
     ShippingMethodTranslation,
     StockAdjustment,
+    StockLevel,
+    StockLocation,
     StockMovement,
     Surcharge,
     Tag,

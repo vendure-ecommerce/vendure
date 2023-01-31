@@ -782,6 +782,7 @@ export type CreateProductVariantInput = {
   price?: InputMaybe<Scalars['Int']>;
   productId: Scalars['ID'];
   sku: Scalars['String'];
+  stockLevels?: InputMaybe<Array<StockLevelInput>>;
   stockOnHand?: InputMaybe<Scalars['Int']>;
   taxCategoryId?: InputMaybe<Scalars['ID']>;
   trackInventory?: InputMaybe<GlobalFlag>;
@@ -816,12 +817,8 @@ export type CreateRoleInput = {
   permissions: Array<Permission>;
 };
 
-export type CreateSellerCustomFieldsInput = {
-  connectedAccountId?: InputMaybe<Scalars['String']>;
-};
-
 export type CreateSellerInput = {
-  customFields?: InputMaybe<CreateSellerCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   name: Scalars['String'];
 };
 
@@ -1243,6 +1240,7 @@ export type CustomFields = {
   Promotion: Array<CustomFieldConfig>;
   Seller: Array<CustomFieldConfig>;
   ShippingMethod: Array<CustomFieldConfig>;
+  StockLocation: Array<CustomFieldConfig>;
   TaxCategory: Array<CustomFieldConfig>;
   TaxRate: Array<CustomFieldConfig>;
   User: Array<CustomFieldConfig>;
@@ -2579,7 +2577,6 @@ export type Mutation = {
   /** Move a Collection to a different parent or index */
   moveCollection: Collection;
   refundOrder: RefundOrderResult;
-  registerNewSeller?: Maybe<Channel>;
   reindex: Job;
   /** Removes Collections from the specified Channel */
   removeCollectionsFromChannel: Array<Collection>;
@@ -3098,11 +3095,6 @@ export type MutationMoveCollectionArgs = {
 
 export type MutationRefundOrderArgs = {
   input: RefundOrderInput;
-};
-
-
-export type MutationRegisterNewSellerArgs = {
-  input: RegisterSellerInput;
 };
 
 
@@ -4336,9 +4328,12 @@ export type ProductVariant = Node & {
   product: Product;
   productId: Scalars['ID'];
   sku: Scalars['String'];
+  /** @deprecated use stockLevels */
   stockAllocated: Scalars['Int'];
   stockLevel: Scalars['String'];
+  stockLevels: Array<StockLevel>;
   stockMovements: StockMovementList;
+  /** @deprecated use stockLevels */
   stockOnHand: Scalars['Int'];
   taxCategory: TaxCategory;
   taxRateApplied: TaxRate;
@@ -4884,11 +4879,6 @@ export type RefundStateTransitionError = ErrorResult & {
   transitionError: Scalars['String'];
 };
 
-export type RegisterSellerInput = {
-  administrator: CreateAdministratorInput;
-  shopName: Scalars['String'];
-};
-
 export type RelationCustomFieldConfig = CustomField & {
   __typename?: 'RelationCustomFieldConfig';
   description?: Maybe<Array<LocalizedString>>;
@@ -5084,19 +5074,13 @@ export type SearchResultSortParameter = {
 export type Seller = Node & {
   __typename?: 'Seller';
   createdAt: Scalars['DateTime'];
-  customFields?: Maybe<SellerCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
   id: Scalars['ID'];
   name: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
 
-export type SellerCustomFields = {
-  __typename?: 'SellerCustomFields';
-  connectedAccountId?: Maybe<Scalars['String']>;
-};
-
 export type SellerFilterParameter = {
-  connectedAccountId?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
   name?: InputMaybe<StringOperators>;
@@ -5123,7 +5107,6 @@ export type SellerListOptions = {
 };
 
 export type SellerSortParameter = {
-  connectedAccountId?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
@@ -5289,9 +5272,15 @@ export type StockLevel = Node & {
   updatedAt: Scalars['DateTime'];
 };
 
+export type StockLevelInput = {
+  stockLocationId: Scalars['ID'];
+  stockOnHand: Scalars['Int'];
+};
+
 export type StockLocation = Node & {
   __typename?: 'StockLocation';
   createdAt: Scalars['DateTime'];
+  customFields?: Maybe<Scalars['JSON']>;
   description: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
@@ -5765,6 +5754,7 @@ export type UpdateProductVariantInput = {
   outOfStockThreshold?: InputMaybe<Scalars['Int']>;
   price?: InputMaybe<Scalars['Int']>;
   sku?: InputMaybe<Scalars['String']>;
+  stockLevels?: InputMaybe<Array<StockLevelInput>>;
   stockOnHand?: InputMaybe<Scalars['Int']>;
   taxCategoryId?: InputMaybe<Scalars['ID']>;
   trackInventory?: InputMaybe<GlobalFlag>;
@@ -5795,12 +5785,8 @@ export type UpdateRoleInput = {
   permissions?: InputMaybe<Array<Permission>>;
 };
 
-export type UpdateSellerCustomFieldsInput = {
-  connectedAccountId?: InputMaybe<Scalars['String']>;
-};
-
 export type UpdateSellerInput = {
-  customFields?: InputMaybe<UpdateSellerCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   id: Scalars['ID'];
   name?: InputMaybe<Scalars['String']>;
 };

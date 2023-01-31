@@ -219,6 +219,7 @@ export interface CustomFields {
     Promotion?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    StockLocation?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];

@@ -134,6 +134,7 @@ import { PaymentMethodService } from './payment-method.service';
 import { PaymentService } from './payment.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
+import { StockLevelService } from './stock-level.service';
 import { StockMovementService } from './stock-movement.service';
 
 /**
@@ -169,6 +170,7 @@ export class OrderService {
         private customFieldRelationService: CustomFieldRelationService,
         private requestCache: RequestContextCacheService,
         private translator: TranslatorService,
+        private stockLevelService: StockLevelService,
     ) {}
 
     /**
@@ -1208,7 +1210,6 @@ export class OrderService {
             .relation('fulfillments')
             .of(orders)
             .add(fulfillment);
-        await this.stockMovementService.createSalesForOrder(ctx, input.lines);
 
         for (const order of orders) {
             await this.historyService.createHistoryEntryForOrder({
@@ -1266,16 +1267,21 @@ export class OrderService {
         for (const line of lines) {
             // tslint:disable-next-line:no-non-null-assertion
             const lineInput = input.lines.find(l => idsAreEqual(l.orderLineId, line.id))!;
+
             const fulfillableStockLevel = await this.productVariantService.getFulfillableStockLevel(
                 ctx,
                 line.productVariant,
             );
             if (fulfillableStockLevel < lineInput.quantity) {
+                const { stockOnHand } = await this.stockLevelService.getAvailableStock(
+                    ctx,
+                    line.productVariant.id,
+                );
                 const productVariant = this.translator.translate(line.productVariant, ctx);
                 return new InsufficientStockOnHandError({
                     productVariantId: productVariant.id as string,
                     productVariantName: productVariant.name,
-                    stockOnHand: productVariant.stockOnHand,
+                    stockOnHand,
                 });
             }
         }

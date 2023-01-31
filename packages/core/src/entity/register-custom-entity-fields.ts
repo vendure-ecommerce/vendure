@@ -49,6 +49,7 @@ import {
     CustomSellerFields,
     CustomShippingMethodFields,
     CustomShippingMethodFieldsTranslation,
+    CustomStockLocationFields,
     CustomTaxCategoryFields,
     CustomTaxRateFields,
     CustomUserFields,
@@ -290,5 +291,6 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Seller', CustomSellerFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'StockLocation', CustomStockLocationFields);
     registerCustomFieldsForEntity(config, 'Zone', CustomZoneFields);
 }

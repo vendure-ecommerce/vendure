@@ -413,7 +413,6 @@ describe('Stock control', () => {
 
             const product = await getProductWithStockMovement('T_2');
             const [variant1, variant2, variant3] = product!.variants;
-
             expect(variant1.stockMovements.totalItems).toBe(3);
             expect(variant1.stockMovements.items[2].type).toBe(StockMovementType.SALE);
             expect(variant1.stockMovements.items[2].quantity).toBe(-2);
