@@ -145,7 +145,9 @@ export class ProductOptionGroupService {
             };
         }
 
-        for (const option of optionGroup.options) {
+        const optionsToDelete = optionGroup.options && optionGroup.options.filter(group => !group.deletedAt);
+
+        for (const option of optionsToDelete) {
             const { result, message } = await this.productOptionService.delete(ctx, option.id);
             if (result === DeletionResult.NOT_DELETED) {
                 await this.connection.rollBackTransaction(ctx);

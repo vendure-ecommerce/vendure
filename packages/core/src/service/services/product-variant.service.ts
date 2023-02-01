@@ -733,8 +733,9 @@ export class ProductVariantService {
         ).optionGroups;
 
         const optionIds = input.optionIds || [];
+        const activeOptions = optionGroups && optionGroups.filter(group => !group.deletedAt);
 
-        if (optionIds.length !== optionGroups.length) {
+        if (optionIds.length !== activeOptions.length) {
             this.throwIncompatibleOptionsError(optionGroups);
         }
         if (
