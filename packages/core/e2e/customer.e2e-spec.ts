@@ -20,6 +20,7 @@ import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToCustomer,
     CreateAddress,
+    CreateAdministrator,
     CreateCustomer,
     CustomerFragment,
     DeleteCustomer,
@@ -48,6 +49,7 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     CREATE_ADDRESS,
+    CREATE_ADMINISTRATOR,
     CREATE_CUSTOMER,
     DELETE_CUSTOMER,
     DELETE_CUSTOMER_NOTE,
@@ -139,16 +141,51 @@ describe('Customer resolver', () => {
     });
 
     it('customer resolver resolves User', async () => {
+        const emailAddress = 'same-email@test.com';
+
+        // Create an administrator with the same email first in order to ensure the right user is resolved.
+        // This test also validates that a customer can be created with the same identifier
+        // of an existing administrator
+        const { createAdministrator } = await adminClient.query<
+            CreateAdministrator.Mutation,
+            CreateAdministrator.Variables
+        >(CREATE_ADMINISTRATOR, {
+            input: {
+                emailAddress,
+                firstName: 'First',
+                lastName: 'Last',
+                password: '123',
+                roleIds: ['1'],
+            },
+        });
+
+        expect(createAdministrator.emailAddress).toEqual(emailAddress);
+
+        const { createCustomer } = await adminClient.query<CreateCustomer.Mutation, CreateCustomer.Variables>(
+            CREATE_CUSTOMER,
+            {
+                input: {
+                    emailAddress,
+                    firstName: 'New',
+                    lastName: 'Customer',
+                },
+                password: 'test',
+            },
+        );
+
+        customerErrorGuard.assertSuccess(createCustomer);
+        expect(createCustomer.emailAddress).toEqual(emailAddress);
+
         const { customer } = await adminClient.query<
             GetCustomerWithUser.Query,
             GetCustomerWithUser.Variables
         >(GET_CUSTOMER_WITH_USER, {
-            id: firstCustomer.id,
+            id: createCustomer.id,
         });
 
         expect(customer!.user).toEqual({
-            id: 'T_2',
-            identifier: firstCustomer.emailAddress,
+            id: createCustomer.user?.id,
+            identifier: emailAddress,
             verified: true,
         });
     });
