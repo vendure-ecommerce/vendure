@@ -53,7 +53,8 @@ export class UserService {
         emailAddress: string,
         userType?: 'administrator' | 'customer',
     ): Promise<User | undefined> {
-        const table = userType ?? ctx.apiType === 'admin' ? 'administrator' : 'customer';
+        const entity = userType ?? (ctx.apiType === 'admin' ? 'administrator' : 'customer');
+        const table = `${this.configService.dbConnectionOptions.entityPrefix ?? ''}${entity}`;
 
         return this.connection
             .getRepository(ctx, User)
