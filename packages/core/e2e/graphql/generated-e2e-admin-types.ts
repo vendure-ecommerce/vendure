@@ -8415,7 +8415,8 @@ export type AttemptLoginMutation = {
               identifier: string;
               channels: Array<{ code: string; token: string; permissions: Array<Permission> }>;
           }
-        | {};
+        | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string };
 };
 
 export type GetCountryListQueryVariables = Exact<{

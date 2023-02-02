@@ -785,6 +785,9 @@ export const GET_SERVER_CONFIG = gql`
                     ShippingMethod {
                         ...CustomFields
                     }
+                    StockLocation {
+                        ...CustomFields
+                    }
                     TaxCategory {
                         ...CustomFields
                     }
