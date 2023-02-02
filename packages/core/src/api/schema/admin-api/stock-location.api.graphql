@@ -1,0 +1,34 @@
+type Query {
+    stockLocation(id: ID!): StockLocation
+    stockLocations(options: StockLocationListOptions): StockLocationList!
+}
+
+type Mutation {
+    createStockLocation(input: CreateStockLocationInput!): StockLocation!
+    updateStockLocation(input: UpdateStockLocationInput!): StockLocation!
+    deleteStockLocation(input: DeleteStockLocationInput!): DeletionResponse!
+}
+
+# Generated at runtime
+input StockLocationListOptions
+
+type StockLocationList implements PaginatedList {
+    items: [StockLocation!]!
+    totalItems: Int!
+}
+
+input CreateStockLocationInput {
+    name: String!
+    description: String
+}
+
+input UpdateStockLocationInput {
+    id: ID!
+    name: String
+    description: String
+}
+
+input DeleteStockLocationInput {
+    id: ID!
+    transferToLocationId: ID
+}

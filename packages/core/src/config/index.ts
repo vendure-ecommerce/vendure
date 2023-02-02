@@ -12,6 +12,7 @@ export * from './auth/password-validation-strategy';
 export * from './catalog/collection-filter';
 export * from './catalog/default-collection-filters';
 export * from './catalog/default-stock-display-strategy';
+export * from './catalog/default-stock-location-strategy';
 export * from './catalog/product-variant-price-calculation-strategy';
 export * from './catalog/stock-display-strategy';
 export * from './catalog/stock-location-strategy';

@@ -1,4 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import {
+    CreateStockLocationInput,
+    DeleteStockLocationInput,
+    UpdateStockLocationInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RelationPaths, RequestContext } from '../../api/index';
@@ -28,6 +33,10 @@ export class StockLocationService {
         await this.ensureDefaultStockLocationExists();
     }
 
+    findOne(ctx: RequestContext, stockLocationId: ID): Promise<StockLocation | undefined> {
+        return this.connection.getRepository(ctx, StockLocation).findOne(stockLocationId);
+    }
+
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<StockLocation>,
@@ -43,6 +52,32 @@ export class StockLocationService {
                 items,
                 totalItems,
             }));
+    }
+
+    create(ctx: RequestContext, input: CreateStockLocationInput): Promise<StockLocation> {
+        return this.connection.getRepository(ctx, StockLocation).save(
+            new StockLocation({
+                name: input.name,
+                description: input.description,
+            }),
+        );
+    }
+
+    async update(ctx: RequestContext, input: UpdateStockLocationInput): Promise<StockLocation> {
+        const stockLocation = await this.connection.getEntityOrThrow(ctx, StockLocation, input.id);
+        if (input.name) {
+            stockLocation.name = input.name;
+        }
+        if (input.description) {
+            stockLocation.description = input.description;
+        }
+        return this.connection.getRepository(ctx, StockLocation).save(stockLocation);
+    }
+
+    async delete(ctx: RequestContext, input: DeleteStockLocationInput): Promise<StockLocation> {
+        const stockLocation = await this.connection.getEntityOrThrow(ctx, StockLocation, input.id);
+        await this.connection.getRepository(ctx, StockLocation).remove(stockLocation);
+        return stockLocation;
     }
 
     getAllStockLocations(ctx: RequestContext) {

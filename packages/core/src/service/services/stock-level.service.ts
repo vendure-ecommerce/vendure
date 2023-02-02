@@ -49,6 +49,14 @@ export class StockLevelService {
         );
     }
 
+    async getStockLevelsForVariant(ctx: RequestContext, productVariantId: ID): Promise<StockLevel[]> {
+        return this.connection.getRepository(ctx, StockLevel).find({
+            where: {
+                productVariantId,
+            },
+        });
+    }
+
     /**
      * @description
      * Returns the available stock (on hand and allocated) for the given {@link ProductVariant}. This is determined

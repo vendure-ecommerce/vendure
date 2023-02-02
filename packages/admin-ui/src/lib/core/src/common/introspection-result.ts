@@ -178,6 +178,7 @@ const result: PossibleTypesResultData = {
             'RoleList',
             'SellerList',
             'ShippingMethodList',
+            'StockLocationList',
             'TagList',
             'TaxRateList',
         ],

@@ -831,6 +831,12 @@ export type CreateShippingMethodInput = {
   translations: Array<ShippingMethodTranslationInput>;
 };
 
+export type CreateStockLocationInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  description?: InputMaybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
 export type CreateTagInput = {
   value: Scalars['String'];
 };
@@ -1414,6 +1420,11 @@ export type DeleteAssetsInput = {
   assetIds: Array<Scalars['ID']>;
   deleteFromAllChannels?: InputMaybe<Scalars['Boolean']>;
   force?: InputMaybe<Scalars['Boolean']>;
+};
+
+export type DeleteStockLocationInput = {
+  id: Scalars['ID'];
+  transferToLocationId?: InputMaybe<Scalars['ID']>;
 };
 
 export type DeletionResponse = {
@@ -2499,6 +2510,7 @@ export type Mutation = {
   createSeller: Seller;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
+  createStockLocation: StockLocation;
   /** Create a new Tag */
   createTag: Tag;
   /** Create a new TaxCategory */
@@ -2556,6 +2568,7 @@ export type Mutation = {
   deleteSeller: DeletionResponse;
   /** Delete a ShippingMethod */
   deleteShippingMethod: DeletionResponse;
+  deleteStockLocation: DeletionResponse;
   /** Delete an existing Tag */
   deleteTag: DeletionResponse;
   /** Deletes a TaxCategory */
@@ -2670,6 +2683,7 @@ export type Mutation = {
   updateSeller: Seller;
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod;
+  updateStockLocation: StockLocation;
   /** Update an existing Tag */
   updateTag: Tag;
   /** Update an existing TaxCategory */
@@ -2892,6 +2906,11 @@ export type MutationCreateShippingMethodArgs = {
 };
 
 
+export type MutationCreateStockLocationArgs = {
+  input: CreateStockLocationInput;
+};
+
+
 export type MutationCreateTagArgs = {
   input: CreateTagInput;
 };
@@ -3043,6 +3062,11 @@ export type MutationDeleteSellerArgs = {
 
 export type MutationDeleteShippingMethodArgs = {
   id: Scalars['ID'];
+};
+
+
+export type MutationDeleteStockLocationArgs = {
+  input: DeleteStockLocationInput;
 };
 
 
@@ -3375,6 +3399,11 @@ export type MutationUpdateSellerArgs = {
 
 export type MutationUpdateShippingMethodArgs = {
   input: UpdateShippingMethodInput;
+};
+
+
+export type MutationUpdateStockLocationArgs = {
+  input: UpdateStockLocationInput;
 };
 
 
@@ -4551,6 +4580,8 @@ export type Query = {
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
   shippingMethod?: Maybe<ShippingMethod>;
   shippingMethods: ShippingMethodList;
+  stockLocation?: Maybe<StockLocation>;
+  stockLocations: StockLocationList;
   tag: Tag;
   tags: TagList;
   taxCategories: Array<TaxCategory>;
@@ -4772,6 +4803,16 @@ export type QueryShippingMethodArgs = {
 
 export type QueryShippingMethodsArgs = {
   options?: InputMaybe<ShippingMethodListOptions>;
+};
+
+
+export type QueryStockLocationArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryStockLocationsArgs = {
+  options?: InputMaybe<StockLocationListOptions>;
 };
 
 
@@ -5287,6 +5328,41 @@ export type StockLocation = Node & {
   updatedAt: Scalars['DateTime'];
 };
 
+export type StockLocationFilterParameter = {
+  createdAt?: InputMaybe<DateOperators>;
+  description?: InputMaybe<StringOperators>;
+  id?: InputMaybe<IdOperators>;
+  name?: InputMaybe<StringOperators>;
+  updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type StockLocationList = PaginatedList & {
+  __typename?: 'StockLocationList';
+  items: Array<StockLocation>;
+  totalItems: Scalars['Int'];
+};
+
+export type StockLocationListOptions = {
+  /** Allows the results to be filtered */
+  filter?: InputMaybe<StockLocationFilterParameter>;
+  /** Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND. */
+  filterOperator?: InputMaybe<LogicalOperator>;
+  /** Skips the first n results, for use in pagination */
+  skip?: InputMaybe<Scalars['Int']>;
+  /** Specifies which properties to sort the results by */
+  sort?: InputMaybe<StockLocationSortParameter>;
+  /** Takes n results, for use in pagination */
+  take?: InputMaybe<Scalars['Int']>;
+};
+
+export type StockLocationSortParameter = {
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  name?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
 export type StockMovement = {
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
@@ -5799,6 +5875,13 @@ export type UpdateShippingMethodInput = {
   fulfillmentHandler?: InputMaybe<Scalars['String']>;
   id: Scalars['ID'];
   translations: Array<ShippingMethodTranslationInput>;
+};
+
+export type UpdateStockLocationInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  description?: InputMaybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateTagInput = {

@@ -447,13 +447,14 @@ export class ProductVariantService {
         if (input.stockOnHand && input.stockOnHand < outOfStockThreshold) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
         }
-        const inputWithoutPrice = {
+        const inputWithoutPriceAndStockLevels = {
             ...input,
         };
-        delete inputWithoutPrice.price;
+        delete inputWithoutPriceAndStockLevels.price;
+        delete inputWithoutPriceAndStockLevels.stockLevels;
         const updatedVariant = await this.translatableSaver.update({
             ctx,
-            input: inputWithoutPrice,
+            input: inputWithoutPriceAndStockLevels,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async v => {

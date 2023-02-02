@@ -67,7 +67,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
     private getInjectableStrategies(): InjectableStrategy[] {
         const { assetNamingStrategy, assetPreviewStrategy, assetStorageStrategy } =
             this.configService.assetOptions;
-        const { productVariantPriceCalculationStrategy, stockDisplayStrategy } =
+        const { productVariantPriceCalculationStrategy, stockDisplayStrategy, stockLocationStrategy } =
             this.configService.catalogOptions;
         const {
             adminAuthenticationStrategy,
@@ -134,6 +134,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...(Array.isArray(activeOrderStrategy) ? activeOrderStrategy : [activeOrderStrategy]),
             orderSellerStrategy,
             shippingLineAssignmentStrategy,
+            stockLocationStrategy,
         ];
     }
 

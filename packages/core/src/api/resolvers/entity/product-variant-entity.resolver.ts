@@ -6,7 +6,7 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
-import { Asset, Channel, FacetValue, Product, ProductOption, TaxRate } from '../../../entity';
+import { Asset, Channel, FacetValue, Product, ProductOption, StockLevel, TaxRate } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
@@ -194,5 +194,13 @@ export class ProductVariantAdminEntityResolver {
         const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
         const channels = await this.productVariantService.getProductVariantChannels(ctx, productVariant.id);
         return channels.filter(channel => (isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId)));
+    }
+
+    @ResolveField()
+    async stockLevels(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<StockLevel[]> {
+        return this.stockLevelService.getStockLevelsForVariant(ctx, productVariant.id);
     }
 }
