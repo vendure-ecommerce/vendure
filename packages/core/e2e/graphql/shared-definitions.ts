@@ -208,6 +208,10 @@ export const ATTEMPT_LOGIN = gql`
     mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean) {
         login(username: $username, password: $password, rememberMe: $rememberMe) {
             ...CurrentUser
+            ... on ErrorResult {
+                errorCode
+                message
+            }
         }
     }
     ${CURRENT_USER_FRAGMENT}

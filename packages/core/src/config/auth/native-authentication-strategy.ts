@@ -30,12 +30,15 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
 
     private connection: TransactionalConnection;
     private passwordCipher: import('../../service/helpers/password-cipher/password-cipher').PasswordCipher;
+    private userService: import('../../service/services/user.service').UserService;
 
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
-        // This is lazily-loaded to avoid a circular dependency
+        // These are lazily-loaded to avoid a circular dependency
         const { PasswordCipher } = await import('../../service/helpers/password-cipher/password-cipher');
+        const { UserService } = await import('../../service/services/user.service');
         this.passwordCipher = injector.get(PasswordCipher);
+        this.userService = injector.get(UserService);
     }
 
     defineInputType(): DocumentNode {
@@ -48,7 +51,7 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     }
 
     async authenticate(ctx: RequestContext, data: NativeAuthenticationData): Promise<User | false> {
-        const user = await this.getUserFromIdentifier(ctx, data.username);
+        const user = await this.userService.getUserByEmailAddress(ctx, data.username);
         if (!user) {
             return false;
         }
@@ -57,13 +60,6 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
             return false;
         }
         return user;
-    }
-
-    private getUserFromIdentifier(ctx: RequestContext, identifier: string): Promise<User | undefined> {
-        return this.connection.getRepository(ctx, User).findOne({
-            where: { identifier, deletedAt: null },
-            relations: ['roles', 'roles.channels', 'authenticationMethods'],
-        });
     }
 
     /**

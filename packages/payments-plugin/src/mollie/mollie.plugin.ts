@@ -17,7 +17,8 @@ import { MollieService } from './mollie.service';
 export interface MolliePluginOptions {
     /**
      * @description
-     * The host of your storefront application, e.g. `'https://my-shop.com'`
+     * The host of your Vendure server, e.g. `'https://my-vendure.io'`.
+     * This is used by Mollie to send webhook events to the Vendure server
      */
     vendureHost: string;
 }

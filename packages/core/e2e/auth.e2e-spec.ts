@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -11,9 +11,11 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { ProtectedFieldsPlugin, transactions } from './fixtures/test-plugins/with-protected-field-resolver';
 import { ErrorCode, Permission } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
     CREATE_ADMINISTRATOR,
+    CREATE_CUSTOMER,
     CREATE_CUSTOMER_GROUP,
     CREATE_PRODUCT,
     CREATE_ROLE,
@@ -171,6 +173,102 @@ describe('Authorization & permissions', () => {
                     }
                 `);
             });
+        });
+    });
+
+    describe('administrator and customer users with the same email address', () => {
+        const emailAddress = 'same-email@test.com';
+        const adminPassword = 'admin-password';
+        const customerPassword = 'customer-password';
+
+        const loginErrorGuard: ErrorResultGuard<Codegen.CurrentUserFragment> = createErrorResultGuard(
+            input => !!input.identifier,
+        );
+
+        beforeAll(async () => {
+            await adminClient.asSuperAdmin();
+
+            await adminClient.query<
+                Codegen.CreateAdministratorMutation,
+                Codegen.CreateAdministratorMutationVariables
+            >(CREATE_ADMINISTRATOR, {
+                input: {
+                    emailAddress,
+                    firstName: 'First',
+                    lastName: 'Last',
+                    password: adminPassword,
+                    roleIds: ['1'],
+                },
+            });
+
+            await adminClient.query<Codegen.CreateCustomerMutation, Codegen.CreateCustomerMutationVariables>(
+                CREATE_CUSTOMER,
+                {
+                    input: {
+                        emailAddress,
+                        firstName: 'First',
+                        lastName: 'Last',
+                    },
+                    password: customerPassword,
+                },
+            );
+        });
+
+        beforeEach(async () => {
+            await adminClient.asAnonymousUser();
+            await shopClient.asAnonymousUser();
+        });
+
+        it('can log in as an administrator', async () => {
+            const loginResult = await adminClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: adminPassword,
+            });
+
+            loginErrorGuard.assertSuccess(loginResult.login);
+            expect(loginResult.login.identifier).toEqual(emailAddress);
+        });
+
+        it('can log in as a customer', async () => {
+            const loginResult = await shopClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: customerPassword,
+            });
+
+            loginErrorGuard.assertSuccess(loginResult.login);
+            expect(loginResult.login.identifier).toEqual(emailAddress);
+        });
+
+        it('cannot log in as an administrator using a customer password', async () => {
+            const loginResult = await adminClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: customerPassword,
+            });
+
+            loginErrorGuard.assertErrorResult(loginResult.login);
+            expect(loginResult.login.errorCode).toEqual(ErrorCode.INVALID_CREDENTIALS_ERROR);
+        });
+
+        it('cannot log in as a customer using an administrator password', async () => {
+            const loginResult = await shopClient.query<
+                CodegenShop.AttemptLoginMutation,
+                CodegenShop.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: emailAddress,
+                password: adminPassword,
+            });
+
+            loginErrorGuard.assertErrorResult(loginResult.login);
+            expect(loginResult.login.errorCode).toEqual(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
     });
 
