@@ -1,5 +1,5 @@
 {
-  "name": "@vendure/common",
+  "name": "@uplab/common",
   "version": "1.9.2",
   "main": "index.js",
   "license": "MIT",

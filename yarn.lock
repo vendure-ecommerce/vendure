@@ -4537,6 +4537,11 @@
     tslib "^2.1.0"
     zone.js "~0.11.4"
 
+"@vendure/common@1.9.2", "@vendure/common@^1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@vendure/common/-/common-1.9.2.tgz#bc6aba17dec1cb1565f79a1e48ffbda8335ac1ca"
+  integrity sha512-0CS7qsIvE6ewZqD7wF586QGqoK96B9I6CtTCVKC0SM9UsbtCAkZEwD4YgyVDQuMMAzZFMfjizKAyZE2PbAOkZw==
+
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
   resolved "https://registry.npmjs.org/@webassemblyjs/ast/-/ast-1.11.1.tgz#2bfd767eae1a6996f432ff7e8d7fc75679c0b6a7"
