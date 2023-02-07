@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-
-import { CurrencyCode, TestShippingMethodResult } from '@vendure/admin-ui/core';
+import { CurrencyCode, TestShippingMethodResult } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-shipping-method-test-result',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { OrderDetail } from '@vendure/admin-ui/core';
+import { OrderDetail } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-line-refunds',

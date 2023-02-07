@@ -3,6 +3,7 @@
   "version": "1.9.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "private": true,
   "files": [
     "lib/**/*"
   ],

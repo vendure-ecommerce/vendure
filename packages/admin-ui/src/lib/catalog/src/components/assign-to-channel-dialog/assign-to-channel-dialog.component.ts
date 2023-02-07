@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DataService, Dialog, GetChannels, NotificationService } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetChannels, NotificationService } from '@uplab/admin-ui/core';
 import { combineLatest } from 'rxjs';
 
 @Component({

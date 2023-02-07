@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CreateZoneInput, CustomFieldConfig, Dialog, ServerConfigService } from '@vendure/admin-ui/core';
+import { CreateZoneInput, CustomFieldConfig, Dialog, ServerConfigService } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-zone-detail-dialog',

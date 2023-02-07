@@ -10,7 +10,7 @@ import {
     ModalService,
     NotificationService,
     SortOrder,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { Observable, timer } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
@@ -22,7 +22,8 @@ import { filter, map, takeUntil } from 'rxjs/operators';
 })
 export class JobListComponent
     extends BaseListComponent<GetAllJobs.Query, GetAllJobs.Items>
-    implements OnInit {
+    implements OnInit
+{
     queues$: Observable<GetJobQueueList.JobQueues[]>;
     liveUpdate = new FormControl(true);
     hideSettled = new FormControl(true);

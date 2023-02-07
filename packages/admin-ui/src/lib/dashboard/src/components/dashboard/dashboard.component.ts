@@ -8,7 +8,7 @@ import {
     LocalStorageService,
     WidgetLayout,
     WidgetLayoutDefinition,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';

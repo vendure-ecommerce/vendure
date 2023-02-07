@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { PermissionDefinition } from '@vendure/admin-ui/core';
+import { PermissionDefinition } from '@uplab/admin-ui/core';
 
 export interface PermissionGridRow {
     label: string;

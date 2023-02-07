@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Fulfillment, OrderDetail } from '@vendure/admin-ui/core';
+import { Fulfillment, OrderDetail } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-fulfillment-card',

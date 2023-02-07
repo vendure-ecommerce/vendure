@@ -26,34 +26,34 @@
       "esnext.asynciterable"
     ],
     "paths": {
-      "@vendure/admin-ui": [
+      "@uplab/admin-ui": [
         "./src/lib/public_api"
       ],
-      "@vendure/admin-ui/catalog": [
+      "@uplab/admin-ui/catalog": [
         "./src/lib/catalog/src/public_api"
       ],
-      "@vendure/admin-ui/core": [
+      "@uplab/admin-ui/core": [
         "./src/lib/core/src/public_api"
       ],
-      "@vendure/admin-ui/customer": [
+      "@uplab/admin-ui/customer": [
         "./src/lib/customer/src/public_api"
       ],
-      "@vendure/admin-ui/dashboard": [
+      "@uplab/admin-ui/dashboard": [
         "./src/lib/dashboard/src/public_api"
       ],
-      "@vendure/admin-ui/login": [
+      "@uplab/admin-ui/login": [
         "./src/lib/login/src/public_api"
       ],
-      "@vendure/admin-ui/marketing": [
+      "@uplab/admin-ui/marketing": [
         "./src/lib/marketing/src/public_api"
       ],
-      "@vendure/admin-ui/order": [
+      "@uplab/admin-ui/order": [
         "./src/lib/order/src/public_api"
       ],
-      "@vendure/admin-ui/settings": [
+      "@uplab/admin-ui/settings": [
         "./src/lib/settings/src/public_api"
       ],
-      "@vendure/admin-ui/system": [
+      "@uplab/admin-ui/system": [
         "./src/lib/system/src/public_api"
       ]
     }

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Dialog, GetProductVariantOptions } from '@vendure/admin-ui/core';
+import { Dialog, GetProductVariantOptions } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-confirm-variant-deletion-dialog',

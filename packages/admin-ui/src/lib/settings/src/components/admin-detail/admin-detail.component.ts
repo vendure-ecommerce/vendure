@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, CustomFieldConfig, PermissionDefinition } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, CustomFieldConfig, PermissionDefinition } from '@uplab/admin-ui/core';
 import {
     Administrator,
     CreateAdministratorInput,
@@ -12,10 +12,10 @@ import {
     Role,
     RoleFragment,
     UpdateAdministratorInput,
-} from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
+import { NotificationService } from '@uplab/admin-ui/core';
+import { DataService } from '@uplab/admin-ui/core';
+import { ServerConfigService } from '@uplab/admin-ui/core';
 import { CUSTOMER_ROLE_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';

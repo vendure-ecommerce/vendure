@@ -18,7 +18,7 @@ import {
     Promotion,
     ServerConfigService,
     UpdatePromotionInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 

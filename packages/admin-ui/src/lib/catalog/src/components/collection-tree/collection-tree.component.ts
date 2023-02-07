@@ -8,7 +8,7 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import { Collection, SelectionManager } from '@vendure/admin-ui/core';
+import { Collection, SelectionManager } from '@uplab/admin-ui/core';
 
 import { arrayToTree, HasParent, RootNode, TreeNode } from './array-to-tree';
 

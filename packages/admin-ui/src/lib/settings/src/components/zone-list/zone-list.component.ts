@@ -9,7 +9,7 @@ import {
     ModalService,
     NotificationService,
     ServerConfigService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, mapTo, switchMap, tap } from 'rxjs/operators';
 

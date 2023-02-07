@@ -7,7 +7,7 @@ import {
     GetProductVariant,
     GetProductVariantQuery,
     ProductSelectorSearchQuery,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 

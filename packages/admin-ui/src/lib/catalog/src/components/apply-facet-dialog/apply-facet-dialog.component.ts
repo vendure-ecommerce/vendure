@@ -5,7 +5,7 @@ import {
     Component,
     ViewChild,
 } from '@angular/core';
-import { Dialog, FacetValue, FacetValueSelectorComponent } from '@vendure/admin-ui/core';
+import { Dialog, FacetValue, FacetValueSelectorComponent } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-apply-facet-dialog',

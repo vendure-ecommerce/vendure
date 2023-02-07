@@ -9,7 +9,7 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { EMPTY } from 'rxjs';
 import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';

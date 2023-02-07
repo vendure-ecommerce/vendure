@@ -14,7 +14,7 @@ import {
     ModalService,
     NotificationService,
     ProductOptionGroupWithOptionsFragment,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { pick } from '@vendure/common/lib/pick';
 import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib/shared-utils';

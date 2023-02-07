@@ -11,7 +11,7 @@ import {
     QueryResult,
     SelectionManager,
     ServerConfigService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
 import {
     debounceTime,

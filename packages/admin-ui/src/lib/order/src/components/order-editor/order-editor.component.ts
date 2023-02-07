@@ -21,7 +21,7 @@ import {
     SortOrder,
     SurchargeInput,
     transformRelationCustomFieldInputs,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { concat, EMPTY, Observable, of, Subject } from 'rxjs';

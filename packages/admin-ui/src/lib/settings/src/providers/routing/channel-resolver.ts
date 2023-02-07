@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver } from '@vendure/admin-ui/core';
-import { Channel, CurrencyCode } from '@vendure/admin-ui/core';
-import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { BaseEntityResolver } from '@uplab/admin-ui/core';
+import { Channel, CurrencyCode } from '@uplab/admin-ui/core';
+import { getDefaultUiLanguage } from '@uplab/admin-ui/core';
+import { DataService } from '@uplab/admin-ui/core';
 
 /**
  * Resolves the id from the path into a Customer entity.
@@ -28,7 +28,7 @@ export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
                 defaultShippingZone: {} as any,
                 defaultTaxZone: {} as any,
             },
-            (id) => dataService.settings.getChannel(id).mapStream((data) => data.channel),
+            id => dataService.settings.getChannel(id).mapStream(data => data.channel),
         );
     }
 }

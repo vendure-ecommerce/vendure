@@ -7,7 +7,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { FormArray, FormGroup } from '@angular/forms';
-import { Permission, ProductDetail, ProductVariant } from '@vendure/admin-ui/core';
+import { Permission, ProductDetail, ProductVariant } from '@uplab/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 

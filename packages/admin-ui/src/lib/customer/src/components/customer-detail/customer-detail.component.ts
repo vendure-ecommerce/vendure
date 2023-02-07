@@ -17,17 +17,17 @@ import {
     GetCustomer,
     GetCustomerHistory,
     GetCustomerQuery,
-    TimelineHistoryEntry,
     ModalService,
     NotificationService,
     ServerConfigService,
     SortOrder,
+    TimelineHistoryEntry,
     UpdateCustomer,
     UpdateCustomerAddress,
     UpdateCustomerAddressMutation,
     UpdateCustomerInput,
     UpdateCustomerMutation,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, forkJoin, from, Observable, Subject } from 'rxjs';
 import {

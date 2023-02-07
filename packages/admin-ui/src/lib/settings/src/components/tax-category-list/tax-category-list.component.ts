@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { DeletionResult, GetTaxCategories, TaxCategory } from '@uplab/admin-ui/core';
+import { NotificationService } from '@uplab/admin-ui/core';
+import { DataService } from '@uplab/admin-ui/core';
+import { QueryResult } from '@uplab/admin-ui/core';
+import { ModalService } from '@uplab/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-
-import { DeletionResult, GetTaxCategories, TaxCategory } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { QueryResult } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-tax-list',

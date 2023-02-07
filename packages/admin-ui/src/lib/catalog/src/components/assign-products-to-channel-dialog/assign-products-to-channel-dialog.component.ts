@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetChannels, ProductVariantFragment } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import { GetChannels, ProductVariantFragment } from '@uplab/admin-ui/core';
+import { NotificationService } from '@uplab/admin-ui/core';
+import { DataService } from '@uplab/admin-ui/core';
+import { Dialog } from '@uplab/admin-ui/core';
 import { combineLatest, from, Observable } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 

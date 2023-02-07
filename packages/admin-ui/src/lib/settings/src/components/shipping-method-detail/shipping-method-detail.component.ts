@@ -23,7 +23,7 @@ import {
     TestShippingMethodResult,
     toConfigurableOperationInput,
     UpdateShippingMethodInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';

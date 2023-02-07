@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { CustomFieldConfig, OrderDetail, ServerConfigService } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, OrderDetail, ServerConfigService } from '@uplab/admin-ui/core';
 import { isObject } from '@vendure/common/lib/shared-utils';
 
 @Component({

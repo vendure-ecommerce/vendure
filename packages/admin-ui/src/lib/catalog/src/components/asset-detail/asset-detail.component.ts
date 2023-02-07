@@ -2,14 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    Asset,
-    BaseDetailComponent,
-    CustomFieldConfig,
-    GetAsset,
-    LanguageCode,
-} from '@vendure/admin-ui/core';
-import { DataService, NotificationService, ServerConfigService } from '@vendure/admin-ui/core';
+import { Asset, BaseDetailComponent, CustomFieldConfig, GetAsset, LanguageCode } from '@uplab/admin-ui/core';
+import { DataService, NotificationService, ServerConfigService } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-asset-detail',

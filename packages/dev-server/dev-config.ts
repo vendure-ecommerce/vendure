@@ -101,11 +101,11 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'postgres',
-                host: '127.0.0.1',
+                host: process.env.DB_HOST ?? '127.0.0.1',
                 port: 5432,
-                username: 'admin',
-                password: 'secret',
-                database: 'vendure-dev',
+                username: process.env.DB_USERNAME ?? 'admin',
+                password: process.env.DB_PASSWORD ?? 'secret',
+                database: process.env.DB_NAME ?? 'vendure-dev',
             };
         case 'sqlite':
             console.log('Using sqlite connection');

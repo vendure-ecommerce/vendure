@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { OrderDetail, OrderDetailFragment } from '@uplab/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 
 export type FulfillmentStatus = 'full' | 'partial' | 'none';

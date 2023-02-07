@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, NgModule, OnInit } from '@angular/core';
-import { CoreModule, DataService, GetOrderList, SharedModule, SortOrder } from '@vendure/admin-ui/core';
+import { CoreModule, DataService, GetOrderList, SharedModule, SortOrder } from '@uplab/admin-ui/core';
 import { Observable } from 'rxjs';
 
 @Component({

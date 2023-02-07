@@ -6,10 +6,11 @@ import {
     Router,
     RouterStateSnapshot,
 } from '@angular/router';
-import { DataService, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { DataService, OrderDetailFragment } from '@uplab/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, Observable } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
+
 import { DraftOrderDetailComponent } from '../../components/draft-order-detail/draft-order-detail.component';
 
 /**

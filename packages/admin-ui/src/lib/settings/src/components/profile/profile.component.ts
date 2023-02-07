@@ -12,7 +12,7 @@ import {
     NotificationService,
     ServerConfigService,
     UpdateActiveAdministratorInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { mergeMap, take } from 'rxjs/operators';
 
 @Component({

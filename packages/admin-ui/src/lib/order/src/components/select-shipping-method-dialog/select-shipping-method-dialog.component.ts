@@ -1,10 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import {
     CreateAddressInput,
     CurrencyCode,
     Dialog,
     DraftOrderEligibleShippingMethodsQuery,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 type ShippingMethodQuote =
     DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder'][number];

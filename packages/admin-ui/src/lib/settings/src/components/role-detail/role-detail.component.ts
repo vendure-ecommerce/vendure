@@ -13,7 +13,7 @@ import {
     Role,
     ServerConfigService,
     UpdateRoleInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable } from 'rxjs';

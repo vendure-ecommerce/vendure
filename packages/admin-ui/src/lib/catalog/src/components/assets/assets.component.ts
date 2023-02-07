@@ -14,7 +14,7 @@ import {
     AssetPreviewDialogComponent,
     ModalService,
     Permission,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 
 export interface AssetChange {

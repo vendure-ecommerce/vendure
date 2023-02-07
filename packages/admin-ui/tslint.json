@@ -17,6 +17,8 @@
       true,
       "spaces"
     ],
+    "no-non-null-assertion": false,
+    "no-empty": false,
     "no-string-literal": false,
     "no-output-on-prefix": true,
     "use-input-property-decorator": true,

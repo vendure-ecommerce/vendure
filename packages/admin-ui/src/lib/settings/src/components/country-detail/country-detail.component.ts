@@ -15,7 +15,7 @@ import {
     Permission,
     ServerConfigService,
     UpdateCountryInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 

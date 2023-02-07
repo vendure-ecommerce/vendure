@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
-import { CurrencyCode, OrderDetail } from '@vendure/admin-ui/core';
+import { CurrencyCode, OrderDetail } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-payment-detail',

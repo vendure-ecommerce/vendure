@@ -12,7 +12,7 @@ import {
     NotificationService,
     SelectionManager,
     ServerConfigService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { EMPTY, Observable } from 'rxjs';
 import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';

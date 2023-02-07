@@ -11,7 +11,7 @@ import {
     SimpleChanges,
     ViewChildren,
 } from '@angular/core';
-import { OrderProcessState } from '@vendure/admin-ui/core';
+import { OrderProcessState } from '@uplab/admin-ui/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -65,7 +65,7 @@ export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewI
 
     getNodeFor(state: string): OrderProcessNodeComponent | undefined {
         if (this.nodeComponents) {
-            return this.nodeComponents.find((n) => n.node.name === state);
+            return this.nodeComponents.find(n => n.node.name === state);
         }
     }
 
@@ -79,7 +79,7 @@ export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewI
         }
 
         for (const [name, stateNode] of stateNodeMap.entries()) {
-            const targets = this.states.find((s) => s.name === name)?.to ?? [];
+            const targets = this.states.find(s => s.name === name)?.to ?? [];
             for (const target of targets) {
                 const targetNode = stateNodeMap.get(target);
                 if (targetNode) {
@@ -87,7 +87,7 @@ export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewI
                 }
             }
         }
-        this.nodes = [...stateNodeMap.values()].filter((n) => n.name !== 'Cancelled');
+        this.nodes = [...stateNodeMap.values()].filter(n => n.name !== 'Cancelled');
     }
 
     private populateEdges() {

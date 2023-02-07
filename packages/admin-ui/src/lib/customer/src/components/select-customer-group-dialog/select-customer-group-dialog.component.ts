@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataService, Dialog, GetCustomerGroups, GetCustomerList } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCustomerGroups, GetCustomerList } from '@uplab/admin-ui/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -20,7 +20,7 @@ export class SelectCustomerGroupDialogComponent implements Dialog<string[]>, OnI
     ngOnInit() {
         this.groups$ = this.dataService.customer
             .getCustomerGroupList()
-            .mapStream((res) => res.customerGroups.items);
+            .mapStream(res => res.customerGroups.items);
     }
 
     cancel() {

@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { Channel } from '@uplab/admin-ui/core';
+import { NotificationService } from '@uplab/admin-ui/core';
+import { DataService } from '@uplab/admin-ui/core';
+import { ModalService } from '@uplab/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { mergeMap, startWith, switchMap } from 'rxjs/operators';
-
-import { Channel } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-channel-list',

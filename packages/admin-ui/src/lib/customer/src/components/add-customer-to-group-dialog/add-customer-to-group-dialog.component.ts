@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { DataService, Dialog, GetCustomerGroups, GetCustomerList } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCustomerGroups, GetCustomerList } from '@uplab/admin-ui/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
@@ -32,12 +32,12 @@ export class AddCustomerToGroupDialogComponent implements Dialog<string[]>, OnIn
             switchMap(({ skip, take, filterTerm }) => {
                 return this.dataService.customer
                     .getCustomerList(take, skip, filterTerm)
-                    .mapStream((res) => res.customers);
+                    .mapStream(res => res.customers);
             }),
         );
 
-        this.customers$ = customerResult$.pipe(map((res) => res.items));
-        this.customersTotal$ = customerResult$.pipe(map((res) => res.totalItems));
+        this.customers$ = customerResult$.pipe(map(res => res.items));
+        this.customersTotal$ = customerResult$.pipe(map(res => res.totalItems));
     }
 
     cancel() {

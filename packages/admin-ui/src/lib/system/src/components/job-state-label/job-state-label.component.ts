@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { JobInfoFragment, JobState } from '@vendure/admin-ui/core';
+import { JobInfoFragment, JobState } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-job-state-label',

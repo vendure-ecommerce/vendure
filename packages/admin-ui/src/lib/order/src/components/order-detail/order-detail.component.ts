@@ -24,7 +24,7 @@ import {
     ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 import { EMPTY, merge, Observable, of, Subject } from 'rxjs';

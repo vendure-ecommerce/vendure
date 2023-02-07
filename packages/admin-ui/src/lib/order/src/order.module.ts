@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@uplab/admin-ui/core';
 
 import { AddManualPaymentDialogComponent } from './components/add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';

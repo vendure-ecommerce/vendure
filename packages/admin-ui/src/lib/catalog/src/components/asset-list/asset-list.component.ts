@@ -13,7 +13,7 @@ import {
     NotificationService,
     SortOrder,
     TagFragment,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { PaginationInstance } from 'ngx-pagination';
 import { BehaviorSubject, combineLatest, EMPTY, Observable } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
@@ -25,7 +25,8 @@ import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operator
 })
 export class AssetListComponent
     extends BaseListComponent<GetAssetList.Query, GetAssetList.Items, GetAssetList.Variables>
-    implements OnInit {
+    implements OnInit
+{
     searchTerm$ = new BehaviorSubject<string | undefined>(undefined);
     filterByTags$ = new BehaviorSubject<TagFragment[] | undefined>(undefined);
     uploading = false;

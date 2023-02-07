@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-
-import { CurrencyCode, ShippingMethodQuote } from '@vendure/admin-ui/core';
+import { CurrencyCode, ShippingMethodQuote } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-shipping-eligibility-test-result',

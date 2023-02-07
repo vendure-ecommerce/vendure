@@ -8,7 +8,7 @@ import {
     detailBreadcrumb,
     FacetWithValues,
     GetProductWithVariants,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';

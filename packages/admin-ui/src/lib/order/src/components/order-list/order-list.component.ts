@@ -11,7 +11,7 @@ import {
     OrderListOptions,
     ServerConfigService,
     SortOrder,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { merge, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';

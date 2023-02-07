@@ -10,7 +10,7 @@ import {
     GetCustomerAddressesQuery,
     GetCustomerAddressesQueryVariables,
     OrderAddressFragment,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';

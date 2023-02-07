@@ -22,7 +22,7 @@ import {
     ProductVariantFragment,
     TaxCategory,
     UpdateProductOptionInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { unique } from '@vendure/common/lib/unique';
 import { Subscription } from 'rxjs';

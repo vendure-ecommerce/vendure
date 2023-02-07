@@ -13,7 +13,7 @@ import {
     LogicalOperator,
     ModalService,
     NotificationService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from 'rxjs';
 import {

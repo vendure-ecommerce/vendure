@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, CustomFieldConfig, Permission } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, CustomFieldConfig, Permission } from '@uplab/admin-ui/core';
 import {
     Channel,
     CreateChannelInput,
@@ -10,11 +10,11 @@ import {
     GetZones,
     LanguageCode,
     UpdateChannelInput,
-} from '@vendure/admin-ui/core';
-import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
+import { getDefaultUiLanguage } from '@uplab/admin-ui/core';
+import { NotificationService } from '@uplab/admin-ui/core';
+import { DataService } from '@uplab/admin-ui/core';
+import { ServerConfigService } from '@uplab/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';

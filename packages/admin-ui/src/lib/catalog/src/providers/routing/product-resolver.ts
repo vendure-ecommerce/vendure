@@ -5,7 +5,7 @@ import {
     DataService,
     getDefaultUiLanguage,
     GetProductWithVariants,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',

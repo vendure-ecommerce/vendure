@@ -6,7 +6,7 @@ import {
     DataService,
     GetActiveAdministrator,
     getAppConfig,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { Observable } from 'rxjs';
 
 @Component({

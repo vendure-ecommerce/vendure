@@ -6,7 +6,7 @@ import {
     Dialog,
     ServerConfigService,
     UpdateCustomerGroupInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-customer-group-detail-dialog',

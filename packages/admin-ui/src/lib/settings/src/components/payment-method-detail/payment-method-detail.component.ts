@@ -19,7 +19,7 @@ import {
     ServerConfigService,
     toConfigurableOperationInput,
     UpdatePaymentMethodInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';

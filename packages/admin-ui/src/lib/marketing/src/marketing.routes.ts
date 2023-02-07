@@ -1,6 +1,11 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CanDeactivateDetailGuard, createResolveData, detailBreadcrumb, Promotion } from '@vendure/admin-ui/core';
+import {
+    CanDeactivateDetailGuard,
+    createResolveData,
+    detailBreadcrumb,
+    Promotion,
+} from '@uplab/admin-ui/core';
 
 import { PromotionDetailComponent } from './components/promotion-detail/promotion-detail.component';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';

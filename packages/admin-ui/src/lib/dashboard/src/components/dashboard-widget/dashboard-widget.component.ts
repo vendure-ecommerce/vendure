@@ -10,7 +10,7 @@ import {
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
-import { DashboardWidgetConfig } from '@vendure/admin-ui/core';
+import { DashboardWidgetConfig } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-dashboard-widget',

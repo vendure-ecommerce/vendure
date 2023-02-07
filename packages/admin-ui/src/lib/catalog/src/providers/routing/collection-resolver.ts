@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver, Collection, DataService, getDefaultUiLanguage } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, Collection, DataService, getDefaultUiLanguage } from '@uplab/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',

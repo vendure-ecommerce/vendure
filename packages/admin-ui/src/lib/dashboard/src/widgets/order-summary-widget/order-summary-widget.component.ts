@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, NgModule, OnInit } from '@angular/core';
-import { CoreModule, DataService } from '@vendure/admin-ui/core';
+import { CoreModule, DataService } from '@uplab/admin-ui/core';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap } from 'rxjs/operators';

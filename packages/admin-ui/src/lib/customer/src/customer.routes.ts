@@ -5,7 +5,7 @@ import {
     createResolveData,
     Customer,
     detailBreadcrumb,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
 import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';
@@ -44,7 +44,7 @@ export function customerBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.customers',
-        getName: (customer) => `${customer.firstName} ${customer.lastName}`,
+        getName: customer => `${customer.firstName} ${customer.lastName}`,
         route: 'customers',
     });
 }

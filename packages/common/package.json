@@ -3,6 +3,7 @@
   "version": "1.9.2",
   "main": "index.js",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json -w",
     "build": "rimraf lib && tsc -p ./tsconfig.build.json",

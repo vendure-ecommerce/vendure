@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
-import { AuthService } from '@vendure/admin-ui/core';
+import { AuthService } from '@uplab/admin-ui/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 

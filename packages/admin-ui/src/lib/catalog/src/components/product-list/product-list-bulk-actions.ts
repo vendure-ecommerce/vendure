@@ -10,7 +10,7 @@ import {
     NotificationService,
     Permission,
     SearchProducts,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY, from, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';

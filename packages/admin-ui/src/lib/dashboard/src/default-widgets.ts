@@ -5,7 +5,7 @@ import {
     DashboardWidgetService,
     Permission,
     WidgetLayoutDefinition,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 import { LatestOrdersWidgetComponent } from './widgets/latest-orders-widget/latest-orders-widget.component';
 import { OrderSummaryWidgetComponent } from './widgets/order-summary-widget/order-summary-widget.component';

@@ -9,7 +9,7 @@ import {
     OrderDetailFragment,
     OrderLineInput,
     RefundOrderInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { summate } from '@vendure/common/lib/shared-utils';
 
 type SelectionLine = { quantity: number; refund: boolean; cancel: boolean };

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { DataService, Dialog, GetCountryList, GetZones } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCountryList, GetZones } from '@uplab/admin-ui/core';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 

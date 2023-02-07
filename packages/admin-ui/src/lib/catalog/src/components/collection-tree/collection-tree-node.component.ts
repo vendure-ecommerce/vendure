@@ -12,7 +12,7 @@ import {
     SkipSelf,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DataService, Permission, SelectionManager } from '@vendure/admin-ui/core';
+import { DataService, Permission, SelectionManager } from '@uplab/admin-ui/core';
 import { Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 

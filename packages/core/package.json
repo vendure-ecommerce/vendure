@@ -2,6 +2,7 @@
   "name": "@vendure/core",
   "version": "1.9.2",
   "description": "A modern, headless ecommerce framework",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/vendure-ecommerce/vendure/"
@@ -15,7 +16,6 @@
   ],
   "homepage": "https://www.vendure.io/",
   "funding": "https://github.com/sponsors/michaelbromley",
-  "private": false,
   "license": "MIT",
   "scripts": {
     "tsc:watch": "tsc -p ./build/tsconfig.build.json --watch",

@@ -11,7 +11,7 @@ import {
     ShippingMethod,
     TaxCategory,
     TaxRate,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
 import { AdministratorListComponent } from './components/administrator-list/administrator-list.component';

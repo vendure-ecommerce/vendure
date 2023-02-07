@@ -10,7 +10,7 @@ import {
     UpdateProductsBulkMutationVariables,
     UpdateVariantsBulkMutation,
     UpdateVariantsBulkMutationVariables,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable, Subscription } from 'rxjs';
 import { shareReplay, switchMap } from 'rxjs/operators';

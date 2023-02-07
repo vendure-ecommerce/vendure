@@ -15,7 +15,7 @@ import {
     SearchProducts,
     SelectionManager,
     ServerConfigService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver, DataService, TaxRate } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, DataService, TaxRate } from '@uplab/admin-ui/core';
 
 /**
  * Resolves the id from the path into a Customer entity.

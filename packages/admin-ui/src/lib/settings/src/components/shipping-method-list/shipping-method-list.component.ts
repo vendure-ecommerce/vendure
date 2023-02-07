@@ -12,7 +12,7 @@ import {
     ServerConfigService,
     ShippingMethodQuote,
     TestEligibleShippingMethodsInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 
@@ -27,7 +27,8 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
 })
 export class ShippingMethodListComponent
     extends BaseListComponent<GetShippingMethodList.Query, GetShippingMethodList.Items>
-    implements OnInit {
+    implements OnInit
+{
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     testAddress: TestAddress;
     testOrderLines: TestOrderLine[];

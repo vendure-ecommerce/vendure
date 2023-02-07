@@ -1,10 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import {
-    CurrencyCode,
-    DataService,
-    LocalStorageService,
-    ProductSelectorSearch,
-} from '@vendure/admin-ui/core';
+import { CurrencyCode, DataService, LocalStorageService, ProductSelectorSearch } from '@uplab/admin-ui/core';
 
 export interface TestOrderLine {
     id: string;

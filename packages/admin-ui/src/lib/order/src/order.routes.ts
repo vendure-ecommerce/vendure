@@ -5,7 +5,7 @@ import {
     CanDeactivateDetailGuard,
     detailBreadcrumb,
     OrderDetail,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 import { DraftOrderDetailComponent } from './components/draft-order-detail/draft-order-detail.component';

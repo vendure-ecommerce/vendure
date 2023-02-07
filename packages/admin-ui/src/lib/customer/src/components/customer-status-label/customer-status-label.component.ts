@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-
-import { Customer } from '@vendure/admin-ui/core';
+import { Customer } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-customer-status-label',

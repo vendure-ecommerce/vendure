@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-
-import { OrderDetail } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import { OrderDetail } from '@uplab/admin-ui/core';
+import { Dialog } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-settle-refund-dialog',

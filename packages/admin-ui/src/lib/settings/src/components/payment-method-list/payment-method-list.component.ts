@@ -8,7 +8,7 @@ import {
     GetPaymentMethodList,
     ModalService,
     NotificationService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 

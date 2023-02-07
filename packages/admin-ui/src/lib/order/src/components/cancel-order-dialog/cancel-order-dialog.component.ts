@@ -7,7 +7,7 @@ import {
     I18nService,
     OrderDetailFragment,
     OrderLineInput,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-cancel-order-dialog',

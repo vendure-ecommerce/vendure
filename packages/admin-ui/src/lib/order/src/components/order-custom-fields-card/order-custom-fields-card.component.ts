@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CustomFieldConfig, ModalService } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, ModalService } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-order-custom-fields-card',

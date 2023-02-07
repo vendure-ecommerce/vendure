@@ -7,7 +7,7 @@ import {
     GetAdministrators,
     ModalService,
     NotificationService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { EMPTY } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -30,7 +30,7 @@ export class AdministratorListComponent extends BaseListComponent<
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.administrator.getAdministrators(...args),
-            (data) => data.administrators,
+            data => data.administrators,
         );
     }
 
@@ -45,7 +45,7 @@ export class AdministratorListComponent extends BaseListComponent<
                 ],
             })
             .pipe(
-                switchMap((res) =>
+                switchMap(res =>
                     res ? this.dataService.administrator.deleteAdministrator(administrator.id) : EMPTY,
                 ),
             )
@@ -56,7 +56,7 @@ export class AdministratorListComponent extends BaseListComponent<
                     });
                     this.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Administrator',
                     });

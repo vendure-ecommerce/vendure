@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { OrderDetail, OrderDetailFragment } from '@uplab/admin-ui/core';
 
 @Component({
     selector: 'vdr-modification-detail',

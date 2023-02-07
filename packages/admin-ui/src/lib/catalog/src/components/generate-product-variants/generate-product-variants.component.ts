@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
-import { CurrencyCode, DataService } from '@vendure/admin-ui/core';
+import { CurrencyCode, DataService } from '@uplab/admin-ui/core';
 import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 
 import { OptionValueInputComponent } from '../option-value-input/option-value-input.component';

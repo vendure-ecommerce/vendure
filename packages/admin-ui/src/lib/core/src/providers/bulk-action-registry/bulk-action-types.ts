@@ -119,7 +119,7 @@ export interface BulkAction<ItemType = any, ComponentType = any> {
      *
      * @example
      * ```TypeScript
-     * import { registerBulkAction, DataService } from '\@vendure/admin-ui/core';
+     * import { registerBulkAction, DataService } from '\@uplab/admin-ui/core';
      *
      * registerBulkAction({
      *   location: 'product-list',

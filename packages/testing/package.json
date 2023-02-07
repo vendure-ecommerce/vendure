@@ -2,6 +2,7 @@
   "name": "@vendure/testing",
   "version": "1.9.2",
   "description": "End-to-end testing tools for Vendure projects",
+  "private": true,
   "keywords": [
     "vendure",
     "testing",

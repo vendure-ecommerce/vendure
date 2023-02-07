@@ -11,7 +11,7 @@ import {
     NotificationService,
     Permission,
     ServerConfigService,
-} from '@vendure/admin-ui/core';
+} from '@uplab/admin-ui/core';
 import { switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 @Component({
