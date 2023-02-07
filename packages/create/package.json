@@ -1,6 +1,6 @@
 {
   "name": "@vendure/create",
-  "version": "1.9.2",
+  "version": "1.10.1",
   "license": "MIT",
   "private": true,
   "bin": {
@@ -29,7 +29,7 @@
     "@types/handlebars": "^4.1.0",
     "@types/listr": "^0.14.2",
     "@types/semver": "^6.2.2",
-    "@vendure/core": "^1.9.2",
+    "@vendure/core": "^1.10.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.2.1",
     "typescript": "4.3.5"
