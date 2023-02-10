@@ -13,11 +13,12 @@
 <div *ngFor="let group of optionGroups; index as i" class="option-groups">
     <div class="name">
         <label>{{ 'catalog.option' | translate }}</label>
-        <input clrInput [(ngModel)]="group.name" name="name" [readonly]="!group.isNew" />
+        <input clrInput [(ngModel)]="group.name"  (input)="onChangeGroupName(i, $event.target.value)" name="name" [readonly]="!group.isNew" />
     </div>
     <div class="values">
         <label>{{ 'catalog.option-values' | translate }}</label>
         <vdr-option-value-input
+            *ngIf="!group.isGlobal; else selectGlobalOptions"
             #optionValueInputComponent
             [options]="group.values"
             [groupName]="group.name"
@@ -25,6 +26,15 @@
             (add)="addOption(i, $event.name)"
             (remove)="removeOption(i, $event)"
         ></vdr-option-value-input>
+        <ng-template #selectGlobalOptions>
+            <vdr-global-product-option-selector
+                [(value)]="group.values"
+                [groupName]="group.name"
+                [(options)]="group.globalOptions"
+                (add)="addOption(i, $event.name)"
+                (remove)="removeOption(i, $event)"
+            ></vdr-global-product-option-selector>
+        </ng-template>
     </div>
     <div>
         <button

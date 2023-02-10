@@ -57,6 +57,8 @@ import { FormFieldControlDirective } from './components/form-field/form-field-co
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
 import { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
+import { GlobalProductOptionChipComponent } from './components/global-product-option-chip/global-product-option-chip.component';
+import { GlobalProductOptionSelectorComponent } from './components/global-product-option-selector/global-product-option-selector.component';
 import { HelpTooltipComponent } from './components/help-tooltip/help-tooltip.component';
 import { HistoryEntryDetailComponent } from './components/history-entry-detail/history-entry-detail.component';
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
@@ -171,6 +173,8 @@ const DECLARATIONS = [
     DataTableComponent,
     DataTableColumnComponent,
     FacetValueSelectorComponent,
+    GlobalProductOptionChipComponent,
+    GlobalProductOptionSelectorComponent,
     ItemsPerPageControlsComponent,
     PaginationControlsComponent,
     TableRowActionComponent,

@@ -99,6 +99,8 @@
     "display-variant-cards": "Details anzeigen",
     "display-variant-table": "Tabellenansicht",
     "drop-files-to-upload": "Dateien zum Hochladen ablegen",
+    "duplicate-option-group-warning": "",
+    "duplicate-option-warning": "",
     "duplicate-sku-warning": "",
     "edit-facet-values": "",
     "edit-options": "",
@@ -235,6 +237,8 @@
     "locale": "",
     "log-out": "Abmelden",
     "login": "Anmelden",
+    "login-image-title": "Hallo! Willkommen zurück. Schön, dich zu sehen.",
+    "login-title": "Anmelden bei Vendure",
     "manage-tags": "Tags verwalten",
     "manage-tags-description": "Tagbeschreibungen verwalten",
     "medium-date": "",
@@ -286,9 +290,7 @@
     "username": "Benutzername",
     "view-next-month": "Nächsten Monat anzeigen",
     "view-previous-month": "Vorherigen Monat anzeigen",
-    "with-selected": "Auswahl...",
-    "login-title": "Anmelden bei Vendure",
-    "login-image-title": "Hallo! Willkommen zurück. Schön, dich zu sehen."
+    "with-selected": "Auswahl..."
   },
   "customer": {
     "add-customer-to-group": "Kunde zu Gruppe hinzufügen",

@@ -99,6 +99,8 @@
     "display-variant-cards": "View details",
     "display-variant-table": "View as table",
     "drop-files-to-upload": "Drop files to upload",
+    "duplicate-option-group-warning": "Please ensure all option groups are unique",
+    "duplicate-option-warning": "Please ensure options in each group are unique",
     "duplicate-sku-warning": "Please ensure all SKUs are unique",
     "edit-facet-values": "Edit facet values",
     "edit-options": "Edit options",
@@ -235,6 +237,8 @@
     "locale": "Locale",
     "log-out": "Log out",
     "login": "Log in",
+    "login-image-title": "Hi! Welcome back. Good to see you.",
+    "login-title": "Log in to Vendure",
     "manage-tags": "Manage tags",
     "manage-tags-description": "Update or delete tags globally.",
     "medium-date": "Medium date",
@@ -286,9 +290,7 @@
     "username": "Username",
     "view-next-month": "View next month",
     "view-previous-month": "View previous month",
-    "with-selected": "With {count} selected...",
-    "login-title": "Log in to Vendure",
-    "login-image-title": "Hi! Welcome back. Good to see you."
+    "with-selected": "With {count} selected..."
   },
   "customer": {
     "add-customer-to-group": "Add customer to group",

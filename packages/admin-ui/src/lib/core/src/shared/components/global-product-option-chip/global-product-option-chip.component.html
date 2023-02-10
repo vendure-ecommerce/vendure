@@ -1,0 +1,10 @@
+<vdr-chip
+    [icon]="icon"
+    [class.locked]="option.locked"
+    [class.editable]="option.locked"
+    [colorFrom]="groupName ?? option.code"
+    [title]="option.name"
+    (iconClick)="onRemove()"
+>
+    {{ option.name }}
+</vdr-chip>

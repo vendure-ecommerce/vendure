@@ -70,3 +70,7 @@ button.icon-button {
 .cdk-overlay-container {
     z-index: 1060;
 }
+
+.ng-dropdown-panel {
+    z-index: 1000 !important;
+}

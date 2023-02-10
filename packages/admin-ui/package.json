@@ -62,6 +62,7 @@
     "prosemirror-state": "^1.4.1",
     "prosemirror-tables": "^1.2.5",
     "rxjs": "^6.6.6",
+    "lodash": "^4.17.21",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
   },
@@ -71,6 +72,7 @@
     "@angular/compiler": "12.2.16",
     "@angular/compiler-cli": "12.2.16",
     "@biesbjerg/ngx-translate-extract": "^7.0.3",
+    "@types/lodash": "^4.14.191",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "^14.14.31",

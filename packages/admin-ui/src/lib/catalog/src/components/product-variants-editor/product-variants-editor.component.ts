@@ -13,12 +13,14 @@ import {
     LanguageCode,
     ModalService,
     NotificationService,
+    Option,
     ProductOptionGroupWithOptionsFragment,
 } from '@uplab/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { pick } from '@vendure/common/lib/pick';
 import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { groupBy, keys, pickBy, uniqBy } from 'lodash';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { defaultIfEmpty, filter, map, mergeMap, switchMap } from 'rxjs/operators';
 
@@ -27,7 +29,7 @@ import { ConfirmVariantDeletionDialogComponent } from '../confirm-variant-deleti
 
 export class GeneratedVariant {
     isDefault: boolean;
-    options: Array<{ name: string; id?: string }>;
+    options: Array<{ name: string; groupName: string; id?: string }>;
     productVariantId?: string;
     enabled: boolean;
     existing: boolean;
@@ -44,14 +46,12 @@ export class GeneratedVariant {
 
 interface OptionGroupUiModel {
     id?: string;
+    isGlobal?: boolean;
+    globalOptions?: Option[];
     isNew: boolean;
     name: string;
     locked: boolean;
-    values: Array<{
-        id?: string;
-        name: string;
-        locked: boolean;
-    }>;
+    values: Option[];
 }
 
 @Component({
@@ -67,6 +67,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     optionGroups: OptionGroupUiModel[];
     product: GetProductVariantOptions.Product;
     currencyCode: CurrencyCode;
+    globalOptionGroups: Record<string, Option[]>;
     private languageCode: LanguageCode;
 
     constructor(
@@ -78,11 +79,24 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     ) {}
 
     ngOnInit() {
-        this.initOptionsAndVariants();
         this.languageCode =
             (this.route.snapshot.paramMap.get('lang') as LanguageCode) || getDefaultUiLanguage();
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
             this.currencyCode = data.activeChannel.currencyCode;
+        });
+        this.dataService.facet.getAllFacets().single$.subscribe(data => {
+            this.globalOptionGroups = data.facets.items.reduce((acc, facet) => {
+                const newValue: Record<string, Option[]> = {
+                    ...acc,
+                    [facet.code]: facet.values.map(value => ({
+                        code: value.code,
+                        name: value.name,
+                        locked: false,
+                    })),
+                };
+                return newValue;
+            }, {});
+            this.initOptionsAndVariants();
         });
     }
 
@@ -207,8 +221,23 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         }
     }
 
+    onChangeGroupName(index: number, value: string): void {
+        const foundGlobalOptionGroup = this.globalOptionGroups[value];
+        this.toggleOptionGroup(index, foundGlobalOptionGroup);
+    }
+
+    private toggleOptionGroup(index: number, globalOptions?: Option[]) {
+        if (globalOptions) {
+            this.optionGroups[index].isGlobal = true;
+            this.optionGroups[index].globalOptions = globalOptions;
+        } else {
+            this.optionGroups[index].isGlobal = false;
+            this.optionGroups[index].globalOptions = undefined;
+        }
+    }
+
     generateVariants() {
-        const groups = this.optionGroups.map(g => g.values);
+        const groups = this.optionGroups.map(g => g.values.map(v => ({ ...v, groupName: g.name })));
         const previousVariants = this.generatedVariants;
         const generatedVariantFactory = (
             isDefault: boolean,
@@ -304,6 +333,8 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
 
         this.checkUniqueSkus()
             .pipe(
+                mergeMap(() => this.checkUniqueOptionGroups()),
+                mergeMap(() => this.checkUniqueOptions()),
                 mergeMap(() => this.confirmDeletionOfObsoleteVariants()),
                 mergeMap(() =>
                     this.productDetailService.createProductOptionGroups(newOptionGroups, this.languageCode),
@@ -313,8 +344,8 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 mergeMap(groupsIds => this.fetchOptionGroups(groupsIds)),
                 mergeMap(groups => this.createNewProductVariants(groups)),
                 mergeMap(res => this.deleteObsoleteVariants(res.createProductVariants)),
-                mergeMap(variants => this.reFetchProduct(variants)),
             )
+            .pipe(mergeMap(variants => this.reFetchProduct(variants)))
             .subscribe({
                 next: variants => {
                     this.formValueChanged = false;
@@ -339,6 +370,50 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 .dialog({
                     title: _('catalog.duplicate-sku-warning'),
                     body: unique(withDuplicateSkus.map(v => `${v.sku}`)).join(', '),
+                    buttons: [{ label: _('common.close'), returnValue: false, type: 'primary' }],
+                })
+                .pipe(mergeMap(res => EMPTY));
+        } else {
+            return of(true);
+        }
+    }
+
+    private checkUniqueOptionGroups() {
+        const groupNames = Object.entries(groupBy(this.optionGroups, 'name')).reduce(
+            (acc: string[], [groupName, optionGroups]) => {
+                if (optionGroups.length > 1) acc.push(groupName);
+                return acc;
+            },
+            [],
+        );
+
+        if (groupNames.length) {
+            return this.modalService
+                .dialog({
+                    title: _('catalog.duplicate-option-group-warning'),
+                    body: groupNames.join(', '),
+                    buttons: [{ label: _('common.close'), returnValue: false, type: 'primary' }],
+                })
+                .pipe(mergeMap(res => EMPTY));
+        } else {
+            return of(true);
+        }
+    }
+
+    private checkUniqueOptions() {
+        const optionGroupsWithDuplicatedOptions = this.optionGroups
+            .map(optionGroup => {
+                const groupedOptionGroup = groupBy(optionGroup.values, 'name');
+                const duplicatedNames = keys(pickBy(groupedOptionGroup, e => e.length > 1));
+                if (duplicatedNames.length) return [optionGroup.name, duplicatedNames.join(', ')].join(': ');
+            })
+            .filter(Boolean);
+
+        if (optionGroupsWithDuplicatedOptions.length) {
+            return this.modalService
+                .dialog({
+                    title: _('catalog.duplicate-option-warning'),
+                    body: optionGroupsWithDuplicatedOptions.join('<br/>'),
                     buttons: [{ label: _('common.close'), returnValue: false, type: 'primary' }],
                 })
                 .pipe(mergeMap(res => EMPTY));
@@ -404,14 +479,14 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     throw new Error('Could not get a productOptionGroupId');
                 }
                 return og.values
-                    .filter(v => !v.locked)
+                    .filter(v => !v.id)
                     .map(v => ({
                         productOptionGroupId,
-                        code: normalizeString(v.name, '-'),
+                        code: normalizeString(v.code ?? v.name, '-'),
                         translations: [{ name: v.name, languageCode: this.languageCode }],
                     }));
             })
-            .reduce((flat, options) => [...flat, ...options], []);
+            .flat();
 
         const allGroupIds = [
             ...createdOptionGroups.map(g => g.id),
@@ -441,13 +516,15 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     private createNewProductVariants(groups: ProductOptionGroupWithOptionsFragment[]) {
         const options = groups
             .filter(notNullOrUndefined)
-            .map(og => og.options)
-            .reduce((flat, o) => [...flat, ...o], []);
+            .map(o => o.options)
+            .flat();
+
         const variants = this.generatedVariants
             .filter(v => v.enabled && !v.existing)
             .map(v => {
-                const optionIds = groups.map((group, index) => {
-                    const option = group.options.find(o => o.name === v.options[index].name);
+                const optionIds = groups.map(group => {
+                    const optionsOfGroup = v.options.filter(o => o.groupName === group.name).map(o => o.name);
+                    const option = group.options.find(o => optionsOfGroup.includes(o.name));
                     if (option) {
                         return option.id;
                     } else {
@@ -516,8 +593,28 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                         })),
                     };
                 });
+                this.applyGlobalOptions();
                 this.generateVariants();
             });
+    }
+
+    private applyGlobalOptions() {
+        const dictionaryOptionGroups = this.optionGroups.reduce(
+            (acc, optionGroup) => ({ ...acc, [optionGroup.name]: optionGroup.values }),
+            {},
+        );
+        this.optionGroups.forEach((optionGroup, i) => {
+            const foundGlobalOptions =
+                this.globalOptionGroups[optionGroup.name] &&
+                uniqBy(
+                    [dictionaryOptionGroups[optionGroup.name], this.globalOptionGroups[optionGroup.name]]
+                        .flat()
+                        .filter(Boolean),
+                    'name',
+                );
+
+            this.toggleOptionGroup(i, foundGlobalOptions);
+        });
     }
 
     private optionsAreEqual(a: Array<{ name: string }>, b: Array<{ name: string }>): boolean {

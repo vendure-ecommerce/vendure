@@ -1,0 +1,33 @@
+<ng-select
+    [items]="mergedOptions"
+    [addTag]="false"
+    [hideSelected]="true"
+    multiple="true"
+    appendTo="body"
+    bindLabel="name"
+    bindValue="name"
+    [ngModel]="selectedIds"
+    [clearable]="false"
+    (add)="add.emit($event)"
+>
+    <ng-template ng-label-tmp let-item="item">
+        <vdr-global-product-option-chip
+            *ngIf="item; else facetNotFound"
+            [option]="item"
+            [groupName]="groupName"
+            (remove)="remove.emit(item)"
+        ></vdr-global-product-option-chip>
+        <ng-template #facetNotFound>
+            <vdr-chip colorType="error" icon="times">{{
+                'catalog.facet-value-not-available' | translate: { id: item.id }
+            }}</vdr-chip>
+        </ng-template>
+    </ng-template>
+    <ng-template ng-option-tmp let-item="item">
+        <vdr-global-product-option-chip
+            isOption="true"
+            [option]="item" 
+            [removable]="false"
+            ></vdr-global-product-option-chip>
+    </ng-template>
+</ng-select>
