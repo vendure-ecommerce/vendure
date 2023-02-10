@@ -218,6 +218,8 @@ populate(
   },
 );
 ```
+**Attention:** When removing the `DefaultJobQueuePlugin` from the plugins list as in the code snippet above, one should manually rebuild the search index in order for the newly added products to appear.
+In the Admin UI this can be done by navigating to the Products page and clicking the gear icon next to the search input.
 
 ### Custom populate scripts
 
