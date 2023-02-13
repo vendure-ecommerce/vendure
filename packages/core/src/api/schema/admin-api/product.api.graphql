@@ -121,7 +121,7 @@ input CreateProductVariantInput {
     translations: [ProductVariantTranslationInput!]!
     facetValueIds: [ID!]
     sku: String!
-    price: Int
+    price: Money
     taxCategoryId: ID
     optionIds: [ID!]
     featuredAssetId: ID
@@ -140,7 +140,7 @@ input UpdateProductVariantInput {
     facetValueIds: [ID!]
     sku: String
     taxCategoryId: ID
-    price: Int
+    price: Money
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int

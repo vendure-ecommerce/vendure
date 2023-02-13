@@ -16,6 +16,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
@@ -649,7 +650,7 @@ export class ProductVariantService {
             await this.createOrUpdateProductVariantPrice(
                 ctx,
                 variant.id,
-                Math.round(price * priceFactor),
+                roundMoney(price * priceFactor),
                 input.channelId,
             );
             const assetIds = variant.assets?.map(a => a.assetId) || [];

@@ -21,8 +21,9 @@ import { ProductVariantPriceCalculationStrategy } from './catalog/product-varian
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
+import { EntityIdStrategy } from './entity/entity-id-strategy';
+import { MoneyStrategy } from './entity/money-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -923,6 +924,14 @@ export interface EntityOptions {
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
+     * Defines the strategy used to store and round monetary values.
+     *
+     * @since 2.0.0
+     * @default DefaultMoneyStrategy
+     */
+    moneyStrategy?: MoneyStrategy;
     /**
      * @description
      * Channels get cached in-memory as they are accessed very frequently. This

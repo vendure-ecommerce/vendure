@@ -4,9 +4,11 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { roundMoney } from '../../common/round-money';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
+import { Money } from '../money.decorator';
 import { Order } from '../order/order.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
@@ -28,7 +30,7 @@ export class ShippingLine extends VendureEntity {
     @ManyToOne(type => Order, order => order.shippingLines)
     order: Order;
 
-    @Column()
+    @Money()
     listPrice: number;
 
     @Column()
@@ -47,19 +49,21 @@ export class ShippingLine extends VendureEntity {
 
     @Calculated()
     get priceWithTax(): number {
-        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
+        return roundMoney(
+            this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate),
+        );
     }
 
     @Calculated()
     get discountedPrice(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
-        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
+        return roundMoney(this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result);
     }
 
     @Calculated()
     get discountedPriceWithTax(): number {
         const result = this.listPrice + this.getAdjustmentsTotal();
-        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
+        return roundMoney(this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate));
     }
 
     @Calculated()
@@ -71,12 +75,16 @@ export class ShippingLine extends VendureEntity {
     get discounts(): Discount[] {
         return (
             this.adjustments?.map(adjustment => {
-                const amount = this.listPriceIncludesTax
-                    ? netPriceOf(adjustment.amount, this.taxRate)
-                    : adjustment.amount;
-                const amountWithTax = this.listPriceIncludesTax
-                    ? adjustment.amount
-                    : grossPriceOf(adjustment.amount, this.taxRate);
+                const amount = roundMoney(
+                    this.listPriceIncludesTax
+                        ? netPriceOf(adjustment.amount, this.taxRate)
+                        : adjustment.amount,
+                );
+                const amountWithTax = roundMoney(
+                    this.listPriceIncludesTax
+                        ? adjustment.amount
+                        : grossPriceOf(adjustment.amount, this.taxRate),
+                );
                 return {
                     ...(adjustment as Omit<Adjustment, '__typename'>),
                     amount,

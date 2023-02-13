@@ -20,7 +20,8 @@ import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
-import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
+import { DefaultMoneyStrategy } from './entity/default-money-strategy';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
@@ -119,6 +120,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         type: 'mysql',
     },
     entityOptions: {
+        moneyStrategy: new DefaultMoneyStrategy(),
         channelCacheTtl: 30000,
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,

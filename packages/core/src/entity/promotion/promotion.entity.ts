@@ -3,6 +3,7 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { roundMoney } from '../../common/round-money';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
@@ -132,19 +133,19 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
             if (promotionAction instanceof PromotionItemAction) {
                 if (this.isOrderItemArg(args)) {
                     const { orderLine } = args;
-                    amount += Math.round(
+                    amount += roundMoney(
                         await promotionAction.execute(ctx, orderLine, action.args, state, this),
                     );
                 }
             } else if (promotionAction instanceof PromotionOrderAction) {
                 if (this.isOrderArg(args)) {
                     const { order } = args;
-                    amount += Math.round(await promotionAction.execute(ctx, order, action.args, state, this));
+                    amount += roundMoney(await promotionAction.execute(ctx, order, action.args, state, this));
                 }
             } else if (promotionAction instanceof PromotionShippingAction) {
                 if (this.isShippingArg(args)) {
                     const { shippingLine, order } = args;
-                    amount += Math.round(
+                    amount += roundMoney(
                         await promotionAction.execute(ctx, shippingLine, order, action.args, state, this),
                     );
                 }

@@ -118,7 +118,7 @@ function createSortParameter(schema: GraphQLSchema, targetType: GraphQLObjectTyp
         fields.push(...Object.values(existingInput.getFields()));
     }
 
-    const sortableTypes = ['ID', 'String', 'Int', 'Float', 'DateTime'];
+    const sortableTypes = ['ID', 'String', 'Int', 'Float', 'DateTime', 'Money'];
     return new GraphQLInputObjectType({
         name: inputName,
         fields: fields
@@ -191,6 +191,7 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
                 return BooleanOperators;
             case 'Int':
             case 'Float':
+            case 'Money':
                 return NumberOperators;
             case 'DateTime':
                 return DateOperators;

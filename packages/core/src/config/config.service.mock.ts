@@ -2,7 +2,7 @@ import { VendureEntity } from '../entity/base/base.entity';
 import { MockClass } from '../testing/testing-types';
 
 import { ConfigService } from './config.service';
-import { EntityIdStrategy, PrimaryKeyType } from './entity-id-strategy/entity-id-strategy';
+import { EntityIdStrategy, PrimaryKeyType } from './entity/entity-id-strategy';
 
 export class MockConfigService implements MockClass<ConfigService> {
     apiOptions = {

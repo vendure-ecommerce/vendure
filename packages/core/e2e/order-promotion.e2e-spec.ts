@@ -1198,9 +1198,9 @@ describe('Promotions applied to Orders', () => {
                 });
                 orderResultGuard.assertSuccess(setOrderShippingMethod);
                 expect(setOrderShippingMethod.discounts).toEqual([]);
-                expect(setOrderShippingMethod.shipping).toBe(287);
+                expect(setOrderShippingMethod.shipping).toBe(288);
                 expect(setOrderShippingMethod.shippingWithTax).toBe(345);
-                expect(setOrderShippingMethod.total).toBe(5287);
+                expect(setOrderShippingMethod.total).toBe(5288);
                 expect(setOrderShippingMethod.totalWithTax).toBe(6345);
 
                 const { applyCouponCode } = await shopClient.query<

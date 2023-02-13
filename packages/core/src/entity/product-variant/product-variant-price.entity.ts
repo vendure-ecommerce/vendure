@@ -3,6 +3,7 @@ import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
+import { Money } from '../money.decorator';
 
 import { ProductVariant } from './product-variant.entity';
 
@@ -19,7 +20,7 @@ export class ProductVariantPrice extends VendureEntity {
         super(input);
     }
 
-    @Column() price: number;
+    @Money() price: number;
 
     @EntityId() channelId: ID;
 

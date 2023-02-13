@@ -3,6 +3,7 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { roundMoney } from '../../common/round-money';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -75,7 +76,9 @@ export class ProductVariant
         if (this.listPrice == null) {
             return 0;
         }
-        return this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice;
+        return roundMoney(
+            this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice,
+        );
     }
 
     @Calculated({
@@ -89,7 +92,9 @@ export class ProductVariant
         if (this.listPrice == null) {
             return 0;
         }
-        return this.listPriceIncludesTax ? this.listPrice : this.taxRateApplied.grossPriceOf(this.listPrice);
+        return roundMoney(
+            this.listPriceIncludesTax ? this.listPrice : this.taxRateApplied.grossPriceOf(this.listPrice),
+        );
     }
 
     /**
@@ -122,12 +127,6 @@ export class ProductVariant
 
     @EntityId({ nullable: true })
     productId: ID;
-
-    // @Column({ default: 0 })
-    // stockOnHand: number;
-
-    // @Column({ default: 0 })
-    // stockAllocated: number;
 
     /**
      * @description

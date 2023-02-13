@@ -80,6 +80,8 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             productVariant {
                 id
             }
+            linePrice
+            linePriceWithTax
             discounts {
                 adjustmentSource
                 amount

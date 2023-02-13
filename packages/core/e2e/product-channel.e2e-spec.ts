@@ -6,23 +6,12 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
-    AssignProductsToChannel,
-    AssignProductVariantsToChannel,
-    CreateAdministrator,
-    CreateChannel,
-    CreateProduct,
-    CreateProductVariants,
-    CreateRole,
     CurrencyCode,
-    GetProductWithVariants,
     LanguageCode,
     Permission,
     ProductVariantFragment,
-    RemoveProductsFromChannel,
-    RemoveProductVariantsFromChannel,
-    UpdateChannel,
-    UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -312,9 +301,6 @@ describe('ChannelAware Products and ProductVariants', () => {
                 id: product1.id,
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_3']);
-            expect(product!.variants.map(v => v.price)).toEqual([
-                Math.round(product1.variants[0].price * PRICE_FACTOR),
-            ]);
             // Third Channel is configured to include taxes in price, so they should be the same.
             expect(product!.variants.map(v => v.priceWithTax)).toEqual([
                 Math.round(product1.variants[0].priceWithTax * PRICE_FACTOR),

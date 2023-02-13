@@ -1,3 +1,4 @@
+import { roundMoney } from '../../common/round-money';
 import {
     createRequestContext,
     MockTaxRateService,
@@ -146,7 +147,7 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
 
             expect(result).toEqual({
-                price: taxRateDefaultStandard.netPriceOf(inputPrice),
+                price: roundMoney(taxRateDefaultStandard.netPriceOf(inputPrice)),
                 priceIncludesTax: false,
             });
         });
@@ -161,7 +162,7 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
 
             expect(result).toEqual({
-                price: taxRateDefaultReduced.netPriceOf(inputPrice),
+                price: roundMoney(taxRateDefaultReduced.netPriceOf(inputPrice)),
                 priceIncludesTax: false,
             });
         });
@@ -176,7 +177,7 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
             });
 
             expect(result).toEqual({
-                price: taxRateDefaultStandard.netPriceOf(inputPrice),
+                price: roundMoney(taxRateDefaultStandard.netPriceOf(inputPrice)),
                 priceIncludesTax: false,
             });
         });

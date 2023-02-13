@@ -6,6 +6,7 @@ import { Column, Entity, Index, ManyToOne } from 'typeorm';
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { VendureEntity } from '../base/base.entity';
+import { Money } from '../money.decorator';
 import { OrderModification } from '../order-modification/order-modification.entity';
 import { Order } from '../order/order.entity';
 
@@ -25,7 +26,7 @@ export class Surcharge extends VendureEntity {
     @Column()
     description: string;
 
-    @Column()
+    @Money()
     listPrice: number;
 
     @Column()

@@ -1647,7 +1647,6 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(order);
 
             const originalTotalWithTax = order.totalWithTax;
-
             const transitionOrderToState = await adminTransitionOrderToState(order.id, 'Modifying');
             orderGuard.assertSuccess(transitionOrderToState);
 
