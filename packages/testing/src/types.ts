@@ -14,9 +14,9 @@ export type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 export interface TestServerOptions {
     /**
      * @description
-     * The path to a CSV file containing product data to import.
+     * The path to an optional CSV file containing product data to import.
      */
-    productsCsvPath: string;
+    productsCsvPath?: string;
     /**
      * @description
      * An object containing non-product data which is used to populate the database.
