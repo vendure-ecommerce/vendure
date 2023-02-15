@@ -1,3 +1,18 @@
+## <small>1.9.3 (2023-02-15)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix UI for long channel list tab on Administrator detail page (#2018) ([7fdd875](https://github.com/vendure-ecommerce/vendure/commit/7fdd875)), closes [#2018](https://github.com/vendure-ecommerce/vendure/issues/2018)
+* **admin-ui** Redirect to loginUrl if configured on Forbidden GraphQL error (#2012) ([53b78d2](https://github.com/vendure-ecommerce/vendure/commit/53b78d2)), closes [#2012](https://github.com/vendure-ecommerce/vendure/issues/2012)
+* **core** Fix auth of admin and customer users with the same email (#2016) ([3c76b2f](https://github.com/vendure-ecommerce/vendure/commit/3c76b2f)), closes [#2016](https://github.com/vendure-ecommerce/vendure/issues/2016)
+* **core** Fix deletion of product options (#2017) ([a3698b5](https://github.com/vendure-ecommerce/vendure/commit/a3698b5)), closes [#2017](https://github.com/vendure-ecommerce/vendure/issues/2017)
+* **payments-plugin** Improve handling of Braintree customerId errors ([4d9f49e](https://github.com/vendure-ecommerce/vendure/commit/4d9f49e))
+
+#### Features
+
+* **asset-server-plugin** Add configurable Cache-Control header (#2005) ([316d04d](https://github.com/vendure-ecommerce/vendure/commit/316d04d)), closes [#2005](https://github.com/vendure-ecommerce/vendure/issues/2005)
+
 ## <small>1.9.2 (2023-01-18)</small>
 
 
