@@ -8,4 +8,6 @@ showtoc: false
 
 This section contains guides for deploying a Vendure application to production.
 
-We are planning to publish specific guides for popular platforms soon. For now, you can find platform-specific information in our [Deployment discussion category](https://github.com/vendure-ecommerce/vendure/discussions/categories/deployment).
+For a quick and simple deployment, we recommend following the [Deploying to Northflank guide]({{< relref "deploy-to-northflank" >}}).
+
+Community-contributed information about deploying to other platforms can be found in our [Deployment discussion category](https://github.com/vendure-ecommerce/vendure/discussions/categories/deployment).
