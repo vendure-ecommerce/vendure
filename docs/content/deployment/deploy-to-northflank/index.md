@@ -7,7 +7,7 @@ images:
 
 {{< figure src="./deploy-to-northflank.webp" >}}
 
-[Northflank](https://northflank.com) is a comprehensive developer platform to build and scale your apps. It has an outstanding developer experience and has a free tier for small projects, and is well-suited for deploying Vendure applications.
+[Northflank](https://northflank.com) is a comprehensive developer platform to build and scale your apps. It has an outstanding developer experience and has a free tier for small projects, and is well-suited for deploying and scaling Vendure applications.
 
 This guide will walk you through the steps to deploy [a sample Vendure application](https://github.com/vendure-ecommerce/one-click-deploy) to Northflank.
 
@@ -231,3 +231,11 @@ Once it is ready, you can navigate to the public URL and append `/admin` to the 
 Congratulations on deploying your Vendure server!
 
 
+## Next steps
+
+Now that you have a basic Vendure server up and running, you can explore some of the other features offered by Northflank that you might need for a full production setup:
+
+- [Set up a MinIO instance](https://northflank.com/docs/v1/application/databases-and-persistence/deploy-databases-on-northflank/deploy-minio-on-northflank) for storing assets using our [S3 asset storage integration]({{< relref "s3asset-storage-strategy" >}}#configures3assetstorage).
+- [Set up a Redis instance](https://northflank.com/docs/v1/application/databases-and-persistence/deploy-databases-on-northflank/deploy-redis-on-northflank) so that you can take advantage of our highly performant [BullMQJobQueuePlugin]({{< relref "bull-mqjob-queue-plugin" >}}) and set up [Redis-based session caching]({{< relref "session-cache-strategy" >}}) to handle multi-instance deployments.
+- With the above in place, you can safely start to [scale your server instances](https://northflank.com/docs/v1/application/scale/scaling-replicas) to handle more traffic. 
+- [Add a custom domain](https://northflank.com/docs/v1/application/domains/add-a-domain-to-your-account) using Northflank's powerful DNS management system.
