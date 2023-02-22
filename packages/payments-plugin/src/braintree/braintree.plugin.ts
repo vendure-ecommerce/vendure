@@ -101,7 +101,7 @@ import { BraintreePluginOptions } from './types';
  *       // Braintree account.
  *       paypal: {
  *         flow: 'checkout',
- *         amount: order.totalWithTax,
+ *         amount: order.totalWithTax / 100,
  *         currency: 'GBP',
  *       },
  *     }),

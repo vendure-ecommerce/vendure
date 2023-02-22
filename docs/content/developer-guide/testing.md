@@ -95,7 +95,7 @@ afterAll(async () => {
 
 An explanation of the options:
 
-* `productsCsvPath` This is a path to a CSV file containing product data. See [Product Import Format]({{< relref "importing-product-data" >}}#product-import-format). You can see [an example used in the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
+* `productsCsvPath` This is a path to an optional CSV file containing product data. See [Product Import Format]({{< relref "importing-product-data" >}}#product-import-format). You can see [an example used in the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
 * `initialData` This is an object which defines how other non-product data (Collections, ShippingMethods, Countries etc.) is populated. See [Initial Data Format]({{< relref "importing-product-data" >}}#initial-data). You can [copy this example from the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/e2e-common/e2e-initial-data.ts)
 * `customerCount` Specifies the number of fake Customers to create. Defaults to 10 if not specified.
 
