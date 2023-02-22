@@ -57,7 +57,12 @@ export class ProductPriceApplicator {
         ctx: RequestContext,
         order?: Order,
     ): Promise<ProductVariant> {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
+        const { productVariantPriceSelectionStrategy, productVariantPriceCalculationStrategy } =
+            this.configService.catalogOptions;
+        const channelPrice = await productVariantPriceSelectionStrategy.selectPrice(
+            ctx,
+            variant.productVariantPrices,
+        );
         if (!channelPrice) {
             throw new InternalServerError(`error.no-price-found-for-channel`, {
                 variantId: variant.id,
@@ -78,7 +83,6 @@ export class ProductPriceApplicator {
             () => this.taxRateService.getApplicableTaxRate(ctx, activeTaxZone, variant.taxCategory),
         );
 
-        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
         const { price, priceIncludesTax } = await productVariantPriceCalculationStrategy.calculate({
             inputPrice: channelPrice.price,
             taxCategory: variant.taxCategory,

@@ -18,6 +18,7 @@ import { DefaultPasswordValidationStrategy } from './auth/default-password-valid
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
+import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-product-variant-price-selection-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
@@ -103,6 +104,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
+        productVariantPriceSelectionStrategy: new DefaultProductVariantPriceSelectionStrategy(),
         productVariantPriceCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
         stockLocationStrategy: new DefaultStockLocationStrategy(),

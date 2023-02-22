@@ -18,6 +18,7 @@ import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
+import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
@@ -647,6 +648,15 @@ export interface CatalogOptions {
      * @default defaultCollectionFilters
      */
     collectionFilters?: Array<CollectionFilter<any>>;
+    /**
+     * @description
+     * Defines the strategy used to select the price of a ProductVariant, based on factors
+     * such as the active Channel and active CurrencyCode.
+     *
+     * @since 2.0.0
+     * @default DefaultProductVariantPriceSelectionStrategy
+     */
+    productVariantPriceSelectionStrategy?: ProductVariantPriceSelectionStrategy;
     /**
      * @description
      * Defines the strategy used for calculating the price of ProductVariants based
