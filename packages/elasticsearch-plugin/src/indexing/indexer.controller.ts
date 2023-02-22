@@ -940,7 +940,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             productVariantPreviewFocalPoint: undefined,
             price: 0,
             priceWithTax: 0,
-            currencyCode: ctx.channel.currencyCode,
+            currencyCode: ctx.currencyCode,
             description: productTranslation.description,
             facetIds: product.facetValues?.map(fv => fv.facet.id.toString()) ?? [],
             channelIds: [ctx.channelId],

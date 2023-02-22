@@ -474,7 +474,7 @@ export class OrderService {
             billingAddress: {},
             subTotal: 0,
             subTotalWithTax: 0,
-            currencyCode: ctx.channel.currencyCode,
+            currencyCode: ctx.currencyCode,
         });
     }
 

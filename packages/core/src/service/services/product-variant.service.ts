@@ -517,6 +517,7 @@ export class ProductVariantService {
             variantPrice = new ProductVariantPrice({
                 channelId,
                 variant: new ProductVariant({ id: productVariantId }),
+                currencyCode: ctx.currencyCode,
             });
         }
         variantPrice.price = price;

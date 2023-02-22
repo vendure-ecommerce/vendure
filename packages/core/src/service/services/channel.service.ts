@@ -222,7 +222,10 @@ export class ChannelService {
         ctx: RequestContext,
         input: CreateChannelInput,
     ): Promise<ErrorResultUnion<CreateChannelResult, Channel>> {
-        const channel = new Channel(input);
+        const channel = new Channel({
+            ...input,
+            defaultCurrencyCode: input.currencyCode,
+        });
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
         if (isGraphQlErrorResult(defaultLanguageValidationResult)) {
             return defaultLanguageValidationResult;
@@ -347,7 +350,7 @@ export class ChannelService {
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: this.configService.defaultLanguageCode,
                 pricesIncludeTax: false,
-                currencyCode: CurrencyCode.USD,
+                defaultCurrencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {

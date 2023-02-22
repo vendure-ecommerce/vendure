@@ -194,6 +194,7 @@ export class FastImporterService {
             const variantPrice = new ProductVariantPrice({
                 price: input.price,
                 channelId,
+                currencyCode: this.defaultChannel.defaultCurrencyCode,
             });
             variantPrice.variant = createdVariant;
             await this.connection

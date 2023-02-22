@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Request } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
@@ -97,6 +97,7 @@ export class RequestContextService {
 
         const hasOwnerPermission = !!requiredPermissions && requiredPermissions.includes(Permission.Owner);
         const languageCode = this.getLanguageCode(req, channel);
+        const currencyCode = this.getCurrencyCode(req, channel);
         const user = session && session.user;
         const isAuthorized = this.userHasRequiredPermissionsOnChannel(requiredPermissions, channel, user);
         const authorizedAsOwnerOnly = !isAuthorized && hasOwnerPermission;
@@ -106,6 +107,7 @@ export class RequestContextService {
             apiType,
             channel,
             languageCode,
+            currencyCode,
             session,
             isAuthorized,
             authorizedAsOwnerOnly,
@@ -131,6 +133,10 @@ export class RequestContextService {
             channel.defaultLanguageCode ??
             this.configService.defaultLanguageCode
         );
+    }
+
+    private getCurrencyCode(req: Request, channel: Channel): CurrencyCode | undefined {
+        return (req.query && (req.query.currencyCode as CurrencyCode)) ?? channel.defaultCurrencyCode;
     }
 
     /**

@@ -161,7 +161,7 @@ describe('RequestContext', () => {
             token: 'oiajwodij09au3r',
             id: '995859',
             code: '__default_channel__',
-            currencyCode: CurrencyCode.EUR,
+            defaultCurrencyCode: CurrencyCode.EUR,
             pricesIncludeTax: true,
             defaultLanguageCode: LanguageCode.en,
             defaultShippingZone: zone,

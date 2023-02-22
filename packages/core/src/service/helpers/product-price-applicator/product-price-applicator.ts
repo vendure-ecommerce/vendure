@@ -89,7 +89,7 @@ export class ProductPriceApplicator {
         variant.listPrice = price;
         variant.listPriceIncludesTax = priceIncludesTax;
         variant.taxRateApplied = applicableTaxRate;
-        variant.currencyCode = ctx.channel.currencyCode;
+        variant.currencyCode = channelPrice.currencyCode;
         return variant;
     }
 }

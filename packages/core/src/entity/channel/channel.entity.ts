@@ -50,7 +50,7 @@ export class Channel extends VendureEntity {
     defaultShippingZone: Zone;
 
     @Column('varchar')
-    currencyCode: CurrencyCode;
+    defaultCurrencyCode: CurrencyCode;
 
     @Column(type => CustomChannelFields)
     customFields: CustomChannelFields;
