@@ -3,6 +3,7 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     ActiveOrderService,
     Ctx,
+    Customer,
     ID,
     InternalServerError,
     Logger,
@@ -48,10 +49,30 @@ export class BraintreeResolver {
             const args = await this.getPaymentMethodArgs(ctx);
             const gateway = getGateway(args, this.options);
             try {
-                const result = await gateway.clientToken.generate({
+                let result = await gateway.clientToken.generate({
                     customerId: includeCustomerId === false ? undefined : customerId,
                 });
-                return result.clientToken;
+                if (result.success === true) {
+                    return result.clientToken;
+                } else {
+                    if (result.message === 'Customer specified by customer_id does not exist') {
+                        // For some reason the custom_id is invalid. This could occur e.g. if the ID was created on the Sandbox endpoint and now
+                        // we switched to Production. In this case, we will remove it and allow a new one
+                        // to be generated when the payment is created.
+                        if (this.options.storeCustomersInBraintree) {
+                            order.customer.customFields.braintreeCustomerId = undefined;
+                            await this.connection.getRepository(ctx, Customer).save(order.customer);
+                        }
+                        result = await gateway.clientToken.generate({ customerId: undefined });
+                        if (result.success === true) {
+                            return result.clientToken;
+                        }
+                    }
+                    Logger.error(`Could not generate Braintree clientToken: ${result.message}`, loggerCtx);
+                    throw new InternalServerError(
+                        `Could not generate Braintree clientToken: ${result.message}`,
+                    );
+                }
             } catch (e) {
                 Logger.error(
                     `Could not generate Braintree clientToken. Check the configured credentials.`,
