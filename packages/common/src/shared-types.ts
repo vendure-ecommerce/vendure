@@ -87,6 +87,7 @@ export type ID = string | number;
  * string       | varchar                               | String
  * localeString | varchar                               | String
  * text         | longtext(m), text(p,s)                | String
+ * localText    | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
@@ -106,7 +107,8 @@ export type CustomFieldType =
     | 'boolean'
     | 'datetime'
     | 'relation'
-    | 'text';
+    | 'text'
+    | 'localeText';
 
 /**
  * @description

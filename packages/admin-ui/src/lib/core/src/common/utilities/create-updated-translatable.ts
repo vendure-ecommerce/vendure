@@ -35,7 +35,7 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
     if (customFieldConfig && updatedFields.hasOwnProperty('customFields')) {
         for (const field of customFieldConfig) {
             const value = updatedFields.customFields[field.name];
-            if (field.type === 'localeString') {
+            if (field.type === 'localeString' || field.type === 'localeText') {
                 newTranslatedCustomFields[field.name] = value;
             } else {
                 newCustomFields[field.name] =
@@ -64,6 +64,7 @@ function getDefaultValue(type: CustomFieldType): any {
         case 'localeString':
         case 'string':
         case 'text':
+        case 'localeText':
             return '';
         case 'boolean':
             return false;

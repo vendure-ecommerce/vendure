@@ -299,7 +299,8 @@ export class DynamicFormInputComponent
                     return { component: 'text-form-input' };
                 }
             }
-            case 'text': {
+            case 'text':
+            case 'localeText': {
                 return { component: 'textarea-form-input' };
             }
             case 'int':

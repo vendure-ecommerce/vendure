@@ -67,6 +67,8 @@ export function generateResolvers(
                     return 'LocaleStringCustomFieldConfig';
                 case 'text':
                     return 'TextCustomFieldConfig';
+                case 'localeText':
+                    return 'LocaleTextCustomFieldConfig';
                 case 'int':
                     return 'IntCustomFieldConfig';
                 case 'float':

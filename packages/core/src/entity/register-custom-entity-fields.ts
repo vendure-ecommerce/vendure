@@ -137,11 +137,11 @@ function registerCustomFieldsForEntity(
             };
 
             if (translation) {
-                if (customField.type === 'localeString') {
+                if (customField.type === 'localeString' || customField.type === 'localeText') {
                     registerColumn();
                 }
             } else {
-                if (customField.type !== 'localeString') {
+                if (customField.type !== 'localeString' && customField.type !== 'localeText') {
                     registerColumn();
                 }
             }
@@ -193,6 +193,7 @@ function getColumnType(
         case 'localeString':
             return 'varchar';
         case 'text':
+        case 'localeText':
             switch (dbEngine) {
                 case 'mysql':
                 case 'mariadb':
