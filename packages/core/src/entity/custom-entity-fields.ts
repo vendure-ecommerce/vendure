@@ -17,6 +17,7 @@ export class CustomGlobalSettingsFields {}
 export class CustomOrderFields {}
 export class CustomOrderLineFields {}
 export class CustomPaymentMethodFields {}
+export class CustomPaymentMethodFieldsTranslation {}
 export class CustomProductFields {}
 export class CustomProductFieldsTranslation {}
 export class CustomProductOptionFields {}

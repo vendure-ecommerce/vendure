@@ -79,13 +79,18 @@ describe('PaymentMethod resolver', () => {
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: 'no-checks',
-                name: 'No Checker',
-                description: 'This is a test payment method',
                 enabled: true,
                 handler: {
                     code: dummyPaymentHandler.code,
                     arguments: [{ name: 'automaticSettle', value: 'true' }],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'No Checker',
+                        description: 'This is a test payment method',
+                    },
+                ],
             },
         });
 
@@ -115,7 +120,6 @@ describe('PaymentMethod resolver', () => {
         >(UPDATE_PAYMENT_METHOD, {
             input: {
                 id: 'T_1',
-                description: 'modified',
                 checker: {
                     code: minPriceChecker.code,
                     arguments: [{ name: 'minPrice', value: '0' }],
@@ -124,6 +128,12 @@ describe('PaymentMethod resolver', () => {
                     code: dummyPaymentHandler.code,
                     arguments: [{ name: 'automaticSettle', value: 'false' }],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        description: 'modified',
+                    },
+                ],
             },
         });
 
@@ -200,8 +210,6 @@ describe('PaymentMethod resolver', () => {
             >(CREATE_PAYMENT_METHOD, {
                 input: {
                     code: 'price-check',
-                    name: 'With Min Price Checker',
-                    description: 'Order total must be more than 2k',
                     enabled: true,
                     checker: {
                         code: minPriceChecker.code,
@@ -211,6 +219,13 @@ describe('PaymentMethod resolver', () => {
                         code: dummyPaymentHandler.code,
                         arguments: [{ name: 'automaticSettle', value: 'true' }],
                     },
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'With Min Price Checker',
+                            description: 'Order total must be more than 2k',
+                        },
+                    ],
                 },
             });
             await adminClient.query<
@@ -219,13 +234,18 @@ describe('PaymentMethod resolver', () => {
             >(CREATE_PAYMENT_METHOD, {
                 input: {
                     code: 'disabled-method',
-                    name: 'Disabled ones',
-                    description: 'This method is disabled',
                     enabled: false,
                     handler: {
                         code: dummyPaymentHandler.code,
                         arguments: [{ name: 'automaticSettle', value: 'true' }],
                     },
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Disabled ones',
+                            description: 'This method is disabled',
+                        },
+                    ],
                 },
             });
 
@@ -325,13 +345,18 @@ describe('PaymentMethod resolver', () => {
             >(CREATE_PAYMENT_METHOD, {
                 input: {
                     code: 'channel-2-method',
-                    name: 'Channel 2 method',
-                    description: 'This is a test payment method',
                     enabled: true,
                     handler: {
                         code: dummyPaymentHandler.code,
                         arguments: [{ name: 'automaticSettle', value: 'true' }],
                     },
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel 2 method',
+                            description: 'This is a test payment method',
+                        },
+                    ],
                 },
             });
 
@@ -407,13 +432,18 @@ describe('PaymentMethod resolver', () => {
             >(CREATE_PAYMENT_METHOD, {
                 input: {
                     code: 'channel-2-method2',
-                    name: 'Channel 2 method 2',
-                    description: 'This is a test payment method',
                     enabled: true,
                     handler: {
                         code: dummyPaymentHandler.code,
                         arguments: [{ name: 'automaticSettle', value: 'true' }],
                     },
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel 2 method 2',
+                            description: 'This is a test payment method',
+                        },
+                    ],
                 },
             });
 

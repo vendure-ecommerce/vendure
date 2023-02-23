@@ -745,10 +745,9 @@ export type CreatePaymentMethodInput = {
   checker?: InputMaybe<ConfigurableOperationInput>;
   code: Scalars['String'];
   customFields?: InputMaybe<Scalars['JSON']>;
-  description?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
   handler: ConfigurableOperationInput;
-  name: Scalars['String'];
+  translations: Array<PaymentMethodTranslationInput>;
 };
 
 export type CreateProductInput = {
@@ -3821,6 +3820,7 @@ export type PaymentMethod = Node & {
   handler: ConfigurableOperation;
   id: Scalars['ID'];
   name: Scalars['String'];
+  translations: Array<PaymentMethodTranslation>;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -3881,6 +3881,24 @@ export type PaymentMethodSortParameter = {
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PaymentMethodTranslation = {
+  __typename?: 'PaymentMethodTranslation';
+  createdAt: Scalars['DateTime'];
+  description: Scalars['String'];
+  id: Scalars['ID'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type PaymentMethodTranslationInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 /** Returned if an attempting to refund a Payment against OrderLines from a different Order */
@@ -5728,11 +5746,10 @@ export type UpdatePaymentMethodInput = {
   checker?: InputMaybe<ConfigurableOperationInput>;
   code?: InputMaybe<Scalars['String']>;
   customFields?: InputMaybe<Scalars['JSON']>;
-  description?: InputMaybe<Scalars['String']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   handler?: InputMaybe<ConfigurableOperationInput>;
   id: Scalars['ID'];
-  name?: InputMaybe<Scalars['String']>;
+  translations?: InputMaybe<Array<PaymentMethodTranslationInput>>;
 };
 
 export type UpdateProductInput = {

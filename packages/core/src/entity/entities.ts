@@ -28,6 +28,7 @@ import { RefundLine } from './order-line-reference/refund-line.entity';
 import { OrderLine } from './order-line/order-line.entity';
 import { OrderModification } from './order-modification/order-modification.entity';
 import { Order } from './order/order.entity';
+import { PaymentMethodTranslation } from './payment-method/payment-method-translation.entity';
 import { PaymentMethod } from './payment-method/payment-method.entity';
 import { Payment } from './payment/payment.entity';
 import { ProductOptionGroupTranslation } from './product-option-group/product-option-group-translation.entity';
@@ -105,6 +106,7 @@ export const coreEntitiesMap = {
     OrderModification,
     Payment,
     PaymentMethod,
+    PaymentMethodTranslation,
     Product,
     ProductAsset,
     ProductOption,

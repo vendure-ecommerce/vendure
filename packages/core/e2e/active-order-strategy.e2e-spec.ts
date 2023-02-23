@@ -1,4 +1,4 @@
-import { DefaultLogger, mergeConfig, orderPercentageDiscount } from '@vendure/core';
+import { mergeConfig, orderPercentageDiscount } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -25,7 +25,6 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('custom ActiveOrderStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
             plugins: [TokenActiveOrderPlugin],
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],

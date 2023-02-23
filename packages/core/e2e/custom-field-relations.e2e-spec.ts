@@ -1058,14 +1058,14 @@ describe('Custom field relations', () => {
                     mutation {
                         createPaymentMethod(
                             input: {
-                                name: "test"
                                 code: "test"
                                 enabled: true
                                 handler: {
                                     code: "${testSuccessfulPaymentMethod.code}"
                                     arguments: []
                                 }
-                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] }
+                                customFields: { singleId: "T_1", multiIds: ["T_1", "T_2"] },
+                                translations: [{ languageCode: en, name: "test" }]
                             }
                         ) {
                             id
@@ -1084,7 +1084,7 @@ describe('Custom field relations', () => {
                         updatePaymentMethod(
                             input: {
                                 id: "${paymentMethodId}"
-                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] }
+                                customFields: { singleId: "T_2", multiIds: ["T_3", "T_4"] },
                             }
                         ) {
                             id

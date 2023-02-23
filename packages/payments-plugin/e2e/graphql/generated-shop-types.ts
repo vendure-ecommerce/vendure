@@ -2168,6 +2168,7 @@ export type PaymentMethod = Node & {
     handler: ConfigurableOperation;
     id: Scalars['ID'];
     name: Scalars['String'];
+    translations: Array<PaymentMethodTranslation>;
     updatedAt: Scalars['DateTime'];
 };
 
@@ -2179,6 +2180,15 @@ export type PaymentMethodQuote = {
     id: Scalars['ID'];
     isEligible: Scalars['Boolean'];
     name: Scalars['String'];
+};
+
+export type PaymentMethodTranslation = {
+    createdAt: Scalars['DateTime'];
+    description: Scalars['String'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
 };
 
 /**
