@@ -745,10 +745,9 @@ export type CreatePaymentMethodInput = {
   checker?: InputMaybe<ConfigurableOperationInput>;
   code: Scalars['String'];
   customFields?: InputMaybe<Scalars['JSON']>;
-  description?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
   handler: ConfigurableOperationInput;
-  name: Scalars['String'];
+  translations: Array<PaymentMethodTranslationInput>;
 };
 
 export type CreateProductInput = {
@@ -3884,6 +3883,7 @@ export type PaymentMethod = Node & {
   handler: ConfigurableOperation;
   id: Scalars['ID'];
   name: Scalars['String'];
+  translations: Array<PaymentMethodTranslation>;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -3944,6 +3944,24 @@ export type PaymentMethodSortParameter = {
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PaymentMethodTranslation = {
+  __typename?: 'PaymentMethodTranslation';
+  createdAt: Scalars['DateTime'];
+  description: Scalars['String'];
+  id: Scalars['ID'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type PaymentMethodTranslationInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 /** Returned if an attempting to refund a Payment against OrderLines from a different Order */
@@ -5804,11 +5822,10 @@ export type UpdatePaymentMethodInput = {
   checker?: InputMaybe<ConfigurableOperationInput>;
   code?: InputMaybe<Scalars['String']>;
   customFields?: InputMaybe<Scalars['JSON']>;
-  description?: InputMaybe<Scalars['String']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   handler?: InputMaybe<ConfigurableOperationInput>;
   id: Scalars['ID'];
-  name?: InputMaybe<Scalars['String']>;
+  translations?: InputMaybe<Array<PaymentMethodTranslationInput>>;
 };
 
 export type UpdateProductInput = {
@@ -7362,14 +7379,14 @@ export type DeleteChannelMutationVariables = Exact<{
 
 export type DeleteChannelMutation = { deleteChannel: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
-export type PaymentMethodFragment = { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } };
+export type PaymentMethodFragment = { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, translations: Array<{ __typename?: 'PaymentMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }>, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } };
 
 export type GetPaymentMethodListQueryVariables = Exact<{
   options: PaymentMethodListOptions;
 }>;
 
 
-export type GetPaymentMethodListQuery = { paymentMethods: { __typename?: 'PaymentMethodList', totalItems: number, items: Array<{ __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } }> } };
+export type GetPaymentMethodListQuery = { paymentMethods: { __typename?: 'PaymentMethodList', totalItems: number, items: Array<{ __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, translations: Array<{ __typename?: 'PaymentMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }>, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } }> } };
 
 export type GetPaymentMethodOperationsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7381,21 +7398,21 @@ export type GetPaymentMethodQueryVariables = Exact<{
 }>;
 
 
-export type GetPaymentMethodQuery = { paymentMethod?: { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } } | null };
+export type GetPaymentMethodQuery = { paymentMethod?: { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, translations: Array<{ __typename?: 'PaymentMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }>, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } } | null };
 
 export type CreatePaymentMethodMutationVariables = Exact<{
   input: CreatePaymentMethodInput;
 }>;
 
 
-export type CreatePaymentMethodMutation = { createPaymentMethod: { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } } };
+export type CreatePaymentMethodMutation = { createPaymentMethod: { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, translations: Array<{ __typename?: 'PaymentMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }>, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } } };
 
 export type UpdatePaymentMethodMutationVariables = Exact<{
   input: UpdatePaymentMethodInput;
 }>;
 
 
-export type UpdatePaymentMethodMutation = { updatePaymentMethod: { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } } };
+export type UpdatePaymentMethodMutation = { updatePaymentMethod: { __typename?: 'PaymentMethod', id: string, createdAt: any, updatedAt: any, name: string, code: string, description: string, enabled: boolean, translations: Array<{ __typename?: 'PaymentMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }>, checker?: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } | null, handler: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> } } };
 
 export type DeletePaymentMethodMutationVariables = Exact<{
   id: Scalars['ID'];

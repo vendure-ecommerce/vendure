@@ -23,6 +23,7 @@ export class PaymentMethodResolver extends BaseEntityResolver<PaymentMethodFragm
                 enabled: true,
                 checker: undefined as any,
                 handler: undefined as any,
+                translations: [],
             },
             id => dataService.settings.getPaymentMethod(id).mapStream(data => data.paymentMethod),
         );

@@ -469,6 +469,12 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         code
         description
         enabled
+        translations {
+            id
+            languageCode
+            name
+            description
+        }
         checker {
             ...ConfigurableOperation
         }
