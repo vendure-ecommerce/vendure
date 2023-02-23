@@ -751,13 +751,9 @@ export type CreatePaymentMethodInput = {
   name: Scalars['String'];
 };
 
-export type CreateProductCustomFieldsInput = {
-  test?: InputMaybe<Scalars['String']>;
-};
-
 export type CreateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<CreateProductCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
@@ -4207,7 +4203,7 @@ export type Product = Node & {
   channels: Array<Channel>;
   collections: Array<Collection>;
   createdAt: Scalars['DateTime'];
-  customFields?: Maybe<ProductCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
   description: Scalars['String'];
   enabled: Scalars['Boolean'];
   facetValues: Array<FacetValue>;
@@ -4230,11 +4226,6 @@ export type ProductVariantListArgs = {
   options?: InputMaybe<ProductVariantListOptions>;
 };
 
-export type ProductCustomFields = {
-  __typename?: 'ProductCustomFields';
-  test?: Maybe<Scalars['String']>;
-};
-
 export type ProductFilterParameter = {
   createdAt?: InputMaybe<DateOperators>;
   description?: InputMaybe<StringOperators>;
@@ -4243,7 +4234,6 @@ export type ProductFilterParameter = {
   languageCode?: InputMaybe<StringOperators>;
   name?: InputMaybe<StringOperators>;
   slug?: InputMaybe<StringOperators>;
-  test?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
 };
 
@@ -4339,7 +4329,6 @@ export type ProductSortParameter = {
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
   slug?: InputMaybe<SortOrder>;
-  test?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
 };
 
@@ -5822,13 +5811,9 @@ export type UpdatePaymentMethodInput = {
   name?: InputMaybe<Scalars['String']>;
 };
 
-export type UpdateProductCustomFieldsInput = {
-  test?: InputMaybe<Scalars['String']>;
-};
-
 export type UpdateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']>>;
-  customFields?: InputMaybe<UpdateProductCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']>;
   enabled?: InputMaybe<Scalars['Boolean']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']>;
