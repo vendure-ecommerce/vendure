@@ -12,6 +12,7 @@ export const PROMOTION_FRAGMENT = gql`
         createdAt
         updatedAt
         name
+        description
         enabled
         couponCode
         perCustomerUsageLimit
@@ -22,6 +23,12 @@ export const PROMOTION_FRAGMENT = gql`
         }
         actions {
             ...ConfigurableOperation
+        }
+        translations {
+            id
+            languageCode
+            name
+            description
         }
     }
     ${CONFIGURABLE_OPERATION_FRAGMENT}

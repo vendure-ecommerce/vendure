@@ -6,6 +6,12 @@
                 <input type="checkbox" clrToggle name="enabled" [formControl]="detailForm.get(['enabled'])" />
                 <label>{{ 'common.enabled' | translate }}</label>
             </clr-toggle-wrapper>
+            <vdr-language-selector
+                [disabled]="isNew$ | async"
+                [availableLanguageCodes]="availableLanguages$ | async"
+                [currentLanguageCode]="languageCode$ | async"
+                (languageCodeChange)="setLanguage($event)"
+            ></vdr-language-selector>
         </div>
     </vdr-ab-left>
 
@@ -41,6 +47,11 @@
             formControlName="name"
         />
     </vdr-form-field>
+    <vdr-rich-text-editor
+        formControlName="description"
+        [readonly]="!('UpdatePromotion' | hasPermission)"
+        [label]="'common.description' | translate"
+    ></vdr-rich-text-editor>
     <vdr-form-field [label]="'marketing.starts-at' | translate" for="startsAt">
         <vdr-datetime-picker formControlName="startsAt"></vdr-datetime-picker>
     </vdr-form-field>

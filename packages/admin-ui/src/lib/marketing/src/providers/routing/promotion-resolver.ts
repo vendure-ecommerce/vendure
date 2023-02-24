@@ -18,9 +18,12 @@ export class PromotionResolver extends BaseEntityResolver<PromotionFragment> {
                 createdAt: '',
                 updatedAt: '',
                 name: '',
+                description: '',
+                couponCode: '',
                 enabled: false,
                 conditions: [],
                 actions: [],
+                translations: [],
             },
             id => dataService.promotion.getPromotion(id).mapStream(data => data.promotion),
         );

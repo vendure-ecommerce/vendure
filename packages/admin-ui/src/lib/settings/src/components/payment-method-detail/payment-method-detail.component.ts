@@ -219,7 +219,7 @@ export class PaymentMethodDetailComponent
     }
 
     /**
-     * Given a facet and the value of the detailForm, this method creates an updated copy of the facet which
+     * Given a PaymentMethod and the value of the detailForm, this method creates an updated copy of it which
      * can then be persisted to the API.
      */
     private getUpdatedPaymentMethod(
