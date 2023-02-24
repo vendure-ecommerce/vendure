@@ -317,8 +317,8 @@ describe('Promotions applied to Orders', () => {
 
             beforeAll(async () => {
                 const { createChannel } = await adminClient.query<
-                    CreateChannel.Mutation,
-                    CreateChannel.Variables
+                    Codegen.CreateChannelMutation,
+                    Codegen.CreateChannelMutationVariables
                 >(CREATE_CHANNEL, {
                     input: {
                         code: 'other-channel',
@@ -1758,12 +1758,19 @@ describe('Promotions applied to Orders', () => {
         await deletePromotion(deletedPromotion.id);
     }
 
-    async function createPromotion(input: Codegen.CreatePromotionInput): Promise<Codegen.PromotionFragment> {
+    async function createPromotion(
+        input: Omit<Codegen.CreatePromotionInput, 'translations'> & { name: string },
+    ): Promise<Codegen.PromotionFragment> {
+        const correctedInput = {
+            ...input,
+            translations: [{ languageCode: LanguageCode.en, name: input.name }],
+        };
+        delete (correctedInput as any).name;
         const result = await adminClient.query<
             Codegen.CreatePromotionMutation,
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
-            input,
+            input: correctedInput,
         });
         return result.createPromotion as Codegen.PromotionFragment;
     }

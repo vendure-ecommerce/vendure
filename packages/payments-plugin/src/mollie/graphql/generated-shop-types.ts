@@ -2746,12 +2746,14 @@ export type Promotion = Node & {
     couponCode?: Maybe<Scalars['String']>;
     createdAt: Scalars['DateTime'];
     customFields?: Maybe<Scalars['JSON']>;
+    description: Scalars['String'];
     enabled: Scalars['Boolean'];
     endsAt?: Maybe<Scalars['DateTime']>;
     id: Scalars['ID'];
     name: Scalars['String'];
     perCustomerUsageLimit?: Maybe<Scalars['Int']>;
     startsAt?: Maybe<Scalars['DateTime']>;
+    translations: Array<PromotionTranslation>;
     updatedAt: Scalars['DateTime'];
 };
 
@@ -2759,6 +2761,16 @@ export type PromotionList = PaginatedList & {
     __typename?: 'PromotionList';
     items: Array<Promotion>;
     totalItems: Scalars['Int'];
+};
+
+export type PromotionTranslation = {
+    __typename?: 'PromotionTranslation';
+    createdAt: Scalars['DateTime'];
+    description: Scalars['String'];
+    id: Scalars['ID'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    updatedAt: Scalars['DateTime'];
 };
 
 export type Query = {

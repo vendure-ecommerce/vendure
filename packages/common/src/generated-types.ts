@@ -804,9 +804,9 @@ export type CreatePromotionInput = {
   customFields?: InputMaybe<Scalars['JSON']>;
   enabled: Scalars['Boolean'];
   endsAt?: InputMaybe<Scalars['DateTime']>;
-  name: Scalars['String'];
   perCustomerUsageLimit?: InputMaybe<Scalars['Int']>;
   startsAt?: InputMaybe<Scalars['DateTime']>;
+  translations: Array<PromotionTranslationInput>;
 };
 
 export type CreatePromotionResult = MissingConditionsError | Promotion;
@@ -4423,18 +4423,21 @@ export type Promotion = Node & {
   couponCode?: Maybe<Scalars['String']>;
   createdAt: Scalars['DateTime'];
   customFields?: Maybe<Scalars['JSON']>;
+  description: Scalars['String'];
   enabled: Scalars['Boolean'];
   endsAt?: Maybe<Scalars['DateTime']>;
   id: Scalars['ID'];
   name: Scalars['String'];
   perCustomerUsageLimit?: Maybe<Scalars['Int']>;
   startsAt?: Maybe<Scalars['DateTime']>;
+  translations: Array<PromotionTranslation>;
   updatedAt: Scalars['DateTime'];
 };
 
 export type PromotionFilterParameter = {
   couponCode?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
+  description?: InputMaybe<StringOperators>;
   enabled?: InputMaybe<BooleanOperators>;
   endsAt?: InputMaybe<DateOperators>;
   id?: InputMaybe<IdOperators>;
@@ -4466,12 +4469,31 @@ export type PromotionListOptions = {
 export type PromotionSortParameter = {
   couponCode?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
   endsAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
   perCustomerUsageLimit?: InputMaybe<SortOrder>;
   startsAt?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type PromotionTranslation = {
+  __typename?: 'PromotionTranslation';
+  createdAt: Scalars['DateTime'];
+  description: Scalars['String'];
+  id: Scalars['ID'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
+};
+
+export type PromotionTranslationInput = {
+  customFields?: InputMaybe<Scalars['JSON']>;
+  description?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: InputMaybe<Scalars['String']>;
 };
 
 /** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
@@ -5802,9 +5824,9 @@ export type UpdatePromotionInput = {
   enabled?: InputMaybe<Scalars['Boolean']>;
   endsAt?: InputMaybe<Scalars['DateTime']>;
   id: Scalars['ID'];
-  name?: InputMaybe<Scalars['String']>;
   perCustomerUsageLimit?: InputMaybe<Scalars['Int']>;
   startsAt?: InputMaybe<Scalars['DateTime']>;
+  translations?: InputMaybe<Array<PromotionTranslationInput>>;
 };
 
 export type UpdatePromotionResult = MissingConditionsError | Promotion;

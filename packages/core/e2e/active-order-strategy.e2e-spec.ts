@@ -1,3 +1,4 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { mergeConfig, orderPercentageDiscount } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -148,7 +149,6 @@ describe('custom ActiveOrderStrategy', () => {
                 {
                     input: {
                         enabled: true,
-                        name: 'Free with test coupon',
                         couponCode: TEST_COUPON_CODE,
                         conditions: [],
                         actions: [
@@ -157,6 +157,7 @@ describe('custom ActiveOrderStrategy', () => {
                                 arguments: [{ name: 'discount', value: '100' }],
                             },
                         ],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Free with test coupon' }],
                     },
                 },
             );

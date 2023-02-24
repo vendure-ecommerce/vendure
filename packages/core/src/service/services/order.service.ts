@@ -767,7 +767,7 @@ export class OrderService {
             channelId: ctx.channelId,
             relations: ['promotions'],
         });
-        return order.promotions || [];
+        return order.promotions.map(p => this.translator.translate(p, ctx)) || [];
     }
 
     /**

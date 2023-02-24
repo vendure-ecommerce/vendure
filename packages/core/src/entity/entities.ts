@@ -42,6 +42,7 @@ import { ProductVariant } from './product-variant/product-variant.entity';
 import { ProductAsset } from './product/product-asset.entity';
 import { ProductTranslation } from './product/product-translation.entity';
 import { Product } from './product/product.entity';
+import { PromotionTranslation } from './promotion/promotion-translation.entity';
 import { Promotion } from './promotion/promotion.entity';
 import { Refund } from './refund/refund.entity';
 import { Role } from './role/role.entity';
@@ -119,6 +120,7 @@ export const coreEntitiesMap = {
     ProductVariantPrice,
     ProductVariantTranslation,
     Promotion,
+    PromotionTranslation,
     Refund,
     RefundLine,
     Release,

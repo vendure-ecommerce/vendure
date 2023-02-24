@@ -73,11 +73,17 @@ describe('Promotion resolver', () => {
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'test promotion',
                 enabled: true,
                 couponCode: 'TEST123',
                 startsAt: new Date('2019-10-30T00:00:00.000Z'),
                 endsAt: new Date('2019-12-01T00:00:00.000Z'),
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'test promotion',
+                        description: 'a test promotion',
+                    },
+                ],
                 conditions: [
                     {
                         code: promoCondition.code,
@@ -109,8 +115,13 @@ describe('Promotion resolver', () => {
             Codegen.CreatePromotionMutationVariables
         >(CREATE_PROMOTION, {
             input: {
-                name: 'bad promotion',
                 enabled: true,
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'bad promotion',
+                    },
+                ],
                 conditions: [],
                 actions: [
                     {

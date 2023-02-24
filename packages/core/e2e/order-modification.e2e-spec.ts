@@ -1307,7 +1307,6 @@ describe('Order modification', () => {
                 Codegen.CreatePromotionMutationVariables
             >(CREATE_PROMOTION, {
                 input: {
-                    name: '$5 off',
                     couponCode: '5OFF',
                     enabled: true,
                     conditions: [],
@@ -1317,6 +1316,7 @@ describe('Order modification', () => {
                             arguments: [{ name: 'discount', value: '500' }],
                         },
                     ],
+                    translations: [{ languageCode: LanguageCode.en, name: '$5 off' }],
                 },
             });
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
@@ -1456,7 +1456,6 @@ describe('Order modification', () => {
             CREATE_PROMOTION,
             {
                 input: {
-                    name: '$5 off',
                     couponCode: '5OFF',
                     enabled: true,
                     conditions: [],
@@ -1466,6 +1465,7 @@ describe('Order modification', () => {
                             arguments: [{ name: 'discount', value: '500' }],
                         },
                     ],
+                    translations: [{ languageCode: LanguageCode.en, name: '$5 off' }],
                 },
             },
         );
@@ -1571,7 +1571,6 @@ describe('Order modification', () => {
                 Codegen.CreatePromotionMutationVariables
             >(CREATE_PROMOTION, {
                 input: {
-                    name: 'half price',
                     couponCode: 'HALF',
                     enabled: true,
                     conditions: [],
@@ -1584,6 +1583,7 @@ describe('Order modification', () => {
                             ],
                         },
                     ],
+                    translations: [{ languageCode: LanguageCode.en, name: 'half price' }],
                 },
             });
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
@@ -1618,7 +1618,6 @@ describe('Order modification', () => {
                 Codegen.CreatePromotionMutationVariables
             >(CREATE_PROMOTION, {
                 input: {
-                    name: '$5 off',
                     couponCode: '5OFF2',
                     enabled: true,
                     conditions: [],
@@ -1628,6 +1627,7 @@ describe('Order modification', () => {
                             arguments: [{ name: 'discount', value: '500' }],
                         },
                     ],
+                    translations: [{ languageCode: LanguageCode.en, name: '$5 off' }],
                 },
             });
 
@@ -1686,7 +1686,6 @@ describe('Order modification', () => {
                     Codegen.CreatePromotionMutationVariables
                 >(CREATE_PROMOTION, {
                     input: {
-                        name: '50 off orders over 100',
                         enabled: true,
                         conditions: [
                             {
@@ -1703,6 +1702,7 @@ describe('Order modification', () => {
                                 arguments: [{ name: 'discount', value: JSON.stringify(promoDiscount) }],
                             },
                         ],
+                        translations: [{ languageCode: LanguageCode.en, name: '50 off orders over 100' }],
                     },
                 });
                 promoId = (createPromotion as any).id;
@@ -2097,7 +2097,6 @@ describe('Order modification', () => {
                 Codegen.CreatePromotionMutationVariables
             >(CREATE_PROMOTION, {
                 input: {
-                    name: '50% off',
                     couponCode: CODE_50PC_OFF,
                     enabled: true,
                     conditions: [],
@@ -2107,6 +2106,7 @@ describe('Order modification', () => {
                             arguments: [{ name: 'discount', value: '50' }],
                         },
                     ],
+                    translations: [{ languageCode: LanguageCode.en, name: '50% off' }],
                 },
             });
             await adminClient.query<
@@ -2114,11 +2114,11 @@ describe('Order modification', () => {
                 Codegen.CreatePromotionMutationVariables
             >(CREATE_PROMOTION, {
                 input: {
-                    name: 'Free shipping',
                     couponCode: CODE_FREE_SHIPPING,
                     enabled: true,
                     conditions: [],
                     actions: [{ code: freeShipping.code, arguments: [] }],
+                    translations: [{ languageCode: LanguageCode.en, name: 'Free shipping' }],
                 },
             });
 
