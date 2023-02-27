@@ -48,7 +48,7 @@ export interface EmailPluginOptions {
      * @description
      * Configures how the emails are sent.
      */
-    transport: EmailTransportOptions | ((ctx?: RequestContext) => EmailTransportOptions | Promise<EmailTransportOptions>)
+    transport: EmailTransportOptions | ((injector?: Injector, ctx?: RequestContext) => EmailTransportOptions | Promise<EmailTransportOptions>)
     /**
      * @description
      * An array of {@link EmailEventHandler}s which define which Vendure events will trigger

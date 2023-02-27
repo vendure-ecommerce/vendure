@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InternalServerError, Logger, RequestContext } from '@vendure/core';
+import { ModuleRef } from '@nestjs/core';
+import { Injector, InternalServerError, Logger, RequestContext } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
@@ -24,7 +25,10 @@ export class EmailProcessor {
     protected generator: EmailGenerator;
     protected transport: EmailTransportOptions;
 
-    constructor(@Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions) {}
+    constructor(
+        @Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions,
+        private moduleRef: ModuleRef,
+    ) { }
 
     async init() {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
@@ -79,7 +83,7 @@ export class EmailProcessor {
         }
     }
 
-    private async getTransportSettings(ctx?: RequestContext): Promise<EmailTransportOptions> {
+    async getTransportSettings(ctx?: RequestContext): Promise<EmailTransportOptions> {
         if (isDevModeOptions(this.options)) {
             return {
                 type: 'file',
@@ -87,7 +91,7 @@ export class EmailProcessor {
                 outputPath: this.options.outputPath,
             };
         } else {
-            return resolveTransportSettings(this.options, ctx);
+            return resolveTransportSettings(this.options, new Injector(this.moduleRef), ctx);
         }
     }
 }

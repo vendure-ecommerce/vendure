@@ -1,4 +1,4 @@
-import { RequestContext } from '@vendure/core';
+import { Injector, RequestContext } from '@vendure/core';
 
 import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions } from './types';
 
@@ -8,9 +8,13 @@ export function isDevModeOptions(
     return (input as EmailPluginDevModeOptions).devMode === true;
 }
 
-export async function resolveTransportSettings(options: EmailPluginOptions ,ctx?: RequestContext): Promise<EmailTransportOptions> {
+export async function resolveTransportSettings(
+    options: EmailPluginOptions,
+    injector: Injector,
+    ctx?: RequestContext
+): Promise<EmailTransportOptions> {
     if (typeof options.transport === 'function') {
-        return options.transport(ctx);
+        return options.transport(injector, ctx);
     } else {
         return options.transport;
     }

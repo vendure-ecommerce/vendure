@@ -3,24 +3,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import {
+    DefaultLogger,
     EventBus,
+    Injector,
     LanguageCode,
     Logger,
+    LogLevel,
     Order,
     OrderStateTransitionEvent,
     PluginCommonModule,
     RequestContext,
-    Type,
     VendureEvent,
 } from '@vendure/core';
 import { TestingLogger } from '@vendure/testing';
 import { createReadStream, readFileSync } from 'fs';
-import { readFile } from 'fs-extra';
 import path from 'path';
 import { Readable } from 'stream';
-
-import { resolveTransportSettings } from './common';
 import { orderConfirmationHandler } from './default-email-handlers';
+import { EmailProcessor } from './email-processor';
 import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-handler';
 import { EmailEventListener } from './event-listener';
@@ -861,32 +861,53 @@ describe('EmailPlugin', () => {
     });
 
     describe('Dynamic transport settings', () => {
-        let plugin: Type<EmailPlugin>;
+        let injectorArg: Injector | undefined;
+        let ctxArg: RequestContext | undefined;
 
-        it('Allows async settings definition', async () => {
-            plugin = EmailPlugin.init({
-                templatePath: path.join(__dirname, '../test-templates'),
-                handlers: [],
-                transport: async (ctx) => {
+        it('Initializes with async transport settings', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello')
+                .setTemplateVars(event => ({ subjectVar: 'foo' }));
+            module = await initPluginWithHandlers([handler], {
+                transport: async (injector, ctx) => {
+                    if (ctx) {
+                        console.error('transport called==================', ctx);
+                    }
+                    injectorArg = injector;
+                    ctxArg = ctx;
                     return {
-                        type: 'smtp',
-                        host: 'smtp.test.eu',
-                        port: 587,
-                        secure: false,
-                        auth: {
-                            user: 'test-user',
-                            pass: 'test-pass',
-                        }
+                        type: 'testing',
+                        onSend: () => {},
                     }
                 }
             });
-            expect(typeof (plugin as any).options.transport).toBe('function');
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            module!.get(EventBus).publish(new MockEvent(ctx, true));
+            await pause();
+            expect(module).toBeDefined();
+            expect(typeof (module.get(EmailPlugin) as any).options.transport).toBe('function');
+        });
+
+        it('Passes injector and context to transport function', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            module!.get(EventBus).publish(new MockEvent(ctx, true));
+            await pause();
+            expect(injectorArg?.constructor.name).toBe('Injector');
+            expect(ctxArg?.constructor.name).toBe('RequestContext');
         });
 
         it('Resolves async transport settings', async () => {
-            const transport =await resolveTransportSettings((plugin as any).options);
-            expect(transport.type).toBe('smtp');
-            expect(transport.host).toBe('smtp.test.eu');
+            const transport = await module!.get(EmailProcessor).getTransportSettings();
+            expect(transport.type).toBe('testing');
         });
     });
 });

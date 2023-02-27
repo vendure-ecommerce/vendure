@@ -19,6 +19,7 @@ import {
     Type,
     VendurePlugin,
 } from '@vendure/core';
+import Module from 'module';
 
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
@@ -193,9 +194,9 @@ import {
  *     EmailPlugin.init({
  *       handlers: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'static/email/templates'),
- *       transport: (ctx) => {
+ *       transport: (injector, ctx) => {
  *         if (ctx) {
- *           return getMySettings(ctx);
+ *           return injector.get(MyTransportService).getSettings(ctx);
  *         } else {
  *           return defaultSettings;
  *         }
@@ -275,7 +276,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
         @Inject(EMAIL_PLUGIN_OPTIONS) private options: EmailPluginOptions,
-    ) {}
+    ) { }
 
     /**
      * Set the plugin options.
@@ -289,10 +290,11 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     async onApplicationBootstrap(): Promise<void> {
         await this.initInjectableStrategies();
         await this.setupEventSubscribers();
-        if (!isDevModeOptions(this.options) && (await resolveTransportSettings(this.options)).type === 'testing') {
+        const transport = await resolveTransportSettings(this.options, new Injector(this.moduleRef));
+        if (!isDevModeOptions(this.options) && transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(this.options);
+            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();
