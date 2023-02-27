@@ -276,7 +276,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
         @Inject(EMAIL_PLUGIN_OPTIONS) private options: EmailPluginOptions,
-    ) { }
+    ) {}
 
     /**
      * Set the plugin options.
