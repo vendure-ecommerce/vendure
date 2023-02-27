@@ -10,6 +10,7 @@ import {
     OrderStateTransitionEvent,
     PluginCommonModule,
     RequestContext,
+    Type,
     VendureEvent,
 } from '@vendure/core';
 import { TestingLogger } from '@vendure/testing';
@@ -18,6 +19,7 @@ import { readFile } from 'fs-extra';
 import path from 'path';
 import { Readable } from 'stream';
 
+import { resolveTransportSettings } from './common';
 import { orderConfirmationHandler } from './default-email-handlers';
 import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-handler';
@@ -855,6 +857,36 @@ describe('EmailPlugin', () => {
             await pause();
 
             expect(onSend.mock.calls[0][0].replyTo).toBe('foo@bar.com');
+        });
+    });
+
+    describe('Dynamic transport settings', () => {
+        let plugin: Type<EmailPlugin>;
+
+        it('Allows async settings definition', async () => {
+            plugin = EmailPlugin.init({
+                templatePath: path.join(__dirname, '../test-templates'),
+                handlers: [],
+                transport: async (ctx) => {
+                    return {
+                        type: 'smtp',
+                        host: 'smtp.test.eu',
+                        port: 587,
+                        secure: false,
+                        auth: {
+                            user: 'test-user',
+                            pass: 'test-pass',
+                        }
+                    }
+                }
+            });
+            expect(typeof (plugin as any).options.transport).toBe('function');
+        });
+
+        it('Resolves async transport settings', async () => {
+            const transport =await resolveTransportSettings((plugin as any).options);
+            expect(transport.type).toBe('smtp');
+            expect(transport.host).toBe('smtp.test.eu');
         });
     });
 });

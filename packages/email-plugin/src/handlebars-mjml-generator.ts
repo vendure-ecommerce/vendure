@@ -3,8 +3,8 @@ import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
 import path from 'path';
-import { EmailGenerator } from './email-generator';
 
+import { EmailGenerator } from './email-generator';
 import { EmailPluginDevModeOptions, EmailPluginOptions } from './types';
 
 /**
