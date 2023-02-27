@@ -873,9 +873,6 @@ describe('EmailPlugin', () => {
                 .setTemplateVars(event => ({ subjectVar: 'foo' }));
             module = await initPluginWithHandlers([handler], {
                 transport: async (injector, ctx) => {
-                    if (ctx) {
-                        console.error('transport called==================', ctx);
-                    }
                     injectorArg = injector;
                     ctxArg = ctx;
                     return {
