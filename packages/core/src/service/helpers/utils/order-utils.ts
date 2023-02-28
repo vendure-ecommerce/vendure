@@ -2,6 +2,7 @@ import { OrderLineInput } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../../api/index';
 import { EntityNotFoundError, idsAreEqual } from '../../../common/index';
@@ -112,13 +113,11 @@ export async function getOrdersFromLines(
     orderLinesInput: OrderLineInput[],
 ): Promise<Order[]> {
     const orders = new Map<ID, Order>();
-    const lines = await connection.getRepository(ctx, OrderLine).findByIds(
-        orderLinesInput.map(l => l.orderLineId),
-        {
-            relations: ['order', 'order.channels'],
-            order: { id: 'ASC' },
-        },
-    );
+    const lines = await connection.getRepository(ctx, OrderLine).find({
+        where: { id: In(orderLinesInput.map(l => l.orderLineId)) },
+        relations: ['order', 'order.channels'],
+        order: { id: 'ASC' },
+    });
     for (const line of lines) {
         const inputLine = orderLinesInput.find(l => idsAreEqual(l.orderLineId, line.id));
         if (!inputLine) {

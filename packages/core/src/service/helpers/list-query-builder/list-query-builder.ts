@@ -4,9 +4,10 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Brackets,
-    FindConditions,
     FindManyOptions,
     FindOneOptions,
+    FindOptionsWhere,
+    In,
     Repository,
     SelectQueryBuilder,
 } from 'typeorm';
@@ -40,7 +41,7 @@ import { parseSortParams } from './parse-sort-params';
 export type ExtendedListQueryOptions<T extends VendureEntity> = {
     relations?: string[];
     channelId?: ID;
-    where?: FindConditions<T>;
+    where?: FindOptionsWhere<T>;
     orderBy?: FindOneOptions<T>['order'];
     /**
      * @description
@@ -214,12 +215,13 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         const qb = repo.createQueryBuilder(extendedOptions.entityAlias || entity.name.toLowerCase());
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: minimumRequiredRelations,
-            take,
-            skip,
-            where: extendedOptions.where || {},
-        } as FindManyOptions<T>);
+        // TODO: what do we replace this with?
+        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+        //     relations: minimumRequiredRelations,
+        //     take,
+        //     skip,
+        //     where: extendedOptions.where || {},
+        // } as FindManyOptions<T>);
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
@@ -479,11 +481,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const entitiesIdsWithRelations = await Promise.all(
             Array.from(groupedRelationsMap.values())?.map(relationPaths => {
                 return repo
-                    .findByIds(entitiesIds, {
+                    .find({
+                        where: { id: In(entitiesIds) },
                         select: ['id'],
                         relations: relationPaths,
                         loadEagerRelations: false,
-                    })
+                    } as FindManyOptions<T>)
                     .then(results =>
                         results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),
                     );

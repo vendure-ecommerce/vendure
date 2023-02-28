@@ -117,7 +117,7 @@ export class FulltextSearchService {
             switch (this.connection.rawConnection.options.type) {
                 case 'mysql':
                 case 'mariadb':
-                case 'aurora-data-api':
+                case 'aurora-mysql':
                     this._searchStrategy = new MysqlSearchStrategy();
                     break;
                 case 'sqlite':
@@ -126,7 +126,7 @@ export class FulltextSearchService {
                     this._searchStrategy = new SqliteSearchStrategy();
                     break;
                 case 'postgres':
-                case 'aurora-data-api-pg':
+                case 'aurora-postgres':
                 case 'cockroachdb':
                     this._searchStrategy = new PostgresSearchStrategy();
                     break;

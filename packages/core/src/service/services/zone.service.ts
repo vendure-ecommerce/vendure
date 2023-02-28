@@ -80,7 +80,8 @@ export class ZoneService {
     findOne(ctx: RequestContext, zoneId: ID): Promise<Zone | undefined> {
         return this.connection
             .getRepository(ctx, Zone)
-            .findOne(zoneId, {
+            .findOne({
+                where: { id: zoneId },
                 relations: ['members'],
             })
             .then(zone => {

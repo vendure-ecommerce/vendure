@@ -13,11 +13,15 @@ export class FulfillmentLineEntityResolver {
 
     @ResolveField()
     async orderLine(@Ctx() ctx: RequestContext, @Parent() fulfillmentLine: FulfillmentLine) {
-        return this.connection.getRepository(ctx, OrderLine).findOne(fulfillmentLine.orderLineId);
+        return this.connection
+            .getRepository(ctx, OrderLine)
+            .findOne({ where: { id: fulfillmentLine.orderLineId } });
     }
 
     @ResolveField()
     async fulfillment(@Ctx() ctx: RequestContext, @Parent() fulfillmentLine: FulfillmentLine) {
-        return this.connection.getRepository(ctx, Fulfillment).findOne(fulfillmentLine.fulfillmentId);
+        return this.connection
+            .getRepository(ctx, Fulfillment)
+            .findOne({ where: { id: fulfillmentLine.fulfillmentId } });
     }
 }

@@ -11,6 +11,7 @@ import {
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -88,7 +89,11 @@ export class FacetService {
             .findOneInChannel(ctx, Facet, facetId, ctx.channelId, {
                 relations: relations ?? ['values', 'values.facet', 'channels'],
             })
-            .then(facet => facet && this.translator.translate(facet, ctx, ['values', ['values', 'facet']]));
+            .then(
+                facet =>
+                    (facet && this.translator.translate(facet, ctx, ['values', ['values', 'facet']])) ??
+                    undefined,
+            );
     }
 
     /**
@@ -124,7 +129,11 @@ export class FacetService {
                 },
                 relations,
             })
-            .then(facet => facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']]));
+            .then(
+                facet =>
+                    (facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']])) ??
+                    undefined,
+            );
     }
 
     /**
@@ -268,7 +277,7 @@ export class FacetService {
         }
         const facetsToAssign = await this.connection
             .getRepository(ctx, Facet)
-            .findByIds(input.facetIds, { relations: ['values'] });
+            .find({ where: { id: In(input.facetIds) }, relations: ['values'] });
         const valuesToAssign = facetsToAssign.reduce(
             (values, facet) => [...values, ...facet.values],
             [] as FacetValue[],
@@ -315,7 +324,7 @@ export class FacetService {
         }
         const facetsToRemove = await this.connection
             .getRepository(ctx, Facet)
-            .findByIds(input.facetIds, { relations: ['values'] });
+            .find({ where: { id: In(input.facetIds) }, relations: ['values'] });
 
         const results: Array<ErrorResultUnion<RemoveFacetFromChannelResult, Facet>> = [];
 

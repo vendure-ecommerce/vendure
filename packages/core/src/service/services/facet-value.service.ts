@@ -102,10 +102,14 @@ export class FacetValueService {
     findOne(ctx: RequestContext, id: ID): Promise<Translated<FacetValue> | undefined> {
         return this.connection
             .getRepository(ctx, FacetValue)
-            .findOne(id, {
+            .findOne({
+                where: { id },
                 relations: ['facet'],
             })
-            .then(facetValue => facetValue && this.translator.translate(facetValue, ctx, ['facet']));
+            .then(
+                facetValue =>
+                    (facetValue && this.translator.translate(facetValue, ctx, ['facet'])) ?? undefined,
+            );
     }
 
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<FacetValue>>> {

@@ -126,10 +126,6 @@ export class FulfillmentService {
             .then(fulfillment => fulfillment.lines);
     }
 
-    getFulfillmentLikeOrderLine(ctx: RequestContext, fullfillmentLineId: ID) {
-        return this.connection.getRepository(ctx, OrderLine).findOne();
-    }
-
     async getFulfillmentsLinesForOrderLine(ctx: RequestContext, orderLineId: ID): Promise<FulfillmentLine[]> {
         const fulfillmentLines = await this.connection
             .getRepository(ctx, FulfillmentLine)

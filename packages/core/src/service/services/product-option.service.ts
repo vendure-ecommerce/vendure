@@ -51,10 +51,11 @@ export class ProductOptionService {
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOption)
-            .findOne(id, {
+            .findOne({
+                where: { id },
                 relations: ['group'],
             })
-            .then(option => option && this.translator.translate(option, ctx));
+            .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
 
     async create(

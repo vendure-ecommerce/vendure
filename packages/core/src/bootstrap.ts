@@ -134,7 +134,9 @@ export async function preBootstrapConfig(
         dbConnectionOptions: {
             entities,
             subscribers: [
-                ...(userConfig.dbConnectionOptions?.subscribers ?? []),
+                ...((userConfig.dbConnectionOptions?.subscribers ?? []) as Array<
+                    Type<EntitySubscriberInterface>
+                >),
                 ...(Object.values(coreSubscribersMap) as Array<Type<EntitySubscriberInterface>>),
             ],
         },
@@ -256,11 +258,13 @@ function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): 
  * See: https://github.com/vendure-ecommerce/vendure/issues/152
  */
 function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonly<RuntimeVendureConfig> {
-    const config = { ...userConfig };
-    config.dbConnectionOptions = {
-        ...userConfig.dbConnectionOptions,
-        synchronize: false,
-    } as ConnectionOptions;
+    const config = {
+        ...userConfig,
+        dbConnectionOptions: {
+            ...userConfig.dbConnectionOptions,
+            synchronize: false,
+        } as ConnectionOptions,
+    };
     return config;
 }
 

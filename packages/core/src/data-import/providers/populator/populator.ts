@@ -207,7 +207,7 @@ export class Populator {
             },
         });
         const ctx = await this.requestContextService.create({
-            user: superAdminUser,
+            user: superAdminUser ?? undefined,
             apiType: 'admin',
             languageCode: data.defaultLanguage,
             channelOrToken: channel ?? (await this.channelService.getDefaultChannel()),

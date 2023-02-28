@@ -17,6 +17,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { IsNull } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -256,7 +257,7 @@ export class CollectionService implements OnModuleInit {
             )
             .getOne();
 
-        return parent && this.translator.translate(parent, ctx);
+        return (parent && this.translator.translate(parent, ctx)) ?? undefined;
     }
 
     /**
@@ -407,7 +408,7 @@ export class CollectionService implements OnModuleInit {
         let qb = this.listQueryBuilder.build(ProductVariant, options, {
             relations: relations ?? ['taxCategory'],
             channelId: ctx.channelId,
-            where: { deletedAt: null },
+            where: { deletedAt: IsNull() },
             ctx,
             entityAlias: 'productVariant',
         });
@@ -724,7 +725,8 @@ export class CollectionService implements OnModuleInit {
                 .leftJoin('collection.channels', 'channel')
                 .where('collection.id = :id', { id: parentId })
                 .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
-                .getOne();
+                .getOne()
+                .then(result => result ?? undefined);
         } else {
             return this.getRootCollection(ctx);
         }

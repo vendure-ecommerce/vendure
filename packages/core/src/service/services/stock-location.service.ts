@@ -34,7 +34,10 @@ export class StockLocationService {
     }
 
     findOne(ctx: RequestContext, stockLocationId: ID): Promise<StockLocation | undefined> {
-        return this.connection.getRepository(ctx, StockLocation).findOne(stockLocationId);
+        return this.connection
+            .getRepository(ctx, StockLocation)
+            .findOne({ where: { id: stockLocationId } })
+            .then(result => result ?? undefined);
     }
 
     findAll(

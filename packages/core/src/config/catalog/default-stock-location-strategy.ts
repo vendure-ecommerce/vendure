@@ -79,7 +79,7 @@ export class DefaultStockLocationStrategy implements StockLocationStrategy {
     ) {
         const allocations = await this.connection.getRepository(ctx, Allocation).find({
             where: {
-                orderLine,
+                orderLine: { id: orderLine.id },
             },
         });
         let unallocated = quantity;

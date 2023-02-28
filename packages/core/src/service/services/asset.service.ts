@@ -21,6 +21,8 @@ import { IncomingMessage } from 'http';
 import mime from 'mime-types';
 import path from 'path';
 import { Readable, Stream } from 'stream';
+import { IsNull } from 'typeorm';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -109,9 +111,11 @@ export class AssetService {
     }
 
     findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<Asset>): Promise<Asset | undefined> {
-        return this.connection.findOneInChannel(ctx, Asset, id, ctx.channelId, {
-            relations: relations ?? [],
-        });
+        return this.connection
+            .findOneInChannel(ctx, Asset, id, ctx.channelId, {
+                relations: relations ?? [],
+            })
+            .then(result => result ?? undefined);
     }
 
     findAll(
@@ -169,9 +173,14 @@ export class AssetService {
         } else {
             entityWithFeaturedAsset = await this.connection
                 .getRepository(ctx, entityType)
-                .findOne(entity.id, {
-                    relations: ['featuredAsset'],
-                });
+                .findOne({
+                    where: { id: entity.id },
+                    relations: {
+                        featuredAsset: true,
+                    },
+                    // TODO: satisfies
+                } as FindOneOptions<T>)
+                .then(result => result ?? undefined);
         }
         return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
@@ -670,19 +679,19 @@ export class AssetService {
     ): Promise<{ products: Product[]; variants: ProductVariant[]; collections: Collection[] }> {
         const products = await this.connection.getRepository(ctx, Product).find({
             where: {
-                featuredAsset: asset,
-                deletedAt: null,
+                featuredAsset: { id: asset.id },
+                deletedAt: IsNull(),
             },
         });
         const variants = await this.connection.getRepository(ctx, ProductVariant).find({
             where: {
-                featuredAsset: asset,
-                deletedAt: null,
+                featuredAsset: { id: asset.id },
+                deletedAt: IsNull(),
             },
         });
         const collections = await this.connection.getRepository(ctx, Collection).find({
             where: {
-                featuredAsset: asset,
+                featuredAsset: { id: asset.id },
             },
         });
         return { products, variants, collections };

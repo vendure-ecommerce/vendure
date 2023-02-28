@@ -5,11 +5,12 @@ import {
     UpdateAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import { idsAreEqual } from '../../common/index';
+import { convertRelationPaths, idsAreEqual } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -67,7 +68,7 @@ export class AdministratorService {
         return this.listQueryBuilder
             .build(Administrator, options, {
                 relations: relations ?? ['user', 'user.roles'],
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 ctx,
             })
             .getManyAndCount()
@@ -86,12 +87,22 @@ export class AdministratorService {
         administratorId: ID,
         relations?: RelationPaths<Administrator>,
     ): Promise<Administrator | undefined> {
-        return this.connection.getRepository(ctx, Administrator).findOne(administratorId, {
-            relations: relations ?? ['user', 'user.roles'],
-            where: {
-                deletedAt: null,
-            },
-        });
+        return this.connection
+            .getRepository(ctx, Administrator)
+            .findOne({
+                relations: relations
+                    ? convertRelationPaths(relations)
+                    : {
+                          user: {
+                              roles: true,
+                          },
+                      },
+                where: {
+                    id: administratorId,
+                    deletedAt: IsNull(),
+                },
+            })
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -103,13 +114,16 @@ export class AdministratorService {
         userId: ID,
         relations?: RelationPaths<Administrator>,
     ): Promise<Administrator | undefined> {
-        return this.connection.getRepository(ctx, Administrator).findOne({
-            relations,
-            where: {
-                user: { id: userId },
-                deletedAt: null,
-            },
-        });
+        return this.connection
+            .getRepository(ctx, Administrator)
+            .findOne({
+                relations: convertRelationPaths(relations),
+                where: {
+                    user: { id: userId },
+                    deletedAt: IsNull(),
+                },
+            })
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -203,9 +217,10 @@ export class AdministratorService {
      * updating an Administrator.
      */
     private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]) {
-        const roles = await this.connection
-            .getRepository(ctx, Role)
-            .findByIds(roleIds, { relations: ['channels'] });
+        const roles = await this.connection.getRepository(ctx, Role).find({
+            where: { id: In(roleIds) },
+            relations: { channels: true },
+        });
         const permissionsRequired = getChannelPermissions(roles);
         for (const channelPermissions of permissionsRequired) {
             const activeUserHasRequiredPermissions = await this.roleService.userHasAllPermissionsOnChannel(
@@ -316,7 +331,9 @@ export class AdministratorService {
                 .getRepository(Administrator)
                 .findOne({
                     where: {
-                        user: superAdminUser,
+                        user: {
+                            id: superAdminUser.id,
+                        },
                     },
                 });
             if (!superAdministrator) {

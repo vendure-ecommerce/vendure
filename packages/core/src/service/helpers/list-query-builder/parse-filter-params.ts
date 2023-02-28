@@ -212,10 +212,10 @@ function getRegexpClause(fieldName: string, argIndex: number, dbType: Connection
         case 'mysql':
         case 'sqljs':
         case 'better-sqlite3':
-        case 'aurora-data-api':
+        case 'aurora-mysql':
             return `${fieldName} REGEXP :arg${argIndex}`;
         case 'postgres':
-        case 'aurora-data-api-pg':
+        case 'aurora-postgres':
         case 'cockroachdb':
             return `${fieldName} ~* :arg${argIndex}`;
         // The node-sqlite3 driver does not support user-defined functions

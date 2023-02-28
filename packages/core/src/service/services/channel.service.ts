@@ -11,6 +11,7 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { FindOneOptions } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
@@ -143,9 +144,10 @@ export class ChannelService {
         entityId: ID,
         channelIds: ID[],
     ): Promise<T | undefined> {
-        const entity = await this.connection.getRepository(ctx, entityType).findOne(entityId, {
+        const entity = await this.connection.getRepository(ctx, entityType).findOne({
+            where: { id: entityId },
             relations: ['channels'],
-        });
+        } as FindOneOptions<T>);
         if (!entity) {
             return;
         }
@@ -215,7 +217,8 @@ export class ChannelService {
     findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
         return this.connection
             .getRepository(ctx, Channel)
-            .findOne(id, { relations: ['defaultShippingZone', 'defaultTaxZone'] });
+            .findOne({ where: { id }, relations: ['defaultShippingZone', 'defaultTaxZone'] })
+            .then(result => result ?? undefined);
     }
 
     async create(

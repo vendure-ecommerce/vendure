@@ -60,7 +60,10 @@ export class CustomerGroupService {
         customerGroupId: ID,
         relations: RelationPaths<CustomerGroup> = [],
     ): Promise<CustomerGroup | undefined> {
-        return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId, { relations });
+        return this.connection
+            .getRepository(ctx, CustomerGroup)
+            .findOne({ where: { id: customerGroupId }, relations })
+            .then(result => result ?? undefined);
     }
 
     /**

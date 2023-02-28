@@ -58,7 +58,7 @@ export class SlugValidator {
             for (const t of input.translations) {
                 if (t.slug) {
                     t.slug = normalizeString(t.slug, '-');
-                    let match: E | undefined;
+                    let match: E | null;
                     let suffix = 1;
                     const seen: ID[] = [];
                     const alreadySuffixed = /-\d+$/;

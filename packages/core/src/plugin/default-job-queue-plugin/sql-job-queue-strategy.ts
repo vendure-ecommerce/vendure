@@ -1,6 +1,6 @@
 import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, Connection, EntityManager, FindConditions, In, LessThan } from 'typeorm';
+import { Brackets, Connection, EntityManager, FindOptionsWhere, In, LessThan } from 'typeorm';
 
 import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
@@ -187,7 +187,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         if (!this.connectionAvailable(this.connection)) {
             throw new Error('Connection not available');
         }
-        const record = await this.connection.getRepository(JobRecord).findOne(id);
+        const record = await this.connection.getRepository(JobRecord).findOne({ where: { id } });
         if (record) {
             return this.fromRecord(record);
         }
@@ -207,7 +207,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         if (!this.connectionAvailable(this.connection)) {
             throw new Error('Connection not available');
         }
-        const findOptions: FindConditions<JobRecord> = {
+        const findOptions: FindOptionsWhere<JobRecord> = {
             ...(0 < queueNames.length ? { queueName: In(queueNames) } : {}),
             isSettled: true,
             settledAt: LessThan(olderThan || new Date()),

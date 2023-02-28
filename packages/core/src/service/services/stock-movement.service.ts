@@ -6,6 +6,7 @@ import {
     StockMovementListOptions,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -266,12 +267,12 @@ export class StockMovementService {
         ctx: RequestContext,
         lineInputs: OrderLineInput[],
     ): Promise<Cancellation[]> {
-        const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
-            lineInputs.map(line => line.orderLineId),
-            {
-                relations: ['productVariant'],
+        const orderLines = await this.connection.getRepository(ctx, OrderLine).find({
+            where: {
+                id: In(lineInputs.map(l => l.orderLineId)),
             },
-        );
+            relations: ['productVariant'],
+        });
 
         const cancellations: Cancellation[] = [];
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
@@ -319,12 +320,10 @@ export class StockMovementService {
      */
     async createReleasesForOrderLines(ctx: RequestContext, lineInputs: OrderLineInput[]): Promise<Release[]> {
         const releases: Release[] = [];
-        const orderLines = await this.connection.getRepository(ctx, OrderLine).findByIds(
-            lineInputs.map(line => line.orderLineId),
-            {
-                relations: ['productVariant'],
-            },
-        );
+        const orderLines = await this.connection.getRepository(ctx, OrderLine).find({
+            where: { id: In(lineInputs.map(l => l.orderLineId)) },
+            relations: ['productVariant'],
+        });
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const variantsMap = new Map<ID, ProductVariant>();
         for (const orderLine of orderLines) {

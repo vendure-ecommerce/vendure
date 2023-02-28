@@ -239,7 +239,9 @@ export class TransactionalConnection {
                 optionsWithoutChannelId,
             );
         } else {
-            entity = await this.getRepository(ctx, entityType).findOne(id, options as FindOneOptions);
+            entity = await this.getRepository(ctx, entityType)
+                .findOne({ where: { id }, ...options } as FindOneOptions<T>)
+                .then(result => result ?? undefined);
         }
         if (
             !entity ||
@@ -265,10 +267,11 @@ export class TransactionalConnection {
         options: FindOneOptions = {},
     ) {
         let qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        options.relations = removeCustomFieldsWithEagerRelations(qb, options.relations);
+        options.relations = removeCustomFieldsWithEagerRelations(qb, options.relations as string[]);
         let skipEagerRelations = false;
         try {
-            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
+            // TODO: replace with what?
+            // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
         } catch (e: any) {
             // https://github.com/vendure-ecommerce/vendure/issues/1664
             // This is a failsafe to catch edge cases related to the TypeORM
@@ -281,11 +284,12 @@ export class TransactionalConnection {
                 `TransactionalConnection.findOneInChannel ran into issues joining nested custom field relations. Running the query without joining any relations instead.`,
             );
             qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-                ...options,
-                relations: [],
-                loadEagerRelations: false,
-            });
+            // TODO: replace with what?
+            // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+            //     ...options,
+            //     relations: [],
+            //     loadEagerRelations: false,
+            // });
             skipEagerRelations = true;
         }
         if (options.loadEagerRelations !== false && !skipEagerRelations) {
@@ -296,7 +300,8 @@ export class TransactionalConnection {
             .leftJoin('entity.channels', 'channel')
             .andWhere('entity.id = :id', { id })
             .andWhere('channel.id = :channelId', { channelId })
-            .getOne();
+            .getOne()
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -318,7 +323,8 @@ export class TransactionalConnection {
         }
 
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
+        // TODO: replace with what?
+        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
         if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);

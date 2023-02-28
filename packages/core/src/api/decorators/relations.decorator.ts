@@ -195,7 +195,8 @@ function getRelationPaths(
                 relationPaths.push(property);
                 const relatedEntity =
                     typeof relationMetadata.type === 'function'
-                        ? relationMetadata.type()
+                        ? // https://github.com/microsoft/TypeScript/issues/37663
+                          (relationMetadata.type as any)()
                         : relationMetadata.type;
                 if (depth < maxDepth) {
                     depth++;

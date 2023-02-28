@@ -38,7 +38,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { In } from 'typeorm';
+import { In, IsNull } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -245,9 +245,10 @@ export class OrderService {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
         effectiveRelations = removeCustomFieldsWithEagerRelations(qb, effectiveRelations);
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            relations: effectiveRelations,
-        });
+        // TODO: What's the replacement?
+        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
+        //     relations: effectiveRelations,
+        // });
         qb.leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
@@ -353,7 +354,7 @@ export class OrderService {
     getOrderModifications(ctx: RequestContext, orderId: ID): Promise<OrderModification[]> {
         return this.connection.getRepository(ctx, OrderModification).find({
             where: {
-                order: orderId,
+                order: { id: orderId },
             },
             relations: ['lines', 'payment', 'refund', 'surcharges'],
         });
@@ -385,7 +386,8 @@ export class OrderService {
             ? undefined
             : this.connection
                   .getRepository(ctx, Order)
-                  .findOne(order.aggregateOrderId, { relations: ['channels', 'lines'] });
+                  .findOne({ where: { id: order.aggregateOrderId }, relations: ['channels', 'lines'] })
+                  .then(result => result ?? undefined);
     }
 
     getOrderChannels(ctx: RequestContext, order: Order): Promise<Channel[]> {
@@ -522,7 +524,7 @@ export class OrderService {
             relations: ['product'],
             where: {
                 enabled: true,
-                deletedAt: null,
+                deletedAt: IsNull(),
             },
         });
         if (variant.product.enabled === false) {
@@ -1259,10 +1261,12 @@ export class OrderService {
         ctx: RequestContext,
         input: FulfillOrderInput,
     ): Promise<InsufficientStockOnHandError | undefined> {
-        const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
-            input.lines.map(l => l.orderLineId),
-            { relations: ['productVariant'] },
-        );
+        const lines = await this.connection.getRepository(ctx, OrderLine).find({
+            where: {
+                id: In(input.lines.map(l => l.orderLineId)),
+            },
+            relations: ['productVariant'],
+        });
 
         for (const line of lines) {
             // tslint:disable-next-line:no-non-null-assertion
@@ -1502,7 +1506,7 @@ export class OrderService {
                 ? orderOrId
                 : await this.connection
                       .getRepository(ctx, Order)
-                      .findOneOrFail(orderOrId, { relations: ['lines', 'shippingLines'] });
+                      .findOneOrFail({ where: { id: orderOrId }, relations: ['lines', 'shippingLines'] });
         // If there is a Session referencing the Order to be deleted, we must first remove that
         // reference in order to avoid a foreign key error. See https://github.com/vendure-ecommerce/vendure/issues/1454
         const sessions = await this.connection

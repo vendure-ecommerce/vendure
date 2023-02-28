@@ -79,9 +79,13 @@ export class RoleService {
     }
 
     findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
-        return this.connection.getRepository(ctx, Role).findOne(roleId, {
-            relations: relations ?? ['channels'],
-        });
+        return this.connection
+            .getRepository(ctx, Role)
+            .findOne({
+                where: { id: roleId },
+                relations: relations ?? ['channels'],
+            })
+            .then(result => result ?? undefined);
     }
 
     getChannelsForRole(ctx: RequestContext, roleId: ID): Promise<Channel[]> {

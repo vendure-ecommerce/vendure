@@ -52,13 +52,10 @@ function assertNoNameConflictsWithEntity(entity: Type<any>, customFields: Custom
 function assertNoDuplicatedCustomFieldNames(entityName: string, customFields: CustomFieldConfig[]): string[] {
     const nameCounts = customFields
         .map(f => f.name)
-        .reduce(
-            (hash, name) => {
-                hash[name] ? hash[name]++ : (hash[name] = 1);
-                return hash;
-            },
-            {} as { [name: string]: number },
-        );
+        .reduce((hash, name) => {
+            hash[name] ? hash[name]++ : (hash[name] = 1);
+            return hash;
+        }, {} as { [name: string]: number });
     return Object.entries(nameCounts)
         .filter(([name, count]) => 1 < count)
         .map(([name, count]) => `${entityName} entity has duplicated custom field name: "${name}"`);
@@ -100,7 +97,8 @@ function getEntityTranslation(entity: Type<any>): Type<any> | undefined {
     if (translation) {
         const type = translation.type;
         if (typeof type === 'function') {
-            return type();
+            // See https://github.com/microsoft/TypeScript/issues/37663
+            return (type as any)();
         }
     }
 }

@@ -61,9 +61,11 @@ export class FacetValueChecker {
         if (!variant) {
             variant = await this.connection
                 .getRepository(ctx, ProductVariant)
-                .findOne(orderLine.productVariant.id, {
+                .findOne({
+                    where: { id: orderLine.productVariant.id },
                     relations: ['product', 'product.facetValues', 'facetValues'],
-                });
+                })
+                .then(result => result ?? undefined);
             if (!variant) {
                 return false;
             }

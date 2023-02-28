@@ -714,9 +714,11 @@ export class OrderModifier {
             // existing entity assigned.
             lineWithCustomFieldRelations = await this.connection
                 .getRepository(ctx, OrderLine)
-                .findOne(orderLine.id, {
+                .findOne({
+                    where: { id: orderLine.id },
                     relations: customFieldRelations.map(r => `customFields.${r.name}`),
-                });
+                })
+                .then(result => result ?? undefined);
         }
 
         for (const def of customFieldDefs) {

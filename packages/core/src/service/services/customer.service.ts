@@ -21,6 +21,7 @@ import {
     UpdateCustomerResult,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -105,7 +106,7 @@ export class CustomerService {
             .build(Customer, options, {
                 relations,
                 channelId: ctx.channelId,
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 ctx,
                 customPropertyMap,
             })
@@ -118,10 +119,12 @@ export class CustomerService {
         id: ID,
         relations: RelationPaths<Customer> = [],
     ): Promise<Customer | undefined> {
-        return this.connection.findOneInChannel(ctx, Customer, id, ctx.channelId, {
-            relations,
-            where: { deletedAt: null },
-        });
+        return this.connection
+            .findOneInChannel(ctx, Customer, id, ctx.channelId, {
+                relations,
+                where: { deletedAt: null },
+            })
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -141,7 +144,7 @@ export class CustomerService {
         if (filterOnChannel) {
             query = query.andWhere('channel.id = :channelId', { channelId: ctx.channelId });
         }
-        return query.getOne();
+        return query.getOne().then(result => result ?? undefined);
     }
 
     /**
@@ -224,7 +227,7 @@ export class CustomerService {
             relations: ['channels'],
             where: {
                 emailAddress: input.emailAddress,
-                deletedAt: null,
+                deletedAt: IsNull(),
             },
         });
         const existingUser = await this.userService.getUserByEmailAddress(
@@ -661,7 +664,7 @@ export class CustomerService {
             relations: ['channels'],
             where: {
                 emailAddress: input.emailAddress,
-                deletedAt: null,
+                deletedAt: IsNull(),
             },
         });
         if (existing) {
@@ -685,7 +688,7 @@ export class CustomerService {
      */
     async createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput): Promise<Address> {
         const customer = await this.connection.getEntityOrThrow(ctx, Customer, customerId, {
-            where: { deletedAt: null },
+            where: { deletedAt: IsNull() },
             relations: ['addresses'],
             channelId: ctx.channelId,
         });
@@ -894,7 +897,7 @@ export class CustomerService {
     ) {
         const result = await this.connection
             .getRepository(ctx, Address)
-            .findOne(addressId, { relations: ['customer', 'customer.addresses'] });
+            .findOne({ where: { id: addressId }, relations: ['customer', 'customer.addresses'] });
         if (result) {
             const customerAddressIds = result.customer.addresses
                 .map(a => a.id)
@@ -926,7 +929,7 @@ export class CustomerService {
         }
         const result = await this.connection
             .getRepository(ctx, Address)
-            .findOne(addressToDelete.id, { relations: ['customer', 'customer.addresses'] });
+            .findOne({ where: { id: addressToDelete.id }, relations: ['customer', 'customer.addresses'] });
         if (result) {
             const customerAddresses = result.customer.addresses;
             if (1 < customerAddresses.length) {

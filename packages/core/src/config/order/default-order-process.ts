@@ -258,7 +258,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
             if (options.checkModificationPayments !== false && fromState === 'Modifying') {
                 const modifications = await connection
                     .getRepository(ctx, OrderModification)
-                    .find({ where: { order }, relations: ['refund', 'payment'] });
+                    .find({ where: { order: { id: order.id } }, relations: ['refund', 'payment'] });
                 if (toState === 'ArrangingAdditionalPayment') {
                     if (
                         0 < modifications.length &&

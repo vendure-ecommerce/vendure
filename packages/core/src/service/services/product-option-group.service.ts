@@ -68,10 +68,11 @@ export class ProductOptionGroupService {
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .findOne(id, {
+            .findOne({
+                where: { id },
                 relations: relations ?? ['options'],
             })
-            .then(group => group && this.translator.translate(group, ctx, ['options']));
+            .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
 
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
@@ -163,9 +164,10 @@ export class ProductOptionGroupService {
         } else {
             // hard delete
 
-            const product = await this.connection
-                .getRepository(ctx, Product)
-                .findOne(productId, { relations: ['optionGroups'] });
+            const product = await this.connection.getRepository(ctx, Product).findOne({
+                where: { id: productId },
+                relations: ['optionGroups'],
+            });
             if (product) {
                 product.optionGroups = product.optionGroups.filter(og => !idsAreEqual(og.id, id));
                 await this.connection.getRepository(ctx, Product).save(product, { reload: false });
