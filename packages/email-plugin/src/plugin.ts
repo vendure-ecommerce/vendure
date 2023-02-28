@@ -284,12 +284,14 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
      * Set the plugin options.
      */
     static init(options: EmailPluginOptions | EmailPluginDevModeOptions): Type<EmailPlugin> {
-        if (!this.options.templateLoader && this.options.templatePath) {
+        if (options.templateLoader) {
+            Logger.info(`Using custom template loader '${options.templateLoader.constructor.name}'`);
+        } else if (!options.templateLoader && options.templatePath) {
             // TODO: this else-if can be removed when deprecated templatePath is removed, 
             //       because we will either have a custom template loader, or the default loader with a default path
-            this.options.templateLoader = new FileBasedTemplateLoader(this.options.templatePath);
+            options.templateLoader = new FileBasedTemplateLoader(options.templatePath);
         } else {
-            this.options.templateLoader = new FileBasedTemplateLoader('./vendure/static/email/templates');
+            options.templateLoader = new FileBasedTemplateLoader('./vendure/static/email/templates');
         }
         this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;

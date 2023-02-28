@@ -19,7 +19,6 @@ import { EmailDetails, EmailPluginOptions, EmailTransportOptions, InitializedEma
  */
 @Injectable()
 export class EmailProcessor {
-    protected templateLoader: TemplateLoader;
     protected emailSender: EmailSender;
     protected generator: EmailGenerator;
     protected transport: EmailTransportOptions;
@@ -54,7 +53,7 @@ export class EmailProcessor {
     async process(data: IntermediateEmailDetails) {
         try {
             const ctx = RequestContext.deserialize(data.ctx);
-            const bodySource = await this.templateLoader.loadTemplate(
+            const bodySource = await this.options.templateLoader.loadTemplate(
                 new Injector(this.moduleRef),
                 ctx,
                 {
