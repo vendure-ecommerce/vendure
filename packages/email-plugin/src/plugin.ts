@@ -26,11 +26,13 @@ import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
+import { FileBasedTemplateLoader } from './template-loader';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
     EmailTransportOptions,
     EventWithContext,
+    InitializedEmailPluginOptions,
     IntermediateEmailDetails,
 } from './types';
 
@@ -263,7 +265,7 @@ import {
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
-    private static options: EmailPluginOptions | EmailPluginDevModeOptions;
+    private static options: InitializedEmailPluginOptions;
     private devMailbox: DevMailbox | undefined;
     private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
     private testingProcessor: EmailProcessor | undefined;
@@ -275,14 +277,21 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
-        @Inject(EMAIL_PLUGIN_OPTIONS) private options: EmailPluginOptions,
-    ) {}
+        @Inject(EMAIL_PLUGIN_OPTIONS) private options: InitializedEmailPluginOptions,
+    ) { }
 
     /**
      * Set the plugin options.
      */
     static init(options: EmailPluginOptions | EmailPluginDevModeOptions): Type<EmailPlugin> {
-        this.options = options;
+        if (!this.options.templateLoader && this.options.templatePath) {
+            // TODO: this else-if can be removed when deprecated templatePath is removed, 
+            //       because we will either have a custom template loader, or the default loader with a default path
+            this.options.templateLoader = new FileBasedTemplateLoader(this.options.templatePath);
+        } else {
+            this.options.templateLoader = new FileBasedTemplateLoader('./vendure/static/email/templates');
+        }
+        this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;
     }
 
