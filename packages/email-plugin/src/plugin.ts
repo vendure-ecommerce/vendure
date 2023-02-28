@@ -15,11 +15,13 @@ import {
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
+    RequestContext,
     Type,
     VendurePlugin,
 } from '@vendure/core';
+import Module from 'module';
 
-import { isDevModeOptions } from './common';
+import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
@@ -27,6 +29,7 @@ import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handl
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
+    EmailTransportOptions,
     EventWithContext,
     IntermediateEmailDetails,
 } from './types';
@@ -178,6 +181,31 @@ import {
  *
  * For all available methods of extending a handler, see the {@link EmailEventHandler} documentation.
  *
+ * ## Dynamic transport settings
+ *
+ * Instead of defining static transport settings, you can also provide a function that dynamically resolves the transport settings.
+ *
+ * @example
+ * ```ts
+ * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ *
+ * const config: VendureConfig = {
+ *   plugins: [
+ *     EmailPlugin.init({
+ *       handlers: defaultEmailHandlers,
+ *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       transport: (injector, ctx) => {
+ *         if (ctx) {
+ *           return injector.get(MyTransportService).getSettings(ctx);
+ *         } else {
+ *           return defaultSettings;
+ *         }
+ *       }
+ *     }),
+ *   ],
+ * };
+ * ```
+ *
  * ## Dev mode
  *
  * For development, the `transport` option can be replaced by `devMode: true`. Doing so configures Vendure to use the
@@ -262,10 +290,11 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     async onApplicationBootstrap(): Promise<void> {
         await this.initInjectableStrategies();
         await this.setupEventSubscribers();
-        if (!isDevModeOptions(this.options) && this.options.transport.type === 'testing') {
+        const transport = await resolveTransportSettings(this.options, new Injector(this.moduleRef));
+        if (!isDevModeOptions(this.options) && transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(this.options);
+            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();

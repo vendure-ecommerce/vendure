@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InternalServerError, Logger } from '@vendure/core';
+import { ModuleRef } from '@nestjs/core';
+import { Injector, InternalServerError, Logger, RequestContext } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
-import { isDevModeOptions } from './common';
+import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { EmailGenerator } from './email-generator';
 import { EmailSender } from './email-sender';
@@ -24,7 +25,10 @@ export class EmailProcessor {
     protected generator: EmailGenerator;
     protected transport: EmailTransportOptions;
 
-    constructor(@Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions) {}
+    constructor(
+        @Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions,
+        private moduleRef: ModuleRef,
+    ) { }
 
     async init() {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
@@ -35,24 +39,16 @@ export class EmailProcessor {
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);
         }
-        if (isDevModeOptions(this.options)) {
-            this.transport = {
-                type: 'file',
-                raw: false,
-                outputPath: this.options.outputPath,
-            };
-        } else {
-            if (!this.options.transport) {
-                throw new InternalServerError(
-                    `When devMode is not set to true, the 'transport' property must be set.`,
-                );
-            }
-            this.transport = this.options.transport;
+        if (!isDevModeOptions(this.options) && !this.options.transport) {
+            throw new InternalServerError(
+                `When devMode is not set to true, the 'transport' property must be set.`,
+            );
         }
-        if (this.transport.type === 'file') {
+        const transport = await this.getTransportSettings();
+        if (transport.type === 'file') {
             // ensure the configured directory exists before
             // we attempt to write files to it
-            const emailPath = this.transport.outputPath;
+            const emailPath = transport.outputPath;
             await fs.ensureDir(emailPath);
         }
     }
@@ -74,7 +70,8 @@ export class EmailProcessor {
                 bcc: data.bcc,
                 replyTo: data.replyTo,
             };
-            await this.emailSender.send(emailDetails, this.transport);
+            const transportSettings = await this.getTransportSettings(RequestContext.deserialize(data.ctx));
+            await this.emailSender.send(emailDetails, transportSettings);
             return true;
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -83,6 +80,18 @@ export class EmailProcessor {
                 Logger.error(String(err), loggerCtx);
             }
             throw err;
+        }
+    }
+
+    async getTransportSettings(ctx?: RequestContext): Promise<EmailTransportOptions> {
+        if (isDevModeOptions(this.options)) {
+            return {
+                type: 'file',
+                raw: false,
+                outputPath: this.options.outputPath,
+            };
+        } else {
+            return resolveTransportSettings(this.options, new Injector(this.moduleRef), ctx);
         }
     }
 }

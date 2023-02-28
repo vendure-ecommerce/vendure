@@ -377,6 +377,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const attachments = await serializeAttachments(attachmentsArray);
         const optionalAddressFields = (await this.setOptionalAddressFieldsFn?.(event)) ?? {};
         return {
+            ctx: event.ctx.serialize(),
             type: this.type,
             recipient,
             from: this.from,
