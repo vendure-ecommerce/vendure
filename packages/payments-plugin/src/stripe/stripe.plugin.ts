@@ -192,7 +192,7 @@ import { StripePluginOptions } from './types';
     shopApiExtensions: {
         schema: gql`
             extend type Mutation {
-                createStripePaymentIntent: String
+                createStripePaymentIntent: String!
             }
         `,
         resolvers: [StripeResolver],

@@ -1,32 +1,31 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Customer, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
+import { Ctx, Customer, Logger, Order, PaymentMethodService, RequestContext, TransactionalConnection } from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { VendureStripeClient } from './stripe-client';
 import { getAmountInStripeMinorUnits } from './stripe-utils';
 import { StripePluginOptions } from './types';
 
 @Injectable()
 export class StripeService {
-    protected stripe: Stripe;
 
     constructor(
         private connection: TransactionalConnection,
+        private paymentMethodService: PaymentMethodService,
         @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
     ) {
-        this.stripe = new Stripe(this.options.apiKey, {
-            apiVersion: '2020-08-27',
-        });
     }
 
-    async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string | undefined> {
+    async createPaymentIntent(ctx: RequestContext, order: Order): Promise<string> {
         let customerId: string | undefined;
+        const stripe = await this.getStripeClient(ctx, order);
 
         if (this.options.storeCustomersInStripe && ctx.activeUserId) {
             customerId = await this.getStripeCustomerId(ctx, order);
         }
         const amountInMinorUnits = getAmountInStripeMinorUnits(order);
-        const { client_secret } = await this.stripe.paymentIntents.create(
+        const { client_secret } = await stripe.paymentIntents.create(
             {
                 amount: amountInMinorUnits,
                 currency: order.currencyCode.toLowerCase(),
@@ -49,28 +48,30 @@ export class StripeService {
                 `Payment intent creation for order ${order.code} did not return client secret`,
                 loggerCtx,
             );
+            throw Error('Failed to create payment intent');
         }
 
         return client_secret ?? undefined;
     }
 
-    async createRefund(paymentIntentId: string, amount: number): Promise<Stripe.Refund | Stripe.StripeError> {
-        // TODO: Consider passing the "reason" property once this feature request is addressed:
-        // https://github.com/vendure-ecommerce/vendure/issues/893
-        try {
-            const refund = await this.stripe.refunds.create({
-                payment_intent: paymentIntentId,
-                amount,
-            });
-
-            return refund;
-        } catch (e: any) {
-            return e as Stripe.StripeError;
-        }
+    async constructEventFromPayload(ctx: RequestContext, order: Order, payload: Buffer, signature: string): Promise<Stripe.Event> {
+        const stripe = await this.getStripeClient(ctx, order)
+        return stripe.webhooks.constructEvent(payload, signature, stripe.webhookSecret);
     }
 
-    constructEventFromPayload(payload: Buffer, signature: string): Stripe.Event {
-        return this.stripe.webhooks.constructEvent(payload, signature, this.options.webhookSigningSecret);
+    async getStripeClient(ctx: RequestContext, order: Order): Promise<VendureStripeClient> {
+        const methods = await this.paymentMethodService.getEligiblePaymentMethods(ctx, order);
+        console.log('methods', JSON.stringify(methods));
+        // TODO Find stripe methods
+        if (!methods) {
+            throw Error(`No eligible Stripe payment method found for order ${order.code}`);
+        }
+        const apiKey = undefined;
+        const webhookSecret = undefined;
+        if (!apiKey || !webhookSecret) {
+            throw Error(`Stripe payment method is missing ApiKey or WebhookSecret`);
+        }
+        return new VendureStripeClient(apiKey, webhookSecret);
     }
 
     /**
@@ -79,10 +80,13 @@ export class StripeService {
      * Otherwise, creates a new Customer record in Stripe and returns the generated id.
      */
     private async getStripeCustomerId(ctx: RequestContext, activeOrder: Order): Promise<string | undefined> {
-        // Load relation with customer not available in the response from activeOrderService.getOrderFromContext()
-        const order = await this.connection.getRepository(Order).findOne(activeOrder.id, {
-            relations: ['customer'],
-        });
+        const [stripe, order] = await Promise.all([
+            this.getStripeClient(ctx, activeOrder),
+            // Load relation with customer not available in the response from activeOrderService.getOrderFromContext()
+            this.connection.getRepository(ctx, Order).findOne(activeOrder.id, {
+                relations: ['customer'],
+            })
+        ]);
 
         if (!order || !order.customer) {
             // This should never happen
@@ -97,11 +101,11 @@ export class StripeService {
 
         let stripeCustomerId;
 
-        const stripeCustomers = await this.stripe.customers.list({ email: customer.emailAddress });
+        const stripeCustomers = await stripe.customers.list({ email: customer.emailAddress });
         if (stripeCustomers.data.length > 0) {
             stripeCustomerId = stripeCustomers.data[0].id;
         } else {
-            const newStripeCustomer = await this.stripe.customers.create({
+            const newStripeCustomer = await stripe.customers.create({
                 email: customer.emailAddress,
                 name: `${customer.firstName} ${customer.lastName}`,
             });

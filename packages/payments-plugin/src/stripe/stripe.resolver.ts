@@ -1,5 +1,5 @@
 import { Mutation, Resolver } from '@nestjs/graphql';
-import { ActiveOrderService, Allow, Ctx, Permission, RequestContext } from '@vendure/core';
+import { ActiveOrderService, Allow, Ctx, Permission, RequestContext, UnauthorizedError, UserInputError } from '@vendure/core';
 
 import { StripeService } from './stripe.service';
 
@@ -9,12 +9,14 @@ export class StripeResolver {
 
     @Mutation()
     @Allow(Permission.Owner)
-    async createStripePaymentIntent(@Ctx() ctx: RequestContext): Promise<string | undefined> {
+    async createStripePaymentIntent(@Ctx() ctx: RequestContext): Promise<string> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.stripeService.createPaymentIntent(ctx, sessionOrder);
             }
+            throw new UserInputError(`No active order found for session`);
         }
+        throw new UnauthorizedError();
     }
 }

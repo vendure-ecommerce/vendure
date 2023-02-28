@@ -78,6 +78,11 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
         }
     }`;
 
+export const CREATE_STRIPE_PAYMENT_INTENT = gql`
+    mutation createStripePaymentIntent{
+        createStripePaymentIntent
+    }`;
+
 export const GET_MOLLIE_PAYMENT_METHODS = gql`
     query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
         molliePaymentMethods(input: $input) {

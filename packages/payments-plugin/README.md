@@ -17,3 +17,20 @@ will create an order, set Mollie as payment method, and create a payment intent 
 6. Watch the logs for `Mollie payment link` and click the link to finalize the test payment.
 
 You can change the order flow, payment methods and more in the file `e2e/mollie-dev-server`, and restart the devserver.
+
+### Stripe local development
+
+For testing out changes to the Stripe plugin locally, with a real Stripe account, follow the steps below. These steps
+will create an order, set Stripe as payment method, and create a payment secret.
+
+1. Get a test api key from your Stripe
+   dashboard: https://dashboard.stripe.com/test/apikeys
+2. Create the file `packages/payments-plugin/.env` with content `STRIPE_APIKEY=your-test-apikey`
+3. `cd packages/payments-plugin`
+
+
+// TODO create checkout page?
+4. `yarn dev-server:mollie`
+5. Watch the logs for `Mollie payment link` and click the link to finalize the test payment.
+
+You can change the order flow, payment methods and more in the file `e2e/mollie-dev-server`, and restart the devserver.

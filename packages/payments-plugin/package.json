@@ -14,7 +14,8 @@
         "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=payments-plugin",
         "lint": "tslint --fix --project ./",
         "ci": "yarn build",
-        "dev-server:mollie": "yarn build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts"
+        "dev-server:mollie": "yarn build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
+        "dev-server:stripe": "yarn build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts"
     },
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
