@@ -492,10 +492,33 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         for (const entry of entitiesIdsWithRelations) {
             const finalEntity = entityMap.get(entry.entity.id);
             if (finalEntity) {
-                finalEntity[entry.relation] = entry.entity[entry.relation];
+                this.assignDeep(entry.relation, entry.entity, finalEntity);
             }
         }
         return Array.from(entityMap.values());
+    }
+
+    private assignDeep<T>(relation: string | keyof T, source: T, target: T) {
+        if (typeof relation === 'string') {
+            const parts = relation.split('.');
+            let resolvedTarget: any = target;
+            let resolvedSource: any = source;
+
+            for (const part of parts.slice(0, parts.length - 1)) {
+                if (!resolvedTarget[part]) {
+                    resolvedTarget[part] = {};
+                }
+                if (!resolvedSource[part]) {
+                    return;
+                }
+                resolvedTarget = resolvedTarget[part];
+                resolvedSource = resolvedSource[part];
+            }
+
+            resolvedTarget[parts[parts.length - 1]] = resolvedSource[parts[parts.length - 1]];
+        } else {
+            target[relation] = source[relation];
+        }
     }
 
     /**
