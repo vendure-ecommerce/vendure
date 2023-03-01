@@ -844,11 +844,14 @@ describe('Default search plugin', () => {
                 await awaitRunningJobs(adminClient);
                 const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
 
+                const variantToDelete = search.items[0];
+                expect(variantToDelete.sku).toBe('IHD455T1_updated');
+
                 await adminClient.query<
                     Codegen.DeleteProductVariantMutation,
                     Codegen.DeleteProductVariantMutationVariables
                 >(DELETE_PRODUCT_VARIANT, {
-                    id: search.items[0].productVariantId,
+                    id: variantToDelete.productVariantId,
                 });
 
                 await awaitRunningJobs(adminClient);

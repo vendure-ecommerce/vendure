@@ -17,7 +17,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { IsNull } from 'typeorm';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -238,10 +238,6 @@ export class CollectionService implements OnModuleInit {
     }
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
-        const parentIdSelect =
-            this.connection.rawConnection.options.type === 'postgres'
-                ? '"child"."parentId"'
-                : 'child.parentId';
         const parent = await this.connection
             .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
@@ -250,7 +246,7 @@ export class CollectionService implements OnModuleInit {
                 qb =>
                     `collection.id = ${qb
                         .subQuery()
-                        .select(parentIdSelect)
+                        .select(`${qb.escape('child')}.${qb.escape('parentId')}`)
                         .from(Collection, 'child')
                         .where('child.id = :id', { id: collectionId })
                         .getQuery()}`,
@@ -375,7 +371,7 @@ export class CollectionService implements OnModuleInit {
 
         return this.connection
             .getRepository(ctx, Collection)
-            .findByIds(ancestors.map(c => c.id))
+            .find({ where: { id: In(ancestors.map(c => c.id)) } })
             .then(categories => {
                 const resultCategories: Array<Collection | Translated<Collection>> = [];
                 ancestors.forEach(a => {
@@ -795,7 +791,7 @@ export class CollectionService implements OnModuleInit {
         }
         const collectionsToAssign = await this.connection
             .getRepository(ctx, Collection)
-            .findByIds(input.collectionIds);
+            .find({ where: { id: In(input.collectionIds) } });
 
         await Promise.all(
             collectionsToAssign.map(collection =>
@@ -840,7 +836,7 @@ export class CollectionService implements OnModuleInit {
         }
         const collectionsToRemove = await this.connection
             .getRepository(ctx, Collection)
-            .findByIds(input.collectionIds);
+            .find({ where: { id: In(input.collectionIds) } });
 
         await Promise.all(
             collectionsToRemove.map(async collection => {

@@ -93,7 +93,7 @@ export class ShippingMethodService {
             ctx.channelId,
             {
                 relations,
-                ...(includeDeleted === false ? { where: { deletedAt: null } } : {}),
+                ...(includeDeleted === false ? { where: { deletedAt: IsNull() } } : {}),
             },
         );
         return (shippingMethod && this.translator.translate(shippingMethod, ctx)) ?? undefined;

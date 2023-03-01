@@ -116,7 +116,7 @@ export class ProductVariantService {
                     ...(relations || ['product', 'featuredAsset', 'product.featuredAsset']),
                     'taxCategory',
                 ],
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
             })
             .then(async result => {
                 if (result) {
@@ -397,7 +397,7 @@ export class ProductVariantService {
                 if (optionIds && optionIds.length) {
                     const selectedOptions = await this.connection
                         .getRepository(ctx, ProductOption)
-                        .findByIds(optionIds);
+                        .find({ where: { id: In(optionIds) } });
                     variant.options = selectedOptions;
                 }
                 if (input.facetValueIds) {
@@ -527,7 +527,9 @@ export class ProductVariantService {
 
     async softDelete(ctx: RequestContext, id: ID | ID[]): Promise<DeletionResponse> {
         const ids = Array.isArray(id) ? id : [id];
-        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(ids);
+        const variants = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .find({ where: { id: In(ids) } });
         for (const variant of variants) {
             variant.deletedAt = new Date();
         }
@@ -689,7 +691,7 @@ export class ProductVariantService {
         }
         const variants = await this.connection
             .getRepository(ctx, ProductVariant)
-            .findByIds(input.productVariantIds);
+            .find({ where: { id: In(input.productVariantIds) } });
         for (const variant of variants) {
             await this.channelService.removeFromChannels(ctx, ProductVariant, variant.id, [input.channelId]);
             await this.connection.getRepository(ctx, ProductVariantPrice).delete({
@@ -754,7 +756,7 @@ export class ProductVariantService {
         const product = await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
             channelId: ctx.channelId,
             relations: ['variants', 'variants.options'],
-            loadEagerRelations: false,
+            loadEagerRelations: true,
         });
 
         const inputOptionIds = this.sortJoin(optionIds, ',');

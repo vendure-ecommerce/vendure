@@ -185,12 +185,17 @@ export class MultivendorPlugin implements OnApplicationBootstrap {
             const allChannels = await this.connection.getRepository(ctx, Channel).find();
             const createdPaymentMethod = await this.paymentMethodService.create(ctx, {
                 code: CONNECTED_PAYMENT_METHOD_CODE,
-                name: 'Connected Payments',
                 enabled: true,
                 handler: {
                     code: multivendorPaymentMethodHandler.code,
                     arguments: [],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Connected Payments',
+                    },
+                ],
             });
             await this.channelService.assignToChannels(
                 ctx,

@@ -181,7 +181,9 @@ export class FacetService {
             entityType: Facet,
             translationType: FacetTranslation,
             beforeSave: async f => {
-                f.code = await this.ensureUniqueCode(ctx, f.code, f.id);
+                if (f.code) {
+                    f.code = await this.ensureUniqueCode(ctx, f.code, f.id);
+                }
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);

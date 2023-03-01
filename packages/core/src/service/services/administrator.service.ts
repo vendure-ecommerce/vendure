@@ -10,7 +10,7 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import { convertRelationPaths, idsAreEqual } from '../../common/index';
+import { idsAreEqual } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -90,13 +90,7 @@ export class AdministratorService {
         return this.connection
             .getRepository(ctx, Administrator)
             .findOne({
-                relations: relations
-                    ? convertRelationPaths(relations)
-                    : {
-                          user: {
-                              roles: true,
-                          },
-                      },
+                relations: relations ?? ['user', 'user.roles'],
                 where: {
                     id: administratorId,
                     deletedAt: IsNull(),
@@ -117,7 +111,7 @@ export class AdministratorService {
         return this.connection
             .getRepository(ctx, Administrator)
             .findOne({
-                relations: convertRelationPaths(relations),
+                relations,
                 where: {
                     user: { id: userId },
                     deletedAt: IsNull(),

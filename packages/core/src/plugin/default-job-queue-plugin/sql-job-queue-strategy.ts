@@ -199,7 +199,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         }
         return this.connection
             .getRepository(JobRecord)
-            .findByIds(ids)
+            .find({ where: { id: In(ids) } })
             .then(records => records.map(this.fromRecord));
     }
 

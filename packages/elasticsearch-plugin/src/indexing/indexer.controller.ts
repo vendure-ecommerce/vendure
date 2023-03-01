@@ -25,6 +25,7 @@ import {
     Translation,
 } from '@vendure/core';
 import { Observable } from 'rxjs';
+import { In, IsNull } from 'typeorm';
 
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx, VARIANT_INDEX_NAME } from '../constants';
 import { ElasticsearchOptions } from '../options';
@@ -504,12 +505,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const operations: BulkVariantOperation[] = [];
         let product: Product | undefined;
         try {
-            product = await this.connection.getRepository(Product).findOne(productId, {
-                relations: this.productRelations,
-                where: {
-                    deletedAt: null,
-                },
-            });
+            product = await this.connection
+                .getRepository(Product)
+                .findOne({
+                    where: { id: productId, deletedAt: IsNull() },
+                    relations: this.productRelations,
+                })
+                .then(result => result ?? undefined);
         } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
             throw e;
@@ -520,8 +522,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const updatedProductVariants = await this.connection.getRepository(ProductVariant).find({
             relations: this.variantRelations,
             where: {
-                productId,
-                deletedAt: null,
+                id: productId,
+                deletedAt: IsNull(),
             },
             order: {
                 id: 'ASC',
@@ -753,7 +755,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }
 
     private async getProductIdsByVariantIds(variantIds: ID[]): Promise<ID[]> {
-        const variants = await this.connection.getRepository(ProductVariant).findByIds(variantIds, {
+        const variants = await this.connection.getRepository(ProductVariant).find({
+            where: { id: In(variantIds) },
             relations: ['product'],
             loadEagerRelations: false,
         });

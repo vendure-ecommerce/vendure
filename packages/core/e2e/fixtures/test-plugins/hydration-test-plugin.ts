@@ -31,7 +31,8 @@ export class TestAdminPluginResolver {
 
     @Query()
     async hydrateProduct(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
-        const product = await this.connection.getRepository(ctx, Product).findOne(args.id, {
+        const product = await this.connection.getRepository(ctx, Product).findOne({
+            where: { id: args.id },
             relations: ['facetValues'],
         });
         // tslint:disable-next-line:no-non-null-assertion
@@ -52,7 +53,7 @@ export class TestAdminPluginResolver {
     // Test case for https://github.com/vendure-ecommerce/vendure/issues/1153
     @Query()
     async hydrateProductAsset(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
-        const product = await this.connection.getRepository(ctx, Product).findOne(args.id);
+        const product = await this.connection.getRepository(ctx, Product).findOne({ where: { id: args.id } });
         // tslint:disable-next-line:no-non-null-assertion
         await this.entityHydrator.hydrate(ctx, product!, {
             relations: ['assets'],

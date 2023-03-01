@@ -111,7 +111,7 @@ export class ProductService {
         const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
             relations: unique(effectiveRelations),
             where: {
-                deletedAt: null,
+                deletedAt: IsNull(),
             },
         });
         if (!product) {
@@ -125,11 +125,10 @@ export class ProductService {
         productIds: ID[],
         relations?: RelationPaths<Product>,
     ): Promise<Array<Translated<Product>>> {
-        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
-        // TODO: what's the replacement?
-        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-        //     relations: (relations && false) || this.relations,
-        // });
+        const qb = this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .setFindOptions({ relations: (relations && false) || this.relations });
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         return qb
@@ -314,7 +313,9 @@ export class ProductService {
             ([] as ID[]).concat(...productsWithVariants.map(p => p.assets.map(a => a.assetId))),
         );
         await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
-        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
+        const products = await this.connection
+            .getRepository(ctx, Product)
+            .find({ where: { id: In(input.productIds) } });
         for (const product of products) {
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
@@ -338,7 +339,9 @@ export class ProductService {
             ),
             channelId: input.channelId,
         });
-        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
+        const products = await this.connection
+            .getRepository(ctx, Product)
+            .find({ where: { id: In(input.productIds) } });
         for (const product of products) {
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }

@@ -144,7 +144,7 @@ class TestResolver {
     async createNTestAdministrators(@Ctx() ctx: RequestContext, @Args() args: any) {
         let error: any;
 
-        const promises: Promise<any>[] = [];
+        const promises: Array<Promise<any>> = [];
         for (let i = 0; i < args.n; i++) {
             promises.push(
                 new Promise(resolve => setTimeout(resolve, i * 10))
@@ -179,7 +179,7 @@ class TestResolver {
     async createNTestAdministrators2(@Ctx() ctx: RequestContext, @Args() args: any) {
         let error: any;
 
-        const promises: Promise<any>[] = [];
+        const promises: Array<Promise<any>> = [];
         const result = await this.connection
             .withTransaction(ctx, _ctx => {
                 for (let i = 0; i < args.n; i++) {
@@ -254,8 +254,8 @@ class TestResolver {
     // Promise.allSettled polyfill
     // Same as Promise.all but waits until all promises will be fulfilled or rejected.
     private allSettled<T>(
-        promises: Promise<T>[],
-    ): Promise<({ status: 'fulfilled'; value: T } | { status: 'rejected'; reason: any })[]> {
+        promises: Array<Promise<T>>,
+    ): Promise<Array<{ status: 'fulfilled'; value: T } | { status: 'rejected'; reason: any }>> {
         return Promise.all(
             promises.map((promise, i) =>
                 promise
@@ -344,7 +344,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
                 // note the ctx is not passed here, so we are not inside the ongoing transaction
                 const adminRepository = this.connection.getRepository(Administrator);
                 try {
-                    await adminRepository.findOneOrFail(administrator.id);
+                    await adminRepository.findOneOrFail({ where: { id: administrator.id } });
                 } catch (e: any) {
                     TransactionTestPlugin.errorHandler(e);
                 } finally {

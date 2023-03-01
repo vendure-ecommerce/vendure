@@ -47,8 +47,6 @@ import { RequestContextCacheService } from '../../cache/request-context-cache.se
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
-    AlreadyRefundedError,
-    CancelActiveOrderError,
     CancelPaymentError,
     EmptyOrderLineSelectionError,
     FulfillmentStateTransitionError,
@@ -58,7 +56,6 @@ import {
     MultipleOrderError,
     NothingToRefundError,
     PaymentOrderMismatchError,
-    QuantityTooGreatError,
     RefundOrderStateError,
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
@@ -74,17 +71,15 @@ import {
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
-import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { removeCustomFieldsWithEagerRelations } from '../../connection/remove-custom-fields-with-eager-relations';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
-import { RefundLine } from '../../entity/order-line-reference/refund-line.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -94,7 +89,6 @@ import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { Session } from '../../entity/session/session.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
-import { Allocation } from '../../entity/stock-movement/allocation.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
@@ -118,11 +112,7 @@ import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-st
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
-import {
-    getOrdersFromLines,
-    orderLinesAreAllCancelled,
-    totalCoveredByPayments,
-} from '../helpers/utils/order-utils';
+import { getOrdersFromLines, totalCoveredByPayments } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -223,7 +213,7 @@ export class OrderService {
         relations?: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         const qb = this.connection.getRepository(ctx, Order).createQueryBuilder('order');
-        let effectiveRelations = relations ?? [
+        const effectiveRelations = relations ?? [
             'channels',
             'customer',
             'customer.user',
@@ -244,16 +234,15 @@ export class OrderService {
         ) {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
-        effectiveRelations = removeCustomFieldsWithEagerRelations(qb, effectiveRelations);
-        // TODO: What's the replacement?
-        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-        //     relations: effectiveRelations,
-        // });
-        qb.leftJoin('order.channels', 'channel')
+        qb.setFindOptions({ relations: effectiveRelations })
+            .leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
         if (effectiveRelations.includes('lines')) {
-            qb.addOrderBy('order__lines.createdAt', 'ASC').addOrderBy('order__lines.productVariantId', 'ASC');
+            qb.addOrderBy(`order__order_lines.${qb.escape('createdAt')}`, 'ASC').addOrderBy(
+                `order__order_lines.${qb.escape('productVariantId')}`,
+                'ASC',
+            );
         }
 
         // tslint:disable-next-line:no-non-null-assertion

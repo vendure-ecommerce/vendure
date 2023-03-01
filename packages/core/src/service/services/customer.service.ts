@@ -122,7 +122,7 @@ export class CustomerService {
         return this.connection
             .findOneInChannel(ctx, Customer, id, ctx.channelId, {
                 relations,
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
             })
             .then(result => result ?? undefined);
     }
@@ -180,7 +180,7 @@ export class CustomerService {
             {
                 relations: ['groups'],
                 where: {
-                    deletedAt: null,
+                    deletedAt: IsNull(),
                 },
             },
         );

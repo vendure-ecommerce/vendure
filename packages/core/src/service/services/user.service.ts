@@ -46,6 +46,7 @@ export class UserService {
         return this.connection
             .getRepository(ctx, User)
             .findOne({
+                where: { id: userId },
                 relations: {
                     roles: {
                         channels: true,

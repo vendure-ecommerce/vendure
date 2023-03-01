@@ -128,7 +128,7 @@ export class Test1664Plugin implements OnApplicationBootstrap {
         (user.customFields as any).profile = profile;
         await this.connection.rawConnection.getRepository(User).save(user);
 
-        const asset = await this.connection.rawConnection.getRepository(Asset).findOne(1);
+        const asset = await this.connection.rawConnection.getRepository(Asset).findOne({ where: { id: 1 } });
         if (asset) {
             const profileAsset = this.connection.rawConnection.getRepository(ProfileAsset).save({
                 asset,

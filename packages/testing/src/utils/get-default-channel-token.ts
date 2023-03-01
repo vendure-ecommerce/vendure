@@ -11,11 +11,14 @@ export async function getDefaultChannelToken(logging = true): Promise<string> {
     const connection = await getConnection();
     let defaultChannel: Channel | undefined;
     try {
-        defaultChannel = await connection.manager.getRepository(Channel).findOne({
-            where: {
-                code: DEFAULT_CHANNEL_CODE,
-            },
-        });
+        defaultChannel = await connection.manager
+            .getRepository(Channel)
+            .findOne({
+                where: {
+                    code: DEFAULT_CHANNEL_CODE,
+                },
+            })
+            .then(result => result ?? undefined);
     } catch (err: any) {
         console.log(`Error occurred when attempting to get default Channel`);
         console.log(err);

@@ -59,11 +59,11 @@ export class GlobalSettingsService {
      */
     async getSettings(ctx: RequestContext): Promise<GlobalSettings> {
         const settings = await this.requestCache.get(ctx, 'globalSettings', () =>
-            this.connection.getRepository(ctx, GlobalSettings).findOne({
-                order: {
-                    createdAt: 'ASC',
-                },
-            }),
+            this.connection
+                .getRepository(ctx, GlobalSettings)
+                .createQueryBuilder('global_settings')
+                .orderBy(this.connection.rawConnection.driver.escape('createdAt'), 'ASC')
+                .getOne(),
         );
         if (!settings) {
             throw new InternalServerError(`error.global-settings-not-found`);

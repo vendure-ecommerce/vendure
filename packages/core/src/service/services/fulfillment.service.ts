@@ -3,6 +3,7 @@ import { ConfigurableOperationInput, OrderLineInput } from '@vendure/common/lib/
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -74,7 +75,7 @@ export class FulfillmentService {
 
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .findByIds(lines.map(l => l.orderLineId));
+            .find({ where: { id: In(lines.map(l => l.orderLineId)) } });
 
         const newFulfillment = await this.connection.getRepository(ctx, Fulfillment).save(
             new Fulfillment({

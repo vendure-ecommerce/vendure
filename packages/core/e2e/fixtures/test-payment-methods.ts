@@ -132,7 +132,7 @@ export const singleStageRefundFailingPaymentMethod = new PaymentMethodHandler({
     createRefund: async (ctx, input, amount, order, payment, args) => {
         const paymentWithRefunds = await connection
             .getRepository(ctx, Payment)
-            .findOne(payment.id, { relations: ['refunds'] });
+            .findOne({ where: { id: payment.id }, relations: ['refunds'] });
         const isFirstRefundAttempt = paymentWithRefunds?.refunds.length === 0;
         const metadata = isFirstRefundAttempt ? { errorMessage: 'Service temporarily unavailable' } : {};
         return {

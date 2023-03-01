@@ -209,7 +209,7 @@ export class StockMovementService {
         const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .findByIds(lines.map(line => line.orderLineId));
+            .find({ where: { id: In(lines.map(line => line.orderLineId)) } });
         for (const lineRow of lines) {
             const orderLine = orderLines.find(line => idsAreEqual(line.id, lineRow.orderLineId));
             if (!orderLine) {

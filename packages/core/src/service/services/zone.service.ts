@@ -9,6 +9,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
@@ -186,7 +187,7 @@ export class ZoneService {
     }
 
     private getCountriesFromIds(ctx: RequestContext, ids: ID[]): Promise<Country[]> {
-        return this.connection.getRepository(ctx, Country).findByIds(ids);
+        return this.connection.getRepository(ctx, Country).find({ where: { id: In(ids) } });
     }
 
     /**

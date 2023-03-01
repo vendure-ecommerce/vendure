@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ManualPaymentInput, RefundOrderInput } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -299,7 +300,7 @@ export class PaymentService {
         let refundOrderLinesTotal = 0;
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .findByIds(input.lines.map(l => l.orderLineId));
+            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
         for (const line of input.lines) {
             const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
             if (orderLine && 0 < orderLine.quantity) {

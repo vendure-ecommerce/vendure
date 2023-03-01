@@ -27,7 +27,6 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
-import { parseChannelParam } from './parse-channel-param';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
 
@@ -212,16 +211,19 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
             : this.connection.rawConnection.getRepository(entity);
-
-        const qb = repo.createQueryBuilder(extendedOptions.entityAlias || entity.name.toLowerCase());
+        const alias = extendedOptions.entityAlias || entity.name.toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
-        // TODO: what do we replace this with?
-        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-        //     relations: minimumRequiredRelations,
-        //     take,
-        //     skip,
-        //     where: extendedOptions.where || {},
-        // } as FindManyOptions<T>);
+        const qb = repo.createQueryBuilder(alias).setFindOptions({
+            relations: minimumRequiredRelations,
+            take,
+            skip,
+            where: extendedOptions.where || {},
+            // We would like to be able to use this feature
+            // rather than our custom `optimizeGetManyAndCountMethod()` implementation,
+            // but at this time (TypeORM 0.3.12) it throws an error in the case of
+            // a Collection that joins its parent entity.
+            // relationLoadStrategy: 'query',
+        });
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
@@ -234,13 +236,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
         const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sortParams = Object.assign({}, options.sort, extendedOptions.orderBy);
-        this.applyTranslationConditions(
-            qb,
-            entity,
-            sortParams,
-            extendedOptions.ctx,
-            extendedOptions.entityAlias,
-        );
+        this.applyTranslationConditions(qb, entity, sortParams, extendedOptions.ctx, alias);
         const sort = parseSortParams(
             rawConnection,
             entity,
@@ -275,15 +271,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            const channelFilter = parseChannelParam(
-                rawConnection,
-                entity,
-                extendedOptions.channelId,
-                extendedOptions.entityAlias,
-            );
-            if (channelFilter) {
-                qb.andWhere(channelFilter.clause, channelFilter.parameters);
-            }
+            qb.leftJoin(`${alias}.channels`, 'lqb__channel').andWhere('lqb__channel.id = :channelId', {
+                channelId: extendedOptions.channelId,
+            });
         }
 
         qb.orderBy(sort);
@@ -485,7 +475,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                         where: { id: In(entitiesIds) },
                         select: ['id'],
                         relations: relationPaths,
-                        loadEagerRelations: false,
+                        loadEagerRelations: true,
                     } as FindManyOptions<T>)
                     .then(results =>
                         results.map(r => ({ relation: relationPaths[0] as keyof T, entity: r })),

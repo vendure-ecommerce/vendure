@@ -15,7 +15,7 @@ import {
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { IsNull } from 'typeorm';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -332,7 +332,9 @@ export class PromotionService {
             a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id,
         );
         const promotionIds = unique(allPromotionIds);
-        const promotions = await this.connection.getRepository(ctx, Promotion).findByIds(promotionIds);
+        const promotions = await this.connection
+            .getRepository(ctx, Promotion)
+            .find({ where: { id: In(promotionIds) } });
         order.promotions = promotions;
         return this.connection.getRepository(ctx, Order).save(order);
     }

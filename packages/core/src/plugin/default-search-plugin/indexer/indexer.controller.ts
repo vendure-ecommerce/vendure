@@ -158,7 +158,9 @@ export class IndexerController {
 
     async deleteVariant(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        const variants = await this.connection.getRepository(ctx, ProductVariant).findByIds(data.variantIds);
+        const variants = await this.connection.getRepository(ctx, ProductVariant).find({
+            where: { id: In(data.variantIds) },
+        });
         if (variants.length) {
             const languageVariants = unique([
                 ...variants
@@ -311,17 +313,14 @@ export class IndexerController {
     }
 
     private getSearchIndexQueryBuilder(ctx: RequestContext, channelId: ID) {
-        const qb = this.connection.getRepository(ctx, ProductVariant).createQueryBuilder('variants');
-        // TODO: replace with what?
-        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-        //     relations: variantRelations,
-        // });
-        FindOptionsUtils.joinEagerRelations(
-            qb,
-            qb.alias,
-            this.connection.rawConnection.getMetadata(ProductVariant),
-        );
-        qb.leftJoin('variants.product', 'product')
+        const qb = this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variants')
+            .setFindOptions({
+                relations: variantRelations,
+                loadEagerRelations: true,
+            })
+            .leftJoin('variants.product', 'product')
             .leftJoin('product.channels', 'channel')
             .where('channel.id = :channelId', { channelId })
             .andWhere('product.deletedAt IS NULL')

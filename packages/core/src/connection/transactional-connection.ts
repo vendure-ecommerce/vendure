@@ -9,17 +9,15 @@ import {
     FindOptionsUtils,
     ObjectType,
     Repository,
-    SelectQueryBuilder,
 } from 'typeorm';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { EntityNotFoundError } from '../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../common/types/common-types';
-import { Logger } from '../config/logger/vendure-logger';
 import { VendureEntity } from '../entity/base/base.entity';
 
-import { removeCustomFieldsWithEagerRelations } from './remove-custom-fields-with-eager-relations';
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
 
@@ -239,8 +237,15 @@ export class TransactionalConnection {
                 optionsWithoutChannelId,
             );
         } else {
+            const optionsWithId = {
+                ...options,
+                where: {
+                    ...(options.where || {}),
+                    id,
+                },
+            } as FindOneOptions<T>;
             entity = await this.getRepository(ctx, entityType)
-                .findOne({ where: { id }, ...options } as FindOneOptions<T>)
+                .findOne(optionsWithId)
                 .then(result => result ?? undefined);
         }
         if (
@@ -264,44 +269,18 @@ export class TransactionalConnection {
         entity: Type<T>,
         id: ID,
         channelId: ID,
-        options: FindOneOptions = {},
+        options: FindOneOptions<T> = {},
     ) {
-        let qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        options.relations = removeCustomFieldsWithEagerRelations(qb, options.relations as string[]);
-        let skipEagerRelations = false;
-        try {
-            // TODO: replace with what?
-            // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
-        } catch (e: any) {
-            // https://github.com/vendure-ecommerce/vendure/issues/1664
-            // This is a failsafe to catch edge cases related to the TypeORM
-            // bug described in the doc block of `removeCustomFieldsWithEagerRelations`.
-            // In this case, a nested custom field relation has an eager-loaded relation,
-            // and is throwing an error. In this case we throw our hands up and say
-            // "sod it!", refuse to load _any_ relations at all, and rely on the
-            // GraphQL entity resolvers to take care of them.
-            Logger.debug(
-                `TransactionalConnection.findOneInChannel ran into issues joining nested custom field relations. Running the query without joining any relations instead.`,
-            );
-            qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-            // TODO: replace with what?
-            // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-            //     ...options,
-            //     relations: [],
-            //     loadEagerRelations: false,
-            // });
-            skipEagerRelations = true;
-        }
-        if (options.loadEagerRelations !== false && !skipEagerRelations) {
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
+        if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }
-        return qb
-            .leftJoin('entity.channels', 'channel')
+        qb.leftJoin('entity.channels', '__channel')
             .andWhere('entity.id = :id', { id })
-            .andWhere('channel.id = :channelId', { channelId })
-            .getOne()
-            .then(result => result ?? undefined);
+            .andWhere('__channel.id = :channelId', { channelId });
+
+        return qb.getOne().then(result => result ?? undefined);
     }
 
     /**
@@ -314,7 +293,7 @@ export class TransactionalConnection {
         entity: Type<T>,
         ids: ID[],
         channelId: ID,
-        options: FindOneOptions,
+        options: FindManyOptions<T>,
     ) {
         // the syntax described in https://github.com/typeorm/typeorm/issues/1239#issuecomment-366955628
         // breaks if the array is empty
@@ -322,9 +301,7 @@ export class TransactionalConnection {
             return Promise.resolve([]);
         }
 
-        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        // TODO: replace with what?
-        // FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
         if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
