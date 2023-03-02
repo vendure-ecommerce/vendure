@@ -11,7 +11,7 @@ import {
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
-import { SortOrder } from '@vendure/common/lib/generated-shop-types';
+import { SortOrder } from '@vendure/common/lib/generated-types';
 import { EMPTY } from 'rxjs';
 import { debounceTime, filter, switchMap, takeUntil } from 'rxjs/operators';
 

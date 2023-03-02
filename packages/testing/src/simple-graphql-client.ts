@@ -12,7 +12,7 @@ import { QueryParams } from './types';
 import { createUploadPostData } from './utils/create-upload-post-data';
 
 const LOGIN = gql`
-    mutation($username: String!, $password: String!) {
+    mutation ($username: String!, $password: String!) {
         login(username: $username, password: $password) {
             ... on CurrentUser {
                 id
@@ -75,7 +75,7 @@ export class SimpleGraphQLClient {
      * @description
      * Performs both query and mutation operations.
      */
-    async query<T = any, V = Record<string, any>>(
+    async query<T = any, V extends Record<string, any> = Record<string, any>>(
         query: DocumentNode,
         variables?: V,
         queryParams?: QueryParams,
@@ -118,7 +118,10 @@ export class SimpleGraphQLClient {
      * @description
      * Performs a query or mutation and returns the resulting status code.
      */
-    async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
+    async queryStatus<T = any, V extends Record<string, any> = Record<string, any>>(
+        query: DocumentNode,
+        variables?: V,
+    ): Promise<number> {
         const response = await this.makeGraphQlRequest(query, variables);
         return response.status;
     }

@@ -1,4 +1,5 @@
 import { ID } from '@vendure/common/lib/shared-types';
+import { isObject } from '@vendure/common/lib/shared-utils';
 
 import { EntityIdStrategy } from '../../config/entity/entity-id-strategy';
 import { VendureEntity } from '../../entity/base/base.entity';
@@ -89,13 +90,15 @@ export class IdCodec {
             }
         } else {
             target = this.transform(target, transformFn, transformKeys);
-            for (const key of Object.keys(target)) {
-                if (this.isObject(target[key as keyof T])) {
-                    target[key as keyof T] = this.transformRecursive(
-                        target[key as keyof T],
-                        transformFn,
-                        transformKeys,
-                    );
+            if (isObject(target)) {
+                for (const key of Object.keys(target)) {
+                    if (this.isObject(target[key as keyof T])) {
+                        target[key as keyof T] = this.transformRecursive(
+                            target[key as keyof T],
+                            transformFn,
+                            transformKeys,
+                        );
+                    }
                 }
             }
         }

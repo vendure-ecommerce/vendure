@@ -1,5 +1,5 @@
 import { Job } from '@vendure/core';
-import { DataSourceOptions, QueueSchedulerOptions, WorkerOptions } from 'bullmq';
+import { ConnectionOptions, QueueSchedulerOptions, WorkerOptions } from 'bullmq';
 import { QueueOptions } from 'bullmq';
 
 /**
@@ -19,7 +19,7 @@ export interface BullMQPluginOptions {
      *
      * If omitted, it will attempt to connect to Redis at `127.0.0.1:6379`.
      */
-    connection?: DataSourceOptions;
+    connection?: ConnectionOptions;
     /**
      * @description
      * Additional options used when instantiating the BullMQ

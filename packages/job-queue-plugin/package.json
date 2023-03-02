@@ -28,6 +28,6 @@
     "@vendure/core": "^2.0.0-next.28",
     "bullmq": "^1.86.7",
     "rimraf": "^3.0.2",
-    "typescript": "4.5.5"
+    "typescript": "4.9.5"
   }
 }

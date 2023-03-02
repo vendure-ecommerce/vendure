@@ -65,4 +65,13 @@ export const GraphQLMoney = new GraphQLScalarType<number>({
         }
         return parseFloat(valueNode.value);
     },
+    extensions: {
+        codegenScalarType: 'number',
+        jsonSchema: {
+            title: 'Money',
+            type: 'number',
+            minimum: Number.MIN_SAFE_INTEGER,
+            maximum: Number.MAX_SAFE_INTEGER,
+        },
+    },
 });

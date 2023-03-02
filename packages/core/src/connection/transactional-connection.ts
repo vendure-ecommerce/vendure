@@ -7,6 +7,7 @@ import {
     EntitySchema,
     FindOneOptions,
     FindOptionsUtils,
+    ObjectLiteral,
     ObjectType,
     Repository,
 } from 'typeorm';
@@ -53,23 +54,25 @@ export class TransactionalConnection {
     /**
      * @description
      * Returns a TypeORM repository. Note that when no RequestContext is supplied, the repository will not
-     * be aware of any existing transaction. Therefore calling this method without supplying a RequestContext
+     * be aware of any existing transaction. Therefore, calling this method without supplying a RequestContext
      * is discouraged without a deliberate reason.
      *
      * @deprecated since 1.7.0: Use {@link TransactionalConnection.rawConnection rawConnection.getRepository()} function instead.
      */
-    getRepository<Entity>(target: ObjectType<Entity> | EntitySchema<Entity> | string): Repository<Entity>;
+    getRepository<Entity extends ObjectLiteral>(
+        target: ObjectType<Entity> | EntitySchema<Entity> | string,
+    ): Repository<Entity>;
     /**
      * @description
      * Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
      * the RequestContext argument when possible, otherwise the queries will be executed outside of any
      * ongoing transactions which have been started by the {@link Transaction} decorator.
      */
-    getRepository<Entity>(
+    getRepository<Entity extends ObjectLiteral>(
         ctx: RequestContext | undefined,
         target: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity>;
-    getRepository<Entity>(
+    getRepository<Entity extends ObjectLiteral>(
         ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined,
         maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity> {

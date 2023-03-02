@@ -30,8 +30,8 @@
     "@types/semver": "^6.2.2",
     "@vendure/core": "^2.0.0-next.28",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.2.1",
-    "typescript": "4.5.5"
+    "ts-node": "^10.9.1",
+    "typescript": "4.9.5"
   },
   "dependencies": {
     "@vendure/common": "^2.0.0-next.28",

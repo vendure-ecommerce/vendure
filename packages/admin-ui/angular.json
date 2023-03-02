@@ -15,7 +15,7 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
             "baseHref": "/admin/",
             "outputPath": "dist",
@@ -38,8 +38,19 @@
               "graphql-tag",
               "zen-observable",
               "lodash",
+              "dayjs",
               "apollo-upload-client",
-              "@vendure/common/lib/simple-deep-clone"
+              "@clr/icons",
+              "@clr/icons/shapes/all-shapes",
+              "@vendure/common/lib/generated-types",
+              "@vendure/common/lib/simple-deep-clone",
+              "@vendure/common/lib/shared-constants",
+              "@vendure/common/lib/shared-utils",
+              "@vendure/common/lib/normalize-string",
+              "@vendure/common/lib/unique",
+              "@vendure/common/lib/omit",
+              "@vendure/common/lib/pick",
+              "@messageformat/core"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
