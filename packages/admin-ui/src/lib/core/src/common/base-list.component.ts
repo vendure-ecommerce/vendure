@@ -86,7 +86,9 @@ export type ItemOf<T, K extends keyof T> = T[K] extends { items: infer R }
  */
 @Directive()
 // tslint:disable-next-line:directive-class-suffix
-export class BaseListComponent<ResultType, ItemType, VariableType = any> implements OnInit, OnDestroy {
+export class BaseListComponent<ResultType, ItemType, VariableType extends Record<string, any> = any>
+    implements OnInit, OnDestroy
+{
     result$: Observable<ResultType>;
     items$: Observable<ItemType[]>;
     totalItems$: Observable<number>;

@@ -77,7 +77,7 @@ export class DataService {
      * ).mapSingle(data => data.product);
      * ```
      */
-    query<T, V = Record<string, any>>(
+    query<T, V extends Record<string, any> = Record<string, any>>(
         query: DocumentNode,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
@@ -102,7 +102,7 @@ export class DataService {
      * );
      * ```
      */
-    mutate<T, V = Record<string, any>>(
+    mutate<T, V extends Record<string, any> = Record<string, any>>(
         mutation: DocumentNode,
         variables?: V,
         update?: MutationUpdaterFn<T>,

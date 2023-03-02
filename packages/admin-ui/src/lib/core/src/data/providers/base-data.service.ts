@@ -39,7 +39,7 @@ export class BaseDataService {
     /**
      * Performs a GraphQL watch query
      */
-    query<T, V = Record<string, any>>(
+    query<T, V extends Record<string, any> = Record<string, any>>(
         query: DocumentNode,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
@@ -57,7 +57,7 @@ export class BaseDataService {
     /**
      * Performs a GraphQL mutation
      */
-    mutate<T, V = Record<string, any>>(
+    mutate<T, V extends Record<string, any> = Record<string, any>>(
         mutation: DocumentNode,
         variables?: V,
         update?: MutationUpdaterFn<T>,

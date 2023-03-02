@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { MessageFormatConfig, MESSAGE_FORMAT_CONFIG } from 'ngx-translate-messageformat-compiler';
 
 import { getAppConfig } from './app.config';
 import { getDefaultUiLanguage } from './common/utilities/get-default-ui-language';
@@ -37,14 +36,11 @@ import { SharedModule } from './shared/shared.module';
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient, PlatformLocation],
             },
+
             compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
     ],
-    providers: [
-        { provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales },
-        registerDefaultFormInputs(),
-        Title,
-    ],
+    providers: [registerDefaultFormInputs(), Title],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
         AppShellComponent,
@@ -99,21 +95,4 @@ export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) 
     // Dynamically get the baseHref, which is configured in the angular.json file
     const baseHref = location.getBaseHrefFromDOM();
     return new CustomHttpTranslationLoader(http, baseHref + 'i18n-messages/');
-}
-
-/**
- * Returns the locales defined in the vendure-ui-config.json, ensuring that the
- * default language is the first item in the array as per the messageformat
- * documentation:
- *
- * > The default locale will be the first entry of the array
- * https://messageformat.github.io/messageformat/MessageFormat
- */
-export function getLocales(): MessageFormatConfig {
-    const locales = getAppConfig().availableLanguages;
-    const defaultLanguage = getDefaultUiLanguage();
-    const localesWithoutDefault = locales.filter(l => l !== defaultLanguage);
-    return {
-        locales: [defaultLanguage, ...localesWithoutDefault],
-    };
 }
