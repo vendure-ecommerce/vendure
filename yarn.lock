@@ -374,10 +374,10 @@
   resolved "https://registry.npmjs.org/@angular/compiler/-/compiler-9.0.0.tgz#87e0bef4c369b6cadae07e3a4295778fc93799d5"
   integrity sha512-ctjwuntPfZZT2mNj2NDIVu51t9cvbhl/16epc5xEwyzyDt76pX9UgwvY+MbXrf/C/FWwdtmNtfP698BKI+9leQ==
 
-"@angular/compiler@^13.1.1":
-  version "13.2.5"
-  resolved "https://registry.npmjs.org/@angular/compiler/-/compiler-13.2.5.tgz#d5a1ef8e4e750ccf61680d7f252e681c4b133d0d"
-  integrity sha512-OF7xqs/7HPyRJXWiP8ZLwcgT+O/pyBdTjubrVNUPmzeKWPFyE9ZVKEg8MLGLbGHRtw1omhU9Mq4b12NqI1B/gA==
+"@angular/compiler@^13.1.2":
+  version "13.3.12"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-13.3.12.tgz#9fa94d116310060bcdd429c24d593b70f8a082da"
+  integrity sha512-F5vJYrjbNvEWoVz9J/CqiT3Iod6g9bV0dGI5EeURcW4yHXHZ12ioQpfU3+bE7qXcTlnofbdDhK8cGxGx01SzBA==
   dependencies:
     tslib "^2.3.0"
 
@@ -2343,22 +2343,6 @@
     "@babel/helper-string-parser" "^7.19.4"
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
-
-"@bartholomej/ngx-translate-extract@^8.0.2":
-  version "8.0.2"
-  resolved "https://registry.npmjs.org/@bartholomej/ngx-translate-extract/-/ngx-translate-extract-8.0.2.tgz#24fd28c34d66a91b20e6c3b0e1cc1b70878b1bc7"
-  integrity sha512-QBayCNhuatTL5mJJzfGtBpbbViRqG+Vv0iQGyiTcoJv40Wv4G+70rQl1Q+I+CW6jcw5L1VfR+RDtKD6WkeuWZw==
-  dependencies:
-    "@angular/compiler" "^13.1.1"
-    "@phenomnomnominal/tsquery" "^4.1.1"
-    boxen "^6.2.1"
-    colorette "^2.0.16"
-    flat "^5.0.2"
-    gettext-parser "^4.2.0"
-    glob "^7.2.0"
-    path "^0.12.7"
-    terminal-link "^3.0.0"
-    yargs "^17.2.1"
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
@@ -5613,6 +5597,22 @@
   integrity sha512-8uALY5LTvSuHgloDVUvWP3pIauILm+8/0pDMokuDYIoNsOkSwd5AiHBTSEJjKTDcZr5z8UpgOWZkxBF4iJftoA==
   dependencies:
     "@types/node" "*"
+
+"@vendure/ngx-translate-extract@^8.0.5":
+  version "8.0.5"
+  resolved "https://registry.yarnpkg.com/@vendure/ngx-translate-extract/-/ngx-translate-extract-8.0.5.tgz#2de6a14ba9970e18b096b836e0599ad9ef03540e"
+  integrity sha512-BD9aJXDp9LC1FhJnqbzhli9BoiwEPKZAtjhJfbSpP5Whp3BsKWKEReRyqbj5eaLkfEqaAH3NnaB41E1A68jvyg==
+  dependencies:
+    "@angular/compiler" "^13.1.2"
+    "@phenomnomnominal/tsquery" "^4.1.1"
+    boxen "^6.2.1"
+    colorette "^2.0.16"
+    flat "^5.0.2"
+    gettext-parser "^4.2.0"
+    glob "^7.2.0"
+    path "^0.12.7"
+    terminal-link "^3.0.0"
+    yargs "^17.5.1"
 
 "@webassemblyjs/ast@1.11.1":
   version "1.11.1"
@@ -15154,10 +15154,12 @@ ng-packagr@14.2.2:
   optionalDependencies:
     esbuild "^0.15.0"
 
-ngx-pagination@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.npmjs.org/ngx-pagination/-/ngx-pagination-5.1.1.tgz#f8494da1e5eb0665382349a4d926c13a491bed21"
-  integrity sha512-KxHES+Dn6pbetytO9ng2GAdclmo4UcwzFmQyVPWh2xRPbAlv5/ezL2xnDVBFMqCoJQaZagvdQ+ZZFbqGWqAvCQ==
+ngx-pagination@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/ngx-pagination/-/ngx-pagination-6.0.3.tgz#083f77a5c9c3ebf5800fb57a280da71aacc10a18"
+  integrity sha512-lONjTQ7hFPh1SyhwDrRd5ZwM4NMGQ7bNR6vLrs6mrU0Z8Q1zCcWbf/pvyp4DOlGyd9uyZxRy2wUsSZLeIPjbAw==
+  dependencies:
+    tslib "^2.3.0"
 
 ngx-translate-messageformat-compiler@^5.0.1:
   version "5.0.1"
@@ -21518,7 +21520,7 @@ yargs@^17.0.0, yargs@^17.2.1:
     y18n "^5.0.5"
     yargs-parser "^21.0.0"
 
-yargs@^17.6.2:
+yargs@^17.5.1, yargs@^17.6.2:
   version "17.7.1"
   resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.1.tgz#34a77645201d1a8fc5213ace787c220eabbd0967"
   integrity sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==
