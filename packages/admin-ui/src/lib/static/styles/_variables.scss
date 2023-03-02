@@ -1,6 +1,6 @@
 @import "./global/sass-overrides";
-@import "~@clr/ui/src/utils/_mixins";
-@import "~@clr/ui/src/utils/_variables.clarity.scss";
+@import "@clr/ui/src/utils/_mixins";
+@import "@clr/ui/src/utils/_variables.clarity.scss";
 
 // breakpoints
 $breakpoint-small: 768px;
