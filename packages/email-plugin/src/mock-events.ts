@@ -10,9 +10,9 @@ import {
     OrderStateTransitionEvent,
     PasswordResetEvent,
     ProductVariant,
+    ShippingLine,
     User,
 } from '@vendure/core';
-import { ShippingLine } from '@vendure/core/dist/entity/shipping-line/shipping-line.entity';
 
 export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
     'ArrangingPayment',
@@ -51,7 +51,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                     {
                         adjustmentSource: 'Promotion:1',
                         type: AdjustmentType.PROMOTION,
-                        amount: -1000 as any,
+                        amount: -1000,
                         description: '$10 off computer equipment',
                     },
                 ],

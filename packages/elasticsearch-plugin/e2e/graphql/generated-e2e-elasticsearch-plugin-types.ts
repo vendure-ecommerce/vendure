@@ -13,7 +13,7 @@ export type Scalars = {
   Float: number;
   DateTime: any;
   JSON: any;
-  Money: any;
+  Money: number;
   Upload: any;
 };
 
@@ -5777,7 +5777,7 @@ export type SearchGetPricesQueryVariables = Exact<{
 }>;
 
 
-export type SearchGetPricesQuery = { search: { items: Array<{ price: { min: any, max: any } | { value: any }, priceWithTax: { min: any, max: any } | { value: any } }> } };
+export type SearchGetPricesQuery = { search: { items: Array<{ price: { min: number, max: number } | { value: number }, priceWithTax: { min: number, max: number } | { value: number } }> } };
 
 export type GetJobInfoQueryVariables = Exact<{
   id: Scalars['ID'];

@@ -549,10 +549,150 @@ export class SettlePaymentError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set([]);
+const errorTypeNames = new Set<string>(['AlreadyRefundedError', 'CancelActiveOrderError', 'CancelPaymentError', 'ChannelDefaultLanguageError', 'CouponCodeExpiredError', 'CouponCodeInvalidError', 'CouponCodeLimitError', 'CreateFulfillmentError', 'EmailAddressConflictError', 'EmptyOrderLineSelectionError', 'FacetInUseError', 'FulfillmentStateTransitionError', 'IneligibleShippingMethodError', 'InsufficientStockError', 'InsufficientStockOnHandError', 'InvalidCredentialsError', 'InvalidFulfillmentHandlerError', 'ItemsAlreadyFulfilledError', 'LanguageNotAvailableError', 'ManualPaymentStateError', 'MimeTypeError', 'MissingConditionsError', 'MultipleOrderError', 'NativeAuthStrategyError', 'NegativeQuantityError', 'NoActiveOrderError', 'NoChangesSpecifiedError', 'NothingToRefundError', 'OrderLimitError', 'OrderModificationError', 'OrderModificationStateError', 'OrderStateTransitionError', 'PaymentMethodMissingError', 'PaymentOrderMismatchError', 'PaymentStateTransitionError', 'ProductOptionInUseError', 'QuantityTooGreatError', 'RefundOrderStateError', 'RefundPaymentIdMissingError', 'RefundStateTransitionError', 'SettlePaymentError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
 
 export const adminErrorOperationTypeResolvers = {
+  AddFulfillmentToOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
+    },
+  },
+  UpdateOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  AddManualPaymentToOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  ApplyCouponCodeResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  AuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  CancelOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  CancelPaymentResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+    },
+  },
+  CreateAssetResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Asset';
+    },
+  },
+  CreateChannelResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Channel';
+    },
+  },
+  CreateCustomerResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Customer';
+    },
+  },
+  CreatePromotionResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Promotion';
+    },
+  },
+  NativeAuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  ModifyOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  RefundOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Refund';
+    },
+  },
+  RemoveOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  RemoveFacetFromChannelResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Facet';
+    },
+  },
+  RemoveOptionGroupFromProductResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Product';
+    },
+  },
+  SetCustomerForDraftOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  SetOrderShippingMethodResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  SettlePaymentResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+    },
+  },
+  SettleRefundResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Refund';
+    },
+  },
+  TransitionFulfillmentToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
+    },
+  },
+  TransitionOrderToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  TransitionPaymentToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+    },
+  },
+  UpdateChannelResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Channel';
+    },
+  },
+  UpdateCustomerResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Customer';
+    },
+  },
+  UpdateGlobalSettingsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'GlobalSettings';
+    },
+  },
+  UpdatePromotionResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Promotion';
+    },
+  },
 };

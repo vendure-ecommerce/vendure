@@ -358,10 +358,100 @@ export class VerificationTokenInvalidError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set([]);
+const errorTypeNames = new Set<string>(['AlreadyLoggedInError', 'CouponCodeExpiredError', 'CouponCodeInvalidError', 'CouponCodeLimitError', 'EmailAddressConflictError', 'IdentifierChangeTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IneligiblePaymentMethodError', 'IneligibleShippingMethodError', 'InsufficientStockError', 'InvalidCredentialsError', 'MissingPasswordError', 'NativeAuthStrategyError', 'NegativeQuantityError', 'NoActiveOrderError', 'NotVerifiedError', 'OrderLimitError', 'OrderModificationError', 'OrderPaymentStateError', 'OrderStateTransitionError', 'PasswordAlreadySetError', 'PasswordResetTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordValidationError', 'PaymentDeclinedError', 'PaymentFailedError', 'VerificationTokenExpiredError', 'VerificationTokenInvalidError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
 
 export const shopErrorOperationTypeResolvers = {
+  UpdateOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  AddPaymentToOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  ApplyCouponCodeResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  AuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  NativeAuthenticationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  RefreshCustomerVerificationResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  RegisterCustomerAccountResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  RemoveOrderItemsResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  RequestPasswordResetResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  RequestUpdateCustomerEmailAddressResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  ResetPasswordResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
+  SetCustomerForOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  ActiveOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  SetOrderShippingMethodResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  TransitionOrderToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  UpdateCustomerEmailAddressResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  UpdateCustomerPasswordResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Success';
+    },
+  },
+  VerifyCustomerAccountResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'CurrentUser';
+    },
+  },
 };

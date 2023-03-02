@@ -66,6 +66,9 @@ Promise.all([
                 enumValues: 'keep',
             },
             strict: true,
+            scalars: {
+                Money: 'number',
+            },
         };
         const e2eConfig = {
             ...config,
@@ -148,6 +151,7 @@ Promise.all([
                     config: {
                         ...config,
                         scalars: {
+                            ...(config.scalars ?? {}),
                             ID: 'string | number',
                         },
                         maybeValue: 'T',
@@ -159,6 +163,7 @@ Promise.all([
                     config: {
                         ...config,
                         scalars: {
+                            ...(config.scalars ?? {}),
                             ID: 'string | number',
                         },
                         maybeValue: 'T',

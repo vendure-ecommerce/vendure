@@ -13,7 +13,7 @@ export type Scalars = {
   Float: number;
   DateTime: any;
   JSON: any;
-  Money: any;
+  Money: number;
   Upload: any;
 };
 

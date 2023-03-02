@@ -13,7 +13,7 @@ export type Scalars = {
   Float: number;
   DateTime: any;
   JSON: any;
-  Money: any;
+  Money: number;
   Upload: any;
 };
 
@@ -5757,21 +5757,21 @@ export type GetCustomerListQueryVariables = Exact<{
 
 export type GetCustomerListQuery = { customers: { totalItems: number, items: Array<{ id: string, title?: string | null, firstName: string, lastName: string, emailAddress: string, phoneNumber?: string | null, user?: { id: string, verified: boolean } | null }> } };
 
-export type RefundFragment = { id: string, state: string, items: any, transactionId?: string | null, shipping: any, total: any, metadata?: any | null };
+export type RefundFragment = { id: string, state: string, items: number, transactionId?: string | null, shipping: number, total: number, metadata?: any | null };
 
 export type RefundOrderMutationVariables = Exact<{
   input: RefundOrderInput;
 }>;
 
 
-export type RefundOrderMutation = { refundOrder: { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { id: string, state: string, items: any, transactionId?: string | null, shipping: any, total: any, metadata?: any | null } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } };
+export type RefundOrderMutation = { refundOrder: { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { id: string, state: string, items: number, transactionId?: string | null, shipping: number, total: number, metadata?: any | null } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } };
 
 export type OrderQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type OrderQuery = { order?: { id: string, payments?: Array<{ id: string, transactionId?: string | null, method: string, amount: any, state: string, errorMessage?: string | null, metadata?: any | null }> | null } | null };
+export type OrderQuery = { order?: { id: string, payments?: Array<{ id: string, transactionId?: string | null, method: string, amount: number, state: string, errorMessage?: string | null, metadata?: any | null }> | null } | null };
 
 export type CreateChannelMutationVariables = Exact<{
   input: CreateChannelInput;

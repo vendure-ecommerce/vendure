@@ -154,11 +154,10 @@ function generateErrorClassSource(node: ObjectTypeDefinitionNode) {
 
 function generateIsErrorFunction(schema: GraphQLSchema) {
     const errorNodes = Object.values(schema.getTypeMap())
-        .map(type => type.astNode)
-        .filter(isObjectTypeDefinition)
+        .filter(isObjectType)
         .filter(node => inheritsFromErrorResult(node));
     return `
-const errorTypeNames = new Set([${errorNodes.map(n => `'${n.name.value}'`).join(', ')}]);
+const errorTypeNames = new Set<string>([${errorNodes.map(n => `'${n.name}'`).join(', ')}]);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').${ERROR_INTERFACE_NAME} {
   return input instanceof ${ERROR_INTERFACE_NAME} || errorTypeNames.has(input.__typename);
 }`;
@@ -195,16 +194,15 @@ function generateTypeResolvers(schema: GraphQLSchema) {
 function getOperationsThatReturnErrorUnions(schema: GraphQLSchema, fields: GraphQLFieldMap<any, any>) {
     return Object.values(fields).filter(operation => {
         const innerType = unwrapType(operation.type);
-        if (innerType.astNode?.kind === 'UnionTypeDefinition') {
-            return isUnionOfResultAndErrors(schema, innerType.astNode);
+        if (isUnionType(innerType)) {
+            return isUnionOfResultAndErrors(schema, innerType.getTypes());
         }
         return false;
     });
 }
 
-function isUnionOfResultAndErrors(schema: GraphQLSchema, node: UnionTypeDefinitionNode) {
-    const errorResultTypes = node.types.filter(namedType => {
-        const type = schema.getType(namedType.name.value);
+function isUnionOfResultAndErrors(schema: GraphQLSchema, types: ReadonlyArray<GraphQLObjectType>) {
+    const errorResultTypes = types.filter(type => {
         if (isObjectType(type)) {
             if (inheritsFromErrorResult(type)) {
                 return true;
@@ -212,7 +210,7 @@ function isUnionOfResultAndErrors(schema: GraphQLSchema, node: UnionTypeDefiniti
         }
         return false;
     });
-    return (errorResultTypes.length = node.types.length - 1);
+    return (errorResultTypes.length = types.length - 1);
 }
 
 function isObjectTypeDefinition(node: any): node is ObjectTypeDefinitionNode {

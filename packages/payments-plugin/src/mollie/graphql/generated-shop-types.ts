@@ -16,7 +16,7 @@ export type Scalars = {
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
   /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
-  Money: any;
+  Money: number;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };

@@ -50,7 +50,7 @@ export const devConfig: VendureConfig = {
     },
     dbConnectionOptions: {
         synchronize: false,
-        logging: true,
+        logging: false,
         migrations: [path.join(__dirname, 'migrations/*.ts')],
         ...getDbConfig(),
     },
@@ -58,7 +58,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Debug }),
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
