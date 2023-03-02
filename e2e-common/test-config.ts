@@ -8,7 +8,7 @@ import {
 } from '@vendure/testing';
 import fs from 'fs-extra';
 import path from 'path';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { getPackageDir } from './get-package-dir';
 
@@ -81,7 +81,7 @@ export const testConfig = () => {
     });
 };
 
-function getDbConfig(): ConnectionOptions {
+function getDbConfig(): DataSourceOptions {
     const dbType = process.env.DB || 'sqljs';
     switch (dbType) {
         case 'postgres':

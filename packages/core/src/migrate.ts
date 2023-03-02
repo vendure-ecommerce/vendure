@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
-import { Connection, ConnectionOptions, createConnection } from 'typeorm';
+import { Connection, createConnection, DataSourceOptions } from 'typeorm';
 import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
 
@@ -177,7 +177,7 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
     resetConfig();
 }
 
-function createConnectionOptions(userConfig: Partial<VendureConfig>): ConnectionOptions {
+function createConnectionOptions(userConfig: Partial<VendureConfig>): DataSourceOptions {
     return Object.assign({ logging: ['query', 'error', 'schema'] }, userConfig.dbConnectionOptions, {
         subscribers: [],
         synchronize: false,

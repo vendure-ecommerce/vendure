@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
-import { Connection, ConnectionOptions, EntitySubscriberInterface } from 'typeorm';
+import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
 import { getConfig, setConfig } from './config/config-helpers';
@@ -263,7 +263,7 @@ function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonl
         dbConnectionOptions: {
             ...userConfig.dbConnectionOptions,
             synchronize: false,
-        } as ConnectionOptions,
+        } as DataSourceOptions,
     };
     return config;
 }

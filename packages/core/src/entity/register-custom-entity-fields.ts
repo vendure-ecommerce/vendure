@@ -4,7 +4,7 @@ import {
     Column,
     ColumnOptions,
     ColumnType,
-    ConnectionOptions,
+    DataSourceOptions,
     Index,
     JoinColumn,
     JoinTable,
@@ -168,7 +168,7 @@ function registerCustomFieldsForEntity(
     }
 }
 
-function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: any): Date | string {
+function formatDefaultDatetime(dbEngine: DataSourceOptions['type'], datetime: any): Date | string {
     if (!datetime) {
         return datetime;
     }
@@ -185,7 +185,7 @@ function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: an
 }
 
 function getColumnType(
-    dbEngine: ConnectionOptions['type'],
+    dbEngine: DataSourceOptions['type'],
     type: Exclude<CustomFieldType, 'relation'>,
 ): ColumnType {
     switch (type) {
@@ -232,7 +232,7 @@ function getColumnType(
     return 'varchar';
 }
 
-function getDefault(customField: CustomFieldConfig, dbEngine: ConnectionOptions['type']) {
+function getDefault(customField: CustomFieldConfig, dbEngine: DataSourceOptions['type']) {
     const { name, type, list, defaultValue, nullable } = customField;
     if (list && defaultValue) {
         if (dbEngine === 'mysql') {

@@ -11,7 +11,7 @@ import {
     PaginatedList,
 } from '@vendure/core';
 import Bull, {
-    ConnectionOptions,
+    DataSourceOptions,
     JobType,
     Processor,
     Queue,
@@ -38,7 +38,7 @@ const DEFAULT_CONCURRENCY = 3;
  */
 export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private redisConnection: Redis.Redis | Redis.Cluster;
-    private connectionOptions: ConnectionOptions;
+    private connectionOptions: DataSourceOptions;
     private queue: Queue;
     private worker: Worker;
     private scheduler: QueueScheduler;

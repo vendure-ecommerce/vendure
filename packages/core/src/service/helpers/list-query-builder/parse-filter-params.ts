@@ -1,6 +1,6 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Connection, ConnectionOptions } from 'typeorm';
+import { Connection, DataSourceOptions } from 'typeorm';
 import { DateUtils } from 'typeorm/util/DateUtils';
 
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
@@ -85,7 +85,7 @@ function buildWhereCondition(
     operator: Operator,
     operand: any,
     argIndex: number,
-    dbType: ConnectionOptions['type'],
+    dbType: DataSourceOptions['type'],
 ): WhereCondition {
     switch (operator) {
         case 'eq':
@@ -206,7 +206,7 @@ function convertDate(input: Date | string | number): string | number {
 /**
  * Returns a valid regexp clause based on the current DB driver type.
  */
-function getRegexpClause(fieldName: string, argIndex: number, dbType: ConnectionOptions['type']): string {
+function getRegexpClause(fieldName: string, argIndex: number, dbType: DataSourceOptions['type']): string {
     switch (dbType) {
         case 'mariadb':
         case 'mysql':

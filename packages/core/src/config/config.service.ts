@@ -1,6 +1,6 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
@@ -68,7 +68,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.assetOptions;
     }
 
-    get dbConnectionOptions(): ConnectionOptions {
+    get dbConnectionOptions(): DataSourceOptions {
         return this.activeConfig.dbConnectionOptions;
     }
 
