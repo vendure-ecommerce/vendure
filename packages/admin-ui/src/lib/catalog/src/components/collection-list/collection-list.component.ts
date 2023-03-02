@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -34,7 +34,7 @@ import { CollectionPartial, RearrangeEvent } from '../collection-tree/collection
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionListComponent implements OnInit, OnDestroy {
-    filterTermControl = new FormControl('');
+    filterTermControl = new UntypedFormControl('');
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
     items$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;

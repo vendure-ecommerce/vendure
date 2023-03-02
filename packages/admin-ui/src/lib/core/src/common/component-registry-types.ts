@@ -1,4 +1,4 @@
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 /**
  * @description
@@ -30,7 +30,7 @@ export interface FormInputComponent<C = InputComponentConfig> {
      *
      * Full documentation can be found in the [Angular docs](https://angular.io/api/forms/FormControl).
      */
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     /**
      * @description
      * The `config` property contains the full configuration object of the custom field or configurable argument.

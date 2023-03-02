@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -24,7 +24,7 @@ export class CustomerListComponent
     extends BaseListComponent<GetCustomerListQuery, ItemOf<GetCustomerListQuery, 'customers'>>
     implements OnInit
 {
-    searchTerm = new FormControl('');
+    searchTerm = new UntypedFormControl('');
     constructor(
         private dataService: DataService,
         router: Router,

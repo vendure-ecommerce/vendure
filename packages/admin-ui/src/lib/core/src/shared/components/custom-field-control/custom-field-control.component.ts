@@ -1,5 +1,5 @@
 import { Component, ComponentFactory, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -23,7 +23,7 @@ import {
 })
 export class CustomFieldControlComponent implements OnInit {
     @Input() entityName: CustomFieldEntityName;
-    @Input('customFieldsFormGroup') formGroup: FormGroup;
+    @Input('customFieldsFormGroup') formGroup: UntypedFormGroup;
     @Input() customField: CustomFieldsFragment;
     @Input() compact = false;
     @Input() showLabel = true;

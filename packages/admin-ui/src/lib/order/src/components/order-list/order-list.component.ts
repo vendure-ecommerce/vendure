@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -41,10 +41,10 @@ export class OrderListComponent
     extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
     implements OnInit
 {
-    searchControl = new FormControl('');
-    searchOrderCodeControl = new FormControl('');
-    searchLastNameControl = new FormControl('');
-    customFilterForm: FormGroup;
+    searchControl = new UntypedFormControl('');
+    searchOrderCodeControl = new UntypedFormControl('');
+    searchLastNameControl = new UntypedFormControl('');
+    customFilterForm: UntypedFormGroup;
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
     filterPresets: FilterPreset[] = [
         {
@@ -148,10 +148,10 @@ export class OrderListComponent
             });
 
         const queryParamMap = this.route.snapshot.queryParamMap;
-        this.customFilterForm = new FormGroup({
-            states: new FormControl(queryParamMap.getAll('states') ?? []),
-            placedAtStart: new FormControl(queryParamMap.get('placedAtStart')),
-            placedAtEnd: new FormControl(queryParamMap.get('placedAtEnd')),
+        this.customFilterForm = new UntypedFormGroup({
+            states: new UntypedFormControl(queryParamMap.getAll('states') ?? []),
+            placedAtStart: new UntypedFormControl(queryParamMap.get('placedAtStart')),
+            placedAtEnd: new UntypedFormControl(queryParamMap.get('placedAtEnd')),
         });
     }
 

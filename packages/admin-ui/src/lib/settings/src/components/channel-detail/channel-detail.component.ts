@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -34,7 +34,7 @@ export class ChannelDetailComponent
     customFields: CustomFieldConfig[];
     zones$: Observable<GetZonesQuery['zones']>;
     sellers$: Observable<GetSellersQuery['sellers']['items']>;
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     currencyCodes = Object.values(CurrencyCode);
     availableLanguageCodes$: Observable<LanguageCode[]>;
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateChannel, Permission.CreateChannel];
@@ -45,7 +45,7 @@ export class ChannelDetailComponent
         protected serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);

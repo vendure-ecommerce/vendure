@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { CustomFieldConfig, OrderDetailFragment, ServerConfigService } from '@vendure/admin-ui/core';
 import { isObject } from '@vendure/common/lib/shared-utils';
 
@@ -14,7 +14,7 @@ export class FulfillmentDetailComponent implements OnInit, OnChanges {
     @Input() order: OrderDetailFragment;
 
     customFieldConfig: CustomFieldConfig[] = [];
-    customFieldFormGroup = new FormGroup({});
+    customFieldFormGroup = new UntypedFormGroup({});
 
     constructor(private serverConfigService: ServerConfigService) {}
 
@@ -45,7 +45,10 @@ export class FulfillmentDetailComponent implements OnInit, OnChanges {
     buildCustomFieldsFormGroup() {
         const customFields = (this.fulfillment as any).customFields;
         for (const fieldDef of this.serverConfigService.getCustomFieldsFor('Fulfillment')) {
-            this.customFieldFormGroup.addControl(fieldDef.name, new FormControl(customFields[fieldDef.name]));
+            this.customFieldFormGroup.addControl(
+                fieldDef.name,
+                new UntypedFormControl(customFields[fieldDef.name]),
+            );
         }
     }
 

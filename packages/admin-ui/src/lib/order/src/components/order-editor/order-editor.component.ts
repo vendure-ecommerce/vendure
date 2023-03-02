@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     AddItemInput,
@@ -62,11 +62,11 @@ export class OrderEditorComponent
 {
     availableCountries$: Observable<GetAvailableCountriesQuery['countries']['items']>;
     addressCustomFields: CustomFieldConfig[];
-    detailForm = new FormGroup({});
-    couponCodesControl = new FormControl();
-    orderLineCustomFieldsFormArray: FormArray;
-    addItemCustomFieldsFormArray: FormArray;
-    addItemCustomFieldsForm: FormGroup;
+    detailForm = new UntypedFormGroup({});
+    couponCodesControl = new UntypedFormControl();
+    orderLineCustomFieldsFormArray: UntypedFormArray;
+    addItemCustomFieldsFormArray: UntypedFormArray;
+    addItemCustomFieldsForm: UntypedFormGroup;
     addItemSelectedVariant: ProductSelectorItem | undefined;
     orderLineCustomFields: CustomFieldConfig[];
     modifyOrderInput: ModifyOrderData = {
@@ -79,9 +79,9 @@ export class OrderEditorComponent
         updateShippingAddress: {},
         updateBillingAddress: {},
     };
-    surchargeForm: FormGroup;
-    shippingAddressForm: FormGroup;
-    billingAddressForm: FormGroup;
+    surchargeForm: UntypedFormGroup;
+    shippingAddressForm: UntypedFormGroup;
+    billingAddressForm: UntypedFormGroup;
     note = '';
     recalculateShipping = true;
     previousState: string;
@@ -127,47 +127,47 @@ export class OrderEditorComponent
             if (order.couponCodes.length) {
                 this.couponCodesControl.setValue(order.couponCodes);
             }
-            this.surchargeForm = new FormGroup({
-                description: new FormControl('', Validators.required),
-                sku: new FormControl(''),
-                price: new FormControl(0, Validators.required),
-                priceIncludesTax: new FormControl(true),
-                taxRate: new FormControl(0),
-                taxDescription: new FormControl(''),
+            this.surchargeForm = new UntypedFormGroup({
+                description: new UntypedFormControl('', Validators.required),
+                sku: new UntypedFormControl(''),
+                price: new UntypedFormControl(0, Validators.required),
+                priceIncludesTax: new UntypedFormControl(true),
+                taxRate: new UntypedFormControl(0),
+                taxDescription: new UntypedFormControl(''),
             });
             if (!this.shippingAddressForm) {
-                this.shippingAddressForm = new FormGroup({
-                    fullName: new FormControl(order.shippingAddress?.fullName),
-                    company: new FormControl(order.shippingAddress?.company),
-                    streetLine1: new FormControl(order.shippingAddress?.streetLine1),
-                    streetLine2: new FormControl(order.shippingAddress?.streetLine2),
-                    city: new FormControl(order.shippingAddress?.city),
-                    province: new FormControl(order.shippingAddress?.province),
-                    postalCode: new FormControl(order.shippingAddress?.postalCode),
-                    countryCode: new FormControl(order.shippingAddress?.countryCode),
-                    phoneNumber: new FormControl(order.shippingAddress?.phoneNumber),
+                this.shippingAddressForm = new UntypedFormGroup({
+                    fullName: new UntypedFormControl(order.shippingAddress?.fullName),
+                    company: new UntypedFormControl(order.shippingAddress?.company),
+                    streetLine1: new UntypedFormControl(order.shippingAddress?.streetLine1),
+                    streetLine2: new UntypedFormControl(order.shippingAddress?.streetLine2),
+                    city: new UntypedFormControl(order.shippingAddress?.city),
+                    province: new UntypedFormControl(order.shippingAddress?.province),
+                    postalCode: new UntypedFormControl(order.shippingAddress?.postalCode),
+                    countryCode: new UntypedFormControl(order.shippingAddress?.countryCode),
+                    phoneNumber: new UntypedFormControl(order.shippingAddress?.phoneNumber),
                 });
                 this.addAddressCustomFieldsFormGroup(this.shippingAddressForm, order.shippingAddress);
             }
             if (!this.billingAddressForm) {
-                this.billingAddressForm = new FormGroup({
-                    fullName: new FormControl(order.billingAddress?.fullName),
-                    company: new FormControl(order.billingAddress?.company),
-                    streetLine1: new FormControl(order.billingAddress?.streetLine1),
-                    streetLine2: new FormControl(order.billingAddress?.streetLine2),
-                    city: new FormControl(order.billingAddress?.city),
-                    province: new FormControl(order.billingAddress?.province),
-                    postalCode: new FormControl(order.billingAddress?.postalCode),
-                    countryCode: new FormControl(order.billingAddress?.countryCode),
-                    phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
+                this.billingAddressForm = new UntypedFormGroup({
+                    fullName: new UntypedFormControl(order.billingAddress?.fullName),
+                    company: new UntypedFormControl(order.billingAddress?.company),
+                    streetLine1: new UntypedFormControl(order.billingAddress?.streetLine1),
+                    streetLine2: new UntypedFormControl(order.billingAddress?.streetLine2),
+                    city: new UntypedFormControl(order.billingAddress?.city),
+                    province: new UntypedFormControl(order.billingAddress?.province),
+                    postalCode: new UntypedFormControl(order.billingAddress?.postalCode),
+                    countryCode: new UntypedFormControl(order.billingAddress?.countryCode),
+                    phoneNumber: new UntypedFormControl(order.billingAddress?.phoneNumber),
                 });
                 this.addAddressCustomFieldsFormGroup(this.billingAddressForm, order.billingAddress);
             }
-            this.orderLineCustomFieldsFormArray = new FormArray([]);
+            this.orderLineCustomFieldsFormArray = new UntypedFormArray([]);
             for (const line of order.lines) {
-                const formGroup = new FormGroup({});
+                const formGroup = new UntypedFormGroup({});
                 for (const { name } of this.orderLineCustomFields) {
-                    formGroup.addControl(name, new FormControl((line as any).customFields[name]));
+                    formGroup.addControl(name, new UntypedFormControl((line as any).customFields[name]));
                 }
                 formGroup.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
                     let modifyRow = this.modifyOrderInput.adjustOrderLines.find(
@@ -188,10 +188,10 @@ export class OrderEditorComponent
             }
         });
 
-        this.addItemCustomFieldsFormArray = new FormArray([]);
-        this.addItemCustomFieldsForm = new FormGroup({});
+        this.addItemCustomFieldsFormArray = new UntypedFormArray([]);
+        this.addItemCustomFieldsForm = new UntypedFormGroup({});
         for (const customField of this.orderLineCustomFields) {
-            this.addItemCustomFieldsForm.addControl(customField.name, new FormControl());
+            this.addItemCustomFieldsForm.addControl(customField.name, new UntypedFormControl());
         }
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()
@@ -295,9 +295,9 @@ export class OrderEditorComponent
             row.quantity++;
         }
         if (customFields) {
-            const formGroup = new FormGroup({});
+            const formGroup = new UntypedFormGroup({});
             for (const [key, value] of Object.entries(customFields)) {
-                formGroup.addControl(key, new FormControl(value));
+                formGroup.addControl(key, new UntypedFormControl(value));
             }
             this.addItemCustomFieldsFormArray.push(formGroup);
             formGroup.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
@@ -455,15 +455,15 @@ export class OrderEditorComponent
     }
 
     private addAddressCustomFieldsFormGroup(
-        parentFormGroup: FormGroup,
+        parentFormGroup: UntypedFormGroup,
         address?: OrderAddressFragment | null,
     ) {
         if (address && this.addressCustomFields.length) {
-            const addressCustomFieldsFormGroup = new FormGroup({});
+            const addressCustomFieldsFormGroup = new UntypedFormGroup({});
             for (const customFieldDef of this.addressCustomFields) {
                 const name = customFieldDef.name;
                 const value = (address as any).customFields?.[name];
-                addressCustomFieldsFormGroup.addControl(name, new FormControl(value));
+                addressCustomFieldsFormGroup.addControl(name, new UntypedFormControl(value));
             }
             parentFormGroup.addControl('customFields', addressCustomFieldsFormGroup);
         }

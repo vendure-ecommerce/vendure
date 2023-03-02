@@ -6,7 +6,13 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    UntypedFormArray,
+    UntypedFormBuilder,
+    UntypedFormControl,
+    UntypedFormGroup,
+    Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -50,7 +56,7 @@ export class CollectionDetailComponent
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
@@ -68,7 +74,7 @@ export class CollectionDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
         private modalService: ModalService,
         private localStorageService: LocalStorageService,
@@ -94,8 +100,8 @@ export class CollectionDetailComponent
         this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
-        const filtersFormArray = this.detailForm.get('filters') as FormArray;
-        const inheritFiltersControl = this.detailForm.get('inheritFilters') as FormControl;
+        const filtersFormArray = this.detailForm.get('filters') as UntypedFormArray;
+        const inheritFiltersControl = this.detailForm.get('inheritFilters') as UntypedFormControl;
         this.inheritFilters$ = inheritFiltersControl.valueChanges.pipe(distinctUntilChanged());
         this.updatedFilters$ = merge(filtersFormArray.statusChanges, this.filterRemoved$).pipe(
             debounceTime(200),
@@ -154,7 +160,7 @@ export class CollectionDetailComponent
     }
 
     addFilter(collectionFilter: ConfigurableOperation) {
-        const filtersArray = this.detailForm.get('filters') as FormArray;
+        const filtersArray = this.detailForm.get('filters') as UntypedFormArray;
         const argsHash = collectionFilter.args.reduce(
             (output, arg) => ({
                 ...output,
@@ -175,7 +181,7 @@ export class CollectionDetailComponent
     }
 
     removeFilter(index: number) {
-        const filtersArray = this.detailForm.get('filters') as FormArray;
+        const filtersArray = this.detailForm.get('filters') as UntypedFormArray;
         if (index !== -1) {
             filtersArray.removeAt(index);
             filtersArray.markAsDirty();
@@ -281,7 +287,7 @@ export class CollectionDetailComponent
             inheritFilters: entity.inheritFilters,
         });
 
-        const formArray = this.detailForm.get('filters') as FormArray;
+        const formArray = this.detailForm.get('filters') as UntypedFormArray;
         if (formArray.length !== entity.filters.length) {
             formArray.clear();
             this.filters = [];
@@ -304,7 +310,7 @@ export class CollectionDetailComponent
      */
     private getUpdatedCollection(
         category: CollectionFragment,
-        form: FormGroup,
+        form: UntypedFormGroup,
         languageCode: LanguageCode,
     ): CreateCollectionInput | UpdateCollectionInput {
         const updatedCategory = createUpdatedTranslatable({

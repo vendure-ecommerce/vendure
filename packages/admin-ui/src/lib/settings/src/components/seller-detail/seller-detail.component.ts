@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -28,7 +28,7 @@ import { mergeMap, take } from 'rxjs/operators';
 export class SellerDetailComponent extends BaseDetailComponent<SellerFragment> implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     zones$: Observable<GetZonesQuery['zones']>;
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     currencyCodes = Object.values(CurrencyCode);
     availableLanguageCodes$: Observable<LanguageCode[]>;
     readonly updatePermission = [Permission.SuperAdmin, Permission.UpdateSeller, Permission.CreateSeller];
@@ -39,7 +39,7 @@ export class SellerDetailComponent extends BaseDetailComponent<SellerFragment> i
         protected serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);

@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { UntypedFormControl } from '@angular/forms';
 import { DataService } from '@vendure/admin-ui/core';
 import { concat, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators'
 })
 export class CouponCodeSelectorComponent implements OnInit {
     @Input() couponCodes: string[];
-    @Input() control: FormControl | undefined;
+    @Input() control: UntypedFormControl | undefined;
     @Output() addCouponCode = new EventEmitter<string>();
     @Output() removeCouponCode = new EventEmitter<string>();
     availableCouponCodes$: Observable<Array<{ code: string; promotionName: string }>>;
@@ -37,7 +37,7 @@ export class CouponCodeSelectorComponent implements OnInit {
             ),
         );
         if (!this.control) {
-            this.control = new FormControl(this.couponCodes ?? []);
+            this.control = new UntypedFormControl(this.couponCodes ?? []);
         }
     }
 }

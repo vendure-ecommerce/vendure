@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, Observable } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
@@ -18,7 +18,7 @@ export class ChannelSwitcherComponent implements OnInit {
     readonly displayFilterThreshold = 10;
     channels$: Observable<CurrentUserChannel[]>;
     channelCount$: Observable<number>;
-    filterControl = new FormControl('');
+    filterControl = new UntypedFormControl('');
     activeChannelCode$: Observable<string>;
     constructor(private dataService: DataService, private channelService: ChannelService) {}
 

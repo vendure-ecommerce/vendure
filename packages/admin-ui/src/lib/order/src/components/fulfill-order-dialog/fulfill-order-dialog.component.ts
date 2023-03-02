@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import {
     configurableDefinitionToInstance,
     ConfigurableOperation,
@@ -23,7 +23,7 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
     resolveWith: (result?: FulfillOrderInput) => void;
     fulfillmentHandlerDef: ConfigurableOperationDefinition;
     fulfillmentHandler: ConfigurableOperation;
-    fulfillmentHandlerControl = new FormControl();
+    fulfillmentHandlerControl = new UntypedFormControl();
     fulfillmentQuantities: { [lineId: string]: { fulfillCount: number; max: number } } = {};
 
     // Provided by modalService.fromComponent() call

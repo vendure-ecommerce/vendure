@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 import { RelationCustomFieldConfig } from '../../../../common/generated-types';
@@ -14,7 +14,7 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
 })
 export class RelationGenericInputComponent {
     @Input() readonly: boolean;
-    @Input() parentFormControl: FormControl;
+    @Input() parentFormControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;
     relationId: string;
 

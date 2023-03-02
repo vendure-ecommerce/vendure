@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { ConfigArgDefinition } from '../../../../common/generated-types';
 import { Dialog } from '../../../../providers/modal/modal.types';
@@ -13,7 +13,7 @@ import { HtmlEditorFormInputComponent } from '../../../dynamic-form-inputs/code-
 })
 export class RawHtmlDialogComponent implements OnInit, Dialog<string> {
     html: string;
-    formControl = new FormControl();
+    formControl = new UntypedFormControl();
     config: ConfigArgDefinition = {
         name: '',
         type: '',

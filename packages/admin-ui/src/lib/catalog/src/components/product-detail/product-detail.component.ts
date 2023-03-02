@@ -1,6 +1,12 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+    UntypedFormArray,
+    UntypedFormBuilder,
+    UntypedFormControl,
+    UntypedFormGroup,
+    Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -75,8 +81,8 @@ export class ProductDetailComponent
     customVariantFields: CustomFieldConfig[];
     customOptionGroupFields: CustomFieldConfig[];
     customOptionFields: CustomFieldConfig[];
-    detailForm: FormGroup;
-    filterInput = new FormControl('');
+    detailForm: UntypedFormGroup;
+    filterInput = new UntypedFormControl('');
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     variantFacetValueChanges: { [variantId: string]: ProductVariantFragment['facetValues'] } = {};
@@ -100,7 +106,7 @@ export class ProductDetailComponent
         router: Router,
         serverConfigService: ServerConfigService,
         private productDetailService: ProductDetailService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
         protected dataService: DataService,
@@ -443,7 +449,7 @@ export class ProductDetailComponent
                 mergeMap(([product, languageCode]) => {
                     const newProduct = this.getUpdatedProduct(
                         product,
-                        productGroup as FormGroup,
+                        productGroup as UntypedFormGroup,
                         languageCode,
                     ) as CreateProductInput;
                     return this.productDetailService.createProductWithVariants(
@@ -485,7 +491,7 @@ export class ProductDetailComponent
                     if (productGroup.dirty || this.assetsChanged()) {
                         productInput = this.getUpdatedProduct(
                             product,
-                            productGroup as FormGroup,
+                            productGroup as UntypedFormGroup,
                             languageCode,
                         ) as UpdateProductInput;
                     }
@@ -493,7 +499,7 @@ export class ProductDetailComponent
                     if ((variantsArray && variantsArray.dirty) || this.variantAssetsChanged()) {
                         variantsInput = this.getUpdatedProductVariants(
                             product,
-                            variantsArray as FormArray,
+                            variantsArray as UntypedFormArray,
                             languageCode,
                             priceIncludesTax,
                         );
@@ -563,7 +569,7 @@ export class ProductDetailComponent
     }
 
     private buildVariantFormArray(variants: ProductVariantFragment[], languageCode: LanguageCode) {
-        const variantsFormArray = this.detailForm.get('variants') as FormArray;
+        const variantsFormArray = this.detailForm.get('variants') as UntypedFormArray;
         variants.forEach((variant, i) => {
             const variantTranslation = findTranslation(variant, languageCode);
             const pendingFacetValueChanges = this.variantFacetValueChanges[variant.id];
@@ -586,7 +592,7 @@ export class ProductDetailComponent
             };
 
             let variantFormGroup = variantsFormArray.controls.find(c => c.value.id === variant.id) as
-                | FormGroup
+                | UntypedFormGroup
                 | undefined;
             if (variantFormGroup) {
                 if (variantFormGroup.pristine) {
@@ -600,7 +606,9 @@ export class ProductDetailComponent
                 variantsFormArray.insert(i, variantFormGroup);
             }
             if (this.customVariantFields.length) {
-                let customFieldsGroup = variantFormGroup.get(['customFields']) as FormGroup | undefined;
+                let customFieldsGroup = variantFormGroup.get(['customFields']) as
+                    | UntypedFormGroup
+                    | undefined;
 
                 if (!customFieldsGroup) {
                     customFieldsGroup = this.formBuilder.group(
@@ -624,7 +632,7 @@ export class ProductDetailComponent
      */
     private getUpdatedProduct(
         product: NonNullable<GetProductWithVariantsQuery['product']>,
-        productFormGroup: FormGroup,
+        productFormGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): UpdateProductInput | CreateProductInput {
         const updatedProduct = createUpdatedTranslatable({
@@ -653,7 +661,7 @@ export class ProductDetailComponent
      */
     private getUpdatedProductVariants(
         product: NonNullable<GetProductWithVariantsQuery['product']>,
-        variantsFormArray: FormArray,
+        variantsFormArray: UntypedFormArray,
         languageCode: LanguageCode,
         priceIncludesTax: boolean,
     ): UpdateProductVariantInput[] {
@@ -692,8 +700,8 @@ export class ProductDetailComponent
             .filter(notNullOrUndefined);
     }
 
-    private getProductFormGroup(): FormGroup {
-        return this.detailForm.get('product') as FormGroup;
+    private getProductFormGroup(): UntypedFormGroup {
+        return this.detailForm.get('product') as UntypedFormGroup;
     }
 
     /**

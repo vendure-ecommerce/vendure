@@ -7,7 +7,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Customer, DataService } from '@vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
@@ -40,7 +40,7 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
 
     membersItemsPerPage$: Observable<number>;
     membersCurrentPage$: Observable<number>;
-    filterTermControl = new FormControl('');
+    filterTermControl = new UntypedFormControl('');
     private refresh$ = new BehaviorSubject<boolean>(true);
     private destroy$ = new Subject<void>();
 

@@ -161,7 +161,6 @@
       }
     }
   },
-  "defaultProject": "vendure-admin",
   "schematics": {
     "@schematics/angular:component": {
       "skipTests": true,

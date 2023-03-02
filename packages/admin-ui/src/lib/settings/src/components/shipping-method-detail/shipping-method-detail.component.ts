@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -42,7 +42,7 @@ export class ShippingMethodDetailComponent
     extends BaseDetailComponent<ShippingMethodFragment>
     implements OnInit, OnDestroy
 {
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     checkers: ConfigurableOperationDefinition[] = [];
     calculators: ConfigurableOperationDefinition[] = [];
     fulfillmentHandlers: ConfigurableOperationDefinition[] = [];
@@ -65,7 +65,7 @@ export class ShippingMethodDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
@@ -282,7 +282,7 @@ export class ShippingMethodDetailComponent
      */
     private getUpdatedShippingMethod(
         shippingMethod: ShippingMethodFragment,
-        formGroup: FormGroup,
+        formGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): Omit<CreateShippingMethodInput | UpdateShippingMethodInput, 'checker' | 'calculator'> {
         const formValue = formGroup.value;

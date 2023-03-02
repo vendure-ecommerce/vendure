@@ -12,7 +12,7 @@
     "strict": true,
     "noImplicitAny": false,
     "strictPropertyInitialization": false,
-    "target": "es2015",
+    "target": "es2020",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

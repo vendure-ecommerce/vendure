@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DataService, Dialog, GetChannelsQuery, ItemOf, NotificationService } from '@vendure/admin-ui/core';
 import { combineLatest } from 'rxjs';
 
@@ -16,7 +16,7 @@ export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
     currentChannel: Channel;
     availableChannels: Channel[];
     resolveWith: (result?: Channel) => void;
-    selectedChannelIdControl = new FormControl();
+    selectedChannelIdControl = new UntypedFormControl();
 
     // assigned by ModalService.fromComponent() call
 

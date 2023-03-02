@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
     CreateCustomerGroupInput,
     CustomFieldConfig,
@@ -18,9 +18,9 @@ export class CustomerGroupDetailDialogComponent implements Dialog<CreateCustomer
     group: { id?: string; name: string; customFields?: { [name: string]: any } };
     resolveWith: (result?: CreateCustomerGroupInput) => void;
     customFields: CustomFieldConfig[];
-    form: FormGroup;
+    form: UntypedFormGroup;
 
-    constructor(private serverConfigService: ServerConfigService, private formBuilder: FormBuilder) {
+    constructor(private serverConfigService: ServerConfigService, private formBuilder: UntypedFormBuilder) {
         this.customFields = this.serverConfigService.getCustomFieldsFor('CustomerGroup');
     }
 
@@ -32,7 +32,7 @@ export class CustomerGroupDetailDialogComponent implements Dialog<CreateCustomer
             ),
         });
         if (this.customFields.length) {
-            const customFieldsGroup = this.form.get('customFields') as FormGroup;
+            const customFieldsGroup = this.form.get('customFields') as UntypedFormGroup;
 
             for (const fieldDef of this.customFields) {
                 const key = fieldDef.name;

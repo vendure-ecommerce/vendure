@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -48,7 +48,7 @@ export class OrderDetailComponent
     extends BaseDetailComponent<OrderDetailFragment>
     implements OnInit, OnDestroy
 {
-    detailForm = new FormGroup({});
+    detailForm = new UntypedFormGroup({});
     history$: Observable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'] | undefined>;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();

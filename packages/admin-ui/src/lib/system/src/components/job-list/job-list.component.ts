@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     BaseListComponent,
@@ -25,9 +25,9 @@ export class JobListComponent
     implements OnInit
 {
     queues$: Observable<GetJobQueueListQuery['jobQueues']>;
-    liveUpdate = new FormControl(true);
-    hideSettled = new FormControl(true);
-    queueFilter = new FormControl('all');
+    liveUpdate = new UntypedFormControl(true);
+    hideSettled = new UntypedFormControl(true);
+    queueFilter = new UntypedFormControl('all');
 
     constructor(
         private dataService: DataService,

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import {
     AddressFragment,
     CreateAddressInput,
@@ -31,12 +31,12 @@ export class SelectAddressDialogComponent implements OnInit, Dialog<CreateAddres
     addresses$: Observable<AddressFragment[]>;
     customerId: string | undefined;
     currentAddress: OrderAddressFragment | undefined;
-    addressForm: FormGroup;
+    addressForm: UntypedFormGroup;
     selectedAddress: AddressFragment | undefined;
     useExisting = true;
     createNew = false;
 
-    constructor(private dataService: DataService, private formBuilder: FormBuilder) {}
+    constructor(private dataService: DataService, private formBuilder: UntypedFormBuilder) {}
 
     ngOnInit(): void {
         this.addressForm = this.formBuilder.group({

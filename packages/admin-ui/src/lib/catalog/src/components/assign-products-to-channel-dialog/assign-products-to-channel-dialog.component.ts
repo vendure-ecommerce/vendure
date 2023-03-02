@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
@@ -25,8 +25,8 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
     availableChannels: Channel[];
     resolveWith: (result?: any) => void;
     variantsPreview$: Observable<Array<{ id: string; name: string; price: number; pricePreview: number }>>;
-    priceFactorControl = new FormControl(1);
-    selectedChannelIdControl = new FormControl();
+    priceFactorControl = new UntypedFormControl(1);
+    selectedChannelIdControl = new UntypedFormControl();
 
     // assigned by ModalService.fromComponent() call
     productIds: string[];

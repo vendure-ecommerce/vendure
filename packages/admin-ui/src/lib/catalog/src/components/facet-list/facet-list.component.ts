@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -27,7 +27,7 @@ export class FacetListComponent
     extends BaseListComponent<GetFacetListQuery, ItemOf<GetFacetListQuery, 'facets'>>
     implements OnInit
 {
-    filterTermControl = new FormControl('');
+    filterTermControl = new UntypedFormControl('');
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;

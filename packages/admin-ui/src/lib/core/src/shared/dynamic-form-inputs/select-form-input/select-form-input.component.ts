@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 
@@ -24,7 +24,7 @@ import { DataService } from '../../../data/providers/data.service';
 export class SelectFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'select-form-input';
     @Input() readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     config: DefaultFormComponentConfig<'select-form-input'> & CustomFieldConfigFragment;
     uiLanguage$: Observable<LanguageCode>;
 
