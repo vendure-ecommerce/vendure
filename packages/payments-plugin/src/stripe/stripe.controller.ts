@@ -43,9 +43,6 @@ export class StripeController {
             response.status(HttpStatus.BAD_REQUEST).send(missingHeaderErrorMessage);
             return;
         }
-        // FIXME
-        console.log(JSON.stringify(request.body));
-
         const event = request.body as Stripe.Event;
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;

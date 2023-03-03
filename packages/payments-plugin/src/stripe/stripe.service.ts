@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Ctx, Customer, Logger, Order, PaymentMethodService, RequestContext, TransactionalConnection } from '@vendure/core';
+import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { Ctx, Customer, Logger, Order, PaymentMethodService, RequestContext, TransactionalConnection, UserInputError } from '@vendure/core';
 import Stripe from 'stripe';
 
 import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
 import { VendureStripeClient } from './stripe-client';
 import { getAmountInStripeMinorUnits } from './stripe-utils';
+import { stripePaymentMethodHandler } from './stripe.handler';
 import { StripePluginOptions } from './types';
 
 @Injectable()
@@ -59,19 +61,37 @@ export class StripeService {
         return stripe.webhooks.constructEvent(payload, signature, stripe.webhookSecret);
     }
 
+    /**
+     * Get Stripe client based on eligible payment methods for order
+     */
     async getStripeClient(ctx: RequestContext, order: Order): Promise<VendureStripeClient> {
-        const methods = await this.paymentMethodService.getEligiblePaymentMethods(ctx, order);
-        console.log('methods', JSON.stringify(methods));
-        // TODO Find stripe methods
-        if (!methods) {
-            throw Error(`No eligible Stripe payment method found for order ${order.code}`);
+        const [eligiblePaymentMethods, paymentMethods] = await Promise.all([
+            this.paymentMethodService.getEligiblePaymentMethods(ctx, order),
+            this.paymentMethodService.findAll(ctx, {
+                filter: {
+                    enabled: { eq: true }
+                }
+            })
+        ]);
+        const stripePaymentMethod = paymentMethods.items.find((pm) => pm.handler.code === stripePaymentMethodHandler.code);
+        if (!stripePaymentMethod) {
+            throw new UserInputError(`No enabled Stripe payment method found`);
         }
-        const apiKey = undefined;
-        const webhookSecret = undefined;
-        if (!apiKey || !webhookSecret) {
-            throw Error(`Stripe payment method is missing ApiKey or WebhookSecret`);
+        const isEligible = eligiblePaymentMethods.some((pm) => pm.code === stripePaymentMethod.code);
+        if (!isEligible) {
+            throw new UserInputError(`Stripe payment method is not eligible for order ${order.code}`);
         }
+        const apiKey = this.findOrThrowArgValue(stripePaymentMethod.handler.args, 'apiKey');
+        const webhookSecret = this.findOrThrowArgValue(stripePaymentMethod.handler.args, 'webhookSecret');
         return new VendureStripeClient(apiKey, webhookSecret);
+    }
+
+    private findOrThrowArgValue(args: ConfigArg[], name: string): string {
+        const value = args.find((arg) => arg.name === name)?.value;
+        if (!value) {
+            throw Error(`No argument named '${name}' found!`);
+        }
+        return value;
     }
 
     /**
