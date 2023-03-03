@@ -27,7 +27,7 @@ export const stripePaymentMethodHandler = new PaymentMethodHandler({
         apiKey: {
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'API Key' }],
-            ui: { component: 'password-form-input' }
+            ui: { component: 'password-form-input' },
         },
         webhookSecret: {
             type: 'string',
