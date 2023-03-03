@@ -10,7 +10,6 @@ import {
 } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
 import gql from 'graphql-tag';
-import localtunnel from 'localtunnel';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -28,7 +27,6 @@ import { CREATE_STRIPE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     require('dotenv').config();
 
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
-    const tunnel = await localtunnel({ port: 3050 });
     const config = mergeConfig(testConfig, {
         plugins: [
             ...testConfig.plugins,
