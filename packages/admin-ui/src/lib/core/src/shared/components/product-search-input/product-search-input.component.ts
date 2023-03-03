@@ -2,8 +2,10 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewCh
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { SearchProducts } from '../../../common/generated-types';
+import { SearchProductsQuery } from '../../../common/generated-types';
 import { SingleSearchSelectionModelFactory } from '../../../common/single-search-selection-model';
+
+type FacetValueResult = SearchProductsQuery['search']['facetValues'][number];
 
 @Component({
     selector: 'vdr-product-search-input',
@@ -13,7 +15,7 @@ import { SingleSearchSelectionModelFactory } from '../../../common/single-search
     providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: SingleSearchSelectionModelFactory }],
 })
 export class ProductSearchInputComponent {
-    @Input() facetValueResults: SearchProducts.FacetValues[];
+    @Input() facetValueResults: FacetValueResult;
     @Output() searchTermChange = new EventEmitter<string>();
     @Output() facetValueChange = new EventEmitter<string[]>();
     @ViewChild('selectComponent', { static: true }) private selectComponent: NgSelectComponent;
@@ -58,7 +60,7 @@ export class ProductSearchInputComponent {
             });
     }
 
-    filterFacetResults = (term: string, item: SearchProducts.FacetValues | { label: string }) => {
+    filterFacetResults = (term: string, item: FacetValueResult | { label: string }) => {
         if (!this.isFacetValueItem(item)) {
             return false;
         }
@@ -80,7 +82,7 @@ export class ProductSearchInputComponent {
         );
     };
 
-    onSelectChange(selectedItems: Array<SearchProducts.FacetValues | { label: string }>) {
+    onSelectChange(selectedItems: Array<FacetValueResult | { label: string }>) {
         if (!Array.isArray(selectedItems)) {
             selectedItems = [selectedItems];
         }
@@ -109,7 +111,7 @@ export class ProductSearchInputComponent {
         return this.selectComponent.itemsList.markedIndex === -1;
     }
 
-    private isFacetValueItem = (input: unknown): input is SearchProducts.FacetValues => {
+    private isFacetValueItem = (input: unknown): input is FacetValueResult => {
         return typeof input === 'object' && !!input && input.hasOwnProperty('facetValue');
     };
 }

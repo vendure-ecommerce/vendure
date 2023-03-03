@@ -57,7 +57,7 @@ export async function setupScaffold(outputPath: string, extensions: Extension[])
     copyUiDevkit(outputPath);
     try {
         await checkIfNgccWasRun();
-    } catch (e) {
+    } catch (e: any) {
         const cmd = shouldUseYarn() ? 'yarn ngcc' : 'npx ngcc';
         logger.log(
             `An error occurred when running ngcc. Try removing node_modules, re-installing, and then manually running "${cmd}" in the project root.`,
@@ -77,7 +77,7 @@ function deleteExistingExtensionModules(outputPath: string) {
  * Generates a module path mapping object for all extensions with a "pathAlias"
  * property declared (if any).
  */
-function generateModulePathMapping(extensions: Array<AdminUiExtensionWithId>) {
+function generateModulePathMapping(extensions: AdminUiExtensionWithId[]) {
     const extensionsWithAlias = extensions.filter(e => e.pathAlias);
     if (extensionsWithAlias.length === 0) {
         return undefined;
@@ -96,7 +96,7 @@ function generateModulePathMapping(extensions: Array<AdminUiExtensionWithId>) {
  * Copies all files from the extensionPaths of the configured extensions into the
  * admin-ui source tree.
  */
-async function copyExtensionModules(outputPath: string, extensions: Array<AdminUiExtensionWithId>) {
+async function copyExtensionModules(outputPath: string, extensions: AdminUiExtensionWithId[]) {
     const extensionRoutesSource = generateLazyExtensionRoutes(extensions);
     fs.writeFileSync(path.join(outputPath, EXTENSION_ROUTES_FILE), extensionRoutesSource, 'utf8');
     const sharedExtensionModulesSource = generateSharedExtensionModule(extensions);
@@ -174,9 +174,9 @@ export async function copyGlobalStyleFile(outputPath: string, stylePath: string)
     await fs.copyFile(stylePath, styleOutputPath);
 }
 
-function generateLazyExtensionRoutes(extensions: Array<AdminUiExtensionWithId>): string {
+function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): string {
     const routes: string[] = [];
-    for (const extension of extensions as Array<AdminUiExtensionWithId>) {
+    for (const extension of extensions as AdminUiExtensionWithId[]) {
         for (const module of extension.ngModules) {
             if (module.type === 'lazy') {
                 routes.push(`  {
@@ -191,7 +191,7 @@ function generateLazyExtensionRoutes(extensions: Array<AdminUiExtensionWithId>):
     return `export const extensionRoutes = [${routes.join(',\n')}];\n`;
 }
 
-function generateSharedExtensionModule(extensions: Array<AdminUiExtensionWithId>) {
+function generateSharedExtensionModule(extensions: AdminUiExtensionWithId[]) {
     return `import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 ${extensions

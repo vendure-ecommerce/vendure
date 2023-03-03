@@ -28,7 +28,7 @@ export const identifierFields = [
     'productId',
     'productAssetId',
     'productVariantAssetId',
-]
+];
 
 export function getFieldsToSelect(includeStockStatus: boolean = false) {
     return includeStockStatus ? [...fieldsToSelect, 'inStock', 'productInStock'] : fieldsToSelect;

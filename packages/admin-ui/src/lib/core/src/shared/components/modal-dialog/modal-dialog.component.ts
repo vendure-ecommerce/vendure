@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import { Dialog, ModalOptions } from '../../../providers/modal/modal.service';
+import { Dialog, ModalOptions } from '../../../providers/modal/modal.types';
 
 import { DialogButtonsDirective } from './dialog-buttons.directive';
 

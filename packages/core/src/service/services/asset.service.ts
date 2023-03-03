@@ -288,7 +288,7 @@ export class AssetService {
             let result: Asset | MimeTypeError;
             try {
                 result = await this.createAssetInternal(ctx, stream, filename, mimetype, input.customFields);
-            } catch (e) {
+            } catch (e: any) {
                 reject(e);
                 return;
             }
@@ -488,7 +488,7 @@ export class AssetService {
             try {
                 await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.source);
                 await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.preview);
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
             }
             this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
@@ -519,7 +519,7 @@ export class AssetService {
     ): Promise<Asset | MimeTypeError> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
-            return new MimeTypeError(filename, mimetype);
+            return new MimeTypeError({ fileName: filename, mimeType: mimetype });
         }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(ctx, filename);
@@ -530,7 +530,7 @@ export class AssetService {
         let preview: Buffer;
         try {
             preview = await assetPreviewStrategy.generatePreviewImage(ctx, mimetype, sourceFile);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not create Asset preview image: ${e.message}`, undefined, e.stack);
             throw e;
         }
@@ -587,7 +587,7 @@ export class AssetService {
         try {
             const { width, height } = sizeOf(imageFile);
             return { width, height };
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(`Could not determine Asset dimensions: ` + e);
             return { width: 0, height: 0 };
         }

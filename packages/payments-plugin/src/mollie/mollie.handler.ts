@@ -39,7 +39,10 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             label: [{ languageCode: LanguageCode.en, value: 'Auto capture payments' }],
             defaultValue: false,
             description: [
-                { languageCode: LanguageCode.en, value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.' },
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.',
+                },
             ],
         },
     },
@@ -58,7 +61,9 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
         }
         if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {
-            throw Error(`Cannot create payment for status ${metadata.status} for order ${order.code}. Only Authorized or Settled are allowed.`);
+            throw Error(
+                `Cannot create payment for status ${metadata.status} for order ${order.code}. Only Authorized or Settled are allowed.`,
+            );
         }
         Logger.info(`Payment for order ${order.code} created with state '${metadata.status}'`, loggerCtx);
         return {
@@ -75,7 +80,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         const mollieOrder = await mollieClient.orders.get(payment.transactionId);
         // Order could have been completed via Mollie dashboard, then we can just settle
         if (!mollieOrder.isCompleted()) {
-            await mollieClient.orders_shipments.create({orderId: payment.transactionId}); // Creating a shipment captures the payment
+            await mollieClient.orders_shipments.create({ orderId: payment.transactionId }); // Creating a shipment captures the payment
         }
         Logger.info(`Settled payment for ${order.code}`, loggerCtx);
         return { success: true };
@@ -83,16 +88,20 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
         const { apiKey } = args;
         const mollieClient = createMollieClient({ apiKey });
-        const mollieOrder = await mollieClient.orders.get(payment.transactionId, {embed: [OrderEmbed.payments]});
+        const mollieOrder = await mollieClient.orders.get(payment.transactionId, {
+            embed: [OrderEmbed.payments],
+        });
         const molliePayments = await mollieOrder.getPayments();
         const molliePayment = molliePayments.find(p => p.status === PaymentStatus.paid); // Only one paid payment should be there
         if (!molliePayment) {
-            throw Error(`No payment with status 'paid' was found in Mollie for order ${order.code} (Mollie order ${mollieOrder.id})`);
+            throw Error(
+                `No payment with status 'paid' was found in Mollie for order ${order.code} (Mollie order ${mollieOrder.id})`,
+            );
         }
         const refund = await mollieClient.payments_refunds.create({
             paymentId: molliePayment.id,
             description: input.reason,
-            amount: toAmount(amount, order.currencyCode)
+            amount: toAmount(amount, order.currencyCode),
         });
         if (refund.status === RefundStatus.failed) {
             Logger.error(

@@ -2,25 +2,33 @@ import { Client } from '@elastic/elasticsearch';
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { SimpleGraphQLClient } from '@vendure/testing';
 
-import { SearchGetPrices, SearchInput } from '../../core/e2e/graphql/generated-e2e-admin-types';
-import { LogicalOperator, SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
+import { SearchGetPricesQuery, SearchInput } from '../../core/e2e/graphql/generated-e2e-admin-types';
+import {
+    LogicalOperator,
+    SearchProductsShopQuery,
+    SearchProductsShopQueryVariables,
+} from '../../core/e2e/graphql/generated-e2e-shop-types';
 import { SEARCH_PRODUCTS_SHOP } from '../../core/e2e/graphql/shop-definitions';
 import { deleteIndices } from '../src/indexing/indexing-utils';
 
 import { SEARCH_GET_PRICES, SEARCH_PRODUCTS } from './elasticsearch-plugin.e2e-spec';
-import { SearchProductsAdmin } from './graphql/generated-e2e-elasticsearch-plugin-types';
+import {
+    SearchGetPricesQueryVariables,
+    SearchProductsAdminQuery,
+    SearchProductsAdminQueryVariables,
+} from './graphql/generated-e2e-elasticsearch-plugin-types';
 
 // tslint:disable-next-line:no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
 export function doAdminSearchQuery(client: SimpleGraphQLClient, input: SearchInput) {
-    return client.query<SearchProductsAdmin.Query, SearchProductsAdmin.Variables>(SEARCH_PRODUCTS, {
+    return client.query<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>(SEARCH_PRODUCTS, {
         input,
     });
 }
 
 export async function testGroupByProduct(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -32,7 +40,7 @@ export async function testGroupByProduct(client: SimpleGraphQLClient) {
 }
 
 export async function testNoGrouping(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -44,7 +52,7 @@ export async function testNoGrouping(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -61,7 +69,7 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -85,7 +93,7 @@ export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -117,7 +125,7 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -132,7 +140,7 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
 }
 
 export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -165,7 +173,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
 }
 
 export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -191,7 +199,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
 }
 
 export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -219,7 +227,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
 }
 
 export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -236,7 +244,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
 }
 
 export async function testMatchCollectionId(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -253,7 +261,7 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -270,15 +278,18 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
 }
 
 export async function testSinglePrices(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
-        input: {
-            groupByProduct: false,
-            take: 3,
-            sort: {
-                price: SortOrder.ASC,
+    const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+        SEARCH_GET_PRICES,
+        {
+            input: {
+                groupByProduct: false,
+                take: 3,
+                sort: {
+                    price: SortOrder.ASC,
+                },
             },
         },
-    });
+    );
     expect(result.search.items).toEqual([
         {
             price: { value: 799 },
@@ -296,13 +307,16 @@ export async function testSinglePrices(client: SimpleGraphQLClient) {
 }
 
 export async function testPriceRanges(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(SEARCH_GET_PRICES, {
-        input: {
-            groupByProduct: true,
-            take: 3,
-            term: 'laptop',
+    const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+        SEARCH_GET_PRICES,
+        {
+            input: {
+                groupByProduct: true,
+                take: 3,
+                term: 'laptop',
+            },
         },
-    });
+    );
     expect(result.search.items).toEqual([
         {
             price: { min: 129900, max: 229900 },

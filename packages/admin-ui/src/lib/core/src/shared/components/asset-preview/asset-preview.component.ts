@@ -15,15 +15,15 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { CustomFieldConfig, GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
+import { CustomFieldConfig, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
+import { AssetLike } from '../asset-gallery/asset-gallery.types';
 import { Point } from '../focal-point-control/focal-point-control.component';
 import { ManageTagsDialogComponent } from '../manage-tags-dialog/manage-tags-dialog.component';
 
 export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | '';
-type AssetLike = GetAssetList.Items | GetAsset.Asset;
 
 @Component({
     selector: 'vdr-asset-preview',

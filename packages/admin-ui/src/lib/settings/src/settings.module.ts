@@ -16,6 +16,8 @@ import { PermissionGridComponent } from './components/permission-grid/permission
 import { ProfileComponent } from './components/profile/profile.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
+import { SellerDetailComponent } from './components/seller-detail/seller-detail.component';
+import { SellerListComponent } from './components/seller-list/seller-list.component';
 import { ShippingEligibilityTestResultComponent } from './components/shipping-eligibility-test-result/shipping-eligibility-test-result.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
 import { ShippingMethodListComponent } from './components/shipping-method-list/shipping-method-list.component';
@@ -56,6 +58,8 @@ import { settingsRoutes } from './settings.routes';
         GlobalSettingsComponent,
         TestOrderBuilderComponent,
         TestAddressFormComponent,
+        SellerDetailComponent,
+        SellerListComponent,
         ShippingMethodTestResultComponent,
         ShippingEligibilityTestResultComponent,
         ZoneListComponent,

@@ -7,7 +7,7 @@ import {
     SelectionNode,
 } from 'graphql';
 
-import { CustomFields, RelationCustomField, RelationCustomFieldFragment } from '../../common/generated-types';
+import { CustomFields, RelationCustomFieldFragment } from '../../common/generated-types';
 
 /**
  * Given a GraphQL AST (DocumentNode), this function looks for fragment definitions and adds and configured
@@ -51,12 +51,12 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                                 ? {
                                       selectionSet: {
                                           kind: Kind.SELECTION_SET,
-                                          selections: (customField as RelationCustomFieldFragment).scalarFields.map(
-                                              f => ({
-                                                  kind: Kind.FIELD,
-                                                  name: { kind: Kind.NAME, value: f },
-                                              }),
-                                          ),
+                                          selections: (
+                                              customField as RelationCustomFieldFragment
+                                          ).scalarFields.map(f => ({
+                                              kind: Kind.FIELD,
+                                              name: { kind: Kind.NAME, value: f },
+                                          })),
                                       },
                                   }
                                 : {}),

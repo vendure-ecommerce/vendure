@@ -29,10 +29,7 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
     @Column()
     identifier: string;
 
-    @OneToMany(
-        type => AuthenticationMethod,
-        method => method.user,
-    )
+    @OneToMany(type => AuthenticationMethod, method => method.user)
     authenticationMethods: AuthenticationMethod[];
 
     @Column({ default: false })
@@ -49,9 +46,9 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
     customFields: CustomUserFields;
 
     getNativeAuthenticationMethod(): NativeAuthenticationMethod;
-    getNativeAuthenticationMethod(strict? : boolean): NativeAuthenticationMethod | undefined;
+    getNativeAuthenticationMethod(strict?: boolean): NativeAuthenticationMethod | undefined;
 
-    getNativeAuthenticationMethod(strict? : boolean): NativeAuthenticationMethod | undefined {
+    getNativeAuthenticationMethod(strict?: boolean): NativeAuthenticationMethod | undefined {
         if (!this.authenticationMethods) {
             throw new InternalServerError('error.user-authentication-methods-not-loaded');
         }

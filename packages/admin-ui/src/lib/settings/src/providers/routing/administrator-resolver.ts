@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver } from '@vendure/admin-ui/core';
-import { Administrator, Role } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { AdministratorFragment, BaseEntityResolver, DataService } from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class AdministratorResolver extends BaseEntityResolver<Administrator.Fragment> {
+export class AdministratorResolver extends BaseEntityResolver<AdministratorFragment> {
     constructor(router: Router, dataService: DataService) {
         super(
             router,

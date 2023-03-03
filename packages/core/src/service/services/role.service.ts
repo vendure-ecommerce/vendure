@@ -334,7 +334,7 @@ export class RoleService {
             const superAdminRole = await this.getSuperAdminRole();
             superAdminRole.permissions = assignablePermissions;
             await this.connection.rawConnection.getRepository(Role).save(superAdminRole, { reload: false });
-        } catch (err) {
+        } catch (err: any) {
             const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),
@@ -354,7 +354,7 @@ export class RoleService {
     private async ensureCustomerRoleExists() {
         try {
             await this.getCustomerRole();
-        } catch (err) {
+        } catch (err: any) {
             const defaultChannel = await this.channelService.getDefaultChannel();
             await this.createRoleForChannels(
                 RequestContext.empty(),

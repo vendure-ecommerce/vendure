@@ -1,5 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
+import { AssetFragment } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { createTestEnvironment } from '@vendure/testing';
 import fs from 'fs-extra';
 import gql from 'graphql-tag';
@@ -10,13 +11,18 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { AssetServerPlugin } from '../src/plugin';
 
-import { CreateAssets, DeleteAsset, DeletionResult } from './graphql/generated-e2e-asset-server-plugin-types';
+import {
+    CreateAssetsMutation,
+    DeleteAssetMutation,
+    DeleteAssetMutationVariables,
+    DeletionResult,
+} from './graphql/generated-e2e-asset-server-plugin-types';
 
 const TEST_ASSET_DIR = 'test-assets';
 const IMAGE_BASENAME = 'derick-david-409858-unsplash';
 
 describe('AssetServerPlugin', () => {
-    let asset: CreateAssets.CreateAssets;
+    let asset: AssetFragment;
     const sourceFilePath = path.join(__dirname, TEST_ASSET_DIR, `source/b6/${IMAGE_BASENAME}.jpg`);
     const previewFilePath = path.join(__dirname, TEST_ASSET_DIR, `preview/71/${IMAGE_BASENAME}__preview.jpg`);
 
@@ -51,7 +57,7 @@ describe('AssetServerPlugin', () => {
 
     it('names the Asset correctly', async () => {
         const filesToUpload = [path.join(__dirname, `fixtures/assets/${IMAGE_BASENAME}.jpg`)];
-        const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+        const { createAssets }: CreateAssetsMutation = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,
             mapVariables: filePaths => ({
@@ -59,8 +65,8 @@ describe('AssetServerPlugin', () => {
             }),
         });
 
-        expect(createAssets[0].name).toBe(`${IMAGE_BASENAME}.jpg`);
-        asset = createAssets[0];
+        asset = createAssets[0] as AssetFragment;
+        expect(asset.name).toBe(`${IMAGE_BASENAME}.jpg`);
     });
 
     it('creates the expected asset files', async () => {
@@ -87,7 +93,7 @@ describe('AssetServerPlugin', () => {
     it('can handle non-latin filenames', async () => {
         const FILE_NAME_ZH = '白飯';
         const filesToUpload = [path.join(__dirname, `fixtures/assets/${FILE_NAME_ZH}.jpg`)];
-        const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+        const { createAssets }: { createAssets: AssetFragment[] } = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,
             mapVariables: filePaths => ({
@@ -190,15 +196,15 @@ describe('AssetServerPlugin', () => {
 
     describe('deletion', () => {
         it('deleting Asset deletes binary file', async () => {
-            const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
-                DELETE_ASSET,
-                {
-                    input: {
-                        assetId: asset.id,
-                        force: true,
-                    },
+            const { deleteAsset } = await adminClient.query<
+                DeleteAssetMutation,
+                DeleteAssetMutationVariables
+            >(DELETE_ASSET, {
+                input: {
+                    assetId: asset.id,
+                    force: true,
                 },
-            );
+            });
 
             expect(deleteAsset.result).toBe(DeletionResult.DELETED);
 
@@ -208,7 +214,7 @@ describe('AssetServerPlugin', () => {
     });
 
     describe('MIME type detection', () => {
-        let testImages: CreateAssets.CreateAssets[] = [];
+        let testImages: AssetFragment[] = [];
 
         async function testMimeTypeOfAssetWithExt(ext: string, expectedMimeType: string) {
             const testImage = testImages.find(i => i.source.endsWith(ext))!;
@@ -222,7 +228,7 @@ describe('AssetServerPlugin', () => {
             const formats = ['gif', 'jpg', 'png', 'svg', 'tiff', 'webp'];
 
             const filesToUpload = formats.map(ext => path.join(__dirname, `fixtures/assets/test.${ext}`));
-            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+            const { createAssets }: CreateAssetsMutation = await adminClient.fileUploadMutation({
                 mutation: CREATE_ASSETS,
                 filePaths: filesToUpload,
                 mapVariables: filePaths => ({
@@ -230,7 +236,7 @@ describe('AssetServerPlugin', () => {
                 }),
             });
 
-            testImages = createAssets;
+            testImages = createAssets as AssetFragment[];
         });
 
         it('gif', async () => {

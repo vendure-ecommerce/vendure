@@ -4,13 +4,13 @@ import {
     BaseEntityResolver,
     DataService,
     getDefaultUiLanguage,
-    GetProductWithVariants,
+    GetProductWithVariantsQuery,
 } from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ProductResolver extends BaseEntityResolver<GetProductWithVariants.Product> {
+export class ProductResolver extends BaseEntityResolver<GetProductWithVariantsQuery['product']> {
     constructor(dataService: DataService, router: Router) {
         super(
             router,

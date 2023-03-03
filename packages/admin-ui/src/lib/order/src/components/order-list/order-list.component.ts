@@ -4,17 +4,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
+    ChannelService,
     DataService,
-    GetOrderList,
+    GetOrderListQuery,
+    ItemOf,
     LocalStorageService,
     LogicalOperator,
+    OrderFilterParameter,
     OrderListOptions,
+    OrderType,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { Order } from '@vendure/common/lib/generated-types';
 import { merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
 
 interface OrderFilterConfig {
     active?: boolean;
@@ -34,7 +38,7 @@ interface FilterPreset {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderListComponent
-    extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
+    extends BaseListComponent<GetOrderListQuery, ItemOf<GetOrderListQuery, 'orders'>>
     implements OnInit
 {
     searchControl = new FormControl('');
@@ -87,11 +91,13 @@ export class OrderListComponent
     ];
     activePreset$: Observable<string>;
     canCreateDraftOrder = false;
+    private activeChannelIsDefaultChannel = false;
 
     constructor(
         private serverConfigService: ServerConfigService,
         private dataService: DataService,
         private localStorageService: LocalStorageService,
+        private channelService: ChannelService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -132,8 +138,11 @@ export class OrderListComponent
             filter(value => 2 < value.length || value.length === 0),
             debounceTime(250),
         );
-        merge(searchTerms$, this.route.queryParamMap)
-            .pipe(takeUntil(this.destroy$))
+        const isDefaultChannel$ = this.channelService.defaultChannelIsActive$.pipe(
+            tap(isDefault => (this.activeChannelIsDefaultChannel = isDefault)),
+        );
+        merge(searchTerms$, isDefaultChannel$, this.route.queryParamMap)
+            .pipe(debounceTime(50), takeUntil(this.destroy$))
             .subscribe(val => {
                 this.refresh();
             });
@@ -184,7 +193,7 @@ export class OrderListComponent
     ): { options: OrderListOptions } {
         const filterConfig = this.filterPresets.find(p => p.name === activeFilterPreset);
         // tslint:disable-next-line:no-shadowed-variable
-        let filter: any = {};
+        let filter: OrderFilterParameter = {};
         let filterOperator: LogicalOperator = LogicalOperator.AND;
         if (filterConfig) {
             if (filterConfig.config.active != null) {
@@ -223,6 +232,14 @@ export class OrderListComponent
                     before: placedAtEnd,
                 };
             }
+        }
+        if (this.activeChannelIsDefaultChannel) {
+            filter = {
+                ...(filter ?? {}),
+                type: {
+                    notEq: OrderType.Seller,
+                },
+            };
         }
         if (searchTerm) {
             filter = {

@@ -4,8 +4,6 @@
  * unless the `byKey` argument is supplied, in which case matching properties will
  * be used to check duplicates
  */
-import { isObject } from './shared-utils';
-
 export function unique<T>(arr: T[], byKey?: keyof T): T[] {
     if (byKey == null) {
         return Array.from(new Set(arr));

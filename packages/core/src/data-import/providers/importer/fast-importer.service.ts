@@ -23,9 +23,8 @@ import { ProductAsset } from '../../../entity/product/product-asset.entity';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
-import { RequestContextService } from '../../../service/index';
+import { RequestContextService, StockMovementService } from '../../../service/index';
 import { ChannelService } from '../../../service/services/channel.service';
-import { StockMovementService } from '../../../service/services/stock-movement.service';
 
 /**
  * @description
@@ -95,7 +94,9 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(this.importCtx, ProductAsset).save(productAssets, { reload: false });
+            await this.connection
+                .getRepository(this.importCtx, ProductAsset)
+                .save(productAssets, { reload: false });
         }
         return product.id;
     }
@@ -177,13 +178,14 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(this.importCtx, ProductVariantAsset).save(variantAssets, { reload: false });
+            await this.connection
+                .getRepository(this.importCtx, ProductVariantAsset)
+                .save(variantAssets, { reload: false });
         }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
                 this.importCtx,
                 createdVariant.id,
-                0,
                 input.stockOnHand,
             );
         }
@@ -192,9 +194,12 @@ export class FastImporterService {
             const variantPrice = new ProductVariantPrice({
                 price: input.price,
                 channelId,
+                currencyCode: this.defaultChannel.defaultCurrencyCode,
             });
             variantPrice.variant = createdVariant;
-            await this.connection.getRepository(this.importCtx, ProductVariantPrice).save(variantPrice, { reload: false });
+            await this.connection
+                .getRepository(this.importCtx, ProductVariantPrice)
+                .save(variantPrice, { reload: false });
         }
 
         return createdVariant.id;

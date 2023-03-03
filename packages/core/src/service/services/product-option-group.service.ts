@@ -11,11 +11,12 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { Logger } from '../../config/index';
+import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Product, ProductOption, ProductOptionTranslation, ProductVariant } from '../../entity/index';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -179,7 +180,7 @@ export class ProductOptionGroupService {
 
             try {
                 await this.connection.getRepository(ctx, ProductOptionGroup).remove(optionGroup);
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(e.message, undefined, e.stack);
             }
         }

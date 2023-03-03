@@ -1,4 +1,4 @@
-import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArg, FulfillOrderInput, OrderLineInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -9,7 +9,6 @@ import {
 } from '../../common/configurable-operation';
 import { OnTransitionStartFn } from '../../common/finite-state-machine/types';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
-import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import {
     FulfillmentState,
@@ -35,7 +34,7 @@ export type CreateFulfillmentResult = Partial<Pick<Fulfillment, 'trackingCode' |
 export type CreateFulfillmentFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     orders: Order[],
-    orderItems: OrderItem[],
+    lines: OrderLineInput[],
     args: ConfigArgValues<T>,
 ) => CreateFulfillmentResult | Promise<CreateFulfillmentResult>;
 
@@ -127,7 +126,7 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  *            shippingTransactionId: transaction.id,
  *          }
  *        };
- *      } catch (e) {
+ *      } catch (e: any) {
  *        // Errors thrown from within this function will
  *        // result in a CreateFulfillmentError being returned
  *        throw e;
@@ -168,10 +167,10 @@ export class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Confi
     createFulfillment(
         ctx: RequestContext,
         orders: Order[],
-        orderItems: OrderItem[],
+        lines: OrderLineInput[],
         args: ConfigArg[],
     ): Partial<Fulfillment> | Promise<Partial<Fulfillment>> {
-        return this.createFulfillmentFn(ctx, orders, orderItems, this.argsArrayToHash(args));
+        return this.createFulfillmentFn(ctx, orders, lines, this.argsArrayToHash(args));
     }
 
     /**

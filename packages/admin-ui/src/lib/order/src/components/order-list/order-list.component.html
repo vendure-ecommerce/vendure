@@ -93,6 +93,7 @@
 >
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.customer' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'order.order-type' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.state' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
@@ -103,6 +104,9 @@
         <td class="left align-middle">{{ order.code }}</td>
         <td class="left align-middle">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
+        </td>
+        <td class="left align-middle">
+            <vdr-chip>{{ order.type }}</vdr-chip>
         </td>
         <td class="left align-middle">
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>

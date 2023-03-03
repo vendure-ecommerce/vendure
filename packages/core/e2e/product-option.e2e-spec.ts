@@ -7,31 +7,8 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { omit } from '../../common/lib/omit';
 
 import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
-import {
-    AddOptionGroupToProduct,
-    AddOptionGroupToProductMutation,
-    AddOptionGroupToProductMutationVariables,
-    CreateProduct,
-    CreateProductMutation,
-    CreateProductMutationVariables,
-    CreateProductOption,
-    CreateProductOptionGroup,
-    CreateProductVariants,
-    CreateProductVariantsMutation,
-    CreateProductVariantsMutationVariables,
-    DeleteProductOptionMutation,
-    DeleteProductOptionMutationVariables,
-    DeleteProductVariantMutation,
-    DeleteProductVariantMutationVariables,
-    DeletionResult,
-    GetProductOptionGroupQuery,
-    GetProductOptionGroupQueryVariables,
-    LanguageCode,
-    ProductOptionGroupFragment,
-    ProductVariantFragment,
-    UpdateProductOption,
-    UpdateProductOptionGroup,
-} from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { DeletionResult, LanguageCode } from './graphql/generated-e2e-admin-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
@@ -45,8 +22,8 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ProductOption resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
-    let sizeGroup: ProductOptionGroupFragment;
-    let mediumOption: CreateProductOption.CreateProductOption;
+    let sizeGroup: Codegen.ProductOptionGroupFragment;
+    let mediumOption: Codegen.CreateProductOptionMutation['createProductOption'];
 
     beforeAll(async () => {
         await server.init({
@@ -63,8 +40,8 @@ describe('ProductOption resolver', () => {
 
     it('createProductOptionGroup', async () => {
         const { createProductOptionGroup } = await adminClient.query<
-            CreateProductOptionGroup.Mutation,
-            CreateProductOptionGroup.Variables
+            Codegen.CreateProductOptionGroupMutation,
+            Codegen.CreateProductOptionGroupMutationVariables
         >(CREATE_PRODUCT_OPTION_GROUP, {
             input: {
                 code: 'size',
@@ -101,8 +78,8 @@ describe('ProductOption resolver', () => {
 
     it('updateProductOptionGroup', async () => {
         const { updateProductOptionGroup } = await adminClient.query<
-            UpdateProductOptionGroup.Mutation,
-            UpdateProductOptionGroup.Variables
+            Codegen.UpdateProductOptionGroupMutation,
+            Codegen.UpdateProductOptionGroupMutationVariables
         >(UPDATE_PRODUCT_OPTION_GROUP, {
             input: {
                 id: sizeGroup.id,
@@ -119,8 +96,8 @@ describe('ProductOption resolver', () => {
         'createProductOption throws with invalid productOptionGroupId',
         assertThrowsWithMessage(async () => {
             const { createProductOption } = await adminClient.query<
-                CreateProductOption.Mutation,
-                CreateProductOption.Variables
+                Codegen.CreateProductOptionMutation,
+                Codegen.CreateProductOptionMutationVariables
             >(CREATE_PRODUCT_OPTION, {
                 input: {
                     productOptionGroupId: 'T_999',
@@ -136,8 +113,8 @@ describe('ProductOption resolver', () => {
 
     it('createProductOption', async () => {
         const { createProductOption } = await adminClient.query<
-            CreateProductOption.Mutation,
-            CreateProductOption.Variables
+            Codegen.CreateProductOptionMutation,
+            Codegen.CreateProductOptionMutationVariables
         >(CREATE_PRODUCT_OPTION, {
             input: {
                 productOptionGroupId: sizeGroup.id,
@@ -160,8 +137,8 @@ describe('ProductOption resolver', () => {
 
     it('updateProductOption', async () => {
         const { updateProductOption } = await adminClient.query<
-            UpdateProductOption.Mutation,
-            UpdateProductOption.Variables
+            Codegen.UpdateProductOptionMutation,
+            Codegen.UpdateProductOptionMutationVariables
         >(UPDATE_PRODUCT_OPTION, {
             input: {
                 id: 'T_7',
@@ -175,14 +152,14 @@ describe('ProductOption resolver', () => {
     });
 
     describe('deletion', () => {
-        let sizeOptionGroupWithOptions: NonNullable<GetProductOptionGroupQuery['productOptionGroup']>;
-        let variants: CreateProductVariantsMutation['createProductVariants'];
+        let sizeOptionGroupWithOptions: NonNullable<Codegen.GetProductOptionGroupQuery['productOptionGroup']>;
+        let variants: Codegen.CreateProductVariantsMutation['createProductVariants'];
 
         beforeAll(async () => {
             // Create a new product with a variant in each size option
             const { createProduct } = await adminClient.query<
-                CreateProductMutation,
-                CreateProductMutationVariables
+                Codegen.CreateProductMutation,
+                Codegen.CreateProductMutationVariables
             >(CREATE_PRODUCT, {
                 input: {
                     translations: [
@@ -197,21 +174,21 @@ describe('ProductOption resolver', () => {
             });
 
             const result = await adminClient.query<
-                AddOptionGroupToProductMutation,
-                AddOptionGroupToProductMutationVariables
+                Codegen.AddOptionGroupToProductMutation,
+                Codegen.AddOptionGroupToProductMutationVariables
             >(ADD_OPTION_GROUP_TO_PRODUCT, {
                 optionGroupId: sizeGroup.id,
                 productId: createProduct.id,
             });
 
             const { productOptionGroup } = await adminClient.query<
-                GetProductOptionGroupQuery,
-                GetProductOptionGroupQueryVariables
+                Codegen.GetProductOptionGroupQuery,
+                Codegen.GetProductOptionGroupQueryVariables
             >(GET_PRODUCT_OPTION_GROUP, {
                 id: sizeGroup.id,
             });
 
-            const variantInput: CreateProductVariantsMutationVariables['input'] =
+            const variantInput: Codegen.CreateProductVariantsMutationVariables['input'] =
                 productOptionGroup!.options.map((option, i) => ({
                     productId: createProduct.id,
                     sku: `TS-${option.code}`,
@@ -220,8 +197,8 @@ describe('ProductOption resolver', () => {
                 }));
 
             const { createProductVariants } = await adminClient.query<
-                CreateProductVariantsMutation,
-                CreateProductVariantsMutationVariables
+                Codegen.CreateProductVariantsMutation,
+                Codegen.CreateProductVariantsMutationVariables
             >(CREATE_PRODUCT_VARIANTS, {
                 input: variantInput,
             });
@@ -233,20 +210,20 @@ describe('ProductOption resolver', () => {
             'attempting to delete a non-existent id throws',
             assertThrowsWithMessage(
                 () =>
-                    adminClient.query<DeleteProductOptionMutation, DeleteProductOptionMutationVariables>(
-                        DELETE_PRODUCT_OPTION,
-                        {
-                            id: '999999',
-                        },
-                    ),
+                    adminClient.query<
+                        Codegen.DeleteProductOptionMutation,
+                        Codegen.DeleteProductOptionMutationVariables
+                    >(DELETE_PRODUCT_OPTION, {
+                        id: '999999',
+                    }),
                 "No ProductOption with the id '999999' could be found",
             ),
         );
 
         it('cannot delete ProductOption that is used by a ProductVariant', async () => {
             const { deleteProductOption } = await adminClient.query<
-                DeleteProductOptionMutation,
-                DeleteProductOptionMutationVariables
+                Codegen.DeleteProductOptionMutation,
+                Codegen.DeleteProductOptionMutationVariables
             >(DELETE_PRODUCT_OPTION, {
                 id: sizeOptionGroupWithOptions.options.find(o => o.code === 'medium')!.id,
             });
@@ -259,8 +236,8 @@ describe('ProductOption resolver', () => {
 
         it('can delete ProductOption after deleting associated ProductVariant', async () => {
             const { deleteProductVariant } = await adminClient.query<
-                DeleteProductVariantMutation,
-                DeleteProductVariantMutationVariables
+                Codegen.DeleteProductVariantMutation,
+                Codegen.DeleteProductVariantMutationVariables
             >(DELETE_PRODUCT_VARIANT, {
                 id: variants.find(v => v!.name.includes('medium'))!.id,
             });
@@ -268,8 +245,8 @@ describe('ProductOption resolver', () => {
             expect(deleteProductVariant.result).toBe(DeletionResult.DELETED);
 
             const { deleteProductOption } = await adminClient.query<
-                DeleteProductOptionMutation,
-                DeleteProductOptionMutationVariables
+                Codegen.DeleteProductOptionMutation,
+                Codegen.DeleteProductOptionMutationVariables
             >(DELETE_PRODUCT_OPTION, {
                 id: sizeOptionGroupWithOptions.options.find(o => o.code === 'medium')!.id,
             });
@@ -279,8 +256,8 @@ describe('ProductOption resolver', () => {
 
         it('deleted ProductOptions not included in query result', async () => {
             const { productOptionGroup } = await adminClient.query<
-                GetProductOptionGroupQuery,
-                GetProductOptionGroupQueryVariables
+                Codegen.GetProductOptionGroupQuery,
+                Codegen.GetProductOptionGroupQueryVariables
             >(GET_PRODUCT_OPTION_GROUP, {
                 id: sizeGroup.id,
             });

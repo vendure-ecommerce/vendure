@@ -2,22 +2,25 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, CustomFieldConfig, Permission } from '@vendure/admin-ui/core';
 import {
-    Channel,
+    BaseDetailComponent,
+    ChannelFragment,
     CreateChannelInput,
     CurrencyCode,
-    GetZones,
+    CustomFieldConfig,
+    DataService,
+    GetSellersQuery,
+    GetZonesQuery,
     LanguageCode,
+    NotificationService,
+    Permission,
+    ServerConfigService,
     UpdateChannelInput,
 } from '@vendure/admin-ui/core';
-import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
+
 @Component({
     selector: 'vdr-channel-detail',
     templateUrl: './channel-detail.component.html',
@@ -25,11 +28,12 @@ import { map, mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChannelDetailComponent
-    extends BaseDetailComponent<Channel.Fragment>
+    extends BaseDetailComponent<ChannelFragment>
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
-    zones$: Observable<GetZones.Zones[]>;
+    zones$: Observable<GetZonesQuery['zones']>;
+    sellers$: Observable<GetSellersQuery['sellers']['items']>;
     detailForm: FormGroup;
     currencyCodes = Object.values(CurrencyCode);
     availableLanguageCodes$: Observable<LanguageCode[]>;
@@ -54,6 +58,7 @@ export class ChannelDetailComponent
             defaultShippingZoneId: ['', Validators.required],
             defaultLanguageCode: [],
             defaultTaxZoneId: ['', Validators.required],
+            sellerId: ['', Validators.required],
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
@@ -63,6 +68,8 @@ export class ChannelDetailComponent
     ngOnInit() {
         this.init();
         this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
+        // TODO: make this lazy-loaded autocomplete
+        this.sellers$ = this.dataService.settings.getSellers().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();
     }
 
@@ -88,6 +95,7 @@ export class ChannelDetailComponent
             defaultShippingZoneId: formValue.defaultShippingZoneId,
             defaultTaxZoneId: formValue.defaultTaxZoneId,
             customFields: formValue.customFields,
+            sellerId: formValue.sellerId,
         };
         this.dataService.settings
             .createChannel(input)
@@ -141,6 +149,7 @@ export class ChannelDetailComponent
                         defaultLanguageCode: formValue.defaultLanguageCode,
                         defaultTaxZoneId: formValue.defaultTaxZoneId,
                         customFields: formValue.customFields,
+                        sellerId: formValue.sellerId,
                     } as UpdateChannelInput;
                     return this.dataService.settings.updateChannel(input);
                 }),
@@ -163,15 +172,16 @@ export class ChannelDetailComponent
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: Channel.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(entity: ChannelFragment, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             code: entity.code,
             token: entity.token || this.generateToken(),
             pricesIncludeTax: entity.pricesIncludeTax,
             currencyCode: entity.currencyCode,
-            defaultShippingZoneId: entity.defaultShippingZone ? entity.defaultShippingZone.id : '',
+            defaultShippingZoneId: entity.defaultShippingZone?.id ?? '',
             defaultLanguageCode: entity.defaultLanguageCode,
-            defaultTaxZoneId: entity.defaultTaxZone ? entity.defaultTaxZone.id : '',
+            defaultTaxZoneId: entity.defaultTaxZone?.id ?? '',
+            sellerId: entity.seller?.id ?? '',
         });
         if (this.customFields.length) {
             this.setCustomFieldFormValues(this.customFields, this.detailForm.get(['customFields']), entity);

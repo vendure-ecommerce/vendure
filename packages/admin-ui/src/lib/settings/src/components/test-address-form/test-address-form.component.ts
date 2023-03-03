@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { DataService, GetAvailableCountries, LocalStorageService } from '@vendure/admin-ui/core';
+import { DataService, GetAvailableCountriesQuery, ItemOf, LocalStorageService } from '@vendure/admin-ui/core';
 import { Observable, Subscription } from 'rxjs';
 
 export interface TestAddress {
@@ -18,7 +18,7 @@ export interface TestAddress {
 })
 export class TestAddressFormComponent implements OnInit, OnDestroy {
     @Output() addressChange = new EventEmitter<TestAddress>();
-    availableCountries$: Observable<GetAvailableCountries.Items[]>;
+    availableCountries$: Observable<Array<ItemOf<GetAvailableCountriesQuery, 'countries'>>>;
     form: FormGroup;
     private subscription: Subscription;
 

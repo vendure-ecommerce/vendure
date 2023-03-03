@@ -46,8 +46,10 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomPromotionFields,
+    CustomSellerFields,
     CustomShippingMethodFields,
     CustomShippingMethodFieldsTranslation,
+    CustomStockLocationFields,
     CustomTaxCategoryFields,
     CustomTaxRateFields,
     CustomUserFields,
@@ -135,11 +137,11 @@ function registerCustomFieldsForEntity(
             };
 
             if (translation) {
-                if (customField.type === 'localeString') {
+                if (customField.type === 'localeString' || customField.type === 'localeText') {
                     registerColumn();
                 }
             } else {
-                if (customField.type !== 'localeString') {
+                if (customField.type !== 'localeString' && customField.type !== 'localeText') {
                     registerColumn();
                 }
             }
@@ -191,6 +193,7 @@ function getColumnType(
         case 'localeString':
             return 'varchar';
         case 'text':
+        case 'localeText':
             switch (dbEngine) {
                 case 'mysql':
                 case 'mariadb':
@@ -286,7 +289,9 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'TaxRate', CustomTaxRateFields);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
+    registerCustomFieldsForEntity(config, 'Seller', CustomSellerFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'StockLocation', CustomStockLocationFields);
     registerCustomFieldsForEntity(config, 'Zone', CustomZoneFields);
 }

@@ -47,7 +47,7 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
         for (const migration of migrations) {
             console.log(chalk.green(`Successfully ran migration: ${migration.name}`));
         }
-    } catch (e) {
+    } catch (e: any) {
         console.log(chalk.red(`An error occurred when running migrations:`));
         console.log(e.message);
         process.exitCode = 1;
@@ -86,7 +86,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
         await disableForeignKeysForSqLite(connection, () =>
             connection.undoLastMigration({ transaction: 'each' }),
         );
-    } catch (e) {
+    } catch (e: any) {
         console.log(chalk.red(`An error occurred when reverting migration:`));
         console.log(e.message);
         process.exitCode = 1;

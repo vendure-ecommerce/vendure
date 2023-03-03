@@ -182,7 +182,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     constructor(private processContext: ProcessContext) {}
 
     /** @internal */
-    onApplicationBootstrap(): void | Promise<void> {
+    onApplicationBootstrap(): void {
         if (this.processContext.isWorker) {
             return;
         }
@@ -249,7 +249,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 res.setHeader('content-security-policy', `default-src 'self'`);
                 res.setHeader('Cache-Control', this.cacheHeader);
                 res.send(file);
-            } catch (e) {
+            } catch (e: any) {
                 const err = new Error('File not found');
                 (err as any).status = 404;
                 return next(err);
@@ -271,7 +271,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                     let file: Buffer;
                     try {
                         file = await AssetServerPlugin.assetStorage.readFileToBuffer(decodedReqPath);
-                    } catch (err) {
+                    } catch (err: any) {
                         res.status(404).send('Resource not found');
                         return;
                     }
@@ -294,7 +294,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         res.setHeader('content-security-policy', `default-src 'self'`);
                         res.send(imageBuffer);
                         return;
-                    } catch (e) {
+                    } catch (e: any) {
                         Logger.error(e, loggerCtx, e.stack);
                         res.status(500).send(e.message);
                         return;

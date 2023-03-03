@@ -6,13 +6,14 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Asset,
     BaseDetailComponent,
     Collection,
+    CollectionFragment,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
@@ -34,7 +35,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
-import { debounceTime, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -45,7 +46,7 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionDetailComponent
-    extends BaseDetailComponent<Collection.Fragment>
+    extends BaseDetailComponent<CollectionFragment>
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];
@@ -54,6 +55,7 @@ export class CollectionDetailComponent
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
     updatedFilters$: Observable<ConfigurableOperationInput[]>;
+    inheritFilters$: Observable<boolean>;
     livePreview = false;
     parentId$: Observable<string | undefined>;
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateCollection];
@@ -78,6 +80,7 @@ export class CollectionDetailComponent
             slug: ['', unicodePatternValidator(/^[\p{Letter}0-9_-]+$/)],
             description: '',
             visible: false,
+            inheritFilters: true,
             filters: this.formBuilder.array([]),
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
@@ -92,6 +95,8 @@ export class CollectionDetailComponent
             this.allFilters = res.collectionFilters;
         });
         const filtersFormArray = this.detailForm.get('filters') as FormArray;
+        const inheritFiltersControl = this.detailForm.get('inheritFilters') as FormControl;
+        this.inheritFilters$ = inheritFiltersControl.valueChanges.pipe(distinctUntilChanged());
         this.updatedFilters$ = merge(filtersFormArray.statusChanges, this.filterRemoved$).pipe(
             debounceTime(200),
             filter(() => filtersFormArray.touched),
@@ -265,7 +270,7 @@ export class CollectionDetailComponent
     /**
      * Sets the values of the form on changes to the category or current language.
      */
-    protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
+    protected setFormValues(entity: CollectionFragment, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(entity, languageCode);
 
         this.detailForm.patchValue({
@@ -273,6 +278,7 @@ export class CollectionDetailComponent
             slug: currentTranslation ? currentTranslation.slug : '',
             description: currentTranslation ? currentTranslation.description : '',
             visible: !entity.isPrivate,
+            inheritFilters: entity.inheritFilters,
         });
 
         const formArray = this.detailForm.get('filters') as FormArray;
@@ -297,7 +303,7 @@ export class CollectionDetailComponent
      * can then be persisted to the API.
      */
     private getUpdatedCollection(
-        category: Collection.Fragment,
+        category: CollectionFragment,
         form: FormGroup,
         languageCode: LanguageCode,
     ): CreateCollectionInput | UpdateCollectionInput {

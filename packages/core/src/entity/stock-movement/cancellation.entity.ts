@@ -2,7 +2,7 @@ import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { ChildEntity, ManyToOne } from 'typeorm';
 
-import { OrderItem } from '../order-item/order-item.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 
 import { StockMovement } from './stock-movement.entity';
 
@@ -21,6 +21,6 @@ export class Cancellation extends StockMovement {
         super(input);
     }
 
-    @ManyToOne(type => OrderItem, orderItem => orderItem.cancellation)
-    orderItem: OrderItem;
+    @ManyToOne(type => OrderLine)
+    orderLine: OrderLine;
 }

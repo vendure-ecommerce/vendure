@@ -15,6 +15,7 @@ import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { runEntityMetadataModifiers } from './entity/run-entity-metadata-modifiers';
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
+import { setMoneyStrategy } from './entity/set-money-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getPluginStartupMessages } from './plugin/plugin-utils';
@@ -142,6 +143,8 @@ export async function preBootstrapConfig(
     let config = getConfig();
     const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
     setEntityIdStrategy(entityIdStrategy, entities);
+    const moneyStrategy = config.entityOptions.moneyStrategy;
+    setMoneyStrategy(moneyStrategy, entities);
     const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
     if (!customFieldValidationResult.valid) {
         process.exitCode = 1;
@@ -221,7 +224,7 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
         version = require('../package.json').version;
-    } catch (e) {
+    } catch (e: any) {
         version = ' unknown';
     }
     const { port, shopApiPath, adminApiPath, hostname } = config.apiOptions;
@@ -276,7 +279,7 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
             try {
                 const adminCount = await connection.getRepository(Administrator).count();
                 return 0 < adminCount;
-            } catch (e) {
+            } catch (e: any) {
                 return false;
             }
         };

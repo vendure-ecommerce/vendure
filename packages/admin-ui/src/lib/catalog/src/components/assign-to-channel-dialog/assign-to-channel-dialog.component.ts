@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DataService, Dialog, GetChannels, NotificationService } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetChannelsQuery, ItemOf, NotificationService } from '@vendure/admin-ui/core';
 import { combineLatest } from 'rxjs';
+
+type Channel = GetChannelsQuery['channels'][number];
 
 @Component({
     selector: 'vdr-assign-to-channel-dialog',
@@ -9,11 +11,11 @@ import { combineLatest } from 'rxjs';
     styleUrls: ['./assign-to-channel-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssignToChannelDialogComponent implements OnInit, Dialog<GetChannels.Channels> {
-    selectedChannel: GetChannels.Channels | null | undefined;
-    currentChannel: GetChannels.Channels;
-    availableChannels: GetChannels.Channels[];
-    resolveWith: (result?: GetChannels.Channels) => void;
+export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
+    selectedChannel: Channel | null | undefined;
+    currentChannel: Channel;
+    availableChannels: Channel[];
+    resolveWith: (result?: Channel) => void;
     selectedChannelIdControl = new FormControl();
 
     // assigned by ModalService.fromComponent() call

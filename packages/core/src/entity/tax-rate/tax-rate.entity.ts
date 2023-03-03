@@ -1,6 +1,6 @@
 import { TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { grossPriceOf, netPriceOf, taxComponentOf, taxPayableOn } from '../../common/tax-utils';
 import { idsAreEqual } from '../../common/utils';
@@ -34,12 +34,15 @@ export class TaxRate extends VendureEntity implements HasCustomFields {
 
     @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) value: number;
 
+    @Index()
     @ManyToOne(type => TaxCategory)
     category: TaxCategory;
 
+    @Index()
     @ManyToOne(type => Zone)
     zone: Zone;
 
+    @Index()
     @ManyToOne(type => CustomerGroup, { nullable: true })
     customerGroup?: CustomerGroup;
 

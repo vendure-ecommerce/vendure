@@ -1,5 +1,5 @@
 import {
-    ASTKindToNode,
+    ASTVisitor,
     DocumentNode,
     getNamedType,
     GraphQLInputObjectType,
@@ -11,7 +11,6 @@ import {
     OperationDefinitionNode,
     TypeInfo,
     visit,
-    Visitor,
     visitWithTypeInfo,
 } from 'graphql';
 
@@ -78,7 +77,7 @@ export class GraphqlValueTransformer {
         };
         typeTree.operation = rootNode;
         let currentNode = rootNode;
-        const visitor: Visitor<ASTKindToNode> = {
+        const visitor: ASTVisitor = {
             enter: node => {
                 const type = typeInfo.getType();
                 const fieldDef = typeInfo.getFieldDef();
@@ -148,7 +147,7 @@ export class GraphqlValueTransformer {
         };
         typeTree.operation = rootNode;
         let currentNode = rootNode;
-        const visitor: Visitor<ASTKindToNode> = {
+        const visitor: ASTVisitor = {
             enter: node => {
                 if (node.kind === 'Argument') {
                     const type = typeInfo.getType();

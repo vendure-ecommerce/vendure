@@ -34,7 +34,7 @@ export function createResolveData<T extends BaseEntityResolver<R>, R>(
  * \@Injectable({
  *   providedIn: 'root',
  * })
- * export class MyEntityResolver extends BaseEntityResolver<MyEntity.Fragment> {
+ * export class MyEntityResolver extends BaseEntityResolver<MyEntityFragment> {
  *   constructor(router: Router, dataService: DataService) {
  *     super(
  *       router,

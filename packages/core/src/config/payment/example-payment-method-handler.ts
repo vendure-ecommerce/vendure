@@ -42,7 +42,7 @@ export const examplePaymentHandler = new PaymentMethodHandler({
                 transactionId: result.id.toString(),
                 metadata,
             };
-        } catch (err) {
+        } catch (err: any) {
             return {
                 amount,
                 state: 'Declined' as 'Declined',

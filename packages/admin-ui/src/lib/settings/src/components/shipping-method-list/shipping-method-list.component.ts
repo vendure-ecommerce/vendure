@@ -4,8 +4,9 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
-    GetActiveChannel,
-    GetShippingMethodList,
+    GetActiveChannelQuery,
+    GetShippingMethodListQuery,
+    ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -26,9 +27,13 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShippingMethodListComponent
-    extends BaseListComponent<GetShippingMethodList.Query, GetShippingMethodList.Items>
-    implements OnInit {
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
+    extends BaseListComponent<
+        GetShippingMethodListQuery,
+        ItemOf<GetShippingMethodListQuery, 'shippingMethods'>
+    >
+    implements OnInit
+{
+    activeChannel$: Observable<GetActiveChannelQuery['activeChannel']>;
     testAddress: TestAddress;
     testOrderLines: TestOrderLine[];
     testDataUpdated = false;

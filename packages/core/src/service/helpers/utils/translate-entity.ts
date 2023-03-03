@@ -97,7 +97,7 @@ export function translateDeep<T extends Translatable & VendureEntity>(
     let translatedEntity: Translated<T>;
     try {
         translatedEntity = translateEntity(translatable, languageCode);
-    } catch (e) {
+    } catch (e: any) {
         translatedEntity = translatable as any;
     }
 

@@ -116,10 +116,12 @@ export class IndexerController {
                     const end = begin + BATCH_SIZE;
                     Logger.verbose(`Updating ids from index ${begin} to ${end}`);
                     const batchIds = ids.slice(begin, end);
-                    const batch = await this.connection.getRepository(ctx, ProductVariant).findByIds(batchIds, {
-                        relations: variantRelations,
-                        where: { deletedAt: null },
-                    });
+                    const batch = await this.connection
+                        .getRepository(ctx, ProductVariant)
+                        .findByIds(batchIds, {
+                            relations: variantRelations,
+                            where: { deletedAt: null },
+                        });
                     await this.saveVariants(ctx, batch);
                     observer.next({
                         total: ids.length,
@@ -188,7 +190,9 @@ export class IndexerController {
 
     async removeVariantFromChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        const variant = await this.connection.getRepository(ctx, ProductVariant).findOne(data.productVariantId);
+        const variant = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .findOne(data.productVariantId);
         const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
         await this.removeSearchIndexItems(ctx, data.channelId, [data.productVariantId], languageVariants);
         return true;
@@ -487,7 +491,12 @@ export class IndexerController {
     /**
      * Remove items from the search index
      */
-    private async removeSearchIndexItems(ctx: RequestContext, channelId: ID, variantIds: ID[], languageCodes: LanguageCode[]) {
+    private async removeSearchIndexItems(
+        ctx: RequestContext,
+        channelId: ID,
+        variantIds: ID[],
+        languageCodes: LanguageCode[],
+    ) {
         const keys: Array<Partial<SearchIndexItem>> = [];
         for (const productVariantId of variantIds) {
             for (const languageCode of languageCodes) {

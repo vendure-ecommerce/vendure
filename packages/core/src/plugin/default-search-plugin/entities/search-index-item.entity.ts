@@ -3,6 +3,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 import { EntityId } from '../../../entity/entity-id.decorator';
+import { Money } from '../../../entity/money.decorator';
 
 @Entity()
 export class SearchIndexItem {
@@ -47,10 +48,10 @@ export class SearchIndexItem {
     @Column()
     sku: string;
 
-    @Column()
+    @Money()
     price: number;
 
-    @Column()
+    @Money()
     priceWithTax: number;
 
     @Column('simple-array')

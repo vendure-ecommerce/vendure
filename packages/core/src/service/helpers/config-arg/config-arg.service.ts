@@ -113,7 +113,7 @@ export class ConfigArgService {
                     } else {
                         valid = !!inputArg && JSON.parse(inputArg.value) != null;
                     }
-                } catch (e) {
+                } catch (e: any) {
                     // ignore
                 }
 

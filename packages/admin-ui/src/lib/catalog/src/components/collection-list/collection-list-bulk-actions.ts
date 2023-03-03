@@ -15,7 +15,7 @@ import { EMPTY, from, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
 
 import { AssignToChannelDialogComponent } from '../assign-to-channel-dialog/assign-to-channel-dialog.component';
-import { CollectionPartial } from '../collection-tree/collection-tree.component';
+import { CollectionPartial } from '../collection-tree/collection-tree.types';
 
 import { CollectionListComponent } from './collection-list.component';
 

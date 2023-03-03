@@ -12,13 +12,14 @@ import { FormArray, FormGroup } from '@angular/forms';
 import {
     CustomFieldConfig,
     DataService,
+    FacetValueFragment,
+    FacetWithValuesFragment,
     GlobalFlag,
     LanguageCode,
     ModalService,
     Permission,
-    ProductDetail,
+    ProductDetailFragment,
     ProductOptionFragment,
-    ProductVariant,
     ProductVariantFragment,
     TaxCategory,
     UpdateProductOptionInput,
@@ -30,11 +31,7 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 import { AssetChange } from '../assets/assets.component';
-import {
-    PaginationConfig,
-    SelectedAssets,
-    VariantFormValue,
-} from '../product-detail/product-detail.component';
+import { PaginationConfig, SelectedAssets, VariantFormValue } from '../product-detail/product-detail.types';
 import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
 
 export interface VariantAssetChange extends AssetChange {
@@ -49,20 +46,20 @@ export interface VariantAssetChange extends AssetChange {
 })
 export class ProductVariantsListComponent implements OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
-    @Input() variants: ProductVariant.Fragment[];
+    @Input() variants: ProductVariantFragment[];
     @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
     @Input() taxCategories: TaxCategory[];
-    @Input() optionGroups: ProductDetail.OptionGroups[];
+    @Input() optionGroups: ProductDetailFragment['optionGroups'];
     @Input() customFields: CustomFieldConfig[];
     @Input() customOptionFields: CustomFieldConfig[];
     @Input() activeLanguage: LanguageCode;
     @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     @Input() pendingFacetValueChanges: { [variantId: string]: ProductVariantFragment['facetValues'] };
-    @Output() assignToChannel = new EventEmitter<ProductVariant.Fragment>();
+    @Output() assignToChannel = new EventEmitter<ProductVariantFragment>();
     @Output() removeFromChannel = new EventEmitter<{
         channelId: string;
-        variant: ProductVariant.Fragment;
+        variant: ProductVariantFragment;
     }>();
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
@@ -114,7 +111,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
-    trackById(index: number, item: ProductVariant.Fragment) {
+    trackById(index: number, item: ProductVariantFragment) {
         return item.id;
     }
 
@@ -142,7 +139,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         return effectiveOutOfStockThreshold;
     }
 
-    getSaleableStockLevel(variant: ProductVariant.Fragment) {
+    getSaleableStockLevel(variant: ProductVariantFragment) {
         const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
             ? this.globalOutOfStockThreshold
             : variant.outOfStockThreshold;
@@ -197,7 +194,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         return translation.name;
     }
 
-    currentOrPendingFacetValues(variant: ProductVariant.Fragment) {
+    currentOrPendingFacetValues(variant: ProductVariantFragment) {
         return this.pendingFacetValueChanges[variant.id] ?? variant.facetValues;
     }
 
@@ -228,7 +225,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
             });
     }
 
-    removeFacetValue(variant: ProductVariant.Fragment, facetValueId: string) {
+    removeFacetValue(variant: ProductVariantFragment, facetValueId: string) {
         const formGroup = this.formGroupMap.get(variant.id);
         if (formGroup) {
             const newValue = (formGroup.value as VariantFormValue).facetValueIds.filter(
@@ -251,7 +248,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         return -1 < this.selectedVariantIds.indexOf(variantId);
     }
 
-    editOption(option: ProductVariant.Options) {
+    editOption(option: ProductVariantFragment['options'][number]) {
         this.modalService
             .fromComponent(UpdateProductOptionDialogComponent, {
                 size: 'md',

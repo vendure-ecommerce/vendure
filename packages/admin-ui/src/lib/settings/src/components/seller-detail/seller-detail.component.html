@@ -1,0 +1,52 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+        <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+        <vdr-action-bar-items locationId="seller-detail"></vdr-action-bar-items>
+        <button
+            class="btn btn-primary"
+            *ngIf="isNew$ | async; else updateButton"
+            (click)="create()"
+            [disabled]="!saveButtonEnabled()"
+        >
+            {{ 'common.create' | translate }}
+        </button>
+        <ng-template #updateButton>
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                *vdrIfPermissions="['SuperAdmin', 'UpdateSeller']"
+                [disabled]="!saveButtonEnabled()"
+            >
+                {{ 'common.update' | translate }}
+            </button>
+        </ng-template>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<form class="form" [formGroup]="detailForm">
+    <vdr-form-field [label]="'common.name' | translate" for="name">
+        <input
+            id="name"
+            type="text"
+            [readonly]="!(updatePermission | hasPermission)"
+            formControlName="name"
+        />
+    </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <vdr-tabbed-custom-fields
+            entityName="Seller"
+            [customFields]="customFields"
+            [customFieldsFormGroup]="detailForm.get('customFields')"
+            [readonly]="!(updatePermission | hasPermission)"
+        ></vdr-tabbed-custom-fields>
+    </section>
+    <vdr-custom-detail-component-host
+        locationId="seller-detail"
+        [entity$]="entity$"
+        [detailForm]="detailForm"
+    ></vdr-custom-detail-component-host>
+</form>

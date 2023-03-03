@@ -111,17 +111,23 @@ input CreateProductVariantOptionInput {
     translations: [ProductOptionTranslationInput!]!
 }
 
+input StockLevelInput {
+    stockLocationId: ID!
+    stockOnHand: Int!
+}
+
 input CreateProductVariantInput {
     productId: ID!
     translations: [ProductVariantTranslationInput!]!
     facetValueIds: [ID!]
     sku: String!
-    price: Int
+    price: Money
     taxCategoryId: ID
     optionIds: [ID!]
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int
+    stockLevels: [StockLevelInput!]
     outOfStockThreshold: Int
     useGlobalOutOfStockThreshold: Boolean
     trackInventory: GlobalFlag
@@ -134,10 +140,11 @@ input UpdateProductVariantInput {
     facetValueIds: [ID!]
     sku: String
     taxCategoryId: ID
-    price: Int
+    price: Money
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int
+    stockLevels: [StockLevelInput!]
     outOfStockThreshold: Int
     useGlobalOutOfStockThreshold: Boolean
     trackInventory: GlobalFlag

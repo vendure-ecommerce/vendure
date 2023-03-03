@@ -341,31 +341,37 @@ export function addOrderLineCustomFieldsInput(
             return { ...fields, [name]: { type } };
         }, {}),
     });
-    schemaConfig.types.push(input);
+    schemaConfig.types = [...schemaConfig.types, input];
 
     const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
     const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;
     if (addItemToOrderMutation) {
-        addItemToOrderMutation.args.push({
-            name: 'customFields',
-            type: input,
-            description: null,
-            defaultValue: null,
-            extensions: null,
-            astNode: null,
-            deprecationReason: null,
-        });
+        addItemToOrderMutation.args = [
+            ...addItemToOrderMutation.args,
+            {
+                name: 'customFields',
+                type: input,
+                description: null,
+                defaultValue: null,
+                extensions: {},
+                astNode: null,
+                deprecationReason: null,
+            },
+        ];
     }
     if (adjustOrderLineMutation) {
-        adjustOrderLineMutation.args.push({
-            name: 'customFields',
-            type: input,
-            description: null,
-            defaultValue: null,
-            extensions: null,
-            astNode: null,
-            deprecationReason: null,
-        });
+        adjustOrderLineMutation.args = [
+            ...adjustOrderLineMutation.args,
+            {
+                name: 'customFields',
+                type: input,
+                description: null,
+                defaultValue: null,
+                extensions: {},
+                astNode: null,
+                deprecationReason: null,
+            },
+        ];
     }
 
     let extendedSchema = new GraphQLSchema(schemaConfig);
@@ -378,9 +384,9 @@ export function addOrderLineCustomFieldsInput(
 
         extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
     }
-    if (schema.getType('AdjustOrderLineInput')) {
+    if (schema.getType('OrderLineInput')) {
         const customFieldTypeDefs = `
-            extend input AdjustOrderLineInput {
+            extend input OrderLineInput {
                 customFields: OrderLineCustomFieldsInput
             }
         `;
@@ -483,6 +489,7 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
         case 'string':
         case 'localeString':
         case 'text':
+        case 'localeText':
             return config.list ? 'StringListOperators' : 'StringOperators';
         case 'boolean':
             return config.list ? 'BooleanListOperators' : 'BooleanOperators';
@@ -518,6 +525,7 @@ function getGraphQlType(config: CustomFieldConfig): string {
         case 'string':
         case 'localeString':
         case 'text':
+        case 'localeText':
             return 'String';
         case 'datetime':
             return 'DateTime';

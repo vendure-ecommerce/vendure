@@ -186,6 +186,13 @@ export class MainNavComponent implements OnInit, OnDestroy {
                 collapsedByDefault: true,
                 items: [
                     {
+                        requiresPermission: allow(Permission.ReadSeller),
+                        id: 'sellers',
+                        label: _('nav.sellers'),
+                        routerLink: ['/settings', 'sellers'],
+                        icon: 'store',
+                    },
+                    {
                         requiresPermission: allow(Permission.ReadChannel),
                         id: 'channels',
                         label: _('nav.channels'),

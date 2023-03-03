@@ -23,9 +23,12 @@ import {
     AttemptLoginMutationVariables,
     GetCustomerList,
 } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
     AddItemToOrderMutation,
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
     GetActiveOrderPaymentsQuery,
     GetNextOrderStatesQuery,
     TestOrderFragmentFragment,
@@ -46,7 +49,7 @@ class DelegateMergeStrategy implements OrderMergeStrategy {
     }
 }
 
-type AddItemToOrderWithCustomFields = AddItemToOrder.Variables & {
+type AddItemToOrderWithCustomFields = AddItemToOrderMutationVariables & {
     customFields?: { inscription?: string };
 };
 
@@ -56,7 +59,7 @@ describe('Order merging', () => {
         input => !!input.lines,
     );
 
-    let customers: GetCustomerList.Items[];
+    let customers: Codegen.GetCustomerListQuery['customers']['items'];
 
     const { server, shopClient, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
@@ -75,7 +78,7 @@ describe('Order merging', () => {
             customerCount: 10,
         });
         await adminClient.asSuperAdmin();
-        const result = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+        const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
         customers = result.customers.items;
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -94,7 +97,7 @@ describe('Order merging', () => {
 
         await shopClient.asUserWithCredentials(customerEmailAddress, 'test');
         for (const line of existingOrderLines) {
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrderWithCustomFields>(
+            await shopClient.query<AddItemToOrderMutation, AddItemToOrderWithCustomFields>(
                 ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                 line,
             );
@@ -102,16 +105,19 @@ describe('Order merging', () => {
 
         await shopClient.asAnonymousUser();
         for (const line of guestOrderLines) {
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrderWithCustomFields>(
+            await shopClient.query<AddItemToOrderMutation, AddItemToOrderWithCustomFields>(
                 ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                 line,
             );
         }
 
-        await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
-            username: customerEmailAddress,
-            password: 'test',
-        });
+        await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
+            ATTEMPT_LOGIN,
+            {
+                username: customerEmailAddress,
+                password: 'test',
+            },
+        );
         const { activeOrder } = await shopClient.query(GET_ACTIVE_ORDER_WITH_CUSTOM_FIELDS);
         return activeOrder;
     }

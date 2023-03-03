@@ -1,5 +1,12 @@
 import { ChangeDetectionStrategy, Component, NgModule, OnInit } from '@angular/core';
-import { CoreModule, DataService, GetOrderList, SharedModule, SortOrder } from '@vendure/admin-ui/core';
+import {
+    CoreModule,
+    DataService,
+    GetOrderListQuery,
+    ItemOf,
+    SharedModule,
+    SortOrder,
+} from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -9,7 +16,7 @@ import { Observable } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LatestOrdersWidgetComponent implements OnInit {
-    latestOrders$: Observable<GetOrderList.Items[]>;
+    latestOrders$: Observable<Array<ItemOf<GetOrderListQuery, 'orders'>>>;
     constructor(private dataService: DataService) {}
 
     ngOnInit(): void {

@@ -70,8 +70,8 @@ export class DynamicFormInputComponent
     private componentType: Type<FormInputComponent>;
     private onChange: (val: any) => void;
     private onTouch: () => void;
-    private renderList$ = new Subject();
-    private destroy$ = new Subject();
+    private renderList$ = new Subject<void>();
+    private destroy$ = new Subject<void>();
 
     constructor(
         private componentRegistryService: ComponentRegistryService,
@@ -299,7 +299,8 @@ export class DynamicFormInputComponent
                     return { component: 'text-form-input' };
                 }
             }
-            case 'text': {
+            case 'text':
+            case 'localeText': {
                 return { component: 'textarea-form-input' };
             }
             case 'int':

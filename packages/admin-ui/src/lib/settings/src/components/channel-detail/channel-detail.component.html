@@ -122,6 +122,18 @@
         </clr-alert-item>
     </clr-alert>
 
+    <vdr-form-field [label]="'common.seller' | translate" for="sellerId">
+        <select
+            clrSelect
+            name="sellerId"
+            formControlName="sellerId"
+            [vdrDisabled]="!(updatePermission | hasPermission)"
+        >
+            <option selected value style="display: none"></option>
+            <option *ngFor="let seller of sellers$ | async" [value]="seller.id">{{ seller.name }}</option>
+        </select>
+    </vdr-form-field>
+
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
         <vdr-tabbed-custom-fields

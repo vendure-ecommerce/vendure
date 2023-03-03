@@ -29,7 +29,7 @@ export function shouldUseYarn(): boolean {
     try {
         execSync('yarnpkg --version', { stdio: 'ignore' });
         return true;
-    } catch (e) {
+    } catch (e: any) {
         return false;
     }
 }
@@ -69,7 +69,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
             // EPERM error in Windows.
             await fs.copy(assetOutputPath, newName);
             await fs.remove(assetOutputPath);
-        } catch (e) {
+        } catch (e: any) {
             logger.log(e);
         }
     }
@@ -80,7 +80,7 @@ export async function copyStaticAsset(outputPath: string, staticAssetDef: Static
  * If not defined by the user, a deterministic ID is generated
  * from a hash of the extension config.
  */
-export function normalizeExtensions(extensions?: AdminUiExtension[]): Array<AdminUiExtensionWithId> {
+export function normalizeExtensions(extensions?: AdminUiExtension[]): AdminUiExtensionWithId[] {
     return (extensions || []).map(e => {
         let id = e.id;
         if (!id) {

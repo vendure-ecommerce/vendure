@@ -23,7 +23,7 @@ import { TranslationOf } from './utilities/find-translation';
  *   styleUrls: ['./my-entity.component.scss'],
  *   changeDetection: ChangeDetectionStrategy.OnPush,
  * })
- * export class GlobalSettingsComponent extends BaseDetailComponent<MyEntity.Fragment> implements OnInit {
+ * export class GlobalSettingsComponent extends BaseDetailComponent<MyEntityFragment> implements OnInit {
  *   detailForm: FormGroup;
  *
  *   constructor(
@@ -39,7 +39,7 @@ import { TranslationOf } from './utilities/find-translation';
  *     });
  *   }
  *
- *   protected setFormValues(entity: MyEntity.Fragment, languageCode: LanguageCode): void {
+ *   protected setFormValues(entity: MyEntityFragment, languageCode: LanguageCode): void {
  *     this.detailForm.patchValue({
  *       name: entity.name,
  *     });

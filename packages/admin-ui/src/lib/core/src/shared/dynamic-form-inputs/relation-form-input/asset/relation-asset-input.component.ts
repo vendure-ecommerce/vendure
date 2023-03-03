@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
 import { FormInputComponent } from '../../../../common/component-registry-types';
-import { GetAsset, RelationCustomFieldConfig } from '../../../../common/generated-types';
+import { GetAssetQuery, RelationCustomFieldConfig } from '../../../../common/generated-types';
 import { DataService } from '../../../../data/providers/data.service';
 import { ModalService } from '../../../../providers/modal/modal.service';
 import { AssetPickerDialogComponent } from '../../../components/asset-picker-dialog/asset-picker-dialog.component';
@@ -22,7 +22,7 @@ export class RelationAssetInputComponent implements FormInputComponent, OnInit {
     @Input() readonly: boolean;
     @Input('parentFormControl') formControl: FormControl;
     @Input() config: RelationCustomFieldConfig;
-    asset$: Observable<GetAsset.Asset | undefined>;
+    asset$: Observable<GetAssetQuery['asset'] | undefined>;
 
     constructor(private modalService: ModalService, private dataService: DataService) {}
 
@@ -62,7 +62,7 @@ export class RelationAssetInputComponent implements FormInputComponent, OnInit {
         this.formControl.markAsDirty();
     }
 
-    previewAsset(asset: GetAsset.Asset) {
+    previewAsset(asset: NonNullable<GetAssetQuery['asset']>) {
         this.modalService
             .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',

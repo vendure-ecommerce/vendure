@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
-import { AssetLike } from '../asset-gallery/asset-gallery.component';
+import { AssetLike } from '../asset-gallery/asset-gallery.types';
 
 @Component({
     selector: 'vdr-asset-preview-links',

@@ -85,7 +85,7 @@ export class I18nService implements OnModuleInit {
             const rawData = fs.readFileSync(filePath);
             const resources = JSON.parse(rawData.toString('utf-8'));
             this.addTranslation(langKey, resources);
-        } catch (err) {
+        } catch (err: any) {
             Logger.error(`Could not load resources file ${filePath}`, `I18nService`);
         }
     }
@@ -113,7 +113,7 @@ export class I18nService implements OnModuleInit {
             let translation = originalError.message;
             try {
                 translation = t(originalError.message, originalError.variables);
-            } catch (e) {
+            } catch (e: any) {
                 translation += ` (Translation format error: ${e.message})`;
             }
             error.message = translation;
@@ -135,7 +135,7 @@ export class I18nService implements OnModuleInit {
         const key = `errorResult.${error.message}`;
         try {
             translation = t(key, error as any);
-        } catch (e) {
+        } catch (e: any) {
             translation += ` (Translation format error: ${e.message})`;
         }
         error.message = translation;

@@ -119,7 +119,7 @@ export class CollectionService implements OnModuleInit {
                             retries: 5,
                             retryDelay: 50,
                         });
-                    } catch (err) {
+                    } catch (err: any) {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
                     }
                     completed++;
@@ -130,7 +130,7 @@ export class CollectionService implements OnModuleInit {
                                 collection,
                                 job.data.applyToChangedVariantsOnly,
                             );
-                        } catch (e) {
+                        } catch (e: any) {
                             const translatedCollection = await this.translator.translate(collection, ctx);
                             Logger.error(
                                 `An error occurred when processing the filters for the collection "${translatedCollection.name}" (id: ${collection.id})`,
@@ -394,7 +394,7 @@ export class CollectionService implements OnModuleInit {
         relations?: RelationPaths<Collection>,
     ): Promise<PaginatedList<ProductVariant>> {
         const applicableFilters = this.getCollectionFiltersFromInput(input);
-        if (input.parentId) {
+        if (input.parentId && input.inheritFilters) {
             const parentFilters = (await this.findOne(ctx, input.parentId, []))?.filters ?? [];
             const ancestorFilters = await this.getAncestors(input.parentId).then(ancestors =>
                 ancestors.reduce(
@@ -590,12 +590,7 @@ export class CollectionService implements OnModuleInit {
         collection: Collection,
         applyToChangedVariantsOnly = true,
     ): Promise<ID[]> {
-        const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
-            ancestors.reduce(
-                (filters, c) => [...filters, ...(c.filters || [])],
-                [] as ConfigurableOperation[],
-            ),
-        );
+        const ancestorFilters = await this.getAncestorFilters(collection);
         const preIds = await this.getCollectionProductVariantIds(collection);
         const filteredVariantIds = await this.getFilteredProductVariantIds([
             ...ancestorFilters,
@@ -630,7 +625,7 @@ export class CollectionService implements OnModuleInit {
                     .of(collection)
                     .add(chunkedAddId);
             }
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e);
         }
 
@@ -639,6 +634,24 @@ export class CollectionService implements OnModuleInit {
         } else {
             return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds];
         }
+    }
+
+    /**
+     * Gets all filters of ancestor Collections while respecting the `inheritFilters` setting of each.
+     * As soon as `inheritFilters === false` is encountered, the collected filters are returned.
+     */
+    private async getAncestorFilters(collection: Collection): Promise<ConfigurableOperation[]> {
+        const ancestorFilters: ConfigurableOperation[] = [];
+        if (collection.inheritFilters) {
+            const ancestors = await this.getAncestors(collection.id);
+            for (const ancestor of ancestors) {
+                ancestorFilters.push(...ancestor.filters);
+                if (ancestor.inheritFilters === false) {
+                    return ancestorFilters;
+                }
+            }
+        }
+        return ancestorFilters;
     }
 
     /**

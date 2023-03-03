@@ -30,7 +30,7 @@ describe('EmailPlugin', () => {
     let onSend: jest.Mock;
     let module: TestingModule;
 
-    const testingLogger = new TestingLogger(() => jest.fn());
+    const testingLogger = new TestingLogger((...args) => jest.fn(...args));
 
     async function initPluginWithHandlers(
         handlers: Array<EmailEventHandler<string, any>>,

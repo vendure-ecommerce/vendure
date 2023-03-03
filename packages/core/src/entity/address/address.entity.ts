@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
@@ -9,7 +9,7 @@ import { Customer } from '../customer/customer.entity';
 
 /**
  * @description
- * Represent's a {@link Customer}'s address.
+ * Represents a {@link Customer}'s address.
  *
  * @docsCategory entities
  */
@@ -19,6 +19,7 @@ export class Address extends VendureEntity implements HasCustomFields {
         super(input);
     }
 
+    @Index()
     @ManyToOne(type => Customer, customer => customer.addresses)
     customer: Customer;
 
@@ -39,6 +40,7 @@ export class Address extends VendureEntity implements HasCustomFields {
 
     @Column({ default: '' }) postalCode: string;
 
+    @Index()
     @ManyToOne(type => Country)
     country: Country;
 

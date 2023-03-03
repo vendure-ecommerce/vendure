@@ -18,31 +18,36 @@ import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
+import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
+import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
-import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
+import { EntityIdStrategy } from './entity/entity-id-strategy';
+import { MoneyStrategy } from './entity/money-strategy';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
+import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { ActiveOrderStrategy } from './order/active-order-strategy';
 import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
-import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { OrderPlacedStrategy } from './order/order-placed-strategy';
+import { OrderProcess } from './order/order-process';
+import { OrderSellerStrategy } from './order/order-seller-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
-import { CustomPaymentProcess } from './payment/custom-payment-process';
 import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from './payment/payment-method-handler';
+import { PaymentProcess } from './payment/payment-process';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
+import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
@@ -488,11 +493,11 @@ export interface OrderOptions {
     /**
      * @description
      * Allows the definition of custom states and transition logic for the order process state machine.
-     * Takes an array of objects implementing the {@link CustomOrderProcess} interface.
+     * Takes an array of objects implementing the {@link OrderProcess} interface.
      *
      * @default []
      */
-    process?: Array<CustomOrderProcess<any>>;
+    process?: Array<OrderProcess<any>>;
     /**
      * @description
      * Determines the point of the order process at which stock gets allocated.
@@ -570,6 +575,14 @@ export interface OrderOptions {
      * @default DefaultActiveOrderStrategy
      */
     activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
+    /**
+     * @description
+     * Defines how Orders will be split amongst multiple Channels in a multivendor scenario.
+     *
+     * @since 2.0.0
+     * @default DefaultOrderSellerStrategy
+     */
+    orderSellerStrategy?: OrderSellerStrategy;
 }
 
 /**
@@ -637,6 +650,15 @@ export interface CatalogOptions {
     collectionFilters?: Array<CollectionFilter<any>>;
     /**
      * @description
+     * Defines the strategy used to select the price of a ProductVariant, based on factors
+     * such as the active Channel and active CurrencyCode.
+     *
+     * @since 2.0.0
+     * @default DefaultProductVariantPriceSelectionStrategy
+     */
+    productVariantPriceSelectionStrategy?: ProductVariantPriceSelectionStrategy;
+    /**
+     * @description
      * Defines the strategy used for calculating the price of ProductVariants based
      * on the Channel settings and active tax Zone.
      *
@@ -655,6 +677,16 @@ export interface CatalogOptions {
      * @default DefaultStockDisplayStrategy
      */
     stockDisplayStrategy?: StockDisplayStrategy;
+    /**
+     * @description
+     * Defines the strategy used to determine which StockLocation should be used when performing
+     * stock operations such as allocating and releasing stock as well as determining the
+     * amount of stock available for sale.
+     *
+     * @default DefaultStockLocationStrategy
+     * @since 2.0.0
+     */
+    stockLocationStrategy?: StockLocationStrategy;
 }
 
 /**
@@ -687,14 +719,32 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
-
+    /**
+     * @description
+     * This strategy is used to assign a given {@link ShippingLine} to one or more {@link OrderLine}s of the Order.
+     * This allows you to set multiple shipping methods for a single order, each assigned a different subset of
+     * OrderLines.
+     *
+     * @since 2.0.0
+     */
+    shippingLineAssignmentStrategy?: ShippingLineAssignmentStrategy;
     /**
      * @description
      * Allows the definition of custom states and transition logic for the fulfillment process state machine.
-     * Takes an array of objects implementing the {@link CustomFulfillmentProcess} interface.
+     * Takes an array of objects implementing the {@link FulfillmentProcess} interface.
+     *
+     * @deprecated use `process`
      */
-    customFulfillmentProcess?: Array<CustomFulfillmentProcess<any>>;
-
+    customFulfillmentProcess?: Array<FulfillmentProcess<any>>;
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the fulfillment process state machine.
+     * Takes an array of objects implementing the {@link FulfillmentProcess} interface.
+     *
+     * @since 2.0.0
+     * @default defaultFulfillmentProcess
+     */
+    process?: Array<FulfillmentProcess<any>>;
     /**
      * @description
      * An array of available FulfillmentHandlers.
@@ -745,11 +795,18 @@ export interface PaymentOptions {
      */
     paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
     /**
+     * @deprecated use `process`
+     */
+    customPaymentProcess?: Array<PaymentProcess<any>>;
+    /**
      * @description
      * Allows the definition of custom states and transition logic for the payment process state machine.
-     * Takes an array of objects implementing the {@link CustomPaymentProcess} interface.
+     * Takes an array of objects implementing the {@link PaymentProcess} interface.
+     *
+     * @default defaultPaymentProcess
+     * @since 2.0.0
      */
-    customPaymentProcess?: Array<CustomPaymentProcess<any>>;
+    process?: Array<PaymentProcess<any>>;
 }
 
 /**
@@ -877,6 +934,14 @@ export interface EntityOptions {
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
+     * Defines the strategy used to store and round monetary values.
+     *
+     * @since 2.0.0
+     * @default DefaultMoneyStrategy
+     */
+    moneyStrategy?: MoneyStrategy;
     /**
      * @description
      * Channels get cached in-memory as they are accessed very frequently. This

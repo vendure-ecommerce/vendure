@@ -212,7 +212,7 @@ async function createApp(
                                 subscriber.complete();
                             })
                             .catch(err => subscriber.error(err));
-                    });
+                    }) as any;
                 },
             },
         );
@@ -278,7 +278,7 @@ async function createApp(
                     console.log('[CI] Pausing after close...');
                     await new Promise(resolve => setTimeout(resolve, 10000));
                 }
-            } catch (e) {
+            } catch (e: any) {
                 console.log();
                 console.error(chalk.red(e.message));
                 console.log();
@@ -292,7 +292,7 @@ async function createApp(
 
     try {
         await tasks.run();
-    } catch (e) {
+    } catch (e: any) {
         process.exit(1);
     }
     const startCommand = useYarn ? 'yarn dev' : 'npm run dev';
@@ -346,7 +346,7 @@ async function copyEmailTemplates(root: string) {
     const templateDir = path.join(root, 'node_modules/@vendure/email-plugin/templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
-    } catch (err) {
+    } catch (err: any) {
         console.error(chalk.red(`Failed to copy email templates.`));
     }
 }

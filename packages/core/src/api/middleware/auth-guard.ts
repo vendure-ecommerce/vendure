@@ -110,7 +110,7 @@ export class AuthGuard implements CanActivate {
                         await this.channelService.assignToChannels(requestContext, Customer, customer.id, [
                             requestContext.channelId,
                         ]);
-                    } catch (e) {
+                    } catch (e: any) {
                         const isDuplicateError =
                             e.code === 'ER_DUP_ENTRY' /* mySQL/MariaDB */ ||
                             e.code === '23505'; /* postgres */

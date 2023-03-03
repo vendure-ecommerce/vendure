@@ -63,7 +63,7 @@ export class FacetValueService {
                 ? // tslint:disable-next-line:no-non-null-assertion
                   [this.connection.getRepository(ctxOrLang, FacetValue), lang!]
                 : [this.connection.rawConnection.getRepository(FacetValue), ctxOrLang];
-        // ToDo Implement usage of channelLanguageCode
+        // TODO: Implement usage of channelLanguageCode
         return repository
             .find({
                 relations: ['facet'],

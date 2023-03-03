@@ -1,7 +1,7 @@
+import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { IFieldResolver, IResolvers } from 'apollo-server-express';
-import { GraphQLSchema } from 'graphql';
-import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
+import { GraphQLFloat, GraphQLSchema } from 'graphql';
+import { GraphQLDateTime, GraphQLJSON, GraphQLSafeInt } from 'graphql-scalars';
 import { GraphQLUpload } from 'graphql-upload';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
@@ -17,6 +17,8 @@ import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { ApiType } from '../common/get-api-type';
 import { RequestContext } from '../common/request-context';
+
+import { GraphQLMoney } from './money-scalar';
 
 /**
  * @description
@@ -65,6 +67,8 @@ export function generateResolvers(
                     return 'LocaleStringCustomFieldConfig';
                 case 'text':
                     return 'TextCustomFieldConfig';
+                case 'localeText':
+                    return 'LocaleTextCustomFieldConfig';
                 case 'int':
                     return 'IntCustomFieldConfig';
                 case 'float':
@@ -82,6 +86,7 @@ export function generateResolvers(
     const commonResolvers = {
         JSON: GraphQLJSON,
         DateTime: GraphQLDateTime,
+        Money: GraphQLMoney,
         Node: dummyResolveType,
         PaginatedList: dummyResolveType,
         Upload: (GraphQLUpload as any) || dummyResolveType,

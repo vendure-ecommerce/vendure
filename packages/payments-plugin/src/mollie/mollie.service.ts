@@ -40,20 +40,17 @@ interface OrderStatusInput {
 class PaymentIntentError implements MolliePaymentIntentError {
     errorCode = ErrorCode.ORDER_PAYMENT_STATE_ERROR;
 
-    constructor(public message: string) {
-    }
+    constructor(public message: string) {}
 }
 
 class InvalidInputError implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
 
-    constructor(public message: string) {
-    }
+    constructor(public message: string) {}
 }
 
 @Injectable()
 export class MollieService {
-
     constructor(
         private paymentMethodService: PaymentMethodService,
         @Inject(PLUGIN_INIT_OPTIONS) private options: MolliePluginOptions,
@@ -61,8 +58,7 @@ export class MollieService {
         private orderService: OrderService,
         private channelService: ChannelService,
         private entityHydrator: EntityHydrator,
-    ) {
-    }
+    ) {}
 
     /**
      * Creates a redirectUrl to Mollie for the given paymentMethod and current activeOrder
@@ -73,7 +69,9 @@ export class MollieService {
     ): Promise<MolliePaymentIntentResult> {
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
-            return new InvalidInputError(`molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`);
+            return new InvalidInputError(
+                `molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`,
+            );
         }
         const [order, paymentMethod] = await Promise.all([
             this.activeOrderService.getActiveOrder(ctx, undefined),
@@ -82,9 +80,9 @@ export class MollieService {
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
-        await this.entityHydrator.hydrate(ctx, order,
-            { relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod'] }
-        );
+        await this.entityHydrator.hydrate(ctx, order, {
+            relations: ['customer', 'surcharges', 'lines.productVariant', 'shippingLines.shippingMethod'],
+        });
         if (!order.lines?.length) {
             return new PaymentIntentError('Cannot create payment intent for empty order');
         }
@@ -100,17 +98,26 @@ export class MollieService {
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
         let redirectUrl = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
         if (!apiKey || !redirectUrl) {
-            Logger.warn(`CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`, loggerCtx);
-            return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`);
+            Logger.warn(
+                `CreatePaymentIntent failed, because no apiKey or redirect is configured for ${paymentMethod.code}`,
+                loggerCtx,
+            );
+            return new PaymentIntentError(
+                `Paymentmethod ${paymentMethod.code} has no apiKey or redirectUrl configured`,
+            );
         }
         const mollieClient = createMollieClient({ apiKey });
         redirectUrl = redirectUrl.endsWith('/') ? redirectUrl.slice(0, -1) : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
-        const billingAddress = toMollieAddress(order.billingAddress, order.customer) || toMollieAddress(order.shippingAddress, order.customer);
+        const billingAddress =
+            toMollieAddress(order.billingAddress, order.customer) ||
+            toMollieAddress(order.shippingAddress, order.customer);
         if (!billingAddress) {
-            return new InvalidInputError(`Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.`);
+            return new InvalidInputError(
+                `Order doesn't have a complete shipping address or billing address. At least city, streetline1 and country are needed to create a payment intent.`,
+            );
         }
         const orderInput: CreateParameters = {
             orderNumber: order.code,
@@ -138,9 +145,16 @@ export class MollieService {
     /**
      * Update Vendure payments and order status based on the incoming Mollie order
      */
-    async handleMollieStatusUpdate({ channelToken, paymentMethodId, orderId }: OrderStatusInput): Promise<void> {
+    async handleMollieStatusUpdate({
+        channelToken,
+        paymentMethodId,
+        orderId,
+    }: OrderStatusInput): Promise<void> {
         const ctx = await this.createContext(channelToken);
-        Logger.info(`Received status update for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
+        Logger.info(
+            `Received status update for channel ${channelToken} for Mollie order ${orderId}`,
+            loggerCtx,
+        );
         const paymentMethod = await this.paymentMethodService.findOne(ctx, paymentMethodId);
         if (!paymentMethod) {
             // Fail silently, as we don't want to expose if a paymentMethodId exists or not
@@ -153,12 +167,17 @@ export class MollieService {
         }
         const client = createMollieClient({ apiKey });
         const mollieOrder = await client.orders.get(orderId);
-        Logger.info(`Processing status '${mollieOrder.status}' for order ${mollieOrder.orderNumber} for channel ${channelToken} for Mollie order ${orderId}`, loggerCtx);
+        Logger.info(
+            `Processing status '${mollieOrder.status}' for order ${mollieOrder.orderNumber} for channel ${channelToken} for Mollie order ${orderId}`,
+            loggerCtx,
+        );
         let order = await this.orderService.findOneByCode(ctx, mollieOrder.orderNumber, ['payments']);
         if (!order) {
-            throw Error(`Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`);
+            throw Error(
+                `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
+            );
         }
-        if (mollieOrder.status === OrderStatus.paid ) {
+        if (mollieOrder.status === OrderStatus.paid) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
             await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Settled');
             return;
@@ -176,11 +195,16 @@ export class MollieService {
             return this.settleExistingPayment(ctx, order, mollieOrder.id);
         }
         if (order.state === 'PaymentAuthorized' || order.state === 'PaymentSettled') {
-            Logger.info(`Order ${order.code} is '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`, loggerCtx);
+            Logger.info(
+                `Order ${order.code} is '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
+                loggerCtx,
+            );
             return;
         }
         // Any other combination of Mollie status and Vendure status indicates something is wrong.
-        throw Error(`Unhandled incoming Mollie status '${mollieOrder.status}' for order ${order.code} with status '${order.state}'`);
+        throw Error(
+            `Unhandled incoming Mollie status '${mollieOrder.status}' for order ${order.code} with status '${order.state}'`,
+        );
     }
 
     /**
@@ -191,7 +215,7 @@ export class MollieService {
         order: Order,
         mollieOrder: MollieOrder,
         paymentMethodCode: string,
-        status: 'Authorized' | 'Settled'
+        status: 'Authorized' | 'Settled',
     ): Promise<Order> {
         if (order.state !== 'ArrangingPayment') {
             const transitionToStateResult = await this.orderService.transitionToState(
@@ -201,7 +225,8 @@ export class MollieService {
             );
             if (transitionToStateResult instanceof OrderStateTransitionError) {
                 throw Error(
-                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`);
+                    `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
+                );
             }
         }
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
@@ -218,9 +243,7 @@ export class MollieService {
             },
         });
         if (!(addPaymentToOrderResult instanceof Order)) {
-            throw Error(
-                `Error adding payment to order ${order.code}: ${addPaymentToOrderResult.message}`,
-            );
+            throw Error(`Error adding payment to order ${order.code}: ${addPaymentToOrderResult.message}`);
         }
         return addPaymentToOrderResult;
     }
@@ -231,16 +254,24 @@ export class MollieService {
     async settleExistingPayment(ctx: RequestContext, order: Order, mollieOrderId: string): Promise<void> {
         const payment = order.payments.find(p => p.transactionId === mollieOrderId);
         if (!payment) {
-            throw Error(`Cannot find payment ${mollieOrderId} for ${order.code}. Unable to settle this payment`);
+            throw Error(
+                `Cannot find payment ${mollieOrderId} for ${order.code}. Unable to settle this payment`,
+            );
         }
         const result = await this.orderService.settlePayment(ctx, payment.id);
         if ((result as ErrorResult).message) {
             throw Error(
-                `Error settling payment ${payment.id} for order ${order.code}: ${(result as ErrorResult).errorCode} - ${(result as ErrorResult).message}`);
+                `Error settling payment ${payment.id} for order ${order.code}: ${
+                    (result as ErrorResult).errorCode
+                } - ${(result as ErrorResult).message}`,
+            );
         }
     }
 
-    async getEnabledPaymentMethods(ctx: RequestContext, paymentMethodCode: string): Promise<MolliePaymentMethod[]> {
+    async getEnabledPaymentMethods(
+        ctx: RequestContext,
+        paymentMethodCode: string,
+    ): Promise<MolliePaymentMethod[]> {
         const paymentMethod = await this.getPaymentMethod(ctx, paymentMethodCode);
         const apiKey = paymentMethod?.handler.args.find(arg => arg.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -254,7 +285,10 @@ export class MollieService {
         }));
     }
 
-    private async getPaymentMethod(ctx: RequestContext, paymentMethodCode: string): Promise<PaymentMethod | undefined> {
+    private async getPaymentMethod(
+        ctx: RequestContext,
+        paymentMethodCode: string,
+    ): Promise<PaymentMethod | undefined> {
         const paymentMethods = await this.paymentMethodService.findAll(ctx);
         return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
     }

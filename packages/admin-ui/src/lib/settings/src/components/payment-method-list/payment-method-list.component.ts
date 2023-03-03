@@ -5,7 +5,8 @@ import {
     BaseListComponent,
     DataService,
     DeletionResult,
-    GetPaymentMethodList,
+    GetPaymentMethodListQuery,
+    ItemOf,
     ModalService,
     NotificationService,
 } from '@vendure/admin-ui/core';
@@ -19,8 +20,8 @@ import { map, switchMap } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentMethodListComponent extends BaseListComponent<
-    GetPaymentMethodList.Query,
-    GetPaymentMethodList.Items
+    GetPaymentMethodListQuery,
+    ItemOf<GetPaymentMethodListQuery, 'paymentMethods'>
 > {
     constructor(
         private dataService: DataService,

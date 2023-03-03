@@ -97,7 +97,7 @@ describe('JobQueueService', () => {
     });
 
     it('job marked as failed when exception thrown', async () => {
-        const subject = new Subject();
+        const subject = new Subject<string>();
         const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: async job => {
@@ -138,7 +138,7 @@ describe('JobQueueService', () => {
     });
 
     it('jobs processed in FIFO queue', async () => {
-        const subject = new Subject();
+        const subject = new Subject<void>();
         const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {
@@ -187,7 +187,7 @@ describe('JobQueueService', () => {
 
         testingJobQueueStrategy.concurrency = 2;
 
-        const subject = new Subject();
+        const subject = new Subject<void>();
         const testQueue = await jobQueueService.createQueue<string>({
             name: 'test',
             process: job => {

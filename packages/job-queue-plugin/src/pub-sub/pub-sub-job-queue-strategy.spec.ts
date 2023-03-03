@@ -47,7 +47,7 @@ describe('PubSubJobQueueStrategy', () => {
                     data: {},
                 }),
             );
-        } catch (err) {
+        } catch (err: any) {
             expect(err).toEqual(new Error('Topic name not set for queue: some-queue'));
         }
         expect(pubsub.topic).not.toHaveBeenCalled();

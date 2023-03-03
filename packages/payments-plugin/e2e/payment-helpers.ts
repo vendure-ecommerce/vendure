@@ -17,7 +17,6 @@ import {
     TRANSITION_TO_STATE,
 } from './graphql/shop-queries';
 
-
 export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
     await shopClient.query(SET_SHIPPING_ADDRESS, {
         input: {
@@ -76,7 +75,8 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
                 message
             }
         }
-    }`;
+    }
+`;
 
 export const CREATE_STRIPE_PAYMENT_INTENT = gql`
     mutation createStripePaymentIntent{
@@ -103,4 +103,5 @@ export const GET_MOLLIE_PAYMENT_METHODS = gql`
                 svg
             }
         }
-    }`;
+    }
+`;

@@ -4,7 +4,8 @@ import {
     CurrencyCode,
     DataService,
     Dialog,
-    GetPaymentMethodList,
+    GetPaymentMethodListQuery,
+    ItemOf,
     ManualPaymentInput,
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
@@ -25,7 +26,7 @@ export class AddManualPaymentDialogComponent implements OnInit, Dialog<Omit<Manu
         method: new FormControl('', Validators.required),
         transactionId: new FormControl('', Validators.required),
     });
-    paymentMethods$: Observable<GetPaymentMethodList.Items[]>;
+    paymentMethods$: Observable<Array<ItemOf<GetPaymentMethodListQuery, 'paymentMethods'>>>;
     constructor(private dataService: DataService) {}
 
     ngOnInit(): void {

@@ -3,7 +3,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     CanDeactivateDetailGuard,
     createResolveData,
-    Customer,
+    CustomerFragment,
     detailBreadcrumb,
 } from '@vendure/admin-ui/core';
 
@@ -40,11 +40,11 @@ export const customerRoutes: Route[] = [
 ];
 
 export function customerBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<Customer.Fragment>({
+    return detailBreadcrumb<CustomerFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.customers',
-        getName: (customer) => `${customer.firstName} ${customer.lastName}`,
+        getName: customer => `${customer.firstName} ${customer.lastName}`,
         route: 'customers',
     });
 }

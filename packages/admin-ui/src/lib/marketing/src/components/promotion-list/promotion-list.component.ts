@@ -2,11 +2,16 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseListComponent, PromotionFilterParameter, PromotionListOptions } from '@vendure/admin-ui/core';
-import { GetPromotionList } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
+import {
+    BaseListComponent,
+    DataService,
+    GetPromotionListQuery,
+    ItemOf,
+    ModalService,
+    NotificationService,
+    PromotionFilterParameter,
+    PromotionListOptions,
+} from '@vendure/admin-ui/core';
 import { EMPTY, merge } from 'rxjs';
 import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 
@@ -22,8 +27,9 @@ export type PromotionSearchForm = {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PromotionListComponent
-    extends BaseListComponent<GetPromotionList.Query, GetPromotionList.Items>
-    implements OnInit {
+    extends BaseListComponent<GetPromotionListQuery, ItemOf<GetPromotionListQuery, 'promotions'>>
+    implements OnInit
+{
     searchForm = new FormGroup({
         name: new FormControl(''),
         couponCode: new FormControl(''),

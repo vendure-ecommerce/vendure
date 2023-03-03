@@ -18,8 +18,7 @@ scalar DateTime
 
 type AddressCustomFields {
   instructions: String
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type 1`] = `
@@ -34,8 +33,7 @@ scalar DateTime
 
 type ProductCustomFields {
   available: Boolean
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type with FilterParameters 1`] = `
@@ -77,8 +75,7 @@ type ProductCustomFields {
   shortName: String
   rating: Float
   published: DateTime
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type with SortParameters 1`] = `
@@ -105,8 +102,7 @@ scalar DateTime
 type ProductCustomFields {
   available: Boolean
   shortName: String
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type with a Create input 1`] = `
@@ -131,8 +127,7 @@ type ProductCustomFields {
 
 input CreateProductCustomFieldsInput {
   available: Boolean
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type with a Create input and a translation 1`] = `
@@ -175,8 +170,7 @@ input CreateProductCustomFieldsInput {
 
 input ProductTranslationInputCustomFields {
   shortName: String
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type with a translation 1`] = `
@@ -202,8 +196,7 @@ type ProductCustomFields {
 
 type ProductTranslationCustomFields {
   shortName: String
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() extends a type with an Update input 1`] = `
@@ -228,8 +221,7 @@ type ProductCustomFields {
 
 input UpdateProductCustomFieldsInput {
   available: Boolean
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() publicOnly = true 1`] = `
@@ -244,8 +236,7 @@ scalar DateTime
 
 type ProductCustomFields {
   available: Boolean
-}
-"
+}"
 `;
 
 exports[`addGraphQLCustomFields() uses JSON scalar if no custom fields defined 1`] = `
@@ -256,8 +247,7 @@ exports[`addGraphQLCustomFields() uses JSON scalar if no custom fields defined 1
 
 scalar JSON
 
-scalar DateTime
-"
+scalar DateTime"
 `;
 
 exports[`addOrderLineCustomFieldsInput() Modifies the schema when the addItemToOrder & adjustOrderLine mutation is present 1`] = `
@@ -269,8 +259,7 @@ exports[`addOrderLineCustomFieldsInput() Modifies the schema when the addItemToO
 input OrderLineCustomFieldsInput {
   giftWrap: Boolean
   message: String
-}
-"
+}"
 `;
 
 exports[`addRegisterCustomerCustomFieldsInput() add public writable custom fields to RegisterCustomerInput 1`] = `
@@ -291,6 +280,5 @@ type Mutation {
 input RegisterCustomerCustomFieldsInput {
   isB2B: Boolean
   message: String
-}
-"
+}"
 `;

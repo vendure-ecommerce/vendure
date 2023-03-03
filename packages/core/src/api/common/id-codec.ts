@@ -1,6 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
-import { EntityIdStrategy } from '../../config/entity-id-strategy/entity-id-strategy';
+import { EntityIdStrategy } from '../../config/entity/entity-id-strategy';
 import { VendureEntity } from '../../entity/base/base.entity';
 
 const ID_KEYS = ['id'];

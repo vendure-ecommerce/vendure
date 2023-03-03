@@ -371,7 +371,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         let attachmentsArray: EmailAttachment[] = [];
         try {
             attachmentsArray = (await this.setAttachmentsFn?.(event)) ?? [];
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e, loggerCtx, e.stack);
         }
         const attachments = await serializeAttachments(attachmentsArray);

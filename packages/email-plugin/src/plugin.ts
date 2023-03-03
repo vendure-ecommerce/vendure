@@ -340,7 +340,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
             } else if (this.testingProcessor) {
                 await this.testingProcessor.process(result);
             }
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
         }
     }

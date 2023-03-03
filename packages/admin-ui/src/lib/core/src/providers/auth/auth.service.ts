@@ -3,12 +3,7 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mapTo, mergeMap, switchMap } from 'rxjs/operators';
 
-import {
-    AttemptLogin,
-    CurrentUserChannel,
-    CurrentUserFragment,
-    SetAsLoggedIn,
-} from '../../common/generated-types';
+import { AttemptLoginMutation, CurrentUserFragment } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { ServerConfigService } from '../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
@@ -30,7 +25,11 @@ export class AuthService {
      * Attempts to log in via the REST login endpoint and updates the app
      * state on success.
      */
-    logIn(username: string, password: string, rememberMe: boolean): Observable<AttemptLogin.Login> {
+    logIn(
+        username: string,
+        password: string,
+        rememberMe: boolean,
+    ): Observable<AttemptLoginMutation['login']> {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
                 if (response.login.__typename === 'CurrentUser') {

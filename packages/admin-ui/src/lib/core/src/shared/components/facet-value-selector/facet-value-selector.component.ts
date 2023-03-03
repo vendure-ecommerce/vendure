@@ -139,7 +139,7 @@ export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlVa
         this.ngSelect.focus();
     }
 
-    writeValue(obj: string | FacetValue.Fragment[] | Array<string | number> | null): void {
+    writeValue(obj: string | FacetValueFragment[] | Array<string | number> | null): void {
         let valueIds: string[] | undefined;
         if (typeof obj === 'string') {
             try {

@@ -227,7 +227,12 @@ export class Job<T extends JobData<T> = any> {
      * already be serializable per the TS type, in practice data can slip through due to loss of
      * type safety.
      */
-    private ensureDataIsSerializable(data: any, output?: any): any {
+    private ensureDataIsSerializable(data: any, depth = 0): any {
+        if (10 < depth) {
+            return '[max depth reached]';
+        }
+        depth++;
+        let output: any;
         if (data instanceof Date) {
             return data.toISOString();
         } else if (isObject(data)) {
@@ -235,7 +240,7 @@ export class Job<T extends JobData<T> = any> {
                 output = {};
             }
             for (const key of Object.keys(data)) {
-                output[key] = this.ensureDataIsSerializable((data as any)[key]);
+                output[key] = this.ensureDataIsSerializable((data as any)[key], depth);
             }
             if (isClassInstance(data)) {
                 const descriptors = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(data));
@@ -251,7 +256,7 @@ export class Job<T extends JobData<T> = any> {
                 output = [];
             }
             data.forEach((item, i) => {
-                output[i] = this.ensureDataIsSerializable(item);
+                output[i] = this.ensureDataIsSerializable(item, depth);
             });
         } else {
             return data;

@@ -21,7 +21,7 @@ import { HardenPluginOptions } from '../types';
 export class QueryComplexityPlugin implements ApolloServerPlugin {
     constructor(private options: HardenPluginOptions) {}
 
-    requestDidStart({ schema }: GraphQLRequestContext): GraphQLRequestListener {
+    async requestDidStart({ schema }: GraphQLRequestContext): Promise<GraphQLRequestListener> {
         const maxQueryComplexity = this.options.maxQueryComplexity ?? 1000;
         return {
             didResolveOperation: async ({ request, document }) => {

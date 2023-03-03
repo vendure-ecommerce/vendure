@@ -2,14 +2,14 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    CreateProductOptionGroup,
+    CreateProductOptionGroupMutation,
     CreateProductOptionInput,
     CurrencyCode,
     DataService,
     DeactivateAware,
     DeletionResult,
     getDefaultUiLanguage,
-    GetProductVariantOptions,
+    GetProductVariantOptionsQuery,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -65,7 +65,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     optionsChanged = false;
     generatedVariants: GeneratedVariant[] = [];
     optionGroups: OptionGroupUiModel[];
-    product: GetProductVariantOptions.Product;
+    product: NonNullable<GetProductVariantOptionsQuery['product']>;
     currencyCode: CurrencyCode;
     private languageCode: LanguageCode;
 
@@ -213,8 +213,8 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         const generatedVariantFactory = (
             isDefault: boolean,
             options: GeneratedVariant['options'],
-            existingVariant?: GetProductVariantOptions.Variants,
-            prototypeVariant?: GetProductVariantOptions.Variants,
+            existingVariant?: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number],
+            prototypeVariant?: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number],
         ): GeneratedVariant => {
             const prototype = this.getVariantPrototype(options, previousVariants);
             return new GeneratedVariant({
@@ -372,13 +372,13 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         );
     }
 
-    private hasOnlyDefaultVariant(product: GetProductVariantOptions.Product): boolean {
+    private hasOnlyDefaultVariant(product: NonNullable<GetProductVariantOptionsQuery['product']>): boolean {
         return product.variants.length === 1 && product.optionGroups.length === 0;
     }
 
     private addOptionGroupsToProduct(
-        createdOptionGroups: CreateProductOptionGroup.CreateProductOptionGroup[],
-    ): Observable<CreateProductOptionGroup.CreateProductOptionGroup[]> {
+        createdOptionGroups: Array<CreateProductOptionGroupMutation['createProductOptionGroup']>,
+    ): Observable<Array<CreateProductOptionGroupMutation['createProductOptionGroup']>> {
         if (createdOptionGroups.length) {
             return forkJoin(
                 createdOptionGroups.map(optionGroup => {
@@ -394,7 +394,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     private addNewOptionsToGroups(
-        createdOptionGroups: CreateProductOptionGroup.CreateProductOptionGroup[],
+        createdOptionGroups: Array<CreateProductOptionGroupMutation['createProductOptionGroup']>,
     ): Observable<string[]> {
         const newOptions: CreateProductOptionInput[] = this.optionGroups
             .map(og => {
@@ -469,7 +469,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         );
     }
 
-    private deleteObsoleteVariants<T>(input: T): Observable<T> {
+    private deleteObsoleteVariants<T>(input: T): Observable<T | T[]> {
         const obsoleteVariants = this.getObsoleteVariants();
         if (obsoleteVariants.length) {
             const deleteOperations = obsoleteVariants.map(v =>

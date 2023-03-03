@@ -6,7 +6,8 @@ import {
     BaseListComponent,
     DataService,
     DeletionResult,
-    GetFacetList,
+    GetFacetListQuery,
+    ItemOf,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -23,7 +24,7 @@ import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/opera
     styleUrls: ['./facet-list.component.scss'],
 })
 export class FacetListComponent
-    extends BaseListComponent<GetFacetList.Query, GetFacetList.Items>
+    extends BaseListComponent<GetFacetListQuery, ItemOf<GetFacetListQuery, 'facets'>>
     implements OnInit
 {
     filterTermControl = new FormControl('');
@@ -31,7 +32,7 @@ export class FacetListComponent
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
-    selectionManager: SelectionManager<GetFacetList.Items>;
+    selectionManager: SelectionManager<ItemOf<GetFacetListQuery, 'facets'>>;
 
     constructor(
         private dataService: DataService,
@@ -60,7 +61,7 @@ export class FacetListComponent
                 },
             }),
         );
-        this.selectionManager = new SelectionManager<GetFacetList.Items>({
+        this.selectionManager = new SelectionManager({
             multiSelect: true,
             itemsAreEqual: (a, b) => a.id === b.id,
             additiveMode: true,
@@ -83,7 +84,7 @@ export class FacetListComponent
             .subscribe(() => this.refresh());
     }
 
-    toggleDisplayLimit(facet: GetFacetList.Items) {
+    toggleDisplayLimit(facet: ItemOf<GetFacetListQuery, 'facets'>) {
         if (this.displayLimit[facet.id] === facet.values.length) {
             this.displayLimit[facet.id] = this.initialLimit;
         } else {

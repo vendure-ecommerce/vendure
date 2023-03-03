@@ -9,7 +9,12 @@ import * as path from 'path';
 import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
 import { copyGlobalStyleFile, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
-import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions, UiExtensionCompilerProcessArgument } from './types';
+import {
+    Extension,
+    StaticAssetDefinition,
+    UiExtensionCompilerOptions,
+    UiExtensionCompilerProcessArgument,
+} from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
@@ -31,7 +36,8 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { outputPath, baseHref, devMode, watchPort, extensions, command, additionalProcessArguments } = options;
+    const { outputPath, baseHref, devMode, watchPort, extensions, command, additionalProcessArguments } =
+        options;
     const usingYarn = options.command && options.command === 'npm' ? false : shouldUseYarn();
     if (devMode) {
         return runWatchMode(
@@ -39,16 +45,16 @@ export function compileUiExtensions(
             baseHref || DEFAULT_BASE_HREF,
             watchPort || 4200,
             extensions,
-            usingYarn, 
-            additionalProcessArguments
+            usingYarn,
+            additionalProcessArguments,
         );
     } else {
         return runCompileMode(
-            outputPath, 
-            baseHref || DEFAULT_BASE_HREF, 
-            extensions, 
-            usingYarn, 
-            additionalProcessArguments
+            outputPath,
+            baseHref || DEFAULT_BASE_HREF,
+            extensions,
+            usingYarn,
+            additionalProcessArguments,
         );
     }
 }
@@ -58,7 +64,7 @@ function runCompileMode(
     baseHref: string,
     extensions: Extension[],
     usingYarn: boolean,
-    args?: UiExtensionCompilerProcessArgument[]
+    args?: UiExtensionCompilerProcessArgument[],
 ): AdminUiAppConfig {
     const cmd = usingYarn ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
@@ -66,7 +72,13 @@ function runCompileMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const commandArgs = ['run', 'build', `--outputPath="${distPath}"`, `--base-href=${baseHref}`, ...buildProcessArguments(args)];
+            const commandArgs = [
+                'run',
+                'build',
+                `--outputPath="${distPath}"`,
+                `--base-href=${baseHref}`,
+                ...buildProcessArguments(args),
+            ];
             if (!usingYarn) {
                 // npm requires `--` before any command line args being passed to a script
                 commandArgs.splice(2, 0, '--');
@@ -99,7 +111,7 @@ function runWatchMode(
     port: number,
     extensions: Extension[],
     usingYarn: boolean,
-    args?: UiExtensionCompilerProcessArgument[]
+    args?: UiExtensionCompilerProcessArgument[],
 ): AdminUiAppDevModeConfig {
     const cmd = usingYarn ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
@@ -116,11 +128,15 @@ function runWatchMode(
             const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
-            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`, ...buildProcessArguments(args)], {
-                cwd: outputPath,
-                shell: true,
-                stdio: 'inherit',
-            });
+            buildProcess = spawn(
+                cmd,
+                ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`, ...buildProcessArguments(args)],
+                {
+                    cwd: outputPath,
+                    shell: true,
+                    stdio: 'inherit',
+                },
+            );
 
             buildProcess.on('close', code => {
                 if (code !== 0) {
@@ -252,11 +268,11 @@ function buildProcessArguments(args?: UiExtensionCompilerProcessArgument[]): str
         if (Array.isArray(arg)) {
             const [key, value] = arg;
 
-            return `${key}=${value}`
+            return `${key}=${value}`;
         }
 
-        return arg
-    })
+        return arg;
+    });
 }
 
 function baseHrefToRoute(baseHref: string): string {

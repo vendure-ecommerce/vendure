@@ -1,7 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-
-import { OrderDetail } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import { Dialog, OrderDetailFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-settle-refund-dialog',
@@ -12,7 +10,7 @@ import { Dialog } from '@vendure/admin-ui/core';
 export class SettleRefundDialogComponent implements Dialog<string> {
     resolveWith: (result?: string) => void;
     transactionId = '';
-    refund: OrderDetail.Refunds;
+    refund: NonNullable<OrderDetailFragment['payments']>[number]['refunds'][number];
 
     submit() {
         this.resolveWith(this.transactionId);

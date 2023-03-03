@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { merge, ObservableInput, Subject } from 'rxjs';
+import { lastValueFrom, merge, ObservableInput, Subject } from 'rxjs';
 import { delay, filter, map, take, tap } from 'rxjs/operators';
 import { Connection, EntitySubscriberInterface } from 'typeorm';
 import { EntityManager } from 'typeorm/entity-manager/EntityManager';
@@ -10,7 +10,7 @@ import { TransactionRollbackEvent } from 'typeorm/subscriber/event/TransactionRo
 
 /**
  * This error should be thrown by an event subscription if types do not match
- * 
+ *
  * @internal
  */
 export class TransactionSubscriberError extends Error {}
@@ -87,7 +87,7 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
         type?: TransactionSubscriberEventType,
     ): Promise<QueryRunner> {
         if (queryRunner.isTransactionActive) {
-            return this.subject$
+            return lastValueFrom(this.subject$
                 .pipe(
                     filter(
                         event => !event.queryRunner.isTransactionActive && event.queryRunner === queryRunner,
@@ -107,7 +107,7 @@ export class TransactionSubscriber implements EntitySubscriberInterface {
                     // in the default-search-plugin.e2e-spec.ts suite when using sqljs.
                     delay(0),
                 )
-                .toPromise();
+            );
         } else {
             return Promise.resolve(queryRunner);
         }

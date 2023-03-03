@@ -10,7 +10,15 @@ import {
     Logger,
     PaginatedList,
 } from '@vendure/core';
-import Bull, { ConnectionOptions, Processor, Queue, QueueScheduler, Worker, WorkerOptions } from 'bullmq';
+import Bull, {
+    ConnectionOptions,
+    JobType,
+    Processor,
+    Queue,
+    QueueScheduler,
+    Worker,
+    WorkerOptions,
+} from 'bullmq';
 import { EventEmitter } from 'events';
 import Redis, { RedisOptions } from 'ioredis';
 
@@ -90,7 +98,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                     const result = await processFn(job);
                     await bullJob.updateProgress(100);
                     return result;
-                } catch (e) {
+                } catch (e: any) {
                     throw e;
                 }
             }
@@ -134,7 +142,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             try {
                 await bullJob.remove();
                 return this.createVendureJob(bullJob);
-            } catch (e) {
+            } catch (e: any) {
                 const message = `Error when cancelling job: ${e.message}`;
                 Logger.error(message, loggerCtx);
                 throw new InternalServerError(message);
@@ -145,7 +153,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
         const start = options?.skip ?? 0;
         const end = start + (options?.take ?? 10);
-        let jobTypes = ALL_JOB_TYPES;
+        let jobTypes: JobType[] = ALL_JOB_TYPES;
         const stateFilter = options?.filter?.state;
         if (stateFilter?.eq) {
             switch (stateFilter.eq) {
@@ -180,12 +188,12 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         let jobCounts: { [index: string]: number } = {};
         try {
             items = await this.queue.getJobs(jobTypes, start, end);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
         }
         try {
             jobCounts = await this.queue.getJobCounts(...jobTypes);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
         }
         const totalItems = Object.values(jobCounts).reduce((sum, count) => sum + count, 0);
@@ -218,7 +226,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             await this.queue.clean(100, 0, 'completed');
             await this.queue.clean(100, 0, 'failed');
             return Object.values(jobCounts).reduce((sum, num) => sum + num, 0);
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
             return 0;
         }

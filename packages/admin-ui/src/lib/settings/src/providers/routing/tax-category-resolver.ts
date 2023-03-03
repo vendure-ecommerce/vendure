@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver, DataService, TaxCategory } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, DataService, TaxCategoryFragment } from '@vendure/admin-ui/core';
 
 /**
  * Resolves the id from the path into a Customer entity.
@@ -8,7 +8,7 @@ import { BaseEntityResolver, DataService, TaxCategory } from '@vendure/admin-ui/
 @Injectable({
     providedIn: 'root',
 })
-export class TaxCategoryResolver extends BaseEntityResolver<TaxCategory.Fragment> {
+export class TaxCategoryResolver extends BaseEntityResolver<TaxCategoryFragment> {
     constructor(router: Router, dataService: DataService) {
         super(
             router,

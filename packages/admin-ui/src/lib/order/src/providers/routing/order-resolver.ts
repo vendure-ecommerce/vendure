@@ -10,6 +10,7 @@ import { DataService, OrderDetailFragment } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, Observable } from 'rxjs';
 import { filter, map, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
+
 import { DraftOrderDetailComponent } from '../../components/draft-order-detail/draft-order-detail.component';
 
 /**
@@ -32,6 +33,7 @@ export class OrderResolver implements Resolve<Observable<OrderDetailFragment>> {
         const navigateAway$ = this.router.events.pipe(filter(event => event instanceof ActivationStart));
 
         const stream = this.dataService.order
+            // tslint:disable-next-line:no-non-null-assertion
             .getOrder(id!)
             .mapStream(data => data.order)
             .pipe(

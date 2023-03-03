@@ -29,8 +29,7 @@ export class SqlJobBufferStorageStrategy implements JobBufferStorageStrategy {
     }
 
     async bufferSize(bufferIds?: string[]): Promise<{ [bufferId: string]: number }> {
-        const qb = await this.connection
-            .rawConnection
+        const qb = await this.connection.rawConnection
             .getRepository(JobRecordBuffer)
             .createQueryBuilder('record')
             .select(`COUNT(*)`, 'count')

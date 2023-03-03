@@ -395,7 +395,10 @@ export class ProductService {
                 variant.options.some(option => idsAreEqual(option.groupId, optionGroupId)),
         );
         if (optionIsInUse) {
-            return new ProductOptionInUseError(optionGroup.code, product.variants.length);
+            return new ProductOptionInUseError({
+                optionGroupCode: optionGroup.code,
+                productVariantCount: product.variants.length,
+            });
         }
         const result = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
             ctx,

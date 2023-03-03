@@ -4,6 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseListComponent,
     DataService,
+    ItemOf,
     JobQueueService,
     JobState,
     LanguageCode,
@@ -12,12 +13,15 @@ import {
     NotificationService,
     ProductSearchInputComponent,
     SearchInput,
-    SearchProducts,
+    SearchProductsQuery,
+    SearchProductsQueryVariables,
     SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
 import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+
+export type SearchItem = ItemOf<SearchProductsQuery, 'search'>;
 
 @Component({
     selector: 'vdr-products-list',
@@ -25,18 +29,22 @@ import { delay, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxj
     styleUrls: ['./product-list.component.scss'],
 })
 export class ProductListComponent
-    extends BaseListComponent<SearchProducts.Query, SearchProducts.Items, SearchProducts.Variables>
+    extends BaseListComponent<
+        SearchProductsQuery,
+        SearchItem,
+        SearchProductsQueryVariables
+    >
     implements OnInit, AfterViewInit
 {
     searchTerm = '';
     facetValueIds: string[] = [];
     groupByProduct = true;
     selectedFacetValueIds$: Observable<string[]>;
-    facetValues$: Observable<SearchProducts.FacetValues[]>;
+    facetValues$: Observable<SearchProductsQuery['search']['facetValues']>;
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     pendingSearchIndexUpdates = 0;
-    selectionManager: SelectionManager<SearchProducts.Items>;
+    selectionManager: SelectionManager<SearchItem>;
 
     @ViewChild('productSearchInputComponent', { static: true })
     private productSearchInput: ProductSearchInputComponent;
@@ -86,7 +94,7 @@ export class ProductListComponent
                 } as SearchInput,
             }),
         );
-        this.selectionManager = new SelectionManager<SearchProducts.Items>({
+        this.selectionManager = new SelectionManager({
             multiSelect: true,
             itemsAreEqual: (a, b) =>
                 this.groupByProduct ? a.productId === b.productId : a.productVariantId === b.productVariantId,

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { CurrencyCode } from '@vendure/admin-ui/core';
-import { OrderDetail } from '@vendure/admin-ui/core';
+import { CurrencyCode, OrderDetailFragment } from '@vendure/admin-ui/core';
+
+type Payment = NonNullable<OrderDetailFragment['payments']>[number];
 
 @Component({
     selector: 'vdr-order-payment-card',
@@ -9,13 +10,13 @@ import { OrderDetail } from '@vendure/admin-ui/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderPaymentCardComponent {
-    @Input() payment: OrderDetail.Payments;
+    @Input() payment: Payment;
     @Input() currencyCode: CurrencyCode;
-    @Output() settlePayment = new EventEmitter<OrderDetail.Payments>();
-    @Output() transitionPaymentState = new EventEmitter<{ payment: OrderDetail.Payments; state: string }>();
-    @Output() settleRefund = new EventEmitter<OrderDetail.Refunds>();
+    @Output() settlePayment = new EventEmitter<Payment>();
+    @Output() transitionPaymentState = new EventEmitter<{ payment: Payment; state: string }>();
+    @Output() settleRefund = new EventEmitter<Payment['refunds'][number]>();
 
-    refundHasMetadata(refund?: OrderDetail.Refunds): boolean {
+    refundHasMetadata(refund?: Payment['refunds'][number]): boolean {
         return !!refund && Object.keys(refund.metadata).length > 0;
     }
 

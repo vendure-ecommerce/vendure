@@ -4,7 +4,7 @@ import { Logger } from '@vendure/core';
 try {
     // tslint:disable-next-line:no-var-requires
     require('bullmq');
-} catch (e) {
+} catch (e: any) {
     // tslint:disable-next-line:no-console
     console.error('The BullMQJobQueuePlugin depends on the "bullmq" package being installed.');
     process.exit(1);

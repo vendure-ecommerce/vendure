@@ -19,6 +19,7 @@
         <button
             class="btn btn-primary"
             *ngIf="
+            order.type !== 'Aggregate' &&
                 (order.state === 'ArrangingPayment' || order.state === 'ArrangingAdditionalPayment') &&
                 (hasUnsettledModifications(order) || 0 < outstandingPaymentAmount(order))
             "
@@ -30,6 +31,7 @@
         <button
             class="btn btn-primary"
             *ngIf="
+                order.type !== 'Aggregate' &&
                 order.active === false &&
                 order.state !== 'ArrangingAdditionalPayment' &&
                 order.state !== 'ArrangingPayment' &&
@@ -39,7 +41,7 @@
         >
             {{ 'order.arrange-additional-payment' | translate }}
         </button>
-        <button class="btn btn-primary" (click)="fulfillOrder()" [disabled]="!canAddFulfillment(order)">
+        <button *ngIf="order.type !== 'Aggregate'" class="btn btn-primary" (click)="fulfillOrder()" [disabled]="!canAddFulfillment(order)">
             {{ 'order.fulfill-order' | translate }}
         </button>
         <vdr-dropdown>
@@ -47,7 +49,7 @@
                 <clr-icon shape="ellipsis-vertical"></clr-icon>
             </button>
             <vdr-dropdown-menu vdrPosition="bottom-right">
-                <ng-container *ngIf="order.nextStates.includes('Modifying')">
+                <ng-container *ngIf="order.type !== 'Aggregate' && order.nextStates.includes('Modifying')">
                     <button type="button" class="btn" vdrDropdownItem (click)="transitionToModifying()">
                         <clr-icon shape="pencil"></clr-icon>
                         {{ 'order.modify-order' | translate }}
@@ -58,7 +60,7 @@
                     type="button"
                     class="btn"
                     vdrDropdownItem
-                    *ngIf="order.nextStates.includes('Cancelled')"
+                    *ngIf="order.type !== 'Aggregate' && order.nextStates.includes('Cancelled')"
                     (click)="cancelOrRefund(order)"
                 >
                     <clr-icon shape="error-standard" class="is-error"></clr-icon>
@@ -99,6 +101,10 @@
 <div *ngIf="entity$ | async as order">
     <div class="clr-row">
         <div class="clr-col-lg-8">
+            <vdr-seller-orders-card
+                *ngIf="order.sellerOrders.length"
+                [orderId]="order.id"
+            ></vdr-seller-orders-card>
             <vdr-order-table
                 [order]="order"
                 [orderLineCustomFields]="orderLineCustomFields"

@@ -20,9 +20,9 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { FacetValue } from '../../entity/index';
 import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -116,7 +116,7 @@ export class FacetService {
                       facetCodeOrLang as LanguageCode,
                   ];
 
-        // ToDo Implement usage of channelLanguageCode
+        // TODO: Implement usage of channelLanguageCode
         return repository
             .findOne({
                 where: {
@@ -348,7 +348,7 @@ export class FacetService {
                         results.push(result);
                     }
                 } else {
-                    results.push(new FacetInUseError(facet.code, productCount, variantCount));
+                    results.push(new FacetInUseError({ facetCode: facet.code, productCount, variantCount }));
                 }
             }
         }

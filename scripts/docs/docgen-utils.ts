@@ -19,7 +19,10 @@ generated: true
 }
 
 export function titleCase(input: string): string {
-    return input.split(' ').map(w => w[0].toLocaleUpperCase() + w.substr(1)).join(' ');
+    return input
+        .split(' ')
+        .map(w => w[0].toLocaleUpperCase() + w.substr(1))
+        .join(' ');
 }
 
 /**
@@ -31,7 +34,7 @@ export function deleteGeneratedDocs(outputPath: string) {
     }
     try {
         let deleteCount = 0;
-        const files = klawSync(outputPath, {nodir: true});
+        const files = klawSync(outputPath, { nodir: true });
         for (const file of files) {
             const content = fs.readFileSync(file.path, 'utf-8');
             if (isGenerated(content)) {
@@ -42,7 +45,7 @@ export function deleteGeneratedDocs(outputPath: string) {
         if (deleteCount) {
             console.log(`Deleted ${deleteCount} generated docs from ${outputPath}`);
         }
-    } catch (e) {
+    } catch (e: any) {
         console.error('Could not delete generated docs!');
         console.log(e);
         process.exitCode = 1;

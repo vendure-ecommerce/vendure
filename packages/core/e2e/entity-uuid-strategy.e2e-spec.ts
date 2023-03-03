@@ -13,7 +13,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { GetProductList } from './graphql/generated-e2e-admin-types';
+import { GetProductListQuery, GetProductListQueryVariables } from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
 
 describe('UuidIdStrategy', () => {
@@ -36,7 +36,7 @@ describe('UuidIdStrategy', () => {
     });
 
     it('uses uuids', async () => {
-        const { products } = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
+        const { products } = await adminClient.query<GetProductListQuery, GetProductListQueryVariables>(
             GET_PRODUCT_LIST,
             {
                 options: {

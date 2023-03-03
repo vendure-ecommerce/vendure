@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Asset, AssetType, BaseEntityResolver } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { AssetFragment, AssetType, BaseEntityResolver, DataService } from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class AssetResolver extends BaseEntityResolver<Asset.Fragment> {
+export class AssetResolver extends BaseEntityResolver<AssetFragment> {
     constructor(router: Router, dataService: DataService) {
         super(
             router,

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { CustomFieldConfig, OrderDetail, ServerConfigService } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, OrderDetailFragment, ServerConfigService } from '@vendure/admin-ui/core';
 import { isObject } from '@vendure/common/lib/shared-utils';
 
 @Component({
@@ -11,7 +11,7 @@ import { isObject } from '@vendure/common/lib/shared-utils';
 })
 export class FulfillmentDetailComponent implements OnInit, OnChanges {
     @Input() fulfillmentId: string;
-    @Input() order: OrderDetail.Fragment;
+    @Input() order: OrderDetailFragment;
 
     customFieldConfig: CustomFieldConfig[] = [];
     customFieldFormGroup = new FormGroup({});
@@ -26,17 +26,16 @@ export class FulfillmentDetailComponent implements OnInit, OnChanges {
         this.buildCustomFieldsFormGroup();
     }
 
-    get fulfillment(): OrderDetail.Fulfillments | undefined | null {
+    get fulfillment(): NonNullable<OrderDetailFragment['fulfillments']>[number] | undefined | null {
         return this.order.fulfillments && this.order.fulfillments.find(f => f.id === this.fulfillmentId);
     }
 
     get items(): Array<{ name: string; quantity: number }> {
         return (
-            this.fulfillment?.summary.map(row => {
+            this.fulfillment?.lines.map(row => {
                 return {
                     name:
-                        this.order.lines.find(line => line.id === row.orderLine.id)?.productVariant.name ??
-                        '',
+                        this.order.lines.find(line => line.id === row.orderLineId)?.productVariant.name ?? '',
                     quantity: row.quantity,
                 };
             }) ?? []

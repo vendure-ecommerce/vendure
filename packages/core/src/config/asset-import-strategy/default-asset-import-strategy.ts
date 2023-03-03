@@ -2,7 +2,7 @@ import fs from 'fs-extra';
 import http from 'http';
 import https from 'https';
 import path from 'path';
-import { from } from 'rxjs';
+import { from, lastValueFrom } from 'rxjs';
 import { delay, retryWhen, take, tap } from 'rxjs/operators';
 import { Readable } from 'stream';
 import { URL } from 'url';
@@ -67,8 +67,8 @@ export class DefaultAssetImportStrategy implements AssetImportStrategy {
 
     private getStreamFromUrl(assetUrl: string): Promise<Readable> {
         const { retryCount, retryDelayMs } = this.options ?? {};
-        return from(fetchUrl(assetUrl))
-            .pipe(
+        return lastValueFrom(
+            from(fetchUrl(assetUrl)).pipe(
                 retryWhen(errors =>
                     errors.pipe(
                         tap(value => {
@@ -79,8 +79,8 @@ export class DefaultAssetImportStrategy implements AssetImportStrategy {
                         take(retryCount ?? 3),
                     ),
                 ),
-            )
-            .toPromise();
+            ),
+        );
     }
 
     private getStreamFromLocalFile(assetPath: string): Readable {

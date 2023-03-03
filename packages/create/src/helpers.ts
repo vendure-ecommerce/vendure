@@ -106,7 +106,7 @@ export function shouldUseYarn() {
     try {
         execSync('yarnpkg --version', { stdio: 'ignore' });
         return true;
-    } catch (e) {
+    } catch (e: any) {
         return false;
     }
 }
@@ -121,7 +121,7 @@ export function checkThatNpmCanReadCwd() {
         // to reproduce the wrong path. Just printing process.cwd()
         // in a Node process was not enough.
         childOutput = spawn.sync('npm', ['config', 'list']).output.join('');
-    } catch (err) {
+    } catch (err: any) {
         // Something went wrong spawning node.
         // Not great, but it means we can't do this check.
         // We might fail later on, but let's continue.
@@ -347,7 +347,7 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
         if (schema.rows.length === 0) {
             throw new Error('NO_SCHEMA');
         }
-    } catch (e) {
+    } catch (e: any) {
         if (e.code === '3D000') {
             throwDatabaseDoesNotExist(options.database);
         } else if (e.message === 'NO_SCHEMA') {
@@ -384,7 +384,7 @@ export async function isServerPortInUse(): Promise<boolean> {
     const tcpPortUsed = require('tcp-port-used');
     try {
         return tcpPortUsed.check(SERVER_PORT);
-    } catch (e) {
+    } catch (e: any) {
         console.log(chalk.yellow(`Warning: could not determine whether port ${SERVER_PORT} is available`));
         return false;
     }

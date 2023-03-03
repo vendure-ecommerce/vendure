@@ -4,7 +4,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
 import {
     ApiOptions,

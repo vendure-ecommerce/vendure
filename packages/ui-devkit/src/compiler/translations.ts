@@ -69,7 +69,7 @@ export async function mergeExtensionTranslations(
             await fs.copy(translationFile, translationBackupFile);
             try {
                 translations = await fs.readJson(translationFile);
-            } catch (e) {
+            } catch (e: any) {
                 logger.error(`Could not load translation file: ${translationFile}`);
                 logger.error(e);
             }
@@ -79,7 +79,7 @@ export async function mergeExtensionTranslations(
             try {
                 const contents = await fs.readJson(file);
                 translations = mergeTranslations(translations, contents);
-            } catch (e) {
+            } catch (e: any) {
                 logger.error(`Could not load translation file: ${translationFile}`);
                 logger.error(e);
             }

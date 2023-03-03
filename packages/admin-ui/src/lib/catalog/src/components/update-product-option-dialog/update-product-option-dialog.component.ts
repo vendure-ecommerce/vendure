@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import {
     CustomFieldConfig,
     LanguageCode,
-    ProductVariant,
+    ProductVariantFragment,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
 import { createUpdatedTranslatable } from '@vendure/admin-ui/core';
@@ -17,11 +17,12 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateProductOptionDialogComponent
-    implements Dialog<UpdateProductOptionInput & { autoUpdate: boolean }>, OnInit {
+    implements Dialog<UpdateProductOptionInput & { autoUpdate: boolean }>, OnInit
+{
     resolveWith: (result?: UpdateProductOptionInput & { autoUpdate: boolean }) => void;
     updateVariantName = true;
     // Provided by caller
-    productOption: ProductVariant.Options;
+    productOption: ProductVariantFragment['options'][number];
     activeLanguage: LanguageCode;
     name: string;
     code: string;

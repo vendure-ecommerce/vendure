@@ -4,7 +4,7 @@ import { Apollo, QueryRef } from 'apollo-angular';
 import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, finalize, map, skip, take, takeUntil, tap } from 'rxjs/operators';
 
-import { GetUserStatus } from '../common/generated-types';
+import { GetUserStatusQuery } from '../common/generated-types';
 
 import { GET_USER_STATUS } from './definitions/client-definitions';
 
@@ -21,7 +21,7 @@ export class QueryResult<T, V = Record<string, any>> {
         this.valueChanges = queryRef.valueChanges;
     }
 
-    completed$ = new Subject();
+    completed$ = new Subject<void>();
     private valueChanges: Observable<ApolloQueryResult<T>>;
 
     /**
@@ -29,7 +29,7 @@ export class QueryResult<T, V = Record<string, any>> {
      * Re-fetch this query whenever the active Channel changes.
      */
     refetchOnChannelChange(): QueryResult<T, V> {
-        const userStatus$ = this.apollo.watchQuery<GetUserStatus.Query>({
+        const userStatus$ = this.apollo.watchQuery<GetUserStatusQuery>({
             query: GET_USER_STATUS,
         }).valueChanges;
         const activeChannelId$ = userStatus$.pipe(

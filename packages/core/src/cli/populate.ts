@@ -1,6 +1,7 @@
 import { INestApplicationContext } from '@nestjs/common';
 import fs from 'fs-extra';
 import path from 'path';
+import { lastValueFrom } from 'rxjs';
 
 const loggerCtx = 'Populate';
 
@@ -112,7 +113,7 @@ export async function populateInitialData(
     try {
         await populator.populateInitialData(initialData, channel);
         Logger.info(`Populated initial data`, loggerCtx);
-    } catch (err) {
+    } catch (err: any) {
         Logger.error(err.message, loggerCtx);
     }
 }
@@ -129,7 +130,7 @@ export async function populateCollections(
             await populator.populateCollections(initialData, channel);
             Logger.info(`Created ${initialData.collections.length} Collections`, loggerCtx);
         }
-    } catch (err) {
+    } catch (err: any) {
         Logger.info(err.message, loggerCtx);
     }
 }
@@ -149,5 +150,5 @@ export async function importProductsFromCsv(
         languageCode,
         channelOrToken: channel,
     });
-    return importer.parseAndImport(productData, ctx, true).toPromise();
+    return lastValueFrom(importer.parseAndImport(productData, ctx, true));
 }

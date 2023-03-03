@@ -25,8 +25,9 @@ export class ChannelResolver {
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadChannel)
-    channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
-        return this.channelService.findAll(ctx);
+    async channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
+        const { items } = await this.channelService.findAll(ctx);
+        return items
     }
 
     @Query()

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewCh
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { SearchProducts, TagFragment } from '../../../common/generated-types';
+import { SearchProductsQuery, TagFragment } from '../../../common/generated-types';
 import { SingleSearchSelectionModelFactory } from '../../../common/single-search-selection-model';
 
 @Component({
@@ -58,7 +58,10 @@ export class AssetSearchInputComponent {
             });
     }
 
-    filterTagResults = (term: string, item: SearchProducts.FacetValues | { label: string }) => {
+    filterTagResults = (
+        term: string,
+        item: SearchProductsQuery['search']['facetValues'] | { label: string },
+    ) => {
         if (!this.isTag(item)) {
             return false;
         }

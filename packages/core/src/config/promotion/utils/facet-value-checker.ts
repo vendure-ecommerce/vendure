@@ -1,7 +1,7 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { RequestContext } from '../../../api';
 
+import { RequestContext } from '../../../api';
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
 import { TransactionalConnection } from '../../../connection/transactional-connection';

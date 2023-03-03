@@ -169,7 +169,7 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
     async init() {
         try {
             this.AWS = await import('aws-sdk');
-        } catch (e) {
+        } catch (e: any) {
             Logger.error(
                 `Could not find the "aws-sdk" package. Make sure it is installed`,
                 loggerCtx,
@@ -265,7 +265,7 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
         try {
             await this.s3.headObject(this.getObjectParams(fileName)).promise();
             return true;
-        } catch (e) {
+        } catch (e: any) {
             return false;
         }
     }
@@ -293,14 +293,14 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             await this.s3.headBucket({ Bucket: this.s3Config.bucket }).promise();
             bucketExists = true;
             Logger.verbose(`Found S3 bucket "${bucket}"`, loggerCtx);
-        } catch (e) {
+        } catch (e: any) {
             Logger.verbose(`Could not find bucket "${bucket}: ${e.message ?? ''}". Attempting to create...`);
         }
         if (!bucketExists) {
             try {
                 await this.s3.createBucket({ Bucket: bucket, ACL: 'private' }).promise();
                 Logger.verbose(`Created S3 bucket "${bucket}"`, loggerCtx);
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(
                     `Could not find nor create the S3 bucket "${bucket}: ${e.message ?? ''}"`,
                     loggerCtx,

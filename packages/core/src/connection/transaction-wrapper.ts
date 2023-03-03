@@ -1,4 +1,4 @@
-import { from, Observable, of } from 'rxjs';
+import { from, lastValueFrom, Observable, of } from 'rxjs';
 import { retryWhen, take, tap } from 'rxjs/operators';
 import { Connection, EntityManager, QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
@@ -18,7 +18,7 @@ export class TransactionWrapper {
      * Executes the `work` function within the context of a transaction. If the `work` function
      * resolves / completes, then all the DB operations it contains will be committed. If it
      * throws an error or rejects, then all DB operations will be rolled back.
-     * 
+     *
      * @note
      * This function does not mutate your context. Instead, this function makes a copy and passes
      * context to work function.
@@ -42,8 +42,8 @@ export class TransactionWrapper {
 
         try {
             const maxRetries = 5;
-            const result = await from(work(ctx))
-                .pipe(
+            const result = await lastValueFrom(
+                from(work(ctx)).pipe(
                     retryWhen(errors =>
                         errors.pipe(
                             tap(err => {
@@ -54,8 +54,8 @@ export class TransactionWrapper {
                             take(maxRetries),
                         ),
                     ),
-                )
-                .toPromise();
+                ),
+            );
             if (queryRunner.isTransactionActive) {
                 await queryRunner.commitTransaction();
             }
@@ -66,7 +66,7 @@ export class TransactionWrapper {
             }
             throw error;
         } finally {
-            if (!queryRunner.isTransactionActive 
+            if (!queryRunner.isTransactionActive
                 && queryRunner.isReleased === false) {
                 // There is a check for an active transaction
                 // because this could be a nested transaction (savepoint).
@@ -90,7 +90,7 @@ export class TransactionWrapper {
             try {
                 await queryRunner.startTransaction();
                 return true;
-            } catch (err) {
+            } catch (err: any) {
                 lastError = err;
                 if (err instanceof TransactionAlreadyStartedError) {
                     return false;

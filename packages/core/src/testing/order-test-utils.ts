@@ -4,7 +4,6 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../api/common/request-context';
 import { Channel } from '../entity/channel/channel.entity';
-import { OrderItem } from '../entity/order-item/order-item.entity';
 import { OrderLine } from '../entity/order-line/order-line.entity';
 import { Order } from '../entity/order/order.entity';
 import { ProductVariant } from '../entity/product-variant/product-variant.entity';
@@ -20,7 +19,7 @@ export function createOrderFromLines(simpleLines: SimpleLine[]): Order {
             new OrderLine({
                 id: lineId,
                 productVariant: new ProductVariant({ id: productVariantId }),
-                items: Array.from({ length: quantity }).map(() => new OrderItem({})),
+                quantity,
                 ...(customFields ? { customFields } : {}),
             }),
     );
@@ -144,15 +143,12 @@ export function createOrder(
         ({ listPrice, taxCategory, quantity }) =>
             new OrderLine({
                 taxCategory,
-                items: Array.from({ length: quantity }).map(
-                    () =>
-                        new OrderItem({
-                            listPrice,
-                            listPriceIncludesTax: orderConfig.ctx.channel.pricesIncludeTax,
-                            taxLines: [],
-                            adjustments: [],
-                        }),
-                ),
+                quantity,
+                orderPlacedQuantity: 0,
+                listPrice,
+                listPriceIncludesTax: orderConfig.ctx.channel.pricesIncludeTax,
+                taxLines: [],
+                adjustments: [],
             }),
     );
 

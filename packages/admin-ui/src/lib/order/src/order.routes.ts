@@ -4,7 +4,7 @@ import {
     BreadcrumbLabelLinkPair,
     CanDeactivateDetailGuard,
     detailBreadcrumb,
-    OrderDetail,
+    OrderDetailFragment,
 } from '@vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
@@ -48,6 +48,18 @@ export const orderRoutes: Route[] = [
         },
     },
     {
+        path: ':aggregateOrderId/seller-orders/:id',
+        component: OrderDetailComponent,
+        resolve: {
+            entity: OrderResolver,
+        },
+        canActivate: [OrderGuard],
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: {
+            breadcrumb: orderBreadcrumb,
+        },
+    },
+    {
         path: ':id/modify',
         component: OrderEditorComponent,
         resolve: {
@@ -61,13 +73,41 @@ export const orderRoutes: Route[] = [
 ];
 
 export function orderBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<OrderDetail.Fragment>({
-        entity: data.entity,
-        id: params.id,
-        breadcrumbKey: 'breadcrumb.orders',
-        getName: order => order.code,
-        route: '',
-    });
+    return data.entity.pipe(
+        map((entity: OrderDetailFragment) => {
+            if (entity.aggregateOrder) {
+                return [
+                    {
+                        label: 'breadcrumb.orders',
+                        link: ['../'],
+                    },
+                    {
+                        label: entity.aggregateOrder.code,
+                        link: ['../', entity.aggregateOrder.id],
+                    },
+                    {
+                        label: _('breadcrumb.seller-orders'),
+                        link: ['../', entity.aggregateOrder.id],
+                    },
+                    {
+                        label: entity.code,
+                        link: [entity.id],
+                    },
+                ];
+            } else {
+                return [
+                    {
+                        label: 'breadcrumb.orders',
+                        link: ['../'],
+                    },
+                    {
+                        label: entity.code,
+                        link: [entity.id],
+                    },
+                ];
+            }
+        }),
+    );
 }
 
 export function modifyingOrderBreadcrumb(data: any, params: any) {

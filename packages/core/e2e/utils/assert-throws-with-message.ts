@@ -8,7 +8,7 @@ export function assertThrowsWithMessage(operation: () => Promise<any>, message: 
         try {
             await operation();
             fail('Should have thrown');
-        } catch (err) {
+        } catch (err: any) {
             const messageString = typeof message === 'function' ? message() : message;
             expect(err.message).toEqual(expect.stringContaining(messageString));
         }

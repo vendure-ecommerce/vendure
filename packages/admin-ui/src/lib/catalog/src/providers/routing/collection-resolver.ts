@@ -1,11 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver, Collection, DataService, getDefaultUiLanguage } from '@vendure/admin-ui/core';
+import {
+    BaseEntityResolver,
+    CollectionFragment,
+    DataService,
+    getDefaultUiLanguage,
+} from '@vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> {
+export class CollectionResolver extends BaseEntityResolver<CollectionFragment> {
     constructor(router: Router, dataService: DataService) {
         super(
             router,
@@ -23,6 +28,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 featuredAsset: null,
                 assets: [],
                 translations: [],
+                inheritFilters: true,
                 filters: [],
                 parent: {} as any,
                 children: null,

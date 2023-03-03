@@ -53,30 +53,32 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     await adminClient.asSuperAdmin();
     await adminClient.query(gql`
         mutation {
-            updateChannel(input: {id: "T_1", currencyCode: EUR}) {
+            updateChannel(input: { id: "T_1", currencyCode: EUR }) {
                 __typename
             }
         }
     `);
     // Create method
-    await adminClient.query<CreatePaymentMethod.Mutation,
-        CreatePaymentMethod.Variables>(CREATE_PAYMENT_METHOD, {
-        input: {
-            code: 'mollie',
-            name: 'Mollie payment test',
-            description: 'This is a Mollie test payment method',
-            enabled: true,
-            handler: {
-                code: molliePaymentHandler.code,
-                arguments: [
-                    { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1` },
-                    // tslint:disable-next-line:no-non-null-assertion
-                    { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
-                    { name: 'autoCapture', value: 'false' },
-                ],
+    await adminClient.query<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+        CREATE_PAYMENT_METHOD,
+        {
+            input: {
+                code: 'mollie',
+                name: 'Mollie payment test',
+                description: 'This is a Mollie test payment method',
+                enabled: true,
+                handler: {
+                    code: molliePaymentHandler.code,
+                    arguments: [
+                        { name: 'redirectUrl', value: `${tunnel.url}/admin/orders?filter=open&page=1` },
+                        // tslint:disable-next-line:no-non-null-assertion
+                        { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
+                        { name: 'autoCapture', value: 'false' },
+                    ],
+                },
             },
         },
-    });
+    );
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
     await shopClient.query<AddItemToOrder.Order, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
@@ -87,9 +89,9 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         apiType: 'admin',
         isAuthorized: true,
         authorizedAsOwnerOnly: false,
-        channel: await server.app.get(ChannelService).getDefaultChannel()
+        channel: await server.app.get(ChannelService).getDefaultChannel(),
     });
-   await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
+    await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
         description: 'Negative test surcharge',
         listPrice: -20000,
     });
@@ -97,7 +99,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
             paymentMethodCode: 'mollie',
-//            molliePaymentMethodCode: 'klarnapaylater'
+            //            molliePaymentMethodCode: 'klarnapaylater'
         },
     });
     if (createMolliePaymentIntent.errorCode) {
@@ -105,4 +107,3 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     }
     Logger.info(`Mollie payment link: ${createMolliePaymentIntent.url}`, 'Mollie DevServer');
 })();
-

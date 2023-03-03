@@ -7,8 +7,8 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { Promotion } from '../../entity/index';
 import { Order } from '../../entity/order/order.entity';
+import { Promotion } from '../../entity/promotion/promotion.entity';
 
 export type PromotionConditionState = Record<string, unknown>;
 

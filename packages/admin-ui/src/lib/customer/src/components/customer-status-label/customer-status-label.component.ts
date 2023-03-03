@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-
-import { Customer } from '@vendure/admin-ui/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { CustomerFragment } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-customer-status-label',
@@ -9,5 +8,5 @@ import { Customer } from '@vendure/admin-ui/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomerStatusLabelComponent {
-    @Input() customer: Customer.Fragment;
+    @Input() customer: CustomerFragment;
 }

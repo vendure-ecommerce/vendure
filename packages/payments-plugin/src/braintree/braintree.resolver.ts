@@ -73,7 +73,7 @@ export class BraintreeResolver {
                         `Could not generate Braintree clientToken: ${result.message}`,
                     );
                 }
-            } catch (e) {
+            } catch (e: any) {
                 Logger.error(
                     `Could not generate Braintree clientToken. Check the configured credentials.`,
                     loggerCtx,

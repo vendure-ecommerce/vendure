@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { CustomFieldConfig, Dialog, GetAvailableCountries } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, Dialog, GetAvailableCountriesQuery } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-address-detail-dialog',
@@ -11,7 +11,7 @@ import { CustomFieldConfig, Dialog, GetAvailableCountries } from '@vendure/admin
 export class AddressDetailDialogComponent implements Dialog<FormGroup>, OnInit {
     addressForm: FormGroup;
     customFields: CustomFieldConfig;
-    availableCountries: GetAvailableCountries.Items[] = [];
+    availableCountries: GetAvailableCountriesQuery['countries']['items'] = [];
     resolveWith: (result?: FormGroup) => void;
 
     constructor(private changeDetector: ChangeDetectorRef) {}

@@ -67,7 +67,7 @@ type TestShippingMethodResult {
 }
 
 type TestShippingMethodQuote {
-    price: Int!
-    priceWithTax: Int!
+    price: Money!
+    priceWithTax: Money!
     metadata: JSON
 }

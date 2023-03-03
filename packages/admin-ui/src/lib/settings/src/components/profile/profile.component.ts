@@ -7,7 +7,7 @@ import {
     BaseDetailComponent,
     CustomFieldConfig,
     DataService,
-    GetActiveAdministrator,
+    GetActiveAdministratorQuery,
     LanguageCode,
     NotificationService,
     ServerConfigService,
@@ -22,7 +22,7 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent
-    extends BaseDetailComponent<GetActiveAdministrator.ActiveAdministrator>
+    extends BaseDetailComponent<NonNullable<GetActiveAdministratorQuery['activeAdministrator']>>
     implements OnInit, OnDestroy
 {
     customFields: CustomFieldConfig[];

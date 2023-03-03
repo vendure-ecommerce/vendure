@@ -10,47 +10,19 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ROLE_FRAGMENT } from './graphql/fragments';
-import {
-    ChannelFragment,
-    CreateAdministratorMutation,
-    CreateAdministratorMutationVariables,
-    CreateChannel,
-    CreateRole,
-    CreateRoleMutation,
-    CreateRoleMutationVariables,
-    CurrencyCode,
-    DeleteRole,
-    DeletionResult,
-    GetChannelsQuery,
-    GetRole,
-    GetRoles,
-    LanguageCode,
-    Permission,
-    Role,
-    UpdateAdministratorMutation,
-    UpdateAdministratorMutationVariables,
-    UpdateRole,
-    UpdateRoleMutation,
-    UpdateRoleMutationVariables,
-} from './graphql/generated-e2e-admin-types';
-import {
-    CREATE_ADMINISTRATOR,
-    CREATE_CHANNEL,
-    CREATE_ROLE,
-    GET_CHANNELS,
-    UPDATE_ADMINISTRATOR,
-    UPDATE_ROLE,
-} from './graphql/shared-definitions';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { CurrencyCode, DeletionResult, LanguageCode, Permission } from './graphql/generated-e2e-admin-types';
+import { CREATE_ADMINISTRATOR, CREATE_CHANNEL, CREATE_ROLE, GET_CHANNELS, UPDATE_ADMINISTRATOR, UPDATE_ROLE } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
 describe('Role resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());
-    let createdRole: Role.Fragment;
-    let defaultRoles: Role.Fragment[];
+    let createdRole: Codegen.RoleFragment;
+    let defaultRoles: Codegen.RoleFragment[];
 
     beforeAll(async () => {
         await server.init({
@@ -66,7 +38,9 @@ describe('Role resolver', () => {
     });
 
     it('roles', async () => {
-        const result = await adminClient.query<GetRoles.Query, GetRoles.Variables>(GET_ROLES);
+        const result = await adminClient.query<Codegen.GetRolesQuery, Codegen.GetRolesQueryVariables>(
+            GET_ROLES,
+        );
 
         defaultRoles = result.roles.items;
         expect(result.roles.items.length).toBe(2);
@@ -75,30 +49,33 @@ describe('Role resolver', () => {
 
     it('createRole with invalid permission', async () => {
         try {
-            await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
-                input: {
-                    code: 'test',
-                    description: 'test role',
-                    permissions: ['ReadCatalogx' as any],
+            await adminClient.query<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(
+                CREATE_ROLE,
+                {
+                    input: {
+                        code: 'test',
+                        description: 'test role',
+                        permissions: ['ReadCatalogx' as any],
+                    },
                 },
-            });
+            );
             fail('Should have thrown');
-        } catch (e) {
+        } catch (e: any) {
             expect(e.response.errors[0]?.extensions.code).toBe('BAD_USER_INPUT');
         }
     });
 
     it('createRole with no permissions includes Authenticated', async () => {
-        const { createRole } = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(
-            CREATE_ROLE,
-            {
-                input: {
-                    code: 'test',
-                    description: 'test role',
-                    permissions: [],
-                },
+        const { createRole } = await adminClient.query<
+            Codegen.CreateRoleMutation,
+            Codegen.CreateRoleMutationVariables
+        >(CREATE_ROLE, {
+            input: {
+                code: 'test',
+                description: 'test role',
+                permissions: [],
             },
-        );
+        });
 
         expect(omit(createRole, ['channels'])).toEqual({
             code: 'test',
@@ -109,16 +86,16 @@ describe('Role resolver', () => {
     });
 
     it('createRole deduplicates permissions', async () => {
-        const { createRole } = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(
-            CREATE_ROLE,
-            {
-                input: {
-                    code: 'test2',
-                    description: 'test role2',
-                    permissions: [Permission.ReadSettings, Permission.ReadSettings],
-                },
+        const { createRole } = await adminClient.query<
+            Codegen.CreateRoleMutation,
+            Codegen.CreateRoleMutationVariables
+        >(CREATE_ROLE, {
+            input: {
+                code: 'test2',
+                description: 'test role2',
+                permissions: [Permission.ReadSettings, Permission.ReadSettings],
             },
-        );
+        });
 
         expect(omit(createRole, ['channels'])).toEqual({
             code: 'test2',
@@ -129,7 +106,10 @@ describe('Role resolver', () => {
     });
 
     it('createRole with permissions', async () => {
-        const result = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+        const result = await adminClient.query<
+            Codegen.CreateRoleMutation,
+            Codegen.CreateRoleMutationVariables
+        >(CREATE_ROLE, {
             input: {
                 code: 'test',
                 description: 'test role',
@@ -154,15 +134,21 @@ describe('Role resolver', () => {
     });
 
     it('role', async () => {
-        const result = await adminClient.query<GetRole.Query, GetRole.Variables>(GET_ROLE, {
-            id: createdRole.id,
-        });
+        const result = await adminClient.query<Codegen.GetRoleQuery, Codegen.GetRoleQueryVariables>(
+            GET_ROLE,
+            {
+                id: createdRole.id,
+            },
+        );
         expect(result.role).toEqual(createdRole);
     });
 
     describe('updateRole', () => {
         it('updates role', async () => {
-            const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+            const result = await adminClient.query<
+                Codegen.UpdateRoleMutation,
+                Codegen.UpdateRoleMutationVariables
+            >(UPDATE_ROLE, {
                 input: {
                     id: createdRole.id,
                     code: 'test-modified',
@@ -189,7 +175,10 @@ describe('Role resolver', () => {
         });
 
         it('works with partial input', async () => {
-            const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+            const result = await adminClient.query<
+                Codegen.UpdateRoleMutation,
+                Codegen.UpdateRoleMutationVariables
+            >(UPDATE_ROLE, {
                 input: {
                     id: createdRole.id,
                     code: 'test-modified-again',
@@ -207,7 +196,10 @@ describe('Role resolver', () => {
         });
 
         it('deduplicates permissions', async () => {
-            const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+            const result = await adminClient.query<
+                Codegen.UpdateRoleMutation,
+                Codegen.UpdateRoleMutationVariables
+            >(UPDATE_ROLE, {
                 input: {
                     id: createdRole.id,
                     permissions: [
@@ -228,36 +220,45 @@ describe('Role resolver', () => {
         it(
             'does not allow setting non-assignable permissions - Owner',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-                    input: {
-                        id: createdRole.id,
-                        permissions: [Permission.Owner],
+                await adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
+                    UPDATE_ROLE,
+                    {
+                        input: {
+                            id: createdRole.id,
+                            permissions: [Permission.Owner],
+                        },
                     },
-                });
+                );
             }, 'The permission "Owner" may not be assigned'),
         );
 
         it(
             'does not allow setting non-assignable permissions - Public',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-                    input: {
-                        id: createdRole.id,
-                        permissions: [Permission.Public],
+                await adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
+                    UPDATE_ROLE,
+                    {
+                        input: {
+                            id: createdRole.id,
+                            permissions: [Permission.Public],
+                        },
                     },
-                });
+                );
             }, 'The permission "Public" may not be assigned'),
         );
 
         it(
             'does not allow setting SuperAdmin permission',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-                    input: {
-                        id: createdRole.id,
-                        permissions: [Permission.SuperAdmin],
+                await adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
+                    UPDATE_ROLE,
+                    {
+                        input: {
+                            id: createdRole.id,
+                            permissions: [Permission.SuperAdmin],
+                        },
                     },
-                });
+                );
             }, 'The permission "SuperAdmin" may not be assigned'),
         );
 
@@ -269,14 +270,17 @@ describe('Role resolver', () => {
                     fail(`Could not find SuperAdmin role`);
                     return;
                 }
-                return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-                    input: {
-                        id: superAdminRole.id,
-                        code: 'superadmin-modified',
-                        description: 'superadmin modified',
-                        permissions: [Permission.Authenticated],
+                return adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
+                    UPDATE_ROLE,
+                    {
+                        input: {
+                            id: superAdminRole.id,
+                            code: 'superadmin-modified',
+                            description: 'superadmin modified',
+                            permissions: [Permission.Authenticated],
+                        },
                     },
-                });
+                );
             }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be modified`),
         );
 
@@ -288,14 +292,17 @@ describe('Role resolver', () => {
                     fail(`Could not find Customer role`);
                     return;
                 }
-                return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-                    input: {
-                        id: customerRole.id,
-                        code: 'customer-modified',
-                        description: 'customer modified',
-                        permissions: [Permission.Authenticated, Permission.DeleteAdministrator],
+                return adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
+                    UPDATE_ROLE,
+                    {
+                        input: {
+                            id: customerRole.id,
+                            code: 'customer-modified',
+                            description: 'customer modified',
+                            permissions: [Permission.Authenticated, Permission.DeleteAdministrator],
+                        },
                     },
-                });
+                );
             }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
         );
     });
@@ -308,9 +315,12 @@ describe('Role resolver', () => {
                 fail(`Could not find Customer role`);
                 return;
             }
-            return adminClient.query<DeleteRole.Mutation, DeleteRole.Variables>(DELETE_ROLE, {
-                id: customerRole.id,
-            });
+            return adminClient.query<Codegen.DeleteRoleMutation, Codegen.DeleteRoleMutationVariables>(
+                DELETE_ROLE,
+                {
+                    id: customerRole.id,
+                },
+            );
         }, `The role '${CUSTOMER_ROLE_CODE}' cannot be deleted`),
     );
 
@@ -322,36 +332,42 @@ describe('Role resolver', () => {
                 fail(`Could not find Customer role`);
                 return;
             }
-            return adminClient.query<DeleteRole.Mutation, DeleteRole.Variables>(DELETE_ROLE, {
-                id: superAdminRole.id,
-            });
+            return adminClient.query<Codegen.DeleteRoleMutation, Codegen.DeleteRoleMutationVariables>(
+                DELETE_ROLE,
+                {
+                    id: superAdminRole.id,
+                },
+            );
         }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be deleted`),
     );
 
     it('deleteRole deletes a role', async () => {
-        const { deleteRole } = await adminClient.query<DeleteRole.Mutation, DeleteRole.Variables>(
-            DELETE_ROLE,
+        const { deleteRole } = await adminClient.query<
+            Codegen.DeleteRoleMutation,
+            Codegen.DeleteRoleMutationVariables
+        >(DELETE_ROLE, {
+            id: createdRole.id,
+        });
+
+        expect(deleteRole.result).toBe(DeletionResult.DELETED);
+
+        const { role } = await adminClient.query<Codegen.GetRoleQuery, Codegen.GetRoleQueryVariables>(
+            GET_ROLE,
             {
                 id: createdRole.id,
             },
         );
-
-        expect(deleteRole.result).toBe(DeletionResult.DELETED);
-
-        const { role } = await adminClient.query<GetRole.Query, GetRole.Variables>(GET_ROLE, {
-            id: createdRole.id,
-        });
         expect(role).toBeNull();
     });
 
     describe('multi-channel', () => {
-        let secondChannel: ChannelFragment;
-        let multiChannelRole: CreateRole.CreateRole;
+        let secondChannel: Codegen.ChannelFragment;
+        let multiChannelRole: Codegen.CreateRoleMutation['createRole'];
 
         beforeAll(async () => {
             const { createChannel } = await adminClient.query<
-                CreateChannel.Mutation,
-                CreateChannel.Variables
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
             >(CREATE_CHANNEL, {
                 input: {
                     code: 'second-channel',
@@ -368,7 +384,10 @@ describe('Role resolver', () => {
         });
 
         it('createRole with specified channel', async () => {
-            const result = await adminClient.query<CreateRole.Mutation, CreateRole.Variables>(CREATE_ROLE, {
+            const result = await adminClient.query<
+                Codegen.CreateRoleMutation,
+                Codegen.CreateRoleMutationVariables
+            >(CREATE_ROLE, {
                 input: {
                     code: 'multi-test',
                     description: 'multi channel test role',
@@ -394,15 +413,15 @@ describe('Role resolver', () => {
         });
 
         it('updateRole with specified channel', async () => {
-            const { updateRole } = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(
-                UPDATE_ROLE,
-                {
-                    input: {
-                        id: multiChannelRole.id,
-                        channelIds: ['T_1', 'T_2'],
-                    },
+            const { updateRole } = await adminClient.query<
+                Codegen.UpdateRoleMutation,
+                Codegen.UpdateRoleMutationVariables
+            >(UPDATE_ROLE, {
+                input: {
+                    id: multiChannelRole.id,
+                    channelIds: ['T_1', 'T_2'],
                 },
-            );
+            });
 
             expect(updateRole.channels.sort(sortById)).toEqual([
                 {
@@ -421,20 +440,20 @@ describe('Role resolver', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1874
     describe('role escalation', () => {
-        let defaultChannel: GetChannelsQuery['channels'][number];
-        let secondChannel: GetChannelsQuery['channels'][number];
-        let limitedAdmin: CreateAdministratorMutation['createAdministrator'];
-        let orderReaderRole: CreateRoleMutation['createRole'];
-        let adminCreatorRole: CreateRoleMutation['createRole'];
-        let adminCreatorAdministrator: CreateAdministratorMutation['createAdministrator'];
+        let defaultChannel: Codegen.GetChannelsQuery['channels'][number];
+        let secondChannel: Codegen.GetChannelsQuery['channels'][number];
+        let limitedAdmin: Codegen.CreateAdministratorMutation['createAdministrator'];
+        let orderReaderRole: Codegen.CreateRoleMutation['createRole'];
+        let adminCreatorRole: Codegen.CreateRoleMutation['createRole'];
+        let adminCreatorAdministrator: Codegen.CreateAdministratorMutation['createAdministrator'];
 
         beforeAll(async () => {
-            const { channels } = await adminClient.query<GetChannelsQuery>(GET_CHANNELS);
+            const { channels } = await adminClient.query<Codegen.GetChannelsQuery>(GET_CHANNELS);
             defaultChannel = channels.find(c => c.token === E2E_DEFAULT_CHANNEL_TOKEN)!;
             secondChannel = channels.find(c => c.token !== E2E_DEFAULT_CHANNEL_TOKEN)!;
             await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             await adminClient.asSuperAdmin();
-            const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
+            const { createRole } = await adminClient.query<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(
                 CREATE_ROLE,
                 {
                     input: {
@@ -452,8 +471,8 @@ describe('Role resolver', () => {
             );
 
             const { createAdministrator } = await adminClient.query<
-                CreateAdministratorMutation,
-                CreateAdministratorMutationVariables
+                Codegen.CreateAdministratorMutation,
+                Codegen.CreateAdministratorMutationVariables
             >(CREATE_ADMINISTRATOR, {
                 input: {
                     firstName: 'channel2',
@@ -466,8 +485,8 @@ describe('Role resolver', () => {
             limitedAdmin = createAdministrator;
 
             const { createRole: createRole2 } = await adminClient.query<
-                CreateRoleMutation,
-                CreateRoleMutationVariables
+                Codegen.CreateRoleMutation,
+                Codegen.CreateRoleMutationVariables
             >(CREATE_ROLE, {
                 input: {
                     code: 'second-channel-order-manager',
@@ -486,7 +505,7 @@ describe('Role resolver', () => {
         it(
             'limited admin cannot create Role with SuperAdmin permission',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(CREATE_ROLE, {
+                await adminClient.query<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(CREATE_ROLE, {
                     input: {
                         code: 'evil-superadmin',
                         description: '',
@@ -501,7 +520,7 @@ describe('Role resolver', () => {
             'limited admin cannot create Administrator with SuperAdmin role',
             assertThrowsWithMessage(async () => {
                 const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE)!;
-                await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
+                await adminClient.query<Codegen.CreateAdministratorMutation, Codegen.CreateAdministratorMutationVariables>(
                     CREATE_ADMINISTRATOR,
                     {
                         input: {
@@ -519,7 +538,7 @@ describe('Role resolver', () => {
         it(
             'limited admin cannot create Role with permissions it itself does not have',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(CREATE_ROLE, {
+                await adminClient.query<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(CREATE_ROLE, {
                     input: {
                         code: 'evil-order-manager',
                         description: '',
@@ -533,7 +552,7 @@ describe('Role resolver', () => {
         it(
             'limited admin cannot create Role on channel it does not have permissions on',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(CREATE_ROLE, {
+                await adminClient.query<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(CREATE_ROLE, {
                     input: {
                         code: 'evil-order-manager',
                         description: '',
@@ -547,7 +566,7 @@ describe('Role resolver', () => {
         it(
             'limited admin cannot create Administrator with a Role with greater permissions than they themselves have',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<CreateAdministratorMutation, CreateAdministratorMutationVariables>(
+                await adminClient.query<Codegen.CreateAdministratorMutation, Codegen.CreateAdministratorMutationVariables>(
                     CREATE_ADMINISTRATOR,
                     {
                         input: {
@@ -563,7 +582,7 @@ describe('Role resolver', () => {
         );
 
         it('limited admin can create Role with permissions it itself has', async () => {
-            const { createRole } = await adminClient.query<CreateRoleMutation, CreateRoleMutationVariables>(
+            const { createRole } = await adminClient.query<Codegen.CreateRoleMutation, Codegen.CreateRoleMutationVariables>(
                 CREATE_ROLE,
                 {
                     input: {
@@ -581,8 +600,8 @@ describe('Role resolver', () => {
 
         it('limited admin can create Administrator with permissions it itself has', async () => {
             const { createAdministrator } = await adminClient.query<
-                CreateAdministratorMutation,
-                CreateAdministratorMutationVariables
+                Codegen.CreateAdministratorMutation,
+                Codegen.CreateAdministratorMutationVariables
             >(CREATE_ADMINISTRATOR, {
                 input: {
                     firstName: 'Admin',
@@ -600,7 +619,7 @@ describe('Role resolver', () => {
         it(
             'limited admin cannot update Role with permissions it itself lacks',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateRoleMutation, UpdateRoleMutationVariables>(UPDATE_ROLE, {
+                await adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(UPDATE_ROLE, {
                     input: {
                         id: adminCreatorRole.id,
                         permissions: [Permission.ReadOrder],
@@ -612,7 +631,7 @@ describe('Role resolver', () => {
         it(
             'limited admin cannot update Administrator with Role containing permissions it itself lacks',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateAdministratorMutation, UpdateAdministratorMutationVariables>(
+                await adminClient.query<Codegen.UpdateAdministratorMutation, Codegen.UpdateAdministratorMutationVariables>(
                     UPDATE_ADMINISTRATOR,
                     {
                         input: {

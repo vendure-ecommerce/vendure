@@ -33,7 +33,7 @@ export class HealthCheckService {
 
     private readonly pollingDelayMs = 60 * 1000;
     private readonly healthCheckEndpoint: string;
-    private readonly _refresh = new Subject();
+    private readonly _refresh = new Subject<void>();
 
     constructor(private httpClient: HttpClient) {
         this.healthCheckEndpoint = getServerLocation() + '/health';

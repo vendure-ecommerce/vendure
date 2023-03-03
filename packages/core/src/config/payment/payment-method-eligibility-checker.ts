@@ -7,7 +7,7 @@ import {
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { PaymentMethod, Order } from '../../entity';
+import { Order, PaymentMethod } from '../../entity';
 
 /**
  * @description
@@ -45,7 +45,7 @@ export interface PaymentMethodEligibilityCheckerConfig<T extends ConfigArgs>
  * @docsWeight 0
  */
 export class PaymentMethodEligibilityChecker<
-    T extends ConfigArgs = ConfigArgs
+    T extends ConfigArgs = ConfigArgs,
 > extends ConfigurableOperationDef<T> {
     private readonly checkFn: CheckPaymentMethodEligibilityCheckerFn<T>;
 
@@ -60,7 +60,12 @@ export class PaymentMethodEligibilityChecker<
      *
      * @internal
      */
-    async check(ctx: RequestContext, order: Order, args: ConfigArg[], method: PaymentMethod): Promise<boolean | string> {
+    async check(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        method: PaymentMethod,
+    ): Promise<boolean | string> {
         return this.checkFn(ctx, order, this.argsArrayToHash(args), method);
     }
 }
@@ -79,5 +84,5 @@ export type CheckPaymentMethodEligibilityCheckerFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    method: PaymentMethod
+    method: PaymentMethod,
 ) => boolean | string | Promise<boolean | string>;

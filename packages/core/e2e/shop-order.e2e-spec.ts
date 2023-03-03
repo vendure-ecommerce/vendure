@@ -21,51 +21,13 @@ import {
 } from './fixtures/test-payment-methods';
 import { countryCodeShippingEligibilityChecker } from './fixtures/test-shipping-eligibility-checkers';
 import {
-    AttemptLogin,
-    CanceledOrderFragment,
-    CancelOrderMutation,
-    CancelOrderMutationVariables,
     CreateAddressInput,
-    CreateShippingMethod,
     CreateShippingMethodInput,
-    DeleteProduct,
-    DeleteProductVariant,
-    DeleteShippingMethod,
-    GetCountryList,
-    GetCustomer,
-    GetCustomerList,
-    GetShippingMethodList,
     LanguageCode,
-    UpdateCountry,
-    UpdateProduct,
-    UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import {
-    ActiveOrderCustomerFragment,
-    AddItemToOrder,
-    AddPaymentToOrder,
-    AdjustItemQuantity,
-    ErrorCode,
-    GetActiveOrder,
-    GetActiveOrderPayments,
-    GetActiveOrderWithPayments,
-    GetAvailableCountries,
-    GetCustomerAddresses,
-    GetCustomerOrders,
-    GetNextOrderStates,
-    GetOrderByCode,
-    GetShippingMethods,
-    RemoveAllOrderLines,
-    RemoveItemFromOrder,
-    SetBillingAddress,
-    SetCustomerForOrder,
-    SetShippingAddress,
-    SetShippingMethod,
-    TestOrderFragmentFragment,
-    TestOrderWithPaymentsFragment,
-    TransitionToState,
-    UpdatedOrderFragment,
-} from './graphql/generated-e2e-shop-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
+import { ErrorCode } from './graphql/generated-e2e-shop-types';
+import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
     CANCEL_ORDER,
@@ -141,11 +103,11 @@ describe('Shop orders', () => {
     );
 
     type OrderSuccessResult =
-        | UpdatedOrderFragment
-        | TestOrderFragmentFragment
-        | TestOrderWithPaymentsFragment
-        | CanceledOrderFragment
-        | ActiveOrderCustomerFragment;
+        | CodegenShop.UpdatedOrderFragment
+        | CodegenShop.TestOrderFragmentFragment
+        | CodegenShop.TestOrderWithPaymentsFragment
+        | CodegenShop.CanceledOrderFragment
+        | CodegenShop.ActiveOrderCustomerFragment;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
@@ -181,16 +143,21 @@ describe('Shop orders', () => {
 
     it('availableCountries returns enabled countries', async () => {
         // disable Austria
-        const { countries } = await adminClient.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
+        const { countries } = await adminClient.query<Codegen.GetCountryListQuery>(GET_COUNTRY_LIST, {});
         const AT = countries.items.find(c => c.code === 'AT')!;
-        await adminClient.query<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
-            input: {
-                id: AT.id,
-                enabled: false,
+        await adminClient.query<Codegen.UpdateCountryMutation, Codegen.UpdateCountryMutationVariables>(
+            UPDATE_COUNTRY,
+            {
+                input: {
+                    id: AT.id,
+                    enabled: false,
+                },
             },
-        });
+        );
 
-        const result = await shopClient.query<GetAvailableCountries.Query>(GET_AVAILABLE_COUNTRIES);
+        const result = await shopClient.query<CodegenShop.GetAvailableCountriesQuery>(
+            GET_AVAILABLE_COUNTRIES,
+        );
         expect(result.availableCountries.length).toBe(countries.items.length - 1);
         expect(result.availableCountries.find(c => c.id === AT.id)).toBeUndefined();
     });
@@ -205,7 +172,7 @@ describe('Shop orders', () => {
         });
 
         it('activeOrder returns null before any items have been added', async () => {
-            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result.activeOrder).toBeNull();
         });
 
@@ -215,8 +182,8 @@ describe('Shop orders', () => {
 
         it('addItemToOrder creates a new Order with an item', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
@@ -235,7 +202,10 @@ describe('Shop orders', () => {
             'addItemToOrder errors with an invalid productVariantId',
             assertThrowsWithMessage(
                 () =>
-                    shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                    shopClient.query<
+                        CodegenShop.AddItemToOrderMutation,
+                        CodegenShop.AddItemToOrderMutationVariables
+                    >(ADD_ITEM_TO_ORDER, {
                         productVariantId: 'T_999',
                         quantity: 1,
                     }),
@@ -245,8 +215,8 @@ describe('Shop orders', () => {
 
         it('addItemToOrder errors with a negative quantity', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_999',
                 quantity: -3,
@@ -259,8 +229,8 @@ describe('Shop orders', () => {
 
         it('addItemToOrder with an existing productVariantId adds quantity to the existing OrderLine', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 2,
@@ -291,21 +261,24 @@ describe('Shop orders', () => {
             `;
             it('addItemToOrder with private customFields errors', async () => {
                 try {
-                    await shopClient.query<AddItemToOrder.Mutation>(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS, {
-                        productVariantId: 'T_2',
-                        quantity: 1,
-                        customFields: {
-                            privateField: 'oh no!',
+                    await shopClient.query<CodegenShop.AddItemToOrderMutation>(
+                        ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                        {
+                            productVariantId: 'T_2',
+                            quantity: 1,
+                            customFields: {
+                                privateField: 'oh no!',
+                            },
                         },
-                    });
+                    );
                     fail('Should have thrown');
-                } catch (e) {
+                } catch (e: any) {
                     expect(e.response.errors[0].extensions.code).toBe('BAD_USER_INPUT');
                 }
             });
 
             it('addItemToOrder with equal customFields adds quantity to the existing OrderLine', async () => {
-                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder: add1 } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_2',
@@ -319,7 +292,7 @@ describe('Shop orders', () => {
                 expect(add1!.lines.length).toBe(2);
                 expect(add1!.lines[1].quantity).toBe(1);
 
-                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_2',
@@ -333,16 +306,16 @@ describe('Shop orders', () => {
                 expect(add2!.lines.length).toBe(2);
                 expect(add2!.lines[1].quantity).toBe(2);
 
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: add2!.lines[1].id,
-                    },
-                );
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: add2!.lines[1].id,
+                });
             });
 
             it('addItemToOrder with different customFields adds quantity to a new OrderLine', async () => {
-                const { addItemToOrder: add1 } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder: add1 } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -356,7 +329,7 @@ describe('Shop orders', () => {
                 expect(add1!.lines.length).toBe(2);
                 expect(add1!.lines[1].quantity).toBe(1);
 
-                const { addItemToOrder: add2 } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -371,18 +344,18 @@ describe('Shop orders', () => {
                 expect(add2!.lines[1].quantity).toBe(1);
                 expect(add2!.lines[2].quantity).toBe(1);
 
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: add2!.lines[1].id,
-                    },
-                );
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: add2!.lines[2].id,
-                    },
-                );
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: add2!.lines[1].id,
+                });
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: add2!.lines[2].id,
+                });
             });
 
             // https://github.com/vendure-ecommerce/vendure/issues/1670
@@ -440,15 +413,15 @@ describe('Shop orders', () => {
                 );
 
                 // clean up
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: add2!.lines[1].id,
-                    },
-                );
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: add2!.lines[1].id,
+                });
                 const { removeOrderLine } = await shopClient.query<
-                    RemoveItemFromOrder.Mutation,
-                    RemoveItemFromOrder.Variables
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: add2!.lines[2].id,
                 });
@@ -457,7 +430,7 @@ describe('Shop orders', () => {
             });
 
             it('addItemToOrder with relation customField', async () => {
-                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -478,7 +451,7 @@ describe('Shop orders', () => {
             });
 
             it('addItemToOrder with equal relation customField adds to quantity', async () => {
-                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -499,7 +472,7 @@ describe('Shop orders', () => {
             });
 
             it('addItemToOrder with different relation customField adds new line', async () => {
-                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -531,15 +504,15 @@ describe('Shop orders', () => {
 
                 expect(adjustOrderLine.lines[2].customFields.lineImage).toEqual({ id: 'T_1' });
 
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: activeOrder!.lines[2].id,
-                    },
-                );
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: activeOrder!.lines[2].id,
+                });
                 const { removeOrderLine } = await shopClient.query<
-                    RemoveItemFromOrder.Mutation,
-                    RemoveItemFromOrder.Variables
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: activeOrder!.lines[1].id,
                 });
@@ -548,7 +521,7 @@ describe('Shop orders', () => {
             });
 
             it('addItemToOrder with list relation customField', async () => {
-                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -570,7 +543,7 @@ describe('Shop orders', () => {
             });
 
             it('addItemToOrder with equal list relation customField adds to quantity', async () => {
-                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -593,7 +566,7 @@ describe('Shop orders', () => {
             });
 
             it('addItemToOrder with different list relation customField adds new line', async () => {
-                const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation>(
+                const { addItemToOrder } = await shopClient.query<CodegenShop.AddItemToOrderMutation>(
                     ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
                     {
                         productVariantId: 'T_3',
@@ -612,15 +585,15 @@ describe('Shop orders', () => {
 
                 expect(activeOrder.lines[2].customFields.lineImages).toEqual([{ id: 'T_1' }]);
 
-                await shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                    REMOVE_ITEM_FROM_ORDER,
-                    {
-                        orderLineId: activeOrder!.lines[2].id,
-                    },
-                );
+                await shopClient.query<
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
+                >(REMOVE_ITEM_FROM_ORDER, {
+                    orderLineId: activeOrder!.lines[2].id,
+                });
                 const { removeOrderLine } = await shopClient.query<
-                    RemoveItemFromOrder.Mutation,
-                    RemoveItemFromOrder.Variables
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: activeOrder!.lines[1].id,
                 });
@@ -631,8 +604,8 @@ describe('Shop orders', () => {
 
         it('addItemToOrder errors when going beyond orderItemsLimit', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 200,
@@ -647,8 +620,8 @@ describe('Shop orders', () => {
 
         it('adjustOrderLine adjusts the quantity', async () => {
             const { adjustOrderLine } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: firstOrderLineId,
                 quantity: 50,
@@ -660,8 +633,8 @@ describe('Shop orders', () => {
 
         it('adjustOrderLine with quantity 0 removes the line', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_3',
                 quantity: 3,
@@ -671,8 +644,8 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { adjustOrderLine } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: addItemToOrder?.lines[1].id!,
                 quantity: 0,
@@ -684,8 +657,8 @@ describe('Shop orders', () => {
 
         it('adjustOrderLine with quantity > stockOnHand only allows user to have stock on hand', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_3',
                 quantity: 111,
@@ -698,8 +671,8 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.order.lines[1].quantity).toBe(100);
 
             const { adjustOrderLine } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: addItemToOrder!.order.lines[1].id,
                 quantity: 101,
@@ -710,12 +683,12 @@ describe('Shop orders', () => {
                 'Only 100 items were added to the order due to insufficient stock',
             );
 
-            const order = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const order = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(order.activeOrder?.lines[1].quantity).toBe(100);
 
             const { adjustOrderLine: adjustLine2 } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: addItemToOrder!.order.lines[1].id,
                 quantity: 0,
@@ -727,8 +700,8 @@ describe('Shop orders', () => {
 
         it('adjustOrderLine errors when going beyond orderItemsLimit', async () => {
             const { adjustOrderLine } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: firstOrderLineId,
                 quantity: 200,
@@ -742,8 +715,8 @@ describe('Shop orders', () => {
 
         it('adjustOrderLine errors with a negative quantity', async () => {
             const { adjustOrderLine } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: firstOrderLineId,
                 quantity: -3,
@@ -757,21 +730,21 @@ describe('Shop orders', () => {
             'adjustOrderLine errors with an invalid orderLineId',
             assertThrowsWithMessage(
                 () =>
-                    shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
-                        ADJUST_ITEM_QUANTITY,
-                        {
-                            orderLineId: 'T_999',
-                            quantity: 5,
-                        },
-                    ),
+                    shopClient.query<
+                        CodegenShop.AdjustItemQuantityMutation,
+                        CodegenShop.AdjustItemQuantityMutationVariables
+                    >(ADJUST_ITEM_QUANTITY, {
+                        orderLineId: 'T_999',
+                        quantity: 5,
+                    }),
                 `This order does not contain an OrderLine with the id 999`,
             ),
         );
 
         it('removeItemFromOrder removes the correct item', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_3',
                 quantity: 3,
@@ -781,8 +754,8 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { removeOrderLine } = await shopClient.query<
-                RemoveItemFromOrder.Mutation,
-                RemoveItemFromOrder.Variables
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
             >(REMOVE_ITEM_FROM_ORDER, {
                 orderLineId: firstOrderLineId,
             });
@@ -795,26 +768,26 @@ describe('Shop orders', () => {
             'removeItemFromOrder errors with an invalid orderItemId',
             assertThrowsWithMessage(
                 () =>
-                    shopClient.query<RemoveItemFromOrder.Mutation, RemoveItemFromOrder.Variables>(
-                        REMOVE_ITEM_FROM_ORDER,
-                        {
-                            orderLineId: 'T_999',
-                        },
-                    ),
+                    shopClient.query<
+                        CodegenShop.RemoveItemFromOrderMutation,
+                        CodegenShop.RemoveItemFromOrderMutationVariables
+                    >(REMOVE_ITEM_FROM_ORDER, {
+                        orderLineId: 'T_999',
+                    }),
                 `This order does not contain an OrderLine with the id 999`,
             ),
         );
 
         it('nextOrderStates returns next valid states', async () => {
-            const result = await shopClient.query<GetNextOrderStates.Query>(GET_NEXT_STATES);
+            const result = await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(GET_NEXT_STATES);
 
             expect(result.nextOrderStates).toEqual(['ArrangingPayment', 'Cancelled']);
         });
 
         it('transitionOrderToState returns error result for invalid state', async () => {
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, { state: 'Completed' });
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
@@ -826,8 +799,8 @@ describe('Shop orders', () => {
 
         it('attempting to transition to ArrangingPayment returns error result when Order has no Customer', async () => {
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
@@ -838,11 +811,11 @@ describe('Shop orders', () => {
         });
 
         it('setCustomerForOrder returns error result on email address conflict', async () => {
-            const { customers } = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+            const { customers } = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
 
             const { setCustomerForOrder } = await shopClient.query<
-                SetCustomerForOrder.Mutation,
-                SetCustomerForOrder.Variables
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
             >(SET_CUSTOMER, {
                 input: {
                     emailAddress: customers.items[0].emailAddress,
@@ -858,8 +831,8 @@ describe('Shop orders', () => {
 
         it('setCustomerForOrder creates a new Customer and associates it with the Order', async () => {
             const { setCustomerForOrder } = await shopClient.query<
-                SetCustomerForOrder.Mutation,
-                SetCustomerForOrder.Variables
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
             >(SET_CUSTOMER, {
                 input: {
                     emailAddress: 'test@test.com',
@@ -878,8 +851,8 @@ describe('Shop orders', () => {
 
         it('setCustomerForOrder updates the existing customer if Customer already set', async () => {
             const { setCustomerForOrder } = await shopClient.query<
-                SetCustomerForOrder.Mutation,
-                SetCustomerForOrder.Variables
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
             >(SET_CUSTOMER, {
                 input: {
                     emailAddress: 'test@test.com',
@@ -909,8 +882,8 @@ describe('Shop orders', () => {
                 phoneNumber: '4444444',
             };
             const { setOrderShippingAddress } = await shopClient.query<
-                SetShippingAddress.Mutation,
-                SetShippingAddress.Variables
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
             >(SET_SHIPPING_ADDRESS, {
                 input: address,
             });
@@ -941,8 +914,8 @@ describe('Shop orders', () => {
                 phoneNumber: '4444444',
             };
             const { setOrderBillingAddress } = await shopClient.query<
-                SetBillingAddress.Mutation,
-                SetBillingAddress.Variables
+                Codegen.SetBillingAddressMutation,
+                Codegen.SetBillingAddressMutationVariables
             >(SET_BILLING_ADDRESS, {
                 input: address,
             });
@@ -961,19 +934,19 @@ describe('Shop orders', () => {
         });
 
         it('customer default Addresses are not updated before payment', async () => {
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
-            const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
-                GET_CUSTOMER,
-                { id: activeOrder!.customer!.id },
-            );
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            const { customer } = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, { id: activeOrder!.customer!.id });
 
             expect(customer!.addresses).toEqual([]);
         });
 
         it('attempting to transition to ArrangingPayment returns error result when Order has no ShippingMethod', async () => {
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
             orderResultGuard.assertErrorResult(transitionOrderToState);
 
@@ -984,21 +957,21 @@ describe('Shop orders', () => {
         });
 
         it('can transition to ArrangingPayment once Customer and ShippingMethod has been set', async () => {
-            const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
+            const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
                 GET_ELIGIBLE_SHIPPING_METHODS,
             );
 
             const { setOrderShippingMethod } = await shopClient.query<
-                SetShippingMethod.Mutation,
-                SetShippingMethod.Variables
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
             >(SET_SHIPPING_METHOD, {
                 id: eligibleShippingMethods[0].id,
             });
             orderResultGuard.assertSuccess(setOrderShippingMethod);
 
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
             orderResultGuard.assertSuccess(transitionOrderToState);
 
@@ -1010,8 +983,8 @@ describe('Shop orders', () => {
 
         it('adds a successful payment and transitions Order state', async () => {
             const { addPaymentToOrder } = await shopClient.query<
-                AddPaymentToOrder.Mutation,
-                AddPaymentToOrder.Variables
+                CodegenShop.AddPaymentToOrderMutation,
+                CodegenShop.AddPaymentToOrderMutationVariables
             >(ADD_PAYMENT, {
                 input: {
                     method: testSuccessfulPaymentMethod.code,
@@ -1029,13 +1002,16 @@ describe('Shop orders', () => {
         });
 
         it('activeOrder is null after payment', async () => {
-            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(result.activeOrder).toBeNull();
         });
 
         it('customer default Addresses are updated after payment', async () => {
-            const result = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(GET_CUSTOMER, {
+            const result = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
                 id: createdCustomerId,
             });
 
@@ -1057,35 +1033,35 @@ describe('Shop orders', () => {
 
     describe('ordering as authenticated user', () => {
         let firstOrderLineId: string;
-        let activeOrder: UpdatedOrderFragment;
+        let activeOrder: CodegenShop.UpdatedOrderFragment;
         let authenticatedUserEmailAddress: string;
-        let customers: GetCustomerList.Items[];
+        let customers: Codegen.GetCustomerListQuery['customers']['items'];
         const password = 'test';
 
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
-            const result = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
-                GET_CUSTOMER_LIST,
-                {
-                    options: {
-                        take: 2,
-                    },
+            const result = await adminClient.query<
+                Codegen.GetCustomerListQuery,
+                Codegen.GetCustomerListQueryVariables
+            >(GET_CUSTOMER_LIST, {
+                options: {
+                    take: 2,
                 },
-            );
+            });
             customers = result.customers.items;
             authenticatedUserEmailAddress = customers[0].emailAddress;
             await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
         });
 
         it('activeOrder returns null before any items have been added', async () => {
-            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result.activeOrder).toBeNull();
         });
 
         it('addItemToOrder creates a new Order with an item', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
@@ -1099,13 +1075,13 @@ describe('Shop orders', () => {
         });
 
         it('activeOrder returns order after item has been added', async () => {
-            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result.activeOrder!.id).toBe(activeOrder.id);
             expect(result.activeOrder!.state).toBe('AddingItems');
         });
 
         it('activeOrder resolves customer user', async () => {
-            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result.activeOrder!.customer!.user).toEqual({
                 id: 'T_2',
                 identifier: 'hayden.zieme12@hotmail.com',
@@ -1114,8 +1090,8 @@ describe('Shop orders', () => {
 
         it('addItemToOrder with an existing productVariantId adds quantity to the existing OrderLine', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 2,
@@ -1127,8 +1103,8 @@ describe('Shop orders', () => {
 
         it('adjustOrderLine adjusts the quantity', async () => {
             const { adjustOrderLine } = await shopClient.query<
-                AdjustItemQuantity.Mutation,
-                AdjustItemQuantity.Variables
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
             >(ADJUST_ITEM_QUANTITY, {
                 orderLineId: firstOrderLineId,
                 quantity: 50,
@@ -1140,8 +1116,8 @@ describe('Shop orders', () => {
 
         it('removeItemFromOrder removes the correct item', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_3',
                 quantity: 3,
@@ -1151,8 +1127,8 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { removeOrderLine } = await shopClient.query<
-                RemoveItemFromOrder.Mutation,
-                RemoveItemFromOrder.Variables
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
             >(REMOVE_ITEM_FROM_ORDER, {
                 orderLineId: firstOrderLineId,
             });
@@ -1162,25 +1138,25 @@ describe('Shop orders', () => {
         });
 
         it('nextOrderStates returns next valid states', async () => {
-            const result = await shopClient.query<GetNextOrderStates.Query>(GET_NEXT_STATES);
+            const result = await shopClient.query<CodegenShop.GetNextOrderStatesQuery>(GET_NEXT_STATES);
 
             expect(result.nextOrderStates).toEqual(['ArrangingPayment', 'Cancelled']);
         });
 
         it('logging out and back in again resumes the last active order', async () => {
             await shopClient.asAnonymousUser();
-            const result1 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result1 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result1.activeOrder).toBeNull();
 
             await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
-            const result2 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result2 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result2.activeOrder!.id).toBe(activeOrder.id);
         });
 
         it('cannot setCustomerForOrder when already logged in', async () => {
             const { setCustomerForOrder } = await shopClient.query<
-                SetCustomerForOrder.Mutation,
-                SetCustomerForOrder.Variables
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
             >(SET_CUSTOMER, {
                 input: {
                     emailAddress: 'newperson@email.com',
@@ -1197,7 +1173,7 @@ describe('Shop orders', () => {
         });
 
         describe('shipping', () => {
-            let shippingMethods: GetShippingMethods.EligibleShippingMethods[];
+            let shippingMethods: CodegenShop.GetShippingMethodsQuery['eligibleShippingMethods'];
 
             it(
                 'setOrderShippingAddress throws with invalid countryCode',
@@ -1207,12 +1183,12 @@ describe('Shop orders', () => {
                         countryCode: 'INVALID',
                     };
 
-                    return shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                        SET_SHIPPING_ADDRESS,
-                        {
-                            input: address,
-                        },
-                    );
+                    return shopClient.query<
+                        CodegenShop.SetShippingAddressMutation,
+                        CodegenShop.SetShippingAddressMutationVariables
+                    >(SET_SHIPPING_ADDRESS, {
+                        input: address,
+                    });
                 }, `The countryCode "INVALID" was not recognized`),
             );
 
@@ -1229,8 +1205,8 @@ describe('Shop orders', () => {
                     phoneNumber: '4444444',
                 };
                 const { setOrderShippingAddress } = await shopClient.query<
-                    SetShippingAddress.Mutation,
-                    SetShippingAddress.Variables
+                    CodegenShop.SetShippingAddressMutation,
+                    CodegenShop.SetShippingAddressMutationVariables
                 >(SET_SHIPPING_ADDRESS, {
                     input: address,
                 });
@@ -1249,7 +1225,7 @@ describe('Shop orders', () => {
             });
 
             it('eligibleShippingMethods lists shipping methods', async () => {
-                const result = await shopClient.query<GetShippingMethods.Query>(
+                const result = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
                     GET_ELIGIBLE_SHIPPING_METHODS,
                 );
 
@@ -1274,7 +1250,7 @@ describe('Shop orders', () => {
             });
 
             it('shipping is initially unset', async () => {
-                const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
                 expect(result.activeOrder!.shipping).toEqual(0);
                 expect(result.activeOrder!.shippingLines).toEqual([]);
@@ -1282,13 +1258,15 @@ describe('Shop orders', () => {
 
             it('setOrderShippingMethod sets the shipping method', async () => {
                 const result = await shopClient.query<
-                    SetShippingMethod.Mutation,
-                    SetShippingMethod.Variables
+                    CodegenShop.SetShippingMethodMutation,
+                    CodegenShop.SetShippingMethodMutationVariables
                 >(SET_SHIPPING_METHOD, {
                     id: shippingMethods[1].id,
                 });
 
-                const activeOrderResult = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                const activeOrderResult = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                    GET_ACTIVE_ORDER,
+                );
 
                 const order = activeOrderResult.activeOrder!;
 
@@ -1300,11 +1278,13 @@ describe('Shop orders', () => {
             });
 
             it('shipping method is preserved after adjustOrderLine', async () => {
-                const activeOrderResult = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+                const activeOrderResult = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
+                    GET_ACTIVE_ORDER,
+                );
                 activeOrder = activeOrderResult.activeOrder!;
                 const { adjustOrderLine } = await shopClient.query<
-                    AdjustItemQuantity.Mutation,
-                    AdjustItemQuantity.Variables
+                    CodegenShop.AdjustItemQuantityMutation,
+                    CodegenShop.AdjustItemQuantityMutationVariables
                 >(ADJUST_ITEM_QUANTITY, {
                     orderLineId: activeOrder.lines[0].id,
                     quantity: 10,
@@ -1321,8 +1301,8 @@ describe('Shop orders', () => {
         describe('payment', () => {
             it('attempting add a Payment returns error result when in AddingItems state', async () => {
                 const { addPaymentToOrder } = await shopClient.query<
-                    AddPaymentToOrder.Mutation,
-                    AddPaymentToOrder.Variables
+                    CodegenShop.AddPaymentToOrderMutation,
+                    CodegenShop.AddPaymentToOrderMutationVariables
                 >(ADD_PAYMENT, {
                     input: {
                         method: testSuccessfulPaymentMethod.code,
@@ -1339,8 +1319,8 @@ describe('Shop orders', () => {
 
             it('transitions to the ArrangingPayment state', async () => {
                 const { transitionOrderToState } = await shopClient.query<
-                    TransitionToState.Mutation,
-                    TransitionToState.Variables
+                    CodegenShop.TransitionToStateMutation,
+                    CodegenShop.TransitionToStateMutationVariables
                 >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
 
                 orderResultGuard.assertSuccess(transitionOrderToState);
@@ -1352,8 +1332,8 @@ describe('Shop orders', () => {
 
             it('attempting to add an item returns error result when in ArrangingPayment state', async () => {
                 const { addItemToOrder } = await shopClient.query<
-                    AddItemToOrder.Mutation,
-                    AddItemToOrder.Variables
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
                 >(ADD_ITEM_TO_ORDER, {
                     productVariantId: 'T_4',
                     quantity: 1,
@@ -1368,8 +1348,8 @@ describe('Shop orders', () => {
 
             it('attempting to modify item quantity returns error result when in ArrangingPayment state', async () => {
                 const { adjustOrderLine } = await shopClient.query<
-                    AdjustItemQuantity.Mutation,
-                    AdjustItemQuantity.Variables
+                    CodegenShop.AdjustItemQuantityMutation,
+                    CodegenShop.AdjustItemQuantityMutationVariables
                 >(ADJUST_ITEM_QUANTITY, {
                     orderLineId: activeOrder.lines[0].id,
                     quantity: 12,
@@ -1383,8 +1363,8 @@ describe('Shop orders', () => {
 
             it('attempting to remove an item returns error result when in ArrangingPayment state', async () => {
                 const { removeOrderLine } = await shopClient.query<
-                    RemoveItemFromOrder.Mutation,
-                    RemoveItemFromOrder.Variables
+                    CodegenShop.RemoveItemFromOrderMutation,
+                    CodegenShop.RemoveItemFromOrderMutationVariables
                 >(REMOVE_ITEM_FROM_ORDER, {
                     orderLineId: activeOrder.lines[0].id,
                 });
@@ -1396,9 +1376,8 @@ describe('Shop orders', () => {
             });
 
             it('attempting to remove all items returns error result when in ArrangingPayment state', async () => {
-                const { removeAllOrderLines } = await shopClient.query<RemoveAllOrderLines.Mutation>(
-                    REMOVE_ALL_ORDER_LINES,
-                );
+                const { removeAllOrderLines } =
+                    await shopClient.query<CodegenShop.RemoveAllOrderLinesMutation>(REMOVE_ALL_ORDER_LINES);
                 orderResultGuard.assertErrorResult(removeAllOrderLines);
                 expect(removeAllOrderLines.message).toBe(
                     `Order contents may only be modified when in the "AddingItems" state`,
@@ -1407,13 +1386,13 @@ describe('Shop orders', () => {
             });
 
             it('attempting to setOrderShippingMethod returns error result when in ArrangingPayment state', async () => {
-                const shippingMethodsResult = await shopClient.query<GetShippingMethods.Query>(
+                const shippingMethodsResult = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
                     GET_ELIGIBLE_SHIPPING_METHODS,
                 );
                 const shippingMethods = shippingMethodsResult.eligibleShippingMethods;
                 const { setOrderShippingMethod } = await shopClient.query<
-                    SetShippingMethod.Mutation,
-                    SetShippingMethod.Variables
+                    CodegenShop.SetShippingMethodMutation,
+                    CodegenShop.SetShippingMethodMutationVariables
                 >(SET_SHIPPING_METHOD, {
                     id: shippingMethods[0].id,
                 });
@@ -1426,8 +1405,8 @@ describe('Shop orders', () => {
 
             it('adds a declined payment', async () => {
                 const { addPaymentToOrder } = await shopClient.query<
-                    AddPaymentToOrder.Mutation,
-                    AddPaymentToOrder.Variables
+                    CodegenShop.AddPaymentToOrderMutation,
+                    CodegenShop.AddPaymentToOrderMutationVariables
                 >(ADD_PAYMENT, {
                     input: {
                         method: testFailingPaymentMethod.code,
@@ -1442,9 +1421,10 @@ describe('Shop orders', () => {
                 expect(addPaymentToOrder!.errorCode).toBe(ErrorCode.PAYMENT_DECLINED_ERROR);
                 expect((addPaymentToOrder as any).paymentErrorMessage).toBe('Insufficient funds');
 
-                const { activeOrder: order } = await shopClient.query<GetActiveOrderWithPayments.Query>(
-                    GET_ACTIVE_ORDER_WITH_PAYMENTS,
-                );
+                const { activeOrder: order } =
+                    await shopClient.query<CodegenShop.GetActiveOrderWithPaymentsQuery>(
+                        GET_ACTIVE_ORDER_WITH_PAYMENTS,
+                    );
                 const payment = order!.payments![0];
                 expect(order!.state).toBe('ArrangingPayment');
                 expect(order!.payments!.length).toBe(1);
@@ -1458,8 +1438,8 @@ describe('Shop orders', () => {
 
             it('adds an error payment and returns error result', async () => {
                 const { addPaymentToOrder } = await shopClient.query<
-                    AddPaymentToOrder.Mutation,
-                    AddPaymentToOrder.Variables
+                    CodegenShop.AddPaymentToOrderMutation,
+                    CodegenShop.AddPaymentToOrderMutationVariables
                 >(ADD_PAYMENT, {
                     input: {
                         method: testErrorPaymentMethod.code,
@@ -1474,7 +1454,7 @@ describe('Shop orders', () => {
                 expect(addPaymentToOrder!.errorCode).toBe(ErrorCode.PAYMENT_FAILED_ERROR);
                 expect((addPaymentToOrder as any).paymentErrorMessage).toBe('Something went horribly wrong');
 
-                const result = await shopClient.query<GetActiveOrderPayments.Query>(
+                const result = await shopClient.query<CodegenShop.GetActiveOrderPaymentsQuery>(
                     GET_ACTIVE_ORDER_PAYMENTS,
                 );
                 const payment = result.activeOrder!.payments![1];
@@ -1486,8 +1466,8 @@ describe('Shop orders', () => {
 
             it('adds a successful payment and transitions Order state', async () => {
                 const { addPaymentToOrder } = await shopClient.query<
-                    AddPaymentToOrder.Mutation,
-                    AddPaymentToOrder.Variables
+                    CodegenShop.AddPaymentToOrderMutation,
+                    CodegenShop.AddPaymentToOrderMutationVariables
                 >(ADD_PAYMENT, {
                     input: {
                         method: testSuccessfulPaymentMethod.code,
@@ -1511,10 +1491,10 @@ describe('Shop orders', () => {
             });
 
             it('does not create new address when Customer already has address', async () => {
-                const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
-                    GET_CUSTOMER,
-                    { id: customers[0].id },
-                );
+                const { customer } = await adminClient.query<
+                    Codegen.GetCustomerQuery,
+                    Codegen.GetCustomerQueryVariables
+                >(GET_CUSTOMER, { id: customers[0].id });
                 expect(customer!.addresses!.length).toBe(1);
             });
         });
@@ -1522,24 +1502,24 @@ describe('Shop orders', () => {
         describe('orderByCode', () => {
             describe('immediately after Order is placed', () => {
                 it('works when authenticated', async () => {
-                    const result = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
-                        GET_ORDER_BY_CODE,
-                        {
-                            code: activeOrder.code,
-                        },
-                    );
+                    const result = await shopClient.query<
+                        CodegenShop.GetOrderByCodeQuery,
+                        CodegenShop.GetOrderByCodeQueryVariables
+                    >(GET_ORDER_BY_CODE, {
+                        code: activeOrder.code,
+                    });
 
                     expect(result.orderByCode!.id).toBe(activeOrder.id);
                 });
 
                 it('works when anonymous', async () => {
                     await shopClient.asAnonymousUser();
-                    const result = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
-                        GET_ORDER_BY_CODE,
-                        {
-                            code: activeOrder.code,
-                        },
-                    );
+                    const result = await shopClient.query<
+                        CodegenShop.GetOrderByCodeQuery,
+                        CodegenShop.GetOrderByCodeQueryVariables
+                    >(GET_ORDER_BY_CODE, {
+                        code: activeOrder.code,
+                    });
 
                     expect(result.orderByCode!.id).toBe(activeOrder.id);
                 });
@@ -1549,12 +1529,12 @@ describe('Shop orders', () => {
                     assertThrowsWithMessage(async () => {
                         authenticatedUserEmailAddress = customers[1].emailAddress;
                         await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
-                        return shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
-                            GET_ORDER_BY_CODE,
-                            {
-                                code: activeOrder.code,
-                            },
-                        );
+                        return shopClient.query<
+                            CodegenShop.GetOrderByCodeQuery,
+                            CodegenShop.GetOrderByCodeQueryVariables
+                        >(GET_ORDER_BY_CODE, {
+                            code: activeOrder.code,
+                        });
                     }, `You are not currently authorized to perform this action`),
                 );
             });
@@ -1570,12 +1550,12 @@ describe('Shop orders', () => {
                 it('still works when authenticated as owner', async () => {
                     authenticatedUserEmailAddress = customers[0].emailAddress;
                     await shopClient.asUserWithCredentials(authenticatedUserEmailAddress, password);
-                    const result = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
-                        GET_ORDER_BY_CODE,
-                        {
-                            code: activeOrder.code,
-                        },
-                    );
+                    const result = await shopClient.query<
+                        CodegenShop.GetOrderByCodeQuery,
+                        CodegenShop.GetOrderByCodeQueryVariables
+                    >(GET_ORDER_BY_CODE, {
+                        code: activeOrder.code,
+                    });
 
                     expect(result.orderByCode!.id).toBe(activeOrder.id);
                 });
@@ -1584,12 +1564,12 @@ describe('Shop orders', () => {
                     'access denied when anonymous',
                     assertThrowsWithMessage(async () => {
                         await shopClient.asAnonymousUser();
-                        await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
-                            GET_ORDER_BY_CODE,
-                            {
-                                code: activeOrder.code,
-                            },
-                        );
+                        await shopClient.query<
+                            CodegenShop.GetOrderByCodeQuery,
+                            CodegenShop.GetOrderByCodeQueryVariables
+                        >(GET_ORDER_BY_CODE, {
+                            code: activeOrder.code,
+                        });
                     }, `You are not currently authorized to perform this action`),
                 );
 
@@ -1602,18 +1582,18 @@ describe('Shop orders', () => {
     });
 
     describe('order merging', () => {
-        let customers: GetCustomerList.Items[];
+        let customers: Codegen.GetCustomerListQuery['customers']['items'];
 
         beforeAll(async () => {
-            const result = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+            const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
             customers = result.customers.items;
         });
 
         it('merges guest order with no existing order', async () => {
             await shopClient.asAnonymousUser();
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
@@ -1622,11 +1602,14 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.length).toBe(1);
             expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
 
-            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
-                username: customers[1].emailAddress,
-                password: 'test',
-            });
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
+                ATTEMPT_LOGIN,
+                {
+                    username: customers[1].emailAddress,
+                    password: 'test',
+                },
+            );
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(activeOrder!.lines.length).toBe(1);
             expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
@@ -1635,8 +1618,8 @@ describe('Shop orders', () => {
         it('merges guest order with existing order', async () => {
             await shopClient.asAnonymousUser();
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_2',
                 quantity: 1,
@@ -1645,11 +1628,14 @@ describe('Shop orders', () => {
             expect(addItemToOrder!.lines.length).toBe(1);
             expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_2');
 
-            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
-                username: customers[1].emailAddress,
-                password: 'test',
-            });
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
+                ATTEMPT_LOGIN,
+                {
+                    username: customers[1].emailAddress,
+                    password: 'test',
+                },
+            );
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(activeOrder!.lines.length).toBe(2);
             expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
@@ -1660,29 +1646,35 @@ describe('Shop orders', () => {
          * See https://github.com/vendure-ecommerce/vendure/issues/263
          */
         it('does not merge when logging in to a different account (issue #263)', async () => {
-            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
-                username: customers[2].emailAddress,
-                password: 'test',
-            });
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
+                ATTEMPT_LOGIN,
+                {
+                    username: customers[2].emailAddress,
+                    password: 'test',
+                },
+            );
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(activeOrder).toBeNull();
         });
 
         it('does not merge when logging back to other account (issue #263)', async () => {
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_3',
                 quantity: 1,
             });
 
-            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
-                username: customers[1].emailAddress,
-                password: 'test',
-            });
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            await shopClient.query<Codegen.AttemptLoginMutation, Codegen.AttemptLoginMutationVariables>(
+                ATTEMPT_LOGIN,
+                {
+                    username: customers[1].emailAddress,
+                    password: 'test',
+                },
+            );
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(activeOrder!.lines.length).toBe(2);
             expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
@@ -1692,29 +1684,33 @@ describe('Shop orders', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/754
         it('handles merging when an existing order has OrderLines', async () => {
             async function setShippingOnActiveOrder() {
-                await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                    SET_SHIPPING_ADDRESS,
-                    {
-                        input: {
-                            streetLine1: '12 the street',
-                            countryCode: 'US',
-                        },
+                await shopClient.query<
+                    CodegenShop.SetShippingAddressMutation,
+                    CodegenShop.SetShippingAddressMutationVariables
+                >(SET_SHIPPING_ADDRESS, {
+                    input: {
+                        streetLine1: '12 the street',
+                        countryCode: 'US',
                     },
-                );
-                const { eligibleShippingMethods } = await shopClient.query<GetShippingMethods.Query>(
-                    GET_ELIGIBLE_SHIPPING_METHODS,
-                );
-                await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
-                    SET_SHIPPING_METHOD,
-                    {
-                        id: eligibleShippingMethods[1].id,
-                    },
-                );
+                });
+                const { eligibleShippingMethods } =
+                    await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
+                        GET_ELIGIBLE_SHIPPING_METHODS,
+                    );
+                await shopClient.query<
+                    CodegenShop.SetShippingMethodMutation,
+                    CodegenShop.SetShippingMethodMutationVariables
+                >(SET_SHIPPING_METHOD, {
+                    id: eligibleShippingMethods[1].id,
+                });
             }
 
             // Set up an existing order and add a ShippingLine
             await shopClient.asUserWithCredentials(customers[2].emailAddress, 'test');
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_3',
                 quantity: 1,
             });
@@ -1722,46 +1718,49 @@ describe('Shop orders', () => {
 
             // Now start a new guest order
             await shopClient.query(LOG_OUT);
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_4',
                 quantity: 1,
             });
             await setShippingOnActiveOrder();
 
             // attempt to log in and merge the guest order with the existing order
-            const { login } = await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(
-                ATTEMPT_LOGIN,
-                {
-                    username: customers[2].emailAddress,
-                    password: 'test',
-                },
-            );
+            const { login } = await shopClient.query<
+                Codegen.AttemptLoginMutation,
+                Codegen.AttemptLoginMutationVariables
+            >(ATTEMPT_LOGIN, {
+                username: customers[2].emailAddress,
+                password: 'test',
+            });
 
             expect(login.identifier).toBe(customers[2].emailAddress);
         });
     });
 
     describe('security of customer data', () => {
-        let customers: GetCustomerList.Items[];
+        let customers: Codegen.GetCustomerListQuery['customers']['items'];
 
         beforeAll(async () => {
-            const result = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+            const result = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
             customers = result.customers.items;
         });
 
         it('cannot setCustomOrder to existing non-guest Customer', async () => {
             await shopClient.asAnonymousUser();
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
 
             const { setCustomerForOrder } = await shopClient.query<
-                SetCustomerForOrder.Mutation,
-                SetCustomerForOrder.Variables
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
             >(SET_CUSTOMER, {
                 input: {
                     emailAddress: customers[0].emailAddress,
@@ -1774,12 +1773,12 @@ describe('Shop orders', () => {
             expect(setCustomerForOrder!.message).toBe('The email address is not available.');
             expect(setCustomerForOrder!.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
 
-            const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
-                GET_CUSTOMER,
-                {
-                    id: customers[0].id,
-                },
-            );
+            const { customer } = await adminClient.query<
+                Codegen.GetCustomerQuery,
+                Codegen.GetCustomerQueryVariables
+            >(GET_CUSTOMER, {
+                id: customers[0].id,
+            });
             expect(customer!.firstName).not.toBe('Evil');
             expect(customer!.lastName).not.toBe('Hacker');
         });
@@ -1787,25 +1786,25 @@ describe('Shop orders', () => {
         it('guest cannot access Addresses of guest customer', async () => {
             await shopClient.asAnonymousUser();
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
 
-            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                SET_CUSTOMER,
-                {
-                    input: {
-                        emailAddress: 'test@test.com',
-                        firstName: 'Evil',
-                        lastName: 'Hacker',
-                    },
+            await shopClient.query<
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    emailAddress: 'test@test.com',
+                    firstName: 'Evil',
+                    lastName: 'Hacker',
                 },
-            );
+            });
 
-            const { activeOrder } = await shopClient.query<GetCustomerAddresses.Query>(
+            const { activeOrder } = await shopClient.query<CodegenShop.GetCustomerAddressesQuery>(
                 GET_ACTIVE_ORDER_ADDRESSES,
             );
 
@@ -1815,25 +1814,27 @@ describe('Shop orders', () => {
         it('guest cannot access Orders of guest customer', async () => {
             await shopClient.asAnonymousUser();
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
 
-            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                SET_CUSTOMER,
-                {
-                    input: {
-                        emailAddress: 'test@test.com',
-                        firstName: 'Evil',
-                        lastName: 'Hacker',
-                    },
+            await shopClient.query<
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    emailAddress: 'test@test.com',
+                    firstName: 'Evil',
+                    lastName: 'Hacker',
                 },
-            );
+            });
 
-            const { activeOrder } = await shopClient.query<GetCustomerOrders.Query>(GET_ACTIVE_ORDER_ORDERS);
+            const { activeOrder } = await shopClient.query<CodegenShop.GetCustomerOrdersQuery>(
+                GET_ACTIVE_ORDER_ORDERS,
+            );
 
             expect(activeOrder!.customer!.orders.items).toEqual([]);
         });
@@ -1842,7 +1843,10 @@ describe('Shop orders', () => {
     describe('order custom fields', () => {
         it('custom fields added to type', async () => {
             await shopClient.asAnonymousUser();
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
@@ -1878,19 +1882,25 @@ describe('Shop orders', () => {
     describe('remove all order lines', () => {
         beforeAll(async () => {
             await shopClient.asAnonymousUser();
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_2',
                 quantity: 3,
             });
         });
         it('should remove all order lines', async () => {
             const { removeAllOrderLines } = await shopClient.query<
-                RemoveAllOrderLines.Mutation,
-                RemoveAllOrderLines.Variables
+                CodegenShop.RemoveAllOrderLinesMutation,
+                CodegenShop.RemoveAllOrderLinesMutationVariables
             >(REMOVE_ALL_ORDER_LINES);
             orderResultGuard.assertSuccess(removeAllOrderLines);
             expect(removeAllOrderLines?.total).toBe(0);
@@ -1909,14 +1919,20 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product is disabled',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: bonsaiProductId,
                         enabled: false,
                     },
                 });
 
-                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                await shopClient.query<
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
+                >(ADD_ITEM_TO_ORDER, {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
@@ -1926,25 +1942,31 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product variant is disabled',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.UpdateProductMutation,
+                    Codegen.UpdateProductMutationVariables
+                >(UPDATE_PRODUCT, {
                     input: {
                         id: bonsaiProductId,
                         enabled: true,
                     },
                 });
-                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
-                    UPDATE_PRODUCT_VARIANTS,
-                    {
-                        input: [
-                            {
-                                id: bonsaiVariantId,
-                                enabled: false,
-                            },
-                        ],
-                    },
-                );
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            id: bonsaiVariantId,
+                            enabled: false,
+                        },
+                    ],
+                });
 
-                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                await shopClient.query<
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
+                >(ADD_ITEM_TO_ORDER, {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
@@ -1953,11 +1975,17 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product is deleted',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                await adminClient.query<
+                    Codegen.DeleteProductMutation,
+                    Codegen.DeleteProductMutationVariables
+                >(DELETE_PRODUCT, {
                     id: bonsaiProductId,
                 });
 
-                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                await shopClient.query<
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
+                >(ADD_ITEM_TO_ORDER, {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
@@ -1966,14 +1994,17 @@ describe('Shop orders', () => {
         it(
             'addItemToOrder errors when product variant is deleted',
             assertThrowsWithMessage(async () => {
-                await adminClient.query<DeleteProductVariant.Mutation, DeleteProductVariant.Variables>(
-                    DELETE_PRODUCT_VARIANT,
-                    {
-                        id: bonsaiVariantId,
-                    },
-                );
+                await adminClient.query<
+                    Codegen.DeleteProductVariantMutation,
+                    Codegen.DeleteProductVariantMutationVariables
+                >(DELETE_PRODUCT_VARIANT, {
+                    id: bonsaiVariantId,
+                });
 
-                await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                await shopClient.query<
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
+                >(ADD_ITEM_TO_ORDER, {
                     productVariantId: bonsaiVariantId,
                     quantity: 1,
                 });
@@ -1987,8 +2018,8 @@ describe('Shop orders', () => {
 
             await shopClient.asUserWithCredentials('marques.sawayn@hotmail.com', 'test');
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: orchidVariantId,
                 quantity: 1,
@@ -1997,13 +2028,16 @@ describe('Shop orders', () => {
             orderResultGuard.assertSuccess(addItemToOrder);
             orderWithDeletedProductVariantId = addItemToOrder.id;
 
-            await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
-                id: orchidProductId,
-            });
+            await adminClient.query<Codegen.DeleteProductMutation, Codegen.DeleteProductMutationVariables>(
+                DELETE_PRODUCT,
+                {
+                    id: orchidProductId,
+                },
+            );
 
             const { transitionOrderToState } = await shopClient.query<
-                TransitionToState.Mutation,
-                TransitionToState.Variables
+                CodegenShop.TransitionToStateMutation,
+                CodegenShop.TransitionToStateMutationVariables
             >(TRANSITION_TO_STATE, {
                 state: 'ArrangingPayment',
             });
@@ -2018,8 +2052,8 @@ describe('Shop orders', () => {
         // https://github.com/vendure-ecommerce/vendure/issues/1567
         it('allows transitioning to Cancelled with deleted variant', async () => {
             const { cancelOrder } = await adminClient.query<
-                CancelOrderMutation,
-                CancelOrderMutationVariables
+                Codegen.CancelOrderMutation,
+                Codegen.CancelOrderMutationVariables
             >(CANCEL_ORDER, {
                 input: {
                     orderId: orderWithDeletedProductVariantId,
@@ -2039,16 +2073,16 @@ describe('Shop orders', () => {
 
         beforeAll(async () => {
             // First we will remove all ShippingMethods and set up 2 specialized ones
-            const { shippingMethods } = await adminClient.query<GetShippingMethodList.Query>(
+            const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
                 GET_SHIPPING_METHOD_LIST,
             );
             for (const method of shippingMethods.items) {
-                await adminClient.query<DeleteShippingMethod.Mutation, DeleteShippingMethod.Variables>(
-                    DELETE_SHIPPING_METHOD,
-                    {
-                        id: method.id,
-                    },
-                );
+                await adminClient.query<
+                    Codegen.DeleteShippingMethodMutation,
+                    Codegen.DeleteShippingMethodMutationVariables
+                >(DELETE_SHIPPING_METHOD, {
+                    id: method.id,
+                });
             }
 
             function createCountryCodeShippingMethodInput(countryCode: string): CreateShippingMethodInput {
@@ -2075,15 +2109,15 @@ describe('Shop orders', () => {
 
             // Now create 2 shipping methods, valid only for a single country
             const result1 = await adminClient.query<
-                CreateShippingMethod.Mutation,
-                CreateShippingMethod.Variables
+                Codegen.CreateShippingMethodMutation,
+                Codegen.CreateShippingMethodMutationVariables
             >(CREATE_SHIPPING_METHOD, {
                 input: createCountryCodeShippingMethodInput('GB'),
             });
             GBShippingMethodId = result1.createShippingMethod.id;
             const result2 = await adminClient.query<
-                CreateShippingMethod.Mutation,
-                CreateShippingMethod.Variables
+                Codegen.CreateShippingMethodMutation,
+                Codegen.CreateShippingMethodMutationVariables
             >(CREATE_SHIPPING_METHOD, {
                 input: createCountryCodeShippingMethodInput('AT'),
             });
@@ -2091,69 +2125,69 @@ describe('Shop orders', () => {
 
             // Now create an order to GB and set the GB shipping method
             const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
-            await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
-                SET_CUSTOMER,
-                {
-                    input: {
-                        emailAddress: 'test-2@test.com',
-                        firstName: 'Test',
-                        lastName: 'Person 2',
-                    },
+            await shopClient.query<
+                CodegenShop.SetCustomerForOrderMutation,
+                CodegenShop.SetCustomerForOrderMutationVariables
+            >(SET_CUSTOMER, {
+                input: {
+                    emailAddress: 'test-2@test.com',
+                    firstName: 'Test',
+                    lastName: 'Person 2',
                 },
-            );
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '12 the street',
-                        countryCode: 'GB',
-                    },
+            });
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '12 the street',
+                    countryCode: 'GB',
                 },
-            );
-            await shopClient.query<SetShippingMethod.Mutation, SetShippingMethod.Variables>(
-                SET_SHIPPING_METHOD,
-                {
-                    id: GBShippingMethodId,
-                },
-            );
+            });
+            await shopClient.query<
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
+            >(SET_SHIPPING_METHOD, {
+                id: GBShippingMethodId,
+            });
         });
 
         it('if selected method no longer eligible, next best is set automatically', async () => {
-            const result1 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result1 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result1.activeOrder?.shippingLines[0].shippingMethod.id).toBe(GBShippingMethodId);
 
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '12 the street',
-                        countryCode: 'AT',
-                    },
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '12 the street',
+                    countryCode: 'AT',
                 },
-            );
+            });
 
-            const result2 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result2 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result2.activeOrder?.shippingLines[0].shippingMethod.id).toBe(ATShippingMethodId);
         });
 
         it('if no method is eligible, shipping lines are cleared', async () => {
-            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
-                SET_SHIPPING_ADDRESS,
-                {
-                    input: {
-                        streetLine1: '12 the street',
-                        countryCode: 'US',
-                    },
+            await shopClient.query<
+                CodegenShop.SetShippingAddressMutation,
+                CodegenShop.SetShippingAddressMutationVariables
+            >(SET_SHIPPING_ADDRESS, {
+                input: {
+                    streetLine1: '12 the street',
+                    countryCode: 'US',
                 },
-            );
+            });
 
-            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result.activeOrder?.shippingLines).toEqual([]);
         });
 

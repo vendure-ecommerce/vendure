@@ -9,15 +9,16 @@ import {
     UpdateChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { ID, Type } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
+import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
-import { ChannelAware } from '../../common/types/common-types';
+import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -25,12 +26,14 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
+import { Seller } from '../../entity/seller/seller.entity';
 import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ChangeChannelEvent } from '../../event-bus/events/change-channel-event';
 import { ChannelEvent } from '../../event-bus/events/channel-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { GlobalSettingsService } from './global-settings.service';
@@ -51,6 +54,7 @@ export class ChannelService {
         private globalSettingsService: GlobalSettingsService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /**
@@ -73,7 +77,13 @@ export class ChannelService {
         return createSelfRefreshingCache({
             name: 'ChannelService.allChannels',
             ttl: this.configService.entityOptions.channelCacheTtl,
-            refresh: { fn: ctx => this.findAll(ctx), defaultArgs: [RequestContext.empty()] },
+            refresh: {
+                fn: async ctx => {
+                    const { items } = await this.findAll(ctx);
+                    return items;
+                },
+                defaultArgs: [RequestContext.empty()],
+            },
         });
     }
 
@@ -185,10 +195,21 @@ export class ChannelService {
         return defaultChannel;
     }
 
-    findAll(ctx: RequestContext): Promise<Channel[]> {
-        return this.connection
-            .getRepository(ctx, Channel)
-            .find({ relations: ['defaultShippingZone', 'defaultTaxZone'] });
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<Channel>,
+        relations?: RelationPaths<Channel>,
+    ): Promise<PaginatedList<Channel>> {
+        return this.listQueryBuilder
+            .build(Channel, options, {
+                relations: relations ?? ['defaultShippingZone', 'defaultTaxZone'],
+                ctx,
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
@@ -201,7 +222,10 @@ export class ChannelService {
         ctx: RequestContext,
         input: CreateChannelInput,
     ): Promise<ErrorResultUnion<CreateChannelResult, Channel>> {
-        const channel = new Channel(input);
+        const channel = new Channel({
+            ...input,
+            defaultCurrencyCode: input.currencyCode,
+        });
         const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
         if (isGraphQlErrorResult(defaultLanguageValidationResult)) {
             return defaultLanguageValidationResult;
@@ -221,10 +245,15 @@ export class ChannelService {
             );
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
+        if (input.sellerId) {
+            const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.sellerId);
+            newChannel.seller = seller;
+            await this.connection.getRepository(ctx, Channel).save(newChannel);
+        }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
         await this.allChannels.refresh(ctx);
         this.eventBus.publish(new ChannelEvent(ctx, newChannel, 'created', input));
-        return channel;
+        return newChannel;
     }
 
     async update(
@@ -253,6 +282,10 @@ export class ChannelService {
                 Zone,
                 input.defaultShippingZoneId,
             );
+        }
+        if (input.sellerId) {
+            const seller = await this.connection.getEntityOrThrow(ctx, Seller, input.sellerId);
+            updatedChannel.seller = seller;
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
@@ -305,25 +338,33 @@ export class ChannelService {
      */
     private async ensureDefaultChannelExists() {
         const { defaultChannelToken } = this.configService;
-        const defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
+        let defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
             where: {
                 code: DEFAULT_CHANNEL_CODE,
             },
+            relations: ['seller'],
         });
 
         if (!defaultChannel) {
-            const newDefaultChannel = new Channel({
+            defaultChannel = new Channel({
                 code: DEFAULT_CHANNEL_CODE,
                 defaultLanguageCode: this.configService.defaultLanguageCode,
                 pricesIncludeTax: false,
-                currencyCode: CurrencyCode.USD,
+                defaultCurrencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
-            await this.connection.rawConnection
-                .getRepository(Channel)
-                .save(newDefaultChannel, { reload: false });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
+            await this.connection.rawConnection
+                .getRepository(Channel)
+                .save(defaultChannel, { reload: false });
+        }
+        if (!defaultChannel.seller) {
+            const seller = await this.connection.rawConnection.getRepository(Seller).find();
+            if (seller.length === 0) {
+                throw new InternalServerError('No Sellers were found. Could not initialize default Channel.');
+            }
+            defaultChannel.seller = seller[0];
             await this.connection.rawConnection
                 .getRepository(Channel)
                 .save(defaultChannel, { reload: false });
@@ -339,7 +380,7 @@ export class ChannelService {
                 .getSettings(ctx)
                 .then(s => s.availableLanguages);
             if (!availableLanguageCodes.includes(input.defaultLanguageCode)) {
-                return new LanguageNotAvailableError(input.defaultLanguageCode);
+                return new LanguageNotAvailableError({ languageCode: input.defaultLanguageCode });
             }
         }
     }

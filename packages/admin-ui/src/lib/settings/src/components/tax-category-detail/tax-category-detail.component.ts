@@ -2,17 +2,19 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent, CustomFieldConfig, Permission } from '@vendure/admin-ui/core';
 import {
+    BaseDetailComponent,
     ConfigurableOperation,
     CreateTaxCategoryInput,
+    CustomFieldConfig,
+    DataService,
     LanguageCode,
-    TaxCategory,
+    NotificationService,
+    Permission,
+    ServerConfigService,
+    TaxCategoryFragment,
     UpdateTaxCategoryInput,
 } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 
@@ -23,10 +25,10 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaxCategoryDetailComponent
-    extends BaseDetailComponent<TaxCategory.Fragment>
+    extends BaseDetailComponent<TaxCategoryFragment>
     implements OnInit, OnDestroy
 {
-    taxCategory$: Observable<TaxCategory.Fragment>;
+    taxCategory$: Observable<TaxCategoryFragment>;
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
     readonly updatePermission = [Permission.UpdateSettings, Permission.UpdateTaxCategory];
@@ -131,7 +133,7 @@ export class TaxCategoryDetailComponent
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: TaxCategory.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(entity: TaxCategoryFragment, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             name: entity.name,
             isDefault: entity.isDefault,

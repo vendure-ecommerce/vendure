@@ -1,4 +1,5 @@
-import { DefaultLogger, mergeConfig, orderPercentageDiscount } from '@vendure/core';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { mergeConfig, orderPercentageDiscount } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -25,7 +26,6 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('custom ActiveOrderStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
             plugins: [TokenActiveOrderPlugin],
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
@@ -149,7 +149,6 @@ describe('custom ActiveOrderStrategy', () => {
                 {
                     input: {
                         enabled: true,
-                        name: 'Free with test coupon',
                         couponCode: TEST_COUPON_CODE,
                         conditions: [],
                         actions: [
@@ -158,6 +157,7 @@ describe('custom ActiveOrderStrategy', () => {
                                 arguments: [{ name: 'discount', value: '100' }],
                             },
                         ],
+                        translations: [{ languageCode: LanguageCode.en, name: 'Free with test coupon' }],
                     },
                 },
             );

@@ -1,7 +1,7 @@
-import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput, OrderLineInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api';
-import { Order, OrderItem } from '../../entity';
+import { Order } from '../../entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
@@ -12,7 +12,7 @@ import { VendureEntityEvent } from '../vendure-entity-event';
  */
 type CreateFulfillmentInput = {
     orders: Order[];
-    items: OrderItem[];
+    lines: OrderLineInput[];
     handler: ConfigurableOperationInput;
 };
 

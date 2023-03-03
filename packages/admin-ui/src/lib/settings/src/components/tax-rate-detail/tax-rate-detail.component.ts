@@ -8,13 +8,14 @@ import {
     CustomerGroup,
     CustomFieldConfig,
     DataService,
-    GetZones,
+    GetZonesQuery,
     LanguageCode,
     NotificationService,
     Permission,
     ServerConfigService,
-    TaxCategory,
+    TaxCategoryFragment,
     TaxRate,
+    TaxRateFragment,
     UpdateTaxRateInput,
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
@@ -27,11 +28,11 @@ import { mergeMap, take } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaxRateDetailComponent
-    extends BaseDetailComponent<TaxRate.Fragment>
+    extends BaseDetailComponent<TaxRateFragment>
     implements OnInit, OnDestroy
 {
-    taxCategories$: Observable<TaxCategory.Fragment[]>;
-    zones$: Observable<GetZones.Zones[]>;
+    taxCategories$: Observable<TaxCategoryFragment[]>;
+    zones$: Observable<GetZonesQuery['zones']>;
     groups$: Observable<CustomerGroup[]>;
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
@@ -149,7 +150,7 @@ export class TaxRateDetailComponent
     /**
      * Update the form values when the entity changes.
      */
-    protected setFormValues(entity: TaxRate.Fragment, languageCode: LanguageCode): void {
+    protected setFormValues(entity: TaxRateFragment, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             name: entity.name,
             enabled: entity.enabled,

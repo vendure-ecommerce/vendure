@@ -70,7 +70,7 @@ export class TranslationDiffer<Entity extends Translatable> {
                     newTranslation = await this.connection
                         .getRepository(ctx, this.translationCtor)
                         .save(translation as any);
-                } catch (err) {
+                } catch (err: any) {
                     throw new InternalServerError(err.message);
                 }
                 entity.translations.push(newTranslation);

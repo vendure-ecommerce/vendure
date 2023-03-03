@@ -228,12 +228,14 @@ class TestResolver {
                     this.createNTestAdministrators3(_ctx, {
                         ...args,
                         n: args.n - 1,
-                        failFactor: args.n * args.failFactor / (args.n - 1)
-                    })
+                        failFactor: (args.n * args.failFactor) / (args.n - 1),
+                    }),
                 );
-    
+
                 result.push(...admins);
-            } catch(e) {}
+            } catch (e) {
+                /* */
+            }
         }
 
         return result;
@@ -331,7 +333,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
                 administrator.lastName = 'modified';
                 try {
                     await adminRepository.save(administrator);
-                } catch (e) {
+                } catch (e: any) {
                     TransactionTestPlugin.errorHandler(e);
                 } finally {
                     TransactionTestPlugin.eventHandlerComplete$.complete();
@@ -343,7 +345,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
                 const adminRepository = this.connection.getRepository(Administrator);
                 try {
                     await adminRepository.findOneOrFail(administrator.id);
-                } catch (e) {
+                } catch (e: any) {
                     TransactionTestPlugin.errorHandler(e);
                 } finally {
                     TransactionTestPlugin.eventHandlerComplete$.complete();

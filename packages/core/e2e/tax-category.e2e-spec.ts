@@ -5,14 +5,8 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import {
-    CreateTaxCategory,
-    DeleteTaxCategory,
-    DeletionResult,
-    GetTaxCategory,
-    GetTaxCategoryList,
-    UpdateTaxCategory,
-} from './graphql/generated-e2e-admin-types';
+import { DeletionResult } from './graphql/generated-e2e-admin-types';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import { sortById } from './utils/test-order-utils';
 
 describe('TaxCategory resolver', () => {
@@ -32,7 +26,9 @@ describe('TaxCategory resolver', () => {
     });
 
     it('taxCategories', async () => {
-        const { taxCategories } = await adminClient.query<GetTaxCategoryList.Query>(GET_TAX_CATEGORY_LIST);
+        const { taxCategories } = await adminClient.query<Codegen.GetTaxCategoryListQuery>(
+            GET_TAX_CATEGORY_LIST,
+        );
 
         expect(taxCategories.sort(sortById)).toEqual([
             { id: 'T_1', name: 'Standard Tax', isDefault: false },
@@ -42,12 +38,12 @@ describe('TaxCategory resolver', () => {
     });
 
     it('taxCategory', async () => {
-        const { taxCategory } = await adminClient.query<GetTaxCategory.Query, GetTaxCategory.Variables>(
-            GET_TAX_CATEGORY,
-            {
-                id: 'T_2',
-            },
-        );
+        const { taxCategory } = await adminClient.query<
+            Codegen.GetTaxCategoryQuery,
+            Codegen.GetTaxCategoryQueryVariables
+        >(GET_TAX_CATEGORY, {
+            id: 'T_2',
+        });
 
         expect(taxCategory).toEqual({
             id: 'T_2',
@@ -58,8 +54,8 @@ describe('TaxCategory resolver', () => {
 
     it('createTaxCategory', async () => {
         const { createTaxCategory } = await adminClient.query<
-            CreateTaxCategory.Mutation,
-            CreateTaxCategory.Variables
+            Codegen.CreateTaxCategoryMutation,
+            Codegen.CreateTaxCategoryMutationVariables
         >(CREATE_TAX_CATEGORY, {
             input: {
                 name: 'New Category',
@@ -75,8 +71,8 @@ describe('TaxCategory resolver', () => {
 
     it('updateCategory', async () => {
         const { updateTaxCategory } = await adminClient.query<
-            UpdateTaxCategory.Mutation,
-            UpdateTaxCategory.Variables
+            Codegen.UpdateTaxCategoryMutation,
+            Codegen.UpdateTaxCategoryMutationVariables
         >(UPDATE_TAX_CATEGORY, {
             input: {
                 id: 'T_4',
@@ -93,8 +89,8 @@ describe('TaxCategory resolver', () => {
 
     it('set default', async () => {
         const { updateTaxCategory } = await adminClient.query<
-            UpdateTaxCategory.Mutation,
-            UpdateTaxCategory.Variables
+            Codegen.UpdateTaxCategoryMutation,
+            Codegen.UpdateTaxCategoryMutationVariables
         >(UPDATE_TAX_CATEGORY, {
             input: {
                 id: 'T_2',
@@ -108,7 +104,9 @@ describe('TaxCategory resolver', () => {
             isDefault: true,
         });
 
-        const { taxCategories } = await adminClient.query<GetTaxCategoryList.Query>(GET_TAX_CATEGORY_LIST);
+        const { taxCategories } = await adminClient.query<Codegen.GetTaxCategoryListQuery>(
+            GET_TAX_CATEGORY_LIST,
+        );
         expect(taxCategories.sort(sortById)).toEqual([
             { id: 'T_1', name: 'Standard Tax', isDefault: false },
             { id: 'T_2', name: 'Reduced Tax', isDefault: true },
@@ -119,8 +117,8 @@ describe('TaxCategory resolver', () => {
 
     it('set a different default', async () => {
         const { updateTaxCategory } = await adminClient.query<
-            UpdateTaxCategory.Mutation,
-            UpdateTaxCategory.Variables
+            Codegen.UpdateTaxCategoryMutation,
+            Codegen.UpdateTaxCategoryMutationVariables
         >(UPDATE_TAX_CATEGORY, {
             input: {
                 id: 'T_1',
@@ -134,7 +132,9 @@ describe('TaxCategory resolver', () => {
             isDefault: true,
         });
 
-        const { taxCategories } = await adminClient.query<GetTaxCategoryList.Query>(GET_TAX_CATEGORY_LIST);
+        const { taxCategories } = await adminClient.query<Codegen.GetTaxCategoryListQuery>(
+            GET_TAX_CATEGORY_LIST,
+        );
         expect(taxCategories.sort(sortById)).toEqual([
             { id: 'T_1', name: 'Standard Tax', isDefault: true },
             { id: 'T_2', name: 'Reduced Tax', isDefault: false },
@@ -146,8 +146,8 @@ describe('TaxCategory resolver', () => {
     describe('deletion', () => {
         it('cannot delete if used by a TaxRate', async () => {
             const { deleteTaxCategory } = await adminClient.query<
-                DeleteTaxCategory.Mutation,
-                DeleteTaxCategory.Variables
+                Codegen.DeleteTaxCategoryMutation,
+                Codegen.DeleteTaxCategoryMutationVariables
             >(DELETE_TAX_CATEGORY, {
                 id: 'T_2',
             });
@@ -160,8 +160,8 @@ describe('TaxCategory resolver', () => {
 
         it('can delete if not used by TaxRate', async () => {
             const { deleteTaxCategory } = await adminClient.query<
-                DeleteTaxCategory.Mutation,
-                DeleteTaxCategory.Variables
+                Codegen.DeleteTaxCategoryMutation,
+                Codegen.DeleteTaxCategoryMutationVariables
             >(DELETE_TAX_CATEGORY, {
                 id: 'T_4',
             });
@@ -169,12 +169,12 @@ describe('TaxCategory resolver', () => {
             expect(deleteTaxCategory.result).toBe(DeletionResult.DELETED);
             expect(deleteTaxCategory.message).toBeNull();
 
-            const { taxCategory } = await adminClient.query<GetTaxCategory.Query, GetTaxCategory.Variables>(
-                GET_TAX_CATEGORY,
-                {
-                    id: 'T_4',
-                },
-            );
+            const { taxCategory } = await adminClient.query<
+                Codegen.GetTaxCategoryQuery,
+                Codegen.GetTaxCategoryQueryVariables
+            >(GET_TAX_CATEGORY, {
+                id: 'T_4',
+            });
 
             expect(taxCategory).toBeNull();
         });

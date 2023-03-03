@@ -49,7 +49,8 @@ export class RefundStateMachine {
 
     async transition(ctx: RequestContext, order: Order, refund: Refund, state: RefundState) {
         const fsm = new FSM(this.config, refund.state);
-        await fsm.transitionTo(state, { ctx, order, refund });
+        const result = await fsm.transitionTo(state, { ctx, order, refund });
         refund.state = state;
+        return result;
     }
 }

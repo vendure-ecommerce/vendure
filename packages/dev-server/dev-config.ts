@@ -16,6 +16,8 @@ import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
+import { MultivendorPlugin } from './test-plugins/multivendor-plugin/multivendor.plugin';
+
 /**
  * Config settings used during development
  */
@@ -61,11 +63,12 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
+        // MultivendorPlugin,
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
-        DefaultSearchPlugin.init({ bufferUpdates: true, indexStockStatus: false }),
+        DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
         // BullMQJobQueuePlugin.init({}),
         DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),

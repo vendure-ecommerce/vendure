@@ -724,11 +724,8 @@ export const CANCEL_ORDER = gql`
         id
         state
         lines {
+            id
             quantity
-            items {
-                id
-                cancelled
-            }
         }
     }
 `;
@@ -871,20 +868,25 @@ export const GET_ASSET_FRAGMENT_FIRST = gql`
     }
 `;
 
+export const ASSET_WITH_TAGS_AND_FOCAL_POINT_FRAGMENT = gql`
+    fragment AssetWithTagsAndFocalPoint on Asset {
+        ...Asset
+        focalPoint {
+            x
+            y
+        }
+        tags {
+            id
+            value
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
-            ...Asset
-            ... on Asset {
-                focalPoint {
-                    x
-                    y
-                }
-                tags {
-                    id
-                    value
-                }
-            }
+            ...AssetWithTagsAndFocalPoint
             ... on MimeTypeError {
                 message
                 fileName
@@ -892,7 +894,7 @@ export const CREATE_ASSETS = gql`
             }
         }
     }
-    ${ASSET_FRAGMENT}
+    ${ASSET_WITH_TAGS_AND_FOCAL_POINT_FRAGMENT}
 `;
 
 export const DELETE_SHIPPING_METHOD = gql`

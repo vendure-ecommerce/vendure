@@ -4,23 +4,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
-    CancelOrder,
+    CancelOrderMutation,
     CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
     FulfillmentFragment,
-    FulfillmentLineSummary,
-    GetOrderHistory,
+    GetOrderHistoryQuery,
     GetOrderQuery,
     HistoryEntryType,
     ModalService,
     NotificationService,
     Order,
-    OrderDetail,
     OrderDetailFragment,
     OrderLineFragment,
     Refund,
-    RefundOrder,
+    RefundOrderMutation,
     ServerConfigService,
     SortOrder,
     TimelineHistoryEntry,
@@ -38,6 +36,8 @@ import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
 
+type Payment = NonNullable<OrderDetailFragment['payments']>[number];
+
 @Component({
     selector: 'vdr-order-detail',
     templateUrl: './order-detail.component.html',
@@ -45,11 +45,11 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderDetailComponent
-    extends BaseDetailComponent<OrderDetail.Fragment>
+    extends BaseDetailComponent<OrderDetailFragment>
     implements OnInit, OnDestroy
 {
     detailForm = new FormGroup({});
-    history$: Observable<GetOrderHistory.Items[] | undefined>;
+    history$: Observable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'] | undefined>;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
@@ -191,7 +191,7 @@ export class OrderDetailComponent
             .filter(line => !!line);
     }
 
-    settlePayment(payment: OrderDetail.Payments) {
+    settlePayment(payment: Payment) {
         this.dataService.order.settlePayment(payment.id).subscribe(({ settlePayment }) => {
             switch (settlePayment.__typename) {
                 case 'Payment':
@@ -211,7 +211,7 @@ export class OrderDetailComponent
         });
     }
 
-    transitionPaymentState({ payment, state }: { payment: OrderDetail.Payments; state: string }) {
+    transitionPaymentState({ payment, state }: { payment: Payment; state: string }) {
         if (state === 'Cancelled') {
             this.dataService.order.cancelPayment(payment.id).subscribe(({ cancelPayment }) => {
                 switch (cancelPayment.__typename) {
@@ -253,15 +253,15 @@ export class OrderDetailComponent
         }
     }
 
-    canAddFulfillment(order: OrderDetail.Fragment): boolean {
-        const allFulfillmentSummaryRows: FulfillmentFragment['summary'] = (order.fulfillments ?? []).reduce(
-            (all, fulfillment) => [...all, ...fulfillment.summary],
-            [] as FulfillmentFragment['summary'],
+    canAddFulfillment(order: OrderDetailFragment): boolean {
+        const allFulfillmentLines: FulfillmentFragment['lines'] = (order.fulfillments ?? []).reduce(
+            (all, fulfillment) => [...all, ...fulfillment.lines],
+            [] as FulfillmentFragment['lines'],
         );
         let allItemsFulfilled = true;
         for (const line of order.lines) {
-            const totalFulfilledCount = allFulfillmentSummaryRows
-                .filter(row => row.orderLine.id === line.id)
+            const totalFulfilledCount = allFulfillmentLines
+                .filter(row => row.orderLineId === line.id)
                 .reduce((sum, row) => sum + row.quantity, 0);
             if (totalFulfilledCount < line.quantity) {
                 allItemsFulfilled = false;
@@ -289,7 +289,7 @@ export class OrderDetailComponent
     }
 
     outstandingPaymentAmount(order: OrderDetailFragment): number {
-        const paymentIsValid = (p: OrderDetail.Payments): boolean =>
+        const paymentIsValid = (p: Payment): boolean =>
             p.state !== 'Cancelled' && p.state !== 'Declined' && p.state !== 'Error';
 
         let amountCovered = 0;
@@ -412,7 +412,7 @@ export class OrderDetailComponent
             });
     }
 
-    cancelOrRefund(order: OrderDetail.Fragment) {
+    cancelOrRefund(order: OrderDetailFragment) {
         const isRefundable = this.orderHasSettledPayments(order);
         if (order.state === 'PaymentAuthorized' || order.active === true || !isRefundable) {
             this.cancelOrder(order);
@@ -421,7 +421,7 @@ export class OrderDetailComponent
         }
     }
 
-    settleRefund(refund: OrderDetail.Refunds) {
+    settleRefund(refund: Payment['refunds'][number]) {
         this.modalService
             .fromComponent(SettleRefundDialogComponent, {
                 size: 'md',
@@ -518,11 +518,11 @@ export class OrderDetailComponent
             });
     }
 
-    orderHasSettledPayments(order: OrderDetail.Fragment): boolean {
+    orderHasSettledPayments(order: OrderDetailFragment): boolean {
         return !!order.payments?.find(p => p.state === 'Settled');
     }
 
-    private cancelOrder(order: OrderDetail.Fragment) {
+    private cancelOrder(order: OrderDetailFragment) {
         this.modalService
             .fromComponent(CancelOrderDialogComponent, {
                 size: 'xl',
@@ -547,7 +547,7 @@ export class OrderDetailComponent
             });
     }
 
-    private refundOrder(order: OrderDetail.Fragment) {
+    private refundOrder(order: OrderDetailFragment) {
         this.modalService
             .fromComponent(RefundOrderDialogComponent, {
                 size: 'xl',
@@ -629,7 +629,7 @@ export class OrderDetailComponent
         }
     }
 
-    protected setFormValues(entity: Order.Fragment): void {
+    protected setFormValues(entity: OrderDetailFragment): void {
         // empty
     }
 }

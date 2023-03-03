@@ -6,9 +6,13 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { FacetValueFragment, GetFacetList } from './graphql/generated-e2e-admin-types';
 import {
-    SearchProductsShop,
+    FacetValueFragment,
+    GetFacetListQuery,
+    GetFacetListQueryVariables,
+} from './graphql/generated-e2e-admin-types';
+import {
+    SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
     SortOrder,
 } from './graphql/generated-e2e-shop-types';
@@ -45,7 +49,7 @@ describe('Default search plugin with UUIDs', () => {
         // rebuild is not completed in time for the first test.
         await new Promise(resolve => setTimeout(resolve, 5000));
 
-        const { facets } = await adminClient.query<GetFacetList.Query, GetFacetList.Variables>(
+        const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
             GET_FACET_LIST,
             {
                 options: {
@@ -67,7 +71,7 @@ describe('Default search plugin with UUIDs', () => {
     });
 
     it('can filter by facetValueIds', async () => {
-        const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopQueryVariables>(
+        const result = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -85,10 +89,10 @@ describe('Default search plugin with UUIDs', () => {
     });
 
     it('can filter by facetValueFilters', async () => {
-        const { facets } = await adminClient.query<GetFacetList.Query, GetFacetList.Variables>(
+        const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
             GET_FACET_LIST,
         );
-        const result = await shopClient.query<SearchProductsShop.Query, SearchProductsShopQueryVariables>(
+        const result = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {

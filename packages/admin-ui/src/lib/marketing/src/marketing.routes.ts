@@ -1,6 +1,11 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CanDeactivateDetailGuard, createResolveData, detailBreadcrumb, Promotion } from '@vendure/admin-ui/core';
+import {
+    CanDeactivateDetailGuard,
+    createResolveData,
+    detailBreadcrumb,
+    PromotionFragment,
+} from '@vendure/admin-ui/core';
 
 import { PromotionDetailComponent } from './components/promotion-detail/promotion-detail.component';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
@@ -26,7 +31,7 @@ export const marketingRoutes: Route[] = [
 ];
 
 export function promotionBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<Promotion.Fragment>({
+    return detailBreadcrumb<PromotionFragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.promotions',

@@ -17,9 +17,9 @@ import {
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ExternalAuthenticationMethod } from '../../entity/authentication-method/external-authentication-method.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { User } from '../../entity/user/user.entity';
-import { ExternalAuthenticationMethod } from '../../entity/authentication-method/external-authentication-method.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
@@ -64,10 +64,10 @@ export class AuthService {
         const authenticationStrategy = this.getAuthenticationStrategy(apiType, authenticationMethod);
         const authenticateResult = await authenticationStrategy.authenticate(ctx, authenticationData);
         if (typeof authenticateResult === 'string') {
-            return new InvalidCredentialsError(authenticateResult);
+            return new InvalidCredentialsError({ authenticationError: authenticateResult });
         }
         if (!authenticateResult) {
-            return new InvalidCredentialsError('');
+            return new InvalidCredentialsError({ authenticationError: '' });
         }
         return this.createAuthenticatedSessionForUser(ctx, authenticateResult, authenticationStrategy.name);
     }
@@ -88,7 +88,9 @@ export class AuthService {
             user.roles = userWithRoles?.roles || [];
         }
 
-        const extAuths = (user.authenticationMethods ?? []).filter(am => am instanceof ExternalAuthenticationMethod);
+        const extAuths = (user.authenticationMethods ?? []).filter(
+            am => am instanceof ExternalAuthenticationMethod,
+        );
         if (!extAuths.length && this.configService.authOptions.requireVerification && !user.verified) {
             return new NotVerifiedError();
         }
@@ -122,7 +124,7 @@ export class AuthService {
         );
         const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(ctx, userId, password);
         if (!passwordMatches) {
-            return new InvalidCredentialsError('');
+            return new InvalidCredentialsError({ authenticationError: '' });
         }
         return true;
     }

@@ -315,11 +315,10 @@ export class Populator {
     private async populatePaymentMethods(ctx: RequestContext, paymentMethods: InitialData['paymentMethods']) {
         for (const method of paymentMethods) {
             await this.paymentMethodService.create(ctx, {
-                name: method.name,
                 code: normalizeString(method.name, '-'),
-                description: '',
                 enabled: true,
                 handler: method.handler,
+                translations: [{ languageCode: ctx.languageCode, name: method.name, description: '' }],
             });
         }
     }

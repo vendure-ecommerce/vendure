@@ -52,7 +52,7 @@ export class AsyncQueue {
         try {
             const result = await task();
             resolve(result);
-        } catch (e) {
+        } catch (e: any) {
             reject(e);
         }
         this.dec();

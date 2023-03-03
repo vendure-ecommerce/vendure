@@ -1,14 +1,17 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import {
+    BaseListComponent,
+    DataService,
+    DeletionResult,
+    GetTaxRateListQuery,
+    ItemOf,
+    ModalService,
+    NotificationService,
+} from '@vendure/admin-ui/core';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-
-import { BaseListComponent } from '@vendure/admin-ui/core';
-import { DeletionResult, GetTaxRateList } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-tax-rate-list',
@@ -16,7 +19,10 @@ import { ModalService } from '@vendure/admin-ui/core';
     styleUrls: ['./tax-rate-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TaxRateListComponent extends BaseListComponent<GetTaxRateList.Query, GetTaxRateList.Items> {
+export class TaxRateListComponent extends BaseListComponent<
+    GetTaxRateListQuery,
+    ItemOf<GetTaxRateListQuery, 'taxRates'>
+> {
     constructor(
         private modalService: ModalService,
         private notificationService: NotificationService,
@@ -31,7 +37,7 @@ export class TaxRateListComponent extends BaseListComponent<GetTaxRateList.Query
         );
     }
 
-    deleteTaxRate(taxRate: GetTaxRateList.Items) {
+    deleteTaxRate(taxRate: ItemOf<GetTaxRateListQuery, 'taxRates'>) {
         return this.modalService
             .dialog({
                 title: _('settings.confirm-delete-tax-rate'),

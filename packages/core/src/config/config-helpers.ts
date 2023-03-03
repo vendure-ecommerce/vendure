@@ -1,14 +1,13 @@
-import { defaultConfig } from './default-config';
 import { mergeConfig } from './merge-config';
 import { PartialVendureConfig, RuntimeVendureConfig } from './vendure-config';
 
-let activeConfig = defaultConfig;
+let activeConfig: RuntimeVendureConfig;
 
 /**
  * Reset the activeConfig object back to the initial default state.
  */
 export function resetConfig() {
-    activeConfig = defaultConfig;
+    activeConfig = require('./default-config').defaultConfig;
 }
 
 /**
@@ -16,6 +15,9 @@ export function resetConfig() {
  * bootstrapping the app.
  */
 export function setConfig(userConfig: PartialVendureConfig): void {
+    if (!activeConfig) {
+        activeConfig = require('./default-config').defaultConfig;
+    }
     activeConfig = mergeConfig(activeConfig, userConfig);
 }
 
@@ -25,5 +27,8 @@ export function setConfig(userConfig: PartialVendureConfig): void {
  * should be used to access config settings.
  */
 export function getConfig(): Readonly<RuntimeVendureConfig> {
+    if (!activeConfig) {
+        activeConfig = require('./default-config').defaultConfig;
+    }
     return activeConfig;
 }

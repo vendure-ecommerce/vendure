@@ -5,12 +5,15 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
+import {
+    SearchProductsShopQuery,
+    SearchProductsShopQueryVariables,
+} from '../../core/e2e/graphql/generated-e2e-shop-types';
 import { SEARCH_PRODUCTS_SHOP } from '../../core/e2e/graphql/shop-definitions';
 import { awaitRunningJobs } from '../../core/e2e/utils/await-running-jobs';
 import { ElasticsearchPlugin } from '../src/plugin';
 
-import { GetCollectionList } from './graphql/generated-e2e-elasticsearch-plugin-types';
+import { GetCollectionListQuery } from './graphql/generated-e2e-elasticsearch-plugin-types';
 // tslint:disable-next-line:no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
@@ -55,7 +58,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
     });
 
     it('no term or filters', async () => {
-        const { search } = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -67,7 +70,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
     });
 
     it('with search term', async () => {
-        const { search } = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
@@ -80,8 +83,8 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
     });
 
     it('with collectionId filter term', async () => {
-        const { collections } = await shopClient.query<GetCollectionList.Query>(GET_COLLECTION_LIST);
-        const { search } = await shopClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+        const { collections } = await shopClient.query<GetCollectionListQuery>(GET_COLLECTION_LIST);
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
