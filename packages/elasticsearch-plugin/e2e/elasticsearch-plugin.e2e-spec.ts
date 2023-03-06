@@ -108,12 +108,12 @@ describe('Elasticsearch plugin', () => {
                     indexPrefix: INDEX_PREFIX,
                     port: elasticsearchPort,
                     host: elasticsearchHost,
-                    hydrateProductVariantRelations: ['customFields.material'],
+                    hydrateProductVariantRelations: ['customFields.material', 'stockLevels'],
                     customProductVariantMappings: {
                         inStock: {
                             graphQlType: 'Boolean!',
                             valueFn: variant => {
-                                return variant.stockOnHand > 0;
+                                return variant.stockLevels[0]?.stockOnHand > 0;
                             },
                         },
                         materialCode: {

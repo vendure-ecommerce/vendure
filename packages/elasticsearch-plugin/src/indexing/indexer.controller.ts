@@ -522,7 +522,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const updatedProductVariants = await this.connection.getRepository(ProductVariant).find({
             relations: this.variantRelations,
             where: {
-                id: productId,
+                productId,
                 deletedAt: IsNull(),
             },
             order: {
