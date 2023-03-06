@@ -5,14 +5,14 @@ module.exports = {
     rootDir: __dirname,
     roots: ['<rootDir>/src', '<rootDir>/mock-data'],
     transform: {
-        '^.+\\.(t|j)s$': 'ts-jest',
-    },
-    globals: {
-        'ts-jest': {
-            tsconfig: {
-                allowJs: true,
+        '^.+\\.(t|j)s$': [
+            'ts-jest',
+            {
+                tsconfig: {
+                    allowJs: true,
+                },
             },
-        },
+        ],
     },
     testEnvironment: 'node',
 };

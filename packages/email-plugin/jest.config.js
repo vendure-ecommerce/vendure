@@ -5,16 +5,16 @@ module.exports = {
     rootDir: __dirname,
     roots: ['<rootDir>/src'],
     transform: {
-        '^.+\\.(t|j)s$': 'ts-jest',
-    },
-    globals: {
-        'ts-jest': {
-            isolatedModules: true,
-            tsconfig: {
-                allowJs: true,
-                skipLibCheck: true,
+        '^.+\\.(t|j)s$': [
+            'ts-jest',
+            {
+                isolatedModules: true,
+                tsconfig: {
+                    allowJs: true,
+                    skipLibCheck: true,
+                },
             },
-        },
+        ],
     },
     testEnvironment: 'node',
 };

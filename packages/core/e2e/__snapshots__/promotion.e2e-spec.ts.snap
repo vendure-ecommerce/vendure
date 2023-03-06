@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Promotion resolver adjustmentOperations 1`] = `
-Array [
-  Object {
-    "args": Array [
-      Object {
+[
+  {
+    "args": [
+      {
         "name": "facetValueIds",
         "type": "ID",
         "ui": null,
@@ -17,10 +17,10 @@ Array [
 `;
 
 exports[`Promotion resolver adjustmentOperations 2`] = `
-Array [
-  Object {
-    "args": Array [
-      Object {
+[
+  {
+    "args": [
+      {
         "name": "arg",
         "type": "int",
         "ui": null,
@@ -29,9 +29,9 @@ Array [
     "code": "promo_condition",
     "description": "description for promo_condition",
   },
-  Object {
-    "args": Array [
-      Object {
+  {
+    "args": [
+      {
         "name": "arg",
         "type": "int",
         "ui": null,
@@ -44,22 +44,22 @@ Array [
 `;
 
 exports[`Promotion resolver createPromotion 1`] = `
-Object {
-  "actions": Array [
-    Object {
-      "args": Array [
-        Object {
+{
+  "actions": [
+    {
+      "args": [
+        {
           "name": "facetValueIds",
-          "value": "[\\"T_1\\"]",
+          "value": "["T_1"]",
         },
       ],
       "code": "promo_action",
     },
   ],
-  "conditions": Array [
-    Object {
-      "args": Array [
-        Object {
+  "conditions": [
+    {
+      "args": [
+        {
           "name": "arg",
           "value": "500",
         },
@@ -76,31 +76,31 @@ Object {
 `;
 
 exports[`Promotion resolver updatePromotion 1`] = `
-Object {
-  "actions": Array [
-    Object {
-      "args": Array [
-        Object {
+{
+  "actions": [
+    {
+      "args": [
+        {
           "name": "facetValueIds",
-          "value": "[\\"T_1\\"]",
+          "value": "["T_1"]",
         },
       ],
       "code": "promo_action",
     },
   ],
-  "conditions": Array [
-    Object {
-      "args": Array [
-        Object {
+  "conditions": [
+    {
+      "args": [
+        {
           "name": "arg",
           "value": "90",
         },
       ],
       "code": "promo_condition",
     },
-    Object {
-      "args": Array [
-        Object {
+    {
+      "args": [
+        {
           "name": "arg",
           "value": "10",
         },

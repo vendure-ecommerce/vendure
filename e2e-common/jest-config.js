@@ -14,15 +14,15 @@ module.exports = {
     testRegex: '.e2e-spec.ts$',
     maxWorkers: process.env.CI ? 1 : 3,
     transform: {
-        '^.+\\.ts$': 'ts-jest',
+        '^.+\\.ts$': [
+            'ts-jest',
+            {
+                tsconfig: '<rootDir>/config/tsconfig.e2e.json',
+                diagnostics: false,
+                isolatedModules: true,
+            },
+        ],
     },
     testEnvironment: 'node',
     reporters: ['default', path.join(__dirname, 'custom-reporter.js')],
-    globals: {
-        'ts-jest': {
-            tsconfig: '<rootDir>/config/tsconfig.e2e.json',
-            diagnostics: false,
-            isolatedModules: true,
-        },
-    },
 };

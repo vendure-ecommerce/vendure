@@ -8,7 +8,7 @@ import nock from 'nock';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { StripePlugin } from '../src/stripe';
 import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
 
@@ -98,13 +98,18 @@ describe('Stripe payments', () => {
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: `stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`,
-                name: 'Stripe payment test',
-                description: 'This is a Stripe test payment method',
                 enabled: true,
                 handler: {
                     code: stripePaymentMethodHandler.code,
                     arguments: [],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Stripe payment test',
+                        description: 'This is a Stripe test payment method',
+                    },
+                ],
             },
         });
         expect(createPaymentMethod.code).toBe(`stripe-payment-${E2E_DEFAULT_CHANNEL_TOKEN}`);

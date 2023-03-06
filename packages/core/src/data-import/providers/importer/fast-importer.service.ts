@@ -182,13 +182,11 @@ export class FastImporterService {
                 .getRepository(this.importCtx, ProductVariantAsset)
                 .save(variantAssets, { reload: false });
         }
-        if (input.stockOnHand != null && input.stockOnHand !== 0) {
-            await this.stockMovementService.adjustProductVariantStock(
-                this.importCtx,
-                createdVariant.id,
-                input.stockOnHand,
-            );
-        }
+        await this.stockMovementService.adjustProductVariantStock(
+            this.importCtx,
+            createdVariant.id,
+            input.stockOnHand ?? 0,
+        );
         const assignedChannelIds = unique([this.defaultChannel, this.importCtx.channel], 'id').map(c => c.id);
         for (const channelId of assignedChannelIds) {
             const variantPrice = new ProductVariantPrice({

@@ -1,5 +1,5 @@
 import { OrderStatus } from '@mollie/api-client';
-import { ChannelService, mergeConfig, OrderService, RequestContext } from '@vendure/core';
+import { ChannelService, LanguageCode, mergeConfig, OrderService, RequestContext } from '@vendure/core';
 import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables,
@@ -190,8 +190,6 @@ describe('Mollie payments', () => {
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,
-                name: 'Mollie payment test',
-                description: 'This is a Mollie test payment method',
                 enabled: true,
                 handler: {
                     code: molliePaymentHandler.code,
@@ -201,6 +199,13 @@ describe('Mollie payments', () => {
                         { name: 'autoCapture', value: 'false' },
                     ],
                 },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Mollie payment test',
+                        description: 'This is a Mollie test payment method',
+                    },
+                ],
             },
         });
         expect(createPaymentMethod.code).toBe(mockData.methodCode);
