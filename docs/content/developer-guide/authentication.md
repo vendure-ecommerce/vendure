@@ -76,7 +76,7 @@ Google.
 To do this you'll need to install the `google-auth-library` npm package as described in the ["Authenticate with a backend server" guide](https://developers.google.com/identity/sign-in/web/backend-auth).
 
 ```TypeScript
-{
+import {
  AuthenticationStrategy,
   ExternalAuthenticationService,
   Injector,
