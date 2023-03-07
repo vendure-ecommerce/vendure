@@ -4504,10 +4504,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/graphql-upload@^8.0.4":
-  version "8.0.12"
-  resolved "https://registry.yarnpkg.com/@types/graphql-upload/-/graphql-upload-8.0.12.tgz#224738b8885bad8d50fb690b67bbe10bbcdef032"
-  integrity sha512-M0ZPZqNUzKNB16q5woEzgG/Q8DjICV80K7JvDSRnDmDFfrRdfFX/n6PbmqAN7gCzECcHVnw1gk6N4Cg0FwxCqA==
+"@types/graphql-upload@^15.0.2":
+  version "15.0.2"
+  resolved "https://registry.yarnpkg.com/@types/graphql-upload/-/graphql-upload-15.0.2.tgz#f6fa1bee2337c6798fb10438a851ed80e3a6f402"
+  integrity sha512-dK4GN/JbMmgHbsKZaUWVYwaLMCwIR0QMBcFz+jb4xj/cRLq1yo2VfnoFvnP5yCw7W4IgGgW7JRwEvM4jn0ahlA==
   dependencies:
     "@types/express" "*"
     "@types/koa" "*"

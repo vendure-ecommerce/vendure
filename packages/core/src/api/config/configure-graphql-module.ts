@@ -92,7 +92,7 @@ async function createGraphQLOptions(
     options: GraphQLApiOptions,
 ): Promise<GqlModuleOptions> {
     const builtSchema = await buildSchemaForApi(options.apiType);
-    const resolvers = generateResolvers(
+    const resolvers = await generateResolvers(
         configService,
         customFieldRelationResolverService,
         options.apiType,

@@ -2,7 +2,6 @@ import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
 import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { GraphQLFloat, GraphQLSchema } from 'graphql';
 import { GraphQLDateTime, GraphQLJSON, GraphQLSafeInt } from 'graphql-scalars';
-import { GraphQLUpload } from 'graphql-upload';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import {
@@ -25,7 +24,7 @@ import { GraphQLMoney } from './money-scalar';
  * Generates additional resolvers required for things like resolution of union types,
  * custom scalars and "relation"-type custom fields.
  */
-export function generateResolvers(
+export async function generateResolvers(
     configService: ConfigService,
     customFieldRelationResolverService: CustomFieldRelationResolverService,
     apiType: ApiType,
@@ -82,6 +81,9 @@ export function generateResolvers(
             }
         },
     };
+
+    // @ts-ignore
+    const { default: GraphQLUpload } = await import('graphql-upload/GraphQLUpload.mjs');
 
     const commonResolvers = {
         JSON: GraphQLJSON,

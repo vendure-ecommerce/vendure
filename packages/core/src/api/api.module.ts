@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { graphqlUploadExpress } from 'graphql-upload';
 import path from 'path';
 
 import { ConfigService } from '../config/config.service';
@@ -75,10 +74,11 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
 })
 export class ApiModule implements NestModule {
     constructor(private configService: ConfigService) {}
-    configure(consumer: MiddlewareConsumer): any {
+    async configure(consumer: MiddlewareConsumer) {
         const { adminApiPath, shopApiPath } = this.configService.apiOptions;
         const { uploadMaxFileSize } = this.configService.assetOptions;
-
+        // @ts-ignore
+        const { default: graphqlUploadExpress } = await import('graphql-upload/graphqlUploadExpress.mjs');
         consumer
             .apply(graphqlUploadExpress({ maxFileSize: uploadMaxFileSize }))
             .forRoutes(adminApiPath, shopApiPath);
