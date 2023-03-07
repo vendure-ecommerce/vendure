@@ -44,7 +44,7 @@
     "concurrently": "^6.0.0",
     "conventional-changelog-core": "^4.2.4",
     "find": "^0.3.0",
-    "graphql": "16.3.0",
+    "graphql": "16.6.0",
     "husky": "^4.3.0",
     "jest": "^29.4.3",
     "klaw-sync": "^6.0.0",
