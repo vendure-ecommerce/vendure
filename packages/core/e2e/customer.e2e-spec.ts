@@ -13,7 +13,7 @@ import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from 
 import gql from 'graphql-tag';
 import path from 'path';
 import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, Mock } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -47,7 +47,7 @@ import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
-let sendEmailFn: jest.Mock;
+let sendEmailFn: Mock;
 
 /**
  * This mock plugin simulates an EmailPlugin which would send emails

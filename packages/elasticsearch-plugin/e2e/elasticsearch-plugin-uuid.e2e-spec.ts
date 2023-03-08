@@ -18,14 +18,6 @@ import { GetCollectionListQuery } from './graphql/generated-e2e-elasticsearch-pl
 // tslint:disable-next-line:no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
-/**
- * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
- * We increase the timeout to 30 seconds to prevent failure due to timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(10 * 3000);
-}
-
 // https://github.com/vendure-ecommerce/vendure/issues/494
 describe('Elasticsearch plugin with UuidIdStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
