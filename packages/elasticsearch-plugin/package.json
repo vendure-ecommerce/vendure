@@ -12,7 +12,8 @@
     "build": "rimraf lib && tsc -p ./tsconfig.build.json",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
-    "e2e": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --package=elasticsearch-plugin"
+    "e2e": "cross-env PACKAGE=elasticsearch-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
+    "e2e:watch": "cross-env PACKAGE=elasticsearch-plugin vitest --config ../../e2e-common/vitest.config.ts"
   },
   "homepage": "https://www.vendure.io/",
   "funding": "https://github.com/sponsors/michaelbromley",

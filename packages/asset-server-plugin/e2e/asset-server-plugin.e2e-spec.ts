@@ -1,11 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
-import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
+import { mergeConfig } from '@vendure/core';
 import { AssetFragment } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { createTestEnvironment } from '@vendure/testing';
 import fs from 'fs-extra';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';

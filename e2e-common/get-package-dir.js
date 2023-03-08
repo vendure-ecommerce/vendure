@@ -4,7 +4,7 @@ const path = require('path');
  * @return {string}
  */
 function getPackageDir() {
-    const packageArg = process.env.packageArg || process.argv.find(arg => arg.startsWith('--package='));
+    const packageArg = process.env.PACKAGE || process.argv.find(arg => arg.startsWith('--package='));
     if (!packageArg) {
         console.error('No package specified! Please pass --package=<packageDirName>');
         process.exit(1);

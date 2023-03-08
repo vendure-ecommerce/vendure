@@ -44,6 +44,7 @@
     "@types/node": "^14.14.31",
     "concurrently": "^6.0.0",
     "conventional-changelog-core": "^4.2.4",
+    "cross-env": "^7.0.3",
     "find": "^0.3.0",
     "graphql": "16.6.0",
     "husky": "^4.3.0",

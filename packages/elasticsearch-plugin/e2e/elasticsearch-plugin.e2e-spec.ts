@@ -14,6 +14,7 @@ import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testi
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -71,14 +72,6 @@ import {
 
 // tslint:disable-next-line:no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
-
-/**
- * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
- * We increase the timeout to 30 seconds to prevent failure due to timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(10 * 3000);
-}
 
 interface SearchProductShopVariables extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {

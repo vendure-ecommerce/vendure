@@ -25,8 +25,8 @@
     "watch": "concurrently yarn:tsc:watch yarn:gulp:watch",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
-    "e2e": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ../../e2e-common/jest-config.js --package=core",
-    "e2e:vitest": "vitest --config ../../e2e-common/vitest.config.ts",
+    "e2e": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts --run",
+    "e2e:watch": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts",
     "ci": "yarn build"
   },
   "publishConfig": {

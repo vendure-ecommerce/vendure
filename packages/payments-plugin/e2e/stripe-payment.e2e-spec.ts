@@ -6,9 +6,10 @@ import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testi
 import gql from 'graphql-tag';
 import nock from 'nock';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { StripePlugin } from '../src/stripe';
 import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
 
