@@ -1,4 +1,5 @@
-import { customAlphabet } from 'nanoid';
+// tslint:disable-next-line:no-var-requires
+const { customAlphabet } = require('nanoid');
 
 const nanoid = customAlphabet('123456789ABCDEFGHJKLMNPQRSTUVWXYZ', 16);
 

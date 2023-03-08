@@ -60,14 +60,14 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
     async init(injector) {
         // Lazily import these services to avoid a circular dependency error
         // due to this being used as part of the DefaultConfig
-        const TransactionalConnection = await import('../../connection/transactional-connection').then(
+        const TransactionalConnection = await import('../../connection/transactional-connection.js').then(
             m => m.TransactionalConnection,
         );
-        const ConfigService = await import('../config.service').then(m => m.ConfigService);
-        const HistoryService = await import('../../service/index').then(m => m.HistoryService);
-        const OrderService = await import('../../service/index').then(m => m.OrderService);
-        const StockMovementService = await import('../../service/index').then(m => m.StockMovementService);
-        const StockLevelService = await import('../../service/index').then(m => m.StockLevelService);
+        const ConfigService = await import('../config.service.js').then(m => m.ConfigService);
+        const HistoryService = await import('../../service/index.js').then(m => m.HistoryService);
+        const OrderService = await import('../../service/index.js').then(m => m.OrderService);
+        const StockMovementService = await import('../../service/index.js').then(m => m.StockMovementService);
+        const StockLevelService = await import('../../service/index.js').then(m => m.StockLevelService);
         connection = injector.get(TransactionalConnection);
         configService = injector.get(ConfigService);
         orderService = injector.get(OrderService);

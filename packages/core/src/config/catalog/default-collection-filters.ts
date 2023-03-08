@@ -1,5 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { customAlphabet } from 'nanoid';
+// tslint:disable-next-line:no-var-requires
+const { customAlphabet } = require('nanoid');
 
 import { ConfigArgDef } from '../../common/configurable-operation';
 import { UserInputError } from '../../common/error/errors';
@@ -28,6 +29,7 @@ export const combineWithAndArg: ConfigArgDef<'boolean'> = {
     description: [
         {
             languageCode: LanguageCode.en,
+            // tslint:disable-next-line:max-line-length
             value: 'If this filter is being combined with other filters, do all conditions need to be satisfied (AND), or just one or the other (OR)?',
         },
     ],

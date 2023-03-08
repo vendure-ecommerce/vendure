@@ -233,15 +233,15 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
         async init(injector) {
             // Lazily import these services to avoid a circular dependency error
             // due to this being used as part of the DefaultConfig
-            const ConfigService = await import('../config.service').then(m => m.ConfigService);
-            const EventBus = await import('../../event-bus/index').then(m => m.EventBus);
-            const StockMovementService = await import('../../service/index').then(
+            const ConfigService = await import('../config.service.js').then(m => m.ConfigService);
+            const EventBus = await import('../../event-bus/index.js').then(m => m.EventBus);
+            const StockMovementService = await import('../../service/index.js').then(
                 m => m.StockMovementService,
             );
-            const StockLevelService = await import('../../service/index').then(m => m.StockLevelService);
-            const HistoryService = await import('../../service/index').then(m => m.HistoryService);
-            const OrderSplitter = await import('../../service/index').then(m => m.OrderSplitter);
-            const ProductVariantService = await import('../../service/index').then(
+            const StockLevelService = await import('../../service/index.js').then(m => m.StockLevelService);
+            const HistoryService = await import('../../service/index.js').then(m => m.HistoryService);
+            const OrderSplitter = await import('../../service/index.js').then(m => m.OrderSplitter);
+            const ProductVariantService = await import('../../service/index.js').then(
                 m => m.ProductVariantService,
             );
             connection = injector.get(TransactionalConnection);

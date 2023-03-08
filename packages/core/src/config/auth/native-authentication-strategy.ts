@@ -35,8 +35,8 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         // These are lazily-loaded to avoid a circular dependency
-        const { PasswordCipher } = await import('../../service/helpers/password-cipher/password-cipher');
-        const { UserService } = await import('../../service/services/user.service');
+        const { PasswordCipher } = await import('../../service/helpers/password-cipher/password-cipher.js');
+        const { UserService } = await import('../../service/services/user.service.js');
         this.passwordCipher = injector.get(PasswordCipher);
         this.userService = injector.get(UserService);
     }

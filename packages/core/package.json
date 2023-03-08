@@ -17,6 +17,7 @@
   "funding": "https://github.com/sponsors/michaelbromley",
   "private": false,
   "license": "MIT",
+  "type": "commonjs",
   "scripts": {
     "tsc:watch": "tsc -p ./build/tsconfig.build.json --watch",
     "gulp:watch": "gulp -f ./build/gulpfile.ts watch",
@@ -40,8 +41,8 @@
     "cli/**/*"
   ],
   "dependencies": {
-    "@graphql-tools/stitch": "^7.5.3",
-    "@nestjs/apollo": "10.2.0",
+    "@graphql-tools/stitch": "^8.7.43",
+    "@nestjs/apollo": "^10.2.0",
     "@nestjs/common": "9.3.9",
     "@nestjs/core": "9.3.9",
     "@nestjs/graphql": "10.2.0",

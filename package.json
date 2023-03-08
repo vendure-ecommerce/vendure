@@ -37,7 +37,7 @@
     "@graphql-codegen/fragment-matcher": "4.0.1",
     "@graphql-codegen/typescript": "3.0.1",
     "@graphql-codegen/typescript-operations": "3.0.1",
-    "@graphql-tools/schema": "^8.3.1",
+    "@graphql-tools/schema": "^9.0.17",
     "@types/jest": "^29.4.0",
     "@types/klaw-sync": "^6.0.0",
     "@types/node": "^14.14.31",

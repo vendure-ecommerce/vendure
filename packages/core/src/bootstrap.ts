@@ -47,7 +47,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
-    const appModule = await import('./app.module');
+    const appModule = await import('./app.module.js');
     setProcessContext('server');
     const { hostname, port, cors, middleware } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
@@ -106,7 +106,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     setProcessContext('worker');
     DefaultLogger.hideNestBoostrapLogs();
 
-    const WorkerModule = await import('./worker/worker.module').then(m => m.WorkerModule);
+    const WorkerModule = await import('./worker/worker.module.js').then(m => m.WorkerModule);
     const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
     });
@@ -129,7 +129,7 @@ export async function preBootstrapConfig(
     }
 
     const entities = await getAllEntities(userConfig);
-    const { coreSubscribersMap } = await import('./entity/subscribers');
+    const { coreSubscribersMap } = await import('./entity/subscribers.js');
     setConfig({
         dbConnectionOptions: {
             entities,
