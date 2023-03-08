@@ -1,7 +1,7 @@
 /* tslint:disable:no-console */
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
-import glob from 'glob';
+import { globSync } from 'glob';
 import * as path from 'path';
 
 import {
@@ -110,7 +110,7 @@ async function copyExtensionModules(outputPath: string, extensions: AdminUiExten
         }
 
         const exclude = extension.exclude
-            .map(e => glob.sync(path.join(extension.extensionPath, e)))
+            .map(e => globSync(path.join(extension.extensionPath, e)))
             .flatMap(e => e);
         fs.copySync(extension.extensionPath, dest, {
             filter: name => name === extension.extensionPath || exclude.every(e => e !== name),
