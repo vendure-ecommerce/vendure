@@ -4,6 +4,8 @@ import { createTestEnvironment } from '@vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -15,7 +17,7 @@ fixPostgresTimezone();
 
 // tslint:disable:no-non-null-assertion
 
-const validateInjectorSpy = jest.fn();
+const validateInjectorSpy = vi.fn();
 
 const customConfig = mergeConfig(testConfig(), {
     dbConnectionOptions: {

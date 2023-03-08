@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Product resolver product mutation createProduct creates a new Product 1`] = `
+exports[`Product resolver > product mutation > createProduct creates a new Product 1`] = `
 {
   "assets": [],
   "channels": [
@@ -22,7 +22,7 @@ exports[`Product resolver product mutation createProduct creates a new Product 1
 }
 `;
 
-exports[`Product resolver product query returns expected properties 1`] = `
+exports[`Product resolver > product query > returns expected properties 1`] = `
 {
   "assets": [
     {

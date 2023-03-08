@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Administrator resolver createAdministrator 1`] = `
+exports[`Administrator resolver > createAdministrator 1`] = `
 {
   "emailAddress": "test@test.com",
   "firstName": "First",
@@ -110,7 +110,7 @@ exports[`Administrator resolver createAdministrator 1`] = `
 }
 `;
 
-exports[`Administrator resolver updateAdministrator 1`] = `
+exports[`Administrator resolver > updateAdministrator 1`] = `
 {
   "emailAddress": "new-email",
   "firstName": "new first",

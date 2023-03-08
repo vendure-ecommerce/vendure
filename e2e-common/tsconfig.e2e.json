@@ -7,6 +7,8 @@
     "inlineSourceMap": false,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "allowJs": false,
     "diagnostics": false

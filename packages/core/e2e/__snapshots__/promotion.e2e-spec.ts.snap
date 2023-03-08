@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Promotion resolver adjustmentOperations 1`] = `
+exports[`Promotion resolver > adjustmentOperations 1`] = `
 [
   {
     "args": [
@@ -16,7 +16,7 @@ exports[`Promotion resolver adjustmentOperations 1`] = `
 ]
 `;
 
-exports[`Promotion resolver adjustmentOperations 2`] = `
+exports[`Promotion resolver > adjustmentOperations 2`] = `
 [
   {
     "args": [
@@ -43,14 +43,14 @@ exports[`Promotion resolver adjustmentOperations 2`] = `
 ]
 `;
 
-exports[`Promotion resolver createPromotion 1`] = `
+exports[`Promotion resolver > createPromotion 1`] = `
 {
   "actions": [
     {
       "args": [
         {
           "name": "facetValueIds",
-          "value": "["T_1"]",
+          "value": "[\\"T_1\\"]",
         },
       ],
       "code": "promo_action",
@@ -75,14 +75,14 @@ exports[`Promotion resolver createPromotion 1`] = `
 }
 `;
 
-exports[`Promotion resolver updatePromotion 1`] = `
+exports[`Promotion resolver > updatePromotion 1`] = `
 {
   "actions": [
     {
       "args": [
         {
           "name": "facetValueIds",
-          "value": "["T_1"]",
+          "value": "[\\"T_1\\"]",
         },
       ],
       "code": "promo_action",

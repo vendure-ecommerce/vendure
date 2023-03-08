@@ -3,6 +3,8 @@ import { CachedSession, mergeConfig, SessionCacheStrategy } from '@vendure/core'
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -16,10 +18,10 @@ import {
 import { ATTEMPT_LOGIN, ME } from './graphql/shared-definitions';
 
 const testSessionCache = new Map<string, CachedSession>();
-const getSpy = jest.fn();
-const setSpy = jest.fn();
-const clearSpy = jest.fn();
-const deleteSpy = jest.fn();
+const getSpy = vi.fn();
+const setSpy = vi.fn();
+const clearSpy = vi.fn();
+const deleteSpy = vi.fn();
 
 class TestingSessionCacheStrategy implements SessionCacheStrategy {
     clear() {

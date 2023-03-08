@@ -16,6 +16,7 @@ import {
 } from '@vendure/core';
 import gql from 'graphql-tag';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
+import { vi } from 'vitest';
 
 import { ProfileAsset } from './profile-asset.entity';
 import { Profile } from './profile.entity';
@@ -155,7 +156,7 @@ const profileType = gql`
 })
 // tslint:disable-next-line:class-name
 export class TestPlugin1636_1664 implements OnApplicationBootstrap {
-    static testResolverSpy = jest.fn();
+    static testResolverSpy = vi.fn();
 
     constructor(private connection: TransactionalConnection) {}
 

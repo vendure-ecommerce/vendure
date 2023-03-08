@@ -2,6 +2,7 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { PaymentMethodHandler } from '@vendure/core';
 import { SimpleGraphQLClient } from '@vendure/testing';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import * as CodegenShop from '../graphql/generated-e2e-shop-types';
 import { TestOrderFragmentFragment } from '../graphql/generated-e2e-shop-types';

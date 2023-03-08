@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Facet resolver createFacet 1`] = `
+exports[`Facet resolver > createFacet 1`] = `
 {
   "code": "speaker-type",
   "id": "T_2",

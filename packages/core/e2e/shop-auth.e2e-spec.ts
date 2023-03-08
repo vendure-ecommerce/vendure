@@ -18,6 +18,8 @@ import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from 
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
+import { Mock, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -45,7 +47,7 @@ import {
     VERIFY_EMAIL,
 } from './graphql/shop-definitions';
 
-let sendEmailFn: jest.Mock;
+let sendEmailFn: Mock;
 
 /**
  * This mock plugin simulates an EmailPlugin which would send emails
@@ -127,7 +129,7 @@ describe('Shop auth & accounts', () => {
         let newCustomerId: string;
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('does not return error result on email address conflict', async () => {
@@ -500,7 +502,7 @@ describe('Shop auth & accounts', () => {
         });
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('requestPasswordReset silently fails with invalid identifier', async () => {
@@ -616,7 +618,7 @@ describe('Shop auth & accounts', () => {
         let newCustomerId: string;
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('register a new account without password', async () => {
@@ -627,10 +629,10 @@ describe('Shop auth & accounts', () => {
                 phoneNumber: '123456',
                 emailAddress,
             };
-            const { registerCustomerAccount } = await shopClient.query<Codegen.RegisterMutation, Codegen.RegisterMutationVariables>(
-                REGISTER_ACCOUNT,
-                { input },
-            );
+            const { registerCustomerAccount } = await shopClient.query<
+                Codegen.RegisterMutation,
+                Codegen.RegisterMutationVariables
+            >(REGISTER_ACCOUNT, { input });
             successErrorGuard.assertSuccess(registerCustomerAccount);
             verificationToken = await verificationTokenPromise;
 
@@ -710,7 +712,7 @@ describe('Shop auth & accounts', () => {
         });
 
         beforeEach(() => {
-            sendEmailFn = jest.fn();
+            sendEmailFn = vi.fn();
         });
 
         it('throws if not logged in', async () => {
@@ -962,7 +964,7 @@ describe('Expiring tokens', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
-        sendEmailFn = jest.fn();
+        sendEmailFn = vi.fn();
     });
 
     afterAll(async () => {
@@ -1067,7 +1069,7 @@ describe('Registration without email verification', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
-        sendEmailFn = jest.fn();
+        sendEmailFn = vi.fn();
     });
 
     afterAll(async () => {
@@ -1156,7 +1158,7 @@ describe('Updating email address without email verification', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
-        sendEmailFn = jest.fn();
+        sendEmailFn = vi.fn();
     });
 
     afterAll(async () => {

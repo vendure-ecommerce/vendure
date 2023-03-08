@@ -13,6 +13,7 @@ module.exports = {
     rootDir: packageDirname,
     testRegex: '.e2e-spec.ts$',
     maxWorkers: process.env.CI ? 1 : 3,
+    extensionsToTreatAsEsm: ['.ts'],
     transform: {
         '^.+\\.ts$': [
             'ts-jest',
@@ -20,6 +21,7 @@ module.exports = {
                 tsconfig: '<rootDir>/config/tsconfig.e2e.json',
                 diagnostics: false,
                 isolatedModules: true,
+                useESM: true,
             },
         ],
     },

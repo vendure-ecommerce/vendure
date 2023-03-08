@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Import resolver imports products 1`] = `
+exports[`Import resolver > imports products 1`] = `
 {
   "assets": [
     {
@@ -119,7 +119,7 @@ exports[`Import resolver imports products 1`] = `
 }
 `;
 
-exports[`Import resolver imports products 2`] = `
+exports[`Import resolver > imports products 2`] = `
 {
   "assets": [],
   "customFields": {
@@ -168,7 +168,7 @@ exports[`Import resolver imports products 2`] = `
 }
 `;
 
-exports[`Import resolver imports products 3`] = `
+exports[`Import resolver > imports products 3`] = `
 {
   "assets": [],
   "customFields": {
@@ -262,7 +262,7 @@ exports[`Import resolver imports products 3`] = `
 }
 `;
 
-exports[`Import resolver imports products 4`] = `
+exports[`Import resolver > imports products 4`] = `
 {
   "assets": [],
   "customFields": {
@@ -403,7 +403,7 @@ exports[`Import resolver imports products 4`] = `
 }
 `;
 
-exports[`Import resolver imports products with multiple languages 1`] = `
+exports[`Import resolver > imports products with multiple languages 1`] = `
 {
   "assets": [],
   "customFields": {

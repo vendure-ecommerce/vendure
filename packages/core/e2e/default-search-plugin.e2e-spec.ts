@@ -2,7 +2,6 @@
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
-    DefaultLogger,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
     mergeConfig,
@@ -16,10 +15,12 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     ChannelFragment,
     CurrencyCode,
@@ -28,7 +29,6 @@ import {
     SearchResultSortParameter,
     SortOrder,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     LogicalOperator,
     SearchProductsShopQuery,
@@ -57,10 +57,6 @@ import { SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__'), 1000));
-
-// Some of these tests have many steps and can timeout
-// on the default of 5s.
-jest.setTimeout(10000);
 
 interface SearchProductShopQueryVariables extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {

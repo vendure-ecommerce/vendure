@@ -25,7 +25,8 @@
     "watch": "concurrently yarn:tsc:watch yarn:gulp:watch",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --package=core",
+    "e2e": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ../../e2e-common/jest-config.js --package=core",
+    "e2e:vitest": "vitest --config ../../e2e-common/vitest.config.ts",
     "ci": "yarn build"
   },
   "publishConfig": {
@@ -96,10 +97,10 @@
     "better-sqlite3": "^7.1.1",
     "gulp": "^4.0.2",
     "mysql": "^2.18.1",
-    "pg": "^8.4.0",
+    "pg": "^8.10.0",
     "rimraf": "^3.0.2",
-    "sql.js": "1.3.2",
-    "sqlite3": "^5.0.0",
+    "sql.js": "1.8.0",
+    "sqlite3": "^5.1.4",
     "typescript": "4.9.5"
   }
 }

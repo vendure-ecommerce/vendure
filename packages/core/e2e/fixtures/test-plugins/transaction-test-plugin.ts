@@ -16,6 +16,7 @@ import {
 } from '@vendure/core';
 import gql from 'graphql-tag';
 import { ReplaySubject, Subscription } from 'rxjs';
+import { vi } from 'vitest';
 
 export class TestEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public administrator: Administrator) {
@@ -304,8 +305,8 @@ class TestResolver {
 })
 export class TransactionTestPlugin implements OnApplicationBootstrap {
     private subscription: Subscription;
-    static callHandler = jest.fn();
-    static errorHandler = jest.fn();
+    static callHandler = vi.fn();
+    static errorHandler = vi.fn();
     static eventHandlerComplete$ = new ReplaySubject(1);
 
     constructor(private eventBus: EventBus, private connection: TransactionalConnection) {}

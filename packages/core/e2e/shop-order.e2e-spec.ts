@@ -4,15 +4,17 @@ import {
     Asset,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
+    manualFulfillmentHandler,
     mergeConfig,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { manualFulfillmentHandler } from '../src/index';
 
 import {
     testErrorPaymentMethod,
@@ -106,7 +108,6 @@ describe('Shop orders', () => {
         | CodegenShop.UpdatedOrderFragment
         | CodegenShop.TestOrderFragmentFragment
         | CodegenShop.TestOrderWithPaymentsFragment
-        | CodegenShop.CanceledOrderFragment
         | CodegenShop.ActiveOrderCustomerFragment;
     const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
@@ -1544,7 +1545,7 @@ describe('Shop orders', () => {
                 beforeAll(() => {
                     // mock Date.now: add 3 hours
                     const nowIn3H = Date.now() + 3 * 3600 * 1000;
-                    dateNowMock = jest.spyOn(global.Date, 'now').mockImplementation(() => nowIn3H);
+                    dateNowMock = vi.spyOn(global.Date, 'now').mockImplementation(() => nowIn3H);
                 });
 
                 it('still works when authenticated as owner', async () => {

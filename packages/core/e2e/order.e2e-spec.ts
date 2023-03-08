@@ -15,6 +15,7 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -1739,7 +1740,7 @@ describe('Orders resolver', () => {
         });
 
         // TODO: I think we should remove this restriction
-        xit('returns error result if attempting to refund the same item more than once', async () => {
+        it.skip('returns error result if attempting to refund the same item more than once', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
                 {

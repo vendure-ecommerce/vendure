@@ -7,6 +7,8 @@ import {
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
+import { vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -25,7 +27,7 @@ import {
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
 
-const check1Spy = jest.fn();
+const check1Spy = vi.fn();
 const checker1 = new ShippingEligibilityChecker({
     code: 'checker1',
     description: [],
@@ -36,7 +38,7 @@ const checker1 = new ShippingEligibilityChecker({
     },
 });
 
-const check2Spy = jest.fn();
+const check2Spy = vi.fn();
 const checker2 = new ShippingEligibilityChecker({
     code: 'checker2',
     description: [],
@@ -47,7 +49,7 @@ const checker2 = new ShippingEligibilityChecker({
     },
 });
 
-const check3Spy = jest.fn();
+const check3Spy = vi.fn();
 const checker3 = new ShippingEligibilityChecker({
     code: 'checker3',
     description: [],

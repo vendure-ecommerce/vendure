@@ -5,13 +5,12 @@ const path = require('path');
  */
 function getPackageDir() {
     const packageArg = process.env.packageArg || process.argv.find(arg => arg.startsWith('--package='));
-
     if (!packageArg) {
         console.error('No package specified! Please pass --package=<packageDirName>');
         process.exit(1);
     }
     const packageDirname = packageArg.split('=')[1];
-    return path.join(__dirname, '../packages', packageDirname, 'e2e');
+    return path.join(__dirname, '../packages', packageDirname ?? packageArg, 'e2e');
 }
 
 module.exports = { getPackageDir };

@@ -7,20 +7,21 @@ import {
 } from 'apollo-server-plugin-base';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 class MyApolloServerPlugin implements ApolloServerPlugin {
-    static serverWillStartFn = jest.fn();
-    static requestDidStartFn = jest.fn();
-    static willSendResponseFn = jest.fn();
+    static serverWillStartFn = vi.fn();
+    static requestDidStartFn = vi.fn();
+    static willSendResponseFn = vi.fn();
 
     static reset() {
-        this.serverWillStartFn = jest.fn();
-        this.requestDidStartFn = jest.fn();
-        this.willSendResponseFn = jest.fn();
+        this.serverWillStartFn = vi.fn();
+        this.requestDidStartFn = vi.fn();
+        this.willSendResponseFn = vi.fn();
     }
 
     serverWillStart(service: GraphQLServiceContext): Promise<void> | void {
