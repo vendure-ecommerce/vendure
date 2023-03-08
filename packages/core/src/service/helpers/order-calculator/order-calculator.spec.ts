@@ -1,10 +1,12 @@
 import { Test } from '@nestjs/testing';
 import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/generated-types';
 import { summate } from '@vendure/common/lib/shared-utils';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
+import { ensureConfigLoaded } from '../../../config/config-helpers';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
@@ -41,6 +43,7 @@ describe('OrderCalculator', () => {
     let orderCalculator: OrderCalculator;
 
     beforeAll(async () => {
+        ensureConfigLoaded();
         const module = await createTestModule();
         orderCalculator = module.get(OrderCalculator);
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);

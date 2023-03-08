@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`ImportParser parseProducts custom fields 1`] = `
+exports[`ImportParser > parseProducts > custom fields 1`] = `
 [
   {
     "product": {
@@ -100,7 +100,7 @@ exports[`ImportParser parseProducts custom fields 1`] = `
 ]
 `;
 
-exports[`ImportParser parseProducts multiple products with multiple variants 1`] = `
+exports[`ImportParser > parseProducts > multiple products with multiple variants 1`] = `
 [
   {
     "product": {
@@ -411,7 +411,7 @@ exports[`ImportParser parseProducts multiple products with multiple variants 1`]
 ]
 `;
 
-exports[`ImportParser parseProducts single product with a multiple variants 1`] = `
+exports[`ImportParser > parseProducts > single product with a multiple variants 1`] = `
 [
   {
     "product": {
@@ -502,7 +502,7 @@ exports[`ImportParser parseProducts single product with a multiple variants 1`] 
 ]
 `;
 
-exports[`ImportParser parseProducts single product with a single variant 1`] = `
+exports[`ImportParser > parseProducts > single product with a single variant 1`] = `
 [
   {
     "product": {
@@ -573,7 +573,7 @@ exports[`ImportParser parseProducts single product with a single variant 1`] = `
 ]
 `;
 
-exports[`ImportParser parseProducts works with multilingual input 1`] = `
+exports[`ImportParser > parseProducts > works with multilingual input 1`] = `
 [
   {
     "product": {
@@ -748,7 +748,7 @@ exports[`ImportParser parseProducts works with multilingual input 1`] = `
 ]
 `;
 
-exports[`ImportParser parseProducts works with streamed input 1`] = `
+exports[`ImportParser > parseProducts > works with streamed input 1`] = `
 [
   {
     "product": {

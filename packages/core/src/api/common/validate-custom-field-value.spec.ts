@@ -1,8 +1,8 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { fail } from 'assert';
+import { describe, expect, it } from 'vitest';
 
 import { Injector } from '../../common/injector';
-import { CustomFieldConfig } from '../../config/custom-field/custom-field-types';
 
 import { validateCustomFieldValue } from './validate-custom-field-value';
 

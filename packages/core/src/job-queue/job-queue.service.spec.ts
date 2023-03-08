@@ -5,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { assertFound, Injector } from '../common';
 import { ConfigService } from '../config/config.service';
@@ -19,7 +20,7 @@ import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 
 const queuePollInterval = 10;
-const backoffStrategySpy = jest.fn();
+const backoffStrategySpy = vi.fn();
 const testJobQueueStrategy = new TestingJobQueueStrategy({
     concurrency: 1,
     pollInterval: queuePollInterval,

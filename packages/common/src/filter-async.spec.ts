@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { filterAsync } from './filter-async';
 
 describe('filterAsync', () => {

@@ -1,4 +1,5 @@
 import { of } from 'rxjs';
+import { describe, expect, it, vi } from 'vitest';
 
 import { FSM } from './finite-state-machine';
 import { Transitions } from './types';
@@ -62,7 +63,7 @@ describe('Finite State Machine', () => {
 
     it('onTransitionStart() is invoked before a transition takes place', () => {
         const initialState = 'DoorsClosed';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const data = 123;
         let currentStateDuringCallback = '';
         const fsm = new FSM<TestState>(
@@ -83,7 +84,7 @@ describe('Finite State Machine', () => {
 
     it('onTransitionEnd() is invoked after a transition takes place', async () => {
         const initialState = 'DoorsClosed';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const data = 123;
         let currentStateDuringCallback = '';
         const fsm = new FSM<TestState>(
@@ -190,7 +191,7 @@ describe('Finite State Machine', () => {
 
     it('onError() is invoked for invalid transitions', async () => {
         const initialState = 'DoorsOpen';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const fsm = new FSM<TestState>(
             {
                 transitions,
@@ -205,7 +206,7 @@ describe('Finite State Machine', () => {
 
     it('onTransitionStart() invokes onError() if it returns a string', async () => {
         const initialState = 'DoorsClosed';
-        const spy = jest.fn();
+        const spy = vi.fn();
         const fsm = new FSM<TestState>(
             {
                 transitions,

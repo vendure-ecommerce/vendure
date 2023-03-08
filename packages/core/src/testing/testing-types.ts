@@ -1,1 +1,1 @@
-export type MockClass<T> = { [K in keyof T]: jest.Mock<any> | any };
+export type MockClass<T> = { [K in keyof T]: vi.Mock<any> | any };

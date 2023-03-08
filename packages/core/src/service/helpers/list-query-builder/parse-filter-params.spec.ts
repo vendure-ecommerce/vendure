@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { FilterParameter } from '../../../common/types/common-types';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
@@ -70,7 +72,7 @@ describe('parseFilterParams()', () => {
     });
 
     describe('string operators', () => {
-        describe('eq', () => {
+        it('eq', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'name', type: String }]);
             const filterParams: FilterParameter<Product> = {
@@ -83,7 +85,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: 'foo' });
         });
 
-        describe('contains', () => {
+        it('contains', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'name', type: String }]);
             const filterParams: FilterParameter<Product> = {
@@ -98,7 +100,7 @@ describe('parseFilterParams()', () => {
     });
 
     describe('number operators', () => {
-        describe('eq', () => {
+        it('eq', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'price', type: Number }]);
             const filterParams: FilterParameter<Product & { price: number }> = {
@@ -111,7 +113,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
-        describe('lt', () => {
+        it('lt', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'price', type: Number }]);
             const filterParams: FilterParameter<Product & { price: number }> = {
@@ -124,7 +126,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
-        describe('lte', () => {
+        it('lte', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'price', type: Number }]);
             const filterParams: FilterParameter<Product & { price: number }> = {
@@ -137,7 +139,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
-        describe('gt', () => {
+        it('gt', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'price', type: Number }]);
             const filterParams: FilterParameter<Product & { price: number }> = {
@@ -150,7 +152,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
-        describe('gte', () => {
+        it('gte', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'price', type: Number }]);
             const filterParams: FilterParameter<Product & { price: number }> = {
@@ -163,7 +165,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
-        describe('between', () => {
+        it('between', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'price', type: Number }]);
             const filterParams: FilterParameter<Product & { price: number }> = {
@@ -181,7 +183,7 @@ describe('parseFilterParams()', () => {
     });
 
     describe('date operators', () => {
-        describe('eq', () => {
+        it('eq', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
@@ -194,7 +196,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
-        describe('before', () => {
+        it('before', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
@@ -207,7 +209,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
-        describe('after', () => {
+        it('after', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
@@ -220,7 +222,7 @@ describe('parseFilterParams()', () => {
             expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
-        describe('between', () => {
+        it('between', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
@@ -241,7 +243,7 @@ describe('parseFilterParams()', () => {
     });
 
     describe('boolean operators', () => {
-        describe('eq', () => {
+        it('eq', () => {
             const connection = new MockConnection();
             connection.setColumns(Product, [{ propertyName: 'available', type: 'tinyint' }]);
             const filterParams: FilterParameter<Product & { available: boolean }> = {

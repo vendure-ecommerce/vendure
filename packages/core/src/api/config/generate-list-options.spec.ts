@@ -1,4 +1,8 @@
-import { buildSchema, printType } from 'graphql';
+// Using require right now to force the commonjs version of GraphQL to be used
+// when running vitest tests. See https://github.com/vitejs/vite/issues/7879
+// tslint:disable-next-line:no-var-requires
+const { buildSchema, printType } = require('graphql');
+import { describe, expect, it } from 'vitest';
 
 import { generateListOptions } from './generate-list-options';
 // tslint:disable:no-non-null-assertion
@@ -63,7 +67,7 @@ describe('generateListOptions()', () => {
                input PersonListOptions
            `;
 
-        const result = generateListOptions(buildSchema(input));
+        const result = generateListOptions(input);
 
         expect(printType(result.getType('PersonListOptions')!)).toBe(
             removeLeadingWhitespace(`

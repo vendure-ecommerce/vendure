@@ -1,3 +1,5 @@
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
+
 import { roundMoney } from '../../common/round-money';
 import {
     createRequestContext,
@@ -6,18 +8,21 @@ import {
     taxCategoryStandard,
     taxRateDefaultReduced,
     taxRateDefaultStandard,
-    taxRateOtherReduced,
-    taxRateOtherStandard,
     zoneDefault,
     zoneOther,
     zoneWithNoTaxRate,
 } from '../../testing/order-test-utils';
+import { ensureConfigLoaded } from '../config-helpers';
 
 import { DefaultProductVariantPriceCalculationStrategy } from './default-product-variant-price-calculation-strategy';
 
 describe('DefaultProductVariantPriceCalculationStrategy', () => {
     let strategy: DefaultProductVariantPriceCalculationStrategy;
     const inputPrice = 6543;
+
+    beforeAll(async () => {
+        await ensureConfigLoaded();
+    });
 
     beforeEach(async () => {
         strategy = new DefaultProductVariantPriceCalculationStrategy();

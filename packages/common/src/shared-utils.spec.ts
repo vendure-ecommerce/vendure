@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { generateAllCombinations, isClassInstance } from './shared-utils';
 
 describe('generateAllCombinations()', () => {
@@ -12,7 +14,10 @@ describe('generateAllCombinations()', () => {
     });
 
     it('works with an input of length 2', () => {
-        const result = generateAllCombinations([['red', 'green', 'blue'], ['small', 'large']]);
+        const result = generateAllCombinations([
+            ['red', 'green', 'blue'],
+            ['small', 'large'],
+        ]);
         expect(result).toEqual([
             ['red', 'small'],
             ['red', 'large'],

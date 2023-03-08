@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+
 import { DECODED, ENCODED, MockIdStrategy } from '../../config/config.service.mock';
 
 import { IdCodec } from './id-codec';

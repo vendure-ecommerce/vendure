@@ -1,24 +1,36 @@
+import path from 'path';
+
 import { mergeConfig } from './merge-config';
 import { PartialVendureConfig, RuntimeVendureConfig } from './vendure-config';
 
 let activeConfig: RuntimeVendureConfig;
-
+const defaultConfigPath = path.join(__dirname, 'default-config');
 /**
  * Reset the activeConfig object back to the initial default state.
  */
 export function resetConfig() {
-    activeConfig = require('./default-config').defaultConfig;
+    activeConfig = require(defaultConfigPath).defaultConfig;
 }
 
 /**
  * Override the default config by merging in the supplied values. Should only be used prior to
  * bootstrapping the app.
  */
-export function setConfig(userConfig: PartialVendureConfig): void {
+export async function setConfig(userConfig: PartialVendureConfig) {
     if (!activeConfig) {
-        activeConfig = require('./default-config').defaultConfig;
+        activeConfig = (await import(defaultConfigPath)).defaultConfig;
     }
     activeConfig = mergeConfig(activeConfig, userConfig);
+}
+
+/**
+ * Ensures that the config has been loaded. This is necessary for tests which
+ * do not go through the normal bootstrap process.
+ */
+export async function ensureConfigLoaded() {
+    if (!activeConfig) {
+        activeConfig = (await import(defaultConfigPath)).defaultConfig;
+    }
 }
 
 /**
@@ -27,8 +39,16 @@ export function setConfig(userConfig: PartialVendureConfig): void {
  * should be used to access config settings.
  */
 export function getConfig(): Readonly<RuntimeVendureConfig> {
+    // @ts-ignore
     if (!activeConfig) {
-        activeConfig = require('./default-config').defaultConfig;
+        try {
+            activeConfig = require(defaultConfigPath).defaultConfig;
+        } catch (e: any) {
+            // tslint:disable-next-line:no-console
+            console.log(
+                `Error loading config. If this is a test, make sure you have called ensureConfigLoaded() before using the config.`,
+            );
+        }
     }
     return activeConfig;
 }

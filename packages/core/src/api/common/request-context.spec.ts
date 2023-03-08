@@ -1,9 +1,9 @@
 import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
-import { User } from '../../entity/user/user.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 
 import { RequestContext, SerializedRequestContext } from './request-context';

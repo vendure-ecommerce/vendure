@@ -4,7 +4,6 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
-        include: '**/*.e2e-spec.ts',
         /**
          * For local debugging of the e2e tests, we set a very long timeout value otherwise tests will
          * automatically fail for going over the 5 second default timeout.
@@ -22,5 +21,7 @@ export default defineConfig({
         // See https://github.com/vitest-dev/vitest/issues/708#issuecomment-1118628479
         // Vite plugin
         swc.vite(),
+        // Rollup plugin
+        swc.rollup() as any,
     ],
 });

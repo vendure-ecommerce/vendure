@@ -125,12 +125,12 @@ export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
 ): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
-        setConfig(userConfig);
+        await setConfig(userConfig);
     }
 
     const entities = await getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers.js');
-    setConfig({
+    await setConfig({
         dbConnectionOptions: {
             entities,
             subscribers: [

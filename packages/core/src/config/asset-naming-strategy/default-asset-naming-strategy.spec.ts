@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { RequestContext } from '../../api/common/request-context';
 
 import { DefaultAssetNamingStrategy } from './default-asset-naming-strategy';

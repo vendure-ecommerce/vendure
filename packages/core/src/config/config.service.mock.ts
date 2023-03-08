@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+
 import { VendureEntity } from '../entity/base/base.entity';
 import { MockClass } from '../testing/testing-types';
 
@@ -20,7 +22,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     };
     authOptions: {};
     defaultChannelToken: 'channel-token';
-    defaultLanguageCode: jest.Mock<any>;
+    defaultLanguageCode: vi.Mock<any>;
     roundingStrategy: {};
     entityIdStrategy = new MockIdStrategy();
     entityOptions = {};
@@ -55,6 +57,6 @@ export const DECODED = 'decoded';
 
 export class MockIdStrategy implements EntityIdStrategy<'increment'> {
     readonly primaryKeyType = 'increment';
-    encodeId = jest.fn().mockReturnValue(ENCODED);
-    decodeId = jest.fn().mockReturnValue(DECODED);
+    encodeId = vi.fn().mockReturnValue(ENCODED);
+    decodeId = vi.fn().mockReturnValue(DECODED);
 }

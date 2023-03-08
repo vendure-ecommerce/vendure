@@ -21,7 +21,9 @@ import {
     isListType,
     isNonNullType,
     isObjectType,
-} from 'graphql';
+    // Importing this from graphql/index.js is a workaround for the dual-package
+    // hazard issue when testing this file in vitest. See https://github.com/vitejs/vite/issues/7879
+} from 'graphql/index.js';
 
 /**
  * Generates ListOptions inputs for queries which return PaginatedList types.

@@ -1,7 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { TranslationInput } from '../../../common/types/locale-types';
-import { TransactionalConnection } from '../../../connection/index';
 import { ProductTranslation } from '../../../entity/product/product-translation.entity';
 import { Product } from '../../../entity/product/product.entity';
 

@@ -1,4 +1,5 @@
 import { Type } from '@vendure/common/lib/shared-types';
+import { describe, expect, it } from 'vitest';
 
 import { CustomFields } from '../config/custom-field/custom-field-types';
 
@@ -10,7 +11,10 @@ describe('validateCustomFieldsConfig()', () => {
 
     it('valid config', () => {
         const config: CustomFields = {
-            Product: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'localeString' }],
+            Product: [
+                { name: 'foo', type: 'string' },
+                { name: 'bar', type: 'localeString' },
+            ],
         };
         const result = validateCustomFieldsConfig(config, allEntities);
 
@@ -20,7 +24,10 @@ describe('validateCustomFieldsConfig()', () => {
 
     it('invalid localeString', () => {
         const config: CustomFields = {
-            User: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'localeString' }],
+            User: [
+                { name: 'foo', type: 'string' },
+                { name: 'bar', type: 'localeString' },
+            ],
         };
         const result = validateCustomFieldsConfig(config, allEntities);
 
