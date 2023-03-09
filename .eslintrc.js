@@ -21,7 +21,13 @@ module.exports = {
         'plugin:@typescript-eslint/recommended-requiring-type-checking',
         'prettier',
     ],
-    ignorePatterns: ['**/generated*', '**/*.js', '**/*.d.ts', '/packages/ui-devkit/scaffold/**/*'],
+    ignorePatterns: [
+        '**/generated*',
+        '**/*.js',
+        '**/*.d.ts',
+        '/packages/ui-devkit/scaffold/**/*',
+        '/packages/dev-server/load-testing/**/*',
+    ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
         project: 'tsconfig.json',

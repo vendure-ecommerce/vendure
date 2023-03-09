@@ -51,7 +51,7 @@ interface Options {
 }
 
 program
-    .option('--script <script>', `Specify the k6 script to run`)
+    .option('--script <script>', 'Specify the k6 script to run')
     .option('--db <db>', 'Select which database to test against', /^(mysql|postgres)$/, 'mysql')
     .option('--populate', 'Whether to populate the database')
     .option('--variant <variant>', 'Which variant of the given script')

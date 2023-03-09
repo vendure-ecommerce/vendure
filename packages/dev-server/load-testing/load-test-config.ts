@@ -92,7 +92,7 @@ export function getProductCsvFilePath() {
 export function getProductCount() {
     const count = +process.argv[2];
     if (!count) {
-        console.error(`Please specify the number of products to generate`);
+        console.error('Please specify the number of products to generate');
         process.exit(1);
     }
     return count;
