@@ -155,7 +155,7 @@ describe('TaxCategory resolver', () => {
 
             expect(deleteTaxCategory.result).toBe(DeletionResult.NOT_DELETED);
             expect(deleteTaxCategory.message).toBe(
-                `Cannot remove TaxCategory "Reduced Tax" as it is referenced by 5 TaxRates`,
+                'Cannot remove TaxCategory "Reduced Tax" as it is referenced by 5 TaxRates',
             );
         });
 

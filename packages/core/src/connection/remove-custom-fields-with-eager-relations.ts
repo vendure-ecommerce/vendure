@@ -58,7 +58,9 @@ export function removeCustomFieldsWithEagerRelations<T extends string>(
             const relationsToRemove = relations.filter(r => r.startsWith(`customFields.${propertyName}`));
             if (relationsToRemove.length) {
                 Logger.debug(
-                    `TransactionalConnection.findOneInChannel cannot automatically join relation [${mainAlias?.metadata.name}.customFields.${propertyName}]`,
+                    `TransactionalConnection.findOneInChannel cannot automatically join relation [${
+                        mainAlias?.metadata.name ?? '(unknown)'
+                    }.customFields.${propertyName}]`,
                 );
                 resultingRelations = relations.filter(r => !r.startsWith(`customFields.${propertyName}`));
             }

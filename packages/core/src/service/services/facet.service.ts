@@ -21,9 +21,9 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -113,7 +113,7 @@ export class FacetService {
         const relations = ['values', 'values.facet'];
         const [repository, facetCode, languageCode] =
             ctxOrFacetCode instanceof RequestContext
-                ? // tslint:disable-next-line:no-non-null-assertion
+                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                   [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
                 : [
                       this.connection.rawConnection.getRepository(Facet),

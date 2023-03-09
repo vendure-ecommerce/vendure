@@ -68,16 +68,16 @@ export class SlugValidator {
                             .createQueryBuilder('translation')
                             .innerJoinAndSelect('translation.base', 'base')
                             .innerJoinAndSelect('base.channels', 'channel')
-                            .where(`channel.id = :channelId`, { channelId: ctx.channelId })
-                            .andWhere(`translation.slug = :slug`, { slug: t.slug })
-                            .andWhere(`translation.languageCode = :languageCode`, {
+                            .where('channel.id = :channelId', { channelId: ctx.channelId })
+                            .andWhere('translation.slug = :slug', { slug: t.slug })
+                            .andWhere('translation.languageCode = :languageCode', {
                                 languageCode: t.languageCode,
                             });
                         if (input.id) {
-                            qb.andWhere(`translation.base != :id`, { id: input.id });
+                            qb.andWhere('translation.base != :id', { id: input.id });
                         }
                         if (seen.length) {
-                            qb.andWhere(`translation.id NOT IN (:...seen)`, { seen });
+                            qb.andWhere('translation.id NOT IN (:...seen)', { seen });
                         }
                         match = await qb.getOne();
                         if (match) {

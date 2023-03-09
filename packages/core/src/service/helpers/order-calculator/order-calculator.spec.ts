@@ -43,7 +43,7 @@ describe('OrderCalculator', () => {
     let orderCalculator: OrderCalculator;
 
     beforeAll(async () => {
-        ensureConfigLoaded();
+        await ensureConfigLoaded();
         const module = await createTestModule();
         orderCalculator = module.get(OrderCalculator);
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);

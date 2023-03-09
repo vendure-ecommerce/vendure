@@ -147,8 +147,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
             .pipe(
                 take(1),
                 map(items => -1 < items.findIndex(i => i.parent && i.parent.id === id)),
-                switchMap(hasChildren => {
-                    return this.modalService.dialog({
+                switchMap(hasChildren => this.modalService.dialog({
                         title: _('catalog.confirm-delete-collection'),
                         body: hasChildren
                             ? _('catalog.confirm-delete-collection-and-children-body')
@@ -157,8 +156,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
                             { type: 'secondary', label: _('common.cancel') },
                             { type: 'danger', label: _('common.delete'), returnValue: true },
                         ],
-                    });
-                }),
+                    })),
                 switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
             )
             .subscribe(

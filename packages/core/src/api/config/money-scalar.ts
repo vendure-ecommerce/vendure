@@ -2,7 +2,7 @@ import { GraphQLError, GraphQLScalarType, Kind, print } from 'graphql';
 import { inspect } from 'graphql/jsutils/inspect';
 
 export function isObjectLike(value: unknown): value is { [key: string]: unknown } {
-    // tslint:disable-next-line:triple-equals
+    // eslint-disable-next-line eqeqeq
     return typeof value == 'object' && value !== null;
 }
 
@@ -31,7 +31,8 @@ function serializeObject(outputValue: unknown): unknown {
 export const GraphQLMoney = new GraphQLScalarType<number>({
     name: 'Money',
     description:
-        'The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).',
+        'The `Money` scalar type represents monetary values and supports signed double-precision ' +
+        'fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).',
     serialize(outputValue) {
         const coercedValue = serializeObject(outputValue);
 

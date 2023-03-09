@@ -94,6 +94,7 @@ export class CollectionService implements OnModuleInit {
 
         merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             .subscribe(async event => {
                 const collections = await this.connection.rawConnection
                     .getRepository(Collection)
@@ -132,9 +133,10 @@ export class CollectionService implements OnModuleInit {
                                 job.data.applyToChangedVariantsOnly,
                             );
                         } catch (e: any) {
-                            const translatedCollection = await this.translator.translate(collection, ctx);
+                            const translatedCollection = this.translator.translate(collection, ctx);
                             Logger.error(
-                                `An error occurred when processing the filters for the collection "${translatedCollection.name}" (id: ${collection.id})`,
+                                'An error occurred when processing the filters for ' +
+                                    `the collection "${translatedCollection.name}" (id: ${collection.id})`,
                             );
                             Logger.error(e.message);
                             continue;
@@ -531,7 +533,7 @@ export class CollectionService implements OnModuleInit {
             idsAreEqual(input.parentId, target.id) ||
             descendants.some(cat => idsAreEqual(input.parentId, cat.id))
         ) {
-            throw new IllegalOperationError(`error.cannot-move-collection-into-self`);
+            throw new IllegalOperationError('error.cannot-move-collection-into-self');
         }
 
         let siblings = await this.connection
@@ -707,7 +709,8 @@ export class CollectionService implements OnModuleInit {
             .select('MAX(collection.position)', 'index')
             .where('parent.id = :id', { id: parentId })
             .getRawOne();
-        return (result.index || 0) + 1;
+        const index = result.index;
+        return (typeof index === 'number' ? index : 0) + 1;
     }
 
     private async getParentCollection(

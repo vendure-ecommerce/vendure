@@ -48,8 +48,8 @@ export class RelationProductInputComponent implements OnInit {
 
         this.results$ = this.searchTerm$.pipe(
             debounceTime(200),
-            switchMap(term => {
-                return this.dataService.product
+            switchMap(term =>
+                this.dataService.product
                     .getProducts({
                         ...(term
                             ? {
@@ -62,8 +62,8 @@ export class RelationProductInputComponent implements OnInit {
                             : {}),
                         take: 10,
                     })
-                    .mapSingle(data => data.products.items);
-            }),
+                    .mapSingle(data => data.products.items),
+            ),
         );
     }
 

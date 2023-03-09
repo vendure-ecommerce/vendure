@@ -19,7 +19,7 @@ import {
     SearchProductsAdminQueryVariables,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
 export function doAdminSearchQuery(client: SimpleGraphQLClient, input: SearchInput) {
@@ -328,7 +328,7 @@ export async function testPriceRanges(client: SimpleGraphQLClient) {
 
 export async function dropElasticIndices(indexPrefix: string) {
     const esClient = new Client({
-        node: `${elasticsearchHost}:${elasticsearchPort}`,
+        node: `${elasticsearchHost as string}:${elasticsearchPort as string}`,
     });
     return deleteIndices(esClient, indexPrefix);
 }

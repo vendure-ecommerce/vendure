@@ -65,7 +65,7 @@ export class CustomFieldRelationService {
         return entity;
     }
 
-    private isRelationalType(input: CustomFieldConfig): input is RelationCustomFieldConfig {
+    private isRelationalType(this: void, input: CustomFieldConfig): input is RelationCustomFieldConfig {
         return input.type === 'relation';
     }
 

@@ -268,15 +268,13 @@ export class PromotionDetailComponent
         operations: ConfigurableOperation[],
         formValueOperations: any,
     ): ConfigurableOperationInput[] {
-        return operations.map((o, i) => {
-            return {
-                code: o.code,
-                arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
-                    name: o.args[j].name,
-                    value: encodeConfigArgValue(value),
-                })),
-            };
-        });
+        return operations.map((o, i) => ({
+            code: o.code,
+            arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
+                name: o.args[j].name,
+                value: encodeConfigArgValue(value),
+            })),
+        }));
     }
 
     /**

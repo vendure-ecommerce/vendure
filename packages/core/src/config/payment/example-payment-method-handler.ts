@@ -12,7 +12,7 @@ const gripeSDK = {
                 id: Math.random().toString(36).substr(3),
             });
         },
-        capture: (transactionId: string) => {
+        capture: async (transactionId: string) => {
             return true;
         },
     },
@@ -45,7 +45,7 @@ export const examplePaymentHandler = new PaymentMethodHandler({
         } catch (err: any) {
             return {
                 amount,
-                state: 'Declined' as 'Declined',
+                state: 'Declined' as const,
                 metadata: {
                     errorMessage: err.message,
                 },

@@ -41,7 +41,7 @@ export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient)
         TransitionToState.Mutation,
         TransitionToState.Variables
     >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
-    // tslint:disable-next-line:no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return (transitionOrderToState as TestOrderFragmentFragment)!.id;
 }
 

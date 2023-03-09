@@ -1,7 +1,7 @@
 import { RequestContext } from '../../api/index';
 import { InjectableStrategy } from '../../common/index';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 /**
  * @description

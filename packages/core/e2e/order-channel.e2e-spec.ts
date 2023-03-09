@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     createErrorResultGuard,
     createTestEnvironment,
@@ -139,11 +139,11 @@ describe('Channelaware orders', () => {
         });
         orderResultGuard.assertSuccess(addItemToOrder);
 
-        expect(addItemToOrder!.lines.length).toBe(1);
-        expect(addItemToOrder!.lines[0].quantity).toBe(1);
-        expect(addItemToOrder!.lines[0].productVariant.id).toBe(product1!.variants[0].id);
+        expect(addItemToOrder.lines.length).toBe(1);
+        expect(addItemToOrder.lines[0].quantity).toBe(1);
+        expect(addItemToOrder.lines[0].productVariant.id).toBe(product1!.variants[0].id);
 
-        order1Id = addItemToOrder!.id;
+        order1Id = addItemToOrder.id;
     });
 
     it('sets active order to null when switching channel', async () => {
@@ -162,11 +162,11 @@ describe('Channelaware orders', () => {
         });
         orderResultGuard.assertSuccess(addItemToOrder);
 
-        expect(addItemToOrder!.lines.length).toBe(1);
-        expect(addItemToOrder!.lines[0].quantity).toBe(1);
-        expect(addItemToOrder!.lines[0].productVariant.id).toBe(product2!.variants[0].id);
+        expect(addItemToOrder.lines.length).toBe(1);
+        expect(addItemToOrder.lines[0].quantity).toBe(1);
+        expect(addItemToOrder.lines[0].productVariant.id).toBe(product2!.variants[0].id);
 
-        order2Id = addItemToOrder!.id;
+        order2Id = addItemToOrder.id;
     });
 
     it('goes back to most recent active order when switching channel', async () => {
@@ -179,7 +179,7 @@ describe('Channelaware orders', () => {
         const result = await shopClient.query<CodegenShop.GetOrderShopQuery>(GET_ORDER_SHOP, {
             id: order2Id,
         });
-        expect(result!.order).toBeNull();
+        expect(result.order).toBeNull();
     });
 
     it('returns order when requesting order from correct channel', async () => {

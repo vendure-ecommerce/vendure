@@ -53,6 +53,7 @@ function assertNoDuplicatedCustomFieldNames(entityName: string, customFields: Cu
     const nameCounts = customFields
         .map(f => f.name)
         .reduce((hash, name) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             hash[name] ? hash[name]++ : (hash[name] = 1);
             return hash;
         }, {} as { [name: string]: number });

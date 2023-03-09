@@ -48,7 +48,7 @@ export class StripeController {
         try {
             event = this.stripeService.constructEventFromPayload(request.rawBody, signature);
         } catch (e: any) {
-            Logger.error(`${signatureErrorMessage} ${signature}: ${e.message}`, loggerCtx);
+            Logger.error(`${signatureErrorMessage} ${signature}: ${JSON.stringify(e.message)}`, loggerCtx);
             response.status(HttpStatus.BAD_REQUEST).send(signatureErrorMessage);
             return;
         }
@@ -63,7 +63,7 @@ export class StripeController {
         const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
 
         if (event.type === 'payment_intent.payment_failed') {
-            const message = paymentIntent.last_payment_error?.message;
+            const message = paymentIntent.last_payment_error?.message ?? 'unknown error';
             Logger.warn(`Payment for order ${orderCode} failed: ${message}`, loggerCtx);
             response.status(HttpStatus.OK).send('Ok');
             return;

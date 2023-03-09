@@ -11,7 +11,7 @@ import { DeletionResult, GetCountryListQuery, LanguageCode } from './graphql/gen
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Country resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());

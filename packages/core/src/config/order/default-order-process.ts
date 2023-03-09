@@ -4,9 +4,9 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Order } from '../../entity/order/order.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
-import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { OrderPlacedEvent } from '../../event-bus/events/order-placed-event';
@@ -264,11 +264,11 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                         0 < modifications.length &&
                         modifications.every(modification => modification.isSettled)
                     ) {
-                        return `message.cannot-transition-no-additional-payments-needed`;
+                        return 'message.cannot-transition-no-additional-payments-needed';
                     }
                 } else {
                     if (modifications.some(modification => !modification.isSettled)) {
-                        return `message.cannot-transition-without-modification-payment`;
+                        return 'message.cannot-transition-without-modification-payment';
                     }
                 }
             }
@@ -288,7 +288,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                 order.payments = existingPayments;
                 const deficit = order.totalWithTax - totalCoveredByPayments(order);
                 if (0 < deficit) {
-                    return `message.cannot-transition-from-arranging-additional-payment`;
+                    return 'message.cannot-transition-from-arranging-additional-payment';
                 }
             }
             if (
@@ -307,21 +307,21 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     .andWhere('variant.id IN (:...variantIds)', { variantIds });
                 const availableVariants = await qb.getMany();
                 if (availableVariants.length !== variantIds.length) {
-                    return `message.cannot-transition-order-contains-products-which-are-unavailable`;
+                    return 'message.cannot-transition-order-contains-products-which-are-unavailable';
                 }
             }
             if (toState === 'ArrangingPayment') {
                 if (options.arrangingPaymentRequiresContents !== false && order.lines.length === 0) {
-                    return `message.cannot-transition-to-payment-when-order-is-empty`;
+                    return 'message.cannot-transition-to-payment-when-order-is-empty';
                 }
                 if (options.arrangingPaymentRequiresCustomer !== false && !order.customer) {
-                    return `message.cannot-transition-to-payment-without-customer`;
+                    return 'message.cannot-transition-to-payment-without-customer';
                 }
                 if (
                     options.arrangingPaymentRequiresShipping !== false &&
                     (!order.shippingLines || order.shippingLines.length === 0)
                 ) {
-                    return `message.cannot-transition-to-payment-without-shipping-method`;
+                    return 'message.cannot-transition-to-payment-without-shipping-method';
                 }
                 if (options.arrangingPaymentRequiresStock !== false) {
                     const variantsWithInsufficientSaleableStock: ProductVariant[] = [];
@@ -350,11 +350,11 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                 if (toState === 'PaymentAuthorized') {
                     const hasAnAuthorizedPayment = !!order.payments.find(p => p.state === 'Authorized');
                     if (!orderTotalIsCovered(order, ['Authorized', 'Settled']) || !hasAnAuthorizedPayment) {
-                        return `message.cannot-transition-without-authorized-payments`;
+                        return 'message.cannot-transition-without-authorized-payments';
                     }
                 }
                 if (toState === 'PaymentSettled' && !orderTotalIsCovered(order, 'Settled')) {
-                    return `message.cannot-transition-without-settled-payments`;
+                    return 'message.cannot-transition-without-settled-payments';
                 }
             }
             if (options.checkAllItemsBeforeCancel !== false) {
@@ -364,7 +364,7 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     fromState !== 'ArrangingPayment'
                 ) {
                     if (!orderLinesAreAllCancelled(order)) {
-                        return `message.cannot-transition-unless-all-cancelled`;
+                        return 'message.cannot-transition-unless-all-cancelled';
                     }
                 }
             }
@@ -372,25 +372,25 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                 if (toState === 'PartiallyShipped') {
                     const orderWithFulfillments = await findOrderWithFulfillments(ctx, order.id);
                     if (!orderItemsArePartiallyShipped(orderWithFulfillments)) {
-                        return `message.cannot-transition-unless-some-order-items-shipped`;
+                        return 'message.cannot-transition-unless-some-order-items-shipped';
                     }
                 }
                 if (toState === 'Shipped') {
                     const orderWithFulfillments = await findOrderWithFulfillments(ctx, order.id);
                     if (!orderItemsAreShipped(orderWithFulfillments)) {
-                        return `message.cannot-transition-unless-all-order-items-shipped`;
+                        return 'message.cannot-transition-unless-all-order-items-shipped';
                     }
                 }
                 if (toState === 'PartiallyDelivered') {
                     const orderWithFulfillments = await findOrderWithFulfillments(ctx, order.id);
                     if (!orderItemsArePartiallyDelivered(orderWithFulfillments)) {
-                        return `message.cannot-transition-unless-some-order-items-delivered`;
+                        return 'message.cannot-transition-unless-some-order-items-delivered';
                     }
                 }
                 if (toState === 'Delivered') {
                     const orderWithFulfillments = await findOrderWithFulfillments(ctx, order.id);
                     if (!orderItemsAreDelivered(orderWithFulfillments)) {
-                        return `message.cannot-transition-unless-all-order-items-delivered`;
+                        return 'message.cannot-transition-unless-all-order-items-delivered';
                     }
                 }
             }

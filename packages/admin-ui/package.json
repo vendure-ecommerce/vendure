@@ -9,7 +9,7 @@
     "build": "node scripts/copy-package-json.js && node scripts/set-version.js && node scripts/build-public-api.js && yarn ng build vendure-admin-lib --configuration production && node scripts/compile-styles.js",
     "watch": "ng build --watch=true",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
-    "lint": "tslint --fix",
+    "lint": "ng lint --fix",
     "extract-translations": "node scripts/extract-translations.js",
     "ngcc": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
   },
@@ -68,15 +68,25 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^15.2.1",
+    "@angular-eslint/builder": "15.2.1",
+    "@angular-eslint/eslint-plugin": "15.2.1",
+    "@angular-eslint/eslint-plugin-template": "15.2.1",
+    "@angular-eslint/schematics": "15.2.1",
+    "@angular-eslint/template-parser": "15.2.1",
     "@angular/cli": "15.2.1",
     "@angular/compiler": "15.2.1",
     "@angular/compiler-cli": "15.2.1",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "^14.14.31",
+    "@typescript-eslint/eslint-plugin": "5.48.2",
+    "@typescript-eslint/parser": "5.48.2",
     "@vendure/ngx-translate-extract": "^8.0.5",
-    "codelyzer": "^6.0.0",
     "cross-spawn": "^7.0.3",
+    "eslint": "^8.33.0",
+    "eslint-plugin-import": "latest",
+    "eslint-plugin-jsdoc": "latest",
+    "eslint-plugin-prefer-arrow": "latest",
     "fs-extra": "^10.0.0",
     "jasmine-core": "~3.99.1",
     "jasmine-spec-reporter": "~7.0.0",
@@ -89,7 +99,6 @@
     "ng-packagr": "15.2.2",
     "puppeteer": "^19.7.3",
     "rimraf": "^3.0.2",
-    "tslint": "~6.1.3",
     "typescript": "4.9.5"
   }
 }

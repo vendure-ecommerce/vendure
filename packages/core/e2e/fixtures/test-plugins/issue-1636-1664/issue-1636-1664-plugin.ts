@@ -154,7 +154,7 @@ const profileType = gql`
         return config;
     },
 })
-// tslint:disable-next-line:class-name
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class TestPlugin1636_1664 implements OnApplicationBootstrap {
     static testResolverSpy = vi.fn();
 
@@ -167,7 +167,7 @@ export class TestPlugin1636_1664 implements OnApplicationBootstrap {
         }
         // Create a Profile and assign it to all the products
         const channels = await this.connection.rawConnection.getRepository(Channel).find();
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const channel = channels[0]!;
         const profile = await this.connection.rawConnection.getRepository(Profile).save(
             new Profile({

@@ -14,7 +14,7 @@
     "copy-assets": "rimraf assets && ts-node ./build.ts",
     "build": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json",
     "watch": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json -w",
-    "lint": "tslint --fix --project ./"
+    "lint": "eslint --fix ."
   },
   "homepage": "https://www.vendure.io/",
   "funding": "https://github.com/sponsors/michaelbromley",

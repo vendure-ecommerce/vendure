@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
 import { globSync } from 'glob';
@@ -160,7 +160,7 @@ async function addGlobalStyles(
 
     const globalStylesSource =
         overridesImport +
-        `@import "./styles/styles";\n` +
+        '@import "./styles/styles";\n' +
         imports.map(file => `@import "./${GLOBAL_STYLES_OUTPUT_DIR}/${file}";`).join('\n');
 
     const globalStylesFile = path.join(outputPath, 'src', 'global-styles.scss');
@@ -176,7 +176,7 @@ export async function copyGlobalStyleFile(outputPath: string, stylePath: string)
 
 function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): string {
     const routes: string[] = [];
-    for (const extension of extensions as AdminUiExtensionWithId[]) {
+    for (const extension of extensions) {
         for (const module of extension.ngModules) {
             if (module.type === 'lazy') {
                 routes.push(`  {
@@ -269,6 +269,7 @@ function configureModulePathMapping(
         return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const tsconfig = require(tsconfigFilePath);
     tsconfig.compilerOptions.paths = modulePathMapping;
     fs.writeFileSync(tsconfigFilePath, JSON.stringify(tsconfig, null, 2));
@@ -285,7 +286,7 @@ function configureModulePathMapping(
 async function checkIfNgccWasRun(): Promise<void> {
     const coreUmdFile = require.resolve('@vendure/admin-ui/core');
     if (!coreUmdFile) {
-        logger.error(`Could not resolve the "@vendure/admin-ui/core" package!`);
+        logger.error('Could not resolve the "@vendure/admin-ui/core" package!');
         return;
     }
     // ngcc creates a particular folder after it has been run once

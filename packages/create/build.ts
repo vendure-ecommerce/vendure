@@ -18,11 +18,7 @@ function copyProductData() {
 }
 
 function copyCliInitialData() {
-    return fs.outputFile(
-        './assets/initial-data.json',
-        JSON.stringify(initialData, null, 2),
-        'utf-8',
-    );
+    return fs.outputFile('./assets/initial-data.json', JSON.stringify(initialData, null, 2), 'utf-8');
 }
 
 copyTemplates()
@@ -31,6 +27,7 @@ copyTemplates()
     .then(copyCliInitialData)
     .then(() => process.exit(0))
     .catch(err => {
+        // eslint-disable-next-line no-console
         console.error(err);
         process.exit(1);
     });

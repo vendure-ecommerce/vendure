@@ -16,7 +16,7 @@ export class TranslateErrorsPlugin implements ApolloServerPlugin {
                 const { errors, context } = requestContext;
                 if (errors) {
                     (requestContext.response as any).errors = errors.map(err => {
-                        return this.i18nService.translateError(context.req, err as GraphQLError) as any;
+                        return this.i18nService.translateError(context.req, err) as any;
                     });
                 }
             },

@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { Injectable } from '@angular/core';
 import {
     TranslateMessageFormatCompiler,

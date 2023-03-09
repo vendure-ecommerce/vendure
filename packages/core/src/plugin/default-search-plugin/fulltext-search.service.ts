@@ -131,7 +131,7 @@ export class FulltextSearchService {
                     this._searchStrategy = new PostgresSearchStrategy();
                     break;
                 default:
-                    throw new InternalServerError(`error.database-not-supported-by-default-search-plugin`);
+                    throw new InternalServerError('error.database-not-supported-by-default-search-plugin');
             }
         }
     }

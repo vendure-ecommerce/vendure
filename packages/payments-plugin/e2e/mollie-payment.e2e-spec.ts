@@ -308,7 +308,7 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         order = orderByCode!;
         expect(order.state).toBe('PaymentSettled');
     });
@@ -338,7 +338,7 @@ describe('Mollie payments', () => {
                 return true;
             })
             .reply(200, { status: 'failed', resource: 'payment' });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const refund = await refundOne(adminClient, order.lines[0].id, order.payments![0].id);
         expect(refund.state).toBe('Failed');
     });
@@ -351,7 +351,7 @@ describe('Mollie payments', () => {
                 return true;
             })
             .reply(200, { status: 'pending', resource: 'payment' });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const refund = await refundOne(adminClient, order.lines[0].id, order.payments![0].id);
         expect(mollieRequest?.amount.value).toBe('119.99');
         expect(refund.total).toBe(11999);
@@ -406,7 +406,7 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         order = orderByCode!;
         expect(order.state).toBe('PaymentAuthorized');
     });
@@ -432,7 +432,7 @@ describe('Mollie payments', () => {
             SettlePaymentMutation,
             SettlePaymentMutationVariables
         >(SETTLE_PAYMENT, {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             id: order.payments![0].id,
         });
         const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
@@ -441,7 +441,7 @@ describe('Mollie payments', () => {
                 code: order.code,
             },
         );
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         order = orderByCode!;
         expect(createShipmentBody).toBeDefined();
         expect(order.state).toBe('PaymentSettled');

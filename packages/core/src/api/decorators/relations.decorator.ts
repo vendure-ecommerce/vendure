@@ -8,7 +8,7 @@ import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../../common/
 import { EntityRelationPaths, InternalServerError, TtlCache } from '../../common/index';
 import { VendureEntity } from '../../entity/base/base.entity';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const graphqlFields = require('graphql-fields');
 
 export type RelationPaths<T extends VendureEntity> = Array<EntityRelationPaths<T>>;
@@ -135,12 +135,12 @@ export const Relations: <T extends VendureEntity>(data: FieldsDecoratorConfig<T>
     createParamDecorator<FieldsDecoratorConfig<any>>((data, ctx: ExecutionContext) => {
         const info = ctx.getArgByIndex(3);
         if (data == null) {
-            throw new InternalServerError(`The @Relations() decorator requires an entity type argument`);
+            throw new InternalServerError('The @Relations() decorator requires an entity type argument');
         }
         if (!isGraphQLResolveInfo(info)) {
             return [];
         }
-        const cacheKey = info.fieldName + '__' + ctx.getArgByIndex(2).req.body.query;
+        const cacheKey = info.fieldName + '__' + (ctx.getArgByIndex(2).req.body.query as string);
         const cachedResult = cache.get(cacheKey);
         if (cachedResult) {
             return cachedResult;

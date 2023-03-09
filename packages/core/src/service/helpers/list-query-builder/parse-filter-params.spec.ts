@@ -25,7 +25,7 @@ describe('parseFilterParams()', () => {
             },
         };
         const result = parseFilterParams(connection as any, Product, filterParams);
-        expect(result[0].clause).toBe(`product.name = :arg1`);
+        expect(result[0].clause).toBe('product.name = :arg1');
         expect(result[0].parameters).toEqual({ arg1: 'foo' });
     });
 
@@ -41,9 +41,9 @@ describe('parseFilterParams()', () => {
             },
         };
         const result = parseFilterParams(connection as any, Product, filterParams);
-        expect(result[0].clause).toBe(`product.name = :arg1`);
+        expect(result[0].clause).toBe('product.name = :arg1');
         expect(result[0].parameters).toEqual({ arg1: 'foo' });
-        expect(result[1].clause).toBe(`product.id = :arg2`);
+        expect(result[1].clause).toBe('product.id = :arg2');
         expect(result[1].parameters).toEqual({ arg2: '123' });
     });
 
@@ -65,9 +65,9 @@ describe('parseFilterParams()', () => {
             },
         };
         const result = parseFilterParams(connection as any, Product, filterParams);
-        expect(result[0].clause).toBe(`product_translations.name = :arg1`);
+        expect(result[0].clause).toBe('product_translations.name = :arg1');
         expect(result[0].parameters).toEqual({ arg1: 'foo' });
-        expect(result[1].clause).toBe(`product.id = :arg2`);
+        expect(result[1].clause).toBe('product.id = :arg2');
         expect(result[1].parameters).toEqual({ arg2: '123' });
     });
 
@@ -81,7 +81,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.name = :arg1`);
+            expect(result[0].clause).toBe('product.name = :arg1');
             expect(result[0].parameters).toEqual({ arg1: 'foo' });
         });
 
@@ -94,7 +94,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.name LIKE :arg1`);
+            expect(result[0].clause).toBe('product.name LIKE :arg1');
             expect(result[0].parameters).toEqual({ arg1: '%foo%' });
         });
     });
@@ -109,7 +109,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.price = :arg1`);
+            expect(result[0].clause).toBe('product.price = :arg1');
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
@@ -122,7 +122,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.price < :arg1`);
+            expect(result[0].clause).toBe('product.price < :arg1');
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
@@ -135,7 +135,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.price <= :arg1`);
+            expect(result[0].clause).toBe('product.price <= :arg1');
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
@@ -148,7 +148,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.price > :arg1`);
+            expect(result[0].clause).toBe('product.price > :arg1');
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
@@ -161,7 +161,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.price >= :arg1`);
+            expect(result[0].clause).toBe('product.price >= :arg1');
             expect(result[0].parameters).toEqual({ arg1: 123 });
         });
 
@@ -177,7 +177,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.price BETWEEN :arg1_a AND :arg1_b`);
+            expect(result[0].clause).toBe('product.price BETWEEN :arg1_a AND :arg1_b');
             expect(result[0].parameters).toEqual({ arg1_a: 10, arg1_b: 50 });
         });
     });
@@ -192,7 +192,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.createdAt = :arg1`);
+            expect(result[0].clause).toBe('product.createdAt = :arg1');
             expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
@@ -205,7 +205,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.createdAt < :arg1`);
+            expect(result[0].clause).toBe('product.createdAt < :arg1');
             expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
@@ -218,7 +218,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.createdAt > :arg1`);
+            expect(result[0].clause).toBe('product.createdAt > :arg1');
             expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
@@ -234,7 +234,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.createdAt BETWEEN :arg1_a AND :arg1_b`);
+            expect(result[0].clause).toBe('product.createdAt BETWEEN :arg1_a AND :arg1_b');
             expect(result[0].parameters).toEqual({
                 arg1_a: '2018-01-01 10:00:00.000',
                 arg1_b: '2018-02-01 10:00:00.000',
@@ -252,7 +252,7 @@ describe('parseFilterParams()', () => {
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
-            expect(result[0].clause).toBe(`product.available = :arg1`);
+            expect(result[0].clause).toBe('product.available = :arg1');
             expect(result[0].parameters).toEqual({ arg1: true });
         });
     });

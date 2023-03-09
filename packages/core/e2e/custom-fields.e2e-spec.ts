@@ -15,7 +15,7 @@ import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 const validateInjectorSpy = vi.fn();
 
@@ -52,7 +52,7 @@ const customConfig = mergeConfig(testConfig(), {
                 type: 'string',
                 validate: value => {
                     if (value !== 'valid') {
-                        return `The value ['${value}'] is not valid`;
+                        return `The value ['${value as string}'] is not valid`;
                     }
                 },
             },
@@ -64,7 +64,7 @@ const customConfig = mergeConfig(testConfig(), {
                         return [
                             {
                                 languageCode: LanguageCode.en,
-                                value: `The value ['${value}'] is not valid`,
+                                value: `The value ['${value as string}'] is not valid`,
                             },
                         ];
                     }
@@ -83,7 +83,7 @@ const customConfig = mergeConfig(testConfig(), {
                 type: 'string',
                 validate: async (value, injector) => {
                     await new Promise(resolve => setTimeout(resolve, 1));
-                    return `async error`;
+                    return 'async error';
                 },
             },
             {
@@ -92,7 +92,7 @@ const customConfig = mergeConfig(testConfig(), {
                 entity: Asset,
                 validate: async value => {
                     await new Promise(resolve => setTimeout(resolve, 1));
-                    return `relation error`;
+                    return 'relation error';
                 },
             },
             {
@@ -160,7 +160,7 @@ const customConfig = mergeConfig(testConfig(), {
                 list: true,
                 validate: value => {
                     if (!value.includes(42)) {
-                        return `Must include the number 42!`;
+                        return 'Must include the number 42!';
                     }
                 },
             },
@@ -365,7 +365,7 @@ describe('Custom fields', () => {
                     }
                 }
             `);
-        }, `Field "readonlyString" is not defined by type "UpdateProductCustomFieldsInput"`),
+        }, 'Field "readonlyString" is not defined by type "UpdateProductCustomFieldsInput"'),
     );
 
     it(
@@ -380,7 +380,7 @@ describe('Custom fields', () => {
                     }
                 }
             `);
-        }, `The custom field 'score' is readonly`),
+        }, "The custom field 'score' is readonly"),
     );
 
     it(
@@ -398,7 +398,7 @@ describe('Custom fields', () => {
                     }
                 }
             `);
-        }, `Field "readonlyString" is not defined by type "CreateProductCustomFieldsInput"`),
+        }, 'Field "readonlyString" is not defined by type "CreateProductCustomFieldsInput"'),
     );
 
     it('string length allows long strings', async () => {
@@ -457,7 +457,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field 'validateString' value ['hello'] does not match the pattern [^[0-9][a-z]+$]`),
+            }, "The custom field 'validateString' value ['hello'] does not match the pattern [^[0-9][a-z]+$]"),
         );
 
         it(
@@ -470,7 +470,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field 'stringWithOptions' value ['tiny'] is invalid. Valid options are ['small', 'medium', 'large']`),
+            }, "The custom field 'stringWithOptions' value ['tiny'] is invalid. Valid options are ['small', 'medium', 'large']"),
         );
 
         it('valid string option', async () => {
@@ -522,7 +522,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field 'validateLocaleString' value ['servus'] does not match the pattern [^[0-9][a-z]+$]`),
+            }, "The custom field 'validateLocaleString' value ['servus'] does not match the pattern [^[0-9][a-z]+$]"),
         );
 
         it(
@@ -535,7 +535,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field 'validateInt' value [12] is greater than the maximum [10]`),
+            }, "The custom field 'validateInt' value [12] is greater than the maximum [10]"),
         );
 
         it(
@@ -548,7 +548,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field 'validateFloat' value [10.6] is greater than the maximum [10.5]`),
+            }, "The custom field 'validateFloat' value [10.6] is greater than the maximum [10.5]"),
         );
 
         it(
@@ -566,7 +566,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The custom field 'validateDateTime' value [2019-01-01T05:25:00.000Z] is less than the minimum [2019-01-01T08:30]`),
+            }, "The custom field 'validateDateTime' value [2019-01-01T05:25:00.000Z] is less than the minimum [2019-01-01T08:30]"),
         );
 
         it(
@@ -579,7 +579,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The value ['invalid'] is not valid`),
+            }, "The value ['invalid'] is not valid"),
         );
 
         it(
@@ -592,7 +592,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `The value ['invalid'] is not valid`),
+            }, "The value ['invalid'] is not valid"),
         );
 
         it(
@@ -607,7 +607,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Must include the number 42!`),
+            }, 'Must include the number 42!'),
         );
 
         it('valid list field', async () => {
@@ -653,7 +653,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `async error`),
+            }, 'async error'),
         );
 
         // https://github.com/vendure-ecommerce/vendure/issues/1000
@@ -670,7 +670,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `relation error`),
+            }, 'relation error'),
         );
 
         // https://github.com/vendure-ecommerce/vendure/issues/1091
@@ -711,7 +711,7 @@ describe('Custom fields', () => {
                     fail('Should have thrown');
                 } catch (e) {
                     expect(e.message).toContain(
-                        `The custom field 'validateInt' value [11] is greater than the maximum [10]`,
+                        "The custom field 'validateInt' value [11] is greater than the maximum [10]",
                     );
                 }
 
@@ -751,7 +751,7 @@ describe('Custom fields', () => {
                     fail('Should have thrown');
                 } catch (e) {
                     expect(e.message).toContain(
-                        `The custom field 'validateInt' value [11] is greater than the maximum [10]`,
+                        "The custom field 'validateInt' value [11] is greater than the maximum [10]",
                     );
                 }
 
@@ -789,7 +789,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Cannot query field "nonPublic" on type "ProductCustomFields"`),
+            }, 'Cannot query field "nonPublic" on type "ProductCustomFields"'),
         );
 
         it('publicly accessible via Shop API', async () => {
@@ -820,7 +820,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Cannot query field "internalString" on type "ProductCustomFields"`),
+            }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
 
         it(
@@ -836,7 +836,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Cannot query field "internalString" on type "ProductCustomFields"`),
+            }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
     });
 
@@ -921,7 +921,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Field "intListWithValidation" is not defined by type "ProductSortParameter".`),
+            }, 'Field "intListWithValidation" is not defined by type "ProductSortParameter".'),
         );
 
         it(
@@ -934,7 +934,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Field "internalString" is not defined by type "ProductFilterParameter"`),
+            }, 'Field "internalString" is not defined by type "ProductFilterParameter"'),
         );
 
         it(
@@ -947,7 +947,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Field "internalString" is not defined by type "ProductFilterParameter"`),
+            }, 'Field "internalString" is not defined by type "ProductFilterParameter"'),
         );
     });
 
@@ -991,14 +991,14 @@ describe('Custom fields', () => {
                 switch (customConfig.dbConnectionOptions.type) {
                     case 'mariadb':
                     case 'mysql':
-                        duplicateKeyErrMessage = `ER_DUP_ENTRY: Duplicate entry 'foo' for key`;
+                        duplicateKeyErrMessage = "ER_DUP_ENTRY: Duplicate entry 'foo' for key";
                         break;
                     case 'postgres':
-                        duplicateKeyErrMessage = `duplicate key value violates unique constraint`;
+                        duplicateKeyErrMessage = 'duplicate key value violates unique constraint';
                         break;
                     case 'sqlite':
                     case 'sqljs':
-                        duplicateKeyErrMessage = `UNIQUE constraint failed: product.customFieldsUniquestring`;
+                        duplicateKeyErrMessage = 'UNIQUE constraint failed: product.customFieldsUniquestring';
                         break;
                 }
                 expect(e.message).toContain(duplicateKeyErrMessage);

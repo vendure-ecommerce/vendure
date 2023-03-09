@@ -22,7 +22,7 @@ export function getAllTranslationFiles(extensions: TranslationExtension[]): {
                 if (!allTranslationsWithGlobs[code]) {
                     allTranslationsWithGlobs[code] = [globPattern];
                 } else {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     allTranslationsWithGlobs[code]!.push(globPattern);
                 }
             }
@@ -39,7 +39,7 @@ export function getAllTranslationFiles(extensions: TranslationExtension[]): {
         }
         for (const pattern of globs) {
             const files = globSync(pattern);
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             allTranslationsWithFiles[code]!.push(...files);
         }
     }

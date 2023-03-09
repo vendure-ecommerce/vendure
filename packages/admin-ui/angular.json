@@ -24,7 +24,11 @@
             "polyfills": "src/lib/static/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
-              { "glob": "**/*", "input": "src/lib/static/", "output": "/" }
+              {
+                "glob": "**/*",
+                "input": "src/lib/static/",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/lib/static/styles/styles.scss"
@@ -130,6 +134,15 @@
               ]
             }
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -162,6 +175,9 @@
   },
   "cli": {
     "packageManager": "yarn",
-    "analytics": "61fa89f7-706a-46c0-bcdb-b1d3664195ce"
+    "analytics": "61fa89f7-706a-46c0-bcdb-b1d3664195ce",
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

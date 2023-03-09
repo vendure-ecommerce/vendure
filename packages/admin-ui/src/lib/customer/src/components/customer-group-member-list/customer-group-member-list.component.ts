@@ -128,7 +128,5 @@ export class CustomerGroupMemberListComponent implements OnInit, OnDestroy {
         }
     }
 
-    isMemberSelected = (member: { id: string }): boolean => {
-        return -1 < this.selectedMemberIds.indexOf(member.id);
-    };
+    isMemberSelected = (member: { id: string }): boolean => -1 < this.selectedMemberIds.indexOf(member.id);
 }

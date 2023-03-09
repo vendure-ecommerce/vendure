@@ -58,14 +58,14 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         clearTimeout(this.timer);
     }
 
-    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
+    async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
         if (!job.id) {
             (job as any).id = Math.floor(Math.random() * 1000000000)
                 .toString()
                 .padEnd(10, '0');
         }
         (job as any).retries = this.setRetries(job.queueName, job);
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.jobs.set(job.id!, job);
         if (!this.unsettledJobs[job.queueName]) {
             this.unsettledJobs[job.queueName] = [];
@@ -126,7 +126,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         if (job.state === JobState.RETRYING || job.state === JobState.PENDING) {
             this.unsettledJobs[job.queueName].unshift({ job, updatedAt: new Date() });
         }
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.jobs.set(job.id!, job);
     }
 
@@ -139,12 +139,12 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
             if (job.isSettled) {
                 if (olderThan) {
                     if (job.settledAt && job.settledAt < olderThan) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         this.jobs.delete(job.id!);
                         removed++;
                     }
                 } else {
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     this.jobs.delete(job.id!);
                     removed++;
                 }
@@ -222,7 +222,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
     private evictSettledJobs = () => {
         const nowMs = +new Date();
         const olderThanMs = nowMs - this.evictJobsAfterMs;
-        this.removeSettledJobs([], new Date(olderThanMs));
+        void this.removeSettledJobs([], new Date(olderThanMs));
         this.timer = setTimeout(this.evictSettledJobs, this.evictJobsAfterMs);
     };
 
@@ -230,7 +230,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         if (!this.processContextChecked) {
             if (this.processContext.isWorker) {
                 Logger.error(
-                    `The InMemoryJobQueueStrategy will not work when running job queues outside the main server process!`,
+                    'The InMemoryJobQueueStrategy will not work when running job queues outside the main server process!',
                 );
                 process.kill(process.pid, 'SIGINT');
             }

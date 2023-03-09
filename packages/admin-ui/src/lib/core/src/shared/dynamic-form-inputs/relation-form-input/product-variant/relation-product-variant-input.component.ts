@@ -48,8 +48,8 @@ export class RelationProductVariantInputComponent implements OnInit {
 
         this.results$ = this.searchTerm$.pipe(
             debounceTime(200),
-            switchMap(term => {
-                return this.dataService.product
+            switchMap(term =>
+                this.dataService.product
                     .getProductVariantsSimple({
                         ...(term
                             ? {
@@ -62,8 +62,8 @@ export class RelationProductVariantInputComponent implements OnInit {
                             : {}),
                         take: 10,
                     })
-                    .mapSingle(data => data.productVariants.items);
-            }),
+                    .mapSingle(data => data.productVariants.items),
+            ),
         );
     }
 

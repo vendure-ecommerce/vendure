@@ -104,6 +104,7 @@ function buildWhereCondition(
             return {
                 clause: `${fieldName} ${LIKE} :arg${argIndex}`,
                 parameters: {
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                     [`arg${argIndex}`]: `%${typeof operand === 'string' ? operand.trim() : operand}%`,
                 },
             };
@@ -112,6 +113,7 @@ function buildWhereCondition(
             const LIKE = dbType === 'postgres' ? 'ILIKE' : 'LIKE';
             return {
                 clause: `${fieldName} NOT ${LIKE} :arg${argIndex}`,
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                 parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
             };
         }

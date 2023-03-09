@@ -58,7 +58,7 @@ export class LocaleStringHydrator {
             }
 
             await dbCallPromise.then(withTranslations => {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 entity.translations = withTranslations!.translations;
             });
         }

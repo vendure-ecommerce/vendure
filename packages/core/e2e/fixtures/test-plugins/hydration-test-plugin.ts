@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import {
     Asset,
@@ -35,7 +35,7 @@ export class TestAdminPluginResolver {
             where: { id: args.id },
             relations: ['facetValues'],
         });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         await this.entityHydrator.hydrate(ctx, product!, {
             relations: [
                 'variants.options',
@@ -54,7 +54,7 @@ export class TestAdminPluginResolver {
     @Query()
     async hydrateProductAsset(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
         const product = await this.connection.getRepository(ctx, Product).findOne({ where: { id: args.id } });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         await this.entityHydrator.hydrate(ctx, product!, {
             relations: ['assets'],
         });

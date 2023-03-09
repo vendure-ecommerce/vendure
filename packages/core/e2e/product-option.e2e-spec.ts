@@ -19,7 +19,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('ProductOption resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());

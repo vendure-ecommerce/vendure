@@ -1,4 +1,4 @@
-// tslint:disable-next-line:no-reference
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../core/typings.d.ts" />
 import { bootstrap, defaultConfig, JobQueueService, Logger, mergeConfig } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
@@ -9,7 +9,7 @@ import { initialData } from '../core/mock-data/data-sources/initial-data';
 
 import { devConfig } from './dev-config';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * A CLI script which populates the dev database with deterministic random data.

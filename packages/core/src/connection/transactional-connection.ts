@@ -79,14 +79,14 @@ export class TransactionalConnection {
         if (ctxOrTarget instanceof RequestContext) {
             const transactionManager = this.getTransactionManager(ctxOrTarget);
             if (transactionManager) {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 return transactionManager.getRepository(maybeTarget!);
             } else {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 return this.rawConnection.getRepository(maybeTarget!);
             }
         } else {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this.rawConnection.getRepository(ctxOrTarget ?? maybeTarget!);
         }
     }
@@ -142,7 +142,7 @@ export class TransactionalConnection {
         let work: (ctx: RequestContext) => Promise<T>;
         if (ctxOrWork instanceof RequestContext) {
             ctx = ctxOrWork;
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             work = maybeWork!;
         } else {
             ctx = RequestContext.empty();
@@ -276,7 +276,7 @@ export class TransactionalConnection {
     ) {
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
         if (options.loadEagerRelations !== false) {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }
         qb.leftJoin('entity.channels', '__channel')
@@ -306,7 +306,7 @@ export class TransactionalConnection {
 
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
         if (options.loadEagerRelations !== false) {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }
         return qb

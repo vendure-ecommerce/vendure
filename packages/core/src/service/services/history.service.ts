@@ -51,9 +51,9 @@ export interface CustomerHistoryEntryData {
     [HistoryEntryType.CUSTOMER_ADDRESS_DELETED]: {
         address: string;
     };
-    [HistoryEntryType.CUSTOMER_PASSWORD_UPDATED]: {};
-    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED]: {};
-    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_PASSWORD_UPDATED]: Record<string, never>;
+    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED]: Record<string, never>;
+    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED]: Record<string, never>;
     [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED]: {
         oldEmailAddress: string;
         newEmailAddress: string;

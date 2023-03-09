@@ -50,9 +50,7 @@ export class VariantPriceDetailComponent implements OnInit, OnChanges {
         );
 
         this.grossPrice$ = combineLatest(this.taxRate$, this.priceChange$).pipe(
-            map(([taxRate, price]) => {
-                return Math.round(price * ((100 + taxRate) / 100));
-            }),
+            map(([taxRate, price]) => Math.round(price * ((100 + taxRate) / 100))),
         );
     }
 

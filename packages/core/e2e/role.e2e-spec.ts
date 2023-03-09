@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import {
     CUSTOMER_ROLE_CODE,
@@ -275,7 +275,7 @@ describe('Role resolver', () => {
             assertThrowsWithMessage(async () => {
                 const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
                 if (!superAdminRole) {
-                    fail(`Could not find SuperAdmin role`);
+                    fail('Could not find SuperAdmin role');
                     return;
                 }
                 return adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
@@ -297,7 +297,7 @@ describe('Role resolver', () => {
             assertThrowsWithMessage(async () => {
                 const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
                 if (!customerRole) {
-                    fail(`Could not find Customer role`);
+                    fail('Could not find Customer role');
                     return;
                 }
                 return adminClient.query<Codegen.UpdateRoleMutation, Codegen.UpdateRoleMutationVariables>(
@@ -320,7 +320,7 @@ describe('Role resolver', () => {
         assertThrowsWithMessage(async () => {
             const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
             if (!customerRole) {
-                fail(`Could not find Customer role`);
+                fail('Could not find Customer role');
                 return;
             }
             return adminClient.query<Codegen.DeleteRoleMutation, Codegen.DeleteRoleMutationVariables>(
@@ -337,7 +337,7 @@ describe('Role resolver', () => {
         assertThrowsWithMessage(async () => {
             const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
             if (!superAdminRole) {
-                fail(`Could not find Customer role`);
+                fail('Could not find Customer role');
                 return;
             }
             return adminClient.query<Codegen.DeleteRoleMutation, Codegen.DeleteRoleMutationVariables>(
@@ -459,7 +459,7 @@ describe('Role resolver', () => {
             const { channels } = await adminClient.query<Codegen.GetChannelsQuery>(GET_CHANNELS);
             defaultChannel = channels.find(c => c.token === E2E_DEFAULT_CHANNEL_TOKEN)!;
             secondChannel = channels.find(c => c.token !== E2E_DEFAULT_CHANNEL_TOKEN)!;
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             await adminClient.asSuperAdmin();
             const { createRole } = await adminClient.query<
                 Codegen.CreateRoleMutation,

@@ -23,7 +23,7 @@
     "gulp:watch": "gulp -f ./build/gulpfile.ts watch",
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
     "watch": "concurrently yarn:tsc:watch yarn:gulp:watch",
-    "lint": "tslint --fix --project ./",
+    "lint": "eslint --fix .",
     "test": "vitest --config ./vitest.config.ts --run",
     "e2e": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts --run",
     "e2e:watch": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts",

@@ -92,15 +92,15 @@ export class OrderDetailComponent
         this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
-            switchMap(() => {
-                return this.dataService.order
+            switchMap(() =>
+                this.dataService.order
                     .getOrderHistory(this.id, {
                         sort: {
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream(data => data.order?.history.items);
-            }),
+                    .mapStream(data => data.order?.history.items),
+            ),
         );
         this.nextStates$ = this.entity$.pipe(
             map(order => {
@@ -357,14 +357,14 @@ export class OrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(FulfillOrderDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(FulfillOrderDialogComponent, {
                         size: 'xl',
                         locals: {
                             order,
                         },
-                    });
-                }),
+                    }),
+                ),
                 switchMap(input => {
                     if (input) {
                         return this.dataService.order.createFulfillment(input);

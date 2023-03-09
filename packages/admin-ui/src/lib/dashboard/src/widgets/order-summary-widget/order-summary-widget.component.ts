@@ -29,21 +29,19 @@ export class OrderSummaryWidgetComponent implements OnInit {
     ngOnInit(): void {
         this.dateRange$ = this.selection$.pipe(
             distinctUntilChanged(),
-            map(selection => {
-                return {
-                    start: dayjs(selection.date).startOf(selection.timeframe).toDate(),
-                    end: dayjs(selection.date).endOf(selection.timeframe).toDate(),
-                };
-            }),
+            map(selection => ({
+                start: dayjs(selection.date).startOf(selection.timeframe).toDate(),
+                end: dayjs(selection.date).endOf(selection.timeframe).toDate(),
+            })),
             shareReplay(1),
         );
         const orderSummary$ = this.dateRange$.pipe(
-            switchMap(({ start, end }) => {
-                return this.dataService.order
+            switchMap(({ start, end }) =>
+                this.dataService.order
                     .getOrderSummary(start, end)
                     .refetchOnChannelChange()
-                    .mapStream(data => data.orders);
-            }),
+                    .mapStream(data => data.orders),
+            ),
             shareReplay(1),
         );
         this.totalOrderCount$ = orderSummary$.pipe(map(res => res.totalItems));

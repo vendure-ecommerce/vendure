@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -115,7 +115,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
             const { product } = await adminClient.query<
                 Codegen.GetProductWithVariantsQuery,
@@ -158,7 +158,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
 
             expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
-            await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { product } = await adminClient.query<
                 Codegen.GetProductWithVariantsQuery,
                 Codegen.GetProductWithVariantsQueryVariables
@@ -231,7 +231,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         it('removes Product from Channel', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { removeProductsFromChannel } = await adminClient.query<
                 Codegen.RemoveProductsFromChannelMutation,
                 Codegen.RemoveProductsFromChannelMutationVariables
@@ -251,7 +251,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         beforeAll(async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
             const { product } = await adminClient.query<
                 Codegen.GetProductWithVariantsQuery,
@@ -281,7 +281,7 @@ describe('ChannelAware Products and ProductVariants', () => {
         it('assigns ProductVariant to Channel and applies price factor', async () => {
             const PRICE_FACTOR = 0.5;
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { assignProductVariantsToChannel } = await adminClient.query<
                 Codegen.AssignProductVariantsToChannelMutation,
                 Codegen.AssignProductVariantsToChannelMutationVariables
@@ -294,7 +294,7 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
 
             expect(assignProductVariantsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
-            await adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
             const { product } = await adminClient.query<
                 Codegen.GetProductWithVariantsQuery,
                 Codegen.GetProductWithVariantsQueryVariables
@@ -307,7 +307,7 @@ describe('ChannelAware Products and ProductVariants', () => {
                 Math.round(product1.variants[0].priceWithTax * PRICE_FACTOR),
             ]);
 
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { product: check } = await adminClient.query<
                 Codegen.GetProductWithVariantsQuery,
                 Codegen.GetProductWithVariantsQueryVariables
@@ -323,7 +323,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         it('does not assign ProductVariant to same channel twice', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { assignProductVariantsToChannel } = await adminClient.query<
                 Codegen.AssignProductVariantsToChannelMutation,
                 Codegen.AssignProductVariantsToChannelMutationVariables
@@ -353,7 +353,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         it('removes ProductVariant but not Product from Channel', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { assignProductVariantsToChannel } = await adminClient.query<
                 Codegen.AssignProductVariantsToChannelMutation,
                 Codegen.AssignProductVariantsToChannelMutationVariables
@@ -387,7 +387,7 @@ describe('ChannelAware Products and ProductVariants', () => {
 
         it('removes ProductVariant and Product from Channel', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { removeProductVariantsFromChannel } = await adminClient.query<
                 Codegen.RemoveProductVariantsFromChannelMutation,
                 Codegen.RemoveProductVariantsFromChannelMutationVariables
@@ -482,7 +482,7 @@ describe('ChannelAware Products and ProductVariants', () => {
                         translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
                     },
                 });
-            }, `No Product with the id '2' could be found`),
+            }, "No Product with the id '2' could be found"),
         );
     });
 });

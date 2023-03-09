@@ -43,7 +43,7 @@ export interface GraphQLApiOptions {
     apiPath: string;
     debug: boolean;
     playground: boolean | any;
-    // tslint:disable-next-line:ban-types
+    // eslint-disable-next-line @typescript-eslint/ban-types
     resolverModule: Function;
     validationRules: Array<(context: ValidationContext) => any>;
 }

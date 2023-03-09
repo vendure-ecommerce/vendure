@@ -26,7 +26,7 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "watch": "tsc -p ./tsconfig.build.json -w",
-    "lint": "tslint --fix --project ./",
+    "lint": "eslint --fix .",
     "ci": "yarn build"
   },
   "bugs": {

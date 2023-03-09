@@ -358,9 +358,9 @@ export class OrderEditorComponent
     previewAndModify(order: OrderDetailFragment) {
         const modifyOrderInput: ModifyOrderData = {
             ...this.modifyOrderInput,
-            adjustOrderLines: this.modifyOrderInput.adjustOrderLines.map(line => {
-                return transformRelationCustomFieldInputs(simpleDeepClone(line), this.orderLineCustomFields);
-            }),
+            adjustOrderLines: this.modifyOrderInput.adjustOrderLines.map(line =>
+                transformRelationCustomFieldInputs(simpleDeepClone(line), this.orderLineCustomFields),
+            ),
         };
         const input: ModifyOrderInput = {
             ...modifyOrderInput,

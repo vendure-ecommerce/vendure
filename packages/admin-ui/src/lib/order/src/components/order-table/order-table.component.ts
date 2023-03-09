@@ -59,9 +59,7 @@ export class OrderTableComponent implements OnInit {
                         value,
                     };
                 })
-                .filter(field => {
-                    return this.orderLineCustomFieldsVisible ? true : field.value != null;
-                });
+                .filter(field => this.orderLineCustomFieldsVisible ? true : field.value != null);
             this.customFieldsForLine[line.id] = result;
         }
     }

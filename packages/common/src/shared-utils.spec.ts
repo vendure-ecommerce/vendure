@@ -38,7 +38,7 @@ describe('isClassInstance()', () => {
     it('returns true for class instances', () => {
         expect(isClassInstance(new Date())).toBe(true);
         expect(isClassInstance(new Foo())).toBe(true);
-        // tslint:disable-next-line:no-construct
+        // eslint-disable-next-line no-new-wrappers
         expect(isClassInstance(new Number(1))).toBe(true);
     });
 

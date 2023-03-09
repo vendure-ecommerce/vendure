@@ -103,7 +103,7 @@ export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observ
  */
 export function asyncObservable<T>(work: (observer: Observer<T>) => Promise<T | void>): Observable<T> {
     return new Observable<T>(subscriber => {
-        (async () => {
+        void (async () => {
             try {
                 const result = await work(subscriber);
                 if (result) {

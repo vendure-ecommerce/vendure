@@ -92,7 +92,7 @@ describe('Custom permissions', () => {
         });
 
         it('CRUD read permission', async () => {
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
             const { wishlist } = await adminClient.query(CRUD_READ);
             expect(wishlist).toBe(true);
         });
@@ -179,7 +179,7 @@ describe('Custom permissions', () => {
         });
 
         it('CRUD read permission', async () => {
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
             const { wishlist } = await adminClient.query(CRUD_READ);
             expect(wishlist).toBe(true);
         });

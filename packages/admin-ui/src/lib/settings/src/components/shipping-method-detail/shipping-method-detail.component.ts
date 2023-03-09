@@ -123,14 +123,14 @@ export class ShippingMethodDetailComponent
             }),
         );
 
-        // tslint:disable:no-non-null-assertion
+        /* eslint-disable @typescript-eslint/no-non-null-assertion */
         merge(
             this.detailForm.get(['checker'])!.valueChanges,
             this.detailForm.get(['calculator'])!.valueChanges,
         )
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => (this.testDataUpdated = true));
-        // tslint:enable:no-non-null-assertion
+        /* eslint-enable @typescript-eslint/no-non-null-assertion */
     }
 
     ngOnDestroy(): void {
@@ -242,7 +242,7 @@ export class ShippingMethodDetailComponent
                     this.changeDetector.markForCheck();
                 },
                 err => {
-                    // tslint:disable-next-line:no-console
+                    // eslint-disable-next-line no-console
                     console.error(err);
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'ShippingMethod',

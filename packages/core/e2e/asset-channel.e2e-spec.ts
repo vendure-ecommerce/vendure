@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -84,7 +84,7 @@ describe('ChannelAware Assets', () => {
     });
 
     it('Asset is not in channel2', async () => {
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -95,7 +95,7 @@ describe('ChannelAware Assets', () => {
     });
 
     it('Add asset to channel2', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { assignAssetsToChannel: assets } = await adminClient.query<
             Codegen.AssignAssetsToChannelMutation,
             Codegen.AssignAssetsToChannelMutationVariables
@@ -109,7 +109,7 @@ describe('ChannelAware Assets', () => {
     });
 
     it('Get asset from channel2', async () => {
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -132,7 +132,7 @@ describe('ChannelAware Assets', () => {
     });
 
     it('Asset is available in default channel', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -143,7 +143,7 @@ describe('ChannelAware Assets', () => {
     });
 
     it('Add asset to channel2', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { assignAssetsToChannel: assets } = await adminClient.query<
             Codegen.AssignAssetsToChannelMutation,
             Codegen.AssignAssetsToChannelMutationVariables
@@ -169,12 +169,12 @@ describe('ChannelAware Assets', () => {
                     deleteFromAllChannels: true,
                 },
             });
-        }, `You are not currently authorized to perform this action`),
+        }, 'You are not currently authorized to perform this action'),
     );
 
     it('Delete asset from all channels as superadmin', async () => {
         await adminClient.asSuperAdmin();
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { deleteAsset } = await adminClient.query<
             Codegen.DeleteAssetMutation,
             Codegen.DeleteAssetMutationVariables
@@ -188,7 +188,7 @@ describe('ChannelAware Assets', () => {
     });
 
     it('Asset is also deleted in default channel', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -201,7 +201,7 @@ describe('ChannelAware Assets', () => {
 
 describe('Product related assets', () => {
     it('Featured asset is available in default channel', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { product } = await adminClient.query<
             Codegen.GetProductWithVariantsQuery,
             Codegen.GetProductWithVariantsQueryVariables
@@ -211,7 +211,7 @@ describe('Product related assets', () => {
         featuredAssetId = product!.featuredAsset!.id;
         expect(featuredAssetId).toBeDefined();
 
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -222,7 +222,7 @@ describe('Product related assets', () => {
     });
 
     it('Featured asset is not available in channel2', async () => {
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -233,7 +233,7 @@ describe('Product related assets', () => {
     });
 
     it('Add Product to channel2', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { assignProductsToChannel } = await adminClient.query<
             Codegen.AssignProductsToChannelMutation,
             Codegen.AssignProductsToChannelMutationVariables
@@ -248,7 +248,7 @@ describe('Product related assets', () => {
     });
 
     it('Get featured asset from channel2', async () => {
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
             GET_ASSET,
             {
@@ -259,7 +259,7 @@ describe('Product related assets', () => {
     });
 
     it('Add Product 2 to channel2', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { assignProductsToChannel } = await adminClient.query<
             Codegen.AssignProductsToChannelMutation,
             Codegen.AssignProductsToChannelMutationVariables
@@ -274,7 +274,7 @@ describe('Product related assets', () => {
     });
 
     it('Add asset A to Product 2 in default channel', async () => {
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { updateProduct } = await adminClient.query<
             Codegen.UpdateProductMutation,
             Codegen.UpdateProductMutationVariables
@@ -288,7 +288,7 @@ describe('Product related assets', () => {
     });
 
     it('Channel2 does not have asset A', async () => {
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { product } = await adminClient.query<
             Codegen.GetProductWithVariantsQuery,
             Codegen.GetProductWithVariantsQueryVariables

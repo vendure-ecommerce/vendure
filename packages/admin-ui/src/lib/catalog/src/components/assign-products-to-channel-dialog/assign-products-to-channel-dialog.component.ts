@@ -46,7 +46,7 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
         const allChannels$ = this.dataService.settings.getChannels().mapSingle(data => data.channels);
 
         combineLatest(activeChannelId$, allChannels$).subscribe(([activeChannelId, channels]) => {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.currentChannel = channels.find(c => c.id === activeChannelId)!;
             this.availableChannels = channels;
         });
@@ -59,14 +59,12 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
             from(this.getTopVariants(10)),
             this.priceFactorControl.valueChanges.pipe(startWith(1)),
         ).pipe(
-            map(([variants, factor]) => {
-                return variants.map(v => ({
+            map(([variants, factor]) => variants.map(v => ({
                     id: v.id,
                     name: v.name,
                     price: v.price,
                     pricePreview: v.price * +factor,
-                }));
-            }),
+                }))),
         );
     }
 
@@ -101,7 +99,7 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
                     .subscribe(() => {
                         this.notificationService.success(_('catalog.assign-variant-to-channel-success'), {
                             channel: selectedChannel.code,
-                            // tslint:disable-next-line:no-non-null-assertion
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             count: this.productVariantIds!.length,
                         });
                         this.resolveWith(true);

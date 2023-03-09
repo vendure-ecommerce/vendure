@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { OnModuleInit } from '@nestjs/common';
 import { ErrorCode, RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
@@ -93,7 +93,7 @@ class TestPasswordValidationStrategy implements PasswordValidationStrategy {
             return 'Password must be more than 8 characters';
         }
         if (password === '12345678') {
-            return `Don't use 12345678!`;
+            return "Don't use 12345678!";
         }
         return true;
     }
@@ -267,7 +267,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`Verification token not recognized`);
+            expect(verifyCustomerAccount.message).toBe('Verification token not recognized');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
         });
 
@@ -280,7 +280,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`A password must be provided.`);
+            expect(verifyCustomerAccount.message).toBe('A password must be provided.');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.MISSING_PASSWORD_ERROR);
         });
 
@@ -294,9 +294,9 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`Password is invalid`);
+            expect(verifyCustomerAccount.message).toBe('Password is invalid');
             expect((verifyCustomerAccount as PasswordValidationError).validationErrorMessage).toBe(
-                `Password must be more than 8 characters`,
+                'Password must be more than 8 characters',
             );
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_VALIDATION_ERROR);
         });
@@ -347,7 +347,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`Verification token not recognized`);
+            expect(verifyCustomerAccount.message).toBe('Verification token not recognized');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
         });
 
@@ -404,9 +404,9 @@ describe('Shop auth & accounts', () => {
             });
             successErrorGuard.assertErrorResult(registerCustomerAccount);
             expect(registerCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_VALIDATION_ERROR);
-            expect(registerCustomerAccount.message).toBe(`Password is invalid`);
+            expect(registerCustomerAccount.message).toBe('Password is invalid');
             expect((registerCustomerAccount as PasswordValidationError).validationErrorMessage).toBe(
-                `Don't use 12345678!`,
+                "Don't use 12345678!",
             );
         });
 
@@ -467,7 +467,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
-            expect(verifyCustomerAccount.message).toBe(`A password has already been set during registration`);
+            expect(verifyCustomerAccount.message).toBe('A password has already been set during registration');
             expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_ALREADY_SET_ERROR);
         });
 
@@ -547,7 +547,7 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(resetPassword);
 
-            expect(resetPassword.message).toBe(`Password reset token not recognized`);
+            expect(resetPassword.message).toBe('Password reset token not recognized');
             expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_RESET_TOKEN_INVALID_ERROR);
         });
 
@@ -561,9 +561,9 @@ describe('Shop auth & accounts', () => {
             });
             currentUserErrorGuard.assertErrorResult(resetPassword);
 
-            expect(resetPassword.message).toBe(`Password is invalid`);
+            expect(resetPassword.message).toBe('Password is invalid');
             expect((resetPassword as PasswordValidationError).validationErrorMessage).toBe(
-                `Password must be more than 8 characters`,
+                'Password must be more than 8 characters',
             );
             expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_VALIDATION_ERROR);
         });
@@ -876,7 +876,7 @@ describe('Shop auth & accounts', () => {
         } catch (e: any) {
             const errorCode = getErrorCode(e);
             if (!errorCode) {
-                fail(`Unexpected failure: ${e}`);
+                fail(`Unexpected failure: ${JSON.stringify(e)}`);
             } else {
                 fail(`Operation should be allowed, got status ${getErrorCode(e)}`);
             }
@@ -886,7 +886,7 @@ describe('Shop auth & accounts', () => {
     async function assertRequestForbidden<V>(operation: DocumentNode, variables: V) {
         try {
             const status = await shopClient.query(operation, variables);
-            fail(`Should have thrown`);
+            fail('Should have thrown');
         } catch (e: any) {
             expect(getErrorCode(e)).toBe('FORBIDDEN');
         }
@@ -914,7 +914,7 @@ describe('Shop auth & accounts', () => {
         const role = roleResult.createRole;
 
         const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
-        const password = `test`;
+        const password = 'test';
 
         const adminResult = await shopClient.query<
             Codegen.CreateAdministratorMutation,
@@ -1004,7 +1004,7 @@ describe('Expiring tokens', () => {
         currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
         expect(verifyCustomerAccount.message).toBe(
-            `Verification token has expired. Use refreshCustomerVerification to send a new token.`,
+            'Verification token has expired. Use refreshCustomerVerification to send a new token.',
         );
         expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_EXPIRED_ERROR);
     });
@@ -1044,7 +1044,7 @@ describe('Expiring tokens', () => {
 
         currentUserErrorGuard.assertErrorResult(resetPassword);
 
-        expect(resetPassword.message).toBe(`Password reset token has expired`);
+        expect(resetPassword.message).toBe('Password reset token has expired');
         expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_RESET_TOKEN_EXPIRED_ERROR);
     });
 });

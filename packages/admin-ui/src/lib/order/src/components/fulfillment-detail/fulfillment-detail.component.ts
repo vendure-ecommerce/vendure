@@ -32,13 +32,10 @@ export class FulfillmentDetailComponent implements OnInit, OnChanges {
 
     get items(): Array<{ name: string; quantity: number }> {
         return (
-            this.fulfillment?.lines.map(row => {
-                return {
-                    name:
-                        this.order.lines.find(line => line.id === row.orderLineId)?.productVariant.name ?? '',
-                    quantity: row.quantity,
-                };
-            }) ?? []
+            this.fulfillment?.lines.map(row => ({
+                name: this.order.lines.find(line => line.id === row.orderLineId)?.productVariant.name ?? '',
+                quantity: row.quantity,
+            })) ?? []
         );
     }
 

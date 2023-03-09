@@ -43,18 +43,18 @@ export class SessionService implements EntitySubscriberInterface {
     }
 
     /** @internal */
-    afterInsert(event: InsertEvent<any>): Promise<any> | void {
-        this.clearSessionCacheOnDataChange(event);
+    async afterInsert(event: InsertEvent<any>): Promise<any> {
+        await this.clearSessionCacheOnDataChange(event);
     }
 
     /** @internal */
-    afterRemove(event: RemoveEvent<any>): Promise<any> | void {
-        this.clearSessionCacheOnDataChange(event);
+    async afterRemove(event: RemoveEvent<any>): Promise<any> {
+        await this.clearSessionCacheOnDataChange(event);
     }
 
     /** @internal */
-    afterUpdate(event: UpdateEvent<any>): Promise<any> | void {
-        this.clearSessionCacheOnDataChange(event);
+    async afterUpdate(event: UpdateEvent<any>): Promise<any> {
+        await this.clearSessionCacheOnDataChange(event);
     }
 
     private async clearSessionCacheOnDataChange(

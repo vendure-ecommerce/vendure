@@ -75,9 +75,7 @@ export class JobListComponent
             .getJobQueues()
             .mapStream(res => res.jobQueues)
             .pipe(
-                map(queues => {
-                    return [{ name: 'all', running: true }, ...queues];
-                }),
+                map(queues => [{ name: 'all', running: true }, ...queues]),
             );
     }
 

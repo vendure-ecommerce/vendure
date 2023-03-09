@@ -91,7 +91,7 @@ export async function generateResolvers(
         Money: GraphQLMoney,
         Node: dummyResolveType,
         PaginatedList: dummyResolveType,
-        Upload: (GraphQLUpload as any) || dummyResolveType,
+        Upload: GraphQLUpload || dummyResolveType,
         SearchResultPrice: {
             __resolveType(value: any) {
                 return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';

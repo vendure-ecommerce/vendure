@@ -86,7 +86,7 @@ export class I18nService implements OnModuleInit {
             const resources = JSON.parse(rawData.toString('utf-8'));
             this.addTranslation(langKey, resources);
         } catch (err: any) {
-            Logger.error(`Could not load resources file ${filePath}`, `I18nService`);
+            Logger.error(`Could not load resources file ${filePath}`, 'I18nService');
         }
     }
 
@@ -114,7 +114,9 @@ export class I18nService implements OnModuleInit {
             try {
                 translation = t(originalError.message, originalError.variables);
             } catch (e: any) {
-                translation += ` (Translation format error: ${e.message})`;
+                const message =
+                    typeof e.message === 'string' ? (e.message as string) : JSON.stringify(e.message);
+                translation += ` (Translation format error: ${message})`;
             }
             error.message = translation;
             // We can now safely remove the variables object so that they do not appear in
@@ -136,7 +138,8 @@ export class I18nService implements OnModuleInit {
         try {
             translation = t(key, error as any);
         } catch (e: any) {
-            translation += ` (Translation format error: ${e.message})`;
+            const message = typeof e.message === 'string' ? (e.message as string) : JSON.stringify(e.message);
+            translation += ` (Translation format error: ${message})`;
         }
         error.message = translation;
     }

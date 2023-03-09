@@ -23,9 +23,9 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
@@ -129,7 +129,7 @@ export class ProductService {
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
             .setFindOptions({ relations: (relations && false) || this.relations });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         return qb
             .leftJoin('product.channels', 'channel')
@@ -186,7 +186,7 @@ export class ProductService {
             .setParameters(translationQb.getParameters())
             .select('product.id', 'id')
             .addSelect(
-                // tslint:disable-next-line:max-line-length
+                // eslint-disable-next-line max-len
                 `CASE translation.languageCode WHEN '${ctx.languageCode}' THEN 2 WHEN '${ctx.channel.defaultLanguageCode}' THEN 1 ELSE 0 END`,
                 'sort_order',
             )
@@ -366,7 +366,7 @@ export class ProductService {
         }
         if (optionGroup.product) {
             const translated = this.translator.translate(optionGroup.product, ctx);
-            throw new UserInputError(`error.product-option-group-already-assigned`, {
+            throw new UserInputError('error.product-option-group-already-assigned', {
                 groupCode: optionGroup.code,
                 productName: translated.name,
             });
@@ -412,7 +412,7 @@ export class ProductService {
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         if (result.result === DeletionResult.NOT_DELETED) {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             throw new InternalServerError(result.message!);
         }
         this.eventBus.publish(new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'));

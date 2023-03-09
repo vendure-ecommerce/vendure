@@ -15,7 +15,8 @@ import { awaitRunningJobs } from '../../core/e2e/utils/await-running-jobs';
 import { ElasticsearchPlugin } from '../src/plugin';
 
 import { GetCollectionListQuery } from './graphql/generated-e2e-elasticsearch-plugin-types';
-// tslint:disable-next-line:no-var-requires
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
 // https://github.com/vendure-ecommerce/vendure/issues/494

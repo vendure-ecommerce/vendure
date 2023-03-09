@@ -42,9 +42,7 @@ export class ProductSearchInputComponent {
             }
         });
 
-        ids.map(id => {
-            return items?.find(item => this.isFacetValueItem(item) && item.facetValue.id === id);
-        })
+        ids.map(id => items?.find(item => this.isFacetValueItem(item) && item.facetValue.id === id))
             .filter(notNullOrUndefined)
             .forEach(item => {
                 const isSelected = this.selectComponent.selectedItems.find(i => {
@@ -111,7 +109,6 @@ export class ProductSearchInputComponent {
         return this.selectComponent.itemsList.markedIndex === -1;
     }
 
-    private isFacetValueItem = (input: unknown): input is FacetValueResult => {
-        return typeof input === 'object' && !!input && input.hasOwnProperty('facetValue');
-    };
+    private isFacetValueItem = (input: unknown): input is FacetValueResult =>
+        typeof input === 'object' && !!input && input.hasOwnProperty('facetValue');
 }

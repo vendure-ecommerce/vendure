@@ -9,6 +9,7 @@ const defaultConfigPath = path.join(__dirname, 'default-config');
  * Reset the activeConfig object back to the initial default state.
  */
 export function resetConfig() {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     activeConfig = require(defaultConfigPath).defaultConfig;
 }
 
@@ -39,14 +40,14 @@ export async function ensureConfigLoaded() {
  * should be used to access config settings.
  */
 export function getConfig(): Readonly<RuntimeVendureConfig> {
-    // @ts-ignore
     if (!activeConfig) {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
             activeConfig = require(defaultConfigPath).defaultConfig;
         } catch (e: any) {
-            // tslint:disable-next-line:no-console
+            // eslint-disable-next-line no-console
             console.log(
-                `Error loading config. If this is a test, make sure you have called ensureConfigLoaded() before using the config.`,
+                'Error loading config. If this is a test, make sure you have called ensureConfigLoaded() before using the config.',
             );
         }
     }

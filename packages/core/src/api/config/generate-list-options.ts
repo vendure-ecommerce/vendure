@@ -69,7 +69,8 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                               filterOperator: {
                                   type: logicalOperatorEnum as GraphQLEnumType,
                                   description:
-                                      'Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.',
+                                      'Specifies whether multiple "filter" arguments should be combines ' +
+                                      'with a logical AND or OR operation. Defaults to AND.',
                               },
                           }
                         : {}),
@@ -224,7 +225,7 @@ function getCommonTypes(schema: GraphQLSchema) {
         !DateOperators ||
         !IDOperators
     ) {
-        throw new Error(`A common type was not defined`);
+        throw new Error('A common type was not defined');
     }
     return {
         SortOrder,

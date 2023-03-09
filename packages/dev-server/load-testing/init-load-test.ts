@@ -1,4 +1,4 @@
-// tslint:disable-next-line:no-reference
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../../core/typings.d.ts" />
 import { bootstrap, JobQueueService, Logger } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
@@ -17,7 +17,7 @@ import {
     getProductCsvFilePath,
 } from './load-test-config';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * A script used to populate a database with test data for load testing.
@@ -143,7 +143,7 @@ function generateProductsCsv(productCount: number = 100): Promise<void> {
 
     stringifier.on('readable', () => {
         let row;
-        // tslint:disable-next-line:no-conditional-assignment
+        // eslint-disable-next-line no-cond-assign
         while ((row = stringifier.read())) {
             data.push(row);
         }

@@ -5,7 +5,7 @@ import { lastValueFrom } from 'rxjs';
 
 const loggerCtx = 'Populate';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * @description
  * Populates the Vendure server with some initial data and (optionally) product data from
@@ -112,7 +112,7 @@ export async function populateInitialData(
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData, channel);
-        Logger.info(`Populated initial data`, loggerCtx);
+        Logger.info('Populated initial data', loggerCtx);
     } catch (err: any) {
         Logger.error(err.message, loggerCtx);
     }

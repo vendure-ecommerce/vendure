@@ -4,7 +4,7 @@ import http from 'http';
 
 import { ADMIN_API_PATH, API_PORT } from '../../packages/common/src/shared-constants';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 /**
  * Makes an introspection query to the Vendure server and writes the result to a

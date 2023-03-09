@@ -139,7 +139,7 @@ describe('custom ActiveOrderStrategy', () => {
     });
 
     describe('happy path', () => {
-        const activeOrderInput = `activeOrderInput: { orderToken: { token: "token-2" } }`;
+        const activeOrderInput = 'activeOrderInput: { orderToken: { token: "token-2" } }';
         const TEST_COUPON_CODE = 'TESTCOUPON';
         let firstOrderLineId: string;
 

@@ -33,35 +33,35 @@ describe('Finite State Machine', () => {
         expect(fsm.getNextStates()).toEqual(['Moving', 'DoorsOpen']);
     });
 
-    it('allows valid transitions', () => {
+    it('allows valid transitions', async () => {
         const initialState = 'DoorsClosed';
         const fsm = new FSM<TestState>({ transitions }, initialState);
 
-        fsm.transitionTo('Moving', {});
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('Moving');
-        fsm.transitionTo('DoorsClosed', {});
+        await fsm.transitionTo('DoorsClosed', {});
         expect(fsm.currentState).toBe('DoorsClosed');
-        fsm.transitionTo('DoorsOpen', {});
+        await fsm.transitionTo('DoorsOpen', {});
         expect(fsm.currentState).toBe('DoorsOpen');
-        fsm.transitionTo('DoorsClosed', {});
+        await fsm.transitionTo('DoorsClosed', {});
         expect(fsm.currentState).toBe('DoorsClosed');
     });
 
-    it('does not allow invalid transitions', () => {
+    it('does not allow invalid transitions', async () => {
         const initialState = 'DoorsOpen';
         const fsm = new FSM<TestState>({ transitions }, initialState);
 
-        fsm.transitionTo('Moving', {});
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('DoorsOpen');
-        fsm.transitionTo('DoorsClosed', {});
+        await fsm.transitionTo('DoorsClosed', {});
         expect(fsm.currentState).toBe('DoorsClosed');
-        fsm.transitionTo('Moving', {});
+        await fsm.transitionTo('Moving', {});
         expect(fsm.currentState).toBe('Moving');
-        fsm.transitionTo('DoorsOpen', {});
+        await fsm.transitionTo('DoorsOpen', {});
         expect(fsm.currentState).toBe('Moving');
     });
 
-    it('onTransitionStart() is invoked before a transition takes place', () => {
+    it('onTransitionStart() is invoked before a transition takes place', async () => {
         const initialState = 'DoorsClosed';
         const spy = vi.fn();
         const data = 123;
@@ -76,7 +76,7 @@ describe('Finite State Machine', () => {
             initialState,
         );
 
-        fsm.transitionTo('Moving', data);
+        await fsm.transitionTo('Moving', data);
 
         expect(spy).toHaveBeenCalledWith(initialState, 'Moving', data);
         expect(currentStateDuringCallback).toBe(initialState);

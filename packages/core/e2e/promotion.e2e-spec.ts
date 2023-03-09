@@ -25,7 +25,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Promotion resolver', () => {
     const promoCondition = generateTestCondition('promo_condition');
@@ -370,7 +370,7 @@ describe('Promotion resolver', () => {
                             enabled: false,
                         },
                     }),
-                `No Promotion with the id '1' could be found`,
+                "No Promotion with the id '1' could be found",
             ),
         );
     });

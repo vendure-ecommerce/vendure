@@ -223,7 +223,7 @@ describe('CustomerGroup resolver', () => {
                 groupId: 'T_1',
                 customerIds: [customers[4].id],
             });
-        }, `Customer does not belong to this CustomerGroup`),
+        }, 'Customer does not belong to this CustomerGroup'),
     );
 
     it('removeCustomersFromGroup with valid customerIds', async () => {

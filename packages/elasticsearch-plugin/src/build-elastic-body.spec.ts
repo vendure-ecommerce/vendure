@@ -473,7 +473,7 @@ describe('buildElasticBody()', () => {
                         graphQlType: 'String',
                         context: 'both',
                         scriptFn: input => ({
-                            script: `doc['property'].dummyScript(${input.term})`,
+                            script: `doc['property'].dummyScript(${input.term as string})`,
                         }),
                     },
                 },
@@ -482,7 +482,7 @@ describe('buildElasticBody()', () => {
         const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
         expect(result.script_fields).toEqual({
             test: {
-                script: `doc['property'].dummyScript(test)`,
+                script: 'doc[\'property\'].dummyScript(test)',
             },
         });
     });

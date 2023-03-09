@@ -67,7 +67,7 @@ export class QueryComplexityPlugin implements ApolloServerPlugin {
                         }" is ${complexity}, which exceeds the maximum of ${maxQueryComplexity}`,
                         loggerCtx,
                     );
-                    throw new InternalServerError(`Query is too complex`);
+                    throw new InternalServerError('Query is too complex');
                 }
             },
         };

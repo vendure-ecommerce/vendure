@@ -66,7 +66,7 @@ export class GlobalSettingsService {
                 .getOne(),
         );
         if (!settings) {
-            throw new InternalServerError(`error.global-settings-not-found`);
+            throw new InternalServerError('error.global-settings-not-found');
         }
         return settings;
     }

@@ -39,8 +39,8 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Collection } from '../../entity/collection/collection.entity';
-import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
@@ -52,7 +52,7 @@ import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { TagService } from './tag.service';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const sizeOf = require('image-size');
 
 /**
@@ -136,7 +136,7 @@ export class AssetService {
                 .select('asset.id')
                 .from(Asset, 'asset')
                 .leftJoin('asset.tags', 'tags')
-                .where(`tags.value IN (:...tags)`);
+                .where('tags.value IN (:...tags)');
 
             if (operator === LogicalOperator.AND) {
                 subquery.groupBy('asset.id').having('COUNT(asset.id) = :tagCount');
@@ -469,7 +469,7 @@ export class AssetService {
                     : RequestContext.empty();
             return this.createAssetInternal(ctx, stream, filename, mimetype);
         } else {
-            throw new InternalServerError(`error.path-should-be-a-string-got-buffer`);
+            throw new InternalServerError('error.path-should-be-a-string-got-buffer');
         }
     }
 
@@ -498,7 +498,7 @@ export class AssetService {
                 await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.source);
                 await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.preview);
             } catch (e: any) {
-                Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
+                Logger.error('error.could-not-delete-asset-file', undefined, e.stack);
             }
             this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
         }
@@ -540,7 +540,8 @@ export class AssetService {
         try {
             preview = await assetPreviewStrategy.generatePreviewImage(ctx, mimetype, sourceFile);
         } catch (e: any) {
-            Logger.error(`Could not create Asset preview image: ${e.message}`, undefined, e.stack);
+            const message: string = typeof e.message === 'string' ? e.message : e.message.toString();
+            Logger.error(`Could not create Asset preview image: ${message}`, undefined, e.stack);
             throw e;
         }
         const previewFileIdentifier = await assetStorageStrategy.writeFileFromBuffer(
@@ -597,7 +598,7 @@ export class AssetService {
             const { width, height } = sizeOf(imageFile);
             return { width, height };
         } catch (e: any) {
-            Logger.error(`Could not determine Asset dimensions: ` + e);
+            Logger.error('Could not determine Asset dimensions: ' + JSON.stringify(e));
             return { width: 0, height: 0 };
         }
     }

@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     DefaultLogger,
     dummyPaymentHandler,
@@ -42,7 +42,7 @@ const minPriceChecker = new PaymentMethodEligibilityChecker({
         if (order.totalWithTax >= args.minPrice) {
             return true;
         } else {
-            return `Order total too low`;
+            return 'Order total too low';
         }
     },
 });

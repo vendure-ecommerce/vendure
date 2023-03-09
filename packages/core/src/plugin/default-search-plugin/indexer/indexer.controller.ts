@@ -15,8 +15,8 @@ import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
-import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../../../service/helpers/product-price-applicator/product-price-applicator';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { PLUGIN_INIT_OPTIONS } from '../constants';
@@ -90,7 +90,7 @@ export class IndexerController {
                     duration: +new Date() - timeStart,
                 });
             }
-            Logger.verbose(`Completed reindexing`, workerLoggerCtx);
+            Logger.verbose('Completed reindexing', workerLoggerCtx);
 
             return {
                 total: count,
@@ -132,7 +132,7 @@ export class IndexerController {
                     });
                 }
             }
-            Logger.verbose(`Completed reindexing!`);
+            Logger.verbose('Completed reindexing!');
             return {
                 total: ids.length,
                 completed: ids.length,

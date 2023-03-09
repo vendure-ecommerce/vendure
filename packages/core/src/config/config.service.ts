@@ -31,7 +31,7 @@ export class ConfigService implements VendureConfig {
     constructor() {
         this.activeConfig = getConfig();
         if (this.activeConfig.authOptions.disableAuth) {
-            // tslint:disable-next-line
+            // eslint-disable-next-line
             Logger.warn('Auth has been disabled. This should never be the case for a production system!');
         }
     }
@@ -81,7 +81,7 @@ export class ConfigService implements VendureConfig {
     }
 
     get orderOptions(): Required<OrderOptions> {
-        return this.activeConfig.orderOptions as Required<OrderOptions>;
+        return this.activeConfig.orderOptions;
     }
 
     get paymentOptions(): Required<PaymentOptions> {

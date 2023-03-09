@@ -116,15 +116,15 @@ export class CustomerDetailComponent
         this.ordersCount$ = this.entity$.pipe(map(customer => customer.orders.totalItems));
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
-            switchMap(() => {
-                return this.dataService.customer
+            switchMap(() =>
+                this.dataService.customer
                     .getCustomerHistory(this.id, {
                         sort: {
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream(data => data.customer?.history.items);
-            }),
+                    .mapStream(data => data.customer?.history.items),
+            ),
         );
     }
 

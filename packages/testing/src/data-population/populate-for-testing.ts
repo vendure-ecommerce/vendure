@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { INestApplicationContext } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { VendureConfig } from '@vendure/core';
@@ -8,7 +8,7 @@ import { TestServerOptions } from '../types';
 
 import { populateCustomers } from './populate-customers';
 
-// tslint:disable:no-floating-promises
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /**
  * Clears all tables from the database and populates with (deterministic) random data.
  */
@@ -42,7 +42,7 @@ async function populateProducts(
 ) {
     if (!productsCsvPath) {
         if (logging) {
-            console.log(`\nNo product data provided, skipping product import`);
+            console.log('\nNo product data provided, skipping product import');
         }
         return;
     }

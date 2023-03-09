@@ -63,6 +63,7 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         productAsset,
         productVariantAsset,
         score: raw.score || 0,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         inStock: raw.si_inStock,
     };

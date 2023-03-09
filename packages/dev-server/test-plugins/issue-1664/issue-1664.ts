@@ -116,7 +116,7 @@ export class Test1664Plugin implements OnApplicationBootstrap {
         }
         // Create a Profile and assign it to all the products
         const users = await this.connection.rawConnection.getRepository(User).find();
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const user = users[1]!;
         const profile = await this.connection.rawConnection.getRepository(Profile).save(
             new Profile({
@@ -170,7 +170,7 @@ export class Test1664Plugin implements OnApplicationBootstrap {
 
         // Create order
         const users = await this.connection.rawConnection.getRepository(User).find();
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const customer = users[1]!;
         const created = await this.orderService.create(ctx, customer.id);
 

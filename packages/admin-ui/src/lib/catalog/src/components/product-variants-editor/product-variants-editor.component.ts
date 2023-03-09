@@ -328,12 +328,10 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     private checkUniqueSkus() {
-        const withDuplicateSkus = this.generatedVariants.filter((variant, index) => {
-            return (
+        const withDuplicateSkus = this.generatedVariants.filter((variant, index) => (
                 variant.enabled &&
                 this.generatedVariants.find(gv => gv.sku.trim() === variant.sku.trim() && gv !== variant)
-            );
-        });
+            ));
         if (withDuplicateSkus.length) {
             return this.modalService
                 .dialog({
@@ -357,9 +355,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     },
                 })
                 .pipe(
-                    mergeMap(res => {
-                        return res === true ? of(true) : EMPTY;
-                    }),
+                    mergeMap(res => res === true ? of(true) : EMPTY),
                 );
         } else {
             return of(true);
@@ -381,12 +377,10 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     ): Observable<Array<CreateProductOptionGroupMutation['createProductOptionGroup']>> {
         if (createdOptionGroups.length) {
             return forkJoin(
-                createdOptionGroups.map(optionGroup => {
-                    return this.dataService.product.addOptionGroupToProduct({
+                createdOptionGroups.map(optionGroup => this.dataService.product.addOptionGroupToProduct({
                         productId: this.product.id,
                         optionGroupId: optionGroup.id,
-                    });
-                }),
+                    })),
             ).pipe(map(() => createdOptionGroups));
         } else {
             return of([]);
@@ -493,9 +487,9 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
 
     initOptionsAndVariants() {
         this.dataService.product
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .getProductVariantsOptions(this.route.snapshot.paramMap.get('id')!)
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .mapSingle(({ product }) => product!)
             .subscribe(p => {
                 this.product = p;
@@ -503,8 +497,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 const allUsedOptionGroupIds = p.variants
                     .map(v => v.options.map(option => option.groupId))
                     .flat();
-                this.optionGroups = p.optionGroups.map(og => {
-                    return {
+                this.optionGroups = p.optionGroups.map(og => ({
                         id: og.id,
                         isNew: false,
                         name: og.name,
@@ -514,8 +507,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                             name: o.name,
                             locked: allUsedOptionIds.includes(o.id),
                         })),
-                    };
-                });
+                    }));
                 this.generateVariants();
             });
     }

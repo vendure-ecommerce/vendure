@@ -42,7 +42,7 @@ export class RawHtmlDialogComponent implements OnInit, Dialog<string> {
         const indentAfter = new Array(level - 1).join('\t');
         let textNode: Text;
 
-        // tslint:disable-next-line:prefer-for-of
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < node.children.length; i++) {
             textNode = document.createTextNode('\n' + indentBefore);
             node.insertBefore(textNode, node.children[i]);

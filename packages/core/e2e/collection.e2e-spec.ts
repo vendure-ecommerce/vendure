@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
     DefaultJobQueuePlugin,
@@ -135,7 +135,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },
@@ -181,7 +181,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },
@@ -212,7 +212,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },
@@ -339,7 +339,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },
@@ -376,7 +376,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },
@@ -420,7 +420,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },
@@ -494,7 +494,7 @@ describe('Collection resolver', () => {
                 id: computersCollection.id,
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.id).toBe(computersCollection.id);
@@ -508,7 +508,7 @@ describe('Collection resolver', () => {
                 slug: computersCollection.slug,
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.id).toBe(computersCollection.id);
@@ -527,7 +527,7 @@ describe('Collection resolver', () => {
                 { languageCode: LanguageCode.de },
             );
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.id).toBe(computersCollection.id);
@@ -564,7 +564,7 @@ describe('Collection resolver', () => {
                 id: computersCollection.id,
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.parent!.name).toBe('Electronics');
@@ -649,7 +649,7 @@ describe('Collection resolver', () => {
                 id: electronicsCollection.id,
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.children!.length).toBe(1);
@@ -664,7 +664,7 @@ describe('Collection resolver', () => {
                 id: pearCollection.id,
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.breadcrumbs).toEqual([
@@ -691,7 +691,7 @@ describe('Collection resolver', () => {
                 id: 'T_1',
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.breadcrumbs).toEqual([
@@ -796,7 +796,7 @@ describe('Collection resolver', () => {
                 id: pearBreadcrumbsCollection.id,
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.breadcrumbs).toEqual([
@@ -897,7 +897,7 @@ describe('Collection resolver', () => {
                             index: 0,
                         },
                     }),
-                `Cannot move a Collection into itself`,
+                'Cannot move a Collection into itself',
             ),
         );
 
@@ -915,7 +915,7 @@ describe('Collection resolver', () => {
                             index: 0,
                         },
                     }),
-                `Cannot move a Collection into itself`,
+                'Cannot move a Collection into itself',
             ),
         );
 
@@ -938,7 +938,7 @@ describe('Collection resolver', () => {
                 id: 'T_1',
             });
             if (!result.collection) {
-                fail(`did not return the collection`);
+                fail('did not return the collection');
                 return;
             }
             expect(result.collection.children?.map(c => (c as any).position)).toEqual([0, 1, 2, 3, 4, 5, 6]);
@@ -1020,7 +1020,7 @@ describe('Collection resolver', () => {
                 >(DELETE_COLLECTION, {
                     id: 'T_999',
                 });
-            }, "No Collection with the id '999' could be found"),
+            }, 'No Collection with the id \'999\' could be found'),
         );
 
         it('collection and product related prior to deletion', async () => {
@@ -1244,7 +1244,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -1289,7 +1289,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `true`,
+                                        value: 'true',
                                     },
                                 ],
                             },
@@ -1343,7 +1343,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `true`,
+                                        value: 'true',
                                     },
                                 ],
                             },
@@ -1533,9 +1533,9 @@ describe('Collection resolver', () => {
                         translations: [
                             {
                                 languageCode: LanguageCode.en,
-                                name: `variantId filter test`,
+                                name: 'variantId filter test',
                                 description: '',
-                                slug: `variantId-filter-test`,
+                                slug: 'variantId-filter-test',
                             },
                         ],
                         filters: [
@@ -1544,7 +1544,7 @@ describe('Collection resolver', () => {
                                 arguments: [
                                     {
                                         name: 'variantIds',
-                                        value: `["T_1", "T_4"]`,
+                                        value: '["T_1", "T_4"]',
                                     },
                                 ],
                             },
@@ -1576,9 +1576,9 @@ describe('Collection resolver', () => {
                         translations: [
                             {
                                 languageCode: LanguageCode.en,
-                                name: `productId filter test`,
+                                name: 'productId filter test',
                                 description: '',
-                                slug: `productId-filter-test`,
+                                slug: 'productId-filter-test',
                             },
                         ],
                         filters: [
@@ -1587,7 +1587,7 @@ describe('Collection resolver', () => {
                                 arguments: [
                                     {
                                         name: 'productIds',
-                                        value: `["T_2"]`,
+                                        value: '["T_2"]',
                                     },
                                 ],
                             },
@@ -1759,7 +1759,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -1812,7 +1812,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -1857,7 +1857,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -1896,7 +1896,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -1933,7 +1933,7 @@ describe('Collection resolver', () => {
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -2249,7 +2249,7 @@ describe('Collection resolver', () => {
                                 },
                                 {
                                     name: 'containsAny',
-                                    value: `false`,
+                                    value: 'false',
                                 },
                             ],
                         },

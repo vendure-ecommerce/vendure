@@ -41,7 +41,10 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             description: [
                 {
                     languageCode: LanguageCode.en,
-                    value: 'This option only affects pay-later methods. Automatically capture payments immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, and you need to manually settle payments to get paid.',
+                    value:
+                        'This option only affects pay-later methods. Automatically capture payments ' +
+                        'immediately after authorization. Without autoCapture orders will remain in the PaymentAuthorized state, ' +
+                        'and you need to manually settle payments to get paid.',
                 },
             ],
         },
@@ -62,10 +65,15 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         }
         if (metadata.status !== 'Authorized' && metadata.status !== 'Settled') {
             throw Error(
-                `Cannot create payment for status ${metadata.status} for order ${order.code}. Only Authorized or Settled are allowed.`,
+                `Cannot create payment for status ${metadata.status as string} for order ${
+                    order.code
+                }. Only Authorized or Settled are allowed.`,
             );
         }
-        Logger.info(`Payment for order ${order.code} created with state '${metadata.status}'`, loggerCtx);
+        Logger.info(
+            `Payment for order ${order.code} created with state '${metadata.status as string}'`,
+            loggerCtx,
+        );
         return {
             amount,
             state: metadata.status,

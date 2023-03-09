@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
@@ -915,11 +915,11 @@ describe('Default search plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_4"]`,
+                                        value: '["T_4"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -974,11 +974,11 @@ describe('Default search plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_3"]`,
+                                        value: '["T_3"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },

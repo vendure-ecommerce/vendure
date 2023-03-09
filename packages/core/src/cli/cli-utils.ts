@@ -1,4 +1,4 @@
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * Logs to the console in a fetching blueish color.
  */

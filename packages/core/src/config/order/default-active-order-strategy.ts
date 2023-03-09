@@ -37,7 +37,7 @@ export class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
 
     async determineActiveOrder(ctx: RequestContext) {
         if (!ctx.session) {
-            throw new InternalServerError(`error.no-active-session`);
+            throw new InternalServerError('error.no-active-session');
         }
         let order = ctx.session.activeOrderId
             ? await this.connection

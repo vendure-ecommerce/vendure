@@ -26,13 +26,11 @@ export class ChannelSwitcherComponent implements OnInit {
         const channels$ = this.dataService.client.userStatus().mapStream(data => data.userStatus.channels);
         const filterTerm$ = this.filterControl.valueChanges.pipe<string>(startWith(''));
         this.channels$ = combineLatest(channels$, filterTerm$).pipe(
-            map(([channels, filterTerm]) => {
-                return filterTerm
+            map(([channels, filterTerm]) => filterTerm
                     ? channels.filter(c =>
                           c.code.toLocaleLowerCase().includes(filterTerm.toLocaleLowerCase()),
                       )
-                    : channels;
-            }),
+                    : channels),
         );
         this.channelCount$ = channels$.pipe(map(channels => channels.length));
         const activeChannel$ = this.dataService.client

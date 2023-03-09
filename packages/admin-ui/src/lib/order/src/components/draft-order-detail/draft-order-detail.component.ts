@@ -126,14 +126,14 @@ export class DraftOrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(SelectAddressDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(SelectAddressDialogComponent, {
                         locals: {
                             customerId: order.customer?.id,
                             currentAddress: order.shippingAddress ?? undefined,
                         },
-                    });
-                }),
+                    }),
+                ),
             )
             .subscribe(result => {
                 if (result) {
@@ -146,14 +146,14 @@ export class DraftOrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(SelectAddressDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(SelectAddressDialogComponent, {
                         locals: {
                             customerId: order.customer?.id,
                             currentAddress: order.billingAddress ?? undefined,
                         },
-                    });
-                }),
+                    }),
+                ),
             )
             .subscribe(result => {
                 if (result) {

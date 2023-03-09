@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ErrorCode } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig, NativeAuthenticationStrategy } from '@vendure/core';

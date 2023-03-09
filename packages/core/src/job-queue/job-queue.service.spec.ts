@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -465,10 +465,10 @@ class MockConfigService implements OnApplicationBootstrap, OnModuleDestroy {
 
     async onApplicationBootstrap() {
         const injector = new Injector(this.moduleRef);
-        await this.jobQueueOptions.jobQueueStrategy.init(injector);
+        this.jobQueueOptions.jobQueueStrategy.init(injector);
     }
 
     async onModuleDestroy() {
-        await this.jobQueueOptions.jobQueueStrategy.destroy();
+        this.jobQueueOptions.jobQueueStrategy.destroy();
     }
 }

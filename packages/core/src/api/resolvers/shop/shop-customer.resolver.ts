@@ -98,7 +98,7 @@ export class ShopCustomerResolver {
         }
         const customer = await this.customerService.findOneByUserId(ctx, userId);
         if (!customer) {
-            throw new InternalServerError(`error.no-customer-found-for-current-user`);
+            throw new InternalServerError('error.no-customer-found-for-current-user');
         }
         return customer;
     }

@@ -222,7 +222,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         });
                     }
                 }
-                Logger.verbose(`Completed updating variants`, loggerCtx);
+                Logger.verbose('Completed updating variants', loggerCtx);
                 return {
                     total: productIds.length,
                     completed: productIds.length,
@@ -252,7 +252,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         `-reindex-${reindexTempName}`,
                     );
                 } catch (e: any) {
-                    Logger.error(`Could not recreate indices.`, loggerCtx);
+                    Logger.error('Could not recreate indices.', loggerCtx);
                     Logger.error(JSON.stringify(e), loggerCtx);
                     throw e;
                 }
@@ -383,7 +383,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     }
                 }
 
-                Logger.verbose(`Completed reindexing!`, loggerCtx);
+                Logger.verbose('Completed reindexing!', loggerCtx);
 
                 return {
                     total: totalProductIds,
@@ -474,7 +474,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             },
         });
         for (const failure of result1.body.failures) {
-            Logger.error(`${failure.cause.type}: ${failure.cause.reason}`, loggerCtx);
+            Logger.error(`${failure.cause.type as string}: ${failure.cause.reason as string}`, loggerCtx);
         }
         const result2 = await this.client.update_by_query({
             index: this.options.indexPrefix + indexName,
@@ -488,7 +488,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             },
         });
         for (const failure of result1.body.failures) {
-            Logger.error(`${failure.cause.type}: ${failure.cause.reason}`, loggerCtx);
+            Logger.error(`${failure.cause.type as string}: ${failure.cause.reason as string}`, loggerCtx);
         }
         return result1.body.failures.length === 0 && result2.body.failures === 0;
     }
@@ -529,7 +529,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 id: 'ASC',
             },
         });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         updatedProductVariants.forEach(variant => (variant.product = product!));
         if (!product.enabled) {
             updatedProductVariants.forEach(v => (v.enabled = false));
@@ -643,7 +643,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 if (2 < path.length) {
                     throw new InternalServerError(
                         [
-                            `hydrateProductRelations / hydrateProductVariantRelations does not currently support nested custom field relations`,
+                            'hydrateProductRelations / hydrateProductVariantRelations does not currently support nested custom field relations',
                             `Received: "${relation}"`,
                         ].join('\n'),
                     );
@@ -666,7 +666,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: RequestContext,
         productId: ID,
     ): Promise<BulkVariantOperation[]> {
-        const channels = await this.requestContextCache.get(ctx, `elastic-index-all-channels`, () =>
+        const channels = await this.requestContextCache.get(ctx, 'elastic-index-all-channels', () =>
             this.connection
                 .getRepository(Channel)
                 .createQueryBuilder('channel')
@@ -812,7 +812,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             }
             return body;
         } catch (e: any) {
-            Logger.error(`Error when attempting to run bulk operations [${e.toString()}]`, loggerCtx);
+            Logger.error(`Error when attempting to run bulk operations [${JSON.stringify(e)}]`, loggerCtx);
             Logger.error('Error details: ' + JSON.stringify(e.body?.error, null, 2), loggerCtx);
         }
     }
@@ -897,7 +897,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             return item;
         } catch (err: any) {
             Logger.error(err.toString());
-            throw Error(`Error while reindexing!`);
+            throw Error('Error while reindexing!');
         }
     }
 

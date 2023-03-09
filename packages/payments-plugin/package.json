@@ -13,7 +13,7 @@
         "build": "rimraf package && tsc -p ./tsconfig.build.json",
         "e2e": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
         "e2e:watch": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.ts",
-        "lint": "tslint --fix --project ./",
+        "lint": "eslint --fix .",
         "ci": "yarn build",
         "dev-server:mollie": "yarn build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts"
     },

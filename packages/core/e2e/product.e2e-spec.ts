@@ -31,7 +31,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
@@ -1200,7 +1200,7 @@ describe('Product resolver', () => {
                             },
                         },
                     ),
-                `No Product with the id '999' could be found`,
+                "No Product with the id '999' could be found",
             ),
         );
 
@@ -1238,7 +1238,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: 'T_999',
                     }),
-                `No Product with the id '999' could be found`,
+                "No Product with the id '999' could be found",
             ),
         );
 
@@ -1253,7 +1253,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: 'T_2',
                     }),
-                `The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"`,
+                'The ProductOptionGroup "laptop-screen-size" is already assigned to the Product "Laptop"',
             ),
         );
 
@@ -1268,7 +1268,7 @@ describe('Product resolver', () => {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                `No ProductOptionGroup with the id '999' could be found`,
+                "No ProductOptionGroup with the id '999' could be found",
             ),
         );
 
@@ -1306,7 +1306,7 @@ describe('Product resolver', () => {
             removeOptionGuard.assertErrorResult(removeOptionGroupFromProduct);
 
             expect(removeOptionGroupFromProduct.message).toBe(
-                `Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants`,
+                'Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants',
             );
             expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
@@ -1351,7 +1351,7 @@ describe('Product resolver', () => {
                         optionGroupId: '1',
                         productId: '999',
                     }),
-                `No Product with the id '999' could be found`,
+                "No Product with the id '999' could be found",
             ),
         );
 
@@ -1366,7 +1366,7 @@ describe('Product resolver', () => {
                         optionGroupId: '999',
                         productId: newProduct.id,
                     }),
-                `No ProductOptionGroup with the id '999' could be found`,
+                "No ProductOptionGroup with the id '999' could be found",
             ),
         );
 
@@ -1663,7 +1663,7 @@ describe('Product resolver', () => {
                                 },
                             ],
                         }),
-                    `No ProductVariant with the id '999' could be found`,
+                    "No ProductVariant with the id '999' could be found",
                 ),
             );
 
@@ -1696,7 +1696,7 @@ describe('Product resolver', () => {
                 });
                 expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
 
-                deletedVariant = result1.product?.variants.find(v => v.id === 'T_35')!;
+                deletedVariant = result1.product!.variants.find(v => v.id === 'T_35')!;
             });
 
             /** Testing https://github.com/vendure-ecommerce/vendure/issues/412 **/
@@ -1981,7 +1981,7 @@ describe('Product resolver', () => {
                             },
                         },
                     ),
-                `No Product with the id '1' could be found`,
+                "No Product with the id '1' could be found",
             ),
         );
 
@@ -1996,7 +1996,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                `No Product with the id '1' could be found`,
+                "No Product with the id '1' could be found",
             ),
         );
 
@@ -2011,7 +2011,7 @@ describe('Product resolver', () => {
                         optionGroupId: 'T_1',
                         productId: productToDelete.id,
                     }),
-                `No Product with the id '1' could be found`,
+                "No Product with the id '1' could be found",
             ),
         );
 

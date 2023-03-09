@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion no-console */
+/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
@@ -70,7 +70,7 @@ import {
     JobState,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
 
 interface SearchProductShopVariables extends SearchProductsShopQueryVariables {
@@ -151,7 +151,7 @@ describe('Elasticsearch plugin', () => {
                                 context: 'product',
                                 scriptFn: input => {
                                     const factor = input.factor ?? 2;
-                                    return { script: `doc['product-answer'].value * ${factor}` };
+                                    return { script: `doc['product-answer'].value * ${factor as string}` };
                                 },
                             },
                         },
@@ -635,11 +635,11 @@ describe('Elasticsearch plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_4"]`,
+                                        value: '["T_4"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -700,11 +700,11 @@ describe('Elasticsearch plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_3"]`,
+                                        value: '["T_3"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },

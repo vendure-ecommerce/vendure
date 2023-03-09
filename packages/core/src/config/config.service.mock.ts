@@ -1,4 +1,5 @@
-import { vi } from 'vitest';
+/* eslint-disable @typescript-eslint/ban-types */
+import { vi, Mock } from 'vitest';
 
 import { VendureEntity } from '../entity/base/base.entity';
 import { MockClass } from '../testing/testing-types';
@@ -22,7 +23,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     };
     authOptions: {};
     defaultChannelToken: 'channel-token';
-    defaultLanguageCode: vi.Mock<any>;
+    defaultLanguageCode: Mock<any>;
     roundingStrategy: {};
     entityIdStrategy = new MockIdStrategy();
     entityOptions = {};

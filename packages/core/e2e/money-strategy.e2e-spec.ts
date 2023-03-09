@@ -14,7 +14,7 @@ import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graph
 import { GET_PRODUCT_VARIANT_LIST } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 const orderGuard: ErrorResultGuard<CodegenShop.UpdatedOrderFragment> = createErrorResultGuard(
     input => !!input.total,

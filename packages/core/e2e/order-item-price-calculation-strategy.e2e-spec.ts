@@ -77,7 +77,7 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
             },
         });
 
-        const variantPrice = (variant0.price as SinglePrice).value as number;
+        const variantPrice = (variant0.price as SinglePrice).value;
         expect(addItemToOrder.lines[0].unitPrice).toEqual(variantPrice);
         expect(addItemToOrder.lines[1].unitPrice).toEqual(variantPrice + 500);
         expect(addItemToOrder.subTotal).toEqual(variantPrice + variantPrice + 500);
@@ -93,7 +93,7 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
             },
         });
 
-        const variantPrice = (variants[0].price as SinglePrice).value as number;
+        const variantPrice = (variants[0].price as SinglePrice).value;
         expect(adjustOrderLine.lines[0].unitPrice).toEqual(variantPrice);
         expect(adjustOrderLine.lines[1].unitPrice).toEqual(variantPrice);
         expect(adjustOrderLine.subTotal).toEqual(variantPrice + variantPrice);

@@ -2,8 +2,8 @@ import { VendureConfig } from '@vendure/core';
 import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 import { createConnection } from 'typeorm';
 
-// tslint:disable:no-console
-// tslint:disable:no-floating-promises
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /**
  * Clears all tables in the database specified by the connectionOptions
  */

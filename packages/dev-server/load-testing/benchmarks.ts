@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { INestApplication } from '@nestjs/common';
 import { GlobalFlag } from '@vendure/common/lib/generated-types';
 import {

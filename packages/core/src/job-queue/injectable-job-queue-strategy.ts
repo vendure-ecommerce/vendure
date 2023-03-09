@@ -3,7 +3,7 @@ import { Injector } from '../common';
 import { Job } from './job';
 import { JobData } from './types';
 
-type ProcessFunc<Data extends JobData<Data> = {}> = (job: Job<Data>) => Promise<any>;
+type ProcessFunc<Data extends JobData<Data> = object> = (job: Job<Data>) => Promise<any>;
 
 /**
  * @description
@@ -36,7 +36,7 @@ export abstract class InjectableJobQueueStrategy {
         this.hasInitialized = false;
     }
 
-    abstract start<Data extends JobData<Data> = {}>(
+    abstract start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): void;

@@ -103,10 +103,10 @@ export class OrderListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
             data => data.orders,
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             (skip, take) =>
                 this.createQueryOptions(
                     skip,
@@ -185,14 +185,14 @@ export class OrderListComponent
     }
 
     private createQueryOptions(
-        // tslint:disable-next-line:no-shadowed-variable
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         skip: number,
         take: number,
         searchTerm: string,
         activeFilterPreset?: string,
     ): { options: OrderListOptions } {
         const filterConfig = this.filterPresets.find(p => p.name === activeFilterPreset);
-        // tslint:disable-next-line:no-shadowed-variable
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         let filter: OrderFilterParameter = {};
         let filterOperator: LogicalOperator = LogicalOperator.AND;
         if (filterConfig) {

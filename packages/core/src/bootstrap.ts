@@ -46,7 +46,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
-    // tslint:disable-next-line:whitespace
+    // eslint-disable-next-line
     const appModule = await import('./app.module.js');
     setProcessContext('server');
     const { hostname, port, cors, middleware } = config.apiOptions;
@@ -150,7 +150,7 @@ export async function preBootstrapConfig(
     const customFieldValidationResult = validateCustomFieldsConfig(config.customFields, entities);
     if (!customFieldValidationResult.valid) {
         process.exitCode = 1;
-        throw new Error(`CustomFields config error:\n- ` + customFieldValidationResult.errors.join('\n- '));
+        throw new Error('CustomFields config error:\n- ' + customFieldValidationResult.errors.join('\n- '));
     }
     config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
@@ -185,7 +185,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
     // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
         if (allEntities.find(e => e.name === pluginEntity.name)) {
-            throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
+            throw new InternalServerError('error.entity-name-conflict', { entityName: pluginEntity.name });
         } else {
             allEntities.push(pluginEntity);
         }
@@ -225,6 +225,7 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
 function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         version = require('../package.json').version;
     } catch (e: any) {
         version = ' unknown';
@@ -241,11 +242,11 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     const title = `Vendure server (v${version}) now running on port ${port}`;
     const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
     const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
-    Logger.info(`=`.repeat(maxLineLength));
+    Logger.info('='.repeat(maxLineLength));
     Logger.info(title.padStart(title.length + titlePadLength));
     Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
     columnarGreetings.forEach(line => Logger.info(line));
-    Logger.info(`=`.repeat(maxLineLength));
+    Logger.info('='.repeat(maxLineLength));
 }
 
 function arrangeCliGreetingsInColumns(lines: Array<readonly [string, string]>): string[] {
@@ -306,6 +307,6 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
             );
             await new Promise(resolve1 => setTimeout(resolve1, pollIntervalMs));
         }
-        reject(`Could not validate DB table structure. Aborting bootstrap.`);
+        reject('Could not validate DB table structure. Aborting bootstrap.');
     });
 }

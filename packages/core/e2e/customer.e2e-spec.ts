@@ -46,7 +46,7 @@ import {
 import { ADD_ITEM_TO_ORDER, SET_CUSTOMER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 let sendEmailFn: Mock;
 
 /**
@@ -193,7 +193,7 @@ describe('Customer resolver', () => {
                             },
                         },
                     ),
-                `The countryCode "INVALID" was not recognized`,
+                'The countryCode "INVALID" was not recognized',
             ),
         );
 
@@ -445,7 +445,7 @@ describe('Customer resolver', () => {
             input => !!input.lines,
         );
 
-        it(`lists that user\'s orders`, async () => {
+        it("lists that user's orders", async () => {
             // log in as first customer
             await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
             // add an item to the order to create an order
@@ -464,7 +464,7 @@ describe('Customer resolver', () => {
             >(GET_CUSTOMER_ORDERS, { id: firstCustomer.id });
 
             expect(customer!.orders.totalItems).toBe(1);
-            expect(customer!.orders.items[0].id).toBe(addItemToOrder!.id);
+            expect(customer!.orders.items[0].id).toBe(addItemToOrder.id);
         });
     });
 
@@ -611,7 +611,7 @@ describe('Customer resolver', () => {
                             firstName: 'updated',
                         },
                     }),
-                `No Customer with the id '3' could be found`,
+                "No Customer with the id '3' could be found",
             ),
         );
 
@@ -629,7 +629,7 @@ describe('Customer resolver', () => {
                             },
                         },
                     ),
-                `No Customer with the id '3' could be found`,
+                "No Customer with the id '3' could be found",
             ),
         );
 
@@ -725,7 +725,7 @@ describe('Customer resolver', () => {
                 },
             ]);
 
-            noteId = customer?.history.items[0].id!;
+            noteId = customer!.history.items[0].id!;
         });
 
         it('update note', async () => {
@@ -749,7 +749,7 @@ describe('Customer resolver', () => {
                 Codegen.GetCustomerHistoryQuery,
                 Codegen.GetCustomerHistoryQueryVariables
             >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
-            const historyCount = before?.history.totalItems!;
+            const historyCount = before!.history.totalItems;
 
             const { deleteCustomerNote } = await adminClient.query<
                 Codegen.DeleteCustomerNoteMutation,

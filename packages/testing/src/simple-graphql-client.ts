@@ -3,8 +3,8 @@ import { VendureConfig } from '@vendure/core';
 import FormData from 'form-data';
 import fs from 'fs';
 import { DocumentNode } from 'graphql';
-import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
+import gql from 'graphql-tag';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { stringify } from 'querystring';
 
@@ -29,7 +29,7 @@ const LOGIN = gql`
     }
 `;
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * @description
  * A minimalistic GraphQL client for populating and querying test data.
@@ -261,7 +261,7 @@ export class ClientError extends Error {
         if (response.errors) {
             return response.errors[0].message;
         } else {
-            return `GraphQL Error (Code: ${response.status})`;
+            return `GraphQL Error (Code: ${response.status as number})`;
         }
     }
 }

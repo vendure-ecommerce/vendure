@@ -30,7 +30,7 @@ export class CouponCodeSelectorComponent implements OnInit {
                         }).single$,
                 ),
                 map(({ promotions }) =>
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     promotions.items.map(p => ({ code: p.couponCode!, promotionName: p.name })),
                 ),
                 startWith([]),

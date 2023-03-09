@@ -18,7 +18,7 @@ import path from 'path';
 
 import { deleteGeneratedDocs, generateFrontMatter } from './docgen-utils';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 type TargetApi = 'shop' | 'admin';
 

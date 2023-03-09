@@ -148,8 +148,7 @@ export class ProductDetailComponent
             skipUntil(initialVariants$),
             skip(1),
             debounceTime(100),
-            switchMap(([term, currentPage, itemsPerPage]) => {
-                return this.dataService.product
+            switchMap(([term, currentPage, itemsPerPage]) => this.dataService.product
                     .getProductVariants(
                         {
                             skip: (currentPage - 1) * itemsPerPage,
@@ -161,8 +160,7 @@ export class ProductDetailComponent
                         },
                         this.id,
                     )
-                    .mapStream(({ productVariants }) => productVariants);
-            }),
+                    .mapStream(({ productVariants }) => productVariants)),
             shareReplay({ bufferSize: 1, refCount: true }),
         );
         const updatedVariants$ = variantsList$.pipe(map(result => result.items));
@@ -195,7 +193,7 @@ export class ProductDetailComponent
 
         const productFacetValues$ = this.product$.pipe(map(product => product.facetValues));
         const productGroup = this.getProductFormGroup();
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const formFacetValueIdChanges$ = productGroup.get('facetValueIds')!.valueChanges.pipe(
             skip(1),
             distinctUntilChanged(),
@@ -250,15 +248,13 @@ export class ProductDetailComponent
         this.productChannels$
             .pipe(
                 take(1),
-                switchMap(channels => {
-                    return this.modalService.fromComponent(AssignProductsToChannelDialogComponent, {
+                switchMap(channels => this.modalService.fromComponent(AssignProductsToChannelDialogComponent, {
                         size: 'lg',
                         locals: {
                             productIds: [this.id],
                             currentChannelIds: channels.map(c => c.id),
                         },
-                    });
-                }),
+                    })),
             )
             .subscribe();
     }
@@ -266,8 +262,7 @@ export class ProductDetailComponent
     removeFromChannel(channelId: string) {
         from(getChannelCodeFromUserStatus(this.dataService, channelId))
             .pipe(
-                switchMap(({ channelCode }) => {
-                    return this.modalService.dialog({
+                switchMap(({ channelCode }) => this.modalService.dialog({
                         title: _('catalog.remove-product-from-channel'),
                         buttons: [
                             { type: 'secondary', label: _('common.cancel') },
@@ -278,8 +273,7 @@ export class ProductDetailComponent
                                 returnValue: true,
                             },
                         ],
-                    });
-                }),
+                    })),
                 switchMap(response =>
                     response
                         ? this.dataService.product.removeProductsFromChannel({
@@ -315,8 +309,7 @@ export class ProductDetailComponent
     removeVariantFromChannel({ channelId, variant }: { channelId: string; variant: ProductVariantFragment }) {
         from(getChannelCodeFromUserStatus(this.dataService, channelId))
             .pipe(
-                switchMap(({ channelCode }) => {
-                    return this.modalService.dialog({
+                switchMap(({ channelCode }) => this.modalService.dialog({
                         title: _('catalog.remove-product-variant-from-channel'),
                         buttons: [
                             { type: 'secondary', label: _('common.cancel') },
@@ -327,8 +320,7 @@ export class ProductDetailComponent
                                 returnValue: true,
                             },
                         ],
-                    });
-                }),
+                    })),
                 switchMap(response =>
                     response
                         ? this.dataService.product.removeVariantsFromChannel({
@@ -423,9 +415,7 @@ export class ProductDetailComponent
     variantsToCreateAreValid(): boolean {
         return (
             0 < this.createVariantsConfig.variants.length &&
-            this.createVariantsConfig.variants.every(v => {
-                return v.sku !== '';
-            })
+            this.createVariantsConfig.variants.every(v => v.sku !== '')
         );
     }
 
@@ -470,7 +460,7 @@ export class ProductDetailComponent
                     this.router.navigate(['../', productId], { relativeTo: this.route });
                 },
                 err => {
-                    // tslint:disable-next-line:no-console
+                    // eslint-disable-next-line no-console
                     console.error(err);
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Product',

@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
 import { AssetFragment } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { createTestEnvironment } from '@vendure/testing';
@@ -267,7 +267,7 @@ describe('AssetServerPlugin', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/1563
     it('falls back to binary preview if image file cannot be processed', async () => {
-        const filesToUpload = [path.join(__dirname, `fixtures/assets/bad-image.jpg`)];
+        const filesToUpload = [path.join(__dirname, 'fixtures/assets/bad-image.jpg')];
         const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,

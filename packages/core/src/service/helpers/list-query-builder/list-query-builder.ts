@@ -224,7 +224,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             // a Collection that joins its parent entity.
             // relationLoadStrategy: 'query',
         });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         // join the tables required by calculated columns

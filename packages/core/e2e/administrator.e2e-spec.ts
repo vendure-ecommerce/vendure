@@ -117,7 +117,7 @@ describe('Administrator resolver', () => {
                         roleIds: ['999'],
                     },
                 }),
-            `No Role with the id '999' could be found`,
+            'No Role with the id \'999\' could be found',
         ),
     );
 

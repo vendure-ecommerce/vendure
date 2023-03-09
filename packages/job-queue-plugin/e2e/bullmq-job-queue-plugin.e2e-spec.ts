@@ -7,9 +7,11 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { awaitRunningJobs } from '../../core/e2e/utils/await-running-jobs';
 import { BullMQJobQueuePlugin } from '../src/bullmq/plugin';
-// tslint:disable-next-line:no-var-requires
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Redis = require('ioredis');
-// tslint:disable-next-line:no-var-requires
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { redisHost, redisPort } = require('./constants');
 
 jest.setTimeout(10 * 3000);

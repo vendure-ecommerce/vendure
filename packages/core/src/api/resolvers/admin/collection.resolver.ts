@@ -75,12 +75,12 @@ export class CollectionResolver {
         if (args.id) {
             collection = await this.collectionService.findOne(ctx, args.id, relations);
             if (args.slug && collection && collection.slug !== args.slug) {
-                throw new UserInputError(`error.collection-id-slug-mismatch`);
+                throw new UserInputError('error.collection-id-slug-mismatch');
             }
         } else if (args.slug) {
             collection = await this.collectionService.findOneBySlug(ctx, args.slug, relations);
         } else {
-            throw new UserInputError(`error.collection-id-or-slug-must-be-provided`);
+            throw new UserInputError('error.collection-id-or-slug-must-be-provided');
         }
         return collection;
     }

@@ -46,7 +46,7 @@ export const rawEditorPlugin = (contextMenuService: ContextMenuService, modalSer
                                         onClick: () => {
                                             contextMenuService.clearContextMenu();
                                             const element = domSerializer.serializeNode(
-                                                // tslint:disable-next-line:no-non-null-assertion
+                                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                                 topLevelNode!,
                                             ) as HTMLElement;
                                             modalService
@@ -73,7 +73,7 @@ export const rawEditorPlugin = (contextMenuService: ContextMenuService, modalSer
                                                                     parsedNodeSlice,
                                                                 );
                                                             } catch (err: any) {
-                                                                // tslint:disable-next-line:no-console
+                                                                // eslint-disable-next-line no-console
                                                                 console.error(err);
                                                             }
                                                             view.dispatch(tr);

@@ -131,16 +131,12 @@ describe('RequestContext', () => {
     });
 
     function createRequestContext(req?: any) {
-        let session: CachedSession;
-        let channel: Channel;
-        let activeOrder: Order;
-        let zone: Zone;
-        activeOrder = new Order({
+        const activeOrder = new Order({
             id: '55555',
             active: true,
             code: 'ADAWDJAWD',
         });
-        session = {
+        const session = {
             cacheExpiry: Number.MAX_SAFE_INTEGER,
             expires: new Date(),
             id: '1234',
@@ -152,12 +148,12 @@ describe('RequestContext', () => {
                 verified: true,
                 channelPermissions: [],
             },
-        };
-        zone = new Zone({
+        } satisfies CachedSession;
+        const zone = new Zone({
             id: '62626',
             name: 'Europe',
         });
-        channel = new Channel({
+        const channel = new Channel({
             token: 'oiajwodij09au3r',
             id: '995859',
             code: '__default_channel__',

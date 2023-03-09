@@ -85,11 +85,11 @@ export function generateAllCombinations<T>(
         output.push(combination);
         return [];
     } else {
-        // tslint:disable:prefer-for-of
+        /* eslint-disable @typescript-eslint/prefer-for-of */
         for (let i = 0; i < optionGroups[k].length; i++) {
             generateAllCombinations(optionGroups, combination.concat(optionGroups[k][i]), k + 1, output);
         }
-        // tslint:enable:prefer-for-of
+        /* eslint-enable @typescript-eslint/prefer-for-of */
         return output;
     }
 }

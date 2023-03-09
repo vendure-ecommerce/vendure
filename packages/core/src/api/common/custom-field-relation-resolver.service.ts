@@ -50,7 +50,7 @@ export class CustomFieldRelationResolverService {
             .createQueryBuilder('relation')
             .where(`relation.id IN (${subQb.getQuery()})`)
             .setParameters({ id: entityId });
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const result = fieldDef.list ? await qb.getMany() : await qb.getOne();

@@ -7,9 +7,9 @@ import { In } from 'typeorm';
 import { RequestContext } from '../../../api/index';
 import { EntityNotFoundError, idsAreEqual } from '../../../common/index';
 import { TransactionalConnection } from '../../../connection/index';
-import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { FulfillmentState } from '../fulfillment-state-machine/fulfillment-state';
 import { PaymentState } from '../payment-state-machine/payment-state';
 

@@ -30,7 +30,7 @@
     "build:compiler": "rimraf ./compiler && tsc -p tsconfig.compiler.json",
     "build": "yarn build:client && yarn build:compiler",
     "watch": "rimraf ./lib && rollup -c rollup.config.mjs -w",
-    "lint": "tslint --fix --project ./"
+    "lint": "eslint --fix ."
   },
   "bugs": {
     "url": "https://github.com/vendure-ecommerce/vendure/issues"

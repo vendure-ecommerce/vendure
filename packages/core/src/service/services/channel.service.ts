@@ -167,7 +167,7 @@ export class ChannelService {
     async getChannelFromToken(ctx: RequestContext, token: string): Promise<Channel>;
     async getChannelFromToken(ctxOrToken: RequestContext | string, token?: string): Promise<Channel> {
         const [ctx, channelToken] =
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
         const allChannels = await this.allChannels.value(ctx);
@@ -192,7 +192,7 @@ export class ChannelService {
         const defaultChannel = allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
 
         if (!defaultChannel) {
-            throw new InternalServerError(`error.default-channel-not-found`);
+            throw new InternalServerError('error.default-channel-not-found');
         }
         return defaultChannel;
     }

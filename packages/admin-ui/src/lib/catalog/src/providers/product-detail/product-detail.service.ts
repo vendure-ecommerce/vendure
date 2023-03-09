@@ -53,18 +53,14 @@ export class ProductDetailService {
             mergeMap(([{ createProduct }, optionGroups]) => {
                 const addOptionsToProduct$ = optionGroups.length
                     ? forkJoin(
-                          optionGroups.map(optionGroup => {
-                              return this.dataService.product.addOptionGroupToProduct({
+                          optionGroups.map(optionGroup => this.dataService.product.addOptionGroupToProduct({
                                   productId: createProduct.id,
                                   optionGroupId: optionGroup.id,
-                              });
-                          }),
+                              })),
                       )
                     : of([]);
                 return addOptionsToProduct$.pipe(
-                    map(() => {
-                        return { createProduct, optionGroups };
-                    }),
+                    map(() => ({ createProduct, optionGroups })),
                 );
             }),
             mergeMap(({ createProduct, optionGroups }) => {
@@ -94,8 +90,7 @@ export class ProductDetailService {
     createProductOptionGroups(groups: Array<{ name: string; values: string[] }>, languageCode: LanguageCode) {
         return groups.length
             ? forkJoin(
-                  groups.map(c => {
-                      return this.dataService.product
+                  groups.map(c => this.dataService.product
                           .createProductOptionGroups({
                               code: normalizeString(c.name, '-'),
                               translations: [{ languageCode, name: c.name }],
@@ -104,8 +99,7 @@ export class ProductDetailService {
                                   translations: [{ languageCode, name: v }],
                               })),
                           })
-                          .pipe(map(data => data.createProductOptionGroup));
-                  }),
+                          .pipe(map(data => data.createProductOptionGroup))),
               )
             : of([]);
     }

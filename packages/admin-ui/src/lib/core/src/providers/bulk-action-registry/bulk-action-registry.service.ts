@@ -12,7 +12,7 @@ export class BulkActionRegistryService {
         if (!this.locationBulActionMap.has(bulkAction.location)) {
             this.locationBulActionMap.set(bulkAction.location, new Set([bulkAction]));
         } else {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.locationBulActionMap.get(bulkAction.location)!.add(bulkAction);
         }
     }

@@ -62,12 +62,10 @@ export class CountryListComponent implements OnInit, OnDestroy {
         this.zones$ = this.dataService.settings.getZones().mapStream(data => data.zones);
 
         this.countriesWithZones$ = combineLatest(countries$, this.zones$).pipe(
-            map(([countries, zones]) => {
-                return countries.map(country => ({
+            map(([countries, zones]) => countries.map(country => ({
                     ...country,
                     zones: zones.filter(z => !!z.members.find(c => c.id === country.id)),
-                }));
-            }),
+                }))),
         );
 
         this.availableLanguages$ = this.serverConfigService.getAvailableLanguages();

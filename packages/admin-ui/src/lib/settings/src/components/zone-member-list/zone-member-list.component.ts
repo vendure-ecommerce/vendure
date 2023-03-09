@@ -54,7 +54,5 @@ export class ZoneMemberListComponent {
         }
     }
 
-    isMemberSelected = (member: ZoneMember): boolean => {
-        return -1 < this.selectedMemberIds.indexOf(member.id);
-    };
+    isMemberSelected = (member: ZoneMember): boolean => -1 < this.selectedMemberIds.indexOf(member.id);
 }

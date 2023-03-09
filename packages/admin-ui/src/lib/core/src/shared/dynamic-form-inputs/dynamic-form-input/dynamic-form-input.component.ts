@@ -91,7 +91,7 @@ export class DynamicFormInputComponent
         if (componentType) {
             this.componentType = componentType;
         } else {
-            // tslint:disable-next-line:no-console
+            // eslint-disable-next-line no-console
             console.error(
                 `No form input component registered with the id "${componentId}". Using the default input instead.`,
             );

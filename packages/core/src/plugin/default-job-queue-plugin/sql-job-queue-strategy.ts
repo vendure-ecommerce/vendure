@@ -34,7 +34,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         super.destroy();
     }
 
-    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
+    async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
         if (!this.connectionAvailable(this.connection)) {
             throw new Error('Connection not available');
         }
@@ -48,7 +48,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
      * MySQL & MariaDB store job data as a "text" type which has a limit of 64kb. Going over that limit will cause the job to not be stored.
      * In order to try to prevent that, this method will truncate any strings in the `data` object over 2kb in size.
      */
-    private constrainDataSize<Data extends JobData<Data> = {}>(job: Job<Data>): Data | undefined {
+    private constrainDataSize<Data extends JobData<Data> = object>(job: Job<Data>): Data | undefined {
         const type = this.connection?.options.type;
         if (type === 'mysql' || type === 'mariadb') {
             const stringified = JSON.stringify(job.data);
@@ -239,7 +239,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         });
     }
 
-    private fromRecord(jobRecord: JobRecord): Job<any> {
+    private fromRecord(this: void, jobRecord: JobRecord): Job<any> {
         return new Job<any>(jobRecord);
     }
 }

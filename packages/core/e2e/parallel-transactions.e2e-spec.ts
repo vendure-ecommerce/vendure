@@ -74,7 +74,7 @@ describe('Parallel transactions', () => {
             },
         });
 
-        const sizes = Array.from({ length: CONCURRENCY_LIMIT }).map(i => `size-${i}`);
+        const sizes = Array.from({ length: CONCURRENCY_LIMIT }).map(i => `size-${i as string}`);
 
         const { createProductOptionGroup } = await adminClient.query<
             Codegen.CreateProductOptionGroupMutation,

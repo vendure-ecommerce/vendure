@@ -60,7 +60,7 @@ export function headingRule(nodeType, maxLevel) {
 export function buildInputRules(schema: Schema): Plugin {
     const rules = smartQuotes.concat(ellipsis, emDash);
     let type: NodeType;
-    // tslint:disable:no-conditional-assignment
+    /* eslint-disable no-cond-assign */
     if ((type = schema.nodes.blockquote)) {
         rules.push(blockQuoteRule(type));
     }

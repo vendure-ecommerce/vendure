@@ -14,9 +14,9 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
-import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { FulfillmentEvent } from '../../event-bus/events/fulfillment-event';
 import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillment-state-transition-event';
@@ -132,7 +132,7 @@ export class FulfillmentService {
             .getRepository(ctx, FulfillmentLine)
             .createQueryBuilder('fulfillmentLine')
             .leftJoin('fulfillmentLine.fulfillment', 'fulfillment')
-            .where(`fulfillmentLine.orderLineId = :orderLineId`, { orderLineId })
+            .where('fulfillmentLine.orderLineId = :orderLineId', { orderLineId })
             .andWhere('fulfillment.state != :cancelledState', { cancelledState: 'Cancelled' })
             .getMany();
 
@@ -186,7 +186,7 @@ export class FulfillmentService {
      * @description
      * Returns an array of the next valid states for the Fulfillment.
      */
-    getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
+    getNextStates(fulfillment: Fulfillment): readonly FulfillmentState[] {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);
     }
 }

@@ -2,12 +2,12 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Injector, RequestContext, VendureEvent } from '@vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
+import SESTransport from 'nodemailer/lib/ses-transport'
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 import { EmailGenerator } from './email-generator';
 import { EmailSender } from './email-sender';
 import { EmailEventHandler } from './event-handler';
-import SESTransport from 'nodemailer/lib/ses-transport'
 
 /**
  * @description

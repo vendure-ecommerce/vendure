@@ -22,9 +22,9 @@ import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
+import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';

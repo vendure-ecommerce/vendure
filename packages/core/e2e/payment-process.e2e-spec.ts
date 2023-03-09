@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     CustomOrderProcess,
     CustomPaymentProcess,
@@ -198,7 +198,7 @@ describe('Payment process', () => {
         expect(order?.state).toBe('ArrangingPayment');
         expect(order?.payments?.length).toBe(1);
         expect(order?.payments?.[0].state).toBe('Validating');
-        payment1Id = addPaymentToOrder?.payments?.[0].id!;
+        payment1Id = addPaymentToOrder.payments![0].id;
     });
 
     it('calls transition hooks', async () => {
@@ -291,7 +291,7 @@ describe('Payment process', () => {
             });
 
             orderGuard.assertSuccess(addPaymentToOrder);
-            payment2Id = addPaymentToOrder!.payments![0].id;
+            payment2Id = addPaymentToOrder.payments![0].id;
 
             await adminClient.query<
                 Codegen.AdminTransitionMutation,

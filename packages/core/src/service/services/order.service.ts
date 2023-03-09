@@ -79,10 +79,10 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
-import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
-import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
@@ -245,7 +245,7 @@ export class OrderService {
             );
         }
 
-        // tslint:disable-next-line:no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const order = await qb.getOne();
@@ -765,7 +765,7 @@ export class OrderService {
      * @description
      * Returns the next possible states that the Order may transition to.
      */
-    getNextOrderStates(order: Order): ReadonlyArray<OrderState> {
+    getNextOrderStates(order: Order): readonly OrderState[] {
         return this.orderStateMachine.getNextStates(order);
     }
 
@@ -782,7 +782,8 @@ export class OrderService {
             .createQueryBuilder('order')
             .update(Order)
             .set({ shippingAddress })
-            .where('id = :id', { id: order.id });
+            .where('id = :id', { id: order.id })
+            .execute();
         order.shippingAddress = shippingAddress;
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
@@ -804,7 +805,8 @@ export class OrderService {
             .createQueryBuilder('order')
             .update(Order)
             .set({ billingAddress })
-            .where('id = :id', { id: order.id });
+            .where('id = :id', { id: order.id })
+            .execute();
         order.billingAddress = billingAddress;
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
@@ -904,7 +906,8 @@ export class OrderService {
             .getRepository(ctx, OrderLine)
             .createQueryBuilder('line')
             .update({ shippingLine: undefined })
-            .whereInIds(order.lines.map(l => l.id));
+            .whereInIds(order.lines.map(l => l.id))
+            .execute();
         const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
         for (const shippingLine of order.shippingLines) {
             const orderLinesForShippingLine =
@@ -1258,7 +1261,7 @@ export class OrderService {
         });
 
         for (const line of lines) {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const lineInput = input.lines.find(l => idsAreEqual(l.orderLineId, line.id))!;
 
             const fulfillableStockLevel = await this.productVariantService.getFulfillableStockLevel(
@@ -1532,7 +1535,7 @@ export class OrderService {
             // so we do not want to merge at all. See https://github.com/vendure-ecommerce/vendure/issues/263
             return existingOrder;
         }
-        const mergeResult = await this.orderMerger.merge(ctx, guestOrder, existingOrder);
+        const mergeResult = this.orderMerger.merge(ctx, guestOrder, existingOrder);
         const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
@@ -1596,7 +1599,7 @@ export class OrderService {
     private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
         const orderLine = order.lines.find(line => idsAreEqual(line.id, orderLineId));
         if (!orderLine) {
-            throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
+            throw new UserInputError('error.order-does-not-contain-line-with-id', { id: orderLineId });
         }
         return orderLine;
     }

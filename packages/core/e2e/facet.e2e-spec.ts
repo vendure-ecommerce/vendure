@@ -29,7 +29,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Facet resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig());
@@ -286,7 +286,7 @@ describe('Facet resolver', () => {
             expect(result1.deleteFacetValues).toEqual([
                 {
                     result: DeletionResult.DELETED,
-                    message: ``,
+                    message: '',
                 },
             ]);
 
@@ -312,7 +312,7 @@ describe('Facet resolver', () => {
             expect(result1.deleteFacetValues).toEqual([
                 {
                     result: DeletionResult.NOT_DELETED,
-                    message: `The FacetValue "pc" is assigned to 1 Product, 1 ProductVariant`,
+                    message: 'The FacetValue "pc" is assigned to 1 Product, 1 ProductVariant',
                 },
             ]);
 
@@ -332,7 +332,8 @@ describe('Facet resolver', () => {
             expect(result1.deleteFacetValues).toEqual([
                 {
                     result: DeletionResult.DELETED,
-                    message: `The selected FacetValue was removed from 1 Product, 1 ProductVariant and deleted`,
+                    message:
+                        'The selected FacetValue was removed from 1 Product, 1 ProductVariant and deleted',
                 },
             ]);
 
@@ -372,7 +373,7 @@ describe('Facet resolver', () => {
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.NOT_DELETED,
-                message: `The Facet "speaker-type" includes FacetValues which are assigned to 1 Product`,
+                message: 'The Facet "speaker-type" includes FacetValues which are assigned to 1 Product',
             });
 
             expect(result2.facet).not.toBe(null);
@@ -389,7 +390,7 @@ describe('Facet resolver', () => {
 
             expect(result1.deleteFacet).toEqual({
                 result: DeletionResult.DELETED,
-                message: `The Facet was deleted and its FacetValues were removed from 1 Product`,
+                message: 'The Facet was deleted and its FacetValues were removed from 1 Product',
             });
 
             // FacetValue no longer in the Facet.values array
@@ -646,7 +647,7 @@ describe('Facet resolver', () => {
                         },
                     ],
                 });
-            }, `No Facet with the id '1' could be found`),
+            }, "No Facet with the id '1' could be found"),
         );
 
         it('removing from channel with error', async () => {

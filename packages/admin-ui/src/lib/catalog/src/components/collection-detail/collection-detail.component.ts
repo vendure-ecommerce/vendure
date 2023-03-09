@@ -341,16 +341,12 @@ export class CollectionDetailComponent
         operations: ConfigurableOperation[],
         formValueOperations: any,
     ): ConfigurableOperationInput[] {
-        return operations.map((o, i) => {
-            return {
+        return operations.map((o, i) => ({
                 code: o.code,
-                arguments: Object.entries(formValueOperations[i].args).map(([name, value], j) => {
-                    return {
+                arguments: Object.entries(formValueOperations[i].args).map(([name, value], j) => ({
                         name,
                         value: encodeConfigArgValue(value),
-                    };
-                }),
-            };
-        });
+                    })),
+            }));
     }
 }

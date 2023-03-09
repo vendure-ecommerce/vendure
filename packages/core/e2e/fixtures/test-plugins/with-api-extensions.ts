@@ -31,7 +31,7 @@ const PizzaScalar = new GraphQLScalarType({
     name: 'Pizza',
     description: 'Everything is pizza',
     serialize(value) {
-        return value.toString() + ' pizza!';
+        return ((value as any).toString() as string) + ' pizza!';
     },
     parseValue(value) {
         return value;

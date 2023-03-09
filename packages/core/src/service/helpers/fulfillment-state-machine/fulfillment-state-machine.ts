@@ -31,7 +31,7 @@ export class FulfillmentStateMachine {
         return new FSM(this.config, currentState).canTransitionTo(newState);
     }
 
-    getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
+    getNextStates(fulfillment: Fulfillment): readonly FulfillmentState[] {
         const fsm = new FSM(this.config, fulfillment.state);
         return fsm.getNextStates();
     }

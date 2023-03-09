@@ -42,7 +42,7 @@ export class RefundStateMachine {
 
     constructor(private configService: ConfigService, private historyService: HistoryService) {}
 
-    getNextStates(refund: Refund): ReadonlyArray<RefundState> {
+    getNextStates(refund: Refund): readonly RefundState[] {
         const fsm = new FSM(this.config, refund.state);
         return fsm.getNextStates();
     }

@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import {
     addForeignKeyIndices,

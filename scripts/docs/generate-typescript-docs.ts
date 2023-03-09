@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
 import path, { extname } from 'path';

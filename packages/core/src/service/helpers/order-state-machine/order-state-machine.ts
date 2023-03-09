@@ -31,7 +31,7 @@ export class OrderStateMachine {
         return new FSM(this.config, currentState).canTransitionTo(newState);
     }
 
-    getNextStates(order: Order): ReadonlyArray<OrderState> {
+    getNextStates(order: Order): readonly OrderState[] {
         const fsm = new FSM(this.config, order.state);
         return fsm.getNextStates();
     }

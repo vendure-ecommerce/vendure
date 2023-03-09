@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { UuidIdStrategy } from '@vendure/core';
 // This import is here to simulate the behaviour of
 // the package end-user importing symbols from the

@@ -3,7 +3,6 @@ import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } f
 import { flatten } from 'lodash';
 import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
 import { filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
-
 import { DataService } from '../../data/providers/data.service';
 
 export type BreadcrumbString = string;
@@ -55,28 +54,29 @@ export class BreadcrumbComponent implements OnDestroy {
         rootRoute: ActivatedRoute,
     ): Observable<Array<{ link: Array<string | any>; label: string }>> {
         const breadcrumbParts = this.assembleBreadcrumbParts(rootRoute);
-        const breadcrumbObservables$ = breadcrumbParts.map(({ value$, path }) => {
-            return value$.pipe(
-                map(value => {
-                    if (isBreadcrumbLabelLinkPair(value)) {
-                        return {
-                            label: value.label,
-                            link: this.normalizeRelativeLinks(value.link, path),
-                        };
-                    } else if (isBreadcrumbPairArray(value)) {
-                        return value.map(val => ({
-                            label: val.label,
-                            link: this.normalizeRelativeLinks(val.link, path),
-                        }));
-                    } else {
-                        return {
-                            label: value,
-                            link: '/' + path.join('/'),
-                        };
-                    }
-                }),
-            ) as Observable<BreadcrumbLabelLinkPair | BreadcrumbLabelLinkPair[]>;
-        });
+        const breadcrumbObservables$ = breadcrumbParts.map(
+            ({ value$, path }) =>
+                value$.pipe(
+                    map(value => {
+                        if (isBreadcrumbLabelLinkPair(value)) {
+                            return {
+                                label: value.label,
+                                link: this.normalizeRelativeLinks(value.link, path),
+                            };
+                        } else if (isBreadcrumbPairArray(value)) {
+                            return value.map(val => ({
+                                label: val.label,
+                                link: this.normalizeRelativeLinks(val.link, path),
+                            }));
+                        } else {
+                            return {
+                                label: value,
+                                link: '/' + path.join('/'),
+                            };
+                        }
+                    }),
+                ) as Observable<BreadcrumbLabelLinkPair | BreadcrumbLabelLinkPair[]>,
+        );
 
         return observableCombineLatest(breadcrumbObservables$).pipe(map(links => flatten(links)));
     }

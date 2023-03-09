@@ -109,7 +109,7 @@ export class ChannelDetailComponent
                     ),
                 ),
                 mergeMap(({ me, createChannel }) =>
-                    // tslint:disable-next-line:no-non-null-assertion
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     this.dataService.client.updateUserChannels(me!.channels).pipe(map(() => createChannel)),
                 ),
             )

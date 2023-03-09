@@ -85,7 +85,7 @@ export type ItemOf<T, K extends keyof T> = T[K] extends { items: infer R }
  * @docsCategory list-detail-views
  */
 @Directive()
-// tslint:disable-next-line:directive-class-suffix
+// eslint-disable-next-line @angular-eslint/directive-class-suffix
 export class BaseListComponent<ResultType, ItemType, VariableType extends Record<string, any> = any>
     implements OnInit, OnDestroy
 {

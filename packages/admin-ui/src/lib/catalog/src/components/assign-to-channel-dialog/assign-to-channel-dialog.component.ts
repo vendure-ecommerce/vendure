@@ -29,7 +29,7 @@ export class AssignToChannelDialogComponent implements OnInit, Dialog<Channel> {
         const allChannels$ = this.dataService.settings.getChannels().mapSingle(data => data.channels);
 
         combineLatest(activeChannelId$, allChannels$).subscribe(([activeChannelId, channels]) => {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this.currentChannel = channels.find(c => c.id === activeChannelId)!;
             this.availableChannels = channels;
         });

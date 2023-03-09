@@ -180,7 +180,7 @@ function generateTypeResolvers(schema: GraphQLSchema) {
             result.push(
                 `  ${returnType.name}: {`,
                 `    __resolveType(value: any) {`,
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 `      return isGraphQLError(value) ? (value as any).__typename : '${nonErrorResult!.name}';`,
                 `    },`,
                 `  },`,

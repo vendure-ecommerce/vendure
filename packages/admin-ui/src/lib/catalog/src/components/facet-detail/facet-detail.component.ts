@@ -430,8 +430,7 @@ export class FacetDetailComponent
             throw new Error(_(`error.facet-value-form-values-do-not-match`));
         }
         return dirtyValues
-            .map((value, i) => {
-                return createUpdatedTranslatable({
+            .map((value, i) => createUpdatedTranslatable({
                     translatable: value,
                     updatedFields: dirtyValueValues[i],
                     customFieldConfig: this.customValueFields,
@@ -440,8 +439,7 @@ export class FacetDetailComponent
                         languageCode,
                         name: '',
                     },
-                });
-            })
+                }))
             .filter(notNullOrUndefined);
     }
 }

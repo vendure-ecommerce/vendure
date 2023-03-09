@@ -36,11 +36,11 @@ export class RelationCustomerInputComponent implements OnInit {
     ngOnInit() {
         this.results$ = this.searchTerm$.pipe(
             debounceTime(200),
-            switchMap(term => {
-                return this.dataService.customer
+            switchMap(term =>
+                this.dataService.customer
                     .getCustomerList(10, 0, term)
-                    .mapSingle(data => data.customers.items);
-            }),
+                    .mapSingle(data => data.customers.items),
+            ),
         );
     }
 
