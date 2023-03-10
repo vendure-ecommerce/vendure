@@ -35,7 +35,7 @@ import { HardenPluginOptions } from './types';
  *   plugins: [
  *      HardenPlugin.init({
  *        maxQueryComplexity: 650,
- *        apiMode: process.env.NODE_ENV === 'development' ? 'dev' : 'prod',
+ *        apiMode: process.env.NODE_ENV === 'dev' ? 'dev' : 'prod',
  *      }),
  *   ],
  * };
