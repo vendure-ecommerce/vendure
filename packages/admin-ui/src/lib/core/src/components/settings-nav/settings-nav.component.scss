@@ -1,0 +1,21 @@
+@import "variables";
+
+.setting-link {
+    width: 100%;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-xs);
+    align-items: center;
+    cursor: pointer;
+    background-color: transparent;
+    padding: var(--space-unit);
+    color: var(--color-left-nav-text);
+    &:hover {
+        color: var(--color-left-nav-text-hover);
+    }
+
+    clr-icon {
+        margin-right: 6px;
+    }
+}

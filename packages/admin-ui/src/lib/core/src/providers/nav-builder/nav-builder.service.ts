@@ -135,7 +135,7 @@ export function addActionBarItem(config: ActionBarItem): Provider {
     providedIn: 'root',
 })
 export class NavBuilderService {
-    navMenuConfig$: Observable<NavMenuSection[]>;
+    menuConfig$: Observable<NavMenuSection[]>;
     actionBarConfig$: Observable<ActionBarItem[]>;
     sectionBadges: { [sectionId: string]: Observable<NavMenuBadgeType> } = {};
 
@@ -236,7 +236,7 @@ export class NavBuilderService {
             shareReplay(1),
         );
 
-        this.navMenuConfig$ = combineLatest(combinedConfig$, itemAdditions$).pipe(
+        this.menuConfig$ = combineLatest(combinedConfig$, itemAdditions$).pipe(
             map(([sections, additionalItems]) => {
                 for (const item of additionalItems) {
                     const section = sections.find(s => s.id === item.sectionId);

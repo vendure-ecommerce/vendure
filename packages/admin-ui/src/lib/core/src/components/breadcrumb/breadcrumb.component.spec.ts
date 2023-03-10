@@ -8,8 +8,9 @@ import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 
 import { MockTranslatePipe } from '../../../../../testing/translate.pipe.mock';
 import { DataService } from '../../data/providers/data.service';
+import { BreadcrumbLabelLinkPair } from '../../providers/breadcrumb/breadcrumb.service';
 
-import { BreadcrumbComponent, BreadcrumbLabelLinkPair } from './breadcrumb.component';
+import { BreadcrumbComponent } from './breadcrumb.component';
 
 describe('BeadcrumbsComponent', () => {
     let baseRouteConfig: Routes;
@@ -450,7 +451,9 @@ class TestParentComponent {}
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
-    template: ` <vdr-breadcrumb></vdr-breadcrumb> `,
+    template: `
+        <vdr-breadcrumb></vdr-breadcrumb>
+    `,
 })
 class TestChildComponent {}
 
