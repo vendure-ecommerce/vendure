@@ -10,13 +10,13 @@ export class StripeResolver {
     @Mutation()
     @Allow(Permission.Owner)
     async createStripePaymentIntent(@Ctx() ctx: RequestContext): Promise<string> {
-        if (ctx.authorizedAsOwnerOnly) {
-            const sessionOrder = await this.activeOrderService.getOrderFromContext(ctx);
-            if (sessionOrder) {
-                return this.stripeService.createPaymentIntent(ctx, sessionOrder);
-            }
+        if (!ctx.authorizedAsOwnerOnly) {
+            throw new UnauthorizedError();
+        }
+        const sessionOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
+        if (!sessionOrder) {
             throw new UserInputError(`No active order found for session`);
         }
-        throw new UnauthorizedError();
+        return this.stripeService.createPaymentIntent(ctx, sessionOrder);        
     }
 }
