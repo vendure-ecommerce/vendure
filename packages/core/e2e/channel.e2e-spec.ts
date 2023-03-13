@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import {
     createErrorResultGuard,
@@ -8,6 +8,7 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -267,7 +268,7 @@ describe('Channels', () => {
     describe('setting defaultLanguage', () => {
         it('returns error result if languageCode not in availableLanguages', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { updateChannel } = await adminClient.query<
                 Codegen.UpdateChannelMutation,
                 Codegen.UpdateChannelMutationVariables
@@ -288,7 +289,7 @@ describe('Channels', () => {
 
         it('allows setting to an available language', async () => {
             await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             await adminClient.query<
                 Codegen.UpdateGlobalLanguagesMutation,
                 Codegen.UpdateGlobalLanguagesMutationVariables
@@ -315,7 +316,7 @@ describe('Channels', () => {
     it('deleteChannel', async () => {
         const PROD_ID = 'T_1';
         await adminClient.asSuperAdmin();
-        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
         const { assignProductsToChannel } = await adminClient.query<
             Codegen.AssignProductsToChannelMutation,

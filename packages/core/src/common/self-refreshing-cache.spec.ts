@@ -1,8 +1,10 @@
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
 import { createSelfRefreshingCache, SelfRefreshingCache } from './self-refreshing-cache';
 
 describe('SelfRefreshingCache', () => {
     let testCache: SelfRefreshingCache<number, [string]>;
-    const fetchFn = jest.fn().mockImplementation((arg: string) => arg.length);
+    const fetchFn = vi.fn().mockImplementation((arg: string) => arg.length);
     let currentTime = 0;
     beforeAll(async () => {
         testCache = await createSelfRefreshingCache<number, [string]>({
@@ -49,7 +51,7 @@ describe('SelfRefreshingCache', () => {
     });
 
     describe('memoization', () => {
-        const memoizedFn = jest.fn();
+        const memoizedFn = vi.fn();
         let getMemoized: (arg1: string, arg2: number) => Promise<number>;
 
         beforeAll(() => {

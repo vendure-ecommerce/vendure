@@ -33,7 +33,7 @@ export class OrderResolver implements Resolve<Observable<OrderDetailFragment>> {
         const navigateAway$ = this.router.events.pipe(filter(event => event instanceof ActivationStart));
 
         const stream = this.dataService.order
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             .getOrder(id!)
             .mapStream(data => data.order)
             .pipe(

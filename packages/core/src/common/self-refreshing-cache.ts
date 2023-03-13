@@ -83,9 +83,11 @@ export async function createSelfRefreshingCache<V, RefreshArgs extends any[]>(
                 }
                 return value;
             })
-            .catch(err => {
+            .catch((err: any) => {
+                const _message = err.message;
+                const message = typeof _message === 'string' ? _message : JSON.stringify(err.message);
                 Logger.error(
-                    `Failed to update SelfRefreshingCache "${name}": ${err.message}`,
+                    `Failed to update SelfRefreshingCache "${name}": ${message}`,
                     undefined,
                     err.stack,
                 );

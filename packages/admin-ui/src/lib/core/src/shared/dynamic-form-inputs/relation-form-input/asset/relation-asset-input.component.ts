@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -20,7 +20,7 @@ import { AssetPreviewDialogComponent } from '../../../components/asset-preview-d
 export class RelationAssetInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'asset-form-input';
     @Input() readonly: boolean;
-    @Input('parentFormControl') formControl: FormControl;
+    @Input('parentFormControl') formControl: UntypedFormControl;
     @Input() config: RelationCustomFieldConfig;
     asset$: Observable<GetAssetQuery['asset'] | undefined>;
 

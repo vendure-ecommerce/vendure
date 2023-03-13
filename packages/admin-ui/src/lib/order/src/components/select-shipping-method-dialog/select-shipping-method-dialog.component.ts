@@ -21,7 +21,6 @@ export class SelectShippingMethodDialogComponent implements OnInit, Dialog<strin
     currentSelectionId: string;
     currencyCode: CurrencyCode;
     selectedMethod: ShippingMethodQuote | undefined;
-    constructor() {}
 
     ngOnInit(): void {
         if (this.currentSelectionId) {

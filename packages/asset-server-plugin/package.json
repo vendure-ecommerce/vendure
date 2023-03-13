@@ -10,9 +10,10 @@
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "rimraf lib && tsc -p ./tsconfig.build.json && node build.js",
-    "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --package=asset-server-plugin"
+    "lint": "eslint --fix .",
+    "test": "vitest --run",
+    "e2e": "cross-env PACKAGE=asset-server-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
+    "e2e:watch": "cross-env PACKAGE=asset-server-plugin vitest --config ../../e2e-common/vitest.config.ts"
   },
   "homepage": "https://www.vendure.io/",
   "funding": "https://github.com/sponsors/michaelbromley",
@@ -30,7 +31,7 @@
     "express": "^4.17.1",
     "node-fetch": "^2.6.7",
     "rimraf": "^3.0.2",
-    "typescript": "4.5.5"
+    "typescript": "4.9.5"
   },
   "dependencies": {
     "file-type": "^16.5.3",

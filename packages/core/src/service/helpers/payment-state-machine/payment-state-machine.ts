@@ -30,7 +30,7 @@ export class PaymentStateMachine {
         return new FSM(this.config, currentState).canTransitionTo(newState);
     }
 
-    getNextStates(payment: Payment): ReadonlyArray<PaymentState> {
+    getNextStates(payment: Payment): readonly PaymentState[] {
         const fsm = new FSM(this.config, payment.state);
         return fsm.getNextStates();
     }

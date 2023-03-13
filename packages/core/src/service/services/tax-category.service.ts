@@ -32,7 +32,10 @@ export class TaxCategoryService {
     }
 
     findOne(ctx: RequestContext, taxCategoryId: ID): Promise<TaxCategory | undefined> {
-        return this.connection.getRepository(ctx, TaxCategory).findOne(taxCategoryId);
+        return this.connection
+            .getRepository(ctx, TaxCategory)
+            .findOne({ where: { id: taxCategoryId } })
+            .then(result => result ?? undefined);
     }
 
     async create(ctx: RequestContext, input: CreateTaxCategoryInput): Promise<TaxCategory> {
@@ -67,7 +70,7 @@ export class TaxCategoryService {
         const taxCategory = await this.connection.getEntityOrThrow(ctx, TaxCategory, id);
         const dependentRates = await this.connection
             .getRepository(ctx, TaxRate)
-            .count({ where: { category: id } });
+            .count({ where: { category: { id } } });
 
         if (0 < dependentRates) {
             const message = ctx.translate('message.cannot-remove-tax-category-due-to-tax-rates', {

@@ -258,7 +258,7 @@ export class ShopOrderResolver {
     async nextOrderStates(
         @Ctx() ctx: RequestContext,
         @Args() args: ActiveOrderArgs,
-    ): Promise<ReadonlyArray<string>> {
+    ): Promise<readonly string[]> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.activeOrderService.getActiveOrder(
                 ctx,

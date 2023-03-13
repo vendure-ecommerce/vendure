@@ -43,7 +43,7 @@ export interface GraphQLApiOptions {
     apiPath: string;
     debug: boolean;
     playground: boolean | any;
-    // tslint:disable-next-line:ban-types
+    // eslint-disable-next-line @typescript-eslint/ban-types
     resolverModule: Function;
     validationRules: Array<(context: ValidationContext) => any>;
 }
@@ -92,7 +92,7 @@ async function createGraphQLOptions(
     options: GraphQLApiOptions,
 ): Promise<GqlModuleOptions> {
     const builtSchema = await buildSchemaForApi(options.apiType);
-    const resolvers = generateResolvers(
+    const resolvers = await generateResolvers(
         configService,
         customFieldRelationResolverService,
         options.apiType,

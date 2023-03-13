@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -43,7 +43,7 @@ export class CustomerGroupListComponent
     >
     implements OnInit
 {
-    searchTerm = new FormControl('');
+    searchTerm = new UntypedFormControl('');
     activeGroup$: Observable<ItemOf<GetCustomerGroupsQuery, 'customerGroups'> | undefined>;
     activeGroupId: string | undefined;
     listIsEmpty$: Observable<boolean>;

@@ -1,4 +1,4 @@
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 import { BaseConnectionOptions } from 'typeorm/connection/BaseConnectionOptions';
 
 /**

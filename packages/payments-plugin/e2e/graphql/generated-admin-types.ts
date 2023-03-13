@@ -1,4 +1,4 @@
-// tslint:disable
+/* eslint-disable */
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -11,13 +11,9 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: any;
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
-  /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
-  Money: any;
-  /** The `Upload` scalar type represents a file upload. */
+  Money: number;
   Upload: any;
 };
 
@@ -5761,21 +5757,21 @@ export type GetCustomerListQueryVariables = Exact<{
 
 export type GetCustomerListQuery = { customers: { totalItems: number, items: Array<{ id: string, title?: string | null, firstName: string, lastName: string, emailAddress: string, phoneNumber?: string | null, user?: { id: string, verified: boolean } | null }> } };
 
-export type RefundFragment = { id: string, state: string, items: any, transactionId?: string | null, shipping: any, total: any, metadata?: any | null };
+export type RefundFragment = { id: string, state: string, items: number, transactionId?: string | null, shipping: number, total: number, metadata?: any | null };
 
 export type RefundOrderMutationVariables = Exact<{
   input: RefundOrderInput;
 }>;
 
 
-export type RefundOrderMutation = { refundOrder: { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { id: string, state: string, items: any, transactionId?: string | null, shipping: any, total: any, metadata?: any | null } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } };
+export type RefundOrderMutation = { refundOrder: { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } | { id: string, state: string, items: number, transactionId?: string | null, shipping: number, total: number, metadata?: any | null } | { errorCode: ErrorCode, message: string } | { errorCode: ErrorCode, message: string } };
 
 export type OrderQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
 
 
-export type OrderQuery = { order?: { id: string, payments?: Array<{ id: string, transactionId?: string | null, method: string, amount: any, state: string, errorMessage?: string | null, metadata?: any | null }> | null } | null };
+export type OrderQuery = { order?: { id: string, payments?: Array<{ id: string, transactionId?: string | null, method: string, amount: number, state: string, errorMessage?: string | null, metadata?: any | null }> | null } | null };
 
 export type CreateChannelMutationVariables = Exact<{
   input: CreateChannelInput;

@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion no-console */
+/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { TestBed } from '@angular/core/testing';
 import { take } from 'rxjs/operators';
 

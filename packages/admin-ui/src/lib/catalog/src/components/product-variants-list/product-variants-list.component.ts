@@ -8,7 +8,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { FormArray, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormGroup } from '@angular/forms';
 import {
     CustomFieldConfig,
     DataService,
@@ -45,7 +45,7 @@ export interface VariantAssetChange extends AssetChange {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductVariantsListComponent implements OnInit, OnDestroy {
-    @Input('productVariantsFormArray') formArray: FormArray;
+    @Input('productVariantsFormArray') formArray: UntypedFormArray;
     @Input() variants: ProductVariantFragment[];
     @Input() paginationConfig: PaginationConfig;
     @Input() channelPriceIncludesTax: boolean;
@@ -65,7 +65,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput & { autoUpdate: boolean }>();
     selectedVariantIds: string[] = [];
-    formGroupMap = new Map<string, FormGroup>();
+    formGroupMap = new Map<string, UntypedFormGroup>();
     GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
@@ -115,7 +115,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         return item.id;
     }
 
-    inventoryIsNotTracked(formGroup: FormGroup): boolean {
+    inventoryIsNotTracked(formGroup: UntypedFormGroup): boolean {
         const trackInventory = formGroup.get('trackInventory')?.value;
         return (
             trackInventory === GlobalFlag.FALSE ||
@@ -123,7 +123,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         );
     }
 
-    getTaxCategoryName(group: FormGroup): string {
+    getTaxCategoryName(group: UntypedFormGroup): string {
         const control = group.get(['taxCategoryId']);
         if (control && this.taxCategories) {
             const match = this.taxCategories.find(t => t.id === control.value);
@@ -132,7 +132,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
         return '';
     }
 
-    getStockOnHandMinValue(variant: FormGroup) {
+    getStockOnHandMinValue(variant: UntypedFormGroup) {
         const effectiveOutOfStockThreshold = variant.get('useGlobalOutOfStockThreshold')?.value
             ? this.globalOutOfStockThreshold
             : variant.get('outOfStockThreshold')?.value;
@@ -268,7 +268,7 @@ export class ProductVariantsListComponent implements OnInit, OnDestroy {
     private buildFormGroupMap() {
         this.formGroupMap.clear();
         for (const controlGroup of this.formArray.controls) {
-            this.formGroupMap.set(controlGroup.value.id, controlGroup as FormGroup);
+            this.formGroupMap.set(controlGroup.value.id, controlGroup as UntypedFormGroup);
         }
         this.changeDetector.markForCheck();
     }

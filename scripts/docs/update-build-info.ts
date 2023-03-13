@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { exec } from 'child_process';
 import fs from 'fs';
 import path from 'path';

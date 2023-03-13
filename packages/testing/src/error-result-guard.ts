@@ -76,7 +76,7 @@ export class ErrorResultGuard<T> {
      */
     assertErrorResult<R>(input: T | R): asserts input is R {
         if (this.isSuccess(input)) {
-            fail(`Should have errored`);
+            fail('Should have errored');
         }
     }
 }

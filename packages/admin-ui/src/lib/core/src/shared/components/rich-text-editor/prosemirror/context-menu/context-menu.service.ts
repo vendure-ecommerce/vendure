@@ -39,8 +39,8 @@ export class ContextMenuService {
         const source$ = this.setContextMenuConfig$.asObservable();
         const groupedConfig$ = source$.pipe(
             bufferWhen(() => source$.pipe(debounceTime(50))),
-            map(group => {
-                return group.reduce((acc, cur) => {
+            map(group =>
+                group.reduce((acc, cur) => {
                     if (!acc) {
                         return cur;
                     } else {
@@ -53,8 +53,8 @@ export class ContextMenuService {
                         }
                     }
                     return acc;
-                }, undefined as ContextMenuConfig | undefined);
-            }),
+                }, undefined as ContextMenuConfig | undefined),
+            ),
         );
 
         const visible$ = this.menuIsVisible$.pipe(filter(val => val === true));

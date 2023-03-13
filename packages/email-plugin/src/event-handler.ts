@@ -346,13 +346,13 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         if (!this.setRecipientFn) {
             throw new Error(
-                `No setRecipientFn has been defined. ` +
+                'No setRecipientFn has been defined. ' +
                     `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
         if (this.from === undefined) {
             throw new Error(
-                `No from field has been defined. ` +
+                'No from field has been defined. ' +
                     `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }
@@ -362,7 +362,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const subject = configuration ? configuration.subject : this.defaultSubject;
         if (subject == null) {
             throw new Error(
-                `No subject field has been defined. ` +
+                'No subject field has been defined. ' +
                     `Remember to call ".setSubject()" when setting up the EmailEventHandler for ${this.type}`,
             );
         }

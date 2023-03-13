@@ -12,7 +12,7 @@ bootstrap(devConfig)
         }
     })
     .catch(err => {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log(err);
         process.exit(1);
     });

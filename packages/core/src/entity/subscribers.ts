@@ -30,6 +30,7 @@ export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
                         prototype,
                         calculatedPropertyDef.name,
                     );
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
                     const getFn = getterDescriptor && getterDescriptor.get;
                     if (getFn && !entity.hasOwnProperty(calculatedPropertyDef.name)) {
                         const boundGetFn = getFn.bind(entity);

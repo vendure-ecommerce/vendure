@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -27,7 +27,7 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
     static readonly id: DefaultFormComponentId = 'product-selector-form-input';
     readonly isListInput = true;
     readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     config: InputComponentConfig;
     selection$: Observable<Array<GetProductVariantQuery['productVariant']>>;
 

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { patchEntity } from './patch-entity';
 
 describe('patchEntity()', () => {

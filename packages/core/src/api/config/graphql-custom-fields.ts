@@ -47,7 +47,9 @@ export function addGraphQLCustomFields(
             if (fieldDef.type === 'relation') {
                 if (!schema.getType(fieldDef.graphQLType || fieldDef.entity.name)) {
                     throw new Error(
-                        `The GraphQL type "${fieldDef.graphQLType}" specified by the ${entityName}.${fieldDef.name} custom field does not exist`,
+                        `The GraphQL type "${
+                            fieldDef?.graphQLType ?? '(unknown)'
+                        }" specified by the ${entityName}.${fieldDef.name} custom field does not exist`,
                     );
                 }
             }
@@ -229,7 +231,7 @@ export function addServerConfigCustomFields(
     const customFieldTypeDefs = `
             type CustomFields {
                 ${Object.keys(customFieldConfig).reduce(
-                    (output, name) => output + name + `: [CustomFieldConfig!]!\n`,
+                    (output, name) => output + name + ': [CustomFieldConfig!]!\n',
                     '',
                 )}
             }
@@ -335,7 +337,7 @@ export function addOrderLineCustomFieldsInput(
         name: 'OrderLineCustomFieldsInput',
         fields: publicCustomFields.reduce((fields, field) => {
             const name = getGraphQlInputName(field);
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const primitiveType = schema.getType(getGraphQlInputType(field))!;
             const type = field.list === true ? new GraphQLList(primitiveType) : primitiveType;
             return { ...fields, [name]: { type } };
@@ -420,7 +422,7 @@ export function addShippingMethodQuoteCustomFields(
     shippingMethodCustomFields: CustomFieldConfig[],
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    let customFieldTypeDefs = ``;
+    let customFieldTypeDefs = '';
     const publicCustomFields = shippingMethodCustomFields.filter(f => f.public !== false);
     if (0 < publicCustomFields.length) {
         customFieldTypeDefs = `
@@ -443,7 +445,7 @@ export function addPaymentMethodQuoteCustomFields(
     paymentMethodCustomFields: CustomFieldConfig[],
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    let customFieldTypeDefs = ``;
+    let customFieldTypeDefs = '';
     const publicCustomFields = paymentMethodCustomFields.filter(f => f.public !== false);
     if (0 < publicCustomFields.length) {
         customFieldTypeDefs = `
@@ -505,7 +507,7 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
 }
 
 function getGraphQlInputType(config: CustomFieldConfig): string {
-    return config.type === 'relation' ? `ID` : getGraphQlType(config);
+    return config.type === 'relation' ? 'ID' : getGraphQlType(config);
 }
 
 function wrapListType(

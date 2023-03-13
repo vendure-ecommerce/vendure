@@ -1,6 +1,7 @@
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -10,7 +11,7 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-admin-types';
 import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 describe('Zone resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig());

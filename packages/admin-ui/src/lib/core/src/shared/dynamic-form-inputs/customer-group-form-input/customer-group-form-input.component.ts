@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { startWith } from 'rxjs/operators';
@@ -26,7 +26,7 @@ import { DataService } from '../../../data/providers/data.service';
 export class CustomerGroupFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'customer-group-form-input';
     @Input() readonly: boolean;
-    formControl: FormControl;
+    formControl: UntypedFormControl;
     customerGroups$: Observable<GetCustomerGroupsQuery['customerGroups']['items']>;
     config: DefaultFormComponentConfig<'customer-group-form-input'>;
 

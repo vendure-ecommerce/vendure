@@ -3,7 +3,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
 import { ValidationContext } from 'graphql';
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
@@ -22,9 +22,9 @@ import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
-import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
+import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -1049,7 +1049,7 @@ export interface VendureConfig {
      * See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
      * full description of all available options.
      */
-    dbConnectionOptions: ConnectionOptions;
+    dbConnectionOptions: DataSourceOptions;
     /**
      * @description
      * The token for the default channel. If not specified, a token

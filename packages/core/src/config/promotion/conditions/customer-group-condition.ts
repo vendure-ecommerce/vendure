@@ -26,7 +26,7 @@ export const customerGroup = new PromotionCondition({
     },
     async init(injector) {
         // Lazily-imported to avoid circular dependency issues.
-        const { CustomerService } = await import('../../../service/services/customer.service');
+        const { CustomerService } = await import('../../../service/services/customer.service.js');
         customerService = injector.get(CustomerService);
         subscription = injector
             .get(EventBus)

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -48,7 +48,7 @@ export class OrderDetailComponent
     extends BaseDetailComponent<OrderDetailFragment>
     implements OnInit, OnDestroy
 {
-    detailForm = new FormGroup({});
+    detailForm = new UntypedFormGroup({});
     history$: Observable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'] | undefined>;
     nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
@@ -92,15 +92,15 @@ export class OrderDetailComponent
         this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
-            switchMap(() => {
-                return this.dataService.order
+            switchMap(() =>
+                this.dataService.order
                     .getOrderHistory(this.id, {
                         sort: {
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream(data => data.order?.history.items);
-            }),
+                    .mapStream(data => data.order?.history.items),
+            ),
         );
         this.nextStates$ = this.entity$.pipe(
             map(order => {
@@ -357,14 +357,14 @@ export class OrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(FulfillOrderDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(FulfillOrderDialogComponent, {
                         size: 'xl',
                         locals: {
                             order,
                         },
-                    });
-                }),
+                    }),
+                ),
                 switchMap(input => {
                     if (input) {
                         return this.dataService.order.createFulfillment(input);

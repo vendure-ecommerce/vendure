@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -30,9 +30,9 @@ export class PromotionListComponent
     extends BaseListComponent<GetPromotionListQuery, ItemOf<GetPromotionListQuery, 'promotions'>>
     implements OnInit
 {
-    searchForm = new FormGroup({
-        name: new FormControl(''),
-        couponCode: new FormControl(''),
+    searchForm = new UntypedFormGroup({
+        name: new UntypedFormControl(''),
+        couponCode: new UntypedFormControl(''),
     });
 
     constructor(

@@ -5,6 +5,7 @@ import {
     UpdateAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -67,7 +68,7 @@ export class AdministratorService {
         return this.listQueryBuilder
             .build(Administrator, options, {
                 relations: relations ?? ['user', 'user.roles'],
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 ctx,
             })
             .getManyAndCount()
@@ -86,12 +87,16 @@ export class AdministratorService {
         administratorId: ID,
         relations?: RelationPaths<Administrator>,
     ): Promise<Administrator | undefined> {
-        return this.connection.getRepository(ctx, Administrator).findOne(administratorId, {
-            relations: relations ?? ['user', 'user.roles'],
-            where: {
-                deletedAt: null,
-            },
-        });
+        return this.connection
+            .getRepository(ctx, Administrator)
+            .findOne({
+                relations: relations ?? ['user', 'user.roles'],
+                where: {
+                    id: administratorId,
+                    deletedAt: IsNull(),
+                },
+            })
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -103,13 +108,16 @@ export class AdministratorService {
         userId: ID,
         relations?: RelationPaths<Administrator>,
     ): Promise<Administrator | undefined> {
-        return this.connection.getRepository(ctx, Administrator).findOne({
-            relations,
-            where: {
-                user: { id: userId },
-                deletedAt: null,
-            },
-        });
+        return this.connection
+            .getRepository(ctx, Administrator)
+            .findOne({
+                relations,
+                where: {
+                    user: { id: userId },
+                    deletedAt: IsNull(),
+                },
+            })
+            .then(result => result ?? undefined);
     }
 
     /**
@@ -203,9 +211,10 @@ export class AdministratorService {
      * updating an Administrator.
      */
     private async checkActiveUserCanGrantRoles(ctx: RequestContext, roleIds: ID[]) {
-        const roles = await this.connection
-            .getRepository(ctx, Role)
-            .findByIds(roleIds, { relations: ['channels'] });
+        const roles = await this.connection.getRepository(ctx, Role).find({
+            where: { id: In(roleIds) },
+            relations: { channels: true },
+        });
         const permissionsRequired = getChannelPermissions(roles);
         for (const channelPermissions of permissionsRequired) {
             const activeUserHasRequiredPermissions = await this.roleService.userHasAllPermissionsOnChannel(
@@ -250,8 +259,8 @@ export class AdministratorService {
             throw new InternalServerError('error.cannot-delete-sole-superadmin');
         }
         await this.connection.getRepository(ctx, Administrator).update({ id }, { deletedAt: new Date() });
-        // tslint:disable-next-line:no-non-null-assertion
-        await this.userService.softDelete(ctx, administrator.user!.id);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await this.userService.softDelete(ctx, administrator.user.id);
         this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
@@ -316,7 +325,9 @@ export class AdministratorService {
                 .getRepository(Administrator)
                 .findOne({
                     where: {
-                        user: superAdminUser,
+                        user: {
+                            id: superAdminUser.id,
+                        },
                     },
                 });
             if (!superAdministrator) {

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -23,7 +23,7 @@ export class AssetDetailComponent
     extends BaseDetailComponent<NonNullable<GetAssetQuery['asset']>>
     implements OnInit, OnDestroy
 {
-    detailForm = new FormGroup({});
+    detailForm = new UntypedFormGroup({});
     customFields: CustomFieldConfig[];
 
     constructor(
@@ -32,16 +32,16 @@ export class AssetDetailComponent
         serverConfigService: ServerConfigService,
         private notificationService: NotificationService,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
     ) {
         super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Asset');
     }
 
     ngOnInit() {
-        this.detailForm = new FormGroup({
-            name: new FormControl(''),
-            tags: new FormControl([]),
+        this.detailForm = new UntypedFormGroup({
+            name: new UntypedFormControl(''),
+            tags: new UntypedFormControl([]),
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),

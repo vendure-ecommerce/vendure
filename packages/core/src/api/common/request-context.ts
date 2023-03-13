@@ -102,7 +102,7 @@ export class RequestContext {
      */
     static deserialize(ctxObject: SerializedRequestContext): RequestContext {
         return new RequestContext({
-            req: ctxObject._req as any,
+            req: ctxObject._req,
             apiType: ctxObject._apiType,
             channel: new Channel(ctxObject._channel),
             session: {
@@ -227,7 +227,7 @@ export class RequestContext {
         try {
             return this._translationFn(key, variables);
         } catch (e: any) {
-            return `Translation format error: ${e.message}). Original key: ${key}`;
+            return `Translation format error: ${JSON.stringify(e.message)}). Original key: ${key}`;
         }
     }
 
@@ -249,7 +249,7 @@ export class RequestContext {
     private shallowCloneRequestObject(req: Request) {
         function copySimpleFieldsToDepth(target: any, maxDepth: number, depth: number = 0) {
             const result: any = {};
-            // tslint:disable-next-line:forin
+            // eslint-disable-next-line guard-for-in
             for (const key in target) {
                 if (key === 'host' && depth === 0) {
                     // avoid Express "deprecated: req.host" warning
@@ -257,7 +257,7 @@ export class RequestContext {
                 }
                 let val: any;
                 try {
-                    val = (target as any)[key];
+                    val = target[key];
                 } catch (e: any) {
                     val = String(e);
                 }

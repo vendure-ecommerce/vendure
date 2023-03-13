@@ -128,7 +128,7 @@ export class DraftOrderResolver {
     async setCustomerForDraftOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetCustomerForDraftOrderArgs,
-    ): Promise<ErrorResultUnion</*SetCustomerForDraftOrderResult*/ any, Order>> {
+    ): Promise<ErrorResultUnion</* SetCustomerForDraftOrderResult*/ any, Order>> {
         let customer: Customer;
         if (args.customerId) {
             const result = await this.customerService.findOne(ctx, args.customerId);
@@ -146,7 +146,7 @@ export class DraftOrderResolver {
             customer = result;
         } else {
             throw new UserInputError(
-                `Either "customerId" or "input" must be supplied to setCustomerForDraftOrder`,
+                'Either "customerId" or "input" must be supplied to setCustomerForDraftOrder',
             );
         }
 

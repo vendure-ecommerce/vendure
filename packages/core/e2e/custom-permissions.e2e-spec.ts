@@ -1,6 +1,7 @@
 import { mergeConfig } from '@vendure/core';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -91,7 +92,7 @@ describe('Custom permissions', () => {
         });
 
         it('CRUD read permission', async () => {
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
             const { wishlist } = await adminClient.query(CRUD_READ);
             expect(wishlist).toBe(true);
         });
@@ -178,7 +179,7 @@ describe('Custom permissions', () => {
         });
 
         it('CRUD read permission', async () => {
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
             const { wishlist } = await adminClient.query(CRUD_READ);
             expect(wishlist).toBe(true);
         });

@@ -3,6 +3,7 @@ import { ConfigurableOperationInput, OrderLineInput } from '@vendure/common/lib/
 import { ID } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -13,9 +14,9 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
-import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { FulfillmentEvent } from '../../event-bus/events/fulfillment-event';
 import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillment-state-transition-event';
@@ -74,7 +75,7 @@ export class FulfillmentService {
 
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .findByIds(lines.map(l => l.orderLineId));
+            .find({ where: { id: In(lines.map(l => l.orderLineId)) } });
 
         const newFulfillment = await this.connection.getRepository(ctx, Fulfillment).save(
             new Fulfillment({
@@ -126,16 +127,12 @@ export class FulfillmentService {
             .then(fulfillment => fulfillment.lines);
     }
 
-    getFulfillmentLikeOrderLine(ctx: RequestContext, fullfillmentLineId: ID) {
-        return this.connection.getRepository(ctx, OrderLine).findOne();
-    }
-
     async getFulfillmentsLinesForOrderLine(ctx: RequestContext, orderLineId: ID): Promise<FulfillmentLine[]> {
         const fulfillmentLines = await this.connection
             .getRepository(ctx, FulfillmentLine)
             .createQueryBuilder('fulfillmentLine')
             .leftJoin('fulfillmentLine.fulfillment', 'fulfillment')
-            .where(`fulfillmentLine.orderLineId = :orderLineId`, { orderLineId })
+            .where('fulfillmentLine.orderLineId = :orderLineId', { orderLineId })
             .andWhere('fulfillment.state != :cancelledState', { cancelledState: 'Cancelled' })
             .getMany();
 
@@ -189,7 +186,7 @@ export class FulfillmentService {
      * @description
      * Returns an array of the next valid states for the Fulfillment.
      */
-    getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
+    getNextStates(fulfillment: Fulfillment): readonly FulfillmentState[] {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);
     }
 }

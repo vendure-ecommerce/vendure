@@ -43,9 +43,18 @@ export class UserService {
     ) {}
 
     async getUserById(ctx: RequestContext, userId: ID): Promise<User | undefined> {
-        return this.connection.getRepository(ctx, User).findOne(userId, {
-            relations: ['roles', 'roles.channels', 'authenticationMethods'],
-        });
+        return this.connection
+            .getRepository(ctx, User)
+            .findOne({
+                where: { id: userId },
+                relations: {
+                    roles: {
+                        channels: true,
+                    },
+                    authenticationMethods: true,
+                },
+            })
+            .then(result => result ?? undefined);
     }
 
     async getUserByEmailAddress(
@@ -65,7 +74,8 @@ export class UserService {
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethods')
             .where('user.identifier = :identifier', { identifier: emailAddress })
             .andWhere('user.deletedAt IS NULL')
-            .getOne();
+            .getOne()
+            .then(result => result ?? undefined);
     }
 
     /**

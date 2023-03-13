@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { summate } from '@vendure/common/lib/shared-utils';
@@ -15,6 +15,7 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -702,12 +703,12 @@ describe('Order modification', () => {
             >(GET_ORDER, {
                 id: order.id,
             });
-            expect(order2!.totalWithTax).toBe(order!.totalWithTax);
-            expect(order2!.lines.length).toBe(order!.lines.length);
-            expect(order2!.surcharges.length).toBe(order!.surcharges.length);
-            expect(order2!.payments!.length).toBe(order!.payments!.length);
+            expect(order2!.totalWithTax).toBe(order.totalWithTax);
+            expect(order2!.lines.length).toBe(order.lines.length);
+            expect(order2!.surcharges.length).toBe(order.surcharges.length);
+            expect(order2!.payments!.length).toBe(order.payments!.length);
             expect(order2!.payments!.map(p => pick(p, ['id', 'amount', 'method']))).toEqual(
-                order!.payments!.map(p => pick(p, ['id', 'amount', 'method'])),
+                order.payments!.map(p => pick(p, ['id', 'amount', 'method'])),
             );
         }
 
@@ -731,9 +732,9 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = Math.round(14374 * 1.2); // price of variant T_5
-            const expectedTotal = order!.totalWithTax + priceDelta;
+            const expectedTotal = order.totalWithTax + priceDelta;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
-            expect(modifyOrder.lines.length).toBe(order!.lines.length + 1);
+            expect(modifyOrder.lines.length).toBe(order.lines.length + 1);
             expect(modifyOrder.modifications.length).toBe(1);
             expect(modifyOrder.modifications[0].priceChange).toBe(priceDelta);
             expect(modifyOrder.modifications[0].lines.length).toBe(1);
@@ -758,13 +759,13 @@ describe('Order modification', () => {
                 input: {
                     dryRun: false,
                     orderId: order.id,
-                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 2 }],
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
                 },
             });
             orderGuard.assertSuccess(modifyOrder);
 
-            const priceDelta = order!.lines[0].unitPriceWithTax;
-            const expectedTotal = order!.totalWithTax + priceDelta;
+            const priceDelta = order.lines[0].unitPriceWithTax;
+            const expectedTotal = order.totalWithTax + priceDelta;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.lines[0].quantity).toBe(2);
             expect(modifyOrder.modifications.length).toBe(1);
@@ -788,14 +789,14 @@ describe('Order modification', () => {
                 input: {
                     dryRun: false,
                     orderId: order.id,
-                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 1 }],
-                    refund: { paymentId: order!.payments![0].id },
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 1 }],
+                    refund: { paymentId: order.payments![0].id },
                 },
             });
             orderGuard.assertSuccess(modifyOrder);
 
-            const priceDelta = -order!.lines[0].unitPriceWithTax;
-            const expectedTotal = order!.totalWithTax + priceDelta;
+            const priceDelta = -order.lines[0].unitPriceWithTax;
+            const expectedTotal = order.totalWithTax + priceDelta;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.lines[0].quantity).toBe(1);
             expect(modifyOrder.payments?.length).toBe(1);
@@ -833,7 +834,7 @@ describe('Order modification', () => {
                     orderId: order.id,
                     adjustOrderLines: [
                         {
-                            orderLineId: order!.lines[0].id,
+                            orderLineId: order.lines[0].id,
                             quantity: 1,
                             customFields: { color: 'black' },
                         } as any,
@@ -847,7 +848,7 @@ describe('Order modification', () => {
                 id: order.id,
             });
             expect(orderWithLines.lines[0]).toEqual({
-                id: order!.lines[0].id,
+                id: order.lines[0].id,
                 customFields: { color: 'black' },
             });
         });
@@ -921,7 +922,7 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = 300;
-            const expectedTotal = order!.totalWithTax + priceDelta;
+            const expectedTotal = order.totalWithTax + priceDelta;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.surcharges.map(s => omit(s, ['id']))).toEqual([
                 {
@@ -951,7 +952,7 @@ describe('Order modification', () => {
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
-                    orderId: order!.id,
+                    orderId: order.id,
                     surcharges: [
                         {
                             description: 'special discount',
@@ -963,13 +964,13 @@ describe('Order modification', () => {
                         },
                     ],
                     refund: {
-                        paymentId: order!.payments![0].id,
+                        paymentId: order.payments![0].id,
                     },
                 },
             });
             orderGuard.assertSuccess(modifyOrder);
 
-            const expectedTotal = order!.totalWithTax + -300;
+            const expectedTotal = order.totalWithTax + -300;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.surcharges.map(s => omit(s, ['id']))).toEqual([
                 {
@@ -999,7 +1000,7 @@ describe('Order modification', () => {
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
-                    orderId: order!.id,
+                    orderId: order.id,
                     updateShippingAddress: {
                         countryCode: 'US',
                     },
@@ -1011,7 +1012,7 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = SHIPPING_US - SHIPPING_OTHER;
-            const expectedTotal = order!.totalWithTax + priceDelta;
+            const expectedTotal = order.totalWithTax + priceDelta;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.shippingAddress?.countryCode).toBe('US');
             expect(modifyOrder.modifications.length).toBe(1);
@@ -1033,7 +1034,7 @@ describe('Order modification', () => {
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
-                    orderId: order!.id,
+                    orderId: order.id,
                     updateShippingAddress: {
                         countryCode: 'US',
                     },
@@ -1045,7 +1046,7 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(modifyOrder);
 
             const priceDelta = 0;
-            const expectedTotal = order!.totalWithTax + priceDelta;
+            const expectedTotal = order.totalWithTax + priceDelta;
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.shippingAddress?.countryCode).toBe('US');
             expect(modifyOrder.modifications.length).toBe(1);
@@ -1156,7 +1157,7 @@ describe('Order modification', () => {
             orderGuard.assertErrorResult(transitionOrderToState);
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
             expect(transitionOrderToState!.transitionError).toBe(
-                `Can only transition to the "ArrangingAdditionalPayment" state`,
+                'Can only transition to the "ArrangingAdditionalPayment" state',
             );
         });
 
@@ -1166,7 +1167,7 @@ describe('Order modification', () => {
                 'ArrangingAdditionalPayment',
             );
             orderGuard.assertSuccess(transitionOrderToState);
-            expect(transitionOrderToState!.state).toBe('ArrangingAdditionalPayment');
+            expect(transitionOrderToState.state).toBe('ArrangingAdditionalPayment');
         });
 
         it('cannot transition from ArrangingAdditionalPayment when total not covered by Payments', async () => {
@@ -1174,7 +1175,7 @@ describe('Order modification', () => {
             orderGuard.assertErrorResult(transitionOrderToState);
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
             expect(transitionOrderToState!.transitionError).toBe(
-                `Cannot transition away from "ArrangingAdditionalPayment" unless Order total is covered by Payments`,
+                'Cannot transition away from "ArrangingAdditionalPayment" unless Order total is covered by Payments',
             );
         });
 
@@ -1274,14 +1275,14 @@ describe('Order modification', () => {
             orderGuard.assertErrorResult(transitionOrderToState);
             expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
             expect(transitionOrderToState!.transitionError).toBe(
-                `Cannot transition Order to the \"ArrangingAdditionalPayment\" state as no additional payments are needed`,
+                'Cannot transition Order to the "ArrangingAdditionalPayment" state as no additional payments are needed',
             );
         });
 
         it('can transition to original state', async () => {
             const transitionOrderToState = await adminTransitionOrderToState(orderId3, 'PaymentSettled');
             orderGuard.assertSuccess(transitionOrderToState);
-            expect(transitionOrderToState!.state).toBe('PaymentSettled');
+            expect(transitionOrderToState.state).toBe('PaymentSettled');
 
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
@@ -1360,7 +1361,7 @@ describe('Order modification', () => {
                 },
             });
             orderGuard.assertSuccess(addManualPaymentToOrder);
-            additionalPaymentId = addManualPaymentToOrder.payments?.[1].id!;
+            additionalPaymentId = addManualPaymentToOrder.payments![1].id!;
 
             const transitionOrderToState2 = await adminTransitionOrderToState(orderId2, 'PaymentSettled');
             orderGuard.assertSuccess(transitionOrderToState2);
@@ -1532,7 +1533,7 @@ describe('Order modification', () => {
                 input: {
                     dryRun: true,
                     orderId: order.id,
-                    adjustOrderLines: [{ orderLineId: order!.lines[0].id, quantity: 2 }],
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 2 }],
                 },
             });
             orderGuard.assertSuccess(modifyOrder);
@@ -1671,7 +1672,7 @@ describe('Order modification', () => {
             expect(modifyOrder.totalWithTax).toBe(
                 originalTotalWithTax - order.lines[0].proratedUnitPriceWithTax,
             );
-            expect(modifyOrder.payments![0].refunds![0].total).toBe(order.lines[0].proratedUnitPriceWithTax);
+            expect(modifyOrder.payments![0].refunds[0].total).toBe(order.lines[0].proratedUnitPriceWithTax);
             expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
         });
 
@@ -1770,14 +1771,14 @@ describe('Order modification', () => {
 
                 const expectedNewTotal = order.lines[0].unitPriceWithTax + shippingPrice;
                 expect(modifyOrder.totalWithTax).toBe(expectedNewTotal);
-                expect(modifyOrder.payments![0].refunds![0].total).toBe(expectedTotal - expectedNewTotal);
+                expect(modifyOrder.payments![0].refunds[0].total).toBe(expectedTotal - expectedNewTotal);
                 expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
             });
 
             it('transition back to original state', async () => {
                 const transitionOrderToState2 = await adminTransitionOrderToState(orderId2, 'PaymentSettled');
                 orderGuard.assertSuccess(transitionOrderToState2);
-                expect(transitionOrderToState2!.state).toBe('PaymentSettled');
+                expect(transitionOrderToState2.state).toBe('PaymentSettled');
             });
 
             it('order no longer has promotions', async () => {
@@ -1852,7 +1853,7 @@ describe('Order modification', () => {
             >(GET_STOCK_MOVEMENT, {
                 id: 'T_1',
             });
-            return product?.variants.find(v => v.id === id)!;
+            return product!.variants.find(v => v.id === id)!;
         }
 
         let orderId4: string;
@@ -1895,7 +1896,7 @@ describe('Order modification', () => {
         it('updates stock when increasing quantity after fulfillment', async () => {
             const result = await adminTransitionOrderToState(orderId4, 'ArrangingAdditionalPayment');
             orderGuard.assertSuccess(result);
-            expect(result!.state).toBe('ArrangingAdditionalPayment');
+            expect(result.state).toBe('ArrangingAdditionalPayment');
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
                 {
@@ -1981,7 +1982,7 @@ describe('Order modification', () => {
             >(MODIFY_ORDER, {
                 input: {
                     dryRun: false,
-                    orderId: order!.id,
+                    orderId: order.id,
                     addItems: [{ productVariantId: 'T_3', quantity: 1 }],
                 },
             });
@@ -2071,12 +2072,12 @@ describe('Order modification', () => {
                     orderId: order.id,
                     adjustOrderLines: [
                         {
-                            orderLineId: order!.lines.find(l => l.productVariant.id === 'T_3')!.id,
+                            orderLineId: order.lines.find(l => l.productVariant.id === 'T_3')!.id,
                             quantity: 0,
                         },
                     ],
                     refund: {
-                        paymentId: order!.payments![0].id,
+                        paymentId: order.payments![0].id,
                     },
                 },
             });
@@ -2303,7 +2304,7 @@ describe('Order modification', () => {
             });
             orderGuard.assertSuccess(modifyOrder);
             expect(modifyOrder.shippingWithTax).toBe(0);
-            expect(modifyOrder!.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder!));
+            expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
             expect(modifyOrder.payments![0].refunds[0].total).toBe(shippingWithTax);
         });
     });
@@ -2326,10 +2327,10 @@ describe('Order modification', () => {
         >(GET_ORDER, {
             id: order.id,
         });
-        expect(order2!.totalWithTax).toBe(order!.totalWithTax);
-        expect(order2!.lines.length).toBe(order!.lines.length);
-        expect(order2!.surcharges.length).toBe(order!.surcharges.length);
-        expect(order2!.totalQuantity).toBe(order!.totalQuantity);
+        expect(order2!.totalWithTax).toBe(order.totalWithTax);
+        expect(order2!.lines.length).toBe(order.lines.length);
+        expect(order2!.surcharges.length).toBe(order.surcharges.length);
+        expect(order2!.totalQuantity).toBe(order.totalQuantity);
     }
 
     async function createOrderAndCheckout(

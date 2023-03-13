@@ -1,6 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { DataProxy, MutationUpdaterFn, WatchQueryFetchPolicy } from '@apollo/client/core';
+import {
+    DataProxy,
+    MutationUpdaterFn,
+    SingleExecutionResult,
+    WatchQueryFetchPolicy,
+} from '@apollo/client/core';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Apollo } from 'apollo-angular';
 import { DocumentNode } from 'graphql/language/ast';
@@ -34,7 +39,7 @@ export class BaseDataService {
     /**
      * Performs a GraphQL watch query
      */
-    query<T, V = Record<string, any>>(
+    query<T, V extends Record<string, any> = Record<string, any>>(
         query: DocumentNode,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
@@ -52,7 +57,7 @@ export class BaseDataService {
     /**
      * Performs a GraphQL mutation
      */
-    mutate<T, V = Record<string, any>>(
+    mutate<T, V extends Record<string, any> = Record<string, any>>(
         mutation: DocumentNode,
         variables?: V,
         update?: MutationUpdaterFn<T>,
@@ -66,7 +71,7 @@ export class BaseDataService {
                 variables: withoutReadonlyFields,
                 update,
             })
-            .pipe(map(result => result.data as T));
+            .pipe(map(result => (result as SingleExecutionResult).data as T));
     }
 
     private prepareCustomFields<V>(mutation: DocumentNode, variables: V): V {

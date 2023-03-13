@@ -17,8 +17,8 @@ import { RelationPaths } from '../../api/index';
 import { UserInputError } from '../../common/error/errors';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CustomerGroupEntityEvent } from '../../event-bus/events/customer-group-entity-event';
 import { CustomerGroupChangeEvent, CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
@@ -60,7 +60,10 @@ export class CustomerGroupService {
         customerGroupId: ID,
         relations: RelationPaths<CustomerGroup> = [],
     ): Promise<CustomerGroup | undefined> {
-        return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId, { relations });
+        return this.connection
+            .getRepository(ctx, CustomerGroup)
+            .findOne({ where: { id: customerGroupId }, relations })
+            .then(result => result ?? undefined);
     }
 
     /**

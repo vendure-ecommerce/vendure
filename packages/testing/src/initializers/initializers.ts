@@ -1,8 +1,8 @@
-import { ConnectionOptions } from 'typeorm';
+import { DataSourceOptions } from 'typeorm';
 
 import { TestDbInitializer } from './test-db-initializer';
 
-export type InitializerRegistry = { [type in ConnectionOptions['type']]?: TestDbInitializer<any> };
+export type InitializerRegistry = { [type in DataSourceOptions['type']]?: TestDbInitializer<any> };
 
 const initializerRegistry: InitializerRegistry = {};
 
@@ -13,11 +13,11 @@ const initializerRegistry: InitializerRegistry = {};
  *
  * @docsCategory testing
  */
-export function registerInitializer(type: ConnectionOptions['type'], initializer: TestDbInitializer<any>) {
+export function registerInitializer(type: DataSourceOptions['type'], initializer: TestDbInitializer<any>) {
     initializerRegistry[type] = initializer;
 }
 
-export function getInitializerFor(type: ConnectionOptions['type']): TestDbInitializer<any> {
+export function getInitializerFor(type: DataSourceOptions['type']): TestDbInitializer<any> {
     const initializer = initializerRegistry[type];
     if (!initializer) {
         throw new Error(`No initializer has been registered for the database type "${type}"`);

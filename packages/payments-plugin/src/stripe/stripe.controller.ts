@@ -57,7 +57,7 @@ export class StripeController {
             throw Error(`Unable to find order ${orderCode}, unable to settle payment ${paymentIntent.id}!`);
         }
         if (event.type === 'payment_intent.payment_failed') {
-            const message = paymentIntent.last_payment_error?.message;
+            const message = paymentIntent.last_payment_error?.message ?? 'unknown error';
             Logger.warn(`Payment for order ${orderCode} failed: ${message}`, loggerCtx);
             response.status(HttpStatus.OK).send('Ok');
             return;

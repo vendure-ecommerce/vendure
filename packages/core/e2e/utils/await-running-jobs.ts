@@ -1,4 +1,5 @@
 import { SimpleGraphQLClient } from '@vendure/testing';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { GetRunningJobs, JobState } from '../graphql/generated-e2e-admin-types';
 import { GET_RUNNING_JOBS } from '../graphql/shared-definitions';

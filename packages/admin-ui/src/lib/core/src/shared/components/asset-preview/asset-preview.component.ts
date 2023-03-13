@@ -10,7 +10,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -35,11 +35,11 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Input() asset: AssetLike;
     @Input() editable = false;
     @Input() customFields: CustomFieldConfig[] = [];
-    @Input() customFieldsForm: FormGroup | undefined;
+    @Input() customFieldsForm: UntypedFormGroup | undefined;
     @Output() assetChange = new EventEmitter<Omit<UpdateAssetInput, 'focalPoint'>>();
     @Output() editClick = new EventEmitter();
 
-    form: FormGroup;
+    form: UntypedFormGroup;
 
     size: PreviewPreset = 'medium';
     width = 0;
@@ -53,7 +53,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
     private sizePriorToSettingFocalPoint: PreviewPreset;
 
     constructor(
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private dataService: DataService,
         private notificationService: NotificationService,
         private changeDetector: ChangeDetectorRef,

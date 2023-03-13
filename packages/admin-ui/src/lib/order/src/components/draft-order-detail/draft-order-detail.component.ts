@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -32,7 +32,7 @@ export class DraftOrderDetailComponent
     extends BaseDetailComponent<OrderDetailFragment>
     implements OnInit, OnDestroy
 {
-    detailForm = new FormGroup({});
+    detailForm = new UntypedFormGroup({});
     eligibleShippingMethods$: Observable<
         DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder']
     >;
@@ -126,14 +126,14 @@ export class DraftOrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(SelectAddressDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(SelectAddressDialogComponent, {
                         locals: {
                             customerId: order.customer?.id,
                             currentAddress: order.shippingAddress ?? undefined,
                         },
-                    });
-                }),
+                    }),
+                ),
             )
             .subscribe(result => {
                 if (result) {
@@ -146,14 +146,14 @@ export class DraftOrderDetailComponent
         this.entity$
             .pipe(
                 take(1),
-                switchMap(order => {
-                    return this.modalService.fromComponent(SelectAddressDialogComponent, {
+                switchMap(order =>
+                    this.modalService.fromComponent(SelectAddressDialogComponent, {
                         locals: {
                             customerId: order.customer?.id,
                             currentAddress: order.billingAddress ?? undefined,
                         },
-                    });
-                }),
+                    }),
+                ),
             )
             .subscribe(result => {
                 if (result) {

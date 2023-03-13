@@ -26,5 +26,5 @@ function setEntityIdColumnTypes(entityIdStrategy: EntityIdStrategy<any>, entitie
 
 function setBaseEntityIdType(entityIdStrategy: EntityIdStrategy<any>) {
     const { entity, name } = getPrimaryGeneratedIdColumn();
-    PrimaryGeneratedColumn(entityIdStrategy.primaryKeyType as any)(entity, name);
+    PrimaryGeneratedColumn(entityIdStrategy.primaryKeyType)(entity, name);
 }

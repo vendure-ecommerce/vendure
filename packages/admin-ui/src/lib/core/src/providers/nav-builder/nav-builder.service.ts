@@ -241,7 +241,7 @@ export class NavBuilderService {
                 for (const item of additionalItems) {
                     const section = sections.find(s => s.id === item.sectionId);
                     if (!section) {
-                        // tslint:disable-next-line:no-console
+                        // eslint-disable-next-line no-console
                         console.error(
                             `Could not add menu item "${item.config.id}", section "${item.sectionId}" does not exist`,
                         );

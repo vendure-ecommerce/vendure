@@ -64,18 +64,18 @@ export class ProductPriceApplicator {
             variant.productVariantPrices,
         );
         if (!channelPrice) {
-            throw new InternalServerError(`error.no-price-found-for-channel`, {
+            throw new InternalServerError('error.no-price-found-for-channel', {
                 variantId: variant.id,
                 channel: ctx.channel.code,
             });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = await this.requestCache.get(ctx, 'allZones', () => this.zoneService.findAll(ctx));
-        const activeTaxZone = await this.requestCache.get(ctx, `activeTaxZone`, () =>
+        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
         if (!activeTaxZone) {
-            throw new InternalServerError(`error.no-active-tax-zone`);
+            throw new InternalServerError('error.no-active-tax-zone');
         }
         const applicableTaxRate = await this.requestCache.get(
             ctx,

@@ -7,19 +7,18 @@ import {
     EntitySchema,
     FindOneOptions,
     FindOptionsUtils,
+    ObjectLiteral,
     ObjectType,
     Repository,
-    SelectQueryBuilder,
 } from 'typeorm';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { EntityNotFoundError } from '../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../common/types/common-types';
-import { Logger } from '../config/logger/vendure-logger';
 import { VendureEntity } from '../entity/base/base.entity';
 
-import { removeCustomFieldsWithEagerRelations } from './remove-custom-fields-with-eager-relations';
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
 
@@ -55,37 +54,39 @@ export class TransactionalConnection {
     /**
      * @description
      * Returns a TypeORM repository. Note that when no RequestContext is supplied, the repository will not
-     * be aware of any existing transaction. Therefore calling this method without supplying a RequestContext
+     * be aware of any existing transaction. Therefore, calling this method without supplying a RequestContext
      * is discouraged without a deliberate reason.
      *
      * @deprecated since 1.7.0: Use {@link TransactionalConnection.rawConnection rawConnection.getRepository()} function instead.
      */
-    getRepository<Entity>(target: ObjectType<Entity> | EntitySchema<Entity> | string): Repository<Entity>;
+    getRepository<Entity extends ObjectLiteral>(
+        target: ObjectType<Entity> | EntitySchema<Entity> | string,
+    ): Repository<Entity>;
     /**
      * @description
      * Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
      * the RequestContext argument when possible, otherwise the queries will be executed outside of any
      * ongoing transactions which have been started by the {@link Transaction} decorator.
      */
-    getRepository<Entity>(
+    getRepository<Entity extends ObjectLiteral>(
         ctx: RequestContext | undefined,
         target: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity>;
-    getRepository<Entity>(
+    getRepository<Entity extends ObjectLiteral>(
         ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined,
         maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity> {
         if (ctxOrTarget instanceof RequestContext) {
             const transactionManager = this.getTransactionManager(ctxOrTarget);
             if (transactionManager) {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 return transactionManager.getRepository(maybeTarget!);
             } else {
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 return this.rawConnection.getRepository(maybeTarget!);
             }
         } else {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this.rawConnection.getRepository(ctxOrTarget ?? maybeTarget!);
         }
     }
@@ -141,7 +142,7 @@ export class TransactionalConnection {
         let work: (ctx: RequestContext) => Promise<T>;
         if (ctxOrWork instanceof RequestContext) {
             ctx = ctxOrWork;
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             work = maybeWork!;
         } else {
             ctx = RequestContext.empty();
@@ -239,7 +240,16 @@ export class TransactionalConnection {
                 optionsWithoutChannelId,
             );
         } else {
-            entity = await this.getRepository(ctx, entityType).findOne(id, options as FindOneOptions);
+            const optionsWithId = {
+                ...options,
+                where: {
+                    ...(options.where || {}),
+                    id,
+                },
+            } as FindOneOptions<T>;
+            entity = await this.getRepository(ctx, entityType)
+                .findOne(optionsWithId)
+                .then(result => result ?? undefined);
         }
         if (
             !entity ||
@@ -262,41 +272,18 @@ export class TransactionalConnection {
         entity: Type<T>,
         id: ID,
         channelId: ID,
-        options: FindOneOptions = {},
+        options: FindOneOptions<T> = {},
     ) {
-        let qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        options.relations = removeCustomFieldsWithEagerRelations(qb, options.relations);
-        let skipEagerRelations = false;
-        try {
-            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
-        } catch (e: any) {
-            // https://github.com/vendure-ecommerce/vendure/issues/1664
-            // This is a failsafe to catch edge cases related to the TypeORM
-            // bug described in the doc block of `removeCustomFieldsWithEagerRelations`.
-            // In this case, a nested custom field relation has an eager-loaded relation,
-            // and is throwing an error. In this case we throw our hands up and say
-            // "sod it!", refuse to load _any_ relations at all, and rely on the
-            // GraphQL entity resolvers to take care of them.
-            Logger.debug(
-                `TransactionalConnection.findOneInChannel ran into issues joining nested custom field relations. Running the query without joining any relations instead.`,
-            );
-            qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-            FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
-                ...options,
-                relations: [],
-                loadEagerRelations: false,
-            });
-            skipEagerRelations = true;
-        }
-        if (options.loadEagerRelations !== false && !skipEagerRelations) {
-            // tslint:disable-next-line:no-non-null-assertion
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
+        if (options.loadEagerRelations !== false) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }
-        return qb
-            .leftJoin('entity.channels', 'channel')
+        qb.leftJoin('entity.channels', '__channel')
             .andWhere('entity.id = :id', { id })
-            .andWhere('channel.id = :channelId', { channelId })
-            .getOne();
+            .andWhere('__channel.id = :channelId', { channelId });
+
+        return qb.getOne().then(result => result ?? undefined);
     }
 
     /**
@@ -309,7 +296,7 @@ export class TransactionalConnection {
         entity: Type<T>,
         ids: ID[],
         channelId: ID,
-        options: FindOneOptions,
+        options: FindManyOptions<T>,
     ) {
         // the syntax described in https://github.com/typeorm/typeorm/issues/1239#issuecomment-366955628
         // breaks if the array is empty
@@ -317,10 +304,9 @@ export class TransactionalConnection {
             return Promise.resolve([]);
         }
 
-        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
         if (options.loadEagerRelations !== false) {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }
         return qb

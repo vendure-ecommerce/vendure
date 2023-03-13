@@ -1,7 +1,9 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import fs from 'fs-extra';
 import path from 'path';
+import { beforeAll, describe, expect, it } from 'vitest';
 
-import { LanguageCode } from '../../..';
+import { ensureConfigLoaded } from '../../../config/config-helpers';
 import { ConfigService } from '../../../config/config.service';
 
 import { ImportParser } from './import-parser';
@@ -30,6 +32,10 @@ const mockConfigService = {
 } as ConfigService;
 
 describe('ImportParser', () => {
+    beforeAll(async () => {
+        await ensureConfigLoaded();
+    });
+
     describe('parseProducts', () => {
         it('single product with a single variant', async () => {
             const importParser = new ImportParser(mockConfigService);

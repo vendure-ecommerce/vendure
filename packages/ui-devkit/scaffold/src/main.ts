@@ -12,6 +12,6 @@ if (environment.production) {
 loadAppConfig()
     .then(() => platformBrowserDynamic().bootstrapModule(AppModule))
     .catch((err: any) => {
-        // tslint:disable:no-console
+        /* eslint-disable no-console */
         console.log(err);
     });

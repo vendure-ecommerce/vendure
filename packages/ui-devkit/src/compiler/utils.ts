@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import { createHash } from 'crypto';
@@ -57,9 +57,8 @@ export function copyUiDevkit(outputPath: string) {
  */
 export async function copyStaticAsset(outputPath: string, staticAssetDef: StaticAssetDefinition) {
     const staticAssetPath = getStaticAssetPath(staticAssetDef);
-    let assetOutputPath: string;
     const assetBasename = path.basename(staticAssetPath);
-    assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetBasename);
+    const assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetBasename);
     fs.copySync(staticAssetPath, assetOutputPath);
     if (typeof staticAssetDef !== 'string') {
         // The asset is being renamed

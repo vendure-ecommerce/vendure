@@ -332,7 +332,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         if (this.lines == null) {
             const errorMessage = [
                 `The property "${propertyName}" on the Order entity requires the Order.lines relation to be joined.`,
-                `This can be done with the EntityHydratorService: \`await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })\``,
+                "This can be done with the EntityHydratorService: `await entityHydratorService.hydrate(ctx, order, { relations: ['lines'] })`",
             ];
 
             throw new InternalServerError(errorMessage.join('\n'));

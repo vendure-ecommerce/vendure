@@ -7,7 +7,7 @@ import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
 import { TestServerOptions } from './types';
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * @description
  * A real Vendure server against which the e2e tests should be run.
@@ -65,12 +65,11 @@ export class TestServer {
     }
 
     private getCallerFilename(depth: number): string {
-        let pst: ErrorConstructor['prepareStackTrace'];
         let stack: any;
         let file: any;
         let frame: any;
 
-        pst = Error.prepareStackTrace;
+        const pst = Error.prepareStackTrace;
         Error.prepareStackTrace = (_, _stack) => {
             Error.prepareStackTrace = pst;
             return _stack;
@@ -104,7 +103,10 @@ export class TestServer {
     /**
      * Bootstraps an instance of the Vendure server for testing against.
      */
-    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
+    private async bootstrapForTesting(
+        this: void,
+        userConfig: Partial<VendureConfig>,
+    ): Promise<INestApplication> {
         const config = await preBootstrapConfig(userConfig);
         Logger.useLogger(config.logger);
         const appModule = await import('@vendure/core/dist/app.module');

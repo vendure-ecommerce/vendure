@@ -55,7 +55,7 @@ export interface PollingJobQueueStrategyConfig {
 
 const STOP_SIGNAL = Symbol('STOP_SIGNAL');
 
-class ActiveQueue<Data extends JobData<Data> = {}> {
+class ActiveQueue<Data extends JobData<Data> = object> {
     private timer: any;
     private running = false;
     private activeJobs: Array<Job<Data>> = [];
@@ -94,7 +94,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                         const onProgress = (job: Job) => this.jobQueueStrategy.update(job);
                         nextJob.on('progress', onProgress);
                         const cancellationSignal$ = interval(this.pollInterval * 5).pipe(
-                            // tslint:disable-next-line:no-non-null-assertion
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             switchMap(() => this.jobQueueStrategy.findOne(nextJob.id!)),
                             filter(job => job?.state === JobState.CANCELLED),
                             take(1),
@@ -124,14 +124,16 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                                 nextJob.off('progress', onProgress);
                                 return this.onFailOrComplete(nextJob);
                             })
-                            .catch(err => {
-                                Logger.warn(`Error updating job info: ${err}`);
+                            .catch((err: any) => {
+                                Logger.warn(`Error updating job info: ${JSON.stringify(err)}`);
                             });
                     }
                 }
             } catch (e: any) {
                 this.errorNotifier$.next([
-                    `Job queue "${this.queueName}" encountered an error (set log level to Debug for trace): ${e.message}`,
+                    `Job queue "${
+                        this.queueName
+                    }" encountered an error (set log level to Debug for trace): ${JSON.stringify(e.message)}`,
                     e.stack,
                 ]);
             }
@@ -140,7 +142,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
             }
         };
 
-        runNextJobs();
+        void runNextJobs();
     }
 
     stop(): Promise<void> {
@@ -162,7 +164,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                     pollTimer = setTimeout(pollActiveJobs, 50);
                 }
             };
-            pollActiveJobs();
+            void pollActiveJobs();
         });
     }
 
@@ -212,7 +214,7 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
         }
     }
 
-    async start<Data extends JobData<Data> = {}>(
+    async start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ) {
@@ -228,7 +230,7 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
         this.activeQueues.set(queueName, process, active);
     }
 
-    async stop<Data extends JobData<Data> = {}>(
+    async stop<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ) {

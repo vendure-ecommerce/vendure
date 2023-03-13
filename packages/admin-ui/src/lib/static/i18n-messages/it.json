@@ -4,7 +4,7 @@
   },
   "asset": {
     "add-asset": "Aggiungi immagine",
-    "add-asset-with-count": "Aggiungi {count, plural, 0 {media} one {1 media} other {{count} media}}",
+    "add-asset-with-count": "Aggiungi {count, plural, =0 {media} one {1 media} other {{count} media}}",
     "assets-selected-count": "{ count } media selezionati",
     "dimensions": "Dimensioni",
     "focal-point": "Punto focale",

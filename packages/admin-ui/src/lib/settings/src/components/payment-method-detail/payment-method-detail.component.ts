@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -38,7 +38,7 @@ export class PaymentMethodDetailComponent
     extends BaseDetailComponent<PaymentMethodFragment>
     implements OnInit, OnDestroy
 {
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
     checkers: ConfigurableOperationDefinition[] = [];
     handlers: ConfigurableOperationDefinition[] = [];
@@ -54,7 +54,7 @@ export class PaymentMethodDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
@@ -104,7 +104,7 @@ export class PaymentMethodDetailComponent
     }
 
     configArgsIsPopulated(): boolean {
-        const configArgsGroup = this.detailForm.get('configArgs') as FormGroup | undefined;
+        const configArgsGroup = this.detailForm.get('configArgs') as UntypedFormGroup | undefined;
         if (!configArgsGroup) {
             return false;
         }
@@ -224,7 +224,7 @@ export class PaymentMethodDetailComponent
      */
     private getUpdatedPaymentMethod(
         paymentMethod: PaymentMethodFragment,
-        formGroup: FormGroup,
+        formGroup: UntypedFormGroup,
         languageCode: LanguageCode,
         selectedHandler: ConfigurableOperation,
         selectedChecker?: ConfigurableOperation | null,

@@ -1,11 +1,11 @@
-import { CompatibilityMoneyStrategy, DefaultMoneyStrategy, mergeConfig } from '@vendure/core';
+import { DefaultMoneyStrategy, Logger, mergeConfig, MoneyStrategy } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 import { ColumnOptions } from 'typeorm';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { Logger, MoneyStrategy } from '../src/index';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { SortOrder } from './graphql/generated-e2e-admin-types';
@@ -14,7 +14,7 @@ import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graph
 import { GET_PRODUCT_VARIANT_LIST } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 
-// tslint:disable:no-non-null-assertion
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 const orderGuard: ErrorResultGuard<CodegenShop.UpdatedOrderFragment> = createErrorResultGuard(
     input => !!input.total,

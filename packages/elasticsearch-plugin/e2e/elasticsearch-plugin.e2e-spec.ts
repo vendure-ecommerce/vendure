@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion no-console */
+/* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
@@ -14,6 +14,7 @@ import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testi
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -69,16 +70,8 @@ import {
     JobState,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { elasticsearchHost, elasticsearchPort } = require('./constants');
-
-/**
- * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
- * We increase the timeout to 30 seconds to prevent failure due to timeouts.
- */
-if (process.env.CI) {
-    jest.setTimeout(10 * 3000);
-}
 
 interface SearchProductShopVariables extends SearchProductsShopQueryVariables {
     input: SearchProductsShopQueryVariables['input'] & {
@@ -108,12 +101,12 @@ describe('Elasticsearch plugin', () => {
                     indexPrefix: INDEX_PREFIX,
                     port: elasticsearchPort,
                     host: elasticsearchHost,
-                    hydrateProductVariantRelations: ['customFields.material'],
+                    hydrateProductVariantRelations: ['customFields.material', 'stockLevels'],
                     customProductVariantMappings: {
                         inStock: {
                             graphQlType: 'Boolean!',
                             valueFn: variant => {
-                                return variant.stockOnHand > 0;
+                                return variant.stockLevels[0]?.stockOnHand > 0;
                             },
                         },
                         materialCode: {
@@ -158,7 +151,7 @@ describe('Elasticsearch plugin', () => {
                                 context: 'product',
                                 scriptFn: input => {
                                     const factor = input.factor ?? 2;
-                                    return { script: `doc['product-answer'].value * ${factor}` };
+                                    return { script: `doc['product-answer'].value * ${factor as string}` };
                                 },
                             },
                         },
@@ -642,11 +635,11 @@ describe('Elasticsearch plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_4"]`,
+                                        value: '["T_4"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },
@@ -707,11 +700,11 @@ describe('Elasticsearch plugin', () => {
                                 arguments: [
                                     {
                                         name: 'facetValueIds',
-                                        value: `["T_3"]`,
+                                        value: '["T_3"]',
                                     },
                                     {
                                         name: 'containsAny',
-                                        value: `false`,
+                                        value: 'false',
                                     },
                                 ],
                             },

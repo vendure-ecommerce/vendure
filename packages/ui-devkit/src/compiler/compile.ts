@@ -1,4 +1,4 @@
-/* tslint:disable:no-console */
+/* eslint-disable no-console */
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { AdminUiAppConfig, AdminUiAppDevModeConfig } from '@vendure/common/lib/shared-types';
 import { ChildProcess, spawn } from 'child_process';
@@ -235,7 +235,7 @@ function runWatchMode(
                         }
                     }
                     for (const languageCode of Object.keys(allTranslationFiles)) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         const translationFiles = allTranslationFiles[languageCode as LanguageCode]!;
                         for (const file of translationFiles) {
                             if (filePath.includes(path.normalize(file))) {
@@ -252,7 +252,7 @@ function runWatchMode(
 
     close = () => {
         if (watcher) {
-            watcher.close();
+            void watcher.close();
         }
         if (buildProcess) {
             buildProcess.kill();
@@ -268,7 +268,7 @@ function buildProcessArguments(args?: UiExtensionCompilerProcessArgument[]): str
         if (Array.isArray(arg)) {
             const [key, value] = arg;
 
-            return `${key}=${value}`;
+            return `${key}=${value as string}`;
         }
 
         return arg;

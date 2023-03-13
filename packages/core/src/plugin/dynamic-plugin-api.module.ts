@@ -49,5 +49,5 @@ export function getDynamicGraphQlModulesForPlugins(apiType: 'shop' | 'admin'): A
 }
 
 function dynamicClassName(module: Type<any>, apiType: 'shop' | 'admin'): string {
-    return module.name + `Dynamic` + (apiType === 'shop' ? 'Shop' : 'Admin') + 'Module';
+    return module.name + 'Dynamic' + (apiType === 'shop' ? 'Shop' : 'Admin') + 'Module';
 }

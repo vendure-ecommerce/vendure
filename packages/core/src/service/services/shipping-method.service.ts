@@ -8,6 +8,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -54,7 +55,8 @@ export class ShippingMethodService {
     async initShippingMethods() {
         if (this.configService.shippingOptions.fulfillmentHandlers.length === 0) {
             throw new Error(
-                `No FulfillmentHandlers were found. Please ensure the VendureConfig.shippingOptions.fulfillmentHandlers array contains at least one FulfillmentHandler.`,
+                'No FulfillmentHandlers were found.' +
+                    ' Please ensure the VendureConfig.shippingOptions.fulfillmentHandlers array contains at least one FulfillmentHandler.',
             );
         }
         await this.verifyShippingMethods();
@@ -68,7 +70,7 @@ export class ShippingMethodService {
         return this.listQueryBuilder
             .build(ShippingMethod, options, {
                 relations,
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 channelId: ctx.channelId,
                 ctx,
             })
@@ -92,10 +94,10 @@ export class ShippingMethodService {
             ctx.channelId,
             {
                 relations,
-                ...(includeDeleted === false ? { where: { deletedAt: null } } : {}),
+                ...(includeDeleted === false ? { where: { deletedAt: IsNull() } } : {}),
             },
         );
-        return shippingMethod && this.translator.translate(shippingMethod, ctx);
+        return (shippingMethod && this.translator.translate(shippingMethod, ctx)) ?? undefined;
     }
 
     async create(ctx: RequestContext, input: CreateShippingMethodInput): Promise<ShippingMethod> {
@@ -175,7 +177,7 @@ export class ShippingMethodService {
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const shippingMethod = await this.connection.getEntityOrThrow(ctx, ShippingMethod, id, {
             channelId: ctx.channelId,
-            where: { deletedAt: null },
+            where: { deletedAt: IsNull() },
         });
         shippingMethod.deletedAt = new Date();
         await this.connection.getRepository(ctx, ShippingMethod).save(shippingMethod, { reload: false });
@@ -202,7 +204,7 @@ export class ShippingMethodService {
     async getActiveShippingMethods(ctx: RequestContext): Promise<ShippingMethod[]> {
         const shippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
             relations: ['channels'],
-            where: { deletedAt: null },
+            where: { deletedAt: IsNull() },
         });
         return shippingMethods
             .filter(sm => sm.channels.find(c => idsAreEqual(c.id, ctx.channelId)))
@@ -214,7 +216,7 @@ export class ShippingMethodService {
      */
     private async verifyShippingMethods() {
         const activeShippingMethods = await this.connection.rawConnection.getRepository(ShippingMethod).find({
-            where: { deletedAt: null },
+            where: { deletedAt: IsNull() },
         });
         for (const method of activeShippingMethods) {
             const handlerCode = method.fulfillmentHandlerCode;

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -34,7 +34,7 @@ import { CollectionPartial, RearrangeEvent } from '../collection-tree/collection
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionListComponent implements OnInit, OnDestroy {
-    filterTermControl = new FormControl('');
+    filterTermControl = new UntypedFormControl('');
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
     items$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;
@@ -147,8 +147,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
             .pipe(
                 take(1),
                 map(items => -1 < items.findIndex(i => i.parent && i.parent.id === id)),
-                switchMap(hasChildren => {
-                    return this.modalService.dialog({
+                switchMap(hasChildren => this.modalService.dialog({
                         title: _('catalog.confirm-delete-collection'),
                         body: hasChildren
                             ? _('catalog.confirm-delete-collection-and-children-body')
@@ -157,8 +156,7 @@ export class CollectionListComponent implements OnInit, OnDestroy {
                             { type: 'secondary', label: _('common.cancel') },
                             { type: 'danger', label: _('common.delete'), returnValue: true },
                         ],
-                    });
-                }),
+                    })),
                 switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
             )
             .subscribe(

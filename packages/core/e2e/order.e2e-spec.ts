@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
@@ -15,6 +15,7 @@ import {
 } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -492,10 +493,10 @@ describe('Orders resolver', () => {
             });
             paymentGuard.assertSuccess(settlePayment);
 
-            expect(settlePayment!.id).toBe(payment.id);
-            expect(settlePayment!.state).toBe('Settled');
+            expect(settlePayment.id).toBe(payment.id);
+            expect(settlePayment.state).toBe('Settled');
             // further metadata is combined into existing object
-            expect(settlePayment!.metadata).toEqual({
+            expect(settlePayment.metadata).toEqual({
                 moreData: 42,
                 public: {
                     baz: 'quux',
@@ -689,7 +690,7 @@ describe('Orders resolver', () => {
             );
 
             expect(result.order!.fulfillments?.length).toBe(1);
-            expect(result.order!.fulfillments![0]!.id).toBe(addFulfillmentToOrder!.id);
+            expect(result.order!.fulfillments![0]!.id).toBe(addFulfillmentToOrder.id);
             expect(result.order!.fulfillments![0]!.lines).toEqual([
                 {
                     orderLineId: order?.lines[0].id,
@@ -1627,7 +1628,7 @@ describe('Orders resolver', () => {
             });
             paymentGuard.assertSuccess(settlePayment);
 
-            expect(settlePayment!.state).toBe('Settled');
+            expect(settlePayment.state).toBe('Settled');
 
             const { refundOrder } = await adminClient.query<
                 Codegen.RefundOrderMutation,
@@ -1666,7 +1667,7 @@ describe('Orders resolver', () => {
                         paymentId: 'T_999',
                     },
                 });
-            }, `No Payment with the id '999' could be found`),
+            }, "No Payment with the id '999' could be found"),
         );
 
         it('returns error result if payment and order lines do not belong to the same Order', async () => {
@@ -1739,7 +1740,7 @@ describe('Orders resolver', () => {
         });
 
         // TODO: I think we should remove this restriction
-        xit('returns error result if attempting to refund the same item more than once', async () => {
+        it.skip('returns error result if attempting to refund the same item more than once', async () => {
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
                 {
@@ -1851,8 +1852,8 @@ describe('Orders resolver', () => {
                 Codegen.RefundOrderMutationVariables
             >(REFUND_ORDER, {
                 input: {
-                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order!.shipping,
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order.shipping,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -1867,8 +1868,8 @@ describe('Orders resolver', () => {
                 Codegen.RefundOrderMutationVariables
             >(REFUND_ORDER, {
                 input: {
-                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order!.shipping,
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    shipping: order.shipping,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -2149,7 +2150,7 @@ describe('Orders resolver', () => {
             expect(order.state).toBe('PaymentSettled');
             expect(order.payments?.length).toBe(2);
             expect(
-                omit(order.payments?.find(p => p.method === singleStageRefundablePaymentMethod.code)!, [
+                omit(order.payments!.find(p => p.method === singleStageRefundablePaymentMethod.code)!, [
                     'id',
                 ]),
             ).toEqual({
@@ -2435,7 +2436,7 @@ describe('Orders resolver', () => {
                 Codegen.RefundOrderMutationVariables
             >(REFUND_ORDER, {
                 input: {
-                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     shipping: 0,
                     adjustment: 0,
                     reason: 'foo',
@@ -2449,7 +2450,7 @@ describe('Orders resolver', () => {
                 Codegen.RefundOrderMutationVariables
             >(REFUND_ORDER, {
                 input: {
-                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: order.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     shipping: 0,
                     adjustment: 0,
                     reason: 'foo',

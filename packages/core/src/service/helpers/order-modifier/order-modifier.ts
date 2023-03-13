@@ -36,11 +36,11 @@ import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { Order } from '../../../entity/order/order.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
-import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
@@ -433,7 +433,7 @@ export class OrderModifier {
             }
             const orderLine = order.lines.find(line => idsAreEqual(line.id, orderLineId));
             if (!orderLine) {
-                throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
+                throw new UserInputError('error.order-does-not-contain-line-with-id', { id: orderLineId });
             }
             const initialLineQuantity = orderLine.quantity;
             let correctedQuantity = quantity;
@@ -714,9 +714,11 @@ export class OrderModifier {
             // existing entity assigned.
             lineWithCustomFieldRelations = await this.connection
                 .getRepository(ctx, OrderLine)
-                .findOne(orderLine.id, {
+                .findOne({
+                    where: { id: orderLine.id },
                     relations: customFieldRelations.map(r => `customFields.${r.name}`),
-                });
+                })
+                .then(result => result ?? undefined);
         }
 
         for (const def of customFieldDefs) {
@@ -734,7 +736,7 @@ export class OrderModifier {
             } else if (def.type === 'relation') {
                 const inputId = getGraphQlInputName(def);
                 const inputValue = inputCustomFields?.[inputId];
-                // tslint:disable-next-line:no-non-null-assertion
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const existingRelation = (lineWithCustomFieldRelations!.customFields as any)[key];
                 if (inputValue) {
                     const customFieldNotEqual = def.list

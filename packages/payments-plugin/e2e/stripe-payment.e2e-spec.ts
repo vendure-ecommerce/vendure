@@ -1,4 +1,4 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
 import { CreateProductMutation, CreateProductMutationVariables, CreateProductVariantsMutation, CreateProductVariantsMutationVariables } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
@@ -6,6 +6,7 @@ import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testi
 import gql from 'graphql-tag';
 import nock from 'nock';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';

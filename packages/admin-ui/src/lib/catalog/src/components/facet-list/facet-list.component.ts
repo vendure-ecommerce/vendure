@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -14,7 +14,7 @@ import {
     SelectionManager,
     ServerConfigService,
 } from '@vendure/admin-ui/core';
-import { SortOrder } from '@vendure/common/lib/generated-shop-types';
+import { SortOrder } from '@vendure/common/lib/generated-types';
 import { EMPTY, Observable } from 'rxjs';
 import { debounceTime, filter, map, switchMap, takeUntil, tap } from 'rxjs/operators';
 
@@ -27,7 +27,7 @@ export class FacetListComponent
     extends BaseListComponent<GetFacetListQuery, ItemOf<GetFacetListQuery, 'facets'>>
     implements OnInit
 {
-    filterTermControl = new FormControl('');
+    filterTermControl = new UntypedFormControl('');
     availableLanguages$: Observable<LanguageCode[]>;
     contentLanguage$: Observable<LanguageCode>;
     readonly initialLimit = 3;

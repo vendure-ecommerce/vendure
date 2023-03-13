@@ -250,7 +250,7 @@ export class PaymentMethodService {
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getOne();
         if (!paymentMethod) {
-            throw new UserInputError(`error.payment-method-not-found`, { method });
+            throw new UserInputError('error.payment-method-not-found', { method });
         }
         const handler = this.configArgService.getByCode('PaymentMethodHandler', paymentMethod.handler.code);
         const checker =

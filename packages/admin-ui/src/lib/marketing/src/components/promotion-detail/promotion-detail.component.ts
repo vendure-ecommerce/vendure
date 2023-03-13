@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -39,7 +39,7 @@ export class PromotionDetailComponent
     implements OnInit, OnDestroy
 {
     promotion$: Observable<PromotionFragment>;
-    detailForm: FormGroup;
+    detailForm: UntypedFormGroup;
     customFields: CustomFieldConfig[];
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
@@ -53,7 +53,7 @@ export class PromotionDetailComponent
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         protected dataService: DataService,
-        private formBuilder: FormBuilder,
+        private formBuilder: UntypedFormBuilder,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
@@ -133,8 +133,8 @@ export class PromotionDetailComponent
         this.detailForm.markAsDirty();
     }
 
-    formArrayOf(key: 'conditions' | 'actions'): FormArray {
-        return this.detailForm.get(key) as FormArray;
+    formArrayOf(key: 'conditions' | 'actions'): UntypedFormArray {
+        return this.detailForm.get(key) as UntypedFormArray;
     }
 
     create() {
@@ -215,7 +215,7 @@ export class PromotionDetailComponent
      */
     private getUpdatedPromotion(
         promotion: PromotionFragment,
-        formGroup: FormGroup,
+        formGroup: UntypedFormGroup,
         languageCode: LanguageCode,
     ): UpdatePromotionInput | CreatePromotionInput {
         const formValue = formGroup.value;
@@ -268,15 +268,13 @@ export class PromotionDetailComponent
         operations: ConfigurableOperation[],
         formValueOperations: any,
     ): ConfigurableOperationInput[] {
-        return operations.map((o, i) => {
-            return {
-                code: o.code,
-                arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
-                    name: o.args[j].name,
-                    value: encodeConfigArgValue(value),
-                })),
-            };
-        });
+        return operations.map((o, i) => ({
+            code: o.code,
+            arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
+                name: o.args[j].name,
+                value: encodeConfigArgValue(value),
+            })),
+        }));
     }
 
     /**

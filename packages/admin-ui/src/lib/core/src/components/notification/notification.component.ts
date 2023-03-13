@@ -16,7 +16,7 @@ export class NotificationComponent {
     isVisible = true;
     private onClickFn: () => void = () => {
         /* */
-    }
+    };
 
     registerOnClickFn(fn: () => void): void {
         this.onClickFn = fn;

@@ -45,7 +45,7 @@ const E2E_ASSET_SERVER_PLUGIN_QUERY_FILES = path.join(
 const ADMIN_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../../schema-admin.json');
 const SHOP_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../../schema-shop.json');
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 
 Promise.all([
     downloadIntrospectionSchema(ADMIN_API_PATH, ADMIN_SCHEMA_OUTPUT_FILE),
@@ -66,14 +66,17 @@ Promise.all([
                 enumValues: 'keep',
             },
             strict: true,
+            scalars: {
+                Money: 'number',
+            },
         };
         const e2eConfig = {
             ...config,
             skipTypename: true,
         };
-        const disableTsLintPlugin = { add: { content: '// tslint:disable' } };
+        const disableEsLintPlugin = { add: { content: '/* eslint-disable */' } };
         const graphQlErrorsPlugin = path.join(__dirname, './plugins/graphql-errors-plugin.js');
-        const commonPlugins = [disableTsLintPlugin, 'typescript'];
+        const commonPlugins = [disableEsLintPlugin, 'typescript'];
         const clientPlugins = [...commonPlugins, 'typescript-operations'];
 
         return generate({
@@ -84,14 +87,14 @@ Promise.all([
                     '../../packages/core/src/common/error/generated-graphql-admin-errors.ts',
                 )]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
-                    plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
+                    plugins: [disableEsLintPlugin, graphQlErrorsPlugin],
                 },
                 [path.join(
                     __dirname,
                     '../../packages/core/src/common/error/generated-graphql-shop-errors.ts',
                 )]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
-                    plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
+                    plugins: [disableEsLintPlugin, graphQlErrorsPlugin],
                 },
                 [path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-admin-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
@@ -139,7 +142,7 @@ Promise.all([
                 )]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
-                    plugins: [disableTsLintPlugin, 'fragment-matcher'],
+                    plugins: [disableEsLintPlugin, 'fragment-matcher'],
                     config: { ...config, apolloClientVersion: 3 },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
@@ -148,6 +151,7 @@ Promise.all([
                     config: {
                         ...config,
                         scalars: {
+                            ...(config.scalars ?? {}),
                             ID: 'string | number',
                         },
                         maybeValue: 'T',
@@ -159,6 +163,7 @@ Promise.all([
                     config: {
                         ...config,
                         scalars: {
+                            ...(config.scalars ?? {}),
                             ID: 'string | number',
                         },
                         maybeValue: 'T',

@@ -74,7 +74,7 @@ export function buildKeymap(schema: Schema, mapKeys?: Keymap) {
     bind('Mod-BracketLeft', lift);
     bind('Escape', selectParentNode);
 
-    // tslint:disable:no-conditional-assignment
+    /* eslint-disable no-cond-assign */
     if ((type = schema.marks.strong)) {
         bind('Mod-b', toggleMark(type));
         bind('Mod-B', toggleMark(type));
@@ -99,7 +99,7 @@ export function buildKeymap(schema: Schema, mapKeys?: Keymap) {
     if ((type = schema.nodes.hard_break)) {
         const br = type;
         const cmd = chainCommands(exitCode, (state, dispatch) => {
-            // tslint:disable-next-line:no-non-null-assertion
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             dispatch!(state.tr.replaceSelectionWith(br.create()).scrollIntoView());
             return true;
         });

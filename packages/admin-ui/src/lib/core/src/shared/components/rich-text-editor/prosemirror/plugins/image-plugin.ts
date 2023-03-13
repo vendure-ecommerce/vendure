@@ -49,7 +49,7 @@ export function insertImageItem(nodeType: NodeType, modalService: ModalService) 
                 })
                 .subscribe(result => {
                     if (result) {
-                        // tslint:disable-next-line:no-non-null-assertion
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         view.dispatch(view.state.tr.replaceSelectionWith(nodeType.createAndFill(result)!));
                     }
                     view.focus();
@@ -60,67 +60,65 @@ export function insertImageItem(nodeType: NodeType, modalService: ModalService) 
 
 export const imageContextMenuPlugin = (contextMenuService: ContextMenuService, modalService: ModalService) =>
     new Plugin({
-        view: () => {
-            return {
-                update: view => {
-                    if (!view.hasFocus()) {
-                        return;
+        view: () => ({
+            update: view => {
+                if (!view.hasFocus()) {
+                    return;
+                }
+                const { doc, selection } = view.state;
+                let imageNode: Node | undefined;
+                let imageNodePos = 0;
+                doc.nodesBetween(selection.from, selection.to, (n, pos, parent) => {
+                    if (n.type.name === 'image') {
+                        imageNode = n;
+                        imageNodePos = pos;
+                        return false;
                     }
-                    const { doc, selection } = view.state;
-                    let imageNode: Node | undefined;
-                    let imageNodePos = 0;
-                    doc.nodesBetween(selection.from, selection.to, (n, pos, parent) => {
-                        if (n.type.name === 'image') {
-                            imageNode = n;
-                            imageNodePos = pos;
-                            return false;
-                        }
-                    });
-                    if (imageNode) {
-                        const node = view.nodeDOM(imageNodePos);
-                        if (node instanceof HTMLImageElement) {
-                            contextMenuService.setContextMenu({
-                                ref: selection,
-                                title: 'Image',
-                                iconShape: 'image',
-                                element: node,
-                                coords: view.coordsAtPos(imageNodePos),
-                                items: [
-                                    {
-                                        enabled: true,
-                                        iconShape: 'image',
-                                        label: 'Image properties',
-                                        onClick: () => {
-                                            contextMenuService.clearContextMenu();
-                                            modalService
-                                                .fromComponent(ExternalImageDialogComponent, {
-                                                    closable: true,
-                                                    locals: {
-                                                        // tslint:disable-next-line:no-non-null-assertion
-                                                        existing: imageNode!.attrs as ExternalImageAttrs,
-                                                    },
-                                                })
-                                                .subscribe(result => {
-                                                    if (result) {
-                                                        // tslint:disable-next-line:no-non-null-assertion
-                                                        view.dispatch(
-                                                            view.state.tr.replaceSelectionWith(
-                                                                // tslint:disable-next-line:no-non-null-assertion
-                                                                imageNode!.type.createAndFill(result)!,
-                                                            ),
-                                                        );
-                                                    }
-                                                    view.focus();
-                                                });
-                                        },
+                });
+                if (imageNode) {
+                    const node = view.nodeDOM(imageNodePos);
+                    if (node instanceof HTMLImageElement) {
+                        contextMenuService.setContextMenu({
+                            ref: selection,
+                            title: 'Image',
+                            iconShape: 'image',
+                            element: node,
+                            coords: view.coordsAtPos(imageNodePos),
+                            items: [
+                                {
+                                    enabled: true,
+                                    iconShape: 'image',
+                                    label: 'Image properties',
+                                    onClick: () => {
+                                        contextMenuService.clearContextMenu();
+                                        modalService
+                                            .fromComponent(ExternalImageDialogComponent, {
+                                                closable: true,
+                                                locals: {
+                                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                                    existing: imageNode!.attrs as ExternalImageAttrs,
+                                                },
+                                            })
+                                            .subscribe(result => {
+                                                if (result) {
+                                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                                    view.dispatch(
+                                                        view.state.tr.replaceSelectionWith(
+                                                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                                            imageNode!.type.createAndFill(result)!,
+                                                        ),
+                                                    );
+                                                }
+                                                view.focus();
+                                            });
                                     },
-                                ],
-                            });
-                        }
-                    } else {
-                        contextMenuService.clearContextMenu();
+                                },
+                            ],
+                        });
                     }
-                },
-            };
-        },
+                } else {
+                    contextMenuService.clearContextMenu();
+                }
+            },
+        }),
     });

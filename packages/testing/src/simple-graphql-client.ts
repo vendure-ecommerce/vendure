@@ -3,8 +3,8 @@ import { VendureConfig } from '@vendure/core';
 import FormData from 'form-data';
 import fs from 'fs';
 import { DocumentNode } from 'graphql';
-import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
+import gql from 'graphql-tag';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { stringify } from 'querystring';
 
@@ -12,7 +12,7 @@ import { QueryParams } from './types';
 import { createUploadPostData } from './utils/create-upload-post-data';
 
 const LOGIN = gql`
-    mutation($username: String!, $password: String!) {
+    mutation ($username: String!, $password: String!) {
         login(username: $username, password: $password) {
             ... on CurrentUser {
                 id
@@ -29,7 +29,7 @@ const LOGIN = gql`
     }
 `;
 
-// tslint:disable:no-console
+/* eslint-disable no-console */
 /**
  * @description
  * A minimalistic GraphQL client for populating and querying test data.
@@ -75,7 +75,7 @@ export class SimpleGraphQLClient {
      * @description
      * Performs both query and mutation operations.
      */
-    async query<T = any, V = Record<string, any>>(
+    async query<T = any, V extends Record<string, any> = Record<string, any>>(
         query: DocumentNode,
         variables?: V,
         queryParams?: QueryParams,
@@ -118,7 +118,10 @@ export class SimpleGraphQLClient {
      * @description
      * Performs a query or mutation and returns the resulting status code.
      */
-    async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
+    async queryStatus<T = any, V extends Record<string, any> = Record<string, any>>(
+        query: DocumentNode,
+        variables?: V,
+    ): Promise<number> {
         const response = await this.makeGraphQlRequest(query, variables);
         return response.status;
     }
@@ -258,7 +261,7 @@ export class ClientError extends Error {
         if (response.errors) {
             return response.errors[0].message;
         } else {
-            return `GraphQL Error (Code: ${response.status})`;
+            return `GraphQL Error (Code: ${response.status as number})`;
         }
     }
 }

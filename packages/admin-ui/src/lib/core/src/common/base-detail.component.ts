@@ -1,4 +1,4 @@
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
@@ -57,7 +57,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     languageCode$: Observable<LanguageCode>;
     isNew$: Observable<boolean>;
     id: string;
-    abstract detailForm: FormGroup;
+    abstract detailForm: UntypedFormGroup;
     protected destroy$ = new Subject<void>();
 
     protected constructor(

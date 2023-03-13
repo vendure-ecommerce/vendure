@@ -36,7 +36,10 @@ export class TagService {
     }
 
     findOne(ctx: RequestContext, tagId: ID): Promise<Tag | undefined> {
-        return this.connection.getRepository(ctx, Tag).findOne(tagId);
+        return this.connection
+            .getRepository(ctx, Tag)
+            .findOne({ where: { id: tagId } })
+            .then(result => result ?? undefined);
     }
 
     create(ctx: RequestContext, input: CreateTagInput) {

@@ -3,6 +3,8 @@ import { ConfigService } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -16,7 +18,7 @@ import { TestPluginWithProvider } from './fixtures/test-plugins/with-provider';
 import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
 
 describe('Plugins', () => {
-    const onConstructorFn = jest.fn();
+    const onConstructorFn = vi.fn();
     const activeConfig = testConfig();
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...activeConfig,

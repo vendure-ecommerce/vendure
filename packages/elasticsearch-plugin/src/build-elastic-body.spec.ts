@@ -1,5 +1,6 @@
 import { LanguageCode, LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
 import { DeepRequired } from '@vendure/core';
+import { describe, expect, it } from 'vitest';
 
 import { buildElasticBody } from './build-elastic-body';
 import { defaultOptions, SearchConfig } from './options';
@@ -472,7 +473,7 @@ describe('buildElasticBody()', () => {
                         graphQlType: 'String',
                         context: 'both',
                         scriptFn: input => ({
-                            script: `doc['property'].dummyScript(${input.term})`,
+                            script: `doc['property'].dummyScript(${input.term as string})`,
                         }),
                     },
                 },
@@ -481,7 +482,7 @@ describe('buildElasticBody()', () => {
         const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
         expect(result.script_fields).toEqual({
             test: {
-                script: `doc['property'].dummyScript(test)`,
+                script: 'doc[\'property\'].dummyScript(test)',
             },
         });
     });

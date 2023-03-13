@@ -15,6 +15,7 @@ import {
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/index';
@@ -81,7 +82,7 @@ export class PromotionService {
     ): Promise<PaginatedList<Promotion>> {
         return this.listQueryBuilder
             .build(Promotion, options, {
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 channelId: ctx.channelId,
                 relations,
                 ctx,
@@ -103,10 +104,10 @@ export class PromotionService {
     ): Promise<Promotion | undefined> {
         return this.connection
             .findOneInChannel(ctx, Promotion, adjustmentSourceId, ctx.channelId, {
-                where: { deletedAt: null },
+                where: { deletedAt: IsNull() },
                 relations,
             })
-            .then(promotion => promotion && this.translator.translate(promotion, ctx));
+            .then(promotion => (promotion && this.translator.translate(promotion, ctx)) ?? undefined);
     }
 
     getPromotionConditions(ctx: RequestContext): ConfigurableOperationDefinition[] {
@@ -209,7 +210,7 @@ export class PromotionService {
     ): Promise<Promotion[]> {
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
-            throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
+            throw new IllegalOperationError('promotion-channels-can-only-be-changed-from-default-channel');
         }
         const promotions = await this.connection.findByIdsInChannel(
             ctx,
@@ -227,7 +228,7 @@ export class PromotionService {
     async removePromotionsFromChannel(ctx: RequestContext, input: RemovePromotionsFromChannelInput) {
         const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
-            throw new IllegalOperationError(`promotion-channels-can-only-be-changed-from-default-channel`);
+            throw new IllegalOperationError('promotion-channels-can-only-be-changed-from-default-channel');
         }
         const promotions = await this.connection.findByIdsInChannel(
             ctx,
@@ -257,7 +258,7 @@ export class PromotionService {
             where: {
                 couponCode,
                 enabled: true,
-                deletedAt: null,
+                deletedAt: IsNull(),
             },
             relations: ['channels'],
         });
@@ -331,7 +332,9 @@ export class PromotionService {
             a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id,
         );
         const promotionIds = unique(allPromotionIds);
-        const promotions = await this.connection.getRepository(ctx, Promotion).findByIds(promotionIds);
+        const promotions = await this.connection
+            .getRepository(ctx, Promotion)
+            .find({ where: { id: In(promotionIds) } });
         order.promotions = promotions;
         return this.connection.getRepository(ctx, Order).save(order);
     }

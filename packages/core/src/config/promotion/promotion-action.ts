@@ -9,8 +9,8 @@ import {
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { Promotion, PromotionState } from '../../entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 
 import { PromotionCondition } from './promotion-condition';
@@ -245,7 +245,7 @@ export interface PromotionShippingActionConfig<T extends ConfigArgs, U extends P
  * @docsWeight 0
  */
 export abstract class PromotionAction<
-    T extends ConfigArgs = {},
+    T extends ConfigArgs = ConfigArgs,
     U extends PromotionCondition[] | undefined = any,
 > extends ConfigurableOperationDef<T> {
     /**

@@ -4,7 +4,7 @@ import { DropdownComponent } from './dropdown.component';
 
 @Directive({
     selector: '[vdrDropdownItem]',
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     host: { '[class.dropdown-item]': 'true' },
 })
 export class DropdownItemDirective {

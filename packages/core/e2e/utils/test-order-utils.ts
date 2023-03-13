@@ -1,7 +1,8 @@
-/* tslint:disable:no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ID } from '@vendure/common/lib/shared-types';
 import { PaymentMethodHandler } from '@vendure/core';
 import { SimpleGraphQLClient } from '@vendure/testing';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import * as CodegenShop from '../graphql/generated-e2e-shop-types';
 import { TestOrderFragmentFragment } from '../graphql/generated-e2e-shop-types';
@@ -61,7 +62,7 @@ export async function addPaymentToOrder(
             },
         },
     });
-    const order = result.addPaymentToOrder!;
+    const order = result.addPaymentToOrder;
     return order as any;
 }
 
