@@ -39,6 +39,7 @@ import { StripePluginOptions } from './types';
  *
  *     plugins: [
  *       StripePlugin.init({
+ *         // This prevents different customers from using the same PaymentIntent
  *         storeCustomersInStripe: true,
  *       }),
  *     ]
