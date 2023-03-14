@@ -29,10 +29,12 @@
     "devDependencies": {
         "@mollie/api-client": "^3.6.0",
         "@types/braintree": "^2.22.15",
+        "@types/localtunnel": "2.0.1",
         "@vendure/common": "^1.9.3",
         "@vendure/core": "^1.9.3",
         "@vendure/testing": "^1.9.3",
         "braintree": "^3.0.0",
+        "localtunnel": "2.0.1",
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
         "stripe": "^8.197.0",

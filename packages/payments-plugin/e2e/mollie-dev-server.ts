@@ -2,10 +2,12 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import {
     ChannelService,
     DefaultLogger,
+    DefaultSearchPlugin,
     Logger,
     LogLevel,
     mergeConfig,
     OrderService,
+    PaymentService,
     RequestContext,
 } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
@@ -35,6 +37,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
     const config = mergeConfig(testConfig, {
         plugins: [
             ...testConfig.plugins,
+            DefaultSearchPlugin,
             AdminUiPlugin.init({
                 route: 'admin',
                 port: 5001,
@@ -42,6 +45,10 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
             MolliePlugin.init({ vendureHost: tunnel.url }),
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
+        apiOptions: {
+            adminApiPlayground: true,
+            shopApiPlayground: true,
+        }
     });
     const { server, shopClient, adminClient } = createTestEnvironment(config as any);
     await server.init({
@@ -94,6 +101,15 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
         listPrice: -20000,
     });
     await setShipping(shopClient);
+    // Add pre payment to order
+    const order = await server.app.get(OrderService).findOne(ctx, 1);
+    await server.app.get(PaymentService).createManualPayment(ctx, order!, 10000 ,{
+        method: 'Manual',
+        orderId: order!.id,
+        metadata: {
+            bogus: 'test'
+        }
+    });
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
             paymentMethodCode: 'mollie',
