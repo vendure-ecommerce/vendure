@@ -26,7 +26,7 @@ export function toMollieAddress(address: OrderAddress, customer: Customer): Moll
 /**
  * Map all order and shipping lines to a single array of Mollie order lines
  */
-export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
+export function toMollieOrderLines(order: Order, alreadyPaid: number): CreateParameters['lines'] {
     // Add order lines
     const lines: CreateParameters['lines'] = order.lines.map(line => ({
         name: line.productVariant.name,
@@ -57,6 +57,15 @@ export function toMollieOrderLines(order: Order): CreateParameters['lines'] {
         vatRate: String(surcharge.taxRate),
         vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
     })));
+    // Deduct amount already paid
+    lines.push({
+        name: 'Already paid',
+        quantity: 1,
+        unitPrice: toAmount(-alreadyPaid, order.currencyCode),
+        totalAmount: toAmount(-alreadyPaid, order.currencyCode),
+        vatRate: String(0),
+        vatAmount: toAmount(0, order.currencyCode),
+    });
     return lines;
 }
 
@@ -77,7 +86,7 @@ export function toAmount(value: number, orderCurrency: string): Amount {
  */
 export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: number): number {
     const taxMultiplier = taxRate / 100;
-    return orderLinePriceWithTax * (taxMultiplier / (1+taxMultiplier)); // I.E. €99,99 * (0,2 ÷ 1,2) with a 20% taxrate
+    return orderLinePriceWithTax * (taxMultiplier / (1 + taxMultiplier)); // I.E. €99,99 * (0,2 ÷ 1,2) with a 20% taxrate
 
 }
 
