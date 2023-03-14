@@ -329,18 +329,18 @@ describe('Mollie payments', () => {
     });
 
     it('Should fail to refund', async () => {
-        // let mollieRequest;
-        // nock('https://api.mollie.com/')
-        //     .get('/v2/orders/ord_mockId?embed=payments')
-        //     .reply(200, mockData.mollieOrderResponse);
-        // nock('https://api.mollie.com/')
-        //     .post(/.*/, body => {
-        //         mollieRequest = body;
-        //         return true;
-        //     })
-        //     .reply(200, { status: 'failed', resource: 'payment' });
-        // const refund = await refundOrderLine(adminClient, order.lines[0].id, 1, order!.payments[1].id);
-        // expect(refund.state).toBe('Failed');
+        let mollieRequest;
+        nock('https://api.mollie.com/')
+            .get('/v2/orders/ord_mockId?embed=payments')
+            .reply(200, mockData.mollieOrderResponse);
+        nock('https://api.mollie.com/')
+            .post(/.*/, body => {
+                mollieRequest = body;
+                return true;
+            })
+            .reply(200, { status: 'failed', resource: 'payment' });
+        const refund = await refundOrderLine(adminClient, order.lines[0].id, 1, order!.payments[1].id);
+        expect(refund.state).toBe('Failed');
     });
 
     it('Should successfully refund the Mollie payment', async () => {
