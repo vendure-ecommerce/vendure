@@ -2,7 +2,13 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } from '@angular/router';
 import { DataService } from '@vendure/admin-ui/core';
 import { flatten } from 'lodash';
-import { combineLatest as observableCombineLatest, Observable, of as observableOf, Subject } from 'rxjs';
+import {
+    combineLatest as observableCombineLatest,
+    Observable,
+    of as observableOf,
+    share,
+    Subject,
+} from 'rxjs';
 import { filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
 
 export type BreadcrumbString = string;
@@ -33,6 +39,7 @@ export class BreadcrumbService implements OnDestroy {
             takeUntil(this.destroy$),
             startWith(true),
             switchMap(() => this.generateBreadcrumbs(this.route.root)),
+            share(),
         );
     }
 
