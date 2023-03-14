@@ -1070,6 +1070,7 @@ export class OrderService {
         if (payment.state === 'Declined') {
             return new PaymentDeclinedError(payment.errorMessage || '');
         }
+        
         return this.transitionOrderIfTotalIsCovered(ctx, order);
     }
 
