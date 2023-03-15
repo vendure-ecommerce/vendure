@@ -18,7 +18,7 @@ The `@vendure/testing` package gives you some simple but powerful tooling for cr
 ### Install dependencies
 
 * [`@vendure/testing`](https://www.npmjs.com/package/@vendure/testing)
-* [`jest`](https://www.npmjs.com/package/jest) You'll need to install a testing framework. In this example we will use [Jest](https://jestjs.io/), but any other framework such as Jasmine should work too.
+* [`jest`](https://www.npmjs.com/package/jest) You'll need to install a testing framework. In this example, we will use [Jest](https://jestjs.io/), but any other framework such as Jasmine should work too.
 * [`graphql-tag`](https://www.npmjs.com/package/graphql-tag) This is not strictly required but makes it much easier to create the DocumentNodes needed to query your server.
 
 Please see the [Jest documentation](https://jestjs.io/docs/en/getting-started) on how to get set up. The remainder of this article will assume a working Jest setup configured to work with TypeScript.

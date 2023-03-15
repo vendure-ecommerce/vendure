@@ -165,8 +165,8 @@ export const initialData: InitialData = {
 * `roles`: Defines which user roles are available.
   * `code`: Role code name.
   * `description`: Role description.
-  * `permissions`: List of permissions to applied to the role.
-* `defaultLanguage`: Sets the language which will be used for all translatable entities created by the initial data e.g. Products, ProductVariants, Collections etc. Should correspond to the language used in your product csv file.
+  * `permissions`: List of permissions to apply to the role.
+* `defaultLanguage`: Sets the language that will be used for all translatable entities created by the initial data e.g. Products, ProductVariants, Collections etc. Should correspond to the language used in your product csv file.
 * `countries`: Defines which countries are available.
   * `name`: The name of the country in the language specified by `defaultLanguage`
   * `code`: A standardized code for the country, e.g. [ISO 3166-1](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
@@ -219,7 +219,7 @@ populate(
 );
 ```
 **Attention:** When removing the `DefaultJobQueuePlugin` from the plugins list as in the code snippet above, one should manually rebuild the search index in order for the newly added products to appear.
-In the Admin UI this can be done by navigating to the Products page and clicking the gear icon next to the search input.
+In the Admin UI, this can be done by navigating to the Products page and clicking the gear icon next to the search input.
 
 ### Custom populate scripts
 

@@ -17,7 +17,7 @@ Note that lifecycle hooks are run in _both_ the server and worker contexts.
 
 ## Configure
 
-Another hook which is not strictly a lifecycle hook, but which can be useful to know is the [`configure` method](https://docs.nestjs.com/middleware#applying-middleware) which is used by NestJS to apply middleware. This method is called _only_ for the server and _not_ for the worker, since middleware relates to the network stack, and the worker has no network part.
+Another hook that is not strictly a lifecycle hook, but which can be useful to know is the [`configure` method](https://docs.nestjs.com/middleware#applying-middleware) which is used by NestJS to apply middleware. This method is called _only_ for the server and _not_ for the worker, since middleware relates to the network stack, and the worker has no network part.
 
 ## Example
 

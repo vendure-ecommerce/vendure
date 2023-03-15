@@ -5,7 +5,7 @@ showtoc: true
 
 # Vendure Worker
  
-The Vendure Worker is a process which is responsible for running computationally intensive or otherwise long-running tasks in the background. For example updating a search index or sending emails. Running such tasks in the background allows the server to stay responsive, since a response can be returned immediately without waiting for the slower tasks to complete. 
+The Vendure Worker is a process responsible for running computationally intensive or otherwise long-running tasks in the background. For example, updating a search index or sending emails. Running such tasks in the background allows the server to stay responsive, since a response can be returned immediately without waiting for the slower tasks to complete. 
 
 Put another way, the Worker executes jobs registered with the [JobQueueService]({{< relref "job-queue-service" >}}).
 
@@ -31,8 +31,8 @@ The Worker is a [NestJS standalone application](https://docs.nestjs.com/standalo
 
 ## Multiple workers
 
-It is possible to run multiple workers in parallel, in order to better handle heavy loads. Using the [JobQueueOptions.activeQueues]({{< relref "job-queue-options" >}}#activequeues) configuration, it is even possible to have particular workers dedicated to one or more specific type of job.
-For example, if you application does video transcoding, you might want to set up a dedicated worker just for that task:
+It is possible to run multiple workers in parallel to better handle heavy loads. Using the [JobQueueOptions.activeQueues]({{< relref "job-queue-options" >}}#activequeues) configuration, it is even possible to have particular workers dedicated to one or more specific types of jobs.
+For example, if your application does video transcoding, you might want to set up a dedicated worker just for that task:
 
 ```TypeScript
 import { bootstrapWorker, mergeConfig } from '@vendure/core';
@@ -74,7 +74,7 @@ If you are authoring a [Vendure plugin]({{< relref "/docs/plugins" >}}) to imple
 
 ## ProcessContext
 
-Sometimes your code may need to be aware of whether it is being run on the as part of a server or worker process. In this case you can inject the [ProcessContext]({{< relref "process-context" >}}) provider and query it like this:
+Sometimes your code may need to be aware of whether it is being run as part of a server or worker process. In this case you can inject the [ProcessContext]({{< relref "process-context" >}}) provider and query it like this:
 
 ```TypeScript
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';

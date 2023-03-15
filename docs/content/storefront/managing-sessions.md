@@ -32,9 +32,9 @@ const config = {
 
 ## Bearer-token sessions
 
-In environments when cookies cannot be easily used (e.g. in some server environments or mobile apps), then the bearer-token method can be used.
+In environments where cookies cannot be easily used (e.g. in some server environments or mobile apps), then the bearer-token method can be used.
 
-Using bearer tokens involes a bit more work on your part: you'll need to manually read response headers to get the token, and once you have it you'll have to manually add it to the headers of each request. 
+Using bearer tokens involves a bit more work on your part: you'll need to manually read response headers to get the token, and once you have it you'll have to manually add it to the headers of each request. 
 
 The workflow would be as follows:
 

@@ -362,7 +362,7 @@ Customer: [
 
 ### Relations
 
-It is possible to set up custom fields which hold references to other entities using the `'relation'` type:
+It is possible to set up custom fields that hold references to other entities using the `'relation'` type:
 
 ```TypeScript
 Customer: [
@@ -405,7 +405,7 @@ mutation {
 {{% alert %}}
 **UI for relation type**
 
-The Admin UI app has built-in selection components for "relation" custom fields which reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will see a generic relation component which allows you to manually enter the ID of the entity you wish to select.
+The Admin UI app has built-in selection components for "relation" custom fields that reference certain common entity types, such as Asset, Product, ProductVariant and Customer. If you are relating to an entity not covered by the built-in selection components, you will see a generic relation component which allows you to manually enter the ID of the entity you wish to select.
 
-If the generic selector is not suitable, or is you wish to replace one of the built-in selector components, you can create a UI extension which defines a custom field control for that custom field. You can read more about this in the [custom form input guide]({{< relref "custom-form-inputs" >}})
+If the generic selector is not suitable, or is you wish to replace one of the built-in selector components, you can create a UI extension that defines a custom field control for that custom field. You can read more about this in the [custom form input guide]({{< relref "custom-form-inputs" >}})
 {{< /alert >}}

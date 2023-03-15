@@ -15,7 +15,7 @@ This is a complete example of how to implement a simple plugin step-by-step.
 
 ## Example: RandomCatPlugin
 
-Let's learn about Vendure plugins by writing a plugin which defines a new database entity and a GraphQL mutation.
+Let's learn about Vendure plugins by writing a plugin that defines a new database entity and a GraphQL mutation.
 
 This plugin will add a new mutation, `addRandomCat`, to the GraphQL API which allows us to conveniently link a random cat image from [http://random.cat](http://random.cat) to any product in our catalog.
 
@@ -74,7 +74,7 @@ To use decorators with TypeScript, you must set the "emitDecoratorMetadata" and 
 
 ### Step 3: Define the new mutation
 
-Next we will define how the GraphQL API should be extended:
+Next, we will define how the GraphQL API should be extended:
 
 ```TypeScript
 import gql from 'graphql-tag';
