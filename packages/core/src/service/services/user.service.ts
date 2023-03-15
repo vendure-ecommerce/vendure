@@ -17,6 +17,7 @@ import {
     VerificationTokenExpiredError,
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { normalizeEmailAddress } from '../../common/index';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
@@ -72,7 +73,9 @@ export class UserService {
             .leftJoinAndSelect('user.roles', 'roles')
             .leftJoinAndSelect('roles.channels', 'channels')
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethods')
-            .where('user.identifier = :identifier', { identifier: emailAddress })
+            .where('LOWER(user.identifier) = :identifier', {
+                identifier: normalizeEmailAddress(emailAddress),
+            })
             .andWhere('user.deletedAt IS NULL')
             .getOne()
             .then(result => result ?? undefined);
@@ -88,7 +91,7 @@ export class UserService {
         password?: string,
     ): Promise<User | PasswordValidationError> {
         const user = new User();
-        user.identifier = identifier;
+        user.identifier = normalizeEmailAddress(identifier);
         const customerRole = await this.roleService.getCustomerRole(ctx);
         user.roles = [customerRole];
         const addNativeAuthResult = await this.addNativeAuthenticationMethod(ctx, user, identifier, password);
@@ -138,7 +141,7 @@ export class UserService {
         } else {
             authenticationMethod.passwordHash = '';
         }
-        authenticationMethod.identifier = identifier;
+        authenticationMethod.identifier = normalizeEmailAddress(identifier);
         authenticationMethod.user = user;
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(authenticationMethod);
         user.authenticationMethods = [...(user.authenticationMethods ?? []), authenticationMethod];
@@ -151,14 +154,14 @@ export class UserService {
      */
     async createAdminUser(ctx: RequestContext, identifier: string, password: string): Promise<User> {
         const user = new User({
-            identifier,
+            identifier: normalizeEmailAddress(identifier),
             verified: true,
         });
         const authenticationMethod = await this.connection
             .getRepository(ctx, NativeAuthenticationMethod)
             .save(
                 new NativeAuthenticationMethod({
-                    identifier,
+                    identifier: normalizeEmailAddress(identifier),
                     passwordHash: await this.passwordCipher.hash(password),
                 }),
             );

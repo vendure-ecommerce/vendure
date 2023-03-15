@@ -8286,7 +8286,7 @@ export type GetCustomerListQuery = {
             lastName: string;
             emailAddress: string;
             phoneNumber?: string | null;
-            user?: { id: string; verified: boolean } | null;
+            user?: { id: string; identifier: string; verified: boolean } | null;
         }>;
     };
 };

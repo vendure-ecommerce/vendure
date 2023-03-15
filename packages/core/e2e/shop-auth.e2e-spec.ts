@@ -1050,7 +1050,7 @@ describe('Expiring tokens', () => {
 });
 
 describe('Registration without email verification', () => {
-    const { server, shopClient } = createTestEnvironment(
+    const { server, shopClient, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             plugins: [TestEmailPlugin as any],
             authOptions: {
@@ -1066,6 +1066,7 @@ describe('Registration without email verification', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
+        await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
@@ -1126,6 +1127,81 @@ describe('Registration without email verification', () => {
             `,
         );
         expect(result.me.identifier).toBe(userEmailAddress);
+    });
+
+    it('can login case insensitive', async () => {
+        await shopClient.asUserWithCredentials(userEmailAddress.toUpperCase(), 'test');
+
+        const result = await shopClient.query(
+            gql`
+                query GetMe {
+                    me {
+                        identifier
+                    }
+                }
+            `,
+        );
+        expect(result.me.identifier).toBe(userEmailAddress);
+    });
+
+    it('normalizes customer & user email addresses', async () => {
+        const input: RegisterCustomerInput = {
+            firstName: 'Bobbington',
+            lastName: 'Jarrolds',
+            emailAddress: 'BOBBINGTON.J@Test.com',
+            password: 'test',
+        };
+        const { registerCustomerAccount } = await shopClient.query<
+            CodegenShop.RegisterMutation,
+            CodegenShop.RegisterMutationVariables
+        >(REGISTER_ACCOUNT, {
+            input,
+        });
+        successErrorGuard.assertSuccess(registerCustomerAccount);
+
+        const { customers } = await adminClient.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST, {
+            options: {
+                filter: {
+                    firstName: { eq: 'Bobbington' },
+                },
+            },
+        });
+
+        expect(customers.items[0].emailAddress).toBe('bobbington.j@test.com');
+        expect(customers.items[0].user?.identifier).toBe('bobbington.j@test.com');
+    });
+
+    it('registering with same email address with different casing does not create new user', async () => {
+        const input: RegisterCustomerInput = {
+            firstName: 'Glen',
+            lastName: 'Beardsley',
+            emailAddress: userEmailAddress.toUpperCase(),
+            password: 'test',
+        };
+        const { registerCustomerAccount } = await shopClient.query<
+            CodegenShop.RegisterMutation,
+            CodegenShop.RegisterMutationVariables
+        >(REGISTER_ACCOUNT, {
+            input,
+        });
+        successErrorGuard.assertSuccess(registerCustomerAccount);
+
+        const { customers } = await adminClient.query<
+            Codegen.GetCustomerListQuery,
+            Codegen.GetCustomerListQueryVariables
+        >(GET_CUSTOMER_LIST, {
+            options: {
+                filter: {
+                    firstName: { eq: 'Glen' },
+                },
+            },
+        });
+
+        expect(customers.items[0].emailAddress).toBe(userEmailAddress);
+        expect(customers.items[0].user?.identifier).toBe(userEmailAddress);
     });
 });
 
