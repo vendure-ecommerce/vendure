@@ -75,7 +75,6 @@ export interface S3Config {
  *   AssetServerPlugin.init({
  *     route: 'assets',
  *     assetUploadDir: path.join(__dirname, 'assets'),
- *     port: 5002,
  *     namingStrategy: new DefaultAssetNamingStrategy(),
  *     storageStrategyFactory: configureS3AssetStorage({
  *       bucket: 'my-s3-bucket',
@@ -102,7 +101,6 @@ export interface S3Config {
  *   AssetServerPlugin.init({
  *     route: 'assets',
  *     assetUploadDir: path.join(__dirname, 'assets'),
- *     port: 5002,
  *     namingStrategy: new DefaultAssetNamingStrategy(),
  *     storageStrategyFactory: configureS3AssetStorage({
  *       bucket: 'my-minio-bucket',
