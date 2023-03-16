@@ -10,7 +10,7 @@ A Customer is anybody who has:
 * Placed an order
 * Registered an account
 
-The Customers section allows you to view and search your customers. Clicking "edit" in the list view brings up the detail view, allowing you to edit the customer details and view orders and history.
+The Customers section allows you to view and search for your customers. Clicking "edit" in the list view brings up the detail view, allowing you to edit the customer details and view orders and history.
 
 ## Guest, Registered, Verified
 

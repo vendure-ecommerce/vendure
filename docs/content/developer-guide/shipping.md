@@ -6,7 +6,7 @@ showtoc: true
 
 Shipping in Vendure is handled by [ShippingMethods]({{< relref "shipping-method" >}}). Multiple ShippingMethods can be set up and then your storefront can query [`eligibleShippingMethods`]({{< relref "/docs/graphql-api/shop/queries" >}}#eligibleshippingmethods) to find out which ones can be applied to the active order.
 
-A ShippingMethod is composed of a **checker** and a **calculator**. When querying `eligibleShippingMethods`, each of the defined ShippingMethods' checker functions are executed to find out whether the order is eligible for that method, and if so, the calculator is executed to determine the shipping cost.
+A ShippingMethod is composed of a **checker** and a **calculator**. When querying `eligibleShippingMethods`, each of the defined ShippingMethods' checker functions is executed to find out whether the order is eligible for that method, and if so, the calculator is executed to determine the shipping cost.
 
 ## Creating a custom checker
 

@@ -14,9 +14,9 @@ This guide only lists some of the more common operations you'll need for your st
 
 ## Universal Parameters
 
-There are a couple of query parameters which are valid for all GraphQL operations:
+There are a couple of query parameters that are valid for all GraphQL operations:
 
-* `languageCode`: This sets the current langauge for the request. Any translatable types (e.g. Products, Facets, Collections) will be returned in that language, if a translation is defined for that language. If not, they will fall back to the default language. The value should be one of the ISO 639-1 codes defined by the [`LanguageCode` enum]({{< relref "language-code" >}}).
+* `languageCode`: This sets the current language for the request. Any translatable types (e.g. Products, Facets, Collections) will be returned in that language, if a translation is defined for that language. If not, they will fall back to the default language. The value should be one of the ISO 639-1 codes defined by the [`LanguageCode` enum]({{< relref "language-code" >}}).
 
   ```text
   POST http://localhost:3000/shop-api?languageCode=de
