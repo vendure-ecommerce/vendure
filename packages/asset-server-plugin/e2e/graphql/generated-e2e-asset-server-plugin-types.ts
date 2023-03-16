@@ -1422,6 +1422,7 @@ export enum ErrorCode {
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
   FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+  GUEST_CHECKOUT_ERROR = 'GUEST_CHECKOUT_ERROR',
   INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
   INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
   INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
@@ -1681,6 +1682,13 @@ export type GlobalSettings = {
   serverConfig: ServerConfig;
   trackInventory: Scalars['Boolean'];
   updatedAt: Scalars['DateTime'];
+};
+
+/** Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it. */
+export type GuestCheckoutError = ErrorResult & {
+  errorCode: ErrorCode;
+  errorDetail: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type HistoryEntry = Node & {
@@ -4899,8 +4907,6 @@ export type SearchInput = {
   collectionId?: InputMaybe<Scalars['ID']>;
   collectionSlug?: InputMaybe<Scalars['String']>;
   facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
-  facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
-  facetValueOperator?: InputMaybe<LogicalOperator>;
   groupByProduct?: InputMaybe<Scalars['Boolean']>;
   skip?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<SearchResultSortParameter>;

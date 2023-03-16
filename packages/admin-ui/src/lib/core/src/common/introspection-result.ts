@@ -94,6 +94,7 @@
       "EmptyOrderLineSelectionError",
       "FacetInUseError",
       "FulfillmentStateTransitionError",
+      "GuestCheckoutError",
       "IneligibleShippingMethodError",
       "InsufficientStockError",
       "InsufficientStockOnHandError",

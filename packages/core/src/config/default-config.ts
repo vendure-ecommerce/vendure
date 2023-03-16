@@ -28,6 +28,7 @@ import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handl
 import { DefaultLogger } from './logger/default-logger';
 import { DefaultActiveOrderStrategy } from './order/default-active-order-strategy';
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
+import { DefaultGuestCheckoutStrategy } from './order/default-guest-checkout-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
 import { defaultOrderProcess } from './order/default-order-process';
@@ -154,6 +155,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
         activeOrderStrategy: new DefaultActiveOrderStrategy(),
         orderSellerStrategy: new DefaultOrderSellerStrategy(),
+        guestCheckoutStrategy: new DefaultGuestCheckoutStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

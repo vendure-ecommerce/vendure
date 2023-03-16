@@ -62,7 +62,7 @@ class TestTaxZoneStrategy implements TaxZoneStrategy {
         return zoneForCountryCode ?? channel.defaultTaxZone;
     }
 
-    private getZoneForCountryCode(ctx: RequestContext, countryCode?: string): Promise<Zone | undefined> {
+    private getZoneForCountryCode(ctx: RequestContext, countryCode?: string): Promise<Zone | null> {
         return this.connection
             .getRepository(ctx, Zone)
             .createQueryBuilder('zone')

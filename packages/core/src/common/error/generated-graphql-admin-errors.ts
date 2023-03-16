@@ -183,6 +183,19 @@ export class FulfillmentStateTransitionError extends ErrorResult {
   }
 }
 
+export class GuestCheckoutError extends ErrorResult {
+  readonly __typename = 'GuestCheckoutError';
+  readonly errorCode = 'GUEST_CHECKOUT_ERROR' as any;
+  readonly message = 'GUEST_CHECKOUT_ERROR';
+  readonly errorDetail: Scalars['String'];
+  constructor(
+    input: { errorDetail: Scalars['String'] }
+  ) {
+    super();
+    this.errorDetail = input.errorDetail
+  }
+}
+
 export class IneligibleShippingMethodError extends ErrorResult {
   readonly __typename = 'IneligibleShippingMethodError';
   readonly errorCode = 'INELIGIBLE_SHIPPING_METHOD_ERROR' as any;
@@ -549,7 +562,7 @@ export class SettlePaymentError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set<string>(['AlreadyRefundedError', 'CancelActiveOrderError', 'CancelPaymentError', 'ChannelDefaultLanguageError', 'CouponCodeExpiredError', 'CouponCodeInvalidError', 'CouponCodeLimitError', 'CreateFulfillmentError', 'EmailAddressConflictError', 'EmptyOrderLineSelectionError', 'FacetInUseError', 'FulfillmentStateTransitionError', 'IneligibleShippingMethodError', 'InsufficientStockError', 'InsufficientStockOnHandError', 'InvalidCredentialsError', 'InvalidFulfillmentHandlerError', 'ItemsAlreadyFulfilledError', 'LanguageNotAvailableError', 'ManualPaymentStateError', 'MimeTypeError', 'MissingConditionsError', 'MultipleOrderError', 'NativeAuthStrategyError', 'NegativeQuantityError', 'NoActiveOrderError', 'NoChangesSpecifiedError', 'NothingToRefundError', 'OrderLimitError', 'OrderModificationError', 'OrderModificationStateError', 'OrderStateTransitionError', 'PaymentMethodMissingError', 'PaymentOrderMismatchError', 'PaymentStateTransitionError', 'ProductOptionInUseError', 'QuantityTooGreatError', 'RefundOrderStateError', 'RefundPaymentIdMissingError', 'RefundStateTransitionError', 'SettlePaymentError']);
+const errorTypeNames = new Set<string>(['AlreadyRefundedError', 'CancelActiveOrderError', 'CancelPaymentError', 'ChannelDefaultLanguageError', 'CouponCodeExpiredError', 'CouponCodeInvalidError', 'CouponCodeLimitError', 'CreateFulfillmentError', 'EmailAddressConflictError', 'EmptyOrderLineSelectionError', 'FacetInUseError', 'FulfillmentStateTransitionError', 'GuestCheckoutError', 'IneligibleShippingMethodError', 'InsufficientStockError', 'InsufficientStockOnHandError', 'InvalidCredentialsError', 'InvalidFulfillmentHandlerError', 'ItemsAlreadyFulfilledError', 'LanguageNotAvailableError', 'ManualPaymentStateError', 'MimeTypeError', 'MissingConditionsError', 'MultipleOrderError', 'NativeAuthStrategyError', 'NegativeQuantityError', 'NoActiveOrderError', 'NoChangesSpecifiedError', 'NothingToRefundError', 'OrderLimitError', 'OrderModificationError', 'OrderModificationStateError', 'OrderStateTransitionError', 'PaymentMethodMissingError', 'PaymentOrderMismatchError', 'PaymentStateTransitionError', 'ProductOptionInUseError', 'QuantityTooGreatError', 'RefundOrderStateError', 'RefundPaymentIdMissingError', 'RefundStateTransitionError', 'SettlePaymentError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }

@@ -837,6 +837,7 @@ export enum ErrorCode {
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
+  GUEST_CHECKOUT_ERROR = 'GUEST_CHECKOUT_ERROR',
   IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR',
   IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR',
   INELIGIBLE_PAYMENT_METHOD_ERROR = 'INELIGIBLE_PAYMENT_METHOD_ERROR',
@@ -1006,6 +1007,13 @@ export enum GlobalFlag {
   INHERIT = 'INHERIT',
   TRUE = 'TRUE'
 }
+
+/** Returned when attempting to set the Customer on a guest checkout when the configured GuestCheckoutStrategy does not allow it. */
+export type GuestCheckoutError = ErrorResult & {
+  errorCode: ErrorCode;
+  errorDetail: Scalars['String'];
+  message: Scalars['String'];
+};
 
 export type HistoryEntry = Node & {
   createdAt: Scalars['DateTime'];
@@ -2807,8 +2815,6 @@ export type SearchInput = {
   collectionId?: InputMaybe<Scalars['ID']>;
   collectionSlug?: InputMaybe<Scalars['String']>;
   facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
-  facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
-  facetValueOperator?: InputMaybe<LogicalOperator>;
   groupByProduct?: InputMaybe<Scalars['Boolean']>;
   skip?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<SearchResultSortParameter>;
@@ -2870,7 +2876,7 @@ export type Seller = Node & {
   updatedAt: Scalars['DateTime'];
 };
 
-export type SetCustomerForOrderResult = AlreadyLoggedInError | EmailAddressConflictError | NoActiveOrderError | Order;
+export type SetCustomerForOrderResult = AlreadyLoggedInError | EmailAddressConflictError | GuestCheckoutError | NoActiveOrderError | Order;
 
 export type SetOrderShippingMethodResult = IneligibleShippingMethodError | NoActiveOrderError | Order | OrderModificationError;
 
