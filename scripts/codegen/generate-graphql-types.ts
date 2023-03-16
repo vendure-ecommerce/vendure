@@ -1,4 +1,5 @@
 import { generate } from '@graphql-codegen/cli';
+import { Types } from '@graphql-codegen/plugin-helpers/typings';
 import fs from 'fs';
 import { buildClientSchema } from 'graphql';
 import path from 'path';
@@ -79,7 +80,7 @@ Promise.all([
         const commonPlugins = [disableEsLintPlugin, 'typescript'];
         const clientPlugins = [...commonPlugins, 'typescript-operations'];
 
-        return generate({
+        const codegenConfig: Types.Config = {
             overwrite: true,
             generates: {
                 [path.join(
@@ -204,7 +205,8 @@ Promise.all([
                     config,
                 },
             },
-        });
+        };
+        return generate(codegenConfig);
     })
     .then(
         result => {

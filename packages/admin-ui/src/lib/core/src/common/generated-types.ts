@@ -5114,6 +5114,10 @@ export type SearchInput = {
   collectionId?: InputMaybe<Scalars['ID']>;
   collectionSlug?: InputMaybe<Scalars['String']>;
   facetValueFilters?: InputMaybe<Array<FacetValueFilterInput>>;
+  /** @deprecated Use `facetValueFilters` instead */
+  facetValueIds?: InputMaybe<Array<Scalars['ID']>>;
+  /** @deprecated Use `facetValueFilters` instead */
+  facetValueOperator?: InputMaybe<LogicalOperator>;
   groupByProduct?: InputMaybe<Scalars['Boolean']>;
   skip?: InputMaybe<Scalars['Int']>;
   sort?: InputMaybe<SearchResultSortParameter>;
