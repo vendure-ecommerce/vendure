@@ -61,7 +61,7 @@ export class TestServer {
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete
         await new Promise(resolve => global.setTimeout(resolve, 500));
-        await this.app.close();
+        await this.app?.close();
     }
 
     private getCallerFilename(depth: number): string {
