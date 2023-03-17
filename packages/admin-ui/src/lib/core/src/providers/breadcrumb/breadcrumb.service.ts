@@ -1,6 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Data, NavigationEnd, Params, PRIMARY_OUTLET, Router } from '@angular/router';
-import { DataService } from '@vendure/admin-ui/core';
 import { flatten } from 'lodash';
 import {
     combineLatest as observableCombineLatest,
@@ -10,6 +9,7 @@ import {
     Subject,
 } from 'rxjs';
 import { filter, map, startWith, switchMap, takeUntil } from 'rxjs/operators';
+import { DataService } from '../../data/providers/data.service';
 
 export type BreadcrumbString = string;
 

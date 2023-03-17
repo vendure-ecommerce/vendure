@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { NavMenuSection } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { NavMenuSection } from '../../providers/nav-builder/nav-builder-types';
 import { BaseNavComponent } from '../base-nav/base-nav.component';
 
 @Component({
