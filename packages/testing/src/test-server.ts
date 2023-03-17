@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
 import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
+import cookieSession from 'cookie-session';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -116,6 +117,13 @@ export class TestServer {
                 cors: config.apiOptions.cors,
                 logger: new Logger(),
             });
+            const { tokenMethod } = config.authOptions;
+            const usingCookie =
+                tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
+            if (usingCookie) {
+                const { cookieOptions } = config.authOptions;
+                app.use(cookieSession(cookieOptions));
+            }
             const earlyMiddlewares = config.apiOptions.middleware.filter(mid => mid.beforeListen);
             earlyMiddlewares.forEach(mid => {
                 app.use(mid.route, mid.handler);
