@@ -17636,6 +17636,11 @@ sql.js@1.3.2:
   resolved "https://registry.npmjs.org/sql.js/-/sql.js-1.3.2.tgz#ce0c7b9d884a7f50476e4c2fb29093e10a83ab09"
   integrity sha512-vRdzoj4TCrCX8yI2mv0OVVEuOOz2IlhEfw1x1Q65BhpmLep46iu+M04zxln4u2mHRk+wj7avFq2L3/1gQS1orQ==
 
+sql.js@1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/sql.js/-/sql.js-1.8.0.tgz#cb45d957e17a2239662fe2f614c9b678990867a6"
+  integrity sha512-3HD8pSkZL+5YvYUI8nlvNILs61ALqq34xgmF+BHpqxe68yZIJ1H+sIVIODvni25+CcxHUxDyrTJUL0lE/m7afw==
+
 sqlite3@^5.0.0:
   version "5.0.2"
   resolved "https://registry.npmjs.org/sqlite3/-/sqlite3-5.0.2.tgz#00924adcc001c17686e0a6643b6cbbc2d3965083"
